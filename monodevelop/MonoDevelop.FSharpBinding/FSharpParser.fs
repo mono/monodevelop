@@ -105,13 +105,13 @@ type FSharpParser() =
             match filePathOpt with
             | None -> ()
             | Some filePath -> 
-                let projFile, files, args, framework = MonoDevelop.getCheckerArgs (proj, filePath)
+                let projFile, files, args = MonoDevelop.getCheckerArgs (proj, filePath)
 
                 let results =
                     try
                         LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash)
                         Async.RunSynchronously (
-                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst), 
+                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, storeAst), 
                             timeout = ServiceSettings.maximumTimeout)
                     with
                     | :? TimeoutException ->

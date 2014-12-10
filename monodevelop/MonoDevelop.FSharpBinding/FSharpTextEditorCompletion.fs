@@ -46,9 +46,9 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
         match getTip() with 
         | FSharpToolTipText [xs] ->
             match xs with 
-            | FSharpToolTipElement.Group ttg -> true 
+            | FSharpToolTipElement.Group _ -> true 
             | _ -> false
-        | FSharpToolTipText list -> true
+        | FSharpToolTipText _list -> true
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
@@ -56,7 +56,7 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
         | FSharpToolTipText xs -> 
             seq{for tooltipElement in xs do
                 match tooltipElement with
-                | FSharpToolTipElement.Single(a, b) -> yield FSharpMemberCompletionData(name, FSharpToolTipText[tooltipElement], glyph) :> _
+                | FSharpToolTipElement.Single _ -> yield FSharpMemberCompletionData(name, FSharpToolTipText[tooltipElement], glyph) :> _
                 | FSharpToolTipElement.Group(items) ->
                   let overloads =
                       items 
@@ -69,10 +69,10 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
                 | FSharpToolTipElement.None -> () }
 
 
-    override x.AddOverload (data: ICompletionData) = ()//not currently called
+    override x.AddOverload (_data: ICompletionData) = ()//not currently called
 
     // TODO: what does 'smartWrap' indicate?
-    override x.CreateTooltipInformation (smartWrap: bool) = 
+    override x.CreateTooltipInformation (_smartWrap: bool) = 
       
       Debug.WriteLine("computing tooltip for {0}", name)
       let description = TipFormatter.formatTip (getTip())
@@ -102,7 +102,7 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
     override x.Count = meths.Length
         /// Returns the markup to use to represent the specified method overload
         /// in the parameter information window.
-    override x.CreateTooltipInformation (overload:int, currentParameter:int, smartWrap:bool) = 
+    override x.CreateTooltipInformation (overload:int, currentParameter:int, _smartWrap:bool) = 
         // Get the lower part of the text for the display of an overload
         let meth = meths.[overload]
         let signature, comment =
@@ -168,7 +168,7 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
         meth.Parameters.Length
         
     // @todo should return 'true' for param-list methods
-    override x.AllowParameterList (overload: int) = 
+    override x.AllowParameterList (_overload: int) = 
         false
 
     override x.GetParameterName (overload:int, paramIndex:int) =
@@ -206,7 +206,7 @@ type FSharpTextEditorCompletion() =
                       DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> _ ]
 
 
-  override x.ExtendsEditor(doc:Document, editor:IEditableTextBuffer) =
+  override x.ExtendsEditor(doc:Document, _editor:IEditableTextBuffer) =
     // Extend any text editor that edits F# files
     CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))
 
@@ -215,7 +215,7 @@ type FSharpTextEditorCompletion() =
       base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', '<' or ','
-  override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
+  override x.HandleParameterCompletion(context:CodeCompletionContext, _completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
     try
       if suppressParameterCompletion then
          suppressParameterCompletion <- false
@@ -244,9 +244,9 @@ type FSharpTextEditorCompletion() =
 
 
       // Try to get typed result - with the specified timeout
-      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
+      let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
       let typedParseResults =
-        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
+        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout) 
         |> Async.RunSynchronously
 
       match typedParseResults with
@@ -329,11 +329,11 @@ type FSharpTextEditorCompletion() =
     let result = CompletionDataList()
     let doc = x.Document
     try
-      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
+      let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
       let typedParseResults = 
-          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout)
           |> Async.RunSynchronously
       lastCharDottedInto <- dottedInto
       match typedParseResults with
@@ -342,7 +342,7 @@ type FSharpTextEditorCompletion() =
         // Get declarations and generate list for MonoDevelop
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, doc.Editor.Document)
         match tyRes.GetDeclarations(line, col, lineStr) with
-        | Some(decls, residue) when decls.Items.Any() ->
+        | Some(decls, _residue) when decls.Items.Any() ->
               let items = decls.Items
                           |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
               result.AddRange(items)
@@ -394,7 +394,7 @@ type FSharpTextEditorCompletion() =
           res
 
   interface IDebuggerExpressionResolver with
-    member x.ResolveExpression(editor, doc, offset, startOffset) =
+    member x.ResolveExpression(_editor, doc, offset, startOffset) =
         let resolver = TextEditorResolverService.GetProvider(doc.Editor.MimeType)
         let resolveResult, dom = resolver.GetLanguageItem(doc,offset)
         match resolveResult.GetSymbol() with

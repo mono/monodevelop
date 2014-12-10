@@ -46,7 +46,7 @@ module Parser =
   // Basic functions needed by the computation builder
 
   let result v = P(fun c -> [v, c])
-  let zero () = P(fun c -> [])
+  let zero () = P(fun _ -> [])
   let bind (P p) f = P(fun inp ->
     [ for (pr, inp') in p inp do
         let (P pars) = f pr

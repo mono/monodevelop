@@ -67,7 +67,7 @@ type FSharpErrorSeverityConverter() =
     | FSharpErrorSeverity.Error -> serializer.Serialize(writer, "Error")
     | FSharpErrorSeverity.Warning -> serializer.Serialize(writer, "Warning")
  
-  override x.ReadJson(reader, t, _, serializer) =
+  override x.ReadJson(_reader, _t, _, _serializer) =
     raise (System.NotSupportedException())
 
   override x.CanRead = false
@@ -82,7 +82,7 @@ type RangeConverter() =
     let range = value :?> Range.range
     serializer.Serialize(writer, (range.Start, range.End))
 
-  override x.ReadJson(reader, t, _, serializer) =
+  override x.ReadJson(_reader, _t, _, _serializer) =
     raise (System.NotSupportedException())
 
   override x.CanRead = false
@@ -337,15 +337,6 @@ module internal Main =
       ok
 
     let getoptions file state =
-      // TODO: Clean up the API these options are being generated to call
-      //
-      // That API is in FSharp.CompilerBinding.LanguageService.
-      // 1. It expects a Target Framework, but *only* for FSI as
-      //    FCS is *rumoured* not to return references including FSharp.Core
-      //    and it uses the framework to guess where it is.
-      //    We will just use 4.5.
-      // 2. The CompileFiles just get added to the options, so we will do that
-      //    here and then pass in an empty array of CompileFiles.
       let text = String.concat "\n" state.Files.[file]
       let project = Map.tryFind file state.Projects
       let projFile, args =
@@ -371,7 +362,7 @@ module internal Main =
 
         let task =
           async {
-            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, [||], args, FSharpTargetFramework.NET_4_5, true)
+            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, [||], args, true)
             match results.GetErrors() with
             | None -> ()
             | Some errs ->
@@ -433,7 +424,7 @@ module internal Main =
         let file = Path.GetFullPath file
         if parsed file then
           let text, projFile, args = getoptions file state
-          let parseResult = agent.ParseFileInProject(projFile, file, text, [||], args, FSharpTargetFramework.NET_4_5) |> Async.RunSynchronously
+          let parseResult = agent.ParseFileInProject(projFile, file, text, args) |> Async.RunSynchronously
           let decls = parseResult.GetNavigationItems().Declarations 
           match state.OutputMode with
           | Text ->
@@ -469,7 +460,7 @@ module internal Main =
           let lineStr = state.Files.[file].[line - 1]
           // TODO: Deny recent typecheck results under some circumstances (after bracketed expr..)
           let timeout = match timeout with Some x -> x | _ -> 20000
-          let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, [||], args, AllowStaleResults.MatchingFileName, timeout, FSharpTargetFramework.NET_4_5)
+          let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, [||], args, AllowStaleResults.MatchingFileName, timeout)
                          |> Async.RunSynchronously
           match tyResOpt with
           | None -> printMsg "ERROR" "Timeout when fetching typed parse result"; main state
