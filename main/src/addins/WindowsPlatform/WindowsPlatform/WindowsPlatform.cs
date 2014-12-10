@@ -411,7 +411,7 @@ namespace MonoDevelop.Platform
 			public override void Launch (params string[] files)
 			{
 				foreach (string file in files)
-					Process.Start (ExePath, "\"" + file + "\"");
+					Process.Start (ExePath, ProcessArgumentBuilder.Quote (file));
 			}
 		}
 	}
