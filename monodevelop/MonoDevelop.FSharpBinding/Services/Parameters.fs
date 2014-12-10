@@ -29,7 +29,15 @@ type FSharpCompilerParameters() =
   let mutable generateTailCalls = "true"
 
   override val NoStdLib = false with get, set
+#if MDVERSION_5_6_3
+  member val DebugType = "" with get, set
+#else
+#if MDVERSION_5_5_4
+  member val DebugType = "" with get, set
+#else
   override val DebugType = "" with get, set
+#endif
+#endif
 
   member val DefineConstants = "" with get, set
   member val OtherFlags = "" with get, set

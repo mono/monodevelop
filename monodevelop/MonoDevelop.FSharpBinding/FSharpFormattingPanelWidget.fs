@@ -13,7 +13,6 @@ open Mono.Unix
 type FSharpFormattingPolicyPanelWidget() =
     inherit Gtk.Bin()
 
-    let mutable currentFormat = FSharpFormattingSettings()
     let store = new ListStore (typedefof<string>, typedefof<FSharpFormattingSettings>)
     let mutable policy = FSharpFormattingPolicy()
 
@@ -45,7 +44,6 @@ type FSharpFormattingPolicyPanelWidget() =
     let fillFormat so =
         match so with
         | Some format ->
-            currentFormat <- format
             propertyGrid.CurrentObject <- format
         | None -> ()
         updateCurrentName()

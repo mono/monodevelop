@@ -434,7 +434,7 @@ module SymbolTooltips =
             let signature = getUnioncaseSignature symbolUse.DisplayContext uc
             ToolTip(signature, getSummaryFromSymbol uc backUpSig)
 
-        | ActivePatternCase apc ->
+        | ActivePatternCase _apc ->
             //Theres not enough information to build this?
             ToolTips.EmptyTip
            
@@ -490,7 +490,7 @@ module SymbolTooltips =
             let signature = getUnioncaseSignature displayContext uc
             ToolTip(signature, getSummaryFromSymbol uc backUpSig)
 
-        | ActivePatternCase apc ->
+        | ActivePatternCase _apc ->
             //Theres not enough information to build this?
             ToolTips.EmptyTip
            

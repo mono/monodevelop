@@ -18,7 +18,7 @@ open MonoDevelop.Projects.Formats.MSBuild
 type CorrectGuidMSBuildExtension() =
     inherit MSBuildExtension()
 
-    override x.SaveProject (monitor, item, project) =
+    override x.SaveProject (_monitor, _item, project) =
         try
             let fsimportExists =
                 project.Imports
@@ -128,7 +128,7 @@ type FSharpLanguageBinding() =
       pars :> ConfigurationParameters
 
 
-    override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
+    override x.CreateProjectParameters(_options:XmlElement) : ProjectParameters =
       ProjectParameters()
       
     override x.GetCodeDomProvider() : CodeDomProvider =

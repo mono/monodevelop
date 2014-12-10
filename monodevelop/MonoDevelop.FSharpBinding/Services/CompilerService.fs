@@ -28,7 +28,7 @@ open FSharp.Compiler.CodeDom
 module CompilerService = 
 
   /// Generate various command line arguments for the project
-  let private generateCmdArgs (config:DotNetProjectConfiguration, regLangVersion, items, configSel) = 
+  let private generateCmdArgs (config:DotNetProjectConfiguration, regLangVersion, configSel) = 
     [ match config.CompileTarget with
       | CompileTarget.Library  -> yield "--target:library"
       | CompileTarget.Module   -> yield "--target:module"
@@ -176,7 +176,7 @@ module CompilerService =
     let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
     let args = 
         [ yield! [ "--noframework --nologo" ]
-          yield! generateCmdArgs(config, None, items, configSel)
+          yield! generateCmdArgs(config, None, configSel)
           yield! CompilerArguments.generateOtherItems items 
       
           // Generate source files

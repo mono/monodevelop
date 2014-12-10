@@ -72,7 +72,7 @@ type FSharpInteractivePad() =
         let ses = InteractiveSession()
         let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ))
         let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ))
-        ses.Exited.Add(fun e -> 
+        ses.Exited.Add(fun _ -> 
           textReceived.Dispose()
           promptReady.Dispose()
           if killIntent = NoIntent then

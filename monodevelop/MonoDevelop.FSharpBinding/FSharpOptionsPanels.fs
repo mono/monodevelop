@@ -80,10 +80,7 @@ type FSharpSettingsPanel() =
     let interactiveArgs = PropertyService.Get (fsiArgumentsPropName, "")
     let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
     let matchWithTheme = PropertyService.Get (fsiMatchWithThemePropName, true)
-    let interactiveFont = PropertyService.Get (fsiFontNamePropName, "")  
     let compilerPath = PropertyService.Get (fscPathPropName, "")
-    let defaultInteractivePath = CompilerArguments.getDefaultInteractive
-    let defaultInteractiveArgs = ""
 
     setInteractiveDisplay (interactivePath = "" && interactiveArgs = "")
     setCompilerDisplay (compilerPath = "")
