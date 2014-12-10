@@ -35,7 +35,11 @@ type FSharpCompilerParameters() =
 #if MDVERSION_5_5_4
   member val DebugType = "" with get, set
 #else
+#if MDVERSION_5_5_0
+  member val DebugType = "" with get, set
+#else
   override val DebugType = "" with get, set
+#endif
 #endif
 #endif
 
