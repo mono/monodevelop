@@ -33,6 +33,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Microsoft.Win32;
@@ -330,103 +331,72 @@ namespace MonoDevelop.Platform
 				yield break;
 			string defaultApp = GetDefaultApp (extension);
 
-			foreach (var app in GetAppsByProgID (extension, defaultApp))
-				yield return app;
-
-			foreach (var app in GetAppsByExeName (extension, defaultApp))
+			foreach (var app in GetAppsForExtension (extension, defaultApp))
 				yield return app;
 		}
 
+		enum AppOpenWithRegistryType {
+			FromValue,
+			FromMRUList,
+			FromSubkey,
+		}
 		const string assocBaseKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\";
-
-		static IEnumerable<DesktopApplication> GetAppsByProgID (string extension, string defaultApp)
+		static IEnumerable<DesktopApplication> GetAppFromRegistry (RegistryKey key, string defaultApp, HashSet<string> uniqueAppsSet, AssociationFlags flags, AppOpenWithRegistryType type)
 		{
-			var progIDs = new HashSet<string> ();
-
-			using (RegistryKey RegKey = Registry.CurrentUser.OpenSubKey (assocBaseKey + extension + @"\OpenWithProgids")) {
-				if (RegKey != null) {
-					foreach (string progID in RegKey.GetValueNames ()) {
-						if (progIDs.Add (progID)) {
-							var app = WindowsAppFromProgID (progID, defaultApp);
-							if (app != null)
-								yield return app;
-						}
-					}
+			if (key != null) {
+				var apps = new string[0];
+				if (type == AppOpenWithRegistryType.FromValue)
+					apps = key.GetValueNames ();
+				else if (type == AppOpenWithRegistryType.FromSubkey)
+					apps = key.GetSubKeyNames ();
+				else if (type == AppOpenWithRegistryType.FromMRUList) {
+					string list = (string)key.GetValue ("MRUList");
+					apps = list.Select (c => c.ToString ()).ToArray ();
 				}
-			}
 
-			using (RegistryKey RegKey = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithProgids")) {
-				if (RegKey != null) {
-					foreach (string progID in RegKey.GetValueNames ()) {
-						if (progIDs.Add (progID)) {
-							var app = WindowsAppFromProgID (progID, defaultApp);
-							if (app != null)
-								yield return app;
-						}
-					}
+				foreach (string appName in apps) {
+					var app = WindowsAppFromName (appName, defaultApp, flags);
+					if (app != null && uniqueAppsSet.Add (app.ExePath))
+						yield return app;
 				}
 			}
 		}
 
-		static IEnumerable<DesktopApplication> GetAppsByExeName (string extension, string defaultApp)
+		static IEnumerable<DesktopApplication> GetAppsForExtension (string extension, string defaultApp)
 		{
-			var exeNames = new HashSet<string> ();
+			var uniqueAppsSet = new HashSet<string> ();
+			// Query Explorer OpenWithProgids.
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey (assocBaseKey + extension + @"\OpenWithProgids"))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.None, AppOpenWithRegistryType.FromValue))
+					yield return app;
 
-			using (RegistryKey RegKey = Registry.CurrentUser.OpenSubKey (assocBaseKey + extension + @"\OpenWithList")) {
-				if (RegKey != null) {
-					string MRUList = (string)RegKey.GetValue ("MRUList");
-					if(MRUList != null){
-						foreach (char c in MRUList.ToString()) {
-							string exeName = RegKey.GetValue (c.ToString ()).ToString ();
-							if (exeNames.Add (exeName)) {
-								var app = WindowsAppFromExeName (exeName, defaultApp);
-								if (app != null)
-									yield return app;
-							}
-						}
-					}
-				}
-			}
+			// Query extension OpenWithProgids.
+			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithProgids"))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.None, AppOpenWithRegistryType.FromValue))
+					yield return app;
 
-			using (RegistryKey RegKey = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithList")) {
-				if (RegKey != null) {
-					foreach (string exeName in RegKey.GetSubKeyNames ()) {
-						if (exeNames.Add (exeName)) {
-							var app = WindowsAppFromExeName (exeName, defaultApp);
-							if (app != null)
-								yield return app;
-						}
-					}
-				}
-			}
+			// Query Explorer OpenWithList.
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey (assocBaseKey + extension + @"\OpenWithList"))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromMRUList))
+					yield return app;
+
+			// Query extension OpenWithList.
+			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithList"))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromMRUList))
+					yield return app;
 		}
 
-		static WindowsDesktopApplication WindowsAppFromProgID (string progID, string defaultApp)
+		static WindowsDesktopApplication WindowsAppFromName (string appName, string defaultApp, AssociationFlags flags)
 		{
 			try {
-				string displayName = QueryAssociationString (progID, AssociationString.FriendlyAppName, AssociationFlags.None, "open");
-				string exePath = QueryAssociationString (progID, AssociationString.Executable, AssociationFlags.None, "open");
-				if(System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
-					return null;
-				return new WindowsDesktopApplication (progID, displayName, exePath, progID.Equals (defaultApp));
+				string displayName = QueryAssociationString (appName, AssociationString.FriendlyAppName, flags, "open");
+				string exePath = QueryAssociationString (appName, AssociationString.Executable, flags, "open");
+				if (System.Reflection.Assembly.GetEntryAssembly ().Location != exePath)
+					return new WindowsDesktopApplication (appName, displayName, exePath, appName.Equals (defaultApp));
 			} catch (Exception ex) {
-				LoggingService.LogError (string.Format ("Failed to read info for ProgID '{0}'", progID), ex);
-				return null;
+				LoggingService.LogError (string.Format ("Failed to read info for {0} '{1}'", flags == AssociationFlags.None ? "ProgId" : "ExeName", appName), ex);
 			}
-		}
-
-		static WindowsDesktopApplication WindowsAppFromExeName (string exeName, string defaultApp)
-		{
-			try {
-				string displayName = QueryAssociationString (exeName, AssociationString.FriendlyAppName, AssociationFlags.OpenByExeName, "open");
-				string exePath = QueryAssociationString (exeName, AssociationString.Executable, AssociationFlags.OpenByExeName, "open");
-				if(System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
-					return null;
-				return new WindowsDesktopApplication (exeName, displayName, exePath, exeName.Equals (defaultApp));
-			} catch (Exception ex) {
-				LoggingService.LogError (string.Format ("Failed to read info for ExeName '{0}'", exeName), ex);
-				return null;
-			}
+			return null;
 		}
 
 		class WindowsDesktopApplication : DesktopApplication
