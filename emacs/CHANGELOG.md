@@ -1,6 +1,6 @@
 ## 1.5.0 (2014-11-25)
 
-Incorporate FSharp.AutoComplete version 0.13.3, which has corrected help text for the parse command and uses FCS 0.0.79.
+Incorporate FSharp.AutoComplete version 0.13.3, which has corrected help text for the parse command and uses FCS 0.0.81.
 
 Features:
   - #235: Support multiple projects simultaneously

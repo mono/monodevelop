@@ -18,7 +18,7 @@ open MonoDevelop.Projects.Formats.MSBuild
 type CorrectGuidMSBuildExtension() =
     inherit MSBuildExtension()
 
-    override x.SaveProject (monitor, item, project) =
+    override x.SaveProject (_monitor, _item, project) =
         try
             let fsimportExists =
                 project.Imports
@@ -46,8 +46,8 @@ type FSharpLanguageBinding() =
   let invalidateProjectFile(project:Project) =
     match project with
     | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
-        let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
-        let options = langServ.GetProjectCheckerOptions(projectFilename, files, args, framework)
+        let projectFilename, files, args  = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
+        let options = langServ.GetProjectCheckerOptions(projectFilename, files, args)
         langServ.InvalidateConfiguration(options)
     | _ -> ()
     
@@ -128,7 +128,7 @@ type FSharpLanguageBinding() =
       pars :> ConfigurationParameters
 
 
-    override x.CreateProjectParameters(options:XmlElement) : ProjectParameters =
+    override x.CreateProjectParameters(_options:XmlElement) : ProjectParameters =
       ProjectParameters()
       
     override x.GetCodeDomProvider() : CodeDomProvider =

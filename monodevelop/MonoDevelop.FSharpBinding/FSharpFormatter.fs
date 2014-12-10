@@ -138,7 +138,7 @@ type FSharpFormatter()  =
 
     override x.SupportsOnTheFlyFormatting = true
     override x.SupportsCorrectingIndent = false
-    override x.CorrectIndenting(policyParent, mimeTypeChain, data, line) = raise (NotSupportedException())
+    override x.CorrectIndenting(_policyParent, _mimeTypeChain, _data, _line) = raise (NotSupportedException())
 
     override x.OnTheFlyFormat(doc, fromOffset, toOffset) =
         let policyParent : PolicyContainer =

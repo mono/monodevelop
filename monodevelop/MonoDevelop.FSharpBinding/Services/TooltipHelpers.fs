@@ -86,8 +86,9 @@ module Tooltips =
                                                |> addStyle
                                 acc.Append(fragment)
                        | "attribution" -> acc //skip attribution elements
-                       | unknown -> LoggingService.LogError("Error in Tooltip parsing, unknown element in summary: " + element.Name.LocalName)
-                                    processNodes acc (element.Nodes())
+                       | unknown -> 
+                           LoggingService.LogError("Error in Tooltip parsing, unknown element in summary: " + unknown)
+                           processNodes acc (element.Nodes())
                 | :? XText as xt -> acc.AppendFormat("{0} ", xt.Value |> GLib.Markup.EscapeText |> trim)
                 | _ -> acc )
         processNodes sb (element.Nodes())

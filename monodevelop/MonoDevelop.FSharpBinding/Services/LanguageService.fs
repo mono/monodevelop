@@ -83,7 +83,6 @@ module internal TipFormatter =
              let args = argsText.Split(',')
              if nameAndCount.Contains "`" then
                  let ps = nameAndCount.Split( [| '`' |],StringSplitOptions.RemoveEmptyEntries)
-                 let name = ps.[0]
                  let noArgs =
                      try int (ps.[1].Split([| '.' |], StringSplitOptions.RemoveEmptyEntries).[0] )
                      with _ -> 0
@@ -142,7 +141,7 @@ module internal TipFormatter =
       else "/Type/Members/Member[@MemberName='" + name + "']"
 
   /// Try to find the MonoDoc documentation for a file/key pair representing an entity with documentation
-  let findMonoDocProviderForEntity (file, key) =
+  let findMonoDocProviderForEntity (_file, key) =
 
       match key with
       | Type(typ) ->
@@ -152,7 +151,7 @@ module internal TipFormatter =
           maybe {let! doc = tryGetDoc (parentId)
                  let docXml = doc.SelectSingleNode (typeMemberFormatter name)
                  return docXml.OuterXml }
-      | Method(parentId, name, count, args) ->
+      | Method(parentId, name, _count, args) ->
           maybe {
                   let! doc = tryGetDoc (parentId)
                   let nodeXmls = doc.SelectNodes (typeMemberFormatter name)
@@ -234,9 +233,9 @@ module internal TipFormatter =
   let private extractParamTipFromElement paramName element =
       match element with
       | FSharpToolTipElement.None -> None
-      | FSharpToolTipElement.Single (it, comment) -> extractParamTipFromComment paramName comment
+      | FSharpToolTipElement.Single (_it, comment) -> extractParamTipFromComment paramName comment
       | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | FSharpToolTipElement.CompositionError err -> None
+      | FSharpToolTipElement.CompositionError _err -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (FSharpToolTipText elements) =
@@ -264,13 +263,12 @@ module internal MonoDevelop =
                                                                         CompilerArguments.getTargetFramework projConfig.TargetFramework.Id,
                                                                         config,
                                                                         false) |> Array.ofList
-                   let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
-                   return args, framework }
+                   return args }
 
         match arguments with
-        | Some (args, framework) -> fileName, files, args, framework
+        | Some args -> fileName, files, args
         | None -> LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
-                  fileName, files, [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
+                  fileName, files, [||]
 
     let getConfig () =
         match MonoDevelop.Ide.IdeApp.Workspace with
@@ -283,7 +281,7 @@ module internal MonoDevelop =
         match project with
         | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript") ->
             getCheckerArgsFromProject(dnp, getConfig())
-        | _ -> filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
+        | _ -> filename, [|filename|], [||]
 
 /// Provides functionality for working with the F# interactive checker running in background
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library

@@ -28,7 +28,6 @@ type FSharpUnitTestTextEditorExtension() =
         sb.ToString ()
 
     override x.GatherUnitTests () =
-        let loc = x.Document.Editor.Caret.Location
         let tests = ResizeArray<AbstractUnitTestTextEditorExtension.UnitTestLocation>()
 
         let hasNUnitReference =
@@ -38,7 +37,7 @@ type FSharpUnitTestTextEditorExtension() =
                 let refs = dnp.GetReferencedAssemblies(MonoDevelop.getConfig()) |> Seq.toArray
                 refs |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
             | _ -> false
-        let activeView = x.Document.Window
+
         if x.Document.ParsedDocument = null || not hasNUnitReference then tests :> IList<_> else
 
         match x.Document.ParsedDocument.Ast with

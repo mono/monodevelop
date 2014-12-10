@@ -49,7 +49,7 @@ type FSharpTooltipProvider() =
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
 
-        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(extEditor.Project, fileName)
+        let projFile, files, args = MonoDevelop.getCheckerArgs(extEditor.Project, fileName)
 
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
 
@@ -59,7 +59,7 @@ type FSharpTooltipProvider() =
            TextSegment.FromBounds(startOffset, endOffset)
 
         let result = async {
-           let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
+           let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
            LoggingService.LogInfo "TooltipProvider: Getting tool tip"
            match parseAndCheckResults with
            | None -> return ParseAndCheckNotFound
@@ -77,12 +77,12 @@ type FSharpTooltipProvider() =
                            | Some (FSharpToolTipText xs, (_,_)) when xs.Length > 0 ->
                                let first = xs.Head    
                                match first with
-                               | FSharpToolTipElement.Single (name, xmlComment) ->
+                               | FSharpToolTipElement.Single (_name, xmlComment) ->
                                     match xmlComment with
                                     | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
                                     | _ -> None
                                | FSharpToolTipElement.Group tts when tts.Length > 0 ->
-                                   let name, xmlComment = tts.Head
+                                   let _name, xmlComment = tts.Head
                                    match xmlComment with
                                    | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
                                    | _ -> None
@@ -143,7 +143,7 @@ type FSharpTooltipProvider() =
        
       with exn -> LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn); null
 
-    override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
+    override x.CreateTooltipWindow (_editor, _offset, _modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
         if (doc = null) then null else
         //At the moment as the new tooltips are unfinished we have two types here
@@ -188,7 +188,7 @@ type FSharpTooltipProvider() =
         | _ -> LoggingService.LogError "TooltipProvider: Type mismatch, not a FSharpLocalResolveResult"
                null
     
-    override x.ShowTooltipWindow (editor, offset, modifierState, mouseX, mouseY, item) =
+    override x.ShowTooltipWindow (editor, offset, modifierState, _mouseX, _mouseY, item) =
         match (lastResult, lastWindow) with
         | Some(lastRes), Some(lastWin) when item.Item = lastRes.Item && lastWin.IsRealized ->
             lastWin :> _                   

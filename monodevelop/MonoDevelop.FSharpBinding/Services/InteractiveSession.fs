@@ -25,7 +25,7 @@ type InteractiveSession() =
 
   let mutable waitingForResponse = false
  
-  let check = 
+  let _check = 
     if path = "" then
         MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive console set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
         raise (InvalidOperationException("No path to F# Interactive console set, and default could not be located."))
@@ -92,8 +92,8 @@ type InteractiveSession() =
     let message = str + if str.EndsWith(";;") then "\n" else ";;\n"
     let stream = fsiProcess.StandardInput.BaseStream
     let bytes = Text.Encoding.UTF8.GetBytes(message)
-    fsiProcess.StandardInput.BaseStream.Write(bytes,0,bytes.Length)
-    fsiProcess.StandardInput.BaseStream.Flush()
+    stream.Write(bytes,0,bytes.Length)
+    stream.Flush()
 
   member x.Exited = fsiProcess.Exited
     

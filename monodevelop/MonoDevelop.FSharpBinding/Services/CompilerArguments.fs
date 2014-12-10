@@ -93,9 +93,9 @@ module CompilerArguments =
        let wrapf = if shouldWrap then wrapFile else id
        
        [
-        let refs =  project.GetReferencedAssemblies(configSelector) |> Seq.toArray
+        let refs =  project.GetReferencedAssemblies(configSelector) 
         let projectReferences =
-            project.GetReferencedAssemblies(configSelector)
+            refs
             // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
             // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
             |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
@@ -173,7 +173,7 @@ module CompilerArguments =
             let logicalResourceName = file.ProjectVirtualPath.ToString().Replace("\\",".").Replace("/",".")
             yield "--resource:" + wrapFile fileName + "," + wrapFile logicalResourceName
         | "None" | "Content" | "Compile" -> ()
-        | s -> ()] // failwith("Items of type '" + s + "' not supported") ]
+        | _ -> ()] // failwith("Items of type '" + s + "' not supported") ]
 
   let private getToolPath (pathsToSearch:seq<string>) (extensions:seq<string>) (toolName:string) =
     let filesToSearch = Seq.map (fun x -> toolName + x) extensions

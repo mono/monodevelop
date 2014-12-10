@@ -82,12 +82,6 @@ type FSharpProjectNodeCommandHandler() =
         | _ -> ()//If we cant find both nodes or the position isnt before or after we dont continue
     | _ -> ()//unsupported
 
-  let getProjectAndPath (fileOrFolder: obj) =
-    match fileOrFolder with
-    | :? ProjectFile as p -> (p.Project, p.FilePath) |> Some
-    | :? ProjectFolder as folder -> (folder.Project, folder.Path) |> Some
-    | _ -> None
-
   /// Implement drag and drop of nodes in F# projects in the solution explorer.
   override x.OnNodeDrop(dataObject, dragOperation, position) =
     match dataObject, dragOperation with
@@ -101,10 +95,10 @@ type FSharpProjectNodeCommandHandler() =
   override x.CanDragNode() = DragOperation.Move
 
   /// Implement drag and drop of nodes in F# projects in the solution explorer.
-  override x.CanDropNode(dataObject, dragOperation) = true
+  override x.CanDropNode(_dataObject, _dragOperation) = true
 
   /// Implement drag and drop of nodes in F# projects in the solution explorer.
-  override x.CanDropNode(dataObject, dragOperation, position) =
+  override x.CanDropNode(dataObject, _dragOperation, _position) =
       //currently we are going to only support dropping project files from the same parent project
       match (dataObject, x.CurrentNode.DataItem) with
       | (:? ProjectFile as drag), (:? ProjectFile as drop) ->

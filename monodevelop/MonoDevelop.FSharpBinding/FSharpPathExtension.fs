@@ -35,11 +35,11 @@ type FSharpPathExtension() =
 
     override x.Initialize() =
         currentPath <- [| new PathEntry("No selection", Tag = null) |]
-        let positionChanged = x.Document.Editor.Caret.PositionChanged.Subscribe(fun o e -> x.PathUpdated e)
-        let documentParsed  = x.Document.DocumentParsed.Subscribe(fun o e -> x.PathUpdated null)
+        let positionChanged = x.Document.Editor.Caret.PositionChanged.Subscribe(fun o e -> x.PathUpdated())
+        let documentParsed  = x.Document.DocumentParsed.Subscribe(fun o e -> x.PathUpdated())
         subscriptions <- positionChanged :: documentParsed :: subscriptions
         
-    member private x.PathUpdated(documentLocation) =
+    member private x.PathUpdated() =
         let loc = x.Document.Editor.Caret.Location
         
         if x.Document.ParsedDocument = null ||

@@ -10,8 +10,6 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <Name>MonoDevelop.FSharp</Name>
-    <!-- disable this for now, xbuild hangs if it launches the terminate-and-stay-resident server -->
-    <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -32,6 +30,8 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
     <StartAction>Program</StartAction>
+    <OtherFlags>--warnon:1182</OtherFlags>
+
     <StartProgram>INSERT_FSPROJ_MDEXE</StartProgram>
     <StartWorkingDirectory>INSERT_FSPROJ_MDROOT</StartWorkingDirectory>
     <CustomCommands>

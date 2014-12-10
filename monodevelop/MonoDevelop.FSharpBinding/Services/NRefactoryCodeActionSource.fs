@@ -58,7 +58,7 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
     let withCol = if hasWith.IsSome then None else Some interfaceData.Range.EndColumn
     indentCol, withCol
     
-  override x.Run (context: IRefactoringContext, script:obj) = 
+  override x.Run (_context: IRefactoringContext, _script:obj) = 
      let line = fsSymbolUse.RangeAlternate.StartLine
 
      let startindent, withCol = getIndentAndWithColumn()
@@ -92,7 +92,7 @@ type ImplementInterfaceCodeActionProvider() as x =
     x.Description <- "Implement this interface"
   override x.IdString = "ImplementInterfaceCodeActionProvider" 
 
-  override x.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
+  override x.GetActions(doc: Document, _ctx: obj, location: TextLocation, _cancellation: CancellationToken) = 
     if doc.ParsedDocument <> null then
       match doc.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast -> seq {
