@@ -410,11 +410,8 @@ namespace MonoDevelop.Platform
 
 			public override void Launch (params string[] files)
 			{
-				var pab = new ProcessArgumentBuilder ();
-				foreach (string file in files) {
-					pab.AddQuoted (file);
-					Process.Start (ExePath, pab.ToString ());
-				}
+				foreach (string file in files)
+					Process.Start (ExePath, "\"" + file + "\"");
 			}
 		}
 	}
