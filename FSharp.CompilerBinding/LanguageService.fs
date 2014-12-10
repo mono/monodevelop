@@ -24,8 +24,8 @@ module Symbols =
 module ServiceSettings =
 
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = 500
-  let maximumTimeout = 10000
+  let blockingTimeout = 250
+  let maximumTimeout = 5000
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
@@ -263,11 +263,16 @@ type LanguageService(dirtyNotify) =
             with exn -> Debug.WriteLine( sprintf "LanguageService: Exception: %s" (exn.ToString()) )
         })
 
+  let scriptExtensions = [".fsx";".fsscript";".sketchfs"]
+  let isAScript fileName =
+      let ext = Path.GetExtension fileName
+      scriptExtensions |> List.exists ((=) ext)
+
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
     let ext = Path.GetExtension(fileName)
-    let opts = 
-      if (ext = ".fsx" || ext = ".fsscript") then
+    let opts =
+      if isAScript fileName then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         x.GetScriptCheckerOptions(fileName, projFilename, source)
           
@@ -363,6 +368,7 @@ type LanguageService(dirtyNotify) =
 
   member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout) = 
    async {
+    let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", box fileName)
     // Try to get recent results from the F# service

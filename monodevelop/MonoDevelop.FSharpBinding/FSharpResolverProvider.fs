@@ -56,9 +56,7 @@ type FSharpResolverProvider() =
                         | Some filename -> DomRegion(filename, 0, 0)
 
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
-                let lastIdent = match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with
-                                | Some(_, identIsland) -> Seq.last identIsland
-                                | None -> ""
+                let lastIdent = Symbols.lastIdent col lineStr
                 let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, domRegion)
                 return resolveResult, domRegion }
         match results |> Async.RunSynchronously with

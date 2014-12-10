@@ -29,8 +29,7 @@ module CompilerArguments =
   
   /// Is the specified extension supported F# file?
   let supportedExtension ext = 
-    [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> List.exists (fun sup ->
-        String.Compare(ext, sup, true) = 0)
+    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"] |> List.exists ((=) ext)
 
   // Translate the target framework to an enum used by FSharp.CompilerBinding
   let getTargetFramework (targetFramework:TargetFrameworkMoniker) = 

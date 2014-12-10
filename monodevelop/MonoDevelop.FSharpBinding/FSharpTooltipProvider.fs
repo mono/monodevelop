@@ -34,7 +34,7 @@ type FSharpTooltipProvider() =
        enterNotify |> Option.iter (fun en -> en.Dispose ())
 
     let isSupported fileName= 
-        [|".fs";".fsi";".fsx";".fsscript"|] 
+        [|".fs";".fsi";".fsx";".fsscript";".sketchfs"|] 
         |> Array.exists ((=) (Path.GetExtension fileName))
 
     override x.GetItem (editor, offset) =
@@ -53,10 +53,29 @@ type FSharpTooltipProvider() =
 
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
 
-        let getSegFromRange (doc:TextDocument) (range: Microsoft.FSharp.Compiler.Range.range)  =
-           let startOffset = doc.LocationToOffset(range.StartLine, range.StartColumn)
-           let endOffset = doc.LocationToOffset(range.EndLine, range.EndColumn)
-           TextSegment.FromBounds(startOffset, endOffset)
+        let getTooltipFromLanguageService (parseAndCheckResults: ParseAndCheckResults) =
+            async {
+               // Get tool-tip from the language service
+               let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
+               match tip with
+               | None -> return NoToolTipText
+               | Some (FSharpToolTipText(elems),_) when elems |> List.forall (function FSharpToolTipElement.None -> true | _ -> false) -> return NoToolTipData
+               | Some(tiptext,(col1,col2)) -> 
+                   LoggingService.LogInfo "TooltipProvider: Got data"
+                   //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
+                   match lastResult with
+                   | Some(tooltipItem) when
+                       tooltipItem.Item :? FSharpToolTipText && 
+                       tooltipItem.Item :?> FSharpToolTipText = tiptext && 
+                       tooltipItem.ItemSegment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1) ->
+                           return Tooltip tooltipItem
+                   //If theres no match or previous cached result generate a new tooltipitem
+                   | Some(_)
+                   | None -> let line = editor.Document.OffsetToLineNumber offset
+                             let segment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
+                             let tooltipItem = TooltipItem (tiptext, segment)
+                             lastResult <- Some(tooltipItem)
+                             return Tooltip tooltipItem }
 
         let result = async {
            let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
@@ -90,51 +109,31 @@ type FSharpTooltipProvider() =
                                | _ -> None
                            | _ -> None)
 
-               let typeTip = 
-                   match symbol with
-                   | Some s -> getTooltipFromSymbolUse s backupSig
-                   | None -> ToolTips.EmptyTip
-
                // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
                // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
-               match typeTip with
-               | ToolTip(signature, summary) ->
-                    //get the TextSegment the the symbols range occupies
-                    let textSeg = getSegFromRange extEditor.Document symbol.Value.RangeAlternate
-                    //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
-                    match lastResult with
-                    | Some(tooltipItem) when
-                        tooltipItem.Item :? (string * XmlDoc) &&
-                        tooltipItem.Item :?> (string * XmlDoc) = (signature, summary) &&
-                        tooltipItem.ItemSegment = textSeg ->
-                            return Tooltip tooltipItem
-                    //If theres no match or previous cached result generate a new tooltipitem
-                    | Some(_)
-                    | None -> let tooltipItem = TooltipItem((signature, summary), textSeg)
-                              lastResult <- Some(tooltipItem)
-                              return Tooltip tooltipItem
-               | EmptyTip ->
-                   // Get tool-tip from the language service
-                   let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
-                   match tip with
-                   | None -> return NoToolTipText
-                   | Some (FSharpToolTipText(elems),_) when elems |> List.forall (function FSharpToolTipElement.None -> true | _ -> false) -> return NoToolTipData
-                   | Some(tiptext,(col1,col2)) -> 
-                       LoggingService.LogInfo "TooltipProvider: Got data"
-                       //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
-                       match lastResult with
-                       | Some(tooltipItem) when
-                           tooltipItem.Item :? FSharpToolTipText && 
-                           tooltipItem.Item :?> FSharpToolTipText = tiptext && 
-                           tooltipItem.ItemSegment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1) ->
-                               return Tooltip tooltipItem
-                       //If theres no match or previous cached result generate a new tooltipitem
-                       | Some(_)
-                       | None -> let line = editor.Document.OffsetToLineNumber offset
-                                 let segment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
-                                 let tooltipItem = TooltipItem (tiptext, segment)
-                                 lastResult <- Some(tooltipItem)
-                                 return Tooltip tooltipItem } |> Async.RunSynchronously
+               match symbol with
+               | Some s -> 
+                    let tt = getTooltipFromSymbolUse s backupSig
+                    match tt with
+                    | ToolTip(signature, summary) ->
+                        //get the TextSegment the the symbols range occupies
+                        let textSeg = Symbols.getTextSegment extEditor.Document symbol.Value col lineStr
+
+                        //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
+                        match lastResult with
+                        | Some(tooltipItem) when
+                            tooltipItem.Item :? (string * XmlDoc) &&
+                            tooltipItem.Item :?> (string * XmlDoc) = (signature, summary) &&
+                            tooltipItem.ItemSegment = textSeg ->
+                                return Tooltip tooltipItem
+                        //If theres no match or previous cached result generate a new tooltipitem
+                        | Some(_)
+                        | None -> let tooltipItem = TooltipItem((signature, summary), textSeg)
+                                  lastResult <- Some(tooltipItem)
+                                  return Tooltip tooltipItem
+                    | EmptyTip -> return! getTooltipFromLanguageService parseAndCheckResults
+               | None -> return! getTooltipFromLanguageService parseAndCheckResults} |> Async.RunSynchronously
+
         match result with
         | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
         | NoToolTipText -> LoggingService.LogWarning "TooltipProvider: TootipText not returned"; null

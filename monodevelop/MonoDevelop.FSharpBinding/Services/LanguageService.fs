@@ -11,6 +11,7 @@ open System.IO
 open System.Xml
 open System.Text
 open System.Diagnostics
+open Mono.TextEditor
 open MonoDevelop.Ide
 open MonoDevelop.Core
 open MonoDevelop.Projects
@@ -18,6 +19,23 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore
 open ExtCore.Caching
 open ExtCore.Control
+
+module Symbols =
+
+  ///Given a column and line string returns the identifier portion of the string
+  let lastIdent column lineString =
+      match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
+      | Some (_, identIsland) -> Seq.last identIsland
+      | None -> ""
+
+  ///Returns a TextSegment that is trimmed to only include the identifier
+  let getTextSegment (doc:TextDocument) (symbolUse:FSharpSymbolUse) column line =
+    let lastIdent = lastIdent  column line
+    let (startLine, startColumn), (endLine, endColumn) = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+
+    let startOffset = doc.LocationToOffset(startLine, startColumn+1)
+    let endOffset = doc.LocationToOffset(endLine, endColumn+1)
+    TextSegment.FromBounds(startOffset, endOffset)
 
 module Option =
     let tryCast<'a> (o: obj): 'a option = 
@@ -279,7 +297,7 @@ module internal MonoDevelop =
         let ext = Path.GetExtension(filename)
 
         match project with
-        | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript") ->
+        | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript" && ext <> ".sketchfs") ->
             getCheckerArgsFromProject(dnp, getConfig())
         | _ -> filename, [|filename|], [||]
 
