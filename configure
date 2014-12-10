@@ -262,7 +262,7 @@ if [ -d "$prefix" ]; then
 	export PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/share/pkgconfig:$PKG_CONFIG_PATH
 fi
 
-if test `uname` = "Darwin"; then
+if test `uname` = "Darwin" && test "x$profile" = "xdefault"; then
 	profile="mac"
 fi
 
