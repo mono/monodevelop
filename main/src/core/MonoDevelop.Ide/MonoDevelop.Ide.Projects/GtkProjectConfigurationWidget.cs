@@ -61,7 +61,15 @@ namespace MonoDevelop.Ide.Projects
 
 		protected override void OnFocusGrabbed ()
 		{
-			projectNameTextBox.GrabFocus ();
+			if (projectConfiguration != null) {
+				if (projectConfiguration.IsProjectNameEnabled) {
+					projectNameTextBox.GrabFocus ();
+				} else if (projectConfiguration.IsSolutionNameEnabled) {
+					solutionNameTextBox.GrabFocus ();
+				}
+			} else {
+				projectNameTextBox.GrabFocus ();
+			}
 		}
 
 		void RegisterEvents ()
