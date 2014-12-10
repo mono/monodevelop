@@ -333,6 +333,7 @@ module SymbolTooltips =
             | _ when fse.IsFSharpModule -> "module"
             | _ when fse.IsEnum         -> "enum"
             | _ when fse.IsValueType    -> "struct"
+            | _ when fse.IsNamespace    -> "namespace"
             | _                         -> "type"
 
         let enumtip () =
