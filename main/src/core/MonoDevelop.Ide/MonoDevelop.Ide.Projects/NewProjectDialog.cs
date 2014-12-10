@@ -445,6 +445,13 @@ namespace MonoDevelop.Ide.Projects {
 				return false;
 			}
 
+			for (int i = 1; i < name.Length; i++) {
+				if (name[i-1] == '.' && char.IsDigit(name[i])) {
+					MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nCannot write '.' followed by a number."));
+					return false;
+				}
+			}
+
 			if (parentFolder != null && parentFolder.ParentSolution.FindProjectByName (name) != null) {
 				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
