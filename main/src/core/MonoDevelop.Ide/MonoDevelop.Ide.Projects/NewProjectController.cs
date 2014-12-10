@@ -462,7 +462,8 @@ namespace MonoDevelop.Ide.Projects
 			CreateVersionControlItems ();
 
 			if (OpenSolution) {
-				var op = OpenCreatedSolution (processedTemplate); // FIXME
+				DisposeExistingNewItem ();
+				var op = OpenCreatedSolution (processedTemplate);
 				op.Completed += delegate {
 					if (op.Success) {
 						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
@@ -526,10 +527,7 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 			}
 
-			if (NewItem != null) {
-				NewItem.Dispose ();
-				NewItem = null;
-			}
+			DisposeExistingNewItem ();
 
 			try {
 				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetTemplateForProcessing (), projectConfiguration, ParentFolder);
@@ -545,6 +543,14 @@ namespace MonoDevelop.Ide.Projects
 			}
 			processedTemplate = result;
 			return true;
+		}
+
+		void DisposeExistingNewItem ()
+		{
+			if (NewItem != null) {
+				NewItem.Dispose ();
+				NewItem = null;
+			}
 		}
 
 		void InstallProjectTemplatePackages (Solution sol)
