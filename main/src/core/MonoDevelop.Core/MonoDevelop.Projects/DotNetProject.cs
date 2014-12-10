@@ -1041,9 +1041,12 @@ namespace MonoDevelop.Projects
 					sb.Append (c);
 				}
 			}
-			if (sb.Length > 0)
+			if (sb.Length > 0) {
+				if (sb[sb.Length - 1] == '.')
+					sb.Remove (sb.Length - 1, 1);
+
 				return sb.ToString ();
-			else
+			} else
 				return null;
 		}
 
