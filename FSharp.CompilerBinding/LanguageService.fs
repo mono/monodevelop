@@ -22,10 +22,10 @@ module Symbols =
 
 /// Contains settings of the F# language service
 module ServiceSettings =
-
+  let internal getEnvInteger e dflt = match System.Environment.GetEnvironmentVariable(e) with null -> dflt | t -> try int t with _ -> dflt
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = 250
-  let maximumTimeout = 5000
+  let blockingTimeout = getEnvInteger "FSHARP_BLOCKINGTIMEOUT" 250
+  let maximumTimeout = getEnvInteger "FSHARP_MAXTIMEOUT" 5000
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
@@ -50,7 +50,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             try
              let results =
                  Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
-                                         timeout = ServiceSettings.maximumTimeout )
+                                         timeout = ServiceSettings.blockingTimeout )
              Some (results, residue)
             with :? TimeoutException -> None
 
@@ -63,8 +63,11 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
             Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (checkResults.GetDeclarationListSymbols (Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
-                      |> Async.RunSynchronously, residue)
+            try
+             let results = 
+                 Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                                         timeout = ServiceSettings.blockingTimeout )
+             Some (results, residue)
             with :? TimeoutException -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
