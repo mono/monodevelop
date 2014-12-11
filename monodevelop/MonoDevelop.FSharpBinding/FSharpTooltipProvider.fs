@@ -33,10 +33,6 @@ type FSharpTooltipProvider() =
        lastWindow |> Option.iter (fun w -> w.Destroy())
        enterNotify |> Option.iter (fun en -> en.Dispose ())
 
-    let isSupported fileName= 
-        [|".fs";".fsi";".fsx";".fsscript";".sketchfs"|] 
-        |> Array.exists ((=) (Path.GetExtension fileName))
-
     override x.GetItem (editor, offset) =
       try
         let activeDoc = IdeApp.Workbench.ActiveDocument
@@ -44,8 +40,7 @@ type FSharpTooltipProvider() =
 
         let fileName = activeDoc.FileName.FullPath.ToString()
         let extEditor = editor :?> ExtensibleTextEditor
-     
-        if not (isSupported fileName) then null else
+
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
 
