@@ -27,6 +27,7 @@ obj/
 /main/src/core/MonoDevelop.Core/BuildVariables.cs
 /scripts/configure.exe
 /main/packages
+/main/.nuget/
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
