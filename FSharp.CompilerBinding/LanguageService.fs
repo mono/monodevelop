@@ -24,8 +24,8 @@ module Symbols =
 module ServiceSettings =
   let internal getEnvInteger e dflt = match System.Environment.GetEnvironmentVariable(e) with null -> dflt | t -> try int t with _ -> dflt
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = getEnvInteger "FSharp_BlockingTimeout" 250
-  let maximumTimeout = getEnvInteger "FSharp_MaxTimeout" 5000
+  let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 250
+  let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 5000
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
