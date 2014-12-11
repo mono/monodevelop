@@ -205,11 +205,6 @@ type FSharpTextEditorCompletion() =
                       CompletionCategory = compilerIdentifierCategory,
                       DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> _ ]
 
-
-  override x.ExtendsEditor(doc:Document, _editor:IEditableTextBuffer) =
-    // Extend any text editor that edits F# files
-    CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))
-
   override x.Initialize() = 
       do base.Document.Editor.IndentationTracker <- FSharpIndentationTracker(base.Document) :> Mono.TextEditor.IIndentationTracker 
       base.Initialize()
