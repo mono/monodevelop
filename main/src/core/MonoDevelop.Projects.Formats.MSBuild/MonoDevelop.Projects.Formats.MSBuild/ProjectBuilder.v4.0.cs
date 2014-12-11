@@ -33,6 +33,7 @@ using System.Linq;
 using Microsoft.Build.Logging;
 using Microsoft.Build.Execution;
 using System.Xml;
+using Microsoft.Build.Construction;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -172,24 +173,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		Project ConfigureProject (string file, string configuration, string platform)
-		{			
+		{
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
-			if (p == null) {
-				var content = buildEngine.GetUnsavedProjectContent (file);
-				if (content == null)
-					p = engine.LoadProject (file);
-				else {
-					Environment.CurrentDirectory = Path.GetDirectoryName (file);
-					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
-					p.FullPath = file;
-				}
+			if (p != null) {
+				p.SkipEvaluation = true;
+
+				p.SetGlobalProperty ("Configuration", configuration);
+				if (!string.IsNullOrEmpty (platform))
+					p.SetGlobalProperty ("Platform", platform);
+				else
+					p.RemoveGlobalProperty ("Platform");
+
+				p.SkipEvaluation = false;
+				p.ReevaluateIfNecessary ();
+
+				return p;
 			}
-			p.SetGlobalProperty ("Configuration", configuration);
-			if (!string.IsNullOrEmpty (platform))
-				p.SetGlobalProperty ("Platform", platform);
-			else
-				p.RemoveGlobalProperty ("Platform");
-			return p;
+
+			var gprops = new Dictionary<string,string> ();
+			gprops["Configuration"] = configuration;
+			if (!string.IsNullOrEmpty (platform)) {
+				gprops ["Platform"] = platform;
+			}
+
+			var content = buildEngine.GetUnsavedProjectContent (file);
+			if (content != null) {
+				var el = ProjectRootElement.Create (new XmlTextReader (new StringReader (content)), engine);
+				el.FullPath = file;
+				return new Project (el, gprops, MSBuildConsts.Version, engine);
+			}
+
+			return engine.LoadProject (file, gprops, MSBuildConsts.Version);
 		}
 
 		public override object InitializeLifetimeService ()
