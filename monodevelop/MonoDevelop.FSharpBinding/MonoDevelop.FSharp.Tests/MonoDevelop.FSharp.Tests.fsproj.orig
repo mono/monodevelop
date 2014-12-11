@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>
     </PlatformTarget>
@@ -31,6 +31,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
+    <DefineConstants>INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <PlatformTarget>
     </PlatformTarget>
     <ConsolePause>false</ConsolePause>

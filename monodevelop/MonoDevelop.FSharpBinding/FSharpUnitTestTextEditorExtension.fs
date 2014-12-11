@@ -1,5 +1,7 @@
 namespace MonoDevelop.FSharp
 
+#if MDVERSION_5_5
+#else
 open System
 open System.Collections.Generic
 open MonoDevelop.Ide
@@ -87,3 +89,4 @@ type FSharpUnitTestTextEditorExtension() =
             |> Option.iter tests.AddRange
         | _ -> ()
         tests :> IList<_>
+#endif
