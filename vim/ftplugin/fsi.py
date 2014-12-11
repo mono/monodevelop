@@ -4,6 +4,7 @@ import string
 import threading
 import Queue
 import uuid
+import hidewin
 
 class FSharpInteractive:
     def __init__(self, fsi_path):
@@ -12,6 +13,7 @@ class FSharpInteractive:
         id = 'vim-' + str(uuid.uuid4())
         command = [fsi_path, '--fsi-server:%s' % id, '--nologo']
         opts = { 'stdin': PIPE, 'stdout': PIPE, 'stderr': PIPE, 'shell': False, 'universal_newlines': True }
+        hidewin.addopt(opts)
         self.p = Popen(command, **opts) 
         #try:
          #   self.p = Popen(command, **opts) 
