@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import json
 import threading
+import hidewin
 
 class Statics:
     fsac = None
@@ -60,6 +61,7 @@ class FSAutoComplete:
 
         command = ['mono', dir + '/bin/fsautocomplete.exe']
         opts = { 'stdin': PIPE, 'stdout': PIPE, 'stderr': PIPE, 'universal_newlines': True }
+        hidewin.addopt(opts)
         try:
             self.p = Popen(command, **opts)
         except WindowsError:
