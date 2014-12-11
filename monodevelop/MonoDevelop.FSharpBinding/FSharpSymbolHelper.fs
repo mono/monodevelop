@@ -414,7 +414,7 @@ module SymbolTooltips =
                     //closure/nested functions
                     if not func.IsModuleValueOrMember then
                         //represents a closure or nested function, needs FCS support
-                        let signature = func.FullType.Format symbolUse.DisplayContext
+                        let signature = func.FullType.Format symbolUse.DisplayContext |> escapeText
                         let summary = getSummaryFromSymbol func backUpSig
                         ToolTip(signature, summary)
                     else

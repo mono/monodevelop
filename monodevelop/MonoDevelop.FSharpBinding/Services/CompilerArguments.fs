@@ -27,11 +27,6 @@ module CompilerArguments =
   /// Wraps the given string between double quotes
   let wrapFile (s:string) = if s.StartsWith "\"" then s else "\"" + s + "\""  
   
-  /// Is the specified extension supported F# file?
-  let supportedExtension ext = 
-    [".fsscript"; ".fs"; ".fsx"; ".fsi"] |> List.exists (fun sup ->
-        String.Compare(ext, sup, true) = 0)
-
   // Translate the target framework to an enum used by FSharp.CompilerBinding
   let getTargetFramework (targetFramework:TargetFrameworkMoniker) = 
       if targetFramework = TargetFrameworkMoniker.NET_3_5 then FSharpTargetFramework.NET_3_5

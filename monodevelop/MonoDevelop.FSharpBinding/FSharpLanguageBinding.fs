@@ -53,7 +53,7 @@ type FSharpLanguageBinding() =
     
   let invalidateAll (args:#ProjectFileEventInfo seq) =
     for projectFileEvent in args do 
-        if CompilerArguments.supportedExtension(Path.GetExtension(projectFileEvent.ProjectFile.FilePath.ToString())) then
+        if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
             invalidateProjectFile(projectFileEvent.Project)
 
   let eventDisposer =
@@ -66,14 +66,14 @@ type FSharpLanguageBinding() =
       // Register handler that will reparse when the active configuration is changes
       IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
              for doc in IdeApp.Workbench.Documents do
-                 if doc.Editor <> null && CompilerArguments.supportedExtension(Path.GetExtension(doc.FileName.ToString())) then 
+                 if doc.Editor <> null && MDLanguageService.SupportedFileName (doc.FileName.ToString()) then 
                     doc.ReparseDocument ())
 
       IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
         let doc = IdeApp.Workbench.ActiveDocument
         if doc <> null && doc.Editor <> null &&
            not doc.Editor.TabsToSpaces &&
-           (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
+           (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
              doc.Editor.TabsToSpaces <- true )
 
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
@@ -95,7 +95,7 @@ type FSharpLanguageBinding() =
     member x.Language = LanguageName
     member x.SingleLineCommentTag = "//"
     member x.GetFileName(baseName) = new FilePath(baseName.ToString() + ".fs")
-    member x.IsSourceCodeFile(fileName) = CompilerArguments.supportedExtension (Path.GetExtension (fileName.ToString()))
+    member x.IsSourceCodeFile(fileName) = MDLanguageService.SupportedFileName (fileName.ToString())
     
     // IDotNetLanguageBinding
     override x.Compile(items, config, configSel, monitor) : BuildResult =

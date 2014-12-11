@@ -22,10 +22,10 @@ module Symbols =
 
 /// Contains settings of the F# language service
 module ServiceSettings =
-
+  let internal getEnvInteger e dflt = match System.Environment.GetEnvironmentVariable(e) with null -> dflt | t -> try int t with _ -> dflt
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = 500
-  let maximumTimeout = 10000
+  let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 250
+  let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 5000
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
@@ -50,7 +50,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             try
              let results =
                  Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
-                                         timeout = ServiceSettings.maximumTimeout )
+                                         timeout = ServiceSettings.blockingTimeout )
              Some (results, residue)
             with :? TimeoutException -> None
 
@@ -63,8 +63,11 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
             Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (checkResults.GetDeclarationListSymbols (Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
-                      |> Async.RunSynchronously, residue)
+            try
+             let results = 
+                 Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                                         timeout = ServiceSettings.blockingTimeout )
+             Some (results, residue)
             with :? TimeoutException -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
@@ -263,11 +266,15 @@ type LanguageService(dirtyNotify) =
             with exn -> Debug.WriteLine( sprintf "LanguageService: Exception: %s" (exn.ToString()) )
         })
 
+  static member IsAScript fileName =
+      let ext = Path.GetExtension fileName
+      [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
+
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
     let ext = Path.GetExtension(fileName)
-    let opts = 
-      if (ext = ".fsx" || ext = ".fsscript") then
+    let opts =
+      if LanguageService.IsAScript fileName then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         x.GetScriptCheckerOptions(fileName, projFilename, source)
           
@@ -363,6 +370,7 @@ type LanguageService(dirtyNotify) =
 
   member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout) = 
    async {
+    let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
     Debug.WriteLine("Parsing: Get typed parse result, fileName={0}", box fileName)
     // Try to get recent results from the F# service

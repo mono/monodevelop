@@ -1,5 +1,7 @@
 environment:
   EMACSBIN: emacs-24.4-bin-i686-mingw32.7z
+  FSharpBinding_BlockingTimeout: 1000
+  FSharpBinding_MaxTimeout: 10000
 matrix:
   fast_finish: true
 install:

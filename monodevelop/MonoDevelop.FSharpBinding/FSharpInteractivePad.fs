@@ -59,7 +59,7 @@ type FSharpInteractivePad() =
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
     else
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      CompilerArguments.supportedExtension(Path.GetExtension(file))
+      MDLanguageService.SupportedFileName (file)
 
   let getCorrectDirectory () = 
     if IdeApp.Workbench.ActiveDocument <> null && isInsideFSharpFile() then
