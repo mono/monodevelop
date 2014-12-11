@@ -263,16 +263,15 @@ type LanguageService(dirtyNotify) =
             with exn -> Debug.WriteLine( sprintf "LanguageService: Exception: %s" (exn.ToString()) )
         })
 
-  let scriptExtensions = [".fsx";".fsscript";".sketchfs"]
-  let isAScript fileName =
+  static member IsAScript fileName =
       let ext = Path.GetExtension fileName
-      scriptExtensions |> List.exists ((=) ext)
+      [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
     let ext = Path.GetExtension(fileName)
     let opts =
-      if isAScript fileName then
+      if LanguageService.IsAScript fileName then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         x.GetScriptCheckerOptions(fileName, projFilename, source)
           

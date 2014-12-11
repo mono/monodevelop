@@ -294,10 +294,8 @@ module internal MonoDevelop =
         | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
     let getCheckerArgs(project: Project, filename: string) =
-        let ext = Path.GetExtension(filename)
-
         match project with
-        | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript" && ext <> ".sketchfs") ->
+        | :? DotNetProject as dnp when FSharp.CompilerBinding.LanguageService.IsAScript filename ->
             getCheckerArgsFromProject(dnp, getConfig())
         | _ -> filename, [|filename|], [||]
 
@@ -329,6 +327,11 @@ type MDLanguageService() =
   // Call this before Instance is called
   static member DisableVirtualFileSystem() =
         vfs <- lazy (Shim.FileSystem)
+
+          /// Is the specified extension supported F# file?
+  static member SupportedFileName fileName =
+    let ext = Path.GetExtension fileName
+    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"] |> List.exists ((=) ext)
 
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
