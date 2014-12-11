@@ -26,8 +26,6 @@
     <Import file = "Templates/FSharpTutorialProject.xpt.xml" />
     <Import file = "Templates/FSharpGtkProject.xpt.xml" />
     <Import file = "Templates/AssemblyInfo.xft.xml" />
-    <Import file = "Templates/FSharpProjectMvc4Razor.xpt.xml" />
-    <Import file = "Templates/FSharpProjectMvc4Razor.windows.xpt.xml" />
     <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
 
@@ -206,12 +204,6 @@
 	</ComplexCondition>
 
     <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
-    <Condition id="Platform" value="windows">
-      <ProjectTemplate id="FSharpMvc4Project" file="Templates/FSharpProjectMvc4Razor.windows.xpt.xml"/>
-    </Condition>
-    <Condition id="Platform" value="!windows">
-      <ProjectTemplate id="FSharpMvc4Project" file="Templates/FSharpProjectMvc4Razor.xpt.xml"/>
-    </Condition>
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
   </Extension>
 
