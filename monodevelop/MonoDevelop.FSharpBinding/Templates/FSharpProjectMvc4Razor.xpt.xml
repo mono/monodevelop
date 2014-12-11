@@ -21,7 +21,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 
-		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc3">
+		<Project name = "${ProjectName}" directory = "." type = "AspNetApp">
 			<Options TargetFrameworkVersion = "4.5" />
 			<References>
 				<Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
