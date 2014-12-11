@@ -1280,5 +1280,13 @@ namespace MonoDevelop.Projects
 				handler.RefreshProjectBuilder ();
 			}
 		}
+
+		public void DisposeProjectBuilder ()
+		{
+			var handler = ItemHandler as MSBuildProjectHandler;
+			if (handler != null) {
+				handler.CleanupProjectBuilder ();
+			}
+		}
 	}
 }
