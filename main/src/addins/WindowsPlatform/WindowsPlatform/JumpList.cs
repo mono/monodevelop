@@ -104,7 +104,7 @@ namespace MonoDevelop.Platform
 		{
 			this.supportedExtensions = new List<string> ();
 			
-			// Determine the correct value for /HKCR/MonoDevelop[version]/shell/Open/Command
+			// Determine the correct value for /HKCR/XamarinStudio/shell/Open/Command
 			ProcessModule monoDevelopAssembly = Process.GetCurrentProcess ().MainModule;
 			string exePath = monoDevelopAssembly.FileName;
 			string executeString = exePath + " %1";

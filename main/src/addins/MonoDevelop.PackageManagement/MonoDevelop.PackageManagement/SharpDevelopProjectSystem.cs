@@ -418,6 +418,7 @@ namespace ICSharpCode.PackageManagement
 				string relativeTargetPath = GetRelativePath (targetPath);
 				project.RemoveImport (relativeTargetPath);
 				RemoveImportWithForwardSlashes (targetPath);
+				project.DisposeProjectBuilder ();
 				project.Save ();
 			});
 		}

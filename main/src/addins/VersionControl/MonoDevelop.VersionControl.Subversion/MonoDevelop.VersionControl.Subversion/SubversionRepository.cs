@@ -532,14 +532,14 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			if (localPaths != null) {
-				ArrayList list = new ArrayList ();
+				var list = new List<DiffInfo> ();
 				foreach (string path in localPaths) {
 					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
 					if (string.IsNullOrEmpty (diff))
 						continue;
 					list.AddRange (GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { path }));
 				}
-				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
+				return list.ToArray ();
 			} else {
 				string diff = Svn.GetUnifiedDiff (baseLocalPath, true, remoteDiff);
 				return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);

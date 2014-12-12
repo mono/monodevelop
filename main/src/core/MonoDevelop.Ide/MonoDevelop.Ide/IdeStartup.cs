@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
+			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);

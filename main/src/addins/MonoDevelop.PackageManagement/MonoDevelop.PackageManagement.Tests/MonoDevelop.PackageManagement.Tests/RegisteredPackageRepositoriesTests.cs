@@ -363,6 +363,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreNotSame (firstAggregateRepository, secondAggregateRepository);
 			Assert.AreSame (secondAggregateRepository, fakeRepositoryCache.FakeAggregateRepository);
 		}
+
+		[Test]
+		public void ActiveRepository_TwoPackageSourcesAndAllSourcesSelectedThenAllSourcesDisabled_NullExceptionIsNotThrown ()
+		{
+			CreateRegisteredPackageRepositories ();
+			packageSourcesHelper.AddTwoPackageSources ("One", "Two");
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			packageSourcesHelper.RegisteredPackageSources [0].IsEnabled = false;
+			packageSourcesHelper.RegisteredPackageSources [1].IsEnabled = false;
+			registeredRepositories.UpdatePackageSources (packageSourcesHelper.RegisteredPackageSources);
+
+			IPackageRepository repository = null;
+			Assert.DoesNotThrow (() => repository = registeredRepositories.ActiveRepository);
+
+			//Assert.IsInstanceOf (
+		}
 	}
 }
 

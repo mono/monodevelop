@@ -205,7 +205,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return projectBuilder;
 		}
 
-		void CleanupProjectBuilder ()
+		internal void CleanupProjectBuilder ()
 		{
 			if (projectBuilder != null) {
 				projectBuilder.Dispose ();
@@ -213,7 +213,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public void RefreshProjectBuilder ()
+		internal void RefreshProjectBuilder ()
 		{
 			if (projectBuilder != null) {
 				projectBuilder.Refresh ();

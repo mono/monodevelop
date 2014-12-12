@@ -141,6 +141,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void RefreshProjectBuilder ()
 		{
 		}
+
+		public bool IsProjectBuilderDisposed;
+
+		public void DisposeProjectBuilder ()
+		{
+			IsProjectBuilderDisposed = true;
+		}
 	}
 }
 

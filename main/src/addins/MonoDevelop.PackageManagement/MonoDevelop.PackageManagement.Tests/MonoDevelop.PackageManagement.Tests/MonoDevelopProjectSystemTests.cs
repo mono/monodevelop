@@ -1123,6 +1123,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			AssertImportRemoved (@"packages\Foo.0.1\build\Foo.targets");
 		}
+
+		[Test]
+		public void RemoveImport_ImportAlreadyAddedToBottomOfProject_ProjectBuilderIsDisposed ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+
+			projectSystem.RemoveImport (targetPath);
+
+			AssertImportRemoved (@"..\packages\Foo.0.1\build\Foo.targets");
+			Assert.IsTrue (project.IsProjectBuilderDisposed);
+		}
 	}
 }
 

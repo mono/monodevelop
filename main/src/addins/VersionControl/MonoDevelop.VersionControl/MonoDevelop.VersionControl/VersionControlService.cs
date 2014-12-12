@@ -265,13 +265,9 @@ namespace MonoDevelop.VersionControl
 			if (comments != null)
 				return comments;
 
-			ResolveEventHandler localResolve = delegate (object s, ResolveEventArgs args) {
-				foreach (System.Reflection.Assembly asm in AppDomain.CurrentDomain.GetAssemblies ()) {
-					if (asm.GetName ().FullName == args.Name)
-						return asm;
-				}
-				return null;
-			};
+			ResolveEventHandler localResolve = (s, args) =>
+				AppDomain.CurrentDomain.GetAssemblies ()
+					.FirstOrDefault (asm => asm.GetName ().FullName == args.Name);
 
 			string file = CommitMessagesFile;
 			if (File.Exists (file)) {
@@ -285,7 +281,7 @@ namespace MonoDevelop.VersionControl
 				
 					// Remove comments for files that don't exists
 					// Remove comments more than 60 days old
-					
+
 					ArrayList toDelete = new ArrayList ();
 					foreach (DictionaryEntry e in comments) {
 						if (!File.Exists ((string)e.Key))
@@ -707,12 +703,7 @@ namespace MonoDevelop.VersionControl
 			if (IsGloballyDisabled)
 				return false;
 
-			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
-				if (vcs.IsInstalled)
-					return true;
-			}
-
-			return false;
+			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 		}
 		
 		internal static Repository InternalGetRepositoryReference (string path, string id)

@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		Button newButton;
+		Button copyButton;
 		Button delButton;
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
@@ -80,7 +81,6 @@ namespace MonoDevelop.Ide.Tasks
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
 			view.Selection.Changed += new EventHandler (SelectionChanged);
-			view.DoPopupMenu = ShowUserPopup;
 			TreeViewColumn col;
 			
 			CellRendererComboBox cellRendPriority = new CellRendererComboBox ();
@@ -110,13 +110,23 @@ namespace MonoDevelop.Ide.Tasks
 			col.Clicked += new EventHandler (UserTaskDescResort);
 			
 			newButton = new Button ();
-			newButton.Image = new Gtk.Image (Gtk.Stock.New, IconSize.Button);
 			newButton.Label = GettextCatalog.GetString ("New Task");
-			newButton.ImagePosition = PositionType.Left;
+			newButton.Image = new Gtk.Image (Gtk.Stock.New, IconSize.Button);
+			newButton.Image.Show ();
 			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
 			newButton.TooltipText = GettextCatalog.GetString ("Create New Task");
+
+			copyButton = new Button ();
+			copyButton.Label = GettextCatalog.GetString ("Copy Task");
+			copyButton.Image = new Gtk.Image (Gtk.Stock.Copy, IconSize.Button);
+			copyButton.Image.Show ();
+			copyButton.Clicked += CopyUserTaskClicked;
+			copyButton.TooltipText = GettextCatalog.GetString ("Copy Task Description");
 			
-			delButton = new Button (new Gtk.Image (Gtk.Stock.Delete, IconSize.Button));
+			delButton = new Button ();
+			delButton.Label = GettextCatalog.GetString ("Delete Task");
+			delButton.Image = new Gtk.Image (Gtk.Stock.Delete, IconSize.Button);
+			delButton.Image.Show ();
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");
 
@@ -203,7 +213,7 @@ namespace MonoDevelop.Ide.Tasks
 		void ValidateButtons ()
 		{
 			newButton.Sensitive = solutionLoaded;
-			delButton.Sensitive = solutionLoaded && view.Selection.CountSelectedRows () > 0;
+			delButton.Sensitive = copyButton.Sensitive = solutionLoaded && view.Selection.CountSelectedRows () > 0;
 		}
 		
 		void NewUserTaskClicked (object obj, EventArgs e)
@@ -220,6 +230,25 @@ namespace MonoDevelop.Ide.Tasks
 			view.SetCursorOnCell (path, view.Columns[(int)Columns.Description], cellRendDesc, true);
 			TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
+
+		void CopyUserTaskClicked (object o, EventArgs args)
+		{
+			Task task;
+			TreeModel model;
+			TreeIter iter;
+
+			if (view.Selection.GetSelected (out model, out iter))
+			{
+				task = (Task) model.GetValue (iter, (int)Columns.UserTask);
+			}
+			else return; // no one selected
+
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = task.Description;
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = task.Description;
+		}
+
 		
 		void DeleteUserTaskClicked (object obj, EventArgs e)
 		{
@@ -342,35 +371,6 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 
-		void ShowUserPopup (Gdk.EventButton evt)
-		{
-			var menu = new Menu () {
-				AccelGroup = new AccelGroup (),
-			};
-			var copy = new ImageMenuItem (Gtk.Stock.Copy, menu.AccelGroup);
-			copy.Activated += OnUserTaskCopied;
-			menu.Append (copy);
-			IdeApp.CommandService.ShowContextMenu (view, evt, menu);
-		}
-
-		void OnUserTaskCopied (object o, EventArgs args)
-		{
-			Task task;
-			TreeModel model;
-			TreeIter iter;
-
-			if (view.Selection.GetSelected (out model, out iter))
-			{
-				task = (Task) model.GetValue (iter, (int)Columns.UserTask);
-			}
-			else return; // no one selected
-
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = task.ToString ();
-			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = task.ToString ();
-		}
-		
 		static SortType ReverseSortOrder (TreeViewColumn col)
 		{
 			if (col.SortIndicator) {
@@ -405,7 +405,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		#region ITaskListView members
 		TreeView ITaskListView.Content { get { return view; } }
-		Widget[] ITaskListView.ToolBarItems { get { return new Widget[] { newButton, delButton }; } }
+		Widget[] ITaskListView.ToolBarItems { get { return new Widget[] { newButton, delButton, copyButton }; } }
 		#endregion
 	}
 }

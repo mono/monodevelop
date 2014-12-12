@@ -110,6 +110,13 @@ namespace MonoDevelop.Components.Mac
 			return false;
 		}
 
+		public static int GetTitleBarHeight ()
+		{
+			var frame = new CoreGraphics.CGRect (0, 0, 100, 100);
+			var rect = NSWindow.ContentRectFor (frame, NSWindowStyle.Titled);
+			return (int)(frame.Height - rect.Height);
+		}
+
 		[DllImport (LibGtk)]
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 
