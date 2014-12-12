@@ -1741,8 +1741,10 @@ namespace Mono.TextEditor
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
 			foreach (var margin in this.margins) {
-				if (margin.BackgroundRenderer != null)
-					margin.BackgroundRenderer.Draw (cr, cairoRectangle);
+				if (margin.BackgroundRenderer != null) {
+					var area = new Cairo.Rectangle(0, 0, Allocation.Width, Allocation.Height);
+					margin.BackgroundRenderer.Draw (cr, area);
+				}
 			}
 
 
