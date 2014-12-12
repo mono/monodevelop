@@ -2912,9 +2912,6 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
 					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
-
-					if (!IsNearX1 (xp, xp1, xp2))
-						index++;
 					return true;
 				}
 				index = line.Length;
@@ -3017,11 +3014,6 @@ namespace Mono.TextEditor
 		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false)
 		{
 			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
-		}
-		
-		static bool IsNearX1 (int pos, int x1, int x2)
-		{
-			return System.Math.Abs (x1 - pos) < System.Math.Abs (x2 - pos);
 		}
 		
 		public Cairo.Point LocationToPoint (int line, int column)
