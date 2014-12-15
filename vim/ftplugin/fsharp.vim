@@ -80,6 +80,8 @@ EOF
     vnoremap  :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
     nnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendLineSilent()<cr>
     vnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendSelSilent()<cr>
+    nnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
+    vnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
 
     augroup fsharpbindings_au
         au!
