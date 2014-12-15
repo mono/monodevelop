@@ -2,7 +2,7 @@
 
 Syntax and indent files have been copied from [fsharp-vim](http://github.com/kongo2002/fsharp-vim) with kind permissions from [kongo2002](https://github.com/kongo2002).
 
-Requires vim compiled with python support.
+Requires vim 7.4 compiled with python support.
 
 This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported.
 
