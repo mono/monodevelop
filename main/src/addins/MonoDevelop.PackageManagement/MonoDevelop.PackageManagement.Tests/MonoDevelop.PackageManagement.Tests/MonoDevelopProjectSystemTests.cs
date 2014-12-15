@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
 using NUnit.Framework;
 
@@ -111,6 +112,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AssertImportRemoved (string expectedImportRemoved)
 		{
 			Assert.That (project.ImportsRemoved, Contains.Item (expectedImportRemoved));
+		}
+
+		MSBuildProject CreateMSBuildProject (string xml)
+		{
+			var msbuildProject = new MSBuildProject ();
+			msbuildProject.Document.LoadXml (xml);
+			return msbuildProject;
 		}
 
 		[Test]
@@ -1136,6 +1144,35 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			AssertImportRemoved (@"..\packages\Foo.0.1\build\Foo.targets");
 			Assert.IsTrue (project.IsProjectBuilderDisposed);
+		}
+
+		[Test]
+		public void RemoveImport_ProjectHasNuGetImportTargetAndSingleImportIsBeingRemoved_NuGetImportTargetIsRemoved ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+			MSBuildProject msbuildProject = CreateMSBuildProject (
+				"<Project ToolsVersion=\"12.0\" DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\r\n" +
+				"  <Target Name=\"EnsureNuGetPackageBuildImports\" BeforeTargets=\"PrepareForBuild\">\r\n" +
+				"    <PropertyGroup>\r\n" +
+				"      <ErrorText>Error.</ErrorText>\r\n" +
+				"    </PropertyGroup>\r\n" +
+				"    <Error Condition=\"!Exists('packages\\Foo.0.1\\build\\Foo.targets')\" Text=\"$([System.String]::Format('$(ErrorText)', 'packages\\Foo.0.1\\build\\Foo.targets'))\" />\r\n" +
+				"  </Target>\r\n" +
+				"</Project>");
+			int targetCountBeforeSave = msbuildProject.Targets.Count ();
+			project.SaveAction = () => {
+				var msbuildExtension = new PackageManagementMSBuildExtension ();
+				msbuildExtension.SaveProject (null, null, msbuildProject);
+			};
+
+			projectSystem.RemoveImport (targetPath);
+
+			AssertImportRemoved (@"packages\Foo.0.1\build\Foo.targets");
+			Assert.AreEqual (1, targetCountBeforeSave);
+			Assert.AreEqual (0, msbuildProject.Targets.Count ());
 		}
 	}
 }
