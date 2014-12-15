@@ -540,6 +540,8 @@ namespace MonoDevelop.Ide.Projects
 
 			if (titem != null)
 				SelectTemplate (titem.Template.Id);
+
+			UpdateOkStatus ();
 		}
 
 		void AddToProjectComboChanged (object o, EventArgs e)
