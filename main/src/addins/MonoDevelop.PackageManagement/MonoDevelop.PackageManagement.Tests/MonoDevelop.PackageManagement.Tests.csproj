@@ -201,6 +201,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithConstraintProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\EnsureNuGetPackageBuildImportsTargetUpdaterTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingSolutionPackageRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
