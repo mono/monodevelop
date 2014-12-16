@@ -1146,7 +1146,6 @@ namespace MonoDevelop.Ide.Gui
 
 		List<FileData> fileStatus;
 		object fileStatusLock = new object ();
-
 		// http://msdn.microsoft.com/en-us/library/system.io.file.getlastwritetimeutc(v=vs.110).aspx
 		static DateTime NonExistentFile = new DateTime(1601, 1, 1);
 		internal void SaveFileStatus ()
