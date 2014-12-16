@@ -487,6 +487,19 @@ namespace MonoDevelop.Debugger.Tests
 			Continue ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
 		}
 
+		[Test]
+		public void BreakpointInsideOneLineDelegate ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd");
+			StartTest ("BreakpointInsideOneLineDelegate");
+			CheckPosition ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+			StepOver ("22af08d6-dafc-47f1-b8d1-bee1526840fd", "button.SetTitle");
+			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			StepOut ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+		}
+
 		/// <summary>
 		/// Bug 2851
 		/// </summary>
@@ -575,7 +588,21 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		/// <summary>
-		/// Bug 4433
+		/// Bug 4433 StepOverPropertiesAndOperators = true
+		/// </summary>
+		[Test]
+		public void Bug4433StepOverProperties ()
+		{
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StartTest ("Bug4433Test");
+			CheckPosition ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StepIn ("ad9b8803-eef0-438c-bf2b-9156782f4027", -1);
+		}
+
+		/// <summary>
+		/// Bug 4433 StepOverPropertiesAndOperators = false
 		/// </summary>
 		[Test]
 		public void Bug4433 ()

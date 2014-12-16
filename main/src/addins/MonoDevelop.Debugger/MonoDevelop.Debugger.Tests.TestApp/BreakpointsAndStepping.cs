@@ -150,6 +150,29 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			action ();/*f3b6862d-732b-4f68-81f5-f362d5a092e2*/
 		}
 
+		public void BreakpointInsideOneLineDelegate ()
+		{
+			var button = new Button ();
+			int numClicks = 0;
+			button.Clicked += (object sender, EventArgs e) => button.SetTitle (String.Format ("clicked {0} times", numClicks++));/*22af08d6-dafc-47f1-b8d1-bee1526840fd*/
+			button.MakeClick ();/*67ae4cce-22b3-49d8-8221-7e5b26a5e79b*/
+		}
+
+		public class Button
+		{
+			public event EventHandler Clicked;
+
+			public void MakeClick ()
+			{
+				Clicked (null, EventArgs.Empty);/*3be64647-76c1-455b-a4a7-a21b37383dcb*/
+			}
+
+			public void SetTitle (string message)
+			{
+
+			}
+		}
+
 		public void ForeachEnumerable ()
 		{
 			var testClass = new TestClass ();/*b73bec88-2c43-4157-8574-ad517730bc74*/
