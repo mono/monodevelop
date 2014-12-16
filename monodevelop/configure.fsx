@@ -171,8 +171,8 @@ if isWindows then
     System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),
        sprintf """
 @echo off
-set MSBUILD=%%WINDIR%%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
-%%MSBUILD%% MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
+set MSBUILD=%%ProgramFiles(x86)%%\MSBuild\12.0\Bin\MSBuild.exe
+"%%MSBUILD%%" MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
 set MDROOT="%s"
 rmdir /s /q pack
 mkdir pack\windows\%s
