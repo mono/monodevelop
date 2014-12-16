@@ -350,7 +350,7 @@ namespace MonoDevelop.Platform
 					apps = key.GetSubKeyNames ();
 				else if (type == AppOpenWithRegistryType.FromMRUList) {
 					string list = (string)key.GetValue ("MRUList");
-					apps = list.Select (c => c.ToString ()).ToArray ();
+					apps = list.Select (c => (string)key.GetValue (c.ToString ())).ToArray ();
 				}
 
 				foreach (string appName in apps) {
@@ -381,7 +381,7 @@ namespace MonoDevelop.Platform
 
 			// Query extension OpenWithList.
 			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithList"))
-				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromMRUList))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromSubkey))
 					yield return app;
 		}
 
