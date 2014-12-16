@@ -147,10 +147,9 @@ namespace MonoDevelop.Platform
 
 			try {
 				nativeDialog.GetSelectedItems (out resultsArray);
-			} catch (Exception ex) {
+			} catch (COMException ex) {
 				//we get E_FAIL when there is no selection
-				var ce = ex.InnerException as COMException;
-				if (ce != null && ce.ErrorCode == -2147467259)
+				if (ex != null && ex.ErrorCode == -2147467259)
 					return filenames;
 				throw;
 			}
