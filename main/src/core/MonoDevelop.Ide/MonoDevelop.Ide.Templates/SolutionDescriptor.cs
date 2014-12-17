@@ -149,9 +149,10 @@ namespace MonoDevelop.Ide.Templates
                 for ( int i = 0; i < entryDescriptors.Count; i++ ) {
                     ProjectCreateInformation entryProjectCI;
                     var entry = entryDescriptors[i] as ICustomProjectCIEntry;
-                    if (entry != null)
-	                    entryProjectCI = entry.CreateProjectCI (localProjectCI);
-                    else
+					if (entry != null) {
+						entryProjectCI = entry.CreateProjectCI (localProjectCI);
+						entryProjectCI = new ProjectTemplateCreateInformation (entryProjectCI, localProjectCI.ProjectName);
+					} else
 	                    entryProjectCI = localProjectCI;
 
 					var solutionItemDesc = entryDescriptors[i];

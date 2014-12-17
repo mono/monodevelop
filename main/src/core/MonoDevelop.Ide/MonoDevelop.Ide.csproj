@@ -2902,6 +2902,7 @@
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Components\EventBoxTooltip.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCreateInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

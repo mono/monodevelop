@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Projects
 			get { return config.ProjectName; }
 			set {
 				config.ProjectName = value;
+				Parameters ["UserDefinedProjectName"] = value;
 				CheckIsValid ();
 			}
 		}

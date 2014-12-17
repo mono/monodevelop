@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.Templates
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.SupportsFramework (dnp.TargetFramework)) {
 					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
 				}
-				var substitution = new string[,] { { "ProjectName", projectCreateInformation.SolutionName } };
+				var substitution = new string[,] { { "ProjectName", GetProjectNameForSubstitution (projectCreateInformation) } };
 				foreach (ProjectReference projectReference in references) {
 					if (projectReference.ReferenceType == ReferenceType.Project) {
 						string referencedProjectName = StringParserService.Parse (projectReference.Reference, substitution);
@@ -188,6 +188,15 @@ namespace MonoDevelop.Ide.Templates
 					MessageService.ShowError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
 				}
 			}
+		}
+
+		static string GetProjectNameForSubstitution (ProjectCreateInformation projectCreateInformation)
+		{
+			var templateInformation = projectCreateInformation as ProjectTemplateCreateInformation;
+			if (templateInformation != null) {
+				return templateInformation.UserDefinedProjectName;
+			}
+			return projectCreateInformation.SolutionName;
 		}
 		
 		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
