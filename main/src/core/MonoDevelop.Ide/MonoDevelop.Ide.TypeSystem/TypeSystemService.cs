@@ -1637,6 +1637,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					asm.Loaded -= HandleReferencedProjectInLoadChange;
 				}
 				loadActions = null;
+				foreach (var wrapper in referencedWrappers) {
+					wrapper.Loaded -= HandleReferencedProjectInLoadChange;
+				}
 				referencedWrappers.Clear ();
 				referencedAssemblies.Clear ();
 				Loaded = null;
