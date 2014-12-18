@@ -489,23 +489,33 @@
       <Addin id="MonoMac" version="5.0"/>
     </Dependencies>
 
-    <Extension path="/MonoDevelop/Ide/FileTemplates">
-      <FileTemplate id="FSharpMonoMacPlist" file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
-      <FileTemplate id="FSharpMonoMacApplicationManifest" file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
-      <FileTemplate id="FSharpMonoMacApplicationDocumentManifest" file ="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
-      <FileTemplate id="FSharpMonoMacWindowWithControllerXib" file ="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
-      <FileTemplate id="FSharpXamMacPlist" file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
-      <FileTemplate id="FSharpXamMacApplicationManifest" file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
-      <FileTemplate id="FSharpXamMacApplicationDocumentManifest" file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
-      <FileTemplate id="FSharpXamMacWindowWithControllerXib" file ="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
-    </Extension>
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<Condition id="MonoMacInstalled">
+			<FileTemplate id="FSharpMonoMacPlist" file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
+			<FileTemplate id="FSharpMonoMacApplicationManifest" file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
+			<FileTemplate id="FSharpMonoMacApplicationDocumentManifest" file ="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
+			<FileTemplate id="FSharpMonoMacWindowWithControllerXib" file ="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
+		</Condition>
 
-    <Extension path="/MonoDevelop/Ide/ProjectTemplates">
-      <ProjectTemplate id="FSharpMonoMacProject" file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
-      <ProjectTemplate id="FSharpMonoMacProjectEmpty" file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
-      <ProjectTemplate id="FSharpXamMacProject" file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
-      <ProjectTemplate id="FSharpXamMacProjectEmpty" file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
-    </Extension>
+		<Condition id="XamMacInstalled">
+			<FileTemplate id="FSharpXamMacPlist" file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
+			<FileTemplate id="FSharpXamMacApplicationManifest" file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
+			<FileTemplate id="FSharpXamMacApplicationDocumentManifest" file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
+			<FileTemplate id="FSharpXamMacWindowWithControllerXib" file ="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<Condition id="MonoMacInstalled">
+			<ProjectTemplate id="FSharpMonoMacProject" file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
+			<ProjectTemplate id="FSharpMonoMacProjectEmpty" file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
+		</Condition>
+
+		<Condition id="XamMacInstalled">
+			<ProjectTemplate id="FSharpXamMacProject" file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
+			<ProjectTemplate id="FSharpXamMacProjectEmpty" file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
+		</Condition>
+	</Extension>
   </Module>
 
 </Addin>
