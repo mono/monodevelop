@@ -287,7 +287,7 @@ module internal MonoDevelop =
 
     let getCheckerArgs(project: Project, filename: string) =
         match project with
-        | :? DotNetProject as dnp when FSharp.CompilerBinding.LanguageService.IsAScript filename ->
+        | :? DotNetProject as dnp when not (FSharp.CompilerBinding.LanguageService.IsAScript filename) ->
             getCheckerArgsFromProject(dnp, getConfig())
         | _ -> filename, [|filename|], [||]
 
