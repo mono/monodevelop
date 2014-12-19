@@ -89,7 +89,7 @@ namespace ICSharpCode.PackageManagement
 
 		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()
 		{
-			throw new NotImplementedException ();
+			return new PriorityPackageRepository (MachineCache.Default, CreateAggregateRepository ());
 		}
 	}
 }

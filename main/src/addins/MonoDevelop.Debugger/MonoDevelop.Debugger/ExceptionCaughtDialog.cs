@@ -587,6 +587,7 @@ namespace MonoDevelop.Debugger
 			if (button == null) {
 				button = new ExceptionCaughtButton (ex, this, File, Line);
 				TextEditorService.RegisterExtension (button);
+				button.ScrollToView ();
 			}
 			if (miniButton != null) {
 				miniButton.Dispose ();
@@ -607,6 +608,7 @@ namespace MonoDevelop.Debugger
 			if (miniButton == null) {
 				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
 				TextEditorService.RegisterExtension (miniButton);
+				miniButton.ScrollToView ();
 			}
 		}
 

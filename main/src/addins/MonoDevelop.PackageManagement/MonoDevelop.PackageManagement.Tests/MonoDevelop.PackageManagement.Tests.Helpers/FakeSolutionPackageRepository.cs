@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakeSharedRepository.FakePackages.Exists (p => p == package);
 		}
 
-		public IQueryable<IPackage> GetPackages ()
+		public virtual IQueryable<IPackage> GetPackages ()
 		{
 			return FakeSharedRepository.FakePackages.AsQueryable ();
 		}

@@ -55,6 +55,11 @@ namespace MonoDevelop.PackageManagement
 			return packages;
 		}
 
+		public bool AnyPackages ()
+		{
+			return packages.Any ();
+		}
+
 		public IPackageName GetUpdatedPackage (string packageId)
 		{
 			return packages
@@ -66,6 +71,16 @@ namespace MonoDevelop.PackageManagement
 			int index = packages.FindIndex (existingPackageName => existingPackageName.Id == package.Id);
 			if (index >= 0) {
 				packages.RemoveAt (index);
+			}
+		}
+
+		public void RemoveUpdatedPackages (IEnumerable<PackageReference> packageReferences)
+		{
+			foreach (PackageReference packageReference in packageReferences) {
+				IPackageName package = packages.Find (existingPackageName => existingPackageName.Id == packageReference.Id);
+				if ((package != null) && (package.Version <= packageReference.Version)) {
+					packages.Remove (package);
+				}
 			}
 		}
 	}

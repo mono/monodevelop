@@ -79,8 +79,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public int FilesAddedWhenSavedCount;
 		public int FilesInProjectWhenSavedCount { get; set; }
 
+		public Action SaveAction = () => { };
+
 		public override void Save ()
 		{
+			SaveAction ();
 			base.Save ();
 			ReferencesWhenSavedCount = References.Count;
 			FilesAddedWhenSavedCount = FilesAdded.Count;

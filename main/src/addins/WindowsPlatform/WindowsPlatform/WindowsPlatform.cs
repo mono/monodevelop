@@ -182,12 +182,13 @@ namespace MonoDevelop.Platform
 		const int MonitorInfoFlagsPrimary = 0x01;
 
 		[StructLayout (LayoutKind.Sequential)]
-		unsafe struct MonitorInfo {
+		struct MonitorInfo {
 			public int Size;
 			public Rect Frame;         // Monitor
 			public Rect VisibleFrame;  // Work
 			public int Flags;
-			public fixed byte Device[32];
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)]
+			public string Device;
 		}
 
 		[UnmanagedFunctionPointer (CallingConvention.Winapi)]
@@ -207,9 +208,7 @@ namespace MonoDevelop.Platform
 			EnumDisplayMonitors (IntPtr.Zero, IntPtr.Zero, delegate (IntPtr hmonitor, IntPtr hdc, IntPtr prect, IntPtr user_data) {
 				var info = new MonitorInfo ();
 
-				unsafe {
-					info.Size = sizeof (MonitorInfo);
-				}
+				info.Size = Marshal.SizeOf (info);
 
 				GetMonitorInfoA (hmonitor, ref info);
 
@@ -351,7 +350,7 @@ namespace MonoDevelop.Platform
 					apps = key.GetSubKeyNames ();
 				else if (type == AppOpenWithRegistryType.FromMRUList) {
 					string list = (string)key.GetValue ("MRUList");
-					apps = list.Select (c => c.ToString ()).ToArray ();
+					apps = list.Select (c => (string)key.GetValue (c.ToString ())).ToArray ();
 				}
 
 				foreach (string appName in apps) {
@@ -382,7 +381,7 @@ namespace MonoDevelop.Platform
 
 			// Query extension OpenWithList.
 			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey (extension + @"\OpenWithList"))
-				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromMRUList))
+				foreach (var app in GetAppFromRegistry (key, defaultApp, uniqueAppsSet, AssociationFlags.OpenByExeName, AppOpenWithRegistryType.FromSubkey))
 					yield return app;
 		}
 

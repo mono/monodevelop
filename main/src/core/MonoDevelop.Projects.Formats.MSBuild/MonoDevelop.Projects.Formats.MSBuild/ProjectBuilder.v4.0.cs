@@ -184,11 +184,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p.FullPath = file;
 				}
 			}
-			p.SetGlobalProperty ("Configuration", configuration);
+			p.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
-				p.SetGlobalProperty ("Platform", platform);
+				p.SetProperty ("Platform", platform);
 			else
-				p.RemoveGlobalProperty ("Platform");
+				p.SetProperty ("Platform", "");
 			return p;
 		}
 
