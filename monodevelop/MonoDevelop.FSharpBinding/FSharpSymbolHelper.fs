@@ -14,85 +14,60 @@ module FSharpTypeExt =
                 name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
             else false
 
-    let rec getAbbreviatedType (fsharpType: FSharpType) =
-        if fsharpType.IsAbbreviation then
-            let typ = fsharpType.AbbreviatedType
-            if typ.HasTypeDefinition then getAbbreviatedType typ
-            else fsharpType
-        else fsharpType
-
     let isConstructor (func: FSharpMemberOrFunctionOrValue) =
         func.CompiledName = ".ctor"
 
-    let isReferenceCell (fsharpType: FSharpType) = 
-        let ty = getAbbreviatedType fsharpType
-        ty.HasTypeDefinition && ty.TypeDefinition.IsFSharpRecord && ty.TypeDefinition.FullName = "Microsoft.FSharp.Core.FSharpRef`1"
-    
-    type FSharpType with
-        member x.IsReferenceCell =
-            isReferenceCell x
-        
-        member this.NonAbbreviatedTypeName = 
-            if this.IsAbbreviation then this.AbbreviatedType.NonAbbreviatedTypeName
-            else this.TypeDefinition.FullName
-
-        member this.NonAbbreviatedType =
-            Type.GetType(this.NonAbbreviatedTypeName)
-
-    type Type with
-        member this.PublicInstanceMembers =
-            this.GetMembers(BindingFlags.Instance ||| BindingFlags.FlattenHierarchy ||| BindingFlags.Public)
-
-    type MemberInfo with
-        member this.DeclaringTypeValue =
-            match this with
-            | :? MethodInfo as mi -> mi.GetBaseDefinition().DeclaringType
-            | _ -> this.DeclaringType
-
 [<AutoOpen>]
 module CorePatterns =
-    let (|ActivePatternCase|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|ActivePatternCase|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpActivePatternCase as ap-> ActivePatternCase(ap) |> Some
         | _ -> None
 
-    let (|Entity|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|Entity|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpEntity as ent -> Entity(ent) |> Some
         | _ -> None
 
-    let (|Field|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|Field|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpField as field-> Field (field) |> Some
         |  _ -> None
 
-    let (|GenericParameter|_|) (symbol: FSharpSymbol) = 
-        match symbol with
+    let (|GenericParameter|_|) (symbol: FSharpSymbolUse) = 
+        match symbol.Symbol with
         | :? FSharpGenericParameter as gp -> GenericParameter(gp) |> Some
         | _ -> None
 
-    let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpMemberOrFunctionOrValue as func -> MemberFunctionOrValue(func) |> Some
         | _ -> None
 
-    let (|Parameter|_|) (symbol : FSharpSymbol) = 
-        match symbol with
+    let (|Parameter|_|) (symbol : FSharpSymbolUse) = 
+        match symbol.Symbol with
         | :? FSharpParameter as param -> Parameter(param) |> Some
         | _ -> None
 
-    let (|StaticParameter|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|StaticParameter|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpStaticParameter as sp -> StaticParameter(sp) |> Some
         | _ -> None
 
-    let (|UnionCase|_|) (symbol : FSharpSymbol) =
-        match symbol with
+    let (|UnionCase|_|) (symbol : FSharpSymbolUse) =
+        match symbol.Symbol with
         | :? FSharpUnionCase as uc-> UnionCase(uc) |> Some
         | _ -> None
 
 [<AutoOpen>]
 module ExtendedPatterns = 
+    let (|Constructor|_|) symbol =
+        match symbol with
+        | CorePatterns.MemberFunctionOrValue func -> 
+            if func.CompiledName = ".ctor" || func.IsImplicitConstructor then Some func
+            else None
+        | _ -> None
+
     let (|TypeAbbreviation|_|) symbol =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsFSharpAbbreviation -> Some TypeAbbreviation
@@ -101,8 +76,6 @@ module ExtendedPatterns =
     let (|Class|_|) symbol =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsClass -> Some(Class)
-        | CorePatterns.MemberFunctionOrValue symbol when
-            symbol.IsImplicitConstructor || isConstructor symbol -> Some(Class)
         | _ -> None
 
     let (|Delegate|_|) symbol =
@@ -121,20 +94,22 @@ module ExtendedPatterns =
             symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some(Property)
         | _ -> None
 
-    let (|Function|Operator|Pattern|ClosureOrNested|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
-        match symbolUse.Symbol with
+    let (|Function|Operator|Pattern|ClosureOrNestedFunction|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
+        match symbolUse with
         | CorePatterns.MemberFunctionOrValue symbol
             when not (isConstructor symbol) ->
-                if symbol.FullType.IsFunctionType 
-                    && not symbol.IsPropertyGetterMethod 
-                    && not symbol.IsPropertySetterMethod then 
+                match symbol.FullTypeSafe with
+                | Some fullType when fullType.IsFunctionType
+                                    && not symbol.IsPropertyGetterMethod
+                                    && not symbol.IsPropertySetterMethod ->
                     if FSharpTypeExt.isOperatorOrActivePattern symbol.DisplayName then
-                        if symbolUse.IsFromPattern then Pattern
-                        else Operator
+                        if symbolUse.IsFromPattern then Pattern symbol
+                        else Operator symbol
                     else
-                        if not symbol.IsModuleValueOrMember then ClosureOrNested
-                        else Function                            
-                else Val
+                        if not symbol.IsModuleValueOrMember then ClosureOrNestedFunction symbol
+                        else Function symbol                       
+                | Some fullType -> Val symbol
+                | None -> Unknown
         | _ -> Unknown
 
     let (|Enum|_|) symbol =
@@ -385,114 +360,59 @@ module SymbolTooltips =
                 else asType Keyword "val"
             prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
 
-    let getTooltipFromSymbolUse (symbolUse:FSharpSymbolUse) (backUpSig: Lazy<_> option) =
-        match symbolUse.Symbol with
-        | Entity fse ->
-            try
-                let signature = getEntitySignature symbolUse.DisplayContext fse
-                ToolTip(signature, getSummaryFromSymbol fse backUpSig)
-            with exn -> ToolTips.EmptyTip
-
-        | MemberFunctionOrValue func ->
-            try
-            if isConstructor func then 
-                if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
-                    //ValueTypes
-                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-                else
-                    //ReferenceType constructor
-                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-
-            elif func.FullType.IsFunctionType && not func.IsPropertyGetterMethod && not func.IsPropertySetterMethod && not symbolUse.IsFromComputationExpression then 
-                if isOperatorOrActivePattern func.DisplayName then
-                    //Active pattern or operator
-                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-                else
-                    //closure/nested functions
-                    if not func.IsModuleValueOrMember then
-                        //represents a closure or nested function, needs FCS support
-                        let signature = func.FullType.Format symbolUse.DisplayContext |> escapeText
-                        let summary = getSummaryFromSymbol func backUpSig
-                        ToolTip(signature, summary)
-                    else
-                        let signature = getFuncSignature symbolUse.DisplayContext func 3 false
-                        ToolTip(signature, getSummaryFromSymbol func backUpSig)                            
-
-            else
-                //val name : Type
-                let signature = getValSignature symbolUse.DisplayContext func
-                ToolTip(signature, getSummaryFromSymbol func backUpSig)
-            with exn -> ToolTips.EmptyTip
-
-        | Field fsf ->
-            let signature = getFieldSignature symbolUse.DisplayContext fsf
-            ToolTip(signature, getSummaryFromSymbol fsf backUpSig)
-
-        | UnionCase uc ->
-            let signature = getUnioncaseSignature symbolUse.DisplayContext uc
-            ToolTip(signature, getSummaryFromSymbol uc backUpSig)
-
-        | ActivePatternCase _apc ->
-            //Theres not enough information to build this?
-            ToolTips.EmptyTip
-           
-        | _ -> ToolTips.EmptyTip
-
-    let getTooltipFromSymbol (symbol:FSharpSymbol) displayContext (backUpSig: Lazy<_> option) =
+    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_> option) =
         match symbol with
         | Entity fse ->
             try
-                let signature = getEntitySignature displayContext fse
+                let signature = getEntitySignature symbol.DisplayContext fse
                 ToolTip(signature, getSummaryFromSymbol fse backUpSig)
             with exn -> ToolTips.EmptyTip
 
-        | MemberFunctionOrValue func ->
-            try
-            if isConstructor func then 
-                if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
-                    //ValueTypes
-                    let signature = getFuncSignature displayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-                else
-                    //ReferenceType constructor
-                    let signature = getFuncSignature displayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-
-            elif func.FullType.IsFunctionType && not func.IsPropertyGetterMethod && not func.IsPropertySetterMethod (*&& not symbolUse.IsFromComputationExpression*) then 
-                if isOperatorOrActivePattern func.DisplayName then
-                    //Active pattern or operator
-                    let signature = getFuncSignature displayContext func 3 false
-                    ToolTip(signature, getSummaryFromSymbol func backUpSig)
-                else
-                    //closure/nested functions
-                    if not func.IsModuleValueOrMember then
-                        //represents a closure or nested function, needs FCS support
-                        let signature = func.FullType.Format displayContext
-                        let summary = getSummaryFromSymbol func backUpSig
-                        ToolTip(signature, summary)
-                    else
-                        let signature = getFuncSignature displayContext func 3 false
-                        ToolTip(signature, getSummaryFromSymbol func backUpSig)                            
-
-            else
-                //val name : Type
-                let signature = getValSignature displayContext func
+        | Constructor func ->
+            if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
+                //ValueTypes
+                let signature = getFuncSignature symbol.DisplayContext func 3 false
                 ToolTip(signature, getSummaryFromSymbol func backUpSig)
-            with exn -> ToolTips.EmptyTip
+            else
+                //ReferenceType constructor
+                let signature = getFuncSignature symbol.DisplayContext func 3 false
+                ToolTip(signature, getSummaryFromSymbol func backUpSig)
+
+        | Operator func ->
+            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            ToolTip(signature, getSummaryFromSymbol func backUpSig)
+
+        | Pattern func ->
+            //Active pattern or operator
+            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            ToolTip(signature, getSummaryFromSymbol func backUpSig)
+
+        | ClosureOrNestedFunction func ->
+            //represents a closure or nested function, needs FCS support
+            let signature = func.FullType.Format symbol.DisplayContext
+            let summary = getSummaryFromSymbol func backUpSig
+            ToolTip(signature, summary)
+
+        | Function func ->
+            let signature = getFuncSignature symbol.DisplayContext func 3 false
+            ToolTip(signature, getSummaryFromSymbol func backUpSig) 
+
+        | Val func ->
+            //val name : Type
+            let signature = getValSignature symbol.DisplayContext func
+            ToolTip(signature, getSummaryFromSymbol func backUpSig)
 
         | Field fsf ->
-            let signature = getFieldSignature displayContext fsf
+            let signature = getFieldSignature symbol.DisplayContext fsf
             ToolTip(signature, getSummaryFromSymbol fsf backUpSig)
 
         | UnionCase uc ->
-            let signature = getUnioncaseSignature displayContext uc
+            let signature = getUnioncaseSignature symbol.DisplayContext uc
             ToolTip(signature, getSummaryFromSymbol uc backUpSig)
 
         | ActivePatternCase _apc ->
             //Theres not enough information to build this?
             ToolTips.EmptyTip
            
-        | _ -> ToolTips.EmptyTip
+        | _ ->
+            ToolTips.EmptyTip

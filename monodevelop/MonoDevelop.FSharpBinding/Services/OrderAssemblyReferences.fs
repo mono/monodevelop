@@ -1,8 +1,9 @@
-namespace FSharp.CompilerBinding
+namespace MonoDevelop.FSharp
 
 open System.Reflection
 open System
 open Mono.Cecil
+open FSharp.CompilerBinding
 
 module Object = 
   let eqHack (f: 'a -> 'b) (x: 'a) (yobj: Object) : Boolean =

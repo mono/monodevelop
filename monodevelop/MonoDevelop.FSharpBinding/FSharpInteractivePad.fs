@@ -272,7 +272,7 @@ type FSharpInteractivePad() =
         |> Seq.distinct
         |> Seq.toArray 
      
-    let orderAssemblyReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
+    let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
     let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
     sendCommand orderedreferences
