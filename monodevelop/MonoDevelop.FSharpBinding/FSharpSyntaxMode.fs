@@ -361,7 +361,7 @@ module internal Patterns =
     let (|Namespace|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Namespace -> Some Namespace
             | _ -> None
         | _ -> None
@@ -369,7 +369,7 @@ module internal Patterns =
     let (|Class|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Class -> Some Class
             | _ -> None
         | _ -> None
@@ -377,7 +377,7 @@ module internal Patterns =
     let (|Property|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Property -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
@@ -385,7 +385,7 @@ module internal Patterns =
     let (|Field|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | CorePatterns.Field _ -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
@@ -394,8 +394,8 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Function
-            | ExtendedPatterns.ClosureOrNested ->  Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Function _
+            | ExtendedPatterns.ClosureOrNestedFunction _ ->  Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -403,14 +403,14 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Val -> Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Val _ -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
     let (|Delegate|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Delegate -> Some Delegate
             | _ -> None
         | _ -> None
@@ -418,7 +418,7 @@ module internal Patterns =
     let (|Event|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse ->
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Event -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
@@ -426,7 +426,7 @@ module internal Patterns =
     let (|Enum|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Enum -> Some Enum
             | _ -> None
         | _ -> None
@@ -434,7 +434,7 @@ module internal Patterns =
     let (|Record|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Record -> Some Record
             | _ -> None
         | _ -> None
@@ -442,7 +442,7 @@ module internal Patterns =
     let (|ValueType|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.ValueType -> Some ValueType
             | _ -> None
         | _ -> None
@@ -450,7 +450,7 @@ module internal Patterns =
     let (|Module|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Module -> Some Module
             | _ -> None
         | _ -> None
@@ -458,7 +458,7 @@ module internal Patterns =
     let (|Union|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Union -> Some Union
             | _ -> None
         | _ -> None
@@ -466,7 +466,7 @@ module internal Patterns =
     let (|GenericParameter|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | CorePatterns.GenericParameter _ -> Some GenericParameter
             | _ -> None
         | _ -> None
@@ -474,7 +474,7 @@ module internal Patterns =
     let (|UnionCase|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | CorePatterns.UnionCase _ -> Some UnionCase
             | _ -> None
         | _ -> None
@@ -482,7 +482,7 @@ module internal Patterns =
     let (|ActivePatternCase|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | CorePatterns.ActivePatternCase _ -> Some ActivePatternCase
             | _ -> None
         | _ -> None
@@ -490,7 +490,7 @@ module internal Patterns =
     let (|Interface|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.Interface _ -> Some Interface
             | _ -> None
         | _ -> None
@@ -498,7 +498,7 @@ module internal Patterns =
     let (|TypeAbbreviation|_|) ts = 
         match ts with
         | IdentifierSymbol symbolUse -> 
-            match symbolUse.Symbol with
+            match symbolUse with
             | ExtendedPatterns.TypeAbbreviation _ -> Some TypeAbbreviation
             | _ -> None
         | _ -> None
@@ -632,7 +632,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                     let localParsedDocument = document.ParsedDocument
                     if localParsedDocument <> null then
                         localParsedDocument.Ast 
-                        |> Option.tryCast<ParseAndCheckResults>
+                        |> tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
     let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * FSharpTokenColorKind)[] option) (token: FSharpTokenInfo) =
@@ -713,7 +713,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             let extraColorInfo =
                 maybe { let! document = Option.ofNull document
                         let! parsedDocument = Option.ofNull document.ParsedDocument
-                        let! pc = Option.tryCast<ParseAndCheckResults> parsedDocument.Ast
+                        let! pc = tryCast<ParseAndCheckResults> parsedDocument.Ast
                         return! pc.GetExtraColorizations() }
 
             match (this.Document, line, offset, length, style) with

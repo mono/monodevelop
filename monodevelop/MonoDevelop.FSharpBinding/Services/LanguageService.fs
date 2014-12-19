@@ -37,14 +37,6 @@ module Symbols =
     let endOffset = doc.LocationToOffset(endLine, endColumn+1)
     TextSegment.FromBounds(startOffset, endOffset)
 
-module Option =
-    let tryCast<'a> (o: obj): 'a option = 
-        match o with
-        | null -> None
-        | :? 'a as a -> Some a
-        | _ -> Printf.kprintf System.Diagnostics.Debug.Fail "Cannot cast %O to %O" (o.GetType()) typeof<'a>.Name
-               None
-
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
 
@@ -273,8 +265,8 @@ module internal MonoDevelop =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
+            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
                    let args = CompilerArguments.generateCompilerOptions(project,
                                                                         fsconfig,
                                                                         None,

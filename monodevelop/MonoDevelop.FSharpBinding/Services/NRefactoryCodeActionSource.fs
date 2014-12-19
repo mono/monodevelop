@@ -94,25 +94,28 @@ type ImplementInterfaceCodeActionProvider() as x =
 
   override x.GetActions(doc: Document, _ctx: obj, location: TextLocation, _cancellation: CancellationToken) = 
     if doc.ParsedDocument <> null then
-      match doc.ParsedDocument.Ast with
-        | :? ParseAndCheckResults as ast -> seq {
-            match ast.ParseTree with 
-            | Some parseTree ->
-              let lineStr = doc.Editor.GetLineText(location.Line)
-              let pos = mkPos location.Line location.Column
-              let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
-              let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
-              
-              match interfaceData, symbol with 
-              | Some iface, Some sy -> 
-                 match sy.Symbol with
-                 | :? FSharpEntity as e when e.IsInterface ->
-                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast, doc.Editor.Options.IndentationSize) :> _
-                 | _ -> ()
-              | _ -> ()
-            | _ -> ()
-          }
-        | _ -> Seq.empty
+        match doc.ParsedDocument.Ast with
+        | :? ParseAndCheckResults as ast ->
+            seq {
+                match ast.ParseTree with 
+                | Some parseTree ->
+                    let pos = mkPos location.Line location.Column
+                    let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
+                    match interfaceData with 
+                    | Some iface ->
+                        let lineStr = doc.Editor.GetLineText(location.Line)
+                        let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
+                        match symbol with
+                        | Some sy ->
+                            match sy.Symbol with
+                            | :? FSharpEntity as e when e.IsInterface ->
+                                 yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast, doc.Editor.Options.IndentationSize) :> _
+                            | _ -> ()
+                        | _ -> ()
+                    | _ -> ()
+                | _ -> ()
+            }
+          | _ -> Seq.empty
      else Seq.empty
      
 type NRefactoryCodeActionSource() = 

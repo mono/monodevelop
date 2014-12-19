@@ -1,4 +1,4 @@
-namespace FSharp.CompilerBinding
+namespace MonoDevelop.FSharp
 
 // This code borrowed from https://github.com/fsprojects/VisualFSharpPowerTools/
 
@@ -11,6 +11,7 @@ open Microsoft.FSharp.Compiler.Ast
 open Microsoft.FSharp.Compiler.Range
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+/// Capture information about an interface in ASTs
 [<RequireQualifiedAccess; NoEquality; NoComparison>]
 type InterfaceData =
     | Interface of SynType * SynMemberDefns option
@@ -110,37 +111,6 @@ module InterfaceStubGenerator =
         (genericDefinition, ctx.TypeInstantations)
         ||> Map.fold (fun s k v -> s.Replace(k, v))
 
-    let internal keywordSet = set Microsoft.FSharp.Compiler.Lexhelp.Keywords.keywordNames
-
-    type NamesWithIndices = Map<string, Set<int>>
-
-    let normalizeArgName (namesWithIndices: NamesWithIndices) nm =
-        match nm with
-        | "()" -> nm, namesWithIndices
-        | _ ->
-            let nm = String.lowerCaseFirstChar nm
-            let nm, index = String.extractTrailingIndex nm
-                
-            let index, namesWithIndices =
-                match namesWithIndices |> Map.tryFind nm, index with
-                | Some indexes, index ->
-                    let rec getAvailableIndex idx =
-                        if indexes |> Set.contains idx then 
-                            getAvailableIndex (idx + 1)
-                        else idx
-                    let index = index |> Option.getOrElse 1 |> getAvailableIndex
-                    Some index, namesWithIndices |> Map.add nm (indexes |> Set.add index)
-                | None, Some index -> Some index, namesWithIndices |> Map.add nm (Set.ofList [index])
-                | None, None -> None, namesWithIndices |> Map.add nm Set.empty
-
-            let nm = 
-                match index with
-                | Some index -> sprintf "%s%d" nm index
-                | None -> nm
-                
-            let nm = if Set.contains nm keywordSet then sprintf "``%s``" nm else nm
-            nm, namesWithIndices
-
     // Format each argument, including its name and type 
     let internal formatArgUsage ctx hasTypeAnnotation (namesWithIndices: Map<string, Set<int>>) (arg: FSharpParameter) = 
         let nm = 
@@ -185,7 +155,7 @@ module InterfaceStubGenerator =
         , namesWithIndices
 
     [<RequireQualifiedAccess; NoComparison>]
-    type MemberInfo =
+    type internal MemberInfo =
         | PropertyGetSet of FSharpMemberOrFunctionOrValue * FSharpMemberOrFunctionOrValue
         | Member of FSharpMemberOrFunctionOrValue
 
@@ -200,10 +170,27 @@ module InterfaceStubGenerator =
             | [[]], true, _ -> [], Some retType
             | _, _, _ -> argInfos, Some retType
 
-        let retType = defaultArg (retType |> Option.map (formatType ctx)) "unit"      
+        let retType = 
+            match retType with
+            | Some typ ->
+                let coreType = formatType ctx typ
+                if v.IsEvent then
+                    let isEventHandler = 
+                        typ.BaseType 
+                        |> Option.bind (fun t -> 
+                            if t.HasTypeDefinition then
+                                t.TypeDefinition.TryGetFullName()
+                             else None)
+                        |> Option.exists ((=) "System.MulticastDelegate")
+                    if isEventHandler then sprintf "IEvent<%s, _>" coreType else coreType
+                else coreType
+            | None -> 
+                "unit"
+            
         argInfos, retType
 
-    let normalizePropertyName (v: FSharpMemberOrFunctionOrValue) =
+    /// Convert a getter/setter to its canonical form
+    let internal normalizePropertyName (v: FSharpMemberOrFunctionOrValue) =
         let displayName = v.DisplayName
         if (v.IsPropertyGetterMethod && displayName.StartsWith("get_")) || 
             (v.IsPropertySetterMethod && displayName.StartsWith("set_")) then
@@ -239,7 +226,7 @@ module InterfaceStubGenerator =
                 // Ordinary instance members
                 | _, true, _, name -> name + parArgs
                 // Ordinary functions or values
-                | false, _, _, name when 
+                | false, _, _, name when
                     not (hasAttribute<RequireQualifiedAccessAttribute> v.LogicalEnclosingEntity.Attributes) -> 
                     name + " " + parArgs
                 // Ordinary static members or things (?) that require fully qualified access
@@ -301,8 +288,7 @@ module InterfaceStubGenerator =
         
             if v.IsEvent then
                 writer.Write(usage)
-                // Yet another hack since FCS return type in the handler form.
-                writer.WriteLine(": {0} = ", if retType.StartsWith("IEvent") then retType else "IEvent<_, _>")
+                writer.WriteLine(": {0} = ", retType)
                 writer.Indent ctx.Indentation
                 for line in ctx.MethodBody do
                     writer.WriteLine(line)
@@ -348,16 +334,40 @@ module InterfaceStubGenerator =
                     writer.WriteLine(line)
                 writer.Unindent ctx.Indentation
 
-    let internal getGenericParameters (e: FSharpEntity) =
-        if e.IsFSharpAbbreviation then
-            e.AbbreviatedType.TypeDefinition.GenericParameters
-        else
-            e.GenericParameters
-
     let rec internal getNonAbbreviatedType (typ: FSharpType) =
         if typ.HasTypeDefinition && typ.TypeDefinition.IsFSharpAbbreviation then
             getNonAbbreviatedType typ.AbbreviatedType
         else typ
+
+    // Sometimes interface members are stored in the form of `IInterface<'T> -> ...`,
+    // so we need to get the 2nd generic argument
+    let internal (|MemberFunctionType|_|) (typ: FSharpType) =
+        if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
+            Some typ.GenericArguments.[1]
+        else None
+
+    let internal (|TypeOfMember|_|) (m: FSharpMemberOrFunctionOrValue) =
+        match m.FullTypeSafe with
+        | Some (MemberFunctionType typ) when m.IsProperty && m.EnclosingEntity.IsFSharp ->
+            Some typ
+        | Some typ -> Some typ
+        | None -> None
+
+    let internal (|EventFunctionType|_|) (typ: FSharpType) =
+        match typ with
+        | MemberFunctionType typ ->
+            if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
+                let retType = typ.GenericArguments.[0]
+                let argType = typ.GenericArguments.[1]
+                if argType.GenericArguments.Count = 2 then
+                    Some (argType.GenericArguments.[0], retType)
+                else None
+            else None
+        | _ ->
+            None
+
+    let internal removeWhitespace (str: string) = 
+        str.Replace(" ", "")
 
     /// Filter out duplicated interfaces in inheritance chain
     let rec internal getInterfaces (e: FSharpEntity) = 
@@ -369,7 +379,7 @@ module InterfaceStubGenerator =
         |> Seq.distinct
 
     /// Get members in the decreasing order of inheritance chain
-    let internal getInterfaceMembers (e: FSharpEntity) = 
+    let getInterfaceMembers (e: FSharpEntity) = 
         seq {
             for (iface, instantiations) in getInterfaces e do
                 yield! iface.MembersFunctionsAndValues |> Seq.choose (fun m -> 
@@ -379,6 +389,7 @@ module InterfaceStubGenerator =
                            else Some (m, instantiations))
          }
 
+    /// Check whether an interface is empty
     let hasNoInterfaceMember e =
         getInterfaceMembers e |> Seq.isEmpty
 
@@ -419,61 +430,33 @@ module InterfaceStubGenerator =
         | InterfaceData.ObjExpr(_, bindings) -> 
             List.choose (|MemberNameAndRange|_|) bindings
 
-    // Sometimes interface members are stored in the form of `IInterface<'T> -> ...`,
-    // so we need to get the 2nd generic argument
-    let internal (|MemberFunctionType|_|) (typ: FSharpType) =
-        if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
-            Some typ.GenericArguments.[1]
-        else None
-
-    let internal (|TypeOfMember|) (m: FSharpMemberOrFunctionOrValue) =
-        let typ = m.FullType
-        match typ with
-        | MemberFunctionType typ when m.IsProperty && m.EnclosingEntity.IsFSharp ->
-            typ
-        | _ -> typ
-
-    let internal (|EventFunctionType|_|) (typ: FSharpType) =
-        match typ with
-        | MemberFunctionType typ ->
-            if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
-                let retType = typ.GenericArguments.[0]
-                let argType = typ.GenericArguments.[1]
-                if argType.GenericArguments.Count = 2 then
-                    Some (argType.GenericArguments.[0], retType)
-                else None
-            else None
-        | _ ->
-            None
-
-    let internal removeWhitespace (str: string) = 
-        str.Replace(" ", "")
-
     let internal normalizeEventName (m: FSharpMemberOrFunctionOrValue) =
         let name = m.DisplayName
         if name.StartsWith("add_") then name.[4..]
         elif name.StartsWith("remove_")  then name.[7..]
         else name
 
-    /// Ideally this info should be returned in error symbols from FCS
+    /// Ideally this info should be returned in error symbols from FCS. 
     /// Because it isn't, we implement a crude way of getting member signatures:
     ///  (1) Crack ASTs to get member names and their associated ranges
     ///  (2) Check symbols of those members based on ranges
     ///  (3) If any symbol found, capture its member signature 
     let getImplementedMemberSignatures (getMemberByLocation: string * range -> Async<FSharpSymbolUse option>) displayContext interfaceData = 
-        let formatMemberSignature (symbolUse: FSharpSymbolUse) =
-            Debug.Assert(symbolUse.Symbol :? FSharpMemberOrFunctionOrValue, "Only accept symbol uses of members.")
-            try
-                let m = symbolUse.Symbol :?> FSharpMemberOrFunctionOrValue
-                match m.FullType with
-                | _ when isEventMember m ->
+        let formatMemberSignature (symbolUse: FSharpSymbolUse) =            
+            match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as m ->
+                match m.FullTypeSafe with
+                | Some _ when isEventMember m ->
                     // Events don't have overloads so we use only display names for comparison
                     let signature = normalizeEventName m
                     Some [signature]
-                | typ ->
+                | Some typ ->
                     let signature = removeWhitespace (sprintf "%s:%s" m.DisplayName (typ.Format(displayContext)))
                     Some [signature]
-            with _ ->
+                | None ->
+                    None
+            | _ ->
+                fail "Should only accept symbol uses of members."
                 None
         async {
             let! symbolUses = 
@@ -514,17 +497,25 @@ module InterfaceStubGenerator =
                     Indentation = indentation; ObjectIdent = objectIdent; MethodBody = lines; DisplayContext = displayContext }
         let missingMembers =
             getInterfaceMembers e
-            |> Seq.filter (fun (m, insts) -> 
-                // FullType might throw exceptions due to bugs in FCS
-                try
-                    let signature =  
-                        if isEventMember m then
-                            normalizeEventName m
-                        else
-                            let (TypeOfMember typ) = m 
-                            removeWhitespace (sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts } typ))
-                    not (Set.contains signature excludedMemberSignatures) 
-                with _ -> true)
+            |> Seq.groupBy (fun (m, insts) ->               
+                match m with
+                | _ when isEventMember m  ->
+                    Some (normalizeEventName m)
+                | TypeOfMember typ ->
+                    let signature = removeWhitespace (sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts } typ))
+                    Some signature 
+                | _ -> 
+                    debug "FullType throws exceptions due to bugs in FCS."
+                    None)
+            |> Seq.collect (fun (signature, members) ->               
+                match signature with
+                | None ->
+                    members
+                | Some signature when not (Set.contains signature excludedMemberSignatures) ->
+                    // Return the first member from a group of members for a particular signature
+                    Seq.truncate 1 members
+                | _ -> Seq.empty)
+
         // All members have already been implemented
         if Seq.isEmpty missingMembers then
             String.Empty
@@ -559,6 +550,7 @@ module InterfaceStubGenerator =
             |> loop
             writer.Dump()
 
+    /// Find corresponding interface declaration at a given position
     let tryFindInterfaceDeclaration (pos: pos) (parsedInput: ParsedInput) =
         let rec walkImplFileInput (ParsedImplFileInput(_name, _isScript, _fileName, _scopedPragmas, _hashDirectives, moduleOrNamespaceList, _)) = 
             List.tryPick walkSynModuleOrNamespace moduleOrNamespaceList
@@ -633,10 +625,9 @@ module InterfaceStubGenerator =
                 | SynMemberDefn.LetBindings(bindings, _isStatic, _isRec, _range) ->
                     List.tryPick walkBinding bindings
                 | SynMemberDefn.Open _
-                | SynMemberDefn.ImplicitInherit _
-                | SynMemberDefn.Inherit _
-                | SynMemberDefn.ImplicitCtor _ -> 
-                    None
+                | SynMemberDefn.ImplicitCtor _
+                | SynMemberDefn.Inherit _ -> None
+                | SynMemberDefn.ImplicitInherit (_, expr, _, _) -> walkExpr expr
 
         and walkBinding (Binding(_access, _bindingKind, _isInline, _isMutable, _attrs, _xmldoc, _valData, _headPat, _retTy, expr, _bindingRange, _seqPoint)) =
             walkExpr expr
