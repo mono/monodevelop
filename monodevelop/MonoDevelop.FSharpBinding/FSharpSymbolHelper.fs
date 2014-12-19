@@ -344,7 +344,7 @@ module SymbolTooltips =
         | _ -> typeDisplay + fullName
 
     let getValSignature displayContext (v:FSharpMemberOrFunctionOrValue) =
-        let retType = asType UserType (escapeText(v.ReturnParameter.Type.Format displayContext))
+        let retType = asType UserType (escapeText(v.FullType.Format(displayContext)))
         let prefix = 
             if v.IsMutable then asType Keyword "val" ++ asType Keyword "mutable"
             else asType Keyword "val"
