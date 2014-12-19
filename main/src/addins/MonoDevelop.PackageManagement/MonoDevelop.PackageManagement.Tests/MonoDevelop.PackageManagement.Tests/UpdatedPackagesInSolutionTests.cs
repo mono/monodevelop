@@ -306,6 +306,47 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsInstanceOf<PackageManagementLogger> (project.Logger);
 		}
+
+		[Test]
+		public void GetUpdatedPackages_TwoPackagesInstalledOneUpdatedAndUpdatesAvailableForBoth_OneUpdateAvailable ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("One", "1.0");
+			project.AddPackageReference ("Two", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("One", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("Two", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("One", "1.1");
+			project.AddPackageReference ("Two", "1.0");
+			packageManagementEvents.OnParentPackageInstalled (updatedPackage, project);
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("Two", updatedPackages.GetPackages ().FirstOrDefault ().Id);
+		}
+
+		[Test]
+		public void GetUpdatedPackages_TwoPackagesInstalledOneUpdatedWhichUpdatesItsDependency_NoUpdatesAvailable ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("One", "1.0");
+			project.AddPackageReference ("Two", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("One", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("Two", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("One", "1.1");
+			project.AddPackageReference ("Two", "1.1");
+			packageManagementEvents.OnParentPackageInstalled (updatedPackage, project);
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
 	}
 }
 
