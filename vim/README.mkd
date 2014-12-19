@@ -45,7 +45,7 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 * `:BuildProject` Calls xbuild on the fsproj for the current file (if any). Can also take a path to the proj file to build.
 * `:RunProject` Runs the project for the current file (if any). 
 * `leader<t>` Echoes the type of the expression currently pointed to by the cursor.
-* `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
+* `leader<d>` _go to declaration_ in current window. 
 * `leader<s>` Takes you back from where _go to declaration_ was triggered.
 
 #####FSharp Interactive
