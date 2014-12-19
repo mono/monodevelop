@@ -76,7 +76,10 @@
   <ItemGroup>
     <Compile Include="Services\Utils.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
+    <Compile Include="Services\Lexer.fs" />
     <Compile Include="Services\CodeGeneration.fs" />
+    <Compile Include="Services\UntypedAst.fs" />
+    <Compile Include="Services\TypedAstUtilities.fs" />
     <Compile Include="Services\InterfaceStubGenerator.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
