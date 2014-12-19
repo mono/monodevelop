@@ -1,4 +1,5 @@
-﻿namespace MonoDevelop.FSharp
+﻿// This code borrowed from https://github.com/fsprojects/VisualFSharpPowerTools/
+namespace MonoDevelop.FSharp
 
 open System
 open System.Text.RegularExpressions
