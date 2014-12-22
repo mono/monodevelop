@@ -133,8 +133,7 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
                 if decl.Declaration.Name.StartsWith(filter) then
                     memberList.Add(decl.Declaration)
         | :? FSharpNavigationTopLevelDeclaration as tld ->
-            for item in tld.Nested do
-                 memberList.Add(item)
+            memberList.AddRange(tld.Nested)
         | _ -> ()
 
     do reset()
