@@ -147,6 +147,10 @@ class FSAutoComplete:
         msg = self.completion.send('completion "%s" %d %d\n' % (fn, line, column))
 
         self.__log('msg received %s\n' % msg)
+
+        if msg is None:
+            return []
+
         msg = map(str, msg)
 
         if base != '':
