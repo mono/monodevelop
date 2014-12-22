@@ -248,7 +248,7 @@ type FSharpTextEditorCompletion() =
       | None -> null
       | Some tyRes ->
       let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
-      let methsOpt = tyRes.GetMethods(line, col, lineStr) |> Async.RunSynchronously
+      let methsOpt = Async.RunSynchronously (tyRes.GetMethods(line, col, lineStr), ServiceSettings.blockingTimeout)
       match methsOpt with 
       | None -> 
           Debug.WriteLine("Getting Parameter Info: no methods")
@@ -256,7 +256,9 @@ type FSharpTextEditorCompletion() =
       | Some(name, meths) -> 
           Debug.WriteLine("Getting Parameter Info: methods!")
           new ParameterDataProvider (startOffset, name, meths) :> _ 
-    with _ -> null
+    with ex ->
+        LoggingService.LogError ("FSharp, Error in HandleParameterCompletion", ex)
+        null
 
   override x.KeyPress (key, keyChar, modifier) =
       // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
@@ -343,7 +345,9 @@ type FSharpTextEditorCompletion() =
               result.AddRange(items)
         | _ -> ()
     with
-    | e -> result.Add(FSharpErrorCompletionData(e))
+    | e ->
+        LoggingService.LogError ("FSharp, An error occured in CodeCompletionCommandImpl", e)
+        result.Add(FSharpErrorCompletionData(e))
     
     // Add the code templates and compiler generated identifiers
     if not dottedInto then
