@@ -232,30 +232,25 @@ type FSharpTextEditorCompletion() =
               else loop depth (i-1) 
           loop 0 (offset-1)
 
-      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 then 
-        null 
+      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 then null 
       else
       Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
 
-
-      // Try to get typed result - with the specified timeout
       let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
-      let typedParseResults =
-        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout) 
-        |> Async.RunSynchronously
 
-      match typedParseResults with
-      | None -> null
-      | Some tyRes ->
-      let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
-      let methsOpt = Async.RunSynchronously (tyRes.GetMethods(line, col, lineStr), ServiceSettings.blockingTimeout)
+      // Try to get typed result - within the specified timeout
+      let methsOpt =
+          Async.RunSynchronously (
+              async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName) 
+                     let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
+                     let! methsOpt = tyRes.GetMethods(line, col, lineStr)
+                     return methsOpt }, ServiceSettings.blockingTimeout)
+
       match methsOpt with 
-      | None -> 
-          Debug.WriteLine("Getting Parameter Info: no methods")
-          null 
-      | Some(name, meths) -> 
-          Debug.WriteLine("Getting Parameter Info: methods!")
-          new ParameterDataProvider (startOffset, name, meths) :> _ 
+      | None -> Debug.WriteLine("Getting Parameter Info: no methods")
+                null 
+      | Some(name, meths) -> Debug.WriteLine("Getting Parameter Info: methods!")
+                             new ParameterDataProvider (startOffset, name, meths) :> _ 
     with ex ->
         LoggingService.LogError ("FSharp, Error in HandleParameterCompletion", ex)
         null
