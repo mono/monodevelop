@@ -680,15 +680,14 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
     let scanToken (tokenizer:FSharpLineTokenizer) s =
         match tokenizer.ScanToken(s) with
-         | Some t, s -> Some(t, s)
-         | _ -> None
+        | Some t, s -> Some(t, s)
+        | _ -> None
 
     let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         let tokens = 
-            Seq.unfold (scanToken tokenizer) 0L
-            |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
-            |> List.ofSeq
+            List.unfold (scanToken tokenizer) 0L
+            |> List.map (makeChunk line.LineNumber style offset extraColorInfo)
         tokens |> Seq.ofList
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
