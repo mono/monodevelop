@@ -59,7 +59,7 @@ type FSharpResolverProvider() =
                 let lastIdent = Symbols.lastIdent col lineStr
                 let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, domRegion)
                 return resolveResult, domRegion }
-        match results |> Async.RunSynchronously with
+        match Async.RunSynchronously (results, ServiceSettings.blockingTimeout) with
         | Some (res, dom) ->
             region <- dom
             res
