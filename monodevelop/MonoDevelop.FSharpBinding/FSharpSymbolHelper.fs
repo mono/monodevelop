@@ -108,7 +108,7 @@ module ExtendedPatterns =
                     else
                         if not symbol.IsModuleValueOrMember then ClosureOrNestedFunction symbol
                         else Function symbol                       
-                | Some fullType -> Val symbol
+                | Some _fullType -> Val symbol
                 | None -> Unknown
         | _ -> Unknown
 

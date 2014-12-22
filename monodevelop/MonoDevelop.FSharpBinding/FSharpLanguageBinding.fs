@@ -56,28 +56,29 @@ type FSharpLanguageBinding() =
         if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
             invalidateProjectFile(projectFileEvent.Project)
 
+  let invalidateConfig _args =
+      IdeApp.Workspace.GetAllProjects()
+      |> Seq.iter invalidateProjectFile
+
+  let ensureCorrectEditorOptions _args =
+      let doc = IdeApp.Workbench.ActiveDocument
+      if doc <> null && doc.Editor <> null &&
+        not doc.Editor.TabsToSpaces &&
+        (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
+        doc.Editor.TabsToSpaces <- true
+      
   let eventDisposer =
       ResizeArray<IDisposable> ()
             
-  // ------------------------------------------------------------------------------------------
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
   do if IdeApp.IsInitialized then
-      // Register handler that will reparse when the active configuration is changes
-      IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
-             for doc in IdeApp.Workbench.Documents do
-                 if doc.Editor <> null && MDLanguageService.SupportedFileName (doc.FileName.ToString()) then 
-                    doc.ReparseDocument ())
-
-      IdeApp.Workbench.ActiveDocumentChanged.Add(fun _ ->
-        let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null && doc.Editor <> null &&
-           not doc.Editor.TabsToSpaces &&
-           (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
-             doc.Editor.TabsToSpaces <- true )
+      //Ensure correct editor options are enables for F#, enforcing this options with the mime type doesnt appear to work
+      IdeApp.Workbench.ActiveDocumentChanged.Subscribe(ensureCorrectEditorOptions) |> eventDisposer.Add
 
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
+      IdeApp.Workspace.ActiveConfigurationChanged.Subscribe(invalidateConfig) |> eventDisposer.Add
       IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateAll) |> eventDisposer.Add
       IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateAll) |> eventDisposer.Add
       IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateAll) |> eventDisposer.Add
@@ -86,7 +87,6 @@ type FSharpLanguageBinding() =
       IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
     
-  // ----------------------------------------------------------------------------
   // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
   let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
   interface IDotNetLanguageBinding  with
