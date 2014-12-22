@@ -72,62 +72,65 @@ type FSharpTooltipProvider() =
                              lastResult <- Some(tooltipItem)
                              return Tooltip tooltipItem }
 
-        let result = async {
-           let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
-           LoggingService.LogInfo "TooltipProvider: Getting tool tip"
-           match parseAndCheckResults with
-           | None -> return ParseAndCheckNotFound
-           | Some parseAndCheckResults ->
-               let! symbol = parseAndCheckResults.GetSymbol(line, col, lineStr)
-               //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
-               // to extract the signature, this is only limited in that it deals with onlt a single tooltip in a group/list
-               // This should be fine as there are issues with genewric tooltip xmldocs anyway
-               // e.g. generics such as Dictionary<'a,'b>.Contains currently dont work.
-               let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
-               //we create the backupSig as lazily as possible we could put the async call in here but I was worried about GC retension.
-               let backupSig = 
-                   Some(lazy
-                           match tip with
-                           | Some (FSharpToolTipText xs, (_,_)) when xs.Length > 0 ->
-                               let first = xs.Head    
-                               match first with
-                               | FSharpToolTipElement.Single (_name, xmlComment) ->
-                                    match xmlComment with
-                                    | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
-                                    | _ -> None
-                               | FSharpToolTipElement.Group tts when tts.Length > 0 ->
-                                   let _name, xmlComment = tts.Head
-                                   match xmlComment with
-                                   | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
-                                   | _ -> None
-                               | FSharpToolTipElement.CompositionError _ -> None
-                               | _ -> None
-                           | _ -> None)
-
-               // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
-               // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
-               match symbol with
-               | Some s -> 
-                    let tt = getTooltipFromSymbolUse s backupSig
-                    match tt with
-                    | ToolTip(signature, summary) ->
-                        //get the TextSegment the the symbols range occupies
-                        let textSeg = Symbols.getTextSegment extEditor.Document symbol.Value col lineStr
-
-                        //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
-                        match lastResult with
-                        | Some(tooltipItem) when
-                            tooltipItem.Item :? (string * XmlDoc) &&
-                            tooltipItem.Item :?> (string * XmlDoc) = (signature, summary) &&
-                            tooltipItem.ItemSegment = textSeg ->
-                                return Tooltip tooltipItem
-                        //If theres no match or previous cached result generate a new tooltipitem
-                        | Some(_)
-                        | None -> let tooltipItem = TooltipItem((signature, summary), textSeg)
-                                  lastResult <- Some(tooltipItem)
-                                  return Tooltip tooltipItem
-                    | EmptyTip -> return! getTooltipFromLanguageService parseAndCheckResults
-               | None -> return! getTooltipFromLanguageService parseAndCheckResults} |> Async.RunSynchronously
+        let result =
+            Async.RunSynchronously (
+                    async {
+                        let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
+                        LoggingService.LogInfo "TooltipProvider: Getting tool tip"
+                        match parseAndCheckResults with
+                        | None -> return ParseAndCheckNotFound
+                        | Some parseAndCheckResults ->
+                            let! symbol = parseAndCheckResults.GetSymbol(line, col, lineStr)
+                            //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
+                            // to extract the signature, this is only limited in that it deals with onlt a single tooltip in a group/list
+                            // This should be fine as there are issues with genewric tooltip xmldocs anyway
+                            // e.g. generics such as Dictionary<'a,'b>.Contains currently dont work.
+                            let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
+                            //we create the backupSig as lazily as possible we could put the async call in here but I was worried about GC retension.
+                            let backupSig = 
+                                Some(lazy
+                                        match tip with
+                                        | Some (FSharpToolTipText xs, (_,_)) when xs.Length > 0 ->
+                                            let first = xs.Head    
+                                            match first with
+                                            | FSharpToolTipElement.Single (_name, xmlComment) ->
+                                                 match xmlComment with
+                                                 | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
+                                                 | _ -> None
+                                            | FSharpToolTipElement.Group tts when tts.Length > 0 ->
+                                                let _name, xmlComment = tts.Head
+                                                match xmlComment with
+                                                | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
+                                                | _ -> None
+                                            | FSharpToolTipElement.CompositionError _ -> None
+                                            | _ -> None
+                                        | _ -> None)
+                        
+                            // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
+                            // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
+                            match symbol with
+                            | Some s -> 
+                                 let tt = getTooltipFromSymbolUse s backupSig
+                                 match tt with
+                                 | ToolTip(signature, summary) ->
+                                     //get the TextSegment the the symbols range occupies
+                                     let textSeg = Symbols.getTextSegment extEditor.Document symbol.Value col lineStr
+                        
+                                     //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
+                                     match lastResult with
+                                     | Some(tooltipItem) when
+                                         tooltipItem.Item :? (string * XmlDoc) &&
+                                         tooltipItem.Item :?> (string * XmlDoc) = (signature, summary) &&
+                                         tooltipItem.ItemSegment = textSeg ->
+                                             return Tooltip tooltipItem
+                                     //If theres no match or previous cached result generate a new tooltipitem
+                                     | Some(_)
+                                     | None -> let tooltipItem = TooltipItem((signature, summary), textSeg)
+                                               lastResult <- Some(tooltipItem)
+                                               return Tooltip tooltipItem
+                                 | EmptyTip -> return! getTooltipFromLanguageService parseAndCheckResults
+                            | None -> return! getTooltipFromLanguageService parseAndCheckResults},
+                    ServiceSettings.blockingTimeout)
 
         match result with
         | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
@@ -135,7 +138,9 @@ type FSharpTooltipProvider() =
         | NoToolTipData -> LoggingService.LogWarning "TooltipProvider: No data found"; null
         | Tooltip t -> t
        
-      with exn -> LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn); null
+      with exn ->
+          LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)
+          null
 
     override x.CreateTooltipWindow (_editor, _offset, _modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
