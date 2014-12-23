@@ -294,3 +294,18 @@ module CompilerArguments =
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 
+  let getDefineSymbols (fileName:string) (project: MonoDevelop.Projects.Project option) =
+    [ let workspace = IdeApp.Workspace
+      if workspace = null then
+          if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
+              yield "INTERACTIVE"
+          else
+              yield "COMPILED"
+      match project with
+      | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
+                  | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
+                      for s in configuration.GetDefineSymbols() do
+                          yield s
+                  | _ -> ()
+      | None -> ()]
+
