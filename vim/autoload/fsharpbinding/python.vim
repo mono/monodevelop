@@ -36,11 +36,9 @@ function! fsharpbinding#python#ParseProject(...)
     python << EOF
 fsautocomplete.project(vim.eval("a:1"))
 EOF
-    else
+    elseif exists('b:proj_file')
     python << EOF
-v = vim.current.buffer.vars
-if "proj_file" in v:
-    fsautocomplete.project(v["proj_file"])
+    fsautocomplete.project(vim.eval("b:proj_file"))
 EOF
     endif
 endfunction
@@ -243,9 +241,8 @@ function! fsharpbinding#python#OnBufEnter()
 python << EOF
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
-v = vim.current.buffer.vars
-if "proj_file" in v:
-    fsautocomplete.project(v["proj_file"])
+if vim.eval("exists('b:proj_file')") == 1:
+    fsautocomplete.project(vim.eval("b:proj_file"))
 EOF
     "set makeprg
     if !filereadable(expand("%:p:h")."/Makefile")

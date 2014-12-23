@@ -57,7 +57,7 @@ if '.fs' == ext or '.fsi' == ext:
     projs = filter(lambda f: '.fsproj' == os.path.splitext(f)[1], os.listdir(dir))
     if len(projs):
         proj_file = os.path.join(dir, projs[0])
-        b.vars["proj_file"] = proj_file
+        vim.command("let b:proj_file = '%s'" % proj_file)
         fsautocomplete.project(proj_file)
 fsautocomplete.parse(b.name, True, b)
 EOF
