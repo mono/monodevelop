@@ -563,7 +563,7 @@ module internal Patterns =
 
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
-type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
+type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
     inherit SyntaxMode()
     // Mutable Local Variables
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
@@ -574,21 +574,6 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
                                     semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
 
-    let getDefineSymbols (project: MonoDevelop.Projects.Project option) =
-        [ let workspace = IdeApp.Workspace
-          if workspace = null then
-              if this.Document <> null && (this.Document.FileName.EndsWith(".fsx") || this.Document.FileName.EndsWith(".fsscript")) then
-                  yield "INTERACTIVE"
-              else
-                  yield "COMPILED"
-          match project with
-          | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
-                      | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
-                          for s in configuration.GetDefineSymbols() do
-                              yield s
-                      | _ -> ()
-          | None -> ()]
-
     let getProject (doc : Gui.Document) =
         if doc <> null && doc.Project <> null then Some doc.Project else
         let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
@@ -598,8 +583,9 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
              else Seq.head projects |> Some
 
     let project = getProject document
+    let fileName = document.FileName.FileName
 
-    let sourceTokenizer= SourceTokenizer(getDefineSymbols project, document.FileName.FileName)
+    let sourceTokenizer = SourceTokenizer(CompilerArguments.getDefineSymbols fileName project, fileName)
 
     let handleConfigurationChanged =
         EventHandler
@@ -703,7 +689,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
         let defines =
             if (this.Document = null) then List.empty
-            else getDefineSymbols(project)
+            else CompilerArguments.getDefineSymbols fileName project
 
         FSharpSyntaxModeInternals.FSharpSpanParser(this, ss, defines) :> SyntaxMode.SpanParser
 
