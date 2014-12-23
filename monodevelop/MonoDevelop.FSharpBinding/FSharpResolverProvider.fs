@@ -33,13 +33,13 @@ type FSharpResolverProvider() =
         let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
 
         let results =
-            asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
+            async {
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
                 let! fsSymbolUse = tyRes.GetSymbol(line, col, lineStr)
-                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
+                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr)
                 let domRegion =
                     match findDeclarationResult with
                     | FSharpFindDeclResult.DeclFound(m) ->
@@ -51,19 +51,21 @@ type FSharpResolverProvider() =
                         | FSharpFindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
                         | FSharpFindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
                         | FSharpFindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)
-                        match fsSymbolUse.Symbol.Assembly.FileName with
+
+                        match fsSymbolUse with
+                        | Some symbolUse ->
+                            match symbolUse.Symbol.Assembly.FileName with
+                            | None -> DomRegion.Empty
+                            | Some filename -> DomRegion(filename, 0, 0)
                         | None -> DomRegion.Empty
-                        | Some filename -> DomRegion(filename, 0, 0)
 
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
                 let lastIdent = Symbols.lastIdent col lineStr
                 let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, domRegion)
                 return resolveResult, domRegion }
-        match Async.RunSynchronously (results, ServiceSettings.blockingTimeout) with
-        | Some (res, dom) ->
-            region <- dom
-            res
-        | _ -> null
+        let res, dom = Async.RunSynchronously (results, ServiceSettings.blockingTimeout)
+        region <- dom
+        res
 
       with exn ->
         LoggingService.LogError("ResolverProvider: Exception while retrieving resolve result", exn)
