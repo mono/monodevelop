@@ -34,12 +34,12 @@ type FSharpResolverProvider() =
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource) |> AsyncMaybe.liftAsync
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
                 let! fsSymbolUse = tyRes.GetSymbol(line, col, lineStr)
-                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
+                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
                 let domRegion =
                     match findDeclarationResult with
                     | FSharpFindDeclResult.DeclFound(m) ->
