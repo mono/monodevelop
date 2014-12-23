@@ -389,7 +389,7 @@ module SymbolTooltips =
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function, needs FCS support
-            let signature = func.FullType.Format symbol.DisplayContext
+            let signature = escapeText <|func.FullType.Format symbol.DisplayContext
             let summary = getSummaryFromSymbol func backUpSig
             ToolTip(signature, summary)
 
