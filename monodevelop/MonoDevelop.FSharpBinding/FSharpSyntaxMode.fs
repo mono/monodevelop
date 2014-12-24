@@ -259,7 +259,7 @@ module FSharpSyntaxModeInternals =
                 base.ScanSpan(&i)
 
 
-open MonoDevelop.FSharp.FSharpSymbolHelper
+open MonoDevelop.FSharp.Symbols
 [<AutoOpen>]
 module internal Patterns =
     type TokenSymbol = 

@@ -13,9 +13,9 @@ open MonoDevelop.Ide
 open MonoDevelop.SourceEditor
 open MonoDevelop.Ide.CodeCompletion
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open MonoDevelop.FSharp.FSharpSymbolHelper
+open MonoDevelop.FSharp.Symbols
 open ExtCore.Control
-open SymbolTooltips
+open Symbols
 
 /// Resolves locations to tooltip items, and orchestrates their display.
 /// We resolve language items to an NRefactory symbol.
@@ -110,7 +110,7 @@ type FSharpTooltipProvider() =
                             // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
                             match symbol with
                             | Some s -> 
-                                 let tt = getTooltipFromSymbolUse s backupSig
+                                 let tt = SymbolTooltips.getTooltipFromSymbolUse s backupSig
                                  match tt with
                                  | ToolTip(signature, summary) ->
                                      //get the TextSegment the the symbols range occupies
@@ -149,7 +149,7 @@ type FSharpTooltipProvider() =
         // ToolTipText for the old tooltips and (string * XmlDoc) for the new tooltips
         match item.Item with 
         | :? FSharpToolTipText as titem ->
-            let tooltip = TipFormatter.formatTip(titem)
+            let tooltip = TooltipFormatting.formatTip(titem)
             let (signature, comment) = 
                 match tooltip with
                 | [signature,comment] -> signature,comment
@@ -175,8 +175,8 @@ type FSharpTooltipProvider() =
             | Lookup(key, potentialFilename) ->
                 let summary = 
                     maybe {let! filename = potentialFilename
-                           let! markup = TipFormatter.findDocForEntity(filename, key)
-                           let summary = Tooltips.getTooltip Styles.simpleMarkup markup
+                           let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                           let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
                            return summary}
                 summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
             | EmptyDoc -> ()
