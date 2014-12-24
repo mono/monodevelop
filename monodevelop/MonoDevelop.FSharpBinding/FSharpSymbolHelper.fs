@@ -1,4 +1,4 @@
-﻿module MonoDevelop.FSharp.FSharpSymbolHelper
+﻿namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.Reflection
@@ -6,6 +6,22 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
 open MonoDevelop.Ide
 open MonoDevelop.Components
+
+module Symbols =
+    ///Given a column and line string returns the identifier portion of the string
+    let lastIdent column lineString =
+        match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
+        | Some (_, identIsland) -> Seq.last identIsland
+        | None -> ""
+
+    ///Returns a TextSegment that is trimmed to only include the identifier
+    let getTextSegment (doc:TextDocument) (symbolUse:FSharpSymbolUse) column line =
+        let lastIdent = lastIdent  column line
+        let (startLine, startColumn), (endLine, endColumn) = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+
+        let startOffset = doc.LocationToOffset(startLine, startColumn+1)
+        let endOffset = doc.LocationToOffset(endLine, endColumn+1)
+        TextSegment.FromBounds(startOffset, endOffset)
 
 [<AutoOpen>]
 module FSharpTypeExt =
