@@ -75,7 +75,7 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
     override x.CreateTooltipInformation (_smartWrap: bool) = 
       
       Debug.WriteLine("computing tooltip for {0}", name)
-      let description = TipFormatter.formatTip (getTip())
+      let description = TooltipFormatting.formatTip (getTip())
       match description with
       | [signature,comment] -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature)
       //With multiple tips just take the head.  
@@ -106,7 +106,7 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
         // Get the lower part of the text for the display of an overload
         let meth = meths.[overload]
         let signature, comment =
-            match TipFormatter.formatTip meth.Description with
+            match TooltipFormatting.formatTip meth.Description with
             | [signature,comment] -> signature,comment
             //With multiple tips just take the head.  
             //This shouldnt happen anyway as we split them in the resolver provider
@@ -117,7 +117,7 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
                 meth.Parameters |> Array.mapi (fun i param -> 
                     let paramDesc = 
                         // Sometimes the parameter decription is hidden in the XML docs
-                        match TipFormatter.extractParamTip param.ParameterName meth.Description with 
+                        match TooltipFormatting.extractParamTip param.ParameterName meth.Description with 
                         | Some(tip) -> tip
                         | None -> param.Description
                     let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
@@ -205,6 +205,18 @@ type FSharpTextEditorCompletion() =
                       CompletionCategory = compilerIdentifierCategory,
                       DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> _ ]
 
+  // Until we build some functionality around a reversing tokenizer that detect this and other contexts
+  // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
+  let isAnAutoProperty (editor: Mono.TextEditor.TextEditorData) offset =
+    let lastStart = editor.FindPrevWordOffset(offset)
+    let lastEnd = editor.FindCurrentWordEnd(lastStart)
+    let lastWord = editor.GetTextBetween(lastStart, lastEnd)
+
+    let prevStart = editor.FindPrevWordOffset(lastStart)
+    let prevEnd = editor.FindCurrentWordEnd(prevStart)
+    let previousWord = editor.GetTextBetween(prevStart, prevEnd)
+    lastWord = "get" && previousWord = "with"
+
   override x.Initialize() = 
       do base.Document.Editor.IndentationTracker <- FSharpIndentationTracker(base.Document) :> Mono.TextEditor.IIndentationTracker 
       base.Initialize()
@@ -231,10 +243,10 @@ type FSharpTextEditorCompletion() =
               elif (ch = '(' || ch = '<') then i
               else loop depth (i-1) 
           loop 0 (offset-1)
-
-      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 then null 
+      
+      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty doc.Editor offset then null 
       else
-      Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
+      LoggingService.LogDebug("FSharpTextEditorCompletion: Getting Parameter Info, startOffset = {0}", startOffset)
 
       let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
 
@@ -247,12 +259,13 @@ type FSharpTextEditorCompletion() =
                      return methsOpt }, ServiceSettings.blockingTimeout)
 
       match methsOpt with 
-      | None -> Debug.WriteLine("Getting Parameter Info: no methods")
-                null 
-      | Some(name, meths) -> Debug.WriteLine("Getting Parameter Info: methods!")
-                             new ParameterDataProvider (startOffset, name, meths) :> _ 
+      | Some(name, meths) when meths.Length > 0 -> 
+          LoggingService.LogInfo ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
+          new ParameterDataProvider (startOffset, name, meths) :> _ 
+      | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")
+             null 
     with ex ->
-        LoggingService.LogError ("FSharp, Error in HandleParameterCompletion", ex)
+        LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
         null
 
   override x.KeyPress (key, keyChar, modifier) =
@@ -310,22 +323,23 @@ type FSharpTextEditorCompletion() =
           | _ -> true
 
       Debug.WriteLine("allowAnyStale = {0}", allowAnyStale)
-
       x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto = true, ctrlSpace = false)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
   override x.CodeCompletionCommand(context) =
-      x.CodeCompletionCommandImpl(context, allowAnyStale = true, dottedInto = false, ctrlSpace = true)
+      let completionIsDot = x.Document.Editor.GetCharAt(context.TriggerOffset - 1) = '.'
+      x.CodeCompletionCommandImpl(context, allowAnyStale = true, dottedInto = completionIsDot, ctrlSpace = true)
 
   member x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto, ctrlSpace) =
     let result = CompletionDataList()
     let doc = x.Document
+    let fileName = doc.FileName.FullPath.ToString()
     try
-      let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
+      let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, fileName)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
       let typedParseResults = 
-          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout)
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, fileName, doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout)
           |> Async.RunSynchronously
       lastCharDottedInto <- dottedInto
       match typedParseResults with
@@ -341,7 +355,7 @@ type FSharpTextEditorCompletion() =
         | _ -> ()
     with
     | e ->
-        LoggingService.LogError ("FSharp, An error occured in CodeCompletionCommandImpl", e)
+        LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
         result.Add(FSharpErrorCompletionData(e))
     
     // Add the code templates and compiler generated identifiers
@@ -367,7 +381,7 @@ type FSharpTextEditorCompletion() =
   // > 0 is the index of the parameter (1-based)
   override x.GetCurrentParameterIndex (startOffset: int) = 
       let editor = x.Document.Editor
-      let cursor = editor.Caret.Offset
+      let cursor = editor.Caret.Offset 
       let i = startOffset // the original context
       if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1 
       elif (i + 1 = cursor && (match editor.Document.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then 0
