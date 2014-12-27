@@ -22,6 +22,18 @@ function! s:get_visual_selection()
   return join(lines, "\n")
 endfunction
 
+" Vim73-compatible version of pyeval
+" taken from: http://stackoverflow.com/questions/13219111/how-to-embed-python-expression-into-s-command-in-vim
+function s:pyeval(expr)
+    if version > 703
+        return pyeval(a:expr)
+    endif
+python << EOF
+import json
+vim.command('return '+json.dumps(eval(vim.eval('a:expr'))))
+EOF
+endfunction
+
 
 function! fsharpbinding#python#LoadLogFile()
 python << EOF
@@ -67,8 +79,8 @@ function! fsharpbinding#python#RunProject(...)
             execute '!mono ' . fnameescape(a:1)
         elseif exists('b:proj_file')
             let cmd = 'Statics.projects["' . b:proj_file . '"]["Output"]'
-            echom "runproj pre pyeval " cmd
-            let target = pyeval(cmd)
+            echom "runproj pre s:pyeval " cmd
+            let target = s:pyeval(cmd)
             echom "target" target
             execute '!mono ' . fnameescape(target)
         else
@@ -97,7 +109,6 @@ EOF
     let b:fsharp_buffer_changed = 0
 endfunction
 
-
 " probable loclist format
 " {'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or function call and instead saw an expression.'}
 
@@ -107,7 +118,7 @@ function! fsharpbinding#python#CurrentErrors()
     let result = []
     let buf = bufnr('%')
     try
-        let errs = pyeval('fsautocomplete.errors_current()')
+        let errs = s:pyeval('fsautocomplete.errors_current()')
         for e in errs
             call add(result,
                 \{'lnum': e['StartLineAlternate'],
@@ -254,7 +265,7 @@ EOF
 endfunction
 
 function! fsharpbinding#python#FsiPurge()
-    let prelude = pyeval('fsi.purge()')
+    let prelude = s:pyeval('fsi.purge()')
     for l in l:prelude
         echom l
     endfor
@@ -286,7 +297,7 @@ function! fsharpbinding#python#FsiEval(text)
     "clear anything in the buffer
         call fsharpbinding#python#FsiPurge()
         call fsharpbinding#python#FsiSend(a:text)
-        let lines = pyeval('fsi.read_until_prompt()')
+        let lines = s:pyeval('fsi.read_until_prompt()')
         for l in lines
             echom l
         endfor
