@@ -1475,53 +1475,53 @@
     <EmbeddedResource Include="icons\light\status-waiting-5-14%402x.png">
       <LogicalName>status-waiting-5-light-14@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-osx-16.png">
-      <LogicalName>component-folder-osx-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-component-mac-16.png">
+      <LogicalName>folder-component-mac-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-osx-16%402x.png">
-      <LogicalName>component-folder-osx-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-component-mac-16%402x.png">
+      <LogicalName>folder-component-mac-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-win-16.png">
-      <LogicalName>component-folder-win-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-component-win-16.png">
+      <LogicalName>folder-component-win-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\component-folder-win-16%402x.png">
-      <LogicalName>component-folder-win-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-component-win-16%402x.png">
+      <LogicalName>folder-component-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-folder-osx-16.png">
-      <LogicalName>generic-folder-osx-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-generic-mac-16.png">
+      <LogicalName>folder-generic-mac-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-folder-osx-16%402x.png">
-      <LogicalName>generic-folder-osx-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-generic-mac-16%402x.png">
+      <LogicalName>folder-generic-mac-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-folder-win-16.png">
-      <LogicalName>generic-folder-win-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-generic-win-16.png">
+      <LogicalName>folder-generic-win-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\generic-folder-win-16%402x.png">
-      <LogicalName>generic-folder-win-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-generic-win-16%402x.png">
+      <LogicalName>folder-generic-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\special-folder-osx-16.png">
-      <LogicalName>special-folder-osx-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-special-mac-16.png">
+      <LogicalName>folder-special-mac-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\special-folder-osx-16%402x.png">
-      <LogicalName>special-folder-osx-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-special-mac-16%402x.png">
+      <LogicalName>folder-special-mac-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\special-folder-win-16.png">
-      <LogicalName>special-folder-win-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-special-win-16.png">
+      <LogicalName>folder-special-win-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\special-folder-win-16%402x.png">
-      <LogicalName>special-folder-win-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-special-win-16%402x.png">
+      <LogicalName>folder-special-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-osx-16.png">
-      <LogicalName>web-reference-folder-osx-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-web-reference-mac-16.png">
+      <LogicalName>folder-web-reference-mac-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-osx-16%402x.png">
-      <LogicalName>web-reference-folder-osx-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-web-reference-mac-16%402x.png">
+      <LogicalName>folder-web-reference-mac-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-win-16.png">
-      <LogicalName>web-reference-folder-win-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-web-reference-win-16.png">
+      <LogicalName>folder-web-reference-win-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\web-reference-folder-win-16%402x.png">
-      <LogicalName>web-reference-folder-win-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\folder-web-reference-win-16%402x.png">
+      <LogicalName>folder-web-reference-win-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pad-help-16.png">
       <LogicalName>pad-help-light-16.png</LogicalName>
