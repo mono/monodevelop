@@ -55,7 +55,7 @@ namespace MonoDevelop.MacIntegration
 {
 	public class MacPlatformService : PlatformService
 	{
-		const string monoDownloadUrl = "http://www.go-mono.com/mono-downloads/download.html";
+		const string monoDownloadUrl = "http://www.mono-project.com/download/";
 
 		TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
