@@ -1,15 +1,22 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	abstract class LibApr
 	{
-		public static readonly int APR_OS_DEFAULT = 0xFFF;
-		public static readonly int APR_WRITE = 2;
-		public static readonly int APR_CREATE = 4;
-		public static readonly int APR_TRUNCATE = 16;
+		public const int APR_OS_DEFAULT = 0xFFF;
+		public const int APR_WRITE = 2;
+		public const int APR_CREATE = 4;
+		public const int APR_TRUNCATE = 16;
+
+		public const int APR_OS_START_ERROR = 20000;
+		public const int APR_OS_ERRSPACE_SIZE = 50000;
+		public const int APR_OS_START_STATUS =(APR_OS_START_ERROR + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USERERR =(APR_OS_START_STATUS + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 		
 		public static LibApr GetLib (int ver)
 		{
@@ -56,12 +63,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public abstract IntPtr pcalloc (IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size);
 		public abstract int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
 		public abstract int file_close (IntPtr file);
-		
-		public const int APR_OS_START_ERROR = 20000;
-		public const int APR_OS_ERRSPACE_SIZE = 50000;
-		public const int APR_OS_START_STATUS =(APR_OS_START_ERROR + APR_OS_ERRSPACE_SIZE);
-		public const int APR_OS_START_USERERR =(APR_OS_START_STATUS + APR_OS_ERRSPACE_SIZE);
-		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 	}
 
 	sealed class LibApr0: LibApr
