@@ -583,6 +583,9 @@ namespace MonoDevelop.VersionControl.Views
 					var rev = (Revision)logstore.GetValue (iter, 0);
 					if (rev.ToString () == value.ToString ()) {
 						treeviewLog.Selection.SelectIter (iter);
+						TreePath path = logstore.GetPath (iter);
+						treeviewLog.ScrollToCell (path, treeviewLog.Columns[0], true, 0, 0);
+						treeviewLog.SetCursorOnCell (path, treeviewLog.Columns[0], textRenderer, true);
 						return;
 					}
 				} while (treeviewLog.Model.IterNext (ref iter));
