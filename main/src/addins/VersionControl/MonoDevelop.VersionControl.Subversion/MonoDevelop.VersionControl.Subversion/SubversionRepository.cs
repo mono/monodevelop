@@ -217,8 +217,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			// svn will successfully revert the first entry (the directory) and then throw an error when trying to revert the
 			// second and third entries because by reverting the directory the files are implicitly reverted. Try to work around
 			// this issue.
-			Array.Sort<FilePath>(localPaths);
-			Array.Reverse (localPaths);
+			Array.Sort<FilePath> (localPaths, (a, b) => b.CompareTo (a));
 			Svn.Revert (localPaths, recurse, monitor);
 		}
 
