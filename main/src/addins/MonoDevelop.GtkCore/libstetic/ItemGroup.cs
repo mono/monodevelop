@@ -34,17 +34,21 @@ namespace Stetic {
 				if (refname != "") {
 					if (refname.IndexOf ('.') != -1) {
 						ItemDescriptor desc = (ItemDescriptor) Registry.LookupItem (refname);
+						items.Remove (desc.Name);
 						items.Add (desc.Name, desc);
 					} else {
 						ItemDescriptor desc = (ItemDescriptor) klass[refname];
+						items.Remove (desc.Name);
 						items.Add (desc.Name, desc);
 					}
 					continue;
 				}
 
 				ItemDescriptor idesc = klass.CreateItemDescriptor ((XmlElement)item, this);
-				if (idesc != null)
+				if (idesc != null) {
+					items.Remove (idesc.Name);
 					items.Add (idesc.Name, idesc);
+				}
 			}
 		}
 
