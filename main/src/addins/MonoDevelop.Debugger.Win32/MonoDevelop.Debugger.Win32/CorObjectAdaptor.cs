@@ -817,10 +817,10 @@ namespace MonoDevelop.Debugger.Win32
 
 				CorReferenceValue refVal = obj.CastToReferenceValue ();
 				if (refVal != null) {
+					cctx.Session.WaitUntilStopped ();
 					if (refVal.IsNull)
 						return refVal;
 					else {
-						cctx.Session.WaitUntilStopped ();
 						return GetRealObject (cctx, refVal.Dereference ());
 					}
 				}

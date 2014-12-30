@@ -1099,6 +1099,7 @@ namespace MonoDevelop.Debugger.Win32
 				process.OnEvalException -= exceptionHandler;
 			}
 
+			WaitUntilStopped ();
 			if (exception != null) {
 /*				ValueReference<CorValue, CorType> msg = ctx.Adapter.GetMember (ctx, val, "Message");
 				if (msg != null) {
