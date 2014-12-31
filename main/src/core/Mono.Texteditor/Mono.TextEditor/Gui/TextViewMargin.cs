@@ -1398,9 +1398,9 @@ namespace Mono.TextEditor
 
 			double ypos;
 			if (spaceOrTab == ' ') {
-				ypos = (int)(y + (LineHeight - dotThickness) / 2);
+				ypos = System.Math.Floor (y + (LineHeight - dotThickness) / 2);
 			} else {
-				ypos = 0.5 + (int)(y + LineHeight / 2);
+				ypos = 0.5 + System.Math.Floor (y + LineHeight / 2);
 			}
 
 			var showOnlySelected = textEditor.Options.ShowWhitespaces != ShowWhitespaces.Always;
@@ -1452,7 +1452,7 @@ namespace Mono.TextEditor
 					col = selected ? SelectionColor.Foreground : foregroundColor;
 				}
 
-				if (firstDraw  || (lastColor.R != col.R && lastColor.G != col.G && lastColor.B != col.B)) {
+				if (firstDraw || (lastColor.R != col.R && lastColor.G != col.G && lastColor.B != col.B)) {
 					ctx.SetSourceRGBA (col.R, col.G, col.B, whitespaceMarkerAlpha);
 					lastColor = col;
 					firstDraw = false;
