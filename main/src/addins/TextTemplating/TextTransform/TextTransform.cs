@@ -76,8 +76,14 @@ namespace Mono.TextTemplating
 			}
 			
 			if (string.IsNullOrEmpty (outputFile)) {
-				Console.Error.WriteLine ("No output file specified; using default.");
 				outputFile = inputFile;
+				if (Path.HasExtension (outputFile)) {
+					var dir = Path.GetDirectoryName (outputFile);
+					var fn = Path.GetFileNameWithoutExtension (outputFile);
+					outputFile = Path.Combine (dir, fn + ".txt");
+				} else {
+					outputFile = outputFile + ".txt";
+				}
 			}
 
 			//FIXME: implement quoting and escaping for values
