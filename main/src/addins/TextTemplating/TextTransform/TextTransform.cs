@@ -64,11 +64,6 @@ namespace Mono.TextTemplating
 			
 			var remainingArgs = optionSet.Parse (args);
 			
-			if (string.IsNullOrEmpty (outputFile)) {
-				Console.Error.WriteLine ("No output file specified.");
-				return -1;
-			}
-			
 			if (remainingArgs.Count != 1) {
 				Console.Error.WriteLine ("No input file specified.");
 				return -1;
@@ -80,6 +75,17 @@ namespace Mono.TextTemplating
 				return -1;
 			}
 			
+			if (string.IsNullOrEmpty (outputFile)) {
+				outputFile = inputFile;
+				if (Path.HasExtension (outputFile)) {
+					var dir = Path.GetDirectoryName (outputFile);
+					var fn = Path.GetFileNameWithoutExtension (outputFile);
+					outputFile = Path.Combine (dir, fn + ".txt");
+				} else {
+					outputFile = outputFile + ".txt";
+				}
+			}
+
 			//FIXME: implement quoting and escaping for values
 			foreach (var par in parameters) {
 				var split = par.Split ('!');
