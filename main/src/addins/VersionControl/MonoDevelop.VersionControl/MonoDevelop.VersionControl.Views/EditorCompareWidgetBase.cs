@@ -127,12 +127,12 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			foreach (var attachedAdjustment in attachedVAdjustments) {
-				Connect (attachedAdjustment, vAdjustment);
+				Connect (attachedAdjustment, vAdjustment, false);
 			}
 
 			hAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 			foreach (var attachedAdjustment in attachedHAdjustments) {
-				Connect (attachedAdjustment, hAdjustment);
+				Connect (attachedAdjustment, hAdjustment, true);
 			}
 
 			hScrollBars = new Gtk.HScrollbar[attachedHAdjustments.Length];
@@ -341,21 +341,21 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		void Connect (Adjustment fromAdj, Adjustment toAdj)
+		void Connect (Adjustment fromAdj, Adjustment toAdj, bool horizontal)
 		{
 			fromAdj.Changed += AdjustmentChanged;
 			fromAdj.ValueChanged += delegate {
 				double fromValue = fromAdj.Value / (fromAdj.Upper - fromAdj.Lower);
 				if (toAdj.Value != fromValue)
 					toAdj.Value = fromValue;
-				RedrawMiddleAreas ();
+				else if (!horizontal)
+					RedrawMiddleAreas ();
 			};
 
 			toAdj.ValueChanged += delegate {
 				double toValue = System.Math.Round (toAdj.Value * (fromAdj.Upper - fromAdj.Lower)); 
 				if (fromAdj.Value != toValue)
 					fromAdj.Value = toValue;
-				RedrawMiddleAreas ();
 			};
 		}
 
