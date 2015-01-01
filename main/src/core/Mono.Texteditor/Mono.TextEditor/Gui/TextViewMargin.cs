@@ -190,20 +190,20 @@ namespace Mono.TextEditor
 			RemoveCachedLine (e.Line);
 		}
 
-		List<DocumentLine> linesToRemove = new List<DocumentLine> ();
-
 		void HandleVAdjustmentValueChanged (object sender, EventArgs e)
 		{
-			int startLine = (int)(textEditor.GetTextEditorData ().VAdjustment.Value / LineHeight);
-			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 1;
+			//We don't want to invalidate 5 lines before start
+			int startLine = YToLine (textEditor.GetTextEditorData ().VAdjustment.Value) - 5;
+			//We don't want to invalidate 5 lines after end(+10 because start is already -5)
+			int endLine = (int)(startLine + textEditor.GetTextEditorData ().VAdjustment.PageSize / LineHeight) + 10;
+			List<DocumentLine> linesToRemove = new List<DocumentLine> ();
 			foreach (DocumentLine line in layoutDict.Keys) {
 				int curLine = line.LineNumber;
-				if (startLine - 5 >= curLine || endLine + 5 <= curLine) {
+				if (startLine >= curLine || endLine <= curLine) {
 					linesToRemove.Add (line);
 				}
 			}
-			linesToRemove.ForEach (line => RemoveCachedLine (line));
-			linesToRemove.Clear ();
+			linesToRemove.ForEach (RemoveCachedLine);
 			
 			textEditor.RequestResetCaretBlink ();
 		}
