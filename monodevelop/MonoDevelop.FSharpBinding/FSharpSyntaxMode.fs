@@ -568,6 +568,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
     // Mutable Local Variables
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
+    let mutable colourizations = None
 
     let handlePropertyChanged =
         EventHandler<PropertyChangedEventArgs>
@@ -605,6 +606,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
     let getAndProcessSymbols (pd:ParseAndCheckResults) =
         async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
                do symbolsInFile <- symbols
+               do colourizations <- pd.GetExtraColorizations()
+
                if document <> null &&
                   document.Editor <> null &&
                   document.Editor.Parent <> null &&
@@ -621,7 +624,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
                         |> tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * FSharpTokenColorKind)[] option) (token: FSharpTokenInfo) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
@@ -631,7 +634,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
                 |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
-            match extraColorInfo with
+            match colourizations with
             | None -> None
             | Some(extraColourInfo) ->
                 extraColourInfo
@@ -669,11 +672,11 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
         | Some t, s -> Some(t, s)
         | _ -> None
 
-    let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
+    let getLexedTokens (style, line:DocumentLine, offset, lineText) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         let tokens = 
             List.unfold (scanToken tokenizer) 0L
-            |> List.map (makeChunk line.LineNumber style offset extraColorInfo)
+            |> List.map (makeChunk line.LineNumber style offset)
         tokens |> Seq.ofList
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
@@ -695,17 +698,11 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
 
     override this.GetChunks(style, line, offset, length) =
         try
-            let extraColorInfo =
-                maybe { let! document = Option.ofNull document
-                        let! parsedDocument = Option.ofNull document.ParsedDocument
-                        let! pc = tryCast<ParseAndCheckResults> parsedDocument.Ast
-                        return! pc.GetExtraColorizations() }
-
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset, length, styleName))
             | PreProcessorCode _ -> base.GetChunks(style, line, offset, length)
             | OtherCode (_, lineText) when semanticHighlightingEnabled -> 
-                let tokens = getLexedTokens(style, line, offset, lineText, extraColorInfo)
+                let tokens = getLexedTokens(style, line, offset, lineText)
                 if (tokens |> Seq.isEmpty || (tokens |> Seq.last).EndOffset < offset + lineText.Length ) then
                     base.GetChunks(style, line, offset, length)
                 else
