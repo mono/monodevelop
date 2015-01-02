@@ -194,11 +194,10 @@ namespace MonoDevelop.GtkCore
 		
 		public static bool HasDesignedObjects (Project project)
 		{
-			if (project == null)
+			if (project == null || !SupportsDesigner (project))
 				return false;
 
-			string stetic_file = Path.Combine (Path.Combine (project.BaseDirectory, "gtk-gui"), "gui.stetic");
-			return SupportsDesigner (project) && File.Exists (stetic_file);
+			return File.Exists (Path.Combine (project.BaseDirectory, "gtk-gui", "gui.stetic"));
 		}
 
 		public static bool SupportsDesigner (Project project)
@@ -223,12 +222,7 @@ namespace MonoDevelop.GtkCore
 			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
-			int idx = pref.StoredReference.IndexOf (",");
-			if (idx == -1)
-				return false;
-
-			string name = pref.StoredReference.Substring (0, idx).Trim ();
-			return name == "gtk-sharp";
+			return pref.StoredReference.StartsWith ("gtk-sharp,");
 		}
 
 		static bool HasGtkReference (DotNetProject project)
