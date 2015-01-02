@@ -167,6 +167,10 @@
     <Parser class="MonoDevelop.FSharp.FSharpParser"  mimeType = "text/x-fsharp" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/TypeSystem/FoldingParser">
+    <Parser class = "MonoDevelop.FSharp.FSharpFoldingParser" mimeType="text/x-fsharp" />
+  </Extension>
+
   <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
     <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpTooltipProvider" mimeType="text/x-fsharp" />
   </Extension>
