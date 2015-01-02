@@ -213,8 +213,13 @@ namespace MonoDevelop.GtkCore
 		{
 			if (project == null || project.LanguageBinding == null || project.LanguageBinding.GetCodeDomProvider () == null)
 				return false;
+			if (project.ExtendedProperties.Contains ("GtkRefactoringSupported"))
+				return (bool)project.ExtendedProperties ["GtkRefactoringSupported"];
+
 			var testFileName = project.LanguageBinding.GetFileName ("test");
-			return CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
+			bool hasSupport = CodeGenerator.HasGenerator (DesktopService.GetMimeTypeForUri (testFileName));
+			project.ExtendedProperties ["GtkRefactoringSupported"] = hasSupport;
+			return hasSupport;
 		}
 		
 		static bool IsGtkReference (ProjectReference pref)
@@ -227,10 +232,17 @@ namespace MonoDevelop.GtkCore
 
 		static bool HasGtkReference (DotNetProject project)
 		{
+			if (project.ExtendedProperties.Contains ("GtkReferenceExists"))
+				return (bool)project.ExtendedProperties ["GtkReferenceExists"];
+
+			bool found = false;
 			foreach (ProjectReference pref in project.References)
-				if (IsGtkReference (pref))
-					return true;
-			return false;
+				if (IsGtkReference (pref)) {
+					found = true;
+					break;
+				}
+			project.ExtendedProperties ["GtkReferenceExists"] = found;
+			return found;
 		}
 		
 		public void ForceCodeGenerationOnBuild ()
