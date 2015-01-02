@@ -1868,5 +1868,55 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("dynamic {string}", val.TypeName);
 			Assert.AreEqual ("\"Hello dynamic objects!\"", val.Value);
 		}
+
+		[Test]
+		public void GetTypeTest ()
+		{
+			if (Session.GetType ().Name == "CorDebuggerSession") {
+				Assert.Ignore ("TODO: GetType() is not implemented in CorDebugger");
+			}
+			ObjectValue val;
+			val = Eval ("a.GetType()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.AreEqual ("{A}", val.Value);
+		
+			val = Eval ("this.GetType()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
+		}
+
+		[Test]
+		[Ignore ("Operator \"is\" is not implemented")]
+		public void IsOperatorTest ()
+		{
+			ObjectValue val;
+			val = Eval ("b is A");
+			Assert.AreEqual ("bool", val.TypeName);
+			Assert.AreEqual ("true", val.Value);
+
+			val = Eval ("b is B");
+			Assert.AreEqual ("bool", val.TypeName);
+			Assert.AreEqual ("true", val.Value);
+
+			val = Eval ("b is C");
+			Assert.AreEqual ("bool", val.TypeName);
+			Assert.AreEqual ("false", val.Value);
+		}
 	}
 }
