@@ -628,7 +628,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
             | None -> None
             | Some(symbols) ->
                 symbols
-                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
+                |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
             match extraColorInfo with
