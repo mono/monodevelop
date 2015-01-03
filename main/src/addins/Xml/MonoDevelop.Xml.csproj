@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -121,16 +121,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\prefs-xml-16.png">
-      <LogicalName>prefs-xml-light-16.png</LogicalName>
+      <LogicalName>prefs-xml-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-xml-16%402x.png">
-      <LogicalName>prefs-xml-light-16@2x.png</LogicalName>
+      <LogicalName>prefs-xml-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-xml-schemas-16.png">
-      <LogicalName>prefs-xml-schemas-light-16.png</LogicalName>
+      <LogicalName>prefs-xml-schemas-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-xml-schemas-16%402x.png">
-      <LogicalName>prefs-xml-schemas-light-16@2x.png</LogicalName>
+      <LogicalName>prefs-xml-schemas-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Formatting\MonoXmlPolicy.xml">
       <LogicalName>MonoXmlPolicy.xml</LogicalName>

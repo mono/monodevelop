@@ -183,28 +183,28 @@
       <LogicalName>gettext-overlay-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
-      <LogicalName>done-light-16.png</LogicalName>
+      <LogicalName>done-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16%402x.png">
-      <LogicalName>done-light-16@2x.png</LogicalName>
+      <LogicalName>done-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16.png">
-      <LogicalName>error-light-16.png</LogicalName>
+      <LogicalName>error-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16%402x.png">
-      <LogicalName>error-light-16@2x.png</LogicalName>
+      <LogicalName>error-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16.png">
-      <LogicalName>warning-light-16.png</LogicalName>
+      <LogicalName>warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16%402x.png">
-      <LogicalName>warning-light-16@2x.png</LogicalName>
+      <LogicalName>warning-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16.png">
-      <LogicalName>prefs-language-light-16.png</LogicalName>
+      <LogicalName>prefs-language-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16%402x.png">
-      <LogicalName>prefs-language-light-16@2x.png</LogicalName>
+      <LogicalName>prefs-language-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

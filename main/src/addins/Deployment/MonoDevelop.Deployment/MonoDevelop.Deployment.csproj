@@ -168,22 +168,22 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\package-16.png">
-      <LogicalName>package-light-16.png</LogicalName>
+      <LogicalName>package-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-16%402x.png">
-      <LogicalName>package-light-16@2x.png</LogicalName>
+      <LogicalName>package-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-32.png">
-      <LogicalName>package-light-32.png</LogicalName>
+      <LogicalName>package-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-32%402x.png">
-      <LogicalName>package-light-32@2x.png</LogicalName>
+      <LogicalName>package-32@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48.png">
-      <LogicalName>package-light-48.png</LogicalName>
+      <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48%402x.png">
-      <LogicalName>package-light-48@2x.png</LogicalName>
+      <LogicalName>package-48@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>

@@ -42,11 +42,11 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	public class QuickTaskOverviewMode : DrawingArea
 	{
-		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-light-16.png");
-		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-light-16.png");
-		static Xwt.Drawing.Image warningImage = Xwt.Drawing.Image.FromResource ("issues-warning-light-16.png");
-		static Xwt.Drawing.Image errorImage = Xwt.Drawing.Image.FromResource ("issues-error-light-16.png");
-		static Xwt.Drawing.Image suggestionImage = Xwt.Drawing.Image.FromResource ("issues-suggestion-light-16.png");
+		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-16.png");
+		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-16.png");
+		static Xwt.Drawing.Image warningImage = Xwt.Drawing.Image.FromResource ("issues-warning-16.png");
+		static Xwt.Drawing.Image errorImage = Xwt.Drawing.Image.FromResource ("issues-error-16.png");
+		static Xwt.Drawing.Image suggestionImage = Xwt.Drawing.Image.FromResource ("issues-suggestion-16.png");
 
 		public static Xwt.Drawing.Image SuggestionImage {
 			get {
