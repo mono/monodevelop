@@ -167,22 +167,22 @@
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\light\package-16.png">
+    <EmbeddedResource Include="icons\package-16.png">
       <LogicalName>package-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-16%402x.png">
+    <EmbeddedResource Include="icons\package-16%402x.png">
       <LogicalName>package-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-32.png">
+    <EmbeddedResource Include="icons\package-32.png">
       <LogicalName>package-light-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-32%402x.png">
+    <EmbeddedResource Include="icons\package-32%402x.png">
       <LogicalName>package-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-48.png">
+    <EmbeddedResource Include="icons\package-48.png">
       <LogicalName>package-light-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-48%402x.png">
+    <EmbeddedResource Include="icons\package-48%402x.png">
       <LogicalName>package-light-48@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

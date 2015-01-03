@@ -564,15 +564,15 @@
                 <File Name="NGit.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NGit.dll" />
                 <File Name="NSch.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\NSch.dll" />
                 <File Name="Sharpen.dll" Source="$(var.BuildRoot)\AddIns\VersionControl\Sharpen.dll" />
-                <File Name="comment-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\comment-16.png" />
+                <File Name="comment-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\comment-16.png" />
                 <File Name="menu_add.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_add.png" />
-                <File Name="commit-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\commit-16.png" />
-                <File Name="diff-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\diff-16.png" />
+                <File Name="commit-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\commit-16.png" />
+                <File Name="diff-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\diff-16.png" />
                 <File Name="menu_log.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_log.png" />
-                <File Name="remote-status-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\remote-status-16.png" />
+                <File Name="remote-status-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\remote-status-16.png" />
                 <File Name="menu_remove.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_remove.png" />
                 <File Name="menu_resolve.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_resolve.png" />
-                <File Name="revert-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\light\revert-16.png" />
+                <File Name="revert-light-16.png" Source="$(var.BuildRoot)\AddIns\VersionControl\revert-16.png" />
                 <File Name="menu_status.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_status.png" />
                 <File Name="menu_update.png" Source="$(var.BuildRoot)\AddIns\VersionControl\menu_update.png" />
               </Component>
