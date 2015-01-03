@@ -41,39 +41,39 @@ namespace MonoDevelop.TextTemplating
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				var host = new ProjectFileTemplatingHost (file);
-				
-				var dnp = file.Project as DotNetProject;
-				if (dnp == null) {
-					var msg = "Precompiled T4 templates are only supported in .NET projects";
-					result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
-					monitor.Log.WriteLine (msg);
-					return;
-				}
-				
-				var provider = dnp.LanguageBinding.GetCodeDomProvider ();
-				if (provider == null) {
-					var msg = "Precompiled T4 templates are only supported for .NET languages with CodeDOM providers";
-					result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
-					monitor.Log.WriteLine (msg);
-					return;
-				};
-				
-				var outputFile = file.FilePath.ChangeExtension (provider.FileExtension);
-				var encoding = System.Text.Encoding.UTF8;
-				string language;
-				string[] references;
-				string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
-				
-				string classNamespace = CustomToolService.GetFileNamespace (file, outputFile);
-				LogicalSetData ("NamespaceHint", classNamespace, result.Errors);
+				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
+					var dnp = file.Project as DotNetProject;
+					if (dnp == null) {
+						var msg = "Precompiled T4 templates are only supported in .NET projects";
+						result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
+						monitor.Log.WriteLine (msg);
+						return;
+					}
+					
+					var provider = dnp.LanguageBinding.GetCodeDomProvider ();
+					if (provider == null) {
+						var msg = "Precompiled T4 templates are only supported for .NET languages with CodeDOM providers";
+						result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
+						monitor.Log.WriteLine (msg);
+						return;
+					};
+					
+					var outputFile = file.FilePath.ChangeExtension (provider.FileExtension);
+					var encoding = System.Text.Encoding.UTF8;
+					string language;
+					string[] references;
+					string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+					
+					string classNamespace = CustomToolService.GetFileNamespace (file, outputFile);
+					LogicalSetData ("NamespaceHint", classNamespace, result.Errors);
 
-				host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out language, out references);
-				
-				result.GeneratedFilePath = outputFile;
-				result.Errors.AddRange (host.Errors);
-				foreach (var err in host.Errors)
-					monitor.Log.WriteLine (err);
+					host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out language, out references);
+					
+					result.GeneratedFilePath = outputFile;
+					result.Errors.AddRange (host.Errors);
+					foreach (var err in host.Errors)
+						monitor.Log.WriteLine (err);
+				}
 			}, result);
 		}
 		
