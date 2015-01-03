@@ -48,7 +48,7 @@ namespace Mono.TextTemplating
 		public TemplatingAppDomainRecycler.Handle GetHandle ()
 		{
 			lock (lockObj) {
-				if (domain == null || domain.UnusedHandles == 0) {
+				if (domain == null || domain.Domain == null || domain.UnusedHandles == 0) {
 					domain = new RecyclableAppDomain (name);
 				}
 				return domain.GetHandle ();
@@ -120,7 +120,10 @@ namespace Mono.TextTemplating
 					liveHandles--;
 					lh = liveHandles;
 				}
-				if (unusedHandles == 0 && lh == 0) {
+				//We must unload domain every time after using it for generation
+				//Otherwise we could not load new version of the project-generated 
+				//assemblies into it. So remove checking for unusedHandles == 0
+				if (lh == 0) {
 					UnloadDomain ();
 				}
 			}
