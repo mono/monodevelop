@@ -145,4 +145,8 @@
 	<Extension path="/MonoDevelop/Ide/SearchCategories">
 		<Class class="MonoDevelop.PackageManagement.SearchPackagesSearchCategory" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildExtensions">
+		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
+	</Extension>
 </ExtensionModel>

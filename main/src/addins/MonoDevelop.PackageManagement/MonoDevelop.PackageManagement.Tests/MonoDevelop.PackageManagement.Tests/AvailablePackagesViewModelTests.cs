@@ -75,10 +75,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateViewModel (FakeRegisteredPackageRepositories registeredPackageRepositories)
 		{
+			CreateSolution ();
+			CreateViewModel (registeredPackageRepositories, solution);
+		}
+
+		void CreateViewModel (
+			FakeRegisteredPackageRepositories registeredPackageRepositories,
+			FakePackageManagementSolution solution)
+		{
 			taskFactory = new FakeTaskFactory ();
 			var packageViewModelFactory = new FakePackageViewModelFactory ();
 			recentPackageRepository = new FakeRecentPackageRepository ();
-			solution = new FakePackageManagementSolution ();
+
 
 			viewModel = new AvailablePackagesViewModel (
 				solution,
@@ -86,6 +94,11 @@ namespace MonoDevelop.PackageManagement.Tests
 				recentPackageRepository,
 				packageViewModelFactory,
 				taskFactory);
+		}
+
+		void CreateSolution ()
+		{
+			solution = new FakePackageManagementSolution ();
 		}
 
 		void CreateExceptionThrowingRegisteredPackageRepositories ()
@@ -1211,6 +1224,32 @@ namespace MonoDevelop.PackageManagement.Tests
 				installedPackage,  package1
 			};
 			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_TwoSolutionPackagesAndSecondOneThrowsExceptionWhenBeingReturned_ExceptionHandled ()
+		{
+			CreateSolution ();
+			var solutionPackageRepository = new ExceptionThrowingSolutionPackageRepository {
+				ThrowExceptionOnIteration = 1
+			};
+			solution.SolutionPackageRepository = solutionPackageRepository;
+			CreateRegisteredPackageRepositories ();
+			CreateViewModel (registeredPackageRepositories, solution);
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "1.0.0.0");
+			var package2 = new FakePackage ("B", "0.3.0.0");
+			var packages = new [] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			AddPackageToSolution ("Aa", "1.0.0.0");
+			AddPackageToSolution ("Bb", "1.0.0.0");
+
+			viewModel.ReadPackages ();
+			Assert.DoesNotThrow (() => CompleteReadPackagesTask ());
+
+			PackageCollectionAssert.AreEqual (packages, viewModel.PackageViewModels);
 		}
 	}
 }

@@ -69,11 +69,21 @@ namespace MonoDevelop.PackageManagement
 					}
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (ex);
-					progressMonitor.Log.WriteLine (ex.Message);
+					if (IsGuiDispatchException (ex)) {
+						progressMonitor.Log.WriteLine (ex.InnerException.Message);
+					} else {
+						progressMonitor.Log.WriteLine (ex.Message);
+					}
 					progressMonitor.ReportError (progressMessage.Error, null);
 					progressMonitor.ShowPackageConsole ();
 				}
 			}
+		}
+
+		static bool IsGuiDispatchException (Exception ex)
+		{
+			return (ex.InnerException != null) &&
+				(ex.Message == "An exception was thrown while dispatching a method call in the UI thread.");
 		}
 
 		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)

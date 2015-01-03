@@ -55,7 +55,7 @@ namespace MonoDevelop.MacIntegration
 {
 	public class MacPlatformService : PlatformService
 	{
-		const string monoDownloadUrl = "http://www.go-mono.com/mono-downloads/download.html";
+		const string monoDownloadUrl = "http://www.mono-project.com/download/";
 
 		TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
@@ -286,9 +286,19 @@ namespace MonoDevelop.MacIntegration
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
 		{
-			NSControlTint tint = NSColor.CurrentControlTint;
-			NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
-			NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+			string color_hex, text_hex;
+
+			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+				NSControlTint tint = NSColor.CurrentControlTint;
+				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+
+				color_hex = ConvertColorToHex (color);
+				text_hex = ConvertColorToHex (text);
+			} else {
+				color_hex = "#c5d4e0";
+				text_hex = "#000";
+			}
 
 			string gtkrc = String.Format (@"
 				style ""treeview"" = ""default"" {{
@@ -307,8 +317,8 @@ namespace MonoDevelop.MacIntegration
 
 				widget_class ""*.<GtkTreeView>*"" style ""treeview""
 				",
-				ConvertColorToHex (color),
-				ConvertColorToHex (text)
+				color_hex,
+				text_hex
 			);
 
 			Gtk.Rc.ParseString (gtkrc);

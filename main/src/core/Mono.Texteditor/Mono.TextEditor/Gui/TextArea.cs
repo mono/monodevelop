@@ -1673,7 +1673,7 @@ namespace Mono.TextEditor
 					foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 						if (containerChild.Child == this)
 							continue;
-						realMaxX = System.Math.Max (realMaxX, containerChild.X + containerChild.Child.Allocation.Width);
+						realMaxX = System.Math.Max (realMaxX, containerChild.X + containerChild.Child.SizeRequest ().Width);
 					}
 
 					this.textEditorData.HAdjustment.SetBounds (

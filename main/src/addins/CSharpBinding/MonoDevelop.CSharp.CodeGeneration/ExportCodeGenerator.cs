@@ -90,22 +90,49 @@ namespace MonoDevelop.CodeGeneration
 		{
 			if (member == null)
 				return null;
+
+			bool useMonoTouchNamespace = false;
+			var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("Foundation", "ExportAttribute")));
+			if (exportAttribute == null) {
+				useMonoTouchNamespace = true;
+				exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("MonoTouch.Foundation", "ExportAttribute")));
+			}
+
+			if (exportAttribute == null || exportAttribute.PositionalArguments.Count == 0)
+				return null;
+
+			var astType = useMonoTouchNamespace
+				? CreateMonoTouchExportAttributeAst (ctx)
+				: CreateUnifiedExportAttributeAst (ctx);
+
+			var attr = new Attribute {
+				Type = astType,
+			};
+
+			attr.Arguments.Add (new PrimitiveExpression (exportAttribute.PositionalArguments [0].ConstantValue)); 
+			return attr;
+		}
+
+		static AstType CreateUnifiedExportAttributeAst (RefactoringContext ctx)
+		{
 			var astType = ctx.CreateShortType ("Foundation", "ExportAttribute");
 			if (astType is SimpleType) {
 				astType = new SimpleType ("Export");
 			} else {
 				astType = new MemberType (new SimpleType ("Foundation"), "Export");
 			}
+			return astType;
+		}
 
-			var attr = new Attribute {
-				Type = astType,
-			};
-			var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("Foundation", "ExportAttribute"))); 
-			if (exportAttribute == null || exportAttribute.PositionalArguments.Count == 0)
-				return null;
-			attr.Arguments.Add (new PrimitiveExpression (exportAttribute.PositionalArguments [0].ConstantValue)); 
-			return attr;
-
+		static AstType CreateMonoTouchExportAttributeAst (RefactoringContext ctx)
+		{
+			var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
+			if (astType is SimpleType) {
+				astType = new SimpleType ("Export");
+			} else {
+				astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
+			}
+			return astType;
 		}
 
 		static IMember GetProtocolMember (RefactoringContext ctx, IType protocolType, IMember member)

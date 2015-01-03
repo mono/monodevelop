@@ -194,6 +194,7 @@ namespace Mono.TextEditor
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
+			SetAdjustments ();
 		}
 		
 		public void MoveTopLevelWidget (Gtk.Widget widget, int x, int y)

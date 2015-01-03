@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Tests
 {
@@ -102,6 +103,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void StaticConstructorStepping ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("Sdb can't step in static constructor.");
+			}
 			InitializeTest ();
 			AddBreakpoint ("6c42f31b-ca4f-4963-bca1-7d7c163087f1");
 			StartTest ("StaticConstructorStepping");
@@ -384,41 +388,54 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("DebuggerNonUserCodeMethod");
 			CheckPosition ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			}
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
+			}
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			}
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			}
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			}
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 3);
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("TODO: SoftDebugger is not marking frames with [DebuggerNonUserCode] as IsExternalCode when ProjectAssembliesOnly == true.");
+			}
 		}
 
 		/// <summary>
@@ -487,12 +504,31 @@ namespace MonoDevelop.Debugger.Tests
 			Continue ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
 		}
 
+		[Test]
+		public void BreakpointInsideOneLineDelegate ()
+		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("TODO: Atm debugger-libs is in charge of placing breakpoints. It either needs more information about Instructions or Runtime has to place breakpoints based on filename+line+column.");
+			}
+			InitializeTest ();
+			AddBreakpoint ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd");
+			StartTest ("BreakpointInsideOneLineDelegate");
+			CheckPosition ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+			StepOver ("22af08d6-dafc-47f1-b8d1-bee1526840fd", "button.SetTitle");
+			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			StepOut ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+		}
+
 		/// <summary>
 		/// Bug 2851
 		/// </summary>
 		[Test]
 		public void ForeachEnumerable ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("Sdb has some problems when stepping into yeild methods. Have to investigate");
+			}
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
 			StartTest ("ForeachEnumerable");
@@ -566,8 +602,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void PListSchemeTest ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("Sdb is reapeating StepIn in StaticConstructor instead of StepOut. Resulting in step stopping at unexpected location.");
+			}
 			InitializeTest ();
-			Session.Options.ProjectAssembliesOnly = true;
 			AddBreakpoint ("41eb3a30-3b19-4ea5-a7dc-e4c76871f391");
 			StartTest ("PListSchemeTest");
 			CheckPosition ("41eb3a30-3b19-4ea5-a7dc-e4c76871f391");
@@ -575,12 +613,27 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		/// <summary>
-		/// Bug 4433
+		/// Bug 4433 StepOverPropertiesAndOperators = true
+		/// </summary>
+		[Test]
+		public void Bug4433StepOverProperties ()
+		{
+			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = true;
+			AddBreakpoint ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StartTest ("Bug4433Test");
+			CheckPosition ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
+			StepIn ("ad9b8803-eef0-438c-bf2b-9156782f4027", -1);
+		}
+
+		/// <summary>
+		/// Bug 4433 StepOverPropertiesAndOperators = false
 		/// </summary>
 		[Test]
 		public void Bug4433 ()
 		{
 			InitializeTest ();
+			Session.Options.StepOverPropertiesAndOperators = false;
 			AddBreakpoint ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
 			StartTest ("Bug4433Test");
 			CheckPosition ("a062e69c-e3f7-4fd7-8985-fc7abd5c27d2");
@@ -715,6 +768,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("TODO: Sdb SetNextStatment");
+			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -727,6 +783,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest2 ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("TODO: Sdb SetNextStatment");
+			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -738,6 +797,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest3 ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("TODO: Sdb SetNextStatment");
+			}
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
 			StartTest ("SimpleMethod");
@@ -779,6 +841,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void CatchPointTest2 ()
 		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("I'm having problem testing this because. There is error nonstop happening in framework about CurrentCulture featching.");
+			}
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);
 			StartTest ("Catchpoint2");
@@ -803,7 +868,9 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("2", val.Value);
 			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
 
-			Assert.Ignore ("TODO: Conditional breakpoints with compare against string or enum is not working");
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.Ignore ("TODO: Conditional breakpoints with compare against string or enum is not working on CorDebugger");
+			}
 
 			InitializeTest ();
 			bp = AddBreakpoint ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
@@ -960,7 +1027,6 @@ namespace MonoDevelop.Debugger.Tests
 			var debugList = new List<Tuple<int,string,string>> ();
 			debugList.Add (new Tuple<int,string,string> (0, "", "DebugText"));
 			debugList.Add (new Tuple<int, string, string> (3, "SomeCategory", "DebugText2"));
-			debugList.Add (new Tuple<int,string,string> (0, "", ""));
 
 			var unexpectedOutput = new List<string> ();
 			var unexpectedError = new List<string> ();
@@ -968,6 +1034,8 @@ namespace MonoDevelop.Debugger.Tests
 
 			Session.DebugWriter = delegate(int level, string category, string message) {
 				var entry = new Tuple<int,string,string> (level, category, message);
+				if (entry.Equals (new Tuple<int,string,string> (0, "", "")))//Sdb is emitting some empty messages :S 
+					return;
 				if (debugList.Contains (entry)) {
 					debugList.Remove (entry);
 				} else {

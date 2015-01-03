@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Opening Files");
 
 				// load previous combine
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
 					if (proj != null)
 						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
@@ -607,7 +607,7 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
+			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);

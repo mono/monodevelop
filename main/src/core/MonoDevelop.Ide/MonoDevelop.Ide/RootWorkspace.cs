@@ -524,7 +524,11 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		bool openingItem;
+		IAsyncOperation openingItemOper;
+
+		internal bool WorkspaceItemIsOpening {
+			get { return openingItemOper != null && !openingItemOper.IsCompleted; }
+		}
 
 		public IAsyncOperation OpenWorkspaceItem (string filename)
 		{
@@ -538,8 +542,8 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
 		{
-			if (openingItem)
-				return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
+			if (openingItemOper != null && !openingItemOper.IsCompleted && closeCurrent)
+				openingItemOper.Cancel ();
 
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
@@ -556,17 +560,21 @@ namespace MonoDevelop.Ide
 					return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
 			}
 
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
-				bool reloading = IsReloading;
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
+			bool reloading = IsReloading;
 
-				openingItem = true;
-				IdeApp.Workbench.LockGui ();
+			var oper = monitor.AsyncOperation;
+			openingItemOper = oper;
+			oper.Completed += delegate {
+				if (oper == openingItemOper)
+					openingItemOper = null;
+			};
+			IdeApp.Workbench.LockGui ();
 
-				DispatchService.BackgroundDispatch (delegate {
-					BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
-				});
-				return monitor.AsyncOperation;
-			}
+			DispatchService.BackgroundDispatch (delegate {
+				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+			});
+			return oper;
 		}
 		
 		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
@@ -625,20 +633,17 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Registering to recent list");
 				DesktopService.RecentFiles.AddProject (item.FileName, item.Name);
 				
-				Gtk.Application.Invoke (delegate {
-					// Add the item in the GUI thread. It is not safe to do it in the background thread.
-					Items.Add (item);
-				});
 			} catch (Exception ex) {
 				monitor.ReportError ("Load operation failed.", ex);
 				
 				// Don't use 'finally' to dispose the monitor, since it has to be disposed later
 				monitor.Dispose ();
+				if (item != null)
+					item.Dispose ();
 				timer.End ();
 				return;
 			} finally {
 				Gtk.Application.Invoke ((s,o) => IdeApp.Workbench.UnlockGui ());
-				openingItem = false;
 				if (reloading)
 					SetReloading (false);
 			}
@@ -646,6 +651,13 @@ namespace MonoDevelop.Ide
 			Gtk.Application.Invoke (delegate {
 				using (monitor) {
 					try {
+						// Add the item in the GUI thread. It is not safe to do it in the background thread.
+						if (!monitor.IsCancelRequested)
+							Items.Add (item);
+						else {
+							item.Dispose ();
+							return;
+						}
 						if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
 							IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
 						if (Items.Count == 1 && loadPreferences) {

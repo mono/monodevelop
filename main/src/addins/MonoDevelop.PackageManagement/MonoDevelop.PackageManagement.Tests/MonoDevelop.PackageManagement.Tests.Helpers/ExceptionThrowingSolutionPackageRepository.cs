@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// ExceptionThrowingSolutionPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,29 +25,32 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
+using System.Linq;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public interface IDotNetProject : IProject
+	public class ExceptionThrowingSolutionPackageRepository : FakeSolutionPackageRepository
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		public int ThrowExceptionOnIteration = 0;
+		public int CurrentIteration = 0;
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
+		public override IQueryable<IPackage> GetPackages ()
+		{
+			return GetPackagesInternal ().AsQueryable ();
+		}
 
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
-		void RefreshProjectBuilder ();
-		void DisposeProjectBuilder ();
+		IEnumerable<IPackage> GetPackagesInternal ()
+		{
+			foreach (IPackage package in base.GetPackages ()) {
+				if (CurrentIteration == ThrowExceptionOnIteration) {
+					throw new ApplicationException ("Error");
+				}
+				CurrentIteration++;
+				yield return package;
+			}
+		}
 	}
 }
 

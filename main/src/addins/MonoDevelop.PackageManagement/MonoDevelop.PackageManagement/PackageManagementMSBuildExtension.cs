@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// PackageManagementMSBuildExtension.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,29 +25,23 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IDotNetProject : IProject
+	public class PackageManagementMSBuildExtension : MSBuildExtension
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
-
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
-		void RefreshProjectBuilder ();
-		void DisposeProjectBuilder ();
+		public override void SaveProject (IProgressMonitor monitor, SolutionEntityItem item, MSBuildProject project)
+		{
+			EnsureNuGetPackageBuildImportsTargetUpdater currentUpdater = Updater;
+			if (currentUpdater != null) {
+				currentUpdater.UpdateProject (project);
+			}
+		}
 	}
 }
 

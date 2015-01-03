@@ -778,7 +778,11 @@ namespace MonoDevelop.Components.Commands
 				x = (int)evt.X;
 				y = (int)evt.Y;
 			} else {
-				Gdk.Display.Default.GetPointer (out x, out y);
+				Gdk.ModifierType mod;
+				parent.GdkWindow.GetPointer (out x, out y, out mod);
+
+				var titleBarHeight = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight ();
+				y -= titleBarHeight;
 			}
 
 			Gtk.Application.Invoke (delegate {

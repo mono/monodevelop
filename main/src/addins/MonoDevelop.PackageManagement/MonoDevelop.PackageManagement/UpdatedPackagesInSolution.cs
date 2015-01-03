@@ -69,7 +69,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			GuiDispatch (() => {
 				UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
-				updatedPackages.RemovePackage (e.Package);
+				if (updatedPackages.AnyPackages ()) {
+					updatedPackages.RemovePackage (e.Package);
+					updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
+				}
 			});
 		}
 

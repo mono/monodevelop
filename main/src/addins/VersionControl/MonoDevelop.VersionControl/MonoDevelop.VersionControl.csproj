@@ -331,7 +331,6 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\EditRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\SelectRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl\AddRemoveMoveCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeSet.cs" />
     <Compile Include="MonoDevelop.VersionControl\CheckoutCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Commands.cs" />
@@ -409,6 +408,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

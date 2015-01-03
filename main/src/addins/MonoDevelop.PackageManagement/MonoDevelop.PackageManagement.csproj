@@ -371,6 +371,8 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoredEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildTargetsRestoredMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
