@@ -29,13 +29,14 @@ using System.Reflection;
 using Microsoft.VisualStudio.TextTemplating;
 using System.CodeDom.Compiler;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace Mono.TextTemplating
 {
 	public sealed class CompiledTemplate : MarshalByRefObject, IDisposable
 	{
 		ITextTemplatingEngineHost host;
-		TextTransformation tt;
+		object textTransformation;
 		readonly CultureInfo culture;
 		readonly string[] assemblyFiles;
 		
@@ -53,39 +54,61 @@ namespace Mono.TextTemplating
 		{
 			var assembly = results.CompiledAssembly;
 			Type transformType = assembly.GetType (fullName);
-			tt = (TextTransformation) Activator.CreateInstance (transformType);
+			//MS Templating Engine does not look on the type itself, 
+			//it checks only that required methods are exists in the compiled type 
+			textTransformation = Activator.CreateInstance (transformType);
 			
 			//set the host property if it exists
 			var hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
 			if (hostProp != null && hostProp.CanWrite)
-				hostProp.SetValue (tt, host, null);
+				hostProp.SetValue (textTransformation, host, null);
 			
 			var sessionHost = host as ITextTemplatingSessionHost;
 			if (sessionHost != null) {
 				//FIXME: should we create a session if it's null?
-				tt.Session = sessionHost.Session;
+				var sessionProp = transformType.GetProperty ("Session", typeof (IDictionary<string, object>));
+				sessionProp.SetValue (textTransformation, sessionHost.Session, null);
 			}
 		}
 
 		public string Process ()
 		{
-			tt.Errors.Clear ();
+			var ttType = textTransformation.GetType ();
+
+			var errorProp = ttType.GetProperty ("Errors", BindingFlags.Instance | BindingFlags.NonPublic);
+			if (errorProp == null)
+				throw new ArgumentException ("Template must have 'Errors' property");
+			var errorMethod = ttType.GetMethod ("Error",new Type[]{typeof(string)});
+			if (errorMethod == null) {
+				throw new ArgumentException ("Template must have 'Error(string message)' method");
+			}
+
+			var errors = (CompilerErrorCollection) errorProp.GetValue (textTransformation);
+			errors.Clear ();
 			
 			//set the culture
 			if (culture != null)
 				ToStringHelper.FormatProvider = culture;
 			else
 				ToStringHelper.FormatProvider = CultureInfo.InvariantCulture;
-			
-			tt.Initialize ();
-			
+
 			string output = null;
-			try {
-				output = tt.TransformText ();
+
+			var initMethod = ttType.GetMethod ("Initialize");
+			var transformMethod = ttType.GetMethod ("TransformText");
+
+			if (initMethod == null) {
+				errorMethod.Invoke (textTransformation, new object[]{ "Error running transform: no method Initialize()" });
+			} else if (transformMethod == null) {
+				errorMethod.Invoke (textTransformation, new object[]{ "Error running transform: no method TransformText()" });
+			} else try {
+				initMethod.Invoke (textTransformation, null);
+				output = (string)transformMethod.Invoke (textTransformation, null);
 			} catch (Exception ex) {
-				tt.Error ("Error running transform: " + ex);
+				errorMethod.Invoke (textTransformation, new object[]{ "Error running transform: " + ex });
 			}
-			host.LogErrors (tt.Errors);
+
+			host.LogErrors (errors);
 			
 			ToStringHelper.FormatProvider = CultureInfo.InvariantCulture;
 			return output;
