@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				this.Offset = offset;
 				this.Rule = "mode:text/x-csharp";
-				this.Begin = new Regex ("}");
+				this.Begin = new Regex ("{");
 				this.End = new Regex ("}");
 				this.TagColor = "Keyword(Access)";
 			}
