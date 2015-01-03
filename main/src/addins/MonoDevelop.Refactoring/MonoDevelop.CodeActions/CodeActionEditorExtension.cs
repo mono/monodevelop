@@ -51,6 +51,7 @@ using MonoDevelop.AnalysisCore;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CodeActions
 {
@@ -154,7 +155,7 @@ namespace MonoDevelop.CodeActions
 		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
 			CancelQuickFixTimer ();
-			if (AnalysisOptions.EnableFancyFeatures &&  DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
+			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
@@ -167,8 +168,8 @@ namespace MonoDevelop.CodeActions
 
 					TextSpan span;
 					if (Editor.IsSomethingSelected)
-						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset) ;
-					else 
+						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
+					else
 						span = TextSpan.FromBounds (loc, loc + 1);
 
 					var diagnosticsAtCaret =
@@ -178,9 +179,9 @@ namespace MonoDevelop.CodeActions
 							.OfType<DiagnosticResult> ()
 							.Select (dr => dr.Diagnostic)
 							.ToList ();
-					System.Threading.Tasks.Task.Factory.StartNew (delegate {
+					System.Threading.Tasks.Task.Factory.StartNew (async delegate {
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToList ();
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
 						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType))) {
 							if (token.IsCancellationRequested)
 								return;
@@ -188,15 +189,14 @@ namespace MonoDevelop.CodeActions
 							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
 								continue;
 
-							List<CodeAction> fixes;
 							try {
-								fixes = provider.GetFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret, token)).Result.ToList ();
+								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret,
+									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
+									token));
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
 								continue;
 							}
-							foreach (var fix in fixes)
-								codeIssueFixes.Add (Tuple.Create (cfp, fix));
 						}
 						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
 						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {

@@ -40,10 +40,6 @@
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
 	branch = xammac-unified
-[submodule "main/external/roslyn"]
-	path = main/external/roslyn
-	url = git@github.com:mono/roslyn.git
-	branch = monodevelop
 [submodule "main/external/NRefactory6"]
 	path = main/external/NRefactory6
 	url = git@github.com:icsharpcode/NRefactory.git

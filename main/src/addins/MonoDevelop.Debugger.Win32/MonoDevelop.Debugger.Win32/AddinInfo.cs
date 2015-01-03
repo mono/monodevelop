@@ -14,4 +14,3 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Debugger", MonoDevelop.BuildInfo.Version)]
-[assembly:AddinDependency ("AspNet", MonoDevelop.BuildInfo.Version)]

@@ -41,7 +41,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Mono.CSharp;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
