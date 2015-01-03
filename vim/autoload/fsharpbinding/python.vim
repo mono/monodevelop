@@ -30,7 +30,9 @@ function s:pyeval(expr)
     endif
 python << EOF
 import json
-vim.command('return '+json.dumps(eval(vim.eval('a:expr'))))
+arg = vim.eval('a:expr')
+result = json.dumps(eval(arg))
+vim.command('return ' + result)
 EOF
 endfunction
 
@@ -118,7 +120,12 @@ function! fsharpbinding#python#CurrentErrors()
     let result = []
     let buf = bufnr('%')
     try
-        let errs = s:pyeval('fsautocomplete.errors_current()')
+        if version > 703
+            let errs = s:pyeval('fsautocomplete.errors_current()')
+        else
+            " Send a sync parse request if Vim 7.3, otherwise misses response for large files
+            let errs = s:pyeval("fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)")
+        endif
         for e in errs
             call add(result,
                 \{'lnum': e['StartLineAlternate'],

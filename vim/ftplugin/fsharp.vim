@@ -92,10 +92,10 @@ EOF
             " these events new in Vim 7.4
             au TextChanged  *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChanged()
             au TextChangedI *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChangedI()
+            au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
+            au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
         endif
-        au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
         au BufEnter     *.fs,*.fsi,*fsx call fsharpbinding#python#OnBufEnter()
-        au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
         au InsertLeave  *.fs,*.fsi,*fsx  if pumvisible() == 0|silent! pclose|endif
     augroup END
 

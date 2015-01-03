@@ -174,11 +174,16 @@ class FSAutoComplete:
 
     def errors(self, fn, full, lines):
         self.__log('errors: fn = %s\n' % fn)
+
         fulltext = "full" if full else ""
         self.send("parse \"%s\" %s\n" % (fn, fulltext))
+
         for line in lines:
             self.send(line + "\n")
+
         msg = self._errors.send("<<EOF>>\n")
+        self.__log('msg received: %s\n' % msg)
+
         return msg
 
     def errors_current(self):
