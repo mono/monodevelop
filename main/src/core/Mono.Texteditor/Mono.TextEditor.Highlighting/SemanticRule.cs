@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 			try {
 				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.TextLength) - startOffset);
 				int startColumn = startOffset - line.Offset;
-				var markers = new List <UrlMarker> (line.Markers.Where (m => m is UrlMarker).Cast<UrlMarker> ());
+				var markers = new List <UrlMarker> (line.Markers.OfType<UrlMarker> ());
 				markers.ForEach (m => doc.RemoveMarker (m, false));
 				foreach (System.Text.RegularExpressions.Match m in UrlRegex.Matches (text)) {
 					doc.AddMarker (line, new UrlMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length), false);
