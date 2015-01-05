@@ -202,6 +202,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\EnsureNuGetPackageBuildImportsTargetUpdaterTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingSolutionPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\CheckForUpdatesProgressMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForUpdatesProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

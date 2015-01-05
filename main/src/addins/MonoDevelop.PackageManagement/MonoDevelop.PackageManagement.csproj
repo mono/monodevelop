@@ -363,6 +363,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MSBuildTargetsRestoredMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -1,5 +1,5 @@
 ﻿//
-// PackageUpdateChecker.cs
+// TestableCheckForUpdatesProgressMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,50 +26,23 @@
 
 using System;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageUpdateChecker
+	public class TestableCheckForUpdatesProgressMonitor : CheckForUpdatesProgressMonitor
 	{
-		IUpdatedPackagesInSolution updatedPackagesInSolution;
-
-		public PackageUpdateChecker ()
-			: this (
-				PackageManagementServices.UpdatedPackagesInSolution)
+		public TestableCheckForUpdatesProgressMonitor (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageEvents)
+			: base (progressMonitorFactory, packageEvents)
 		{
 		}
 
-		public PackageUpdateChecker (
-			IUpdatedPackagesInSolution updatedPackagesInSolution)
-		{
-			this.updatedPackagesInSolution = updatedPackagesInSolution;
-		}
+		public bool IsPackageConsoleShown;
 
-		public void Run ()
+		protected override void ShowPackageConsole ()
 		{
-			try {
-				CheckForPackageUpdatesWithProgressMonitor ();
-			} catch (Exception ex) {
-				LoggingService.LogInternalError ("PackageUpdateChecker error.", ex);
-			}
-		}
-
-		void CheckForPackageUpdatesWithProgressMonitor ()
-		{
-			using (var progressMonitor = new CheckForUpdatesProgressMonitor ()) {
-				try {
-					CheckForPackageUpdates (progressMonitor);
-				} catch (Exception ex) {
-					progressMonitor.ReportError (ex);
-				}
-			}
-		}
-
-		void CheckForPackageUpdates (CheckForUpdatesProgressMonitor progressMonitor)
-		{
-			updatedPackagesInSolution.CheckForUpdates ();
-			progressMonitor.ReportSuccess (updatedPackagesInSolution.AnyUpdates ());
+			IsPackageConsoleShown = true;
 		}
 	}
 }
