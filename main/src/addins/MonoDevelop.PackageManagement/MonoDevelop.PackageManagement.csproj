@@ -338,7 +338,6 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageUpdateChecker.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageUpdatesEventMonitor.cs" />
@@ -364,6 +363,8 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

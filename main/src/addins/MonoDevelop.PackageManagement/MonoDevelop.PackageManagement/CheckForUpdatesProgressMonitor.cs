@@ -64,6 +64,8 @@ namespace MonoDevelop.PackageManagement
 			LoggingService.LogInternalError (ex);
 			if (IsGuiDispatchException (ex)) {
 				progressMonitor.Log.WriteLine (ex.InnerException.Message);
+			} else if (ex is AggregateException) {
+				LogAggregateException ((AggregateException)ex);
 			} else {
 				progressMonitor.Log.WriteLine (ex.Message);
 			}
@@ -75,6 +77,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			return (ex.InnerException != null) &&
 				(ex.Message == "An exception was thrown while dispatching a method call in the UI thread.");
+		}
+
+		void LogAggregateException (AggregateException ex)
+		{
+			progressMonitor.Log.WriteLine (new AggregateExceptionErrorMessage (ex));
 		}
 
 		protected virtual void ShowPackageConsole ()

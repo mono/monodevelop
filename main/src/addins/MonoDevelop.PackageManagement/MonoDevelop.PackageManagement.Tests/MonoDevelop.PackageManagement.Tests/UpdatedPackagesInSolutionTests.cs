@@ -28,8 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
-using NUnit.Framework;
+using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -40,6 +41,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageManagementSolution solution;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		PackageManagementEvents packageManagementEvents;
+		FakeTaskFactory taskFactory;
+		FakeProgressMonitorFactory progressMonitorFactory;
+		TestableCheckForUpdatesTaskRunner checkForUpdatesTaskRunner;
 		List<string> messagesLogged;
 
 		void CreateUpdatedPackagesInSolution ()
@@ -47,10 +51,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			solution = new FakePackageManagementSolution ();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories ();
 			packageManagementEvents = new PackageManagementEvents ();
+			taskFactory = new FakeTaskFactory ();
+			taskFactory.RunTasksSynchronously = true;
+			progressMonitorFactory = new FakeProgressMonitorFactory ();
+			checkForUpdatesTaskRunner = new TestableCheckForUpdatesTaskRunner (
+				taskFactory,
+				progressMonitorFactory,
+				packageManagementEvents);
 			updatedPackagesInSolution = new TestableUpdatedPackagesInSolution (
 				solution,
 				registeredPackageRepositories,
-				packageManagementEvents);
+				packageManagementEvents,
+				checkForUpdatesTaskRunner);
 		}
 
 		FakePackageManagementProject AddProjectToSolution ()
@@ -346,6 +358,164 @@ namespace MonoDevelop.PackageManagement.Tests
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdatedButSolutionClosedBeforeResultsReturned_UpdatedPackagesAvailableEventIsNotFiredAndNoPackageUpdatesAvailable ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			bool fired = false;
+			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
+				fired = true;
+			};
+			updatedPackagesInSolution.CheckForUpdates ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			updatedPackagesInSolution.Clear ();
+
+			task.ExecuteContinueWith ();
+
+			Assert.IsFalse (fired);
+			Assert.IsFalse (updatedPackagesInSolution.AnyUpdates ());
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdated_ProgressMonitorCreatedAndDisposedAfterCheckForUpdatesReturned ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			bool progressMonitorCreated = checkForUpdatesTaskRunner.ProgressMonitorCreated != null;
+			bool disposedBeforeTaskRun = progressMonitorFactory.ProgressMonitor.IsDisposed;
+
+			taskFactory.ExecuteAllTasks<CheckForUpdatesTask> ();
+
+			Assert.IsTrue (progressMonitorCreated);
+			Assert.IsFalse (disposedBeforeTaskRun);
+			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdatedButSolutionClosedBeforeResultsReturned_ProgressMonitorIsDisposed ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			bool progressMonitorCreated = checkForUpdatesTaskRunner.ProgressMonitorCreated != null;
+			bool disposedBeforeTaskRun = progressMonitorFactory.ProgressMonitor.IsDisposed;
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			updatedPackagesInSolution.Clear ();
+
+			task.ExecuteContinueWith ();
+
+			Assert.IsTrue (progressMonitorCreated);
+			Assert.IsFalse (disposedBeforeTaskRun);
+			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdated_SuccessReportedToProgressMonitor ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.AreEqual (GettextCatalog.GetString ("Package updates are available."), progressMonitorFactory.ProgressMonitor.ReportedSuccessMessage);
+		}
+
+		[Test]
+		public void CheckForUpdates_NoPackagesUpdated_SuccessReportedToProgressMonitor ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+
+			updatedPackagesInSolution.CheckForUpdates ();
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.IsFalse (updatedPackagesInSolution.AnyUpdates ());
+			Assert.AreEqual (GettextCatalog.GetString ("Packages are up to date."), progressMonitorFactory.ProgressMonitor.ReportedSuccessMessage);
+		}
+
+		[Test]
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdates_ErrorReportedToProgressMonitorWhichIsDisposed ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.IsFaulted = true;
+			var innerException = new ApplicationException ("Inner exception error message");
+			task.Exception = new AggregateException ("Aggregate error message", innerException);
+			task.ExecuteTaskButNotContinueWith ();
+			task.Result = null;
+			task.ExecuteContinueWith ();
+
+			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates. Please see Package Console for details."), progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
+			Assert.IsTrue (checkForUpdatesTaskRunner.ProgressMonitorCreated.IsPackageConsoleShown);
+			progressMonitorFactory.ProgressMonitor.AssertMessageIsLogged ("Inner exception error message");
+			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturns_ErrorIsNotReportedButProgressMonitorIsDisposed ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.IsFaulted = true;
+			task.Exception = new AggregateException ("Error message");
+			task.ExecuteTaskButNotContinueWith ();
+			updatedPackagesInSolution.Clear ();
+			task.Result = null;
+			task.ExecuteContinueWith ();
+
+			Assert.IsNull (progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
+			progressMonitorFactory.ProgressMonitor.AssertMessageIsNotLogged ("Error message");
+			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void CheckForUpdates_ExceptionThrownWhilstCheckingForUpdatesButSolutionClosedBeforeCheckForUpdatesReturnsAndSecondCheckForUpdatesIsStarted_ErrorIsNotReported ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.IsFaulted = true;
+			task.Exception = new AggregateException ("Error message");
+			task.ExecuteTaskButNotContinueWith ();
+			updatedPackagesInSolution.CheckForUpdates ();
+			task.Result = null;
+			task.ExecuteContinueWith ();
+
+			Assert.IsNull (progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
+			progressMonitorFactory.ProgressMonitor.AssertMessageIsNotLogged ("Error message");
+			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
 		}
 	}
 }

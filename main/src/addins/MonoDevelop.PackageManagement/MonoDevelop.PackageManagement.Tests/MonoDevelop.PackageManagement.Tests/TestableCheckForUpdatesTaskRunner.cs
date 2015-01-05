@@ -1,10 +1,10 @@
 ﻿//
-// PackageUpdateChecker.cs
+// TestableCheckForUpdatesTaskRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,50 +26,34 @@
 
 using System;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests
 {
-	public class PackageUpdateChecker
+	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
-		IUpdatedPackagesInSolution updatedPackagesInSolution;
-
-		public PackageUpdateChecker ()
-			: this (
-				PackageManagementServices.UpdatedPackagesInSolution)
+		public TestableCheckForUpdatesTaskRunner (
+			ITaskFactory taskFactory,
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
+			: base (taskFactory, progressMonitorFactory, packageManagementEvents)
 		{
 		}
 
-		public PackageUpdateChecker (
-			IUpdatedPackagesInSolution updatedPackagesInSolution)
+		protected override CheckForUpdatesProgressMonitor CreateProgressMonitor (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
 		{
-			this.updatedPackagesInSolution = updatedPackagesInSolution;
+			ProgressMonitorCreated = new TestableCheckForUpdatesProgressMonitor (progressMonitorFactory, packageManagementEvents);
+			return ProgressMonitorCreated;
 		}
 
-		public void Run ()
-		{
-			try {
-				CheckForPackageUpdatesWithProgressMonitor ();
-			} catch (Exception ex) {
-				LoggingService.LogInternalError ("PackageUpdateChecker error.", ex);
-			}
-		}
+		public TestableCheckForUpdatesProgressMonitor ProgressMonitorCreated { get; set; }
 
-		void CheckForPackageUpdatesWithProgressMonitor ()
+		protected override void GuiBackgroundDispatch (MessageHandler handler)
 		{
-			using (var progressMonitor = new CheckForUpdatesProgressMonitor ()) {
-				try {
-					CheckForPackageUpdates (progressMonitor);
-				} catch (Exception ex) {
-					progressMonitor.ReportError (ex);
-				}
-			}
-		}
-
-		void CheckForPackageUpdates (CheckForUpdatesProgressMonitor progressMonitor)
-		{
-			updatedPackagesInSolution.CheckForUpdates ();
-			progressMonitor.ReportSuccess (updatedPackagesInSolution.AnyUpdates ());
+			handler.Invoke ();
 		}
 	}
 }
