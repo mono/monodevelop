@@ -57,7 +57,7 @@ if '.fs' == ext or '.fsi' == ext:
     projs = filter(lambda f: '.fsproj' == os.path.splitext(f)[1], os.listdir(dir))
     if len(projs):
         proj_file = os.path.join(dir, projs[0])
-        b.vars["proj_file"] = proj_file
+        vim.command("let b:proj_file = '%s'" % proj_file)
         fsautocomplete.project(proj_file)
 fsautocomplete.parse(b.name, True, b)
 EOF
@@ -88,11 +88,14 @@ EOF
         " closing the scratch window after leaving insert mode
         " is common practice
         au BufWritePre  *.fs,*.fsi,*fsx call fsharpbinding#python#OnBufWritePre() 
-        au TextChanged  *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChanged()
-        au TextChangedI *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChangedI()
-        au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
+        if version > 703
+            " these events new in Vim 7.4
+            au TextChanged  *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChanged()
+            au TextChangedI *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChangedI()
+            au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
+            au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
+        endif
         au BufEnter     *.fs,*.fsi,*fsx call fsharpbinding#python#OnBufEnter()
-        au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
         au InsertLeave  *.fs,*.fsi,*fsx  if pumvisible() == 0|silent! pclose|endif
     augroup END
 

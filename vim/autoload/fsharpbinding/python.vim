@@ -22,6 +22,20 @@ function! s:get_visual_selection()
   return join(lines, "\n")
 endfunction
 
+" Vim73-compatible version of pyeval
+" taken from: http://stackoverflow.com/questions/13219111/how-to-embed-python-expression-into-s-command-in-vim
+function s:pyeval(expr)
+    if version > 703
+        return pyeval(a:expr)
+    endif
+python << EOF
+import json
+arg = vim.eval('a:expr')
+result = json.dumps(eval(arg))
+vim.command('return ' + result)
+EOF
+endfunction
+
 
 function! fsharpbinding#python#LoadLogFile()
 python << EOF
@@ -36,11 +50,9 @@ function! fsharpbinding#python#ParseProject(...)
     python << EOF
 fsautocomplete.project(vim.eval("a:1"))
 EOF
-    else
+    elseif exists('b:proj_file')
     python << EOF
-v = vim.current.buffer.vars
-if "proj_file" in v:
-    fsautocomplete.project(v["proj_file"])
+    fsautocomplete.project(vim.eval("b:proj_file"))
 EOF
     endif
 endfunction
@@ -69,8 +81,8 @@ function! fsharpbinding#python#RunProject(...)
             execute '!mono ' . fnameescape(a:1)
         elseif exists('b:proj_file')
             let cmd = 'Statics.projects["' . b:proj_file . '"]["Output"]'
-            echom "runproj pre pyeval " cmd
-            let target = pyeval(cmd)
+            echom "runproj pre s:pyeval " cmd
+            let target = s:pyeval(cmd)
             echom "target" target
             execute '!mono ' . fnameescape(target)
         else
@@ -99,7 +111,6 @@ EOF
     let b:fsharp_buffer_changed = 0
 endfunction
 
-
 " probable loclist format
 " {'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or function call and instead saw an expression.'}
 
@@ -109,7 +120,12 @@ function! fsharpbinding#python#CurrentErrors()
     let result = []
     let buf = bufnr('%')
     try
-        let errs = pyeval('fsautocomplete.errors_current()')
+        if version > 703
+            let errs = s:pyeval('fsautocomplete.errors_current()')
+        else
+            " Send a sync parse request if Vim 7.3, otherwise misses response for large files
+            let errs = s:pyeval("fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)")
+        endif
         for e in errs
             call add(result,
                 \{'lnum': e['StartLineAlternate'],
@@ -243,9 +259,8 @@ function! fsharpbinding#python#OnBufEnter()
 python << EOF
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
-v = vim.current.buffer.vars
-if "proj_file" in v:
-    fsautocomplete.project(v["proj_file"])
+if vim.eval("exists('b:proj_file')") == 1:
+    fsautocomplete.project(vim.eval("b:proj_file"))
 EOF
     "set makeprg
     if !filereadable(expand("%:p:h")."/Makefile")
@@ -257,7 +272,7 @@ EOF
 endfunction
 
 function! fsharpbinding#python#FsiPurge()
-    let prelude = pyeval('fsi.purge()')
+    let prelude = s:pyeval('fsi.purge()')
     for l in l:prelude
         echom l
     endfor
@@ -289,7 +304,7 @@ function! fsharpbinding#python#FsiEval(text)
     "clear anything in the buffer
         call fsharpbinding#python#FsiPurge()
         call fsharpbinding#python#FsiSend(a:text)
-        let lines = pyeval('fsi.read_until_prompt()')
+        let lines = s:pyeval('fsi.read_until_prompt()')
         for l in lines
             echom l
         endfor
