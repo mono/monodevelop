@@ -1298,6 +1298,7 @@ namespace Mono.TextEditor
 			if (scrollWindowTimer == 0) {
 				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
 					FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
+					scrollWindowTimer = 0;
 					return true;
 				});
 			}
@@ -1307,7 +1308,6 @@ namespace Mono.TextEditor
 		{
 			if (scrollWindowTimer != 0) {
 				GLib.Source.Remove (scrollWindowTimer);
-				
 				scrollWindowTimer = 0;
 			}
 		}

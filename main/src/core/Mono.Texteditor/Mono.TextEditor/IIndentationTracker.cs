@@ -65,12 +65,13 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			DocumentLine line = doc.GetLine (lineNumber - 1);
+			DocumentLine line = doc.GetLine (lineNumber);
 			while (line != null) {
-				var indent = line.GetIndentation (doc);
-				if (indent.Length > 0)
-					return indent;
-				line = line.PreviousLine;
+				if (line.Length == 0) {
+					line = line.PreviousLine;
+					continue;
+				}
+				return line.GetIndentation (doc);
 			}
 			return "";
 		}
