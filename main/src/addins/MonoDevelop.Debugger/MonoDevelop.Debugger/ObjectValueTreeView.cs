@@ -205,14 +205,21 @@ namespace MonoDevelop.Debugger
 		{
 			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 			{
+				var darkColor = Color.WithIncreasedLight (-0.15);
+
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
-					cr.LineWidth = 0.5;
 					double center_x = cell_area.X + Math.Round ((double)(cell_area.Width / 2d));
 					double center_y = cell_area.Y + Math.Round ((double)(cell_area.Height / 2d));
-					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
+
+					// TODO: VV: On retina this should be LineWidth = 0.5 and Arc size needs to match
+
+					// @1x:
+					cr.LineWidth = 1;
+					cr.Arc (center_x, center_y, 5.5f, 0, 2 * Math.PI);
+
 					cr.SetSourceRGBA (Color.Red, Color.Green, Color.Blue, 1);
 					cr.FillPreserve ();
-					cr.SetSourceRGBA (0, 0, 0, 1);
+					cr.SetSourceRGBA (darkColor.Red, darkColor.Green, darkColor.Blue, 1);
 					cr.Stroke ();
 				}
 			}

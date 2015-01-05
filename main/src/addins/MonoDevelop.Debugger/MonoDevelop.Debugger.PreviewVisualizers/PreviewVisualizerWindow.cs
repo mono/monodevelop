@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger
 			TransientFor = (Gtk.Window) invokingWidget.Toplevel;
 
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
-			Theme.Padding = 0;
+			Theme.Padding = 3;
 			ShowArrow = true;
 			var mainBox = new VBox ();
 			var headerTable = new Table (1, 3, false);
@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger
 			headerTable.Attach (hb, 0, 1, 0, 1);
 
 			var headerTitle = new Label ();
-			headerTitle.ModifyFg (StateType.Normal, new Color (64, 64, 64));
+			headerTitle.ModifyFg (StateType.Normal, new Color (36, 36, 36));
 			var font = headerTitle.Style.FontDescription.Copy ();
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);
@@ -101,7 +101,7 @@ namespace MonoDevelop.Debugger
 				widget = new GenericPreviewVisualizer ().GetVisualizerWidget (val);
 			}
 			var alignment = new Alignment (0, 0, 1, 1);
-			alignment.SetPadding (1, 3, 3, 3);
+			alignment.SetPadding (3, 5, 5, 5);
 			alignment.Show ();
 			alignment.Add (widget);
 			mainBox.PackStart (alignment);

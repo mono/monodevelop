@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
+using Gtk;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -41,11 +42,26 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			string value = val.Value;
+			Gdk.Color col = new Gdk.Color (85, 85, 85);
+
 			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
 				value = '"' + GetString (val) + '"';
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+
 			var label = new Gtk.Label (value);
+			var font = label.Style.FontDescription.Copy ();
+
+			if (font.SizeIsAbsolute) {
+				font.AbsoluteSize = font.Size - 1;
+			} else {
+				font.Size -= (int)(Pango.Scale.PangoScale);
+			}
+
+			label.ModifyFont (font);
+			label.ModifyFg (StateType.Normal, col);
+			label.SetPadding (4, 4);
+
 			if (label.SizeRequest ().Width > 500) {
 				label.WidthRequest = 500;
 				label.Wrap = true;
@@ -53,6 +69,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			} else {
 				label.Justify = Gtk.Justification.Center;
 			}
+
 			if (label.Layout.GetLine (1) != null) {
 				label.Justify = Gtk.Justification.Left;
 				var line15 = label.Layout.GetLine (15);
@@ -60,7 +77,9 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 					label.Text = value.Substring (0, line15.StartIndex).TrimEnd ('\r', '\n') + "\n…";
 				}
 			}
+
 			label.Show ();
+
 			return label;
 		}
 
