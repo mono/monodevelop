@@ -110,15 +110,16 @@ namespace MonoDevelop.Platform
 			string executeString = exePath + " %1";
 			string progId = Taskbar.TaskbarManager.Instance.ApplicationId;
 
-			RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey (progId + @"\shell\Open\Command", false);
-			if (progIdKey == null) {
-				return false;
-			}
+			using (RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey (progId + @"\shell\Open\Command", false)) {
+				if (progIdKey == null) {
+					return false;
+				}
 			
-			object path = progIdKey.GetValue (String.Empty);
-			bool isProgIdRegistered = String.Equals (executeString, path as string, StringComparison.OrdinalIgnoreCase);
-			if (!isProgIdRegistered) {
-				return false;
+				object path = progIdKey.GetValue (String.Empty);
+				bool isProgIdRegistered = String.Equals (executeString, path as string, StringComparison.OrdinalIgnoreCase);
+				if (!isProgIdRegistered) {
+					return false;
+				}
 			}
 			
 			string[] subkeyNames = Registry.ClassesRoot.GetSubKeyNames ();
@@ -126,15 +127,16 @@ namespace MonoDevelop.Platform
 				if (subkey[0] != '.') {
 					continue;
 				}
+
+				using (RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgids"))) {
+					if (openWithKey == null) {
+						continue;
+					}
 				
-				RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgids"));
-				if (openWithKey == null) {
-					continue;
-				}
-				
-				string progIdValue = openWithKey.GetValue (progId, null) as string;
-				if (progIdValue == null) {
-					continue;
+					string progIdValue = openWithKey.GetValue (progId, null) as string;
+					if (progIdValue == null) {
+						continue;
+					}
 				}
 				
 				this.supportedExtensions.Add (subkey);
