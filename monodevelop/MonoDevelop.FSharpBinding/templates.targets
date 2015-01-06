@@ -30,15 +30,7 @@
     <None Include="Templates/FSharpNUnitLibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacPlist.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+
     <None Include="Templates/MonoMac/XamMac/XamMacProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -46,15 +38,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml">
@@ -66,6 +49,7 @@
     <None Include="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+
     <None Include="Templates/Android/MonoDroidActivity.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -147,6 +131,7 @@
     <None Include="Templates/Android/MonoDroidApplication/Resource.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+
     <None Include="Templates/ios/LibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -207,6 +192,7 @@
     <None Include="Templates/ios/SingleView/Universal/ViewController.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+
     <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestsProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
