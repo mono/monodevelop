@@ -73,39 +73,32 @@ type FSharpTooltipProvider() =
                              return Tooltip tooltipItem }
 
         let result =
+            //operate on available results no async gettypeparse results is available quick enough
+            let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource)
             Async.RunSynchronously (
                     async {
-                        let! parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
-                        LoggingService.LogInfo "TooltipProvider: Getting tool tip"
-                        match parseAndCheckResults with
-                        | None -> return ParseAndCheckNotFound
-                        | Some parseAndCheckResults ->
+                        try
+                            LoggingService.LogInfo "TooltipProvider: Getting tool tip"
                             let! symbol = parseAndCheckResults.GetSymbol(line, col, lineStr)
                             //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
-                            // to extract the signature, this is only limited in that it deals with onlt a single tooltip in a group/list
-                            // This should be fine as there are issues with genewric tooltip xmldocs anyway
+                            // to extract the signature, this is only limited in that it deals with only a single tooltip in a group/list
+                            // This should be fine as there are issues with generic tooltip xmldocs anyway
                             // e.g. generics such as Dictionary<'a,'b>.Contains currently dont work.
                             let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
                             //we create the backupSig as lazily as possible we could put the async call in here but I was worried about GC retension.
                             let backupSig = 
-                                Some(lazy
-                                        match tip with
-                                        | Some (FSharpToolTipText xs, (_,_)) when xs.Length > 0 ->
-                                            let first = xs.Head    
-                                            match first with
-                                            | FSharpToolTipElement.Single (_name, xmlComment) ->
-                                                 match xmlComment with
-                                                 | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
-                                                 | _ -> None
-                                            | FSharpToolTipElement.Group tts when tts.Length > 0 ->
-                                                let _name, xmlComment = tts.Head
-                                                match xmlComment with
-                                                | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
-                                                | _ -> None
-                                            | FSharpToolTipElement.CompositionError _ -> None
-                                            | _ -> None
-                                        | _ -> None)
-                        
+                                lazy
+                                    match tip with
+                                    | Some (FSharpToolTipText (first :: _remainder), (_startCol,_endCol)) ->
+                                        match first with
+                                        | FSharpToolTipElement.Single (_name, FSharpXmlDoc.XmlDocFileSignature(key, file)) -> Some (file, key)
+                                        | FSharpToolTipElement.Group ((_name, FSharpXmlDoc.XmlDocFileSignature (key, file)) :: _remainder)  -> Some (file, key)
+                                        | FSharpToolTipElement.CompositionError error ->
+                                            LoggingService.LogError (sprintf "TooltipProvider: Composition error: %s" error)
+                                            None
+                                        | _ -> None
+                                    | _ -> None
+                            
                             // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
                             // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
                             match symbol with
@@ -129,7 +122,12 @@ type FSharpTooltipProvider() =
                                                lastResult <- Some(tooltipItem)
                                                return Tooltip tooltipItem
                                  | EmptyTip -> return! getTooltipFromLanguageService parseAndCheckResults
-                            | None -> return! getTooltipFromLanguageService parseAndCheckResults},
+                            | None -> return! getTooltipFromLanguageService parseAndCheckResults
+                        with
+                        | :? TimeoutException -> return ParseAndCheckNotFound
+                        | ex ->
+                            LoggingService.LogError ("TooltipProvider: unexpected exception", ex)
+                            return ParseAndCheckNotFound},
                     ServiceSettings.blockingTimeout)
 
         match result with

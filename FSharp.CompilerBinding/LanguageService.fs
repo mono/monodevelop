@@ -401,6 +401,12 @@ type LanguageService(dirtyNotify) =
     | None -> return! mbox.PostAndAsyncReply(fun reply -> (fileName, src, opts, reply))
    }
 
+  member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, files, args, stale) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
+    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
+    | Some results -> results
+    | None -> ParseAndCheckResults.Empty
+
 
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, files, line:int, col, lineStr, args) =

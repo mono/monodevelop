@@ -216,7 +216,7 @@ module SymbolTooltips =
         | true, false -> b
         | false, false -> a + " " + b
 
-    let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>> option) =
+    let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>>) =
         let xmlDoc, xmlDocSig = 
             match symbol with
             | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
@@ -230,11 +230,8 @@ module SymbolTooltips =
         if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
         else
             if String.IsNullOrWhiteSpace xmlDocSig then
-                match backupSig with
-                | Some backup ->
-                     match backup.Force() with
-                     | Some (key, file) ->Lookup (key, Some file)
-                     | None -> XmlDoc.EmptyDoc
+                match backupSig.Force() with
+                | Some (key, file) -> Lookup (key, Some file)
                 | None -> XmlDoc.EmptyDoc
             else Lookup(xmlDocSig, symbol.Assembly.FileName)
 
@@ -376,7 +373,7 @@ module SymbolTooltips =
                 else asType Keyword "val"
             prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
 
-    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_> option) =
+    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_>) =
         match symbol with
         | Entity fse ->
             try
