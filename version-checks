@@ -6,7 +6,7 @@ script_name=./`basename $0`
 
 #
 # Script to check versions of dependencies
-# To check the version for all dependencies, just run the script with no arguments.
+# To check the version for all dependencies, just run the script with no arguments
 # To check the version for a specific dependency, run the script with "check <dependency>"
 # To reset a dependency to the needed version, run the script with "reset <dependency>"
 # It is also possible to pass "reset all" to reset all dependencies
@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=16e4a1b674e4e3e54488d27146a979cef53a552d
+DEP_NEEDED_VERSION[0]=9adb78ada2822827d8b6eb478af91f1825bf9c68
 DEP_BRANCH_AND_REMOTE[0]="watchkit origin/watchkit"
 
 # heap-shot
