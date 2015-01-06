@@ -58,7 +58,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			get { return true; }
 		}
 		
-		public bool CanHandle (FilePath fileName, string mimeType, Project ownerProject)
+		public bool CanHandle (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
 			if (excludeThis)
 				return false;
@@ -78,7 +78,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return db != null;
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public IViewContent CreateContent (FilePath fileName, string mimeType, MonoDevelop.Projects.Project ownerProject)
 		{
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
@@ -92,14 +92,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		Stetic.ActionGroupInfo GetActionGroup (string file)
 		{
-			Project project = IdeApp.Workspace.GetProjectContainingFile (file);
+			var project = IdeApp.Workspace.GetProjectContainingFile (file);
 			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
 				
 			return GtkDesignInfo.FromProject (project).GuiBuilderProject.GetActionGroupForFile (file);
 		}
 		
-		internal static string BindToClass (Project project, Stetic.ActionGroupInfo group)
+		internal static string BindToClass (MonoDevelop.Projects.Project project, Stetic.ActionGroupInfo group)
 		{
 			GuiBuilderProject gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 			string file = gproject.GetSourceCodeFile (group);
@@ -129,7 +129,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return gproject.GetSourceCodeFile (group);
 		}
 		
-		static ITypeSymbol CreateClass (Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
+		static ITypeSymbol CreateClass (MonoDevelop.Projects.Project project, Stetic.ActionGroupComponent group, string name, string namspace, string folder)
 		{
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			

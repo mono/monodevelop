@@ -505,7 +505,7 @@ namespace MonoDevelop.SourceEditor
 			var error = Document.GetTextSegmentMarkersAt (offset).OfType<ErrorMarker> ().FirstOrDefault ();
 			
 			if (error != null) {
-				if (error.Error.ErrorType == ErrorType.Warning)
+				if (error.Error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Warning)
 					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
 						GLib.Markup.EscapeText (error.Error.Message));
 				return GettextCatalog.GetString ("<b>Parser Error</b>: {0}",

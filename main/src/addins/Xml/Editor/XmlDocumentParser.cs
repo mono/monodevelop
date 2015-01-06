@@ -44,7 +44,8 @@ namespace MonoDevelop.Xml.Editor
 				var xmlParser = new XmlParser (new XmlRootState (), true);
 				xmlParser.Parse (content);
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				doc.Add (xmlParser.Errors);
+				// TODO error conversion!
+				//doc.Add (xmlParser.Errors);
 				
 				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
 					if (!doc.XDocument.RootElement.IsEnded)

@@ -2915,6 +2915,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\KeyDescriptor.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\MessageBubbles\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\LineEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\Error.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -107,14 +107,16 @@ namespace MonoDevelop.Ide.Editor
 
 		public static IErrorMarker CreateErrorMarker (TextEditor editor, Error info)
 		{
-			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
-			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
+			int offset    = info.Region.Offset;
+			int endOffset = info.Region.EndOffset;
 			if (endOffset < offset) {
 				endOffset = offset + 1;
 				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
 					endOffset++;
+				info = new Error (info.ErrorType, info.Message, TextSegment.FromBounds (offset, endOffset));
 			}
-			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
+
+			return editor.TextMarkerFactory.CreateErrorMarker (editor, info);
 		}
 		#endregion
 	}

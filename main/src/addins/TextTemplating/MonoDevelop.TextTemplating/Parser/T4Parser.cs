@@ -28,9 +28,10 @@ using System;
 using System.IO;
 using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
@@ -38,17 +39,20 @@ namespace MonoDevelop.TextTemplating.Parser
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
 		{
+
 			ParsedTemplate template = new ParsedTemplate (fileName);
+			var txt = content.ReadToEnd ();
+			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (txt), fileName);
+
 			try {
-				var tk = new Tokeniser (fileName, content.ReadToEnd ());
+				var tk = new Tokeniser (fileName, txt);
 				template.ParseWithoutIncludes (tk);
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);
 			}
-
 			var errors = new List<Error> ();
 			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors) {
-				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, err.Line, err.Column));
+				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, new TextSegment (readOnlyDoc.LocationToOffset (err.Line, err.Column), 0)));
 			}
 			var doc = new T4ParsedDocument (fileName, template.RawSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;

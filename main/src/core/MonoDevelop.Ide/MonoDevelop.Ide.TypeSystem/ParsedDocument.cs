@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Threading;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -226,41 +224,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.conditionalRegions.AddRange (conditionalRegions);
 		}
 		
-		#region IUnresolvedFile delegation
-		public virtual IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
-		{
-			return null;
-		}
-		
-		public virtual IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
-		{
-			return null;
-		}
-
-		public virtual IUnresolvedMember GetMember (TextLocation location)
-		{
-			return null;
-		}
-
-		public virtual IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return new List<IUnresolvedTypeDefinition> ();
-			}
-		}
-
-		#endregion
-
 		public Func<ITextDocument, DocumentLocation,  DocumentContext, CancellationToken, IRefactoringContext> CreateRefactoringContext;
 		public Func<ITextDocument, DocumentLocation, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
 	}
 	
-	public class DefaultParsedDocument : ParsedDocument, IUnresolvedFile
+	public class DefaultParsedDocument : ParsedDocument
 	{
-
-		public override IUnresolvedFile ParsedFile {
-			get { return this; }
-		}
-		
 		List<Error> errors = new List<Error> ();
 		
 		public override IList<Error> Errors {
@@ -273,53 +242,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 		}
-		
-		#region IUnresolvedFile implementation
-		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition(TextLocation location)
-		{
-			return TopLevelTypeDefinitions.FirstOrDefault (t => t.Region.IsInside (location));
-		}
-		
-		public override IUnresolvedTypeDefinition GetInnermostTypeDefinition(TextLocation location)
-		{
-			IUnresolvedTypeDefinition parent = null;
-			var type = GetTopLevelTypeDefinition(location);
-			while (type != null) {
-				parent = type;
-				type = parent.NestedTypes.FirstOrDefault (t => t.Region.IsInside (location));
-			}
-			return parent;
-		}
-		
-		public override IUnresolvedMember GetMember(TextLocation location)
-		{
-			var type = GetInnermostTypeDefinition(location);
-			if (type == null)
-				return null;
-			return type.Members.FirstOrDefault (e => e.Region.IsInside(location));
-		}
-		
-		List<IUnresolvedTypeDefinition> types = new List<IUnresolvedTypeDefinition> ();
-		public override IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return types;
-			}
-		}
-		
-		List<IUnresolvedAttribute> attributes = new List<IUnresolvedAttribute> ();
-		public IList<IUnresolvedAttribute> AssemblyAttributes {
-			get {
-				return attributes;
-			}
-		}
 
-		public IList<IUnresolvedAttribute> ModuleAttributes {
-			get {
-				return new List<IUnresolvedAttribute> ();
-			}
-		}
-		#endregion
-		
 		public void Add (Error error)
 		{
 			errors.Add (error);
@@ -329,68 +252,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.errors.AddRange (errors);
 		}
-
-		#region IUnresolvedFile implementation
-		DateTime? IUnresolvedFile.LastWriteTime {
-			get {
-				return LastWriteTimeUtc;
-			}
-			set {
-				LastWriteTimeUtc = value.HasValue ? value.Value : DateTime.UtcNow;
-			}
-		}
-		#endregion
 	}
-	
-	[Serializable]
-	public class ParsedDocumentDecorator : ParsedDocument
-	{
-		IUnresolvedFile parsedFile;
-		
-		public override IUnresolvedFile ParsedFile {
-			get { return parsedFile; }
-			set { parsedFile = value; FileName = parsedFile.FileName; }
-		}
-		
-		public override IList<Error> Errors {
-			get {
-				return parsedFile.Errors;
-			}
-		}
-		
-		public ParsedDocumentDecorator (IUnresolvedFile parsedFile) : base (parsedFile.FileName)
-		{
-			this.parsedFile = parsedFile;
-		}
-		
-		public ParsedDocumentDecorator () : base ("")
-		{
-		}
-		
-		#region IUnresolvedFile implementation
-		public override IUnresolvedTypeDefinition GetTopLevelTypeDefinition (TextLocation location)
-		{
-			return parsedFile.GetTopLevelTypeDefinition (location);
-		}
 
-		public override IUnresolvedTypeDefinition GetInnermostTypeDefinition (TextLocation location)
-		{
-			return parsedFile.GetInnermostTypeDefinition (location);
-		}
-
-		public override IUnresolvedMember GetMember (TextLocation location)
-		{
-			return parsedFile.GetMember (location);
-		}
-
-		public override IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
-			get {
-				return parsedFile.TopLevelTypeDefinitions;
-			}
-		}
-		#endregion
-	}
-	
 	public static class FoldingUtilities
 	{
 		static bool IncompleteOrSingleLine (DomRegion region)

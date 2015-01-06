@@ -92,7 +92,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		void ISupportsProjectReload.Update (Project project)
+		void ISupportsProjectReload.Update (MonoDevelop.Projects.Project project)
 		{
 			if (gproject != null && gproject.Project == project)
 				return;
@@ -493,7 +493,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (node.Reference == null)
 				return;
 			
-			ProjectReference pref;
+			MonoDevelop.Projects.ProjectReference pref;
 			
 			// If the class name includes an assembly name it means that the
 			// widget is implemented in another assembly, not in the one that
@@ -509,16 +509,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (asm == null)
 					return;
 				if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
-					pref = new ProjectReference (ReferenceType.Package, asm);
+					pref = new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, asm);
 				} else {
 					asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
-					pref = new ProjectReference (ReferenceType.Assembly, asm);
+					pref = new MonoDevelop.Projects.ProjectReference (ReferenceType.Assembly, asm);
 				}
 			}
 			else
-				pref = new ProjectReference (node.ReferenceType, node.Reference);
+				pref = new MonoDevelop.Projects.ProjectReference (node.ReferenceType, node.Reference);
 			
-			foreach (ProjectReference pr in gproject.Project.References) {
+			foreach (var pr in gproject.Project.References) {
 				if (pr.Reference == pref.Reference)
 					return;
 			}

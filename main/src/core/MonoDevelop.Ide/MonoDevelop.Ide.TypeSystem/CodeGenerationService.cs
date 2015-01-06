@@ -130,26 +130,26 @@ namespace MonoDevelop.Ide.TypeSystem
 				var editor = loadedDocument.Editor;
 				var loc = part.Region.Begin;
 				var parsedDocument = loadedDocument.UpdateParseDocument ();
-				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
-				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
-				if (insertionPoints.Count == 0) {
-					MessageService.ShowError (
-						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
-						);
-					return;
-				}
-				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, delegate(InsertionCursorEventArgs iCArgs) {
-					if (!iCArgs.Success) {
-						tcs.SetResult (false);
-						return;
-					}
-					var generator = CreateCodeGenerator (editor, parentType.Compilation);
-					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
 // TODO: Roslyn port.					
+//				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+//				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
+//				if (insertionPoints.Count == 0) {
+//					MessageService.ShowError (
+//						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+//						);
+//					return;
+//				}
+//				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, delegate(InsertionCursorEventArgs iCArgs) {
+//					if (!iCArgs.Success) {
+//						tcs.SetResult (false);
+//						return;
+//					}
+//					var generator = CreateCodeGenerator (editor, parentType.Compilation);
+//					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
 //					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
 //					iCArgs.InsertionPoint.Insert (editor, generatedCode.Code);
 //					tcs.SetResult (true);
-				}));
+//				}));
 //				var mode = new InsertionCursorEditMode (
 //					editor.Parent,
 //					insertionPoints);
@@ -194,25 +194,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				return tcs.Task;
 
 			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
-			loadedDocument.RunWhenLoaded (delegate {
-				var editor = loadedDocument.Editor;
-				var loc = part.Region.Begin;
-				var parsedDocument = loadedDocument.UpdateParseDocument ();
-				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
-				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
-				if (insertionPoints.Count == 0) {
-					MessageService.ShowError (
-						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
-						);
-					return;
-				}
-				var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember) ?? insertionPoints.First ();
-// TODO: Roslyn port.
+			// TODO: Roslyn port.
+//			loadedDocument.RunWhenLoaded (delegate {
+//				var editor = loadedDocument.Editor;
+//				var loc = part.Region.Begin;
+//				var parsedDocument = loadedDocument.UpdateParseDocument ();
+//				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+//				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
+//				if (insertionPoints.Count == 0) {
+//					MessageService.ShowError (
+//						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+//						);
+//					return;
+//				}
+//				var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember) ?? insertionPoints.First ();
 //				var generator = CreateCodeGenerator (editor, parentType.Compilation);
 //				generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
 //				var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
 //				suitableInsertionPoint.Insert (editor, generatedCode.Code);
-			});
+//			});
 
 			return tcs.Task;
 		}

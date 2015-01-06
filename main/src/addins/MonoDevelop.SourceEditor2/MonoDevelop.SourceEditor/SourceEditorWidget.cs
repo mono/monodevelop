@@ -1362,7 +1362,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin), error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+				var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? Severity.Error : Severity.Warning);
 				tasks.Add (newTask);
 			}
 			

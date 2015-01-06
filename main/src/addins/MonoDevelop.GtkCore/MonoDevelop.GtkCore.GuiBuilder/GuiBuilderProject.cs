@@ -42,6 +42,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -339,16 +340,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
-				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+				var docId = RoslynTypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
+				if (docId == null)
+					continue;
+				var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
 				if (doc == null)
 					continue;
 	
 				string dir = Path.Combine (Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "stetic"), "deleted-designs");
 				if (!Directory.Exists (dir) || Directory.GetFiles (dir).Length == 0)
 					continue;
-	
-				foreach (var t in doc.TopLevelTypeDefinitions) {
-					string path = Path.Combine (dir, t.FullName + ".xml");
+				var semanticModel = doc.GetSemanticModelAsync ().Result;
+				if (semanticModel == null)
+					continue;
+
+				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
+					string path = Path.Combine (dir, c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat) + ".xml");
 					if (!System.IO.File.Exists (path))
 						continue;
 					XmlDocument xmldoc = new XmlDocument ();
@@ -364,12 +372,21 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ArrayList toDelete = new ArrayList ();
 
 			foreach (ProjectFileEventInfo args in e) {
-				var doc = TypeSystemService.ParseFile (args.Project, args.ProjectFile.Name);
+
+				var docId = RoslynTypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
+				if (docId == null)
+					continue;
+				var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
 				if (doc == null)
 					continue;
+				var semanticModel = doc.GetSemanticModelAsync ().Result;
+				if (semanticModel == null)
+					continue;
+
 	
-				foreach (var t in doc.TopLevelTypeDefinitions) {
-					GuiBuilderWindow win = GetWindowForClass (t.FullName);
+				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
+					GuiBuilderWindow win = GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat));
 					if (win != null)
 						toDelete.Add (win);
 				}

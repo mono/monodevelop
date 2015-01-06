@@ -37,7 +37,7 @@ namespace MonoDevelop.TextTemplating.Parser
 	public class T4ParsedDocument : ParsedDocument
 	{
 		string fileName;
-		IList<Error> errors;
+		IList<MonoDevelop.Ide.TypeSystem.Error> errors;
 
 		public override string FileName {
 			get {
@@ -45,14 +45,14 @@ namespace MonoDevelop.TextTemplating.Parser
 			}
 		}
 
-		public T4ParsedDocument (string fileName, List<ISegment> segments, IList<Error> errors)
+		public T4ParsedDocument (string fileName, List<ISegment> segments, IList<MonoDevelop.Ide.TypeSystem.Error> errors)
 		{
 			this.fileName = fileName;
 			this.errors = errors;
 			TemplateSegments = segments;
 		}
 
-		public override IList<Error> Errors {
+		public override IList<MonoDevelop.Ide.TypeSystem.Error> Errors {
 			get {
 				return errors;
 			}

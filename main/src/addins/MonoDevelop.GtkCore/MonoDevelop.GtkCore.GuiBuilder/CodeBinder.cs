@@ -57,12 +57,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		ITextFileProvider textFileProvider;
 		Stetic.Component targetObject;
-		Project project;
+		MonoDevelop.Projects.Project project;
 		GuiBuilderProject gproject;
 		string className;
 		string classFile;
 		
-		public CodeBinder (Project project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
+		public CodeBinder (MonoDevelop.Projects.Project project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
 		{
 			this.project = project;
 			this.textFileProvider = textFileProvider;
@@ -210,7 +210,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (FindField (cls, name) != null)
 				return;
 
-			Document doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().SourceTree.FilePath, true);
+			var doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().SourceTree.FilePath, true);
 			
 			var editor = doc.Editor;
 			if (editor != null) {

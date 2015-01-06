@@ -58,7 +58,7 @@ namespace CBinding.Parser
 				foreach (LanguageItem li in pi.Containers ()) {
 					if (null == li.Parent && FilePath.Equals (li.File, fileName)) {
 						var tmp = AddLanguageItem (pi, globals, li, contentLines) as IUnresolvedTypeDefinition;
-						if (null != tmp){ doc.TopLevelTypeDefinitions.Add (tmp); }
+						if (null != tmp){ /*doc.TopLevelTypeDefinitions.Add (tmp);*/ }
 					}
 				}
 				
@@ -70,7 +70,7 @@ namespace CBinding.Parser
 				}
 			}
 			
-			doc.TopLevelTypeDefinitions.Add (globals);
+			//doc.TopLevelTypeDefinitions.Add (globals);
 			return doc;
 		}
 		

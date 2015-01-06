@@ -3184,9 +3184,9 @@ namespace MonoDevelop.SourceEditor
 			return new SmartTagMarker (offset, realLocation);
 		}
 
-		IErrorMarker ITextMarkerFactory.CreateErrorMarker (MonoDevelop.Ide.Editor.TextEditor editor, Error info, int offset, int length)
+		IErrorMarker ITextMarkerFactory.CreateErrorMarker (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.TypeSystem.Error info)
 		{
-			return new ErrorMarker (info, offset, length);
+			return new ErrorMarker (info, info.Region.Offset, info.Region.Length);
 		}
 		#endregion
 

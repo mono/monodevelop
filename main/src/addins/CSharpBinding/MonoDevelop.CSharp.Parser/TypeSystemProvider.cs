@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser (GetCompilerArguments (project));
 			parser.GenerateTypeSystemMode = !storeAst;
-			var result = new ParsedDocumentDecorator ();
+			var result = new DefaultParsedDocument (fileName);
 
 			if (project != null) {
 				var projectFile = project.Files.GetFile (fileName);

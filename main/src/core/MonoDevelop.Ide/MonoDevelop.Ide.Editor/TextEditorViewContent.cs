@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Editor
 			errors.Clear ();
 		}
 
-		void UnderLineError (Error info)
+		void UnderLineError (MonoDevelop.Ide.TypeSystem.Error info)
 		{
 			var error = TextMarkerFactory.CreateErrorMarker (textEditor, info);
 			textEditor.AddMarker (error); 
@@ -820,7 +820,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 
 				foreach (var error in doc.Errors) {
-					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+					var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? Severity.Error : Severity.Warning);
 					tasks.Add (newTask);
 				}
 			}

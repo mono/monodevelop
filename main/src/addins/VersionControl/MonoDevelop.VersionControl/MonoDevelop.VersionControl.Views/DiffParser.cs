@@ -82,7 +82,7 @@ namespace MonoDevelop.VersionControl.Views
 					// Create new file region
 					currentFile = new DefaultUnresolvedTypeDefinition (string.Empty, string.Empty);
 					currentFile.Region = currentFile.BodyRegion = new DomRegion (lastToken (lineMatch.Groups ["filepath"].Value), linenum, line.Length + 1, linenum, int.MaxValue);
-					doc.TopLevelTypeDefinitions.Add (currentFile);
+					// doc.TopLevelTypeDefinitions.Add (currentFile);
 				} else {
 					lineMatch = chunkExpression.Match (line);
 					if (lineMatch != null && lineMatch.Success && currentFile != null) {

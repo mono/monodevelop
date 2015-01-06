@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
 {

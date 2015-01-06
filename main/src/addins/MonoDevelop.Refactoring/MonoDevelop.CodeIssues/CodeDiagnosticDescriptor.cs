@@ -215,16 +215,6 @@ namespace MonoDevelop.CodeIssues
 				); 
 			}
 		}
-
-		public void SuppressWithAttribute (TextEditor editor, DocumentContext context, TextSpan span)
-		{
-			var end = editor.OffsetToLocation (span.End);
-			var member = context.ParsedDocument.GetMember (new ICSharpCode.NRefactory.TextLocation (end.Line, end.Column));
-			editor.InsertText (
-				editor.LocationToOffset (member.Region.BeginLine, 1),
-				editor.GetVirtualIndentationString (member.Region.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + editor.EolMarker, SuppressMessageCategory, SuppressMessageCheckId)
-			); 
-		}
 	}
 }
 

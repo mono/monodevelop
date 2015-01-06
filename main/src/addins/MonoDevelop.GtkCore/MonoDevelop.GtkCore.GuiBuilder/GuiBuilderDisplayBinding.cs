@@ -30,6 +30,9 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -93,12 +96,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
 			
-			var doc = TypeSystemService.ParseFile (project, file);
+			var docId = RoslynTypeSystemService.GetDocument (project, file);
+			if (docId == null)
+				return null;
+			var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
 			if (doc == null)
 				return null;
+			var semanticModel = doc.GetSemanticModelAsync ().Result;
+			if (semanticModel == null)
+				return null;
 
-			foreach (var t in doc.TopLevelTypeDefinitions) {
-				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (t.FullName);
+			foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+				var c = semanticModel.GetDeclaredSymbol (classDeclaration);
+				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat));
 				if (win != null)
 					return win;
 			}

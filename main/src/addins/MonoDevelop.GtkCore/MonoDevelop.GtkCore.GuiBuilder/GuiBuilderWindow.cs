@@ -242,7 +242,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
+			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
 					var ef = doc.Editor;
 					if (ef != null) return ef;
