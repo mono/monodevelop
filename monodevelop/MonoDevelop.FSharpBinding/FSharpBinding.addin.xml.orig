@@ -32,16 +32,10 @@
     <!--- F# MonoMac templates -->
     <Import file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
     <Import file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
-    <Import file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
-    <Import file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
-    <Import file="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
     <Import file="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
 
     <Import file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
     <Import file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
-    <Import file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
-    <Import file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
-    <Import file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
     <Import file="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
 
     <!--- F# Android templates -->
