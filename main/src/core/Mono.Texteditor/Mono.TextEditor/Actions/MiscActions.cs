@@ -239,9 +239,14 @@ namespace Mono.TextEditor
 		{
 			using (var undo = data.OpenUndoGroup ()) {
 				data.EnsureCaretIsNotVirtual ();
+				string indentString;
+				if (data.HasIndentationTracker) {
+					indentString = data.IndentationTracker.GetIndentationString (data.Caret.Location);
+				} else {
+					indentString = data.GetIndentationString (data.Caret.Location);
+				}
 				data.InsertAtCaret (data.EolMarker);
-				var line = data.Document.GetLine (data.Caret.Line);
-				data.InsertAtCaret (data.GetIndentationString (line.EndOffset));
+				data.InsertAtCaret (indentString);
 			}
 		}
 		
