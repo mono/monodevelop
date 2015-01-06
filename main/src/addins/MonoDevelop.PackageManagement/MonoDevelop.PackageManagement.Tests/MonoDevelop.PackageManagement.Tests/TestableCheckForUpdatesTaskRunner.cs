@@ -1,10 +1,10 @@
 ﻿//
-// TestableUpdatedPackagesInSolution.cs
+// TestableCheckForUpdatesTaskRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,37 +27,33 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement.Tests
 {
-	public class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
+	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
-		public TestableUpdatedPackagesInSolution (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents,
-			CheckForUpdatesTaskRunner taskRunner)
-			: base (
-				solution,
-				registeredPackageRepositories,
-				packageManagementEvents,
-				taskRunner)
+		public TestableCheckForUpdatesTaskRunner (
+			ITaskFactory taskFactory,
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
+			: base (taskFactory, progressMonitorFactory, packageManagementEvents)
 		{
-			FileExistsAction = path => {
-				return true;
-			};
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override CheckForUpdatesProgressMonitor CreateProgressMonitor (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
+		{
+			ProgressMonitorCreated = new TestableCheckForUpdatesProgressMonitor (progressMonitorFactory, packageManagementEvents);
+			return ProgressMonitorCreated;
+		}
+
+		public TestableCheckForUpdatesProgressMonitor ProgressMonitorCreated { get; set; }
+
+		protected override void GuiBackgroundDispatch (MessageHandler handler)
 		{
 			handler.Invoke ();
-		}
-
-		public Func<string, bool> FileExistsAction;
-
-		protected override bool FileExists (string path)
-		{
-			return FileExistsAction (path);
 		}
 	}
 }

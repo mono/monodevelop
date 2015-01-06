@@ -1,5 +1,5 @@
 ﻿//
-// TestableUpdatedPackagesInSolution.cs
+// TestableCheckForUpdatesProgressMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,38 +26,23 @@
 
 using System;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
+	public class TestableCheckForUpdatesProgressMonitor : CheckForUpdatesProgressMonitor
 	{
-		public TestableUpdatedPackagesInSolution (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents,
-			CheckForUpdatesTaskRunner taskRunner)
-			: base (
-				solution,
-				registeredPackageRepositories,
-				packageManagementEvents,
-				taskRunner)
+		public TestableCheckForUpdatesProgressMonitor (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageEvents)
+			: base (progressMonitorFactory, packageEvents)
 		{
-			FileExistsAction = path => {
-				return true;
-			};
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
-		{
-			handler.Invoke ();
-		}
+		public bool IsPackageConsoleShown;
 
-		public Func<string, bool> FileExistsAction;
-
-		protected override bool FileExists (string path)
+		protected override void ShowPackageConsole ()
 		{
-			return FileExistsAction (path);
+			IsPackageConsoleShown = true;
 		}
 	}
 }
