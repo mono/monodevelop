@@ -1918,5 +1918,16 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("bool", val.TypeName);
 			Assert.AreEqual ("false", val.Value);
 		}
+
+		[Test]
+		public void DebugDisplayTest ()
+		{
+			ObjectValue val;
+			if (AllowTargetInvokes) {
+				val = Eval ("debugDisplayMethodTest");
+				Assert.AreEqual ("DebuggerDisplayMethodTest", val.TypeName);
+				Assert.AreEqual ("First Int:32 Second Int:43", val.Value);
+			}
+		}
 	}
 }
