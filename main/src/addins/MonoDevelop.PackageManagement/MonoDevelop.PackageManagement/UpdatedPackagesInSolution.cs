@@ -41,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagementEvents packageManagementEvents;
 		CheckForUpdatesTaskRunner taskRunner;
+		List<ParentPackageOperationEventArgs> packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
 		List<UpdatedPackagesInProject> projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
 
 		public UpdatedPackagesInSolution (
@@ -83,23 +84,34 @@ namespace MonoDevelop.PackageManagement
 		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e)
 		{
 			GuiDispatch (() => {
-				UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
-				if (updatedPackages.AnyPackages ()) {
-					updatedPackages.RemovePackage (e.Package);
-					updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
+				if (taskRunner.IsRunning) {
+					packageOperationsDuringCheckForUpdates.Add (e);
+				} else {
+					RemoveUpdatedPackages (e);
 				}
 			});
+		}
+
+		void RemoveUpdatedPackages (ParentPackageOperationEventArgs e)
+		{
+			UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
+			if (updatedPackages.AnyPackages ()) {
+				updatedPackages.RemovePackage (e.Package);
+				updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
+			}
 		}
 
 		public void Clear ()
 		{
 			taskRunner.Stop ();
 			projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
+			packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
 		}
 
 		public void CheckForUpdates ()
 		{
 			GuiDispatch (() => {
+				Clear ();
 				var task = new CheckForUpdatesTask (this, GetProjectsWithPackages ());
 				taskRunner.Start (task);
 			});
@@ -108,9 +120,20 @@ namespace MonoDevelop.PackageManagement
 		public void CheckForUpdatesCompleted (CheckForUpdatesTask task)
 		{
 			projectsWithUpdatedPackages = task.ProjectsWithUpdatedPackages.ToList ();
+
+			RemovePackagesUpdatedDuringCheckForUpdates ();
+
 			if (AnyUpdates ()) {
 				packageManagementEvents.OnUpdatedPackagesAvailable ();
 			}
+		}
+
+		void RemovePackagesUpdatedDuringCheckForUpdates ()
+		{
+			foreach (ParentPackageOperationEventArgs e in packageOperationsDuringCheckForUpdates) {
+				RemoveUpdatedPackages (e);
+			}
+			packageOperationsDuringCheckForUpdates.Clear ();
 		}
 
 		IEnumerable<IPackageManagementProject> GetProjectsWithPackages ()

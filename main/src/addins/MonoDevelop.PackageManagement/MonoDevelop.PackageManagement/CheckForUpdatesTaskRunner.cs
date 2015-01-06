@@ -58,6 +58,10 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
+		public bool IsRunning {
+			get { return currentCheckForUpdatesTask != null; }
+		}
+
 		public void Start (CheckForUpdatesTask checkForUpdatesTask)
 		{
 			Stop ();

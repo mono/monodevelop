@@ -542,6 +542,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (updatedPackagesInSolution.AnyUpdates ());
 			Assert.IsTrue (fired);
 		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageUpdatedAndPackageIsUninstalledWhilstCheckingForUpdates_NoUpdatesAvailableForUninstalledPackage ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			packageManagementEvents.OnParentPackageUninstalled (package, project);
+			task.ExecuteContinueWith ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
 	}
 }
 
