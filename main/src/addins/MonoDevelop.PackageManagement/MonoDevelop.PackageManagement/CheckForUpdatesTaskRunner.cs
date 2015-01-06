@@ -111,6 +111,7 @@ namespace MonoDevelop.PackageManagement
 			} else if (task.IsCancelled || !IsCurrentTask (task.Result)) {
 				// Ignore.
 				task.Result.Dispose ();
+				return;
 			} else {
 				task.Result.CheckForUpdatesCompleted ();
 				GuiBackgroundDispatch (() => {

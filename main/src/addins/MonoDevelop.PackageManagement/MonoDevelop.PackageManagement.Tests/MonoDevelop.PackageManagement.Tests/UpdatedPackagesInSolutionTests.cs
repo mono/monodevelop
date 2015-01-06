@@ -517,6 +517,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			progressMonitorFactory.ProgressMonitor.AssertMessageIsNotLogged ("Error message");
 			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
 		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdatedAndSolutionClosedBeforeResultsReturnedAndThenSolutionOpenedAgain_UpdatedPackagesAvailableEventIsFiredForSecondOpeningOfSolution ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			bool fired = false;
+			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
+				fired = true;
+			};
+			updatedPackagesInSolution.CheckForUpdates ();
+			var firstTask = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			firstTask.ExecuteTaskButNotContinueWith ();
+			updatedPackagesInSolution.CheckForUpdates ();
+			firstTask.ExecuteContinueWith ();
+			var secondTask = taskFactory.FakeTasksCreated [1] as FakeTask<CheckForUpdatesTask>;
+			secondTask.ExecuteTaskButNotContinueWith ();
+			secondTask.ExecuteContinueWith ();
+
+			Assert.IsTrue (updatedPackagesInSolution.AnyUpdates ());
+			Assert.IsTrue (fired);
+		}
 	}
 }
 
