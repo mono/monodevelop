@@ -59,20 +59,20 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-sharp-2.0</Package>
     </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.CodeAnalysis.Common.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\NRefactory6\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-beta1-20141031-01\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
