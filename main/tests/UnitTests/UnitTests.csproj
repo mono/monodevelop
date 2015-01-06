@@ -62,11 +62,8 @@
       <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
