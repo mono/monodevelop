@@ -6,11 +6,8 @@ SPACE +=
 AOT_DIRECTORIES:=$(subst $(SPACE),:,$(shell find main/build/* -type d))
 MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono --aot --debug
 
-all: update_submodules roslyn all-recursive
+all: update_submodules all-recursive
 
-roslyn:
-	cd main/external/roslyn && sh build.sh
-	
 update_submodules:
 	if test -d ".git"; then \
 		git submodule update --init --recursive || exit 1; \
