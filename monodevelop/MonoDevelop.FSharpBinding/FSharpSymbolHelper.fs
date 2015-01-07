@@ -247,8 +247,10 @@ module SymbolTooltips =
     let getFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
         let indent = String.replicate indent " "
         let functionName =
-            if isConstructor func then func.EnclosingEntity.DisplayName
-            else func.DisplayName
+            let name = 
+                if isConstructor func then func.EnclosingEntity.DisplayName
+                else func.DisplayName
+            escapeText name
 
         let modifiers =
             let accessibility =
