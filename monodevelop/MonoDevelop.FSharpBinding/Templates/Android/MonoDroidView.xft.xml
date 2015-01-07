@@ -13,7 +13,7 @@
 	</Conditions>
 	
 	<TemplateFiles>
-		<File name="${Name}.fs" ><![CDATA[
+		<UnformattedFile name="${Name}.fs" ><![CDATA[
 namespace ${Namespace}
 
 open System
@@ -37,7 +37,7 @@ type ${Name} =
 
     member x.Initialize () = ()
 
-]]></File>
+]]></UnformattedFile>
 	</TemplateFiles>
 </Template>
 

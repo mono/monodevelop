@@ -34,7 +34,7 @@
 			</References>
 		
 			<Files>
-				<File name="Test.fs">
+				<UnformattedFile name="Test.fs">
 <![CDATA[namespace ${ProjectName}
 open System
 open NUnit.Framework
@@ -46,7 +46,7 @@ type Test() =
     member x.TestCase() =
         Assert.IsTrue(true)
 ]]>
-             	</File>
+             	</UnformattedFile>
 			</Files>
 		</Project>
 	</Combine>

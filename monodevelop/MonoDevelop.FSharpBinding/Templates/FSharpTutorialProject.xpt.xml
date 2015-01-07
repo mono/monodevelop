@@ -30,7 +30,7 @@
         <Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
       </References>
       <Files>
-        <File name = "Tutorial.fs" AddStandardHeader="True">
+        <UnformattedFile name = "Tutorial.fs" AddStandardHeader="True">
   <![CDATA[// This sample will guide you through elements of the F# language. 
 
 //
@@ -766,7 +766,7 @@ module BoilerPlateForForm =
 //    do System.Windows.Forms.Application.Run()
 
 #endif
-]]></File>
+]]></UnformattedFile>
       </Files>
     </Project>
   </Combine>

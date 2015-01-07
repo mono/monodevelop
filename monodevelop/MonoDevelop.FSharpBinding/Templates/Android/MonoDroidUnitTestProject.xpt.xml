@@ -35,14 +35,14 @@
 				<File name="MainActivity.fs" src="UnitTestProject/MainActivity.fs" />
 				<File name="TestsSample.fs" src="UnitTestProject/TestsSample.fs" />
 				<Directory name="Resources">
-					<File name="Resource.designer.fs" src="MonoDroidApplication/Resource.fs" />
+					<UnformattedFile name="Resource.designer.fs" src="MonoDroidApplication/Resource.fs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name ="drawable">
 						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
-					<File name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
+					<UnformattedFile name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
 				</Directory>
 				<Directory name="Assets">
 					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />

@@ -14,8 +14,8 @@
   </TemplateConfiguration>
 
   <TemplateFiles>
-    <File DefaultExtension=".fsi" DefaultName="source" AddStandardHeader="True">
-    </File>
+    <UnformattedFile DefaultExtension=".fsi" DefaultName="source" AddStandardHeader="True">
+    </UnformattedFile>
   </TemplateFiles>
 
   <FileOptions/>

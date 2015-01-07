@@ -13,7 +13,7 @@
 	</Conditions>
 	
 	<TemplateFiles>
-		<File name="${Name}.fs" ><![CDATA[
+		<UnformattedFile name="${Name}.fs" ><![CDATA[
 namespace ${Namespace}
 
 open System
@@ -36,6 +36,6 @@ type ${Name}() =
     base.OnCreate (savedInstanceState)
     // Create your fragment here
 
-]]></File>
+]]></UnformattedFile>
 	</TemplateFiles>
 </Template>

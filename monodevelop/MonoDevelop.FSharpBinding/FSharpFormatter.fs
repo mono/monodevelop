@@ -78,7 +78,6 @@ type FSharpFormatter()  =
             | _ -> false
 
         let config = getConfig style formatting
-        LoggingService.LogInfo("**Fantomas**: Read config - \n{0}", sprintf "%A" config)
 
         match options with
         | Document ->
