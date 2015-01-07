@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=8d43049a2038812f4649ed2c16551e46fb29fb6c
+DEP_NEEDED_VERSION[0]=3693bb8e1744699383c9da832cccf7e3ce8092dc
 DEP_BRANCH_AND_REMOTE[0]="publishing-workflow origin/publishing-workflow"
 
 # heap-shot
