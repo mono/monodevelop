@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							continue;
 						if (alreadyVisited.Contains (file.FullPath))
 							continue;
-						alreadyVisited.Add (file.FileName);
+						alreadyVisited.Add (file.FullPath);
 						yield return new FileProvider (file.FullPath);
 					}
 				}
@@ -125,9 +125,9 @@ namespace MonoDevelop.Ide.FindInFiles
 							continue;
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
 							continue;
-						if (alreadyVisited.Contains (file.Name))
+						if (alreadyVisited.Contains (file.FilePath.FullPath))
 							continue;
-						alreadyVisited.Add (file.Name);
+						alreadyVisited.Add (file.FilePath.FullPath);
 						yield return new FileProvider (file.Name, project);
 					}
 				}
@@ -169,9 +169,9 @@ namespace MonoDevelop.Ide.FindInFiles
 						continue;
 					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.Name))
 						continue;
-					if (alreadyVisited.Contains (file.Name))
+					if (alreadyVisited.Contains (file.FilePath.FullPath))
 						continue;
-					alreadyVisited.Add (file.Name);
+					alreadyVisited.Add (file.FilePath.FullPath);
 					yield return new FileProvider (file.Name, project);
 				}
 			}
