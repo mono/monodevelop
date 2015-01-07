@@ -13,7 +13,7 @@
 	</Conditions>
 	
 	<TemplateFiles>
-		<File name="${Name}.fs" ><![CDATA[
+		<UnformattedFile name="${Name}.fs" ><![CDATA[
 namespace ${Namespace}
 
 open System
@@ -35,6 +35,6 @@ type ${Name} =
   override x.OnReceive (context, intent) =
     Toast.MakeText(context, "Received intent!", ToastLength.Short).Show ()
 
-]]></File>
+]]></UnformattedFile>
 	</TemplateFiles>
 </Template>

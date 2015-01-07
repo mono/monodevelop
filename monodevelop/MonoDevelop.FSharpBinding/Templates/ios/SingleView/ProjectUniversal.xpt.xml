@@ -32,8 +32,8 @@
 				</Directory>
 				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_Universal.plist.xml" />
 				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
-				<File name="${SafeProjectName}ViewController.fs" AddStandardHeader="True" src="Universal/ViewController.fs" />
-				<File name="AppDelegate.fs" AddStandardHeader="True" src="Common/AppDelegate.fs" />
+				<UnformattedFile name="${SafeProjectName}ViewController.fs" AddStandardHeader="True" src="Universal/ViewController.fs" />
+				<UnformattedFile name="AppDelegate.fs" AddStandardHeader="True" src="Common/AppDelegate.fs" />
 			</Files>
 		</Project>
 	</Combine>
