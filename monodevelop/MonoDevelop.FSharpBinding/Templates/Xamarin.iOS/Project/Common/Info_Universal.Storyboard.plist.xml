@@ -24,7 +24,5 @@
 	<string>MainStoryboard_iPhone</string>
 	<key>UIMainStoryboardFile~ipad</key>
 	<string>MainStoryboard_iPad</string>
-	<key>MinimumOSVersion</key>
-	<string>5.0</string>
 </dict>
 </plist>
