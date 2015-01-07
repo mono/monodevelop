@@ -27,6 +27,7 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region implemented abstract members of TextLoader
 		TextAndVersion GetTextAndVersion (Workspace workspace, DocumentId documentId)
 		{
-			var text = SourceText.From (TextFileProvider.Instance.GetTextEditorData (fileName).Text);
+			SourceText text;
 			if (workspace.IsDocumentOpen (documentId)) {
 				text = SourceText.From (TextFileProvider.Instance.GetTextEditorData (fileName).Text);
 			}
