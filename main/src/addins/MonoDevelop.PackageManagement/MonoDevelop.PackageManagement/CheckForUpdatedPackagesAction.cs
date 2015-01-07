@@ -26,6 +26,7 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -51,7 +52,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			updatedPackagesInSolution.CheckForUpdates ();
+			// Queue the check for updates with the background dispatcher so
+			// the NuGet addin does not create another separate Package Console.
+			DispatchService.BackgroundDispatch (() => {
+				updatedPackagesInSolution.CheckForUpdates ();
+			});
 		}
 	}
 }
