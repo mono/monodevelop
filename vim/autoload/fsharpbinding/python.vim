@@ -236,7 +236,6 @@ endfunction
 function! fsharpbinding#python#OnCursorHold()
     if exists ("g:fsharp_only_check_errors_on_write") != 0 
         if g:fsharp_only_check_errors_on_write != 1 && b:fsharp_buffer_changed == 1
-            echom "syn check"
             exec "SyntasticCheck"
         endif
     endif
