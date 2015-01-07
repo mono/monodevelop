@@ -27,7 +27,6 @@ using System;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.Utils;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 

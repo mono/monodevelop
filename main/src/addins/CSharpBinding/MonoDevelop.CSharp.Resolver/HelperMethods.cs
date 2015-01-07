@@ -41,12 +41,6 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
@@ -56,16 +50,16 @@ namespace MonoDevelop.CSharp
 {
 	static class HelperMethods
 	{
-		public static void SetText (this CompletionData data, string text)
-		{
-			if (data is CompletionData) {
-				((CompletionData)data).CompletionText = text;
-			} else if (data is IEntityCompletionData) {
-				((IEntityCompletionData)data).CompletionText = text;
-			} else {
-				System.Console.WriteLine("Unknown completion data:" + data);
-			}
-		}
+//		public static void SetText (this CompletionData data, string text)
+//		{
+//			if (data is CompletionData) {
+//				((CompletionData)data).CompletionText = text;
+//			} else if (data is IEntityCompletionData) {
+//				((IEntityCompletionData)data).CompletionText = text;
+//			} else {
+//				System.Console.WriteLine("Unknown completion data:" + data);
+//			}
+//		}
 		
 		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
 		{

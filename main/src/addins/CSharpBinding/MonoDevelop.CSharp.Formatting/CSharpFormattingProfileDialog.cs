@@ -30,7 +30,6 @@ using MonoDevelop.Ide;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui.Content;

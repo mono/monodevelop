@@ -40,7 +40,6 @@ using MonoDevelop.CSharp.Formatting;
 
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -49,7 +48,6 @@ using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
-using MonoDevelop.CSharp.NRefactoryWrapper;
 using System.Xml;
 
 namespace MonoDevelop.CSharp.Completion
@@ -1154,107 +1152,107 @@ namespace MonoDevelop.CSharp.Completion
 			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
 		}
 
-		internal static string ResolveExpression (IReadonlyTextDocument editor, ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, out int startOffset)
-		{
-			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
-			startOffset = -1;
-
-			if (result is NamespaceResolveResult ||
-				result is ConversionResolveResult ||
-				result is ConstantResolveResult ||
-				result is ForEachResolveResult ||
-				result is TypeIsResolveResult ||
-				result is TypeOfResolveResult ||
-				result is ErrorResolveResult)
-				return null;
-
-			if (result.IsCompileTimeConstant)
-				return null;
-
-			startOffset = editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
-
-			if (result is InvocationResolveResult) {
-				var ir = (InvocationResolveResult) result;
-				if (ir.Member.Name == ".ctor") {
-					// if the user is hovering over something like "new Abc (...)", we want to show them type information for Abc
-					return ir.Member.DeclaringType.FullName;
-				}
-
-				// do not support general method invocation for tooltips because it could cause side-effects
-				return null;
-			} else if (result is LocalResolveResult) {
-				if (node is ICSharpCode.NRefactory.CSharp.ParameterDeclaration) {
-					// user is hovering over a method parameter, but we don't want to include the parameter type
-					var param = (ICSharpCode.NRefactory.CSharp.ParameterDeclaration) node;
-
-					return GetIdentifierName (editor, param.NameToken, out startOffset);
-				}
-
-				if (node is ICSharpCode.NRefactory.CSharp.VariableInitializer) {
-					// user is hovering over something like "int fubar = 5;", but we don't want the expression to include the " = 5"
-					var variable = (ICSharpCode.NRefactory.CSharp.VariableInitializer) node;
-
-					return GetIdentifierName (editor, variable.NameToken, out startOffset);
-				}
-			} else if (result is MemberResolveResult) {
-				var mr = (MemberResolveResult) result;
-
-				if (node is ICSharpCode.NRefactory.CSharp.PropertyDeclaration) {
-					var prop = (ICSharpCode.NRefactory.CSharp.PropertyDeclaration) node;
-					var name = GetIdentifierName (editor, prop.NameToken, out startOffset);
-
-					// if the property is static, then we want to return "Full.TypeName.Property"
-					if (prop.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
-						return mr.Member.DeclaringType.FullName + "." + name;
-
-					// otherwise we want to return "this.Property" so that it won't conflict with anything else in the local scope
-					return "this." + name;
-				}
-
-				if (node is ICSharpCode.NRefactory.CSharp.FieldDeclaration) {
-					var field = (ICSharpCode.NRefactory.CSharp.FieldDeclaration) node;
-					var name = GetIdentifierName (editor, field.NameToken, out startOffset);
-
-					// if the field is static, then we want to return "Full.TypeName.Field"
-					if (field.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
-						return mr.Member.DeclaringType.FullName + "." + name;
-
-					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
-					return "this." + name;
-				}
-
-				if (node is ICSharpCode.NRefactory.CSharp.VariableInitializer) {
-					// user is hovering over a field declaration that includes initialization
-					var variable = (ICSharpCode.NRefactory.CSharp.VariableInitializer) node;
-					var name = GetIdentifierName (editor, variable.NameToken, out startOffset);
-
-					// walk up the AST to find the FieldDeclaration so that we can determine if it is static or not
-					var field = variable.GetParent<ICSharpCode.NRefactory.CSharp.FieldDeclaration> ();
-
-					// if the field is static, then we want to return "Full.TypeName.Field"
-					if (field.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
-						return mr.Member.DeclaringType.FullName + "." + name;
-
-					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
-					return "this." + name;
-				}
-
-				if (node is ICSharpCode.NRefactory.CSharp.NamedExpression) {
-					// user is hovering over 'Property' in an expression like: var fubar = new Fubar () { Property = baz };
-					var variable = node.GetParent<ICSharpCode.NRefactory.CSharp.VariableInitializer> ();
-					if (variable != null) {
-						var variableName = GetIdentifierName (editor, variable.NameToken, out startOffset);
-						var name = GetIdentifierName (editor, ((ICSharpCode.NRefactory.CSharp.NamedExpression) node).NameToken, out startOffset);
-
-						return variableName + "." + name;
-					}
-				}
-			} else if (result is TypeResolveResult) {
-				return ((TypeResolveResult) result).Type.FullName;
-			}
-
-			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
-		}
+//		internal static string ResolveExpression (IReadonlyTextDocument editor, ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, out int startOffset)
+//		{
+//			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
+//			startOffset = -1;
+//
+//			if (result is NamespaceResolveResult ||
+//				result is ConversionResolveResult ||
+//				result is ConstantResolveResult ||
+//				result is ForEachResolveResult ||
+//				result is TypeIsResolveResult ||
+//				result is TypeOfResolveResult ||
+//				result is ErrorResolveResult)
+//				return null;
+//
+//			if (result.IsCompileTimeConstant)
+//				return null;
+//
+//			startOffset = editor.LocationToOffset (node.StartLocation.Line, node.StartLocation.Column);
+//
+//			if (result is InvocationResolveResult) {
+//				var ir = (InvocationResolveResult) result;
+//				if (ir.Member.Name == ".ctor") {
+//					// if the user is hovering over something like "new Abc (...)", we want to show them type information for Abc
+//					return ir.Member.DeclaringType.FullName;
+//				}
+//
+//				// do not support general method invocation for tooltips because it could cause side-effects
+//				return null;
+//			} else if (result is LocalResolveResult) {
+//				if (node is ICSharpCode.NRefactory.CSharp.ParameterDeclaration) {
+//					// user is hovering over a method parameter, but we don't want to include the parameter type
+//					var param = (ICSharpCode.NRefactory.CSharp.ParameterDeclaration) node;
+//
+//					return GetIdentifierName (editor, param.NameToken, out startOffset);
+//				}
+//
+//				if (node is ICSharpCode.NRefactory.CSharp.VariableInitializer) {
+//					// user is hovering over something like "int fubar = 5;", but we don't want the expression to include the " = 5"
+//					var variable = (ICSharpCode.NRefactory.CSharp.VariableInitializer) node;
+//
+//					return GetIdentifierName (editor, variable.NameToken, out startOffset);
+//				}
+//			} else if (result is MemberResolveResult) {
+//				var mr = (MemberResolveResult) result;
+//
+//				if (node is ICSharpCode.NRefactory.CSharp.PropertyDeclaration) {
+//					var prop = (ICSharpCode.NRefactory.CSharp.PropertyDeclaration) node;
+//					var name = GetIdentifierName (editor, prop.NameToken, out startOffset);
+//
+//					// if the property is static, then we want to return "Full.TypeName.Property"
+//					if (prop.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
+//						return mr.Member.DeclaringType.FullName + "." + name;
+//
+//					// otherwise we want to return "this.Property" so that it won't conflict with anything else in the local scope
+//					return "this." + name;
+//				}
+//
+//				if (node is ICSharpCode.NRefactory.CSharp.FieldDeclaration) {
+//					var field = (ICSharpCode.NRefactory.CSharp.FieldDeclaration) node;
+//					var name = GetIdentifierName (editor, field.NameToken, out startOffset);
+//
+//					// if the field is static, then we want to return "Full.TypeName.Field"
+//					if (field.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
+//						return mr.Member.DeclaringType.FullName + "." + name;
+//
+//					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
+//					return "this." + name;
+//				}
+//
+//				if (node is ICSharpCode.NRefactory.CSharp.VariableInitializer) {
+//					// user is hovering over a field declaration that includes initialization
+//					var variable = (ICSharpCode.NRefactory.CSharp.VariableInitializer) node;
+//					var name = GetIdentifierName (editor, variable.NameToken, out startOffset);
+//
+//					// walk up the AST to find the FieldDeclaration so that we can determine if it is static or not
+//					var field = variable.GetParent<ICSharpCode.NRefactory.CSharp.FieldDeclaration> ();
+//
+//					// if the field is static, then we want to return "Full.TypeName.Field"
+//					if (field.Modifiers.HasFlag (ICSharpCode.NRefactory.CSharp.Modifiers.Static))
+//						return mr.Member.DeclaringType.FullName + "." + name;
+//
+//					// otherwise we want to return "this.Field" so that it won't conflict with anything else in the local scope
+//					return "this." + name;
+//				}
+//
+//				if (node is ICSharpCode.NRefactory.CSharp.NamedExpression) {
+//					// user is hovering over 'Property' in an expression like: var fubar = new Fubar () { Property = baz };
+//					var variable = node.GetParent<ICSharpCode.NRefactory.CSharp.VariableInitializer> ();
+//					if (variable != null) {
+//						var variableName = GetIdentifierName (editor, variable.NameToken, out startOffset);
+//						var name = GetIdentifierName (editor, ((ICSharpCode.NRefactory.CSharp.NamedExpression) node).NameToken, out startOffset);
+//
+//						return variableName + "." + name;
+//					}
+//				}
+//			} else if (result is TypeResolveResult) {
+//				return ((TypeResolveResult) result).Type.FullName;
+//			}
+//
+//			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
+//		}
 
 		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, MonoDevelop.Ide.Gui.Document doc, int offset, out int startOffset)
 		{

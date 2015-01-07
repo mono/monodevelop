@@ -24,12 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp.Completion;
 using System.Collections.Generic;
 using MonoDevelop.CodeGeneration;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
-using ICSharpCode.NRefactory.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {

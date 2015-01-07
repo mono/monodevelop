@@ -26,7 +26,6 @@
 
 using System;
 
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Gtk;

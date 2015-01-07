@@ -1,90 +1,90 @@
+////
+//// ProtocolCompletionData.cs
+////
+//// Author:
+////       Mike Krüger <mkrueger@xamarin.com>
+////
+//// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+////
+//// Permission is hereby granted, free of charge, to any person obtaining a copy
+//// of this software and associated documentation files (the "Software"), to deal
+//// in the Software without restriction, including without limitation the rights
+//// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//// copies of the Software, and to permit persons to whom the Software is
+//// furnished to do so, subject to the following conditions:
+////
+//// The above copyright notice and this permission notice shall be included in
+//// all copies or substantial portions of the Software.
+////
+//// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//// THE SOFTWARE.
+//using System;
+//using ICSharpCode.NRefactory.TypeSystem;
+//using MonoDevelop.Ide.CodeCompletion;
+//using MonoDevelop.Ide.TypeSystem;
+//using MonoDevelop.CodeGeneration;
+//using MonoDevelop.Ide.Editor.Extension;
 //
-// ProtocolCompletionData.cs
+//namespace MonoDevelop.CSharp.Completion
+//{
+//	class ProtocolCompletionData : CompletionData
+//	{
+//		readonly IMember member;
+//		readonly static Ambience ambience = new CSharpAmbience ();
+//		readonly int    declarationBegin;
+//		CSharpCompletionTextEditorExtension engine;
+//		
+//		public bool GenerateBody { get; set; }
 //
-// Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+////		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+////		{
+////			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
+////		}
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-using System;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.CodeGeneration;
-using MonoDevelop.Ide.Editor.Extension;
-
-namespace MonoDevelop.CSharp.Completion
-{
-	class ProtocolCompletionData : CompletionData
-	{
-		readonly IMember member;
-		readonly static Ambience ambience = new CSharpAmbience ();
-		readonly int    declarationBegin;
-		CSharpCompletionTextEditorExtension engine;
-		
-		public bool GenerateBody { get; set; }
-
-//		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+//		public ProtocolCompletionData (CSharpCompletionTextEditorExtension engine, int declarationBegin, IMember member) : base (null)
 //		{
-//			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
+//			this.engine = engine;
+//			this.member = member;
+//
+//			this.declarationBegin = declarationBegin;
+//			this.GenerateBody = true;
+//			this.Icon = member.GetStockIcon ();
+//			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
+//			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
 //		}
-
-		public ProtocolCompletionData (CSharpCompletionTextEditorExtension engine, int declarationBegin, IMember member) : base (null)
-		{
-			this.engine = engine;
-			this.member = member;
-
-			this.declarationBegin = declarationBegin;
-			this.GenerateBody = true;
-			this.Icon = member.GetStockIcon ();
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
-			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
-		}
-
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
-		{
-			// TODO: Roslyn port.
-//			var ext = engine;
-//			var editor = ext.Editor;
-//			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
-//			if (ext.Project != null)
-//				generator.PolicyParent = ext.Project.Policies;
-//			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
 //
-//			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
-//			sb = sb.TrimEnd ();
+//		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+//		{
+//			// TODO: Roslyn port.
+////			var ext = engine;
+////			var editor = ext.Editor;
+////			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
+////			if (ext.Project != null)
+////				generator.PolicyParent = ext.Project.Policies;
+////			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
+////
+////			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
+////			sb = sb.TrimEnd ();
+////
+////			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
+////			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
+////
+////			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
+////			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
+////
+////			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
+////			if (selectionEndPosition > 0) {
+////				targetCaretPosition += declarationBegin;
+////				selectionEndPosition += declarationBegin;
+////				editor.CaretOffset = selectionEndPosition;
+////				editor.SetSelection (targetCaretPosition, selectionEndPosition);
+////			}
+//		}
+//	}
+//}
 //
-//			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
-//			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
-//
-//			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
-//			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
-//
-//			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
-//			if (selectionEndPosition > 0) {
-//				targetCaretPosition += declarationBegin;
-//				selectionEndPosition += declarationBegin;
-//				editor.CaretOffset = selectionEndPosition;
-//				editor.SetSelection (targetCaretPosition, selectionEndPosition);
-//			}
-		}
-	}
-}
-

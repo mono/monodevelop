@@ -26,7 +26,6 @@
 //
 using System;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide;
 using MonoDevelop.CSharp;
 using MonoDevelop.Core;

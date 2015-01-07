@@ -35,7 +35,6 @@ using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.CSharp.NRefactoryWrapper;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Formatting;

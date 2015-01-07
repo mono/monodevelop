@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Collections.Generic;

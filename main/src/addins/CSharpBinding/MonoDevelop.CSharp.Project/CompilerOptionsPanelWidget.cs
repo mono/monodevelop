@@ -35,8 +35,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -208,16 +208,14 @@ namespace MonoDevelop.CSharp.Project
 		void FillClasses ()
 		{
 			try {
-				var ctx = TypeSystemService.GetCompilation (project);
+				var ctx = RoslynTypeSystemService.GetCompilationAsync (project).Result;
 				if (ctx == null)
 					// Project not found in parser database
 					return;
-				foreach (var c in ctx.GetAllTypeDefinitions ()) {
-					if (c.Methods != null) {
-						foreach (var m in c.Methods) {
-							if (m.IsStatic && m.Name == "Main")
-								classListStore.AppendValues (c.FullName);
-						}
+				foreach (var c in ctx.Assembly.GlobalNamespace.GetTypeMembers ()) {
+					foreach (var m in c.GetMembers().OfType<IMethodSymbol> ()) {
+						if (m.IsStatic && m.Name == "Main")
+							classListStore.AppendValues (c.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 					}
 				}
 				classListFilled = true;

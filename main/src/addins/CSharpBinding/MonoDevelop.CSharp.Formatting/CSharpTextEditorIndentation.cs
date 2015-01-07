@@ -34,19 +34,16 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.SourceEditor;
-using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.Editor;
 using System.Linq;
 using System.Text;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor;
 using Atk;
 using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.CSharp.NRefactoryWrapper;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core.Text;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -114,7 +111,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 
 			if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-				OnTheFlyFormatter.Format (Editor, DocumentContext, location);
+				var offset = Editor.LocationToOffset (location);
+				OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset);
 			}
 		}
 
@@ -151,9 +149,9 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
-			var options = Editor.CreateNRefactoryTextEditorOptions ();
+			//var options = Editor.CreateNRefactoryTextEditorOptions ();
 			var policy = Policy.CreateOptions (Editor.Options);
-			options.IndentBlankLines = true;
+			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
 				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (Editor, policy);
@@ -333,7 +331,7 @@ namespace MonoDevelop.CSharp.Formatting
 						endIndex++;
 					}
 					string tag = endIndex - startIndex > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 1) : null;
-					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
+					if (!string.IsNullOrEmpty (tag) && ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
 						var caretOffset = Editor.CaretOffset;
 						Editor.InsertText (caretOffset, "</" + tag + ">");
 						Editor.CaretOffset = caretOffset;
@@ -413,7 +411,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (descriptor.SpecialKey == SpecialKey.Tab) {
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				if (stateTracker.IsInsideStringLiteral && !Editor.IsSomethingSelected) {
-					var lexer = new CSharpCompletionEngineBase.MiniLexer (Editor.GetTextAt (0, Editor.CaretOffset));
+					var lexer = new ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngineBase.MiniLexer (Editor.GetTextAt (0, Editor.CaretOffset));
 					lexer.Parse ();
 					if (lexer.IsInString) {
 						Editor.InsertAtCaret ("\\t");
@@ -576,7 +574,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			var offset = curLine.Offset;
 			string lineText = data.GetTextAt (caretOffset, max - caretOffset);
-			var lexer = new CSharpCompletionEngineBase.MiniLexer (lineText);
+			var lexer = new ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngineBase.MiniLexer (lineText);
 			lexer.Parse ((ch, i) => {
 				if (lexer.IsInSingleComment || lexer.IsInMultiLineComment)
 					return true;
@@ -729,7 +727,7 @@ namespace MonoDevelop.CSharp.Formatting
 					textEditorData.CaretOffset = line.Offset + insertedText.Length;
 					return true;
 				} else if (wasInStringLiteral) {
-					var lexer = new CSharpCompletionEngineBase.MiniLexer (textEditorData.GetTextAt (0, prevLine.EndOffset).TrimEnd ());
+					var lexer = new ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngineBase.MiniLexer (textEditorData.GetTextAt (0, prevLine.EndOffset).TrimEnd ());
 					lexer.Parse ();
 					if (!lexer.IsInString)
 						return false;

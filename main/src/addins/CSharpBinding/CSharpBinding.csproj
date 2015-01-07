@@ -247,7 +247,6 @@
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
@@ -314,11 +313,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.NRefactoryWrapper\DocumentLineWrapper.cs" />
-    <Compile Include="MonoDevelop.CSharp.NRefactoryWrapper\DocumentWrapper.cs" />
-    <Compile Include="MonoDevelop.CSharp.NRefactoryWrapper\ReadonlyDocumentWrapper.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.NRefactoryWrapper\TextSourceVersionWrapper.cs" />
     <Compile Include="MonoDevelop.CSharp\SemanticErrorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />

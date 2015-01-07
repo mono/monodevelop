@@ -28,19 +28,12 @@ using MonoDevelop.Ide;
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
-using ICSharpCode.NRefactory.CSharp;
 using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Parser;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
-using ICSharpCode.NRefactory.Editor;
-using MonoDevelop.CSharp.NRefactoryWrapper;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Gui.Content;
@@ -54,15 +47,15 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (editor, context, 0, editor.Length);
 		}
 
-		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
-		{
-			Format (editor, context, location, location, false);
-		} 
-
-		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
-		{
-			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
-		}
+//		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
+//		{
+//			Format (editor, context, location, location, false);
+//		} 
+//
+//		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
+//		{
+//			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
+//		}
 		
 		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true)
 		{

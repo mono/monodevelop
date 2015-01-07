@@ -32,7 +32,6 @@ using System.Xml;
 using System.Text;
 using System.Linq;
 using MonoDevelop.Projects.Policies;
-using ICSharpCode.NRefactory.CSharp;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;

@@ -366,7 +366,7 @@ namespace MonoDevelop.CSharp.Parser
 				elseBlock = null;
 				break;
 			case Tokenizer.PreprocessorDirective.Define:
-				result.Add (new PreProcessorDefine (directive.Arg, loc));
+				//result.Add (new PreProcessorDefine (directive.Arg, loc));
 				break;
 			case Tokenizer.PreprocessorDirective.Region:
 				regions.Push (directive);
