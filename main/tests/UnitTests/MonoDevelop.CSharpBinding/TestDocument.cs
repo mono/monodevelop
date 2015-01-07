@@ -45,12 +45,12 @@ namespace MonoDevelop.CSharpBinding
 		
 		public IProjectContent HiddenProjectContent;
 
-		public override IProjectContent GetProjectContext ()
-		{
-			if (HiddenProjectContent != null)
-				return HiddenProjectContent;
-			return base.GetProjectContext ();
-		}
+//		public override IProjectContent GetProjectContext ()
+//		{
+//			if (HiddenProjectContent != null)
+//				return HiddenProjectContent;
+//			return base.GetProjectContext ();
+//		}
 	}
 }
 

@@ -27,9 +27,6 @@
 using System;
 using MonoDevelop.Projects.Policies;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 

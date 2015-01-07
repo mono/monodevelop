@@ -28,7 +28,6 @@ using NUnit.Framework;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.CSharp.Completion;

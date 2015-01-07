@@ -1298,10 +1298,6 @@ namespace MonoDevelop.Ide.TypeSystem
 								return context.SetAssemblyName (assemblyName) ?? context;
 							}
 
-							context = new MonoDevelopProjectContent (p);
-							context = context.SetLocation (p.FileName);
-							context = context.SetAssemblyName (assemblyName);
-
 							QueueParseJob (this.wrapper);
 							return context;
 						} finally {
@@ -1321,9 +1317,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						return null;
 					try {
 						var cache = DeserializeObject<IProjectContent> (cacheFile);
-						var monoDevelopProjectContent = cache as MonoDevelopProjectContent;
-						if (monoDevelopProjectContent != null)
-							monoDevelopProjectContent.Project = project;
 						return cache;
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Error while reading completion cache, regenerating", e); 

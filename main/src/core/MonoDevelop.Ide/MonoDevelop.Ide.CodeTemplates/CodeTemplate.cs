@@ -34,7 +34,6 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.Editor;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Linq;

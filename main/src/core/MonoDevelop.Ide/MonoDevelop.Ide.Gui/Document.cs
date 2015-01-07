@@ -47,9 +47,6 @@ using MonoDevelop.Ide.Extensions;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -67,7 +64,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		ParsedDocument parsedDocument;
-		IProjectContent singleFileContext;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -567,7 +563,6 @@ namespace MonoDevelop.Ide.Gui
 			window = null;
 
 			parsedDocument = null;
-			singleFileContext = null;
 			views = null;
 			viewsRO = null;
 		}
@@ -750,39 +745,13 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				string currentParseText = editor.Text;
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText);
-				if (Project == null && this.parsedDocument != null) {
-					singleFileContext = GetProjectContext ().AddOrUpdateFiles (parsedDocument.ParsedFile);
-				}
 			} finally {
 
 				OnDocumentParsed (EventArgs.Empty);
 			}
 			return this.parsedDocument;
 		}
-
-		static readonly Lazy<IUnresolvedAssembly> mscorlib = new Lazy<IUnresolvedAssembly> ( () => new IkvmLoader ().LoadAssemblyFile (typeof (object).Assembly.Location));
-		static readonly Lazy<IUnresolvedAssembly> systemCore = new Lazy<IUnresolvedAssembly>( () => new IkvmLoader ().LoadAssemblyFile (typeof (System.Linq.Enumerable).Assembly.Location));
-		static readonly Lazy<IUnresolvedAssembly> system = new Lazy<IUnresolvedAssembly>( () => new IkvmLoader ().LoadAssemblyFile (typeof (System.Uri).Assembly.Location));
-
-		static IUnresolvedAssembly Mscorlib { get { return mscorlib.Value; } }
-		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
-		static IUnresolvedAssembly System { get { return system.Value; } }
-
-		public virtual IProjectContent GetProjectContext ()
-		{
-			if (Project == null) {
-				if (singleFileContext == null) {
-					singleFileContext = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent ();
-					singleFileContext = singleFileContext.AddAssemblyReferences (new [] { Mscorlib, System, SystemCore });
-				}
-				if (parsedDocument != null)
-					return singleFileContext.AddOrUpdateFiles (parsedDocument.ParsedFile);
-				return singleFileContext;
-			}
 			
-			return TypeSystemService.GetProjectContext (Project);
-		}
-		
 		uint parseTimeout = 0;
 
 		void EnsureAnalysisDocumentIsOpen ()
