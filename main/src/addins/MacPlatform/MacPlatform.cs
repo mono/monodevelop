@@ -315,7 +315,12 @@ namespace MonoDevelop.MacIntegration
 					}}
 				}}
 
+        style ""menu-item"" {{
+          bg[SELECTED] = ""{0}""
+        }}
+
 				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+        widget_class ""*.<GtkMenuItem>*"" style ""menu-item""
 				",
 				color_hex,
 				text_hex
