@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Projects
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
-			templateCategoriesTreeView.RowActivated += TreeViewRowActivated;
 			templatesTreeView.Selection.Changed += TemplatesTreeViewSelectionChanged;
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
@@ -437,9 +436,20 @@ namespace MonoDevelop.Ide.Projects
 
 		void TreeViewRowActivated (object o, RowActivatedArgs args)
 		{
-			if (CanMoveToNextPage) {
+			if (CanMoveToNextPage && IsSolutionTemplateOnActivatedRow ((Gtk.TreeView)o, args)) {
 				MoveToNextPage ();
 			}
+		}
+
+		bool IsSolutionTemplateOnActivatedRow (TreeView treeView, RowActivatedArgs args)
+		{
+			TreeModel model = treeView.Model;
+			TreeIter iter;
+			if (model.GetIter (out iter, args.Path)) {
+				var template = model.GetValue (iter, TemplateColumn) as SolutionTemplate;
+				return template != null;
+			}
+			return false;
 		}
 	}
 }
