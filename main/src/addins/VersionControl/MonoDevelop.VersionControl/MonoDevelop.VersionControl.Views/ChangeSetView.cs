@@ -74,7 +74,7 @@ namespace MonoDevelop.VersionControl.Views
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
-			colCommit.Widget = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-light-16.png")).ToGtkWidget ();
+			colCommit.Widget = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-16.png")).ToGtkWidget ();
 			colCommit.Widget.Show ();
 			colCommit.PackStart (cellToggle, false);
 			colCommit.PackStart (crc, false);
