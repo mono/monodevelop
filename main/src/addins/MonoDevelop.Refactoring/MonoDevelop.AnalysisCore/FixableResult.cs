@@ -31,12 +31,13 @@ using ICSharpCode.NRefactory.Refactoring;
 using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public class FixableResult : Result
 	{
-		public FixableResult (TextSpan region, string message, Severity level,
+		public FixableResult (TextSpan region, string message, DiagnosticSeverity level,
 			IssueMarker mark, params IAnalysisFix[] fixes)
 			: base (region, message, level, mark)
 		{

@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -182,16 +183,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 			static Cairo.Color GetColor (TextEditor editor, Result result)
 			{
 				switch (result.Level) {
-				case Severity.None:
+				case DiagnosticSeverity.Hidden:
 					return DefaultSourceEditorOptions.Instance.GetColorStyle ().PlainText.Background;
-				case Severity.Error:
+				case DiagnosticSeverity.Error:
 					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
-				case Severity.Warning:
+				case DiagnosticSeverity.Warning:
 					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
-				case Severity.Suggestion:
+				case DiagnosticSeverity.Info:
 					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
-				case Severity.Hint:
-					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
 				default:
 					throw new System.ArgumentOutOfRangeException ();
 				}

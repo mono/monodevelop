@@ -31,8 +31,7 @@ using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -50,19 +49,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 			private set;
 		}
 		
-		public Severity Severity {
+		public DiagnosticSeverity Severity {
 			get;
 			private set;
 		}
 		
-		public QuickTask (Func<string> descriptionFunc, int location, Severity severity)
+		public QuickTask (Func<string> descriptionFunc, int location, DiagnosticSeverity severity)
 		{
 			this.description = new Lazy<string> (descriptionFunc);
 			this.Location = location;
 			this.Severity = severity;
 		}
 
-		public QuickTask (string description, int location, Severity severity)
+		public QuickTask (string description, int location, DiagnosticSeverity severity)
 		{
 			this.description = new Lazy<string> (() => description);
 			this.Location = location;

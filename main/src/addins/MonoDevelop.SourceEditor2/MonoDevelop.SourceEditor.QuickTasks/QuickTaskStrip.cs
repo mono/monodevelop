@@ -37,6 +37,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
 		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
-		public readonly static bool MergeScrollBarAndQuickTasks = !Platform.IsMac;
+		public readonly static bool MergeScrollBarAndQuickTasks = !MonoDevelop.Core.Platform.IsMac;
 
 		static QuickTaskStrip ()
 		{
@@ -262,8 +263,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
 				bool isNextTask = task.Location > curLoc;
 				if (mode == HoverMode.NextMessage ||
-					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-					mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == DiagnosticSeverity.Warning ||
+					mode == HoverMode.NextError && task.Severity == DiagnosticSeverity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)
@@ -280,8 +281,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			foreach (var task in AllTasks.OrderByDescending (t => t.Location) ) {
 				bool isNextTask = task.Location < curLoc;
 				if (mode == HoverMode.NextMessage ||
-					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-					mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == DiagnosticSeverity.Warning ||
+					mode == HoverMode.NextError && task.Severity == DiagnosticSeverity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)

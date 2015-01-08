@@ -49,7 +49,7 @@ namespace MonoDevelop.CodeIssues
 				throw new ArgumentNullException ("diagnostic");
 			this.diagnostic = diagnostic;
 
-			SetSeverity (ConvertSeverity (diagnostic.Severity), GetIssueMarker ()); 
+			SetSeverity (diagnostic.Severity, GetIssueMarker ()); 
 		}
 
 		static TextSpan GetSpan (Diagnostic diagnostic)
@@ -72,22 +72,6 @@ namespace MonoDevelop.CodeIssues
 			if (diagnostic.Severity == DiagnosticSeverity.Info)
 				return IssueMarker.DottedLine;
 			return IssueMarker.WavedLine;
-		}
-
-		static Severity ConvertSeverity (DiagnosticSeverity severity)
-		{
-			switch (severity) {
-			case DiagnosticSeverity.Hidden:
-				return Severity.None;
-			case DiagnosticSeverity.Info:
-				return Severity.Hint;
-			case DiagnosticSeverity.Warning:
-				return Severity.Warning;
-			case DiagnosticSeverity.Error:
-				return Severity.Error;
-			default:
-				throw new ArgumentOutOfRangeException ("severity", severity, "not supported");
-			}
 		}
 	}
 }

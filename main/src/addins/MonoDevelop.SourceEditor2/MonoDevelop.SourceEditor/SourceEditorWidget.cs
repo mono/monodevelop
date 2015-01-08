@@ -45,10 +45,10 @@ using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -1357,12 +1357,12 @@ namespace MonoDevelop.SourceEditor
 			tasks.Clear ();
 			
 			foreach (var cmt in doc.TagComments) {
-				var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin), Severity.Hint);
+				var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin), DiagnosticSeverity.Info);
 				tasks.Add (newTask);
 			}
 			
 			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? Severity.Error : Severity.Warning);
+				var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 				tasks.Add (newTask);
 			}
 			

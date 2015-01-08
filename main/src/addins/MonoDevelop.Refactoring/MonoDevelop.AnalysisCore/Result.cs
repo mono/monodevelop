@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.AnalysisCore.Extensions;
 using ICSharpCode.NRefactory.TypeSystem;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.AnalysisCore
 			this.Underline = underLine;
 		}
 		
-		public Result (TextSpan region, string message, Severity level, IssueMarker inspectionMark, bool underline = true)
+		public Result (TextSpan region, string message, DiagnosticSeverity level, IssueMarker inspectionMark, bool underline = true)
 		{
 			this.Region = region;
 			this.Message = message;
@@ -50,7 +51,7 @@ namespace MonoDevelop.AnalysisCore
 			this.Underline = underline;
 		}
 		 
-		public void SetSeverity (Severity level, IssueMarker inspectionMark)
+		public void SetSeverity (DiagnosticSeverity level, IssueMarker inspectionMark)
 		{
 			this.Level = level;
 			this.InspectionMark = inspectionMark;
@@ -64,7 +65,7 @@ namespace MonoDevelop.AnalysisCore
 		}
 		
 		public string Message { get; private set; }
-		public Severity Level { get; private set; }
+		public DiagnosticSeverity Level { get; private set; }
 		public IssueMarker InspectionMark { get; private set; }
 		public TextSpan Region { get; private set; }
 		

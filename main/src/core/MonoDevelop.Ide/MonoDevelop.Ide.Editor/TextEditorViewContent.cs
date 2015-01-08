@@ -45,6 +45,7 @@ using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -122,7 +123,7 @@ namespace MonoDevelop.Ide.Editor
 				policyContainer.PolicyChanged -= HandlePolicyChanged;
 		}
 
-		void UpdateStyleParent (Project styleParent, string mimeType)
+		void UpdateStyleParent (MonoDevelop.Projects.Project styleParent, string mimeType)
 		{
 			RemovePolicyChangeHandler ();
 
@@ -420,7 +421,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.DiscardChanges ();
 		}
 
-		public Project Project {
+		public MonoDevelop.Projects.Project Project {
 			get {
 				return textEditorImpl.Project;
 			}
@@ -815,12 +816,12 @@ namespace MonoDevelop.Ide.Editor
 			tasks.Clear ();
 			if (doc != null) {
 				foreach (var cmt in doc.TagComments) {
-					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), Severity.Hint);
+					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
 					tasks.Add (newTask);
 				}
 
 				foreach (var error in doc.Errors) {
-					var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? Severity.Error : Severity.Warning);
+					var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					tasks.Add (newTask);
 				}
 			}

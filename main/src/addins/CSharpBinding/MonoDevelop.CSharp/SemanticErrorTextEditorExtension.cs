@@ -130,7 +130,7 @@ namespace MonoDevelop.CSharp
 				base.VisitIdentifierName (node);
 				var info = resolver.GetSymbolInfo (node, cancellationToken); 
 				if (info.Symbol == null)  {
-					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", node.GetText ()), node.SpanStart, ICSharpCode.NRefactory.Refactoring.Severity.Error));
+					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", node.GetText ()), node.SpanStart, DiagnosticSeverity.Error));
 				}
 			}
 
