@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Editor
 	/// A document context puts a textual document in a semantic context inside a project and gives access
 	/// to the parse information of the textual document.
 	/// </summary>
-	public abstract class DocumentContext : ICSharpCode.NRefactory.AbstractAnnotatable
+	public abstract class DocumentContext
 	{
 		/// <summary>
 		/// The name of the document. It's the file name for files on disc. 

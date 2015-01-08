@@ -547,7 +547,6 @@ namespace MonoDevelop.Ide.Gui
 			if (Editor != null) {
 				Editor.Dispose ();
 			}
-			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;
