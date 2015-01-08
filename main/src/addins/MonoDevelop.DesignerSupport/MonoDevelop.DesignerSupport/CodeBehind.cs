@@ -32,7 +32,6 @@ using System.Collections.Generic;
 
 using MonoDevelop.Projects;
 using System.Globalization;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -102,33 +101,33 @@ namespace MonoDevelop.DesignerSupport
 			return null;
 		}
 		
-		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
-		{
-			if (cls.GetDefinition ().Parts.Count == 1)
-				return null;
-			
-			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
-			
-			foreach (var c in cls.GetDefinition ().Parts)
-				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
-			
-			return null;
-		}
-		
-		public static IUnresolvedTypeDefinition GetNonDesignerClass (IType cls)
-		{
-			if (cls.GetDefinition ().Parts.Count == 1)
-				return null;
-			
-			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
-			
-			foreach (var c in cls.GetDefinition ().Parts)
-				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
-				    return c;
-			
-			return null;
-		}
+//		public static IUnresolvedTypeDefinition GetDesignerClass (IType cls)
+//		{
+//			if (cls.GetDefinition ().Parts.Count == 1)
+//				return null;
+//			
+//			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
+//			
+//			foreach (var c in cls.GetDefinition ().Parts)
+//				if (c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+//				    return c;
+//			
+//			return null;
+//		}
+//		
+//		public static IUnresolvedTypeDefinition GetNonDesignerClass (IType cls)
+//		{
+//			if (cls.GetDefinition ().Parts.Count == 1)
+//				return null;
+//			
+//			string designerEnding = ".designer" + Path.GetExtension (cls.GetDefinition ().Region.FileName);
+//			
+//			foreach (var c in cls.GetDefinition ().Parts)
+//				if (!c.Region.FileName.EndsWith (designerEnding, StringComparison.OrdinalIgnoreCase))
+//				    return c;
+//			
+//			return null;
+//		}
 
 		public static bool IsDesignerFile (string name)
 		{
