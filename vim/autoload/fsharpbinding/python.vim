@@ -235,7 +235,7 @@ endfunction
 
 function! fsharpbinding#python#OnCursorHold()
     if exists ("g:fsharp_only_check_errors_on_write") != 0 
-        if g:fsharp_only_check_errors_on_write != 1 
+        if g:fsharp_only_check_errors_on_write != 1 && b:fsharp_buffer_changed == 1
             exec "SyntasticCheck"
         endif
     endif
@@ -255,8 +255,11 @@ function! fsharpbinding#python#OnTextChangedI()
 endfunction
 
 function! fsharpbinding#python#OnBufEnter()
+    let b:fsharp_buffer_changed = 1
     set updatetime=500
 python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
 if vim.eval("exists('b:proj_file')") == 1:
