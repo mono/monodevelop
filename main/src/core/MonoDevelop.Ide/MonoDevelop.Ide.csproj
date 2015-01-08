@@ -776,40 +776,40 @@
       <LogicalName>popup-close-hover-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-left-cap-normal.png">
-      <LogicalName>btn-debug-base-left-cap-normal-light.png</LogicalName>
+      <LogicalName>btn-debug-base-left-cap-normal.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-left-cap-normal%402x.png">
-      <LogicalName>btn-debug-base-left-cap-normal-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-left-cap-normal@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-left-cap-pressed.png">
-      <LogicalName>btn-debug-base-left-cap-pressed-light.png</LogicalName>
+      <LogicalName>btn-debug-base-left-cap-pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-left-cap-pressed%402x.png">
-      <LogicalName>btn-debug-base-left-cap-pressed-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-left-cap-pressed@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-middle-cap-normal.png">
-      <LogicalName>btn-debug-base-middle-cap-normal-light.png</LogicalName>
+      <LogicalName>btn-debug-base-middle-cap-normal.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-middle-cap-normal%402x.png">
-      <LogicalName>btn-debug-base-middle-cap-normal-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-middle-cap-normal@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-middle-cap-pressed.png">
-      <LogicalName>btn-debug-base-middle-cap-pressed-light.png</LogicalName>
+      <LogicalName>btn-debug-base-middle-cap-pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-middle-cap-pressed%402x.png">
-      <LogicalName>btn-debug-base-middle-cap-pressed-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-middle-cap-pressed@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-right-cap-normal.png">
-      <LogicalName>btn-debug-base-right-cap-normal-light.png</LogicalName>
+      <LogicalName>btn-debug-base-right-cap-normal.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-right-cap-normal%402x.png">
-      <LogicalName>btn-debug-base-right-cap-normal-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-right-cap-normal@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-right-cap-pressed.png">
-      <LogicalName>btn-debug-base-right-cap-pressed-light.png</LogicalName>
+      <LogicalName>btn-debug-base-right-cap-pressed.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-right-cap-pressed%402x.png">
-      <LogicalName>btn-debug-base-right-cap-pressed-light@2x.png</LogicalName>
+      <LogicalName>btn-debug-base-right-cap-pressed@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-execute-disabled-32.png">
       <LogicalName>btn-execute-disabled-32.png</LogicalName>
@@ -890,22 +890,22 @@
       <LogicalName>searchbox-search-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button.png">
-      <LogicalName>tree-popup-button-light.png</LogicalName>
+      <LogicalName>tree-popup-button.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button%402x.png">
-      <LogicalName>tree-popup-button-light@2x.png</LogicalName>
+      <LogicalName>tree-popup-button@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-hover.png">
-      <LogicalName>tree-popup-button-hover-light.png</LogicalName>
+      <LogicalName>tree-popup-button-hover.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-hover%402x.png">
-      <LogicalName>tree-popup-button-hover-light@2x.png</LogicalName>
+      <LogicalName>tree-popup-button-hover@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down.png">
-      <LogicalName>tree-popup-button-down-light.png</LogicalName>
+      <LogicalName>tree-popup-button-down.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button-down%402x.png">
-      <LogicalName>tree-popup-button-down-light@2x.png</LogicalName>
+      <LogicalName>tree-popup-button-down@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components\SearchEntry.cs" />
     <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">

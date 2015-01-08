@@ -2247,9 +2247,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			static CustomCellRendererText ()
 			{
-				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button-light.png");
-				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down-light.png");
-				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover-light.png");
+				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button.png");
+				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down.png");
+				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover.png");
 			}
 
 			[GLib.Property ("text-markup")]
