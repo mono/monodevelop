@@ -64,7 +64,7 @@ function! fsharpbinding#python#BuildProject(...)
         if a:0 > 0
             execute '!xbuild ' . fnameescape(a:1)
         elseif exists('b:proj_file')
-            execute '!xbuild ' . fnameescape(b:proj_file)
+            execute '!xbuild ' . fnameescape(b:proj_file) "/verbosity:quiet /nologo"
         else
             echoe "no project file could be found"
         endif
@@ -87,6 +87,25 @@ function! fsharpbinding#python#RunProject(...)
             execute '!mono ' . fnameescape(target)
         else
             echoe "no project file could be found"
+        endif
+    catch
+        echoe "failed to execute build. ex: " v:exception
+    endtry
+endfunction
+
+function! fsharpbinding#python#RunTests(...)
+    try
+        execute 'wa'
+        call fsharpbinding#python#BuildProject()
+        if a:0 > 0 && exists('g:fsharp_test_runner')
+            execute '!mono ' . g:fsharp_test_runner fnameescape(a:1)
+        elseif exists('b:proj_file') && exists('g:fsharp_test_runner')
+            let cmd = 'Statics.projects["' . b:proj_file . '"]["Output"]'
+            let target = s:pyeval(cmd)
+            echom "target" target
+            execute '!mono ' . g:fsharp_test_runner fnameescape(target)
+        else
+            echoe "no project file or test runner could be found"
         endif
     catch
         echoe "failed to execute build. ex: " v:exception

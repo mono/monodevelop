@@ -69,6 +69,7 @@ EOF
     com! -buffer LogFile call fsharpbinding#python#LoadLogFile()
     com! -buffer -nargs=* -complete=file ParseProject call fsharpbinding#python#ParseProject(<f-args>)
     com! -buffer -nargs=* -complete=file BuildProject call fsharpbinding#python#BuildProject(<f-args>)
+    com! -buffer -nargs=* -complete=file RunTests call fsharpbinding#python#RunTests(<f-args>)
     com! -buffer -nargs=* -complete=file RunProject call fsharpbinding#python#RunProject(<f-args>)
     
     "fsi
