@@ -102,22 +102,91 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 			return null;
 		}
-		
+
+		public static void Update (IEnumerable<ProjectFile> files, bool force)
+		{
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
+
+			var fileEnumerator = files.GetEnumerator ();
+
+			if (fileEnumerator.MoveNext())
+				Update (monitor, fileEnumerator, force, false, false);
+		}
+
+		private static void Update(IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, bool hasErrors, bool hasWarnings)
+		{
+			ProjectFile file = fileEnumerator.Current;
+			ProjectFile genFile = null;
+			ISingleFileCustomTool tool = null;
+
+			//Find the first file in the collection, which has got generator tool
+			while (((tool = GetGenerator (file.Generator)) == null
+				|| (genFile = GetGeneratedFile (file, force)) == null)
+				&& fileEnumerator.MoveNext());
+
+			//no files which can be generated in remaining elements of the collection, nothing to do
+			if (tool == null || genFile == null) {
+				WriteSummaryResults (monitor, hasErrors, hasWarnings);
+				return;
+			}
+
+			TaskService.Errors.ClearByOwner (file);
+
+			var result = new SingleFileCustomToolResult ();
+			monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
+
+			try {
+				IAsyncOperation op = tool.Generate (monitor, file, result);
+				op.Completed += delegate {
+					if (result.Success)
+						monitor.Log.WriteLine(GettextCatalog.GetString("File {0} has generated successfully.", result.GeneratedFilePath));
+
+					if (UpdateCompleted (monitor, null, file, genFile, result, true) && fileEnumerator.MoveNext())
+						Update(monitor, fileEnumerator, force, hasErrors || !result.Success, hasWarnings || result.SuccessWithWarnings );
+					else
+						WriteSummaryResults (monitor, hasErrors, hasWarnings);
+				};
+			} catch (Exception ex) {
+				result.UnhandledException = ex;
+				UpdateCompleted (monitor, null, file, genFile, result, true);
+			}
+		}
+
+		static void WriteSummaryResults(IProgressMonitor monitor, bool hasErrors, bool hasWarnings)
+		{
+			if (hasErrors)
+				monitor.ReportError (GettextCatalog.GetString("Errors in files generation."), null);
+			else if (hasWarnings)
+				monitor.ReportSuccess (GettextCatalog.GetString("Warnings in files generation."));
+			else
+				monitor.ReportSuccess (GettextCatalog.GetString("Generated files successfully."));
+
+			monitor.Dispose ();
+		}
+
+		static ProjectFile GetGeneratedFile(ProjectFile file, bool force)
+		{
+			ProjectFile genFile = null;
+
+			if (!string.IsNullOrEmpty (file.LastGenOutput))
+				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
+
+			if (!force && genFile != null && File.Exists (genFile.FilePath) && 
+				File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
+				return null;
+			}
+
+			return genFile;
+		}
+
 		public static void Update (ProjectFile file, bool force)
 		{
 			var tool = GetGenerator (file.Generator);
 			if (tool == null)
 				return;
 			
-			ProjectFile genFile = null;
-			if (!string.IsNullOrEmpty (file.LastGenOutput))
-				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
-			
-			if (!force && genFile != null && File.Exists (genFile.FilePath) && 
-			    File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
-				return;
-			}
-			
+			ProjectFile genFile = GetGeneratedFile(file, force);
+
 			TaskService.Errors.ClearByOwner (file);
 			
 			//if this file is already being run, cancel it
@@ -142,7 +211,7 @@ namespace MonoDevelop.Ide.CustomTools
 						IAsyncOperation runningTask;
 						if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask == op) {
 							runningTasks.Remove (file.FilePath);
-							UpdateCompleted (monitor, aggOp, file, genFile, result);
+							UpdateCompleted (monitor, aggOp, file, genFile, result, false);
 						} else {
 							//it was cancelled because another was run for the same file, so just clean up
 							aggOp.Dispose ();
@@ -154,20 +223,22 @@ namespace MonoDevelop.Ide.CustomTools
 				};
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
-				UpdateCompleted (monitor, aggOp, file, genFile, result);
+				UpdateCompleted (monitor, aggOp, file, genFile, result, false);
 			}
 		}
 		
-		static void UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
-		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result)
+		static bool UpdateCompleted (IProgressMonitor monitor, AggregatedOperationMonitor aggOp,
+		                             ProjectFile file, ProjectFile genFile, SingleFileCustomToolResult result,
+		                             bool runMultipleFiles)
 		{
 			monitor.EndTask ();
-			aggOp.Dispose ();
+			if (aggOp != null)
+				aggOp.Dispose ();
 			
 			if (monitor.IsCancelRequested) {
 				monitor.ReportError (GettextCatalog.GetString ("Cancelled"), null);
 				monitor.Dispose ();
-				return;
+				return false;
 			}
 			
 			string genFileName;
@@ -209,21 +280,23 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 				
 				if (broken)
-					return;
+					return true;
 
-				if (result.Success)
-					monitor.ReportSuccess ("Generated file successfully.");
-				else if (result.SuccessWithWarnings)
-					monitor.ReportSuccess ("Warnings in file generation.");
-				else
-					monitor.ReportError ("Errors in file generation.", null);
-				
+				if (!runMultipleFiles) {
+					if (result.Success)
+						monitor.ReportSuccess ("Generated file successfully.");
+					else if (result.SuccessWithWarnings)
+						monitor.ReportSuccess ("Warnings in file generation.");
+					else
+						monitor.ReportError ("Errors in file generation.", null);
+				}
 			} finally {
-				monitor.Dispose ();
+				if (!runMultipleFiles)
+					monitor.Dispose ();
 			}
 
 			if (result.GeneratedFilePath.IsNullOrEmpty || !File.Exists (result.GeneratedFilePath))
-				return;
+				return true;
 
 			// broadcast a change event so text editors etc reload the file
 			FileService.NotifyFileChanged (result.GeneratedFilePath);
@@ -252,6 +325,8 @@ namespace MonoDevelop.Ide.CustomTools
 				if (projectChanged)
 					IdeApp.ProjectOperations.Save (file.Project);
 			});
+
+			return true;
 		}
 		
 		static void HandleRename (ProjectFileRenamedEventArgs e)

@@ -28,6 +28,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CustomTools;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -42,20 +44,33 @@ namespace MonoDevelop.TextTemplating
 		{
 			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
 
+			IEnumerable<ProjectFile> files = null;
+
 			Solution solution = wob as Solution;
 			if (solution != null) {
 				foreach(Project p in solution.GetAllProjects ())
-					UpdateFilesInProject(p);
+					files = (files == null) ? GetFilesToUpdate (p) : files.Concat (GetFilesToUpdate (p));
 			} else {
 				Project proj = wob as Project;
 
 				if (proj != null) {
-					UpdateFilesInProject (proj);
+					files = GetFilesToUpdate (proj);
 				}
 			}
 
+			if (files != null)
+				CustomToolService.Update (files, true);
+
 			base.Run ();
 
+		}
+
+		private IEnumerable<ProjectFile> GetFilesToUpdate(Project project)
+		{
+			return project.Files.Where (
+				f => f.Generator == typeof(TextTemplatingFileGenerator).Name
+				|| f.Generator == typeof(TextTemplatingFilePreprocessor).Name
+			);
 		}
 
 		private void UpdateFilesInProject(Project project)
