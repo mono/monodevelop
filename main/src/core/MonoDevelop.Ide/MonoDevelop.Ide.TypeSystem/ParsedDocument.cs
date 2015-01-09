@@ -131,20 +131,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Errors.Any (e => e.ErrorType == ErrorType.Error);
 			}
 		}
-		
-		/// <summary>
-		/// Gets or sets the language ast used by specific language backends.
-		/// </summary>
-		public object Ast {
-			get;
-			set;
-		}
-		
-		public T GetAst<T> () where T : class
-		{
-			return Ast as T;
-		}
-		
+
 		public ParsedDocument ()
 		{
 		}
