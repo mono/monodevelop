@@ -78,6 +78,7 @@
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "vc-add-command" resource = "vcs-added-16.png" size="Menu" />
 		<StockIcon stockid = "vc-remove-command" resource = "vcs-removed-16.png" size="Menu" />
+		<StockIcon stockid = "vc-rename-command" resource = "vcs-renamed-16.png" size="Menu" />
 		<StockIcon stockid = "vc-resolve-command" resource = "vcs-conflicted-16.png" size="Menu" />
 		<StockIcon stockid = "vc-revert-command" resource = "revert-16.png" size="Menu" />
 		<StockIcon stockid = "vc-diff" resource = "diff-16.png" size="Menu" />
@@ -92,6 +93,7 @@
 		<StockIcon stockid = "md-version-control" resource = "version-control-16.png" size="Menu" />
 		<StockIcon stockid = "vc-file-added" resource = "vcs-added-16.png" size="Menu" />
 		<StockIcon stockid = "vc-file-removed" resource = "vcs-removed-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-renamed" resource = "vcs-renamed-16.png" size="Menu" />
 		<StockIcon stockid = "vc-file-modified" resource = "vcs-modified-16.png" size="Menu" />
 		<StockIcon stockid = "vc-file-conflicted" resource = "vcs-conflicted-16.png" size="Menu" />
 		<StockIcon stockid = "vc-repository" resource = "repository-16.png" size="Menu" />

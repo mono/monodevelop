@@ -147,6 +147,12 @@
     <EmbeddedResource Include="icons\removed-overlay-16%402x.png">
       <LogicalName>removed-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16.png">
+      <LogicalName>renamed-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16%402x.png">
+      <LogicalName>renamed-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\ignored-overlay-16.png">
       <LogicalName>ignored-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -254,6 +260,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-removed-16%402x.png">
       <LogicalName>vcs-removed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16.png">
+      <LogicalName>vcs-renamed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16%402x.png">
+      <LogicalName>vcs-renamed-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-conflicted-16.png">
       <LogicalName>vcs-conflicted-16.png</LogicalName>
