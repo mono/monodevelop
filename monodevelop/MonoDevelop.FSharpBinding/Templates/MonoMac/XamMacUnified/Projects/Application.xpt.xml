@@ -1,0 +1,43 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Xamarin.Mac Application</_Name>
+		<_Category>F#/Mac/Unified API</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description><![CDATA[*** PREVIEW ONLY ***
+
+A basic Cocoa Mac application that targets the new Unified API shared with Xamarin.iOS. Requires Xcode 5 or newer.
+
+The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
+
+Currently the Unified API is available as a preview, is subject to change, and stability is not yet guaranteed.]]>
+		</_Description>
+	</TemplateConfiguration>
+
+	<Actions>
+		<Open filename="AppDelegate.fs"/>
+	</Actions>
+
+	<Combine name="${ProjectName}" directory=".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name="${ProjectName}" directory="." type="XamMac2">
+			<Options TargetFrameworkVersion="Xamarin.Mac,Version=v2.0"/>
+			<References>
+				<Reference type="Gac" refto="System"/>
+				<Reference type="Gac" refto="System.Core"/>
+				<Reference type="Gac" refto="Xamarin.Mac"/>
+			</References>
+			<Files>
+				<Directory name="Resources"/>
+				<FileTemplateReference TemplateID="XamMac2ApplicationManifest"/>
+				<File name="MainMenu.xib" src="Application/MainMenu.xib" DefaultExtension=".xib" SuppressAutoOpen="True"/>
+				<FileTemplateReference TemplateID="FSharpXamMac2WindowWithController" name="MainWindow"/>
+				<UnformattedFile name="AppDelegate.fs" src="Application/AppDelegate.fs" AddStandardHeader="True"/>
+				<UnformattedFile name="Main.fs" src="Application/Main.fs" AddStandardHeader="True"/>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
