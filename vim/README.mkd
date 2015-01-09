@@ -44,6 +44,7 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 * `:ParseProject` Reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` Calls xbuild on the fsproj for the current file (if any). Can also take a path to the proj file to build.
 * `:RunProject` Runs the project for the current file (if any). 
+* `:RunTests` If `g:fsharp_test_runner` is set it will build the current project and run any tests. (Currently only tested with nunit-console.exe)
 * `leader<t>` Echoes the type of the expression currently pointed to by the cursor.
 * `leader<d>` _go to declaration_ in current window. 
 * `leader<s>` Takes you back from where _go to declaration_ was triggered.
@@ -84,6 +85,11 @@ You can set the msbuild/xbuild path. On windows it is very likely you need to do
 let g:fsharp_xbuild_path = "/path/to/xbuild/or/msbuild"
 ~~~
 
+This setting needs to point to a suitable test runner (such as nunit-console.exe)
+
+~~~.vim
+let g:fsharp_test_runner = "/path/to/test/runner"
+~~~
 
 [syntastic]: https://github.com/scrooloose/syntastic
 [airline]: https://github.com/bling/vim-airline
