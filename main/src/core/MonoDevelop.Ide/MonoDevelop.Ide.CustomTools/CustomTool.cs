@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.CustomTools
 		
 		public bool SuccessWithWarnings {
 			get {
-				return UnhandledException == null && !Errors.HasErrors;
+				return UnhandledException == null && !Errors.HasErrors && Errors.HasWarnings;
 			}
 		}
 	}
