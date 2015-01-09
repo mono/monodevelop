@@ -561,10 +561,34 @@ module internal Patterns =
                 OtherCode (style.PlainText.Name, docText)
         else OtherCode (style.PlainText.Name, docText)
 
+module Rules =
+    let baseMode =
+        let assembly = Reflection.Assembly.GetExecutingAssembly ()
+        let manifest =
+            assembly.GetManifestResourceNames ()
+            |> Seq.find (fun s -> s.Contains ("FSharpSyntaxMode"))
+
+        let provider = new ResourceStreamProvider (assembly, manifest)
+        use stream = provider.Open ()
+        let baseMode = SyntaxMode.Read (stream)
+        baseMode
+
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
-type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) =
+type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     inherit SyntaxMode()
+
+    let baseMode = Rules.baseMode
+    do  this.rules <- ResizeArray (baseMode.Rules)
+        this.keywords <- ResizeArray (baseMode.Keywords)
+        this.spans <- baseMode.Spans |> Array.ofSeq
+        this.matches <- baseMode.Matches
+        this.prevMarker <- baseMode.PrevMarker
+        this.SemanticRules <- ResizeArray (baseMode.SemanticRules)
+        this.keywordTable <- baseMode.keywordTable
+        this.keywordTableIgnoreCase <- baseMode.keywordTableIgnoreCase
+        this.properties <- baseMode.Properties
+
     // Mutable Local Variables
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
