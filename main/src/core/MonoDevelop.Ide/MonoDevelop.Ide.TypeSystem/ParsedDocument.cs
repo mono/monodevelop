@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		NonSerializable = 1
 	}
 
-
 	public abstract class ParsedDocument
 	{
 		DateTime lastWriteTimeUtc = DateTime.UtcNow;
@@ -51,11 +50,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		[NonSerialized]
 		List<Comment> comments = new List<Comment> ();
-		
-		public virtual IUnresolvedFile ParsedFile {
-			get { return null; }
-			set { throw new InvalidOperationException (); }
-		}
 
 		public IList<Comment> Comments {
 			get {
@@ -223,9 +217,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.conditionalRegions.AddRange (conditionalRegions);
 		}
-		
-		public Func<ITextDocument, DocumentLocation,  DocumentContext, CancellationToken, IRefactoringContext> CreateRefactoringContext;
-		public Func<ITextDocument, DocumentLocation, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument

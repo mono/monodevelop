@@ -359,12 +359,12 @@ namespace MonoDevelop.Ide.Gui
 				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
 				var doc = parsedDocument;
-				if (doc != null && doc.ParsedFile != null) {
+				if (doc != null) {
 					string fileName = Window.ViewContent.ContentName;
 					try {
-						doc.ParsedFile.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
+						doc.LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName);
 					} catch (Exception e) {
-						doc.ParsedFile.LastWriteTime = DateTime.UtcNow;
+						doc.LastWriteTimeUtc = DateTime.UtcNow;
 						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 
 					}
 				}

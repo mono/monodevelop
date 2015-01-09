@@ -80,8 +80,7 @@ namespace MonoDevelop.CSharp.Parser
 				pf.LastWriteTime = DateTime.UtcNow;
 			}
 
-			result.LastWriteTimeUtc = pf.LastWriteTime.Value;
-			result.ParsedFile = pf;
+			result.LastWriteTimeUtc = pf.LastWriteTime.Value.ToUniversalTime ();
 			result.Add (GetSemanticTags (unit));
 
 /*			result.CreateRefactoringContext =  (editor, caretLocation, doc, token) =>  {

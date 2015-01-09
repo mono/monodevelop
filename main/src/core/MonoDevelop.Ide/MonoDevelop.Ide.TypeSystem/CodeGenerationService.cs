@@ -48,44 +48,44 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class CodeGenerationService
 	{
-		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
-		{
-			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
-			
-			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
-			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
-			
-			var dotNetProject = project as DotNetProject;
-			if (dotNetProject == null) {
-				LoggingService.LogError ("Only .NET projects are supported.");
-				return null;
-			}
-			
-			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
-			StringWriter sw = new StringWriter ();
-			var options = new CodeGeneratorOptions ();
-			options.IndentString = data.GetLineIndent (type.Region.BeginLine) + "\t";
-			if (newMember is CodeMemberMethod)
-				options.BracingStyle = "C";
-			generator.GenerateCodeFromMember (newMember, sw, options);
-
-			var code = sw.ToString ();
-			if (!string.IsNullOrEmpty (code))
-				suitableInsertionPoint.Insert (data, code);
-			if (!isOpen) {
-				try {
-					File.WriteAllText (type.Region.FileName, data.Text);
-				} catch (Exception e) {
-					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.Region.FileName), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
-				}
-			}
-			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
-			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
-		}
+//		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
+//		{
+//			bool isOpen;
+//			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+//			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
+//			
+//			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
+//			
+//			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
+//			
+//			var dotNetProject = project as DotNetProject;
+//			if (dotNetProject == null) {
+//				LoggingService.LogError ("Only .NET projects are supported.");
+//				return null;
+//			}
+//			
+//			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
+//			StringWriter sw = new StringWriter ();
+//			var options = new CodeGeneratorOptions ();
+//			options.IndentString = data.GetLineIndent (type.Region.BeginLine) + "\t";
+//			if (newMember is CodeMemberMethod)
+//				options.BracingStyle = "C";
+//			generator.GenerateCodeFromMember (newMember, sw, options);
+//
+//			var code = sw.ToString ();
+//			if (!string.IsNullOrEmpty (code))
+//				suitableInsertionPoint.Insert (data, code);
+//			if (!isOpen) {
+//				try {
+//					File.WriteAllText (type.Region.FileName, data.Text);
+//				} catch (Exception e) {
+//					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.Region.FileName), e);
+//					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
+//				}
+//			}
+//			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
+//			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
+//		}
 		
 		public static void AddNewMember (ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
 		{

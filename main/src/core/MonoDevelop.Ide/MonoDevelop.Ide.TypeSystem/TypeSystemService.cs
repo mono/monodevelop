@@ -377,11 +377,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper._content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
+						//wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
 						UpdateProjectCommentTasks (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
+						// wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
 					}
 
 					// The parsed file could be included in other projects as well, therefore
@@ -395,9 +395,9 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (file != null) {
 							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
 							if ((newResult.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-								pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
+								// pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
 								pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
-								pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
+								// pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
 							}
 						}
 					}
@@ -438,11 +438,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (projectWrapperUpdateLock) {
 					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
 						var oldFile = wrapper._content.GetFile (fileName);
-						wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
+						// wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
 						UpdateProjectCommentTasks (wrapper, result);
 						if (oldFile != null)
 							wrapper.InformFileRemoved (new ParsedFileEventArgs (oldFile));
-						wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
+						// wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
 					}
 				}
 				return result;
@@ -2567,7 +2567,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var parsedDocument = ParseFile (file, mimeType, reader);
 				
 				var content = new CSharpProjectContent ();
-				return content.AddOrUpdateFiles (parsedDocument.ParsedFile);
+				return content;
 			}
 		}
 
@@ -2663,15 +2663,15 @@ namespace MonoDevelop.Ide.TypeSystem
 							return;
 						parsedFiles.Add (Tuple.Create (parsedDocument, Context._content.GetFile (fileName))); 
 					}
-					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Where (f => (f.Item1.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable).Select (p => p.Item1.ParsedFile)));
+					// Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Where (f => (f.Item1.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable).Select (p => p.Item1ParsedFile)));
 					foreach (var file in parsedFiles) {
 						if (token.IsCancellationRequested)
 							return;
 						if (file.Item2 != null)
 							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
 						var parsedDocument = file.Item1;
-						if ((parsedDocument.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
-							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
+//						if ((parsedDocument.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+//							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
 					Context.EndLoadOperation ();
