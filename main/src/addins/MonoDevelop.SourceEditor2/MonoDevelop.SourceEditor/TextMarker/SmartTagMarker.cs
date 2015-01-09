@@ -46,6 +46,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.editor = editor;
 			var line = editor.GetLine (loc.Line);
+			if (line == null)
+				return;
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
 			cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (metrics.LineYRenderStartPosition) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
