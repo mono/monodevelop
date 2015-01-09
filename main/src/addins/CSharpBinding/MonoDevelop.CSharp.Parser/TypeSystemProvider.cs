@@ -94,7 +94,6 @@ namespace MonoDevelop.CSharp.Parser
 */
 
 			if (storeAst) {
-				result.Ast = unit;
 				result.Add (GenerateFoldings (unit, result));
 			}
 			return result;

@@ -134,7 +134,7 @@ namespace MonoDevelop.CSharp.Completion
 //			DocumentContext.DocumentParsed += HandleDocumentParsed;
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument != null) {
-				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
+//				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
 //					this.UnresolvedFileCompilation = DocumentContext.Compilation;
 //					this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 //					Editor.CaretPositionChanged += HandlePositionChanged;
