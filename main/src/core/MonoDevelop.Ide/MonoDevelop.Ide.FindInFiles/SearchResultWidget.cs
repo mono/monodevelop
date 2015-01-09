@@ -833,8 +833,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			for (int j = 0; j < textMarkup.Length; j++) {
 				var ch = textMarkup [j];
 				if (inEntity) {
-					if (ch == ';')
+					if (ch == ';') {
 						inEntity = false;
+						i++;
+					}
 					markupBuilder.Append (ch);
 					continue;
 				}

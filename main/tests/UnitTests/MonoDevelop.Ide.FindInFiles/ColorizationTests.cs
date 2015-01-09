@@ -58,6 +58,22 @@ namespace MonoDevelop.Ide.FindInFiles
 			);
 			Assert.AreEqual ("<span foreground=\"#000000\">Console.WriteLine (</span><span foreground=\"#3364A4\"><span background=\"#FFFFFF\">base</span><span foreground=\"#000000\"><span background=\"#FFFFFF\">.</span>ToString());</span>", result);
 		}
+
+
+		/// <summary>
+		/// Bug 25836 - Search Results widget displaying wrong highlight
+		/// </summary>
+		[Test]
+		public void TestBug25836 ()
+		{
+			var result = PangoHelper.ColorMarkupBackground (
+				"<span foreground=\"#000000\">List&lt;RevisionPath&gt; foo;</span>",
+				5,
+				17,
+				new Mono.TextEditor.HslColor (1d, 1d, 1d)
+			);
+			Assert.AreEqual ("<span foreground=\"#000000\">List&lt;<span background=\"#FFFFFF\">RevisionPath</span>&gt; foo;</span>", result);
+		}
 	}
 }
 
