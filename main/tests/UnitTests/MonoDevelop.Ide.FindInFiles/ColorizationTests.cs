@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				24,
 				new Mono.TextEditor.HslColor (1d, 1d, 1d)
 			);
-			Assert.AreEqual ("<span foreground=\"#000000\">Console.WriteLine (</span><span foreground=\"#3364A4\"><span background=\"#FFFFFF\">base</span><span foreground=\"#000000\"><span background=\"#FFFFFF\">.</span>ToString());</span>", result);
+			Assert.AreEqual ("<span foreground=\"#000000\">Console.WriteLine (</span><span foreground=\"#3364A4\"><span background=\"#FFFFFF\">base</span></span><span foreground=\"#000000\"><span background=\"#FFFFFF\">.</span>ToString());</span>", result);
 		}
 
 
@@ -74,6 +74,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			);
 			Assert.AreEqual ("<span foreground=\"#000000\">List&lt;<span background=\"#FFFFFF\">RevisionPath</span>&gt; foo;</span>", result);
 		}
+
+
+		[Test]
+		public void TestMarekReportedBug ()
+		{
+			var result = PangoHelper.ColorMarkupBackground (
+				"<span foreground=\"#000000\">ec.Report.Error (</span><span foreground=\"#A40000\">29</span><span foreground=\"#000000\">, loc, </span><span foreground=\"#A40000\">\"Cannot implicitly convert type `{0}' to `{1}'\"</span><span foreground=\"#000000\">,</span>",
+				16,
+				20,
+				new Mono.TextEditor.HslColor (1d, 1d, 1d)
+			);
+			Assert.AreEqual ("<span foreground=\"#000000\">ec.Report.Error <span background=\"#FFFFFF\">(</span></span><span foreground=\"#A40000\"><span background=\"#FFFFFF\">29</span></span><span foreground=\"#000000\"><span background=\"#FFFFFF\">,</span> loc, </span><span foreground=\"#A40000\">\"Cannot implicitly convert type `{0}' to `{1}'\"</span><span foreground=\"#000000\">,</span>", result);
+		}
 	}
 }
-

@@ -845,6 +845,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						inMarkup = false;
 						markupBuilder.Append (ch);
 						if (i > startIndex && markupBuilder.ToString ().EndsWith("</span>")) {
+							if (!closed)
+								markupBuilder.Append ("</span>");
 							markupBuilder.Append (textMarkup.Substring(j + 1));
 							return ColorMarkupBackground (markupBuilder.ToString (), i, endIndex, searchColor);
 						}
