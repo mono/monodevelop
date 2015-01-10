@@ -48,12 +48,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Tools">
-		<Condition id="ItemType" value="Solution|Project">
-			<CommandItem id = "MonoDevelop.TextTemplating.Commands.Generate"
-						 _label = "Process Templates"
-						 defaultHandler = "MonoDevelop.TextTemplating.GenerateCommandHandler"
-			/>
-		</Condition>
+		<CommandItem id = "MonoDevelop.TextTemplating.Commands.Generate"
+					 _label = "Process Templates"
+					 defaultHandler = "MonoDevelop.TextTemplating.GenerateCommandHandler"
+		/>
 	</Extension>
 
 

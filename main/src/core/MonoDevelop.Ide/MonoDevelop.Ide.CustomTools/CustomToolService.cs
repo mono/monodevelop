@@ -107,13 +107,22 @@ namespace MonoDevelop.Ide.CustomTools
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false);
 
-			var fileEnumerator = files.GetEnumerator ();
+			IEnumerator<ProjectFile> fileEnumerator;
 
-			if (fileEnumerator.MoveNext())
-				Update (monitor, fileEnumerator, force, false, false);
+			//begin root task
+			monitor.BeginTask (GettextCatalog.GetString ("Generate templates"), 1);
+
+			if (files == null || !(fileEnumerator = files.GetEnumerator ()).MoveNext ()) {
+				monitor.EndTask ();
+				monitor.ReportSuccess (GettextCatalog.GetString ("There is no files to generate"));
+				monitor.Dispose ();
+			} else {
+				Update (monitor, fileEnumerator, force, 0, 0, 0);
+			}
+
 		}
 
-		private static void Update(IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, bool hasErrors, bool hasWarnings)
+		static void Update (IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int successed, int warnings, int errors)
 		{
 			ProjectFile file = fileEnumerator.Current;
 			ProjectFile genFile = null;
@@ -121,12 +130,12 @@ namespace MonoDevelop.Ide.CustomTools
 
 			//Find the first file in the collection, which has got generator tool
 			while (((tool = GetGenerator (file.Generator)) == null
-				|| (genFile = GetGeneratedFile (file, force)) == null)
-				&& fileEnumerator.MoveNext());
+			       || (genFile = GetGeneratedFile (file, force)) == null)
+			       && fileEnumerator.MoveNext ());
 
 			//no files which can be generated in remaining elements of the collection, nothing to do
 			if (tool == null || genFile == null) {
-				WriteSummaryResults (monitor, hasErrors, hasWarnings);
+				WriteSummaryResults (monitor, successed, warnings, errors);
 				return;
 			}
 
@@ -138,13 +147,22 @@ namespace MonoDevelop.Ide.CustomTools
 			try {
 				IAsyncOperation op = tool.Generate (monitor, file, result);
 				op.Completed += delegate {
-					if (result.Success)
-						monitor.Log.WriteLine(GettextCatalog.GetString("File {0} has generated successfully.", result.GeneratedFilePath));
+					if (result.Success) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' has generated successfully.", result.GeneratedFilePath));
+						successed++;
+					} else if (result.SuccessWithWarnings) {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("File '{0}' has generated with warnings.", result.GeneratedFilePath));
+						warnings++;
+					} else {
+						monitor.Log.WriteLine (GettextCatalog.GetString ("Errors in file '{0}' generation.", result.GeneratedFilePath));
+						errors++;
+					}
 
-					if (UpdateCompleted (monitor, null, file, genFile, result, true) && fileEnumerator.MoveNext())
-						Update(monitor, fileEnumerator, force, hasErrors || !result.Success, hasWarnings || result.SuccessWithWarnings );
+					//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occured
+					if (UpdateCompleted (monitor, null, file, genFile, result, true) && fileEnumerator.MoveNext ())
+						Update (monitor, fileEnumerator, force, successed, warnings, errors);
 					else
-						WriteSummaryResults (monitor, hasErrors, hasWarnings);
+						WriteSummaryResults (monitor, successed, warnings, errors);
 				};
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
@@ -152,27 +170,33 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 
-		static void WriteSummaryResults(IProgressMonitor monitor, bool hasErrors, bool hasWarnings)
+		static void WriteSummaryResults (IProgressMonitor monitor, int succeded, int warnings, int errors)
 		{
-			if (hasErrors)
-				monitor.ReportError (GettextCatalog.GetString("Errors in files generation."), null);
-			else if (hasWarnings)
-				monitor.ReportSuccess (GettextCatalog.GetString("Warnings in files generation."));
+			monitor.Log.WriteLine ();
+			monitor.Log.WriteLine (GettextCatalog.GetString ("{0} files processed total. {1} generated sucessfully, {2} with warnings, {3} with errors"),
+				succeded + warnings + errors, succeded, warnings, errors);
+			//ends the root task
+			monitor.EndTask ();
+
+			if (errors > 0)
+				monitor.ReportError (GettextCatalog.GetString ("Errors in files generation."), null);
+			else if (warnings > 0)
+				monitor.ReportSuccess (GettextCatalog.GetString ("Warnings in files generation."));
 			else
-				monitor.ReportSuccess (GettextCatalog.GetString("Generated files successfully."));
+				monitor.ReportSuccess (GettextCatalog.GetString ("Generated files successfully."));
 
 			monitor.Dispose ();
 		}
 
-		static ProjectFile GetGeneratedFile(ProjectFile file, bool force)
+		static ProjectFile GetGeneratedFile (ProjectFile file, bool force)
 		{
 			ProjectFile genFile = null;
 
 			if (!string.IsNullOrEmpty (file.LastGenOutput))
 				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
 
-			if (!force && genFile != null && File.Exists (genFile.FilePath) && 
-				File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
+			if (!force && genFile != null && File.Exists (genFile.FilePath) &&
+			    File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
 				return null;
 			}
 

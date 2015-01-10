@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CustomTools;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -42,27 +43,23 @@ namespace MonoDevelop.TextTemplating
 	{
 		protected override void Run ()
 		{
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
+			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
 
-			IEnumerable<ProjectFile> files = null;
-
-			Solution solution = wob as Solution;
-			if (solution != null) {
-				foreach(Project p in solution.GetAllProjects ())
-					files = (files == null) ? GetFilesToUpdate (p) : files.Concat (GetFilesToUpdate (p));
+			if (wob is ProjectFile) {
+				CustomToolService.Update (wob as ProjectFile, true);
 			} else {
-				Project proj = wob as Project;
+				IEnumerable<ProjectFile> files = null;
 
-				if (proj != null) {
-					files = GetFilesToUpdate (proj);
+				Solution solution = wob as Solution;
+				if (solution != null) {
+					foreach (Project p in solution.GetAllProjects ())
+						files = (files == null) ? GetFilesToUpdate (p) : files.Concat (GetFilesToUpdate (p));
+				} else if (wob is Project) {
+					files = GetFilesToUpdate (wob as Project);
 				}
-			}
 
-			if (files != null)
 				CustomToolService.Update (files, true);
-
-			base.Run ();
-
+			}
 		}
 
 		private IEnumerable<ProjectFile> GetFilesToUpdate(Project project)
@@ -85,7 +82,23 @@ namespace MonoDevelop.TextTemplating
 
 		protected override void Update (CommandInfo info)
 		{
-			base.Update (info);
+			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
+
+			if (wob is Solution || wob is Project) {
+				info.Text = GettextCatalog.GetString ("Process Templates");
+				info.Enabled = true;
+			} else if (wob is ProjectFile) {
+				var file = wob as ProjectFile;
+				if (file.Generator == typeof(TextTemplatingFileGenerator).Name
+				    || file.Generator == typeof(TextTemplatingFilePreprocessor).Name) {
+					info.Text = GettextCatalog.GetString ("Process Template");
+					info.Enabled = true;
+				} else {
+					info.Enabled = false;
+				}
+			} else {
+				info.Enabled = false;
+			}
 		}
 	}
 }
