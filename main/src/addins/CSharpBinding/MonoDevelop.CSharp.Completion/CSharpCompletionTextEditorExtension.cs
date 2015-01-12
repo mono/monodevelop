@@ -184,7 +184,7 @@ namespace MonoDevelop.CSharp.Completion
 			var newDocument = DocumentContext.AnalysisDocument;
 			if (newDocument == null) 
 				return;
-			var semanticModel = await newDocument.GetSemanticModelAsync ();
+			var semanticModel = await Task.Run<SemanticModel> (async () => await newDocument.GetSemanticModelAsync ());
 			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
 
 			if (validTypeSystemSegmentTree != null)

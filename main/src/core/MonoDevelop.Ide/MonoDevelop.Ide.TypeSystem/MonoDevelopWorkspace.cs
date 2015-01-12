@@ -49,26 +49,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
 
-		static MonoDevelopWorkspace ()
-		{
-
-//			try {
-//				services = MefHostServices.Create(new [] { 
-//					typeof(MefHostServices).Assembly,
-//					typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
-//				});
-//				LoggingService.LogInfo (services.GetExports<object> ().Count () + " roslyn services registered.");
-//			} catch (Exception e) {
-//				LoggingService.LogError ("Can't create host services", e); 
-//				services = MefHostServices.Create(new Assembly[0]);
-//			}
-		}
-
 		public MonoDevelopWorkspace () : base (services, "MonoDevelopWorkspace")
 		{
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
-				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
 			}
 		}
 
@@ -77,44 +61,40 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.Dispose (finalize);
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
-				IdeApp.ProjectOperations.EndBuild -= HandleEndBuild;
 			}
 		}
 
-		void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
 			if (currentMonoDevelopSolution == null)
 				return;
 			try {
-				OnSolutionReloaded (CreateSolutionInfo (currentMonoDevelopSolution));
+				using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
+					OnSolutionReloaded (await System.Threading.Tasks.Task.Run (() => CreateSolutionInfo (currentMonoDevelopSolution, progressMonitor)));
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while reloading solution.", ex); 
 			}
-//			foreach (var pr in projectContents.Keys.ToArray ()) {
-//				var project = pr as DotNetProject;
-//				if (project != null)
-//					CheckProjectOutput (project, true);
-//			}
 		}
 
-		static void HandleEndBuild (object sender, MonoDevelop.Projects.BuildEventArgs args)
+		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution, IProgressMonitor monitor)
 		{
-			var project = args.SolutionItem as MonoDevelop.Projects.DotNetProject;
-			if (project == null)
-				return;
-			//	CheckProjectOutput (project, true);
+			var projects = new List<ProjectInfo> ();
+			var mdProjects = solution.GetAllProjects ();
+			monitor.BeginTask ("Loading projects", mdProjects.Count);
+			foreach (var proj in mdProjects) {
+				projects.Add (LoadProject (proj));
+				monitor.Step (1);
+			}
+			monitor.EndTask ();
+			return SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
 		}
 
-		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution)
-		{
-			return SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, solution.GetAllProjects ().AsParallel ().Select (p => LoadProject (p)));
-		}
-
-		public Solution LoadSolution (MonoDevelop.Projects.Solution solution)
+		public Solution LoadSolution (MonoDevelop.Projects.Solution solution, IProgressMonitor progressMonitor)
 		{
 			this.currentMonoDevelopSolution = solution;
-			var solutionInfo = CreateSolutionInfo (solution);
-			OnSolutionAdded (solutionInfo); 
+			var solutionInfo = CreateSolutionInfo (solution, progressMonitor);
+			OnSolutionAdded (solutionInfo);
 			return CurrentSolution;
 		}
 		
@@ -215,16 +195,19 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		ProjectInfo LoadProject (MonoDevelop.Projects.Project p)
 		{
+			if (!projectIdMap.ContainsKey (p)) {
+				p.FileAddedToProject += OnFileAdded;
+				p.FileRemovedFromProject += OnFileRemoved;
+				p.FileRenamedInProject += OnFileRenamed;
+				p.Modified += OnProjectModified;
+			}
+
 			var projectId = GetProjectId (p);
 			var projectData = GetProjectData (projectId); 
 			var config = p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration;
 			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
 			if (config != null)
 				cp = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
-			p.FileAddedToProject += OnFileAdded;
-			p.FileRemovedFromProject += OnFileRemoved;
-			p.FileRenamedInProject += OnFileRenamed;
-			p.Modified += OnProjectModified;
 
 			var info = ProjectInfo.Create (
 				projectId,
@@ -240,6 +223,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				GetProjectReferences (p),
 				GetMetadataReferences (p)
 			);
+
 			projectData.Info = info;
 			return info;
 		}
@@ -279,7 +263,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					                netProject.TargetFramework
 				                );
 				if (corLibRef != null) {
-					yield return MetadataReference.CreateFromFile (corLibRef.Location, MetadataReferenceProperties.Assembly);
+					yield return MetadataReferenceCache.LoadReference (GetProjectId (p), corLibRef.Location);
 				}
 			}
 
@@ -290,7 +274,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					fileName = Path.GetFullPath (file);
 				}
-				yield return MetadataReference.CreateFromFile (fileName, MetadataReferenceProperties.Assembly);
+				yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
 			}
 		}
 
@@ -421,6 +405,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				OnProjectRemoved (id);
 				projectIdMap.Remove (project);
 				projectDataMap.Remove (id);
+				MetadataReferenceCache.RemoveReferences (id);
 
 				project.FileAddedToProject -= OnFileAdded;
 				project.FileRemovedFromProject -= OnFileRemoved;

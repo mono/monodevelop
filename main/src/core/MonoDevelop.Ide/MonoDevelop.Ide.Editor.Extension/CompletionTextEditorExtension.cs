@@ -164,6 +164,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 							}
 						});
 					}, TaskScheduler.Current, token);
+				} else {
+					currentCompletionContext = null;
 				}
 			}
 			

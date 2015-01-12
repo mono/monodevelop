@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static readonly List<string> outputTrackedProjects = new List<string> ();
 
-		static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
+		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException ("solution");
@@ -117,29 +117,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			};
 		}
 
-		public static void Load (MonoDevelop.Projects.WorkspaceItem item)
+		public static void Load (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				InternalLoad (item);
+				InternalLoad (item, progressMonitor);
 			}
 		}
 
-		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item)
+		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
 				foreach (var it in ws.Items)
-					InternalLoad (it);
-//				ws.ItemAdded += OnWorkspaceItemAdded;
-//				ws.ItemRemoved += OnWorkspaceItemRemoved;
+					InternalLoad (it, progressMonitor);
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
 					var newWorkspace = new MonoDevelopWorkspace ();
-					newWorkspace.LoadSolution (solution);
+					newWorkspace.LoadSolution (solution, progressMonitor);
 					workspaces [solution] = newWorkspace;
-//					solution.SolutionItemAdded += OnSolutionItemAdded;
-//					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+					solution.SolutionItemAdded += OnSolutionItemAdded;
+					solution.SolutionItemRemoved += OnSolutionItemRemoved;
 				}
 			}
 		}
@@ -201,7 +201,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			Load (args.Item);
+			using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
+				Task.Run (() => RoslynTypeSystemService.Load (args.Item, progressMonitor));
+			}
 		}
 
 		static void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)

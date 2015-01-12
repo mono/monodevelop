@@ -43,6 +43,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Execution;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -647,17 +648,15 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (false);
 			}
-			
-			Gtk.Application.Invoke (delegate {
-				using (monitor) {
-					try {
-						// Add the item in the GUI thread. It is not safe to do it in the background thread.
-						if (!monitor.IsCancelRequested)
-							Items.Add (item);
-						else {
-							item.Dispose ();
-							return;
-						}
+			using (monitor) {
+				try {
+					if (!monitor.IsCancelRequested)
+						Items.Add (item);
+					else {
+						item.Dispose ();
+						return;
+					}
+					Gtk.Application.Invoke (delegate {
 						if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
 							IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
 						if (Items.Count == 1 && loadPreferences) {
@@ -667,11 +666,11 @@ namespace MonoDevelop.Ide
 						timer.Trace ("Reattaching documents");
 						ReattachDocumentProjects (null);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-					} finally {
-						timer.End ();
-					}
+					});
+				} finally {
+					timer.End ();
 				}
-			});
+			}
 		}
 
 		void RestoreWorkspacePreferences (WorkspaceItem item)
@@ -1001,6 +1000,13 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
+			try {
+				using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
+					MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Load (item, progressMonitor);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not load parser database.", ex);
+			}
 			if (DispatchService.IsGuiThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
@@ -1010,18 +1016,9 @@ namespace MonoDevelop.Ide
 				});
 			}
 		}
-		
+
 		void NotifyItemAddedGui (WorkspaceItem item, bool reloading)
 		{
-			try {
-//				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Load (item);
-//				Mono.Profiler.RuntimeControls.DisableProfiler ();
-//				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not load parser database.", ex);
-			}
-
 			Workspace ws = item as Workspace;
 			if (ws != null) {
 				ws.DescendantItemAdded += descendantItemAddedHandler;

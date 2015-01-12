@@ -69,7 +69,8 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var solution = new MonoDevelop.Projects.Solution ();
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
-			RoslynTypeSystemService.Load (solution);
+			using (var monitor = new NullProgressMonitor ())
+				RoslynTypeSystemService.Load (solution, monitor);
 			
 			content.Project = project;
 

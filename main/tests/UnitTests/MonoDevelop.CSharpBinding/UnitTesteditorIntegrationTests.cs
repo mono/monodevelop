@@ -36,6 +36,7 @@ using System.Threading;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -75,7 +76,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 			var solution = new MonoDevelop.Projects.Solution ();
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
-			RoslynTypeSystemService.Load (solution);
+			using (var monitor = new NullProgressMonitor ())
+				RoslynTypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 
