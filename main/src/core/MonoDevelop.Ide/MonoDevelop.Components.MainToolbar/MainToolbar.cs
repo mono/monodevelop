@@ -87,6 +87,10 @@ namespace MonoDevelop.Components.MainToolbar
 		int ignoreConfigurationChangedCount;
 		int ignoreRuntimeChangedCount;
 
+		// attributes for the runtime combo (bold / normal)
+		readonly Pango.AttrList boldAttributes = new Pango.AttrList ();
+		readonly Pango.AttrList normalAttributes = new Pango.AttrList ();
+
 		public Cairo.ImageSurface Background {
 			get;
 			set;
@@ -163,8 +167,10 @@ namespace MonoDevelop.Components.MainToolbar
 			if (!runtimeCombo.PopupShown) {
 				renderer.Text = target.FullName;
 				renderer.Xpad = 3;
+				renderer.Attributes = normalAttributes;
 			} else {
 				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
+				renderer.Attributes = target.Notable ? boldAttributes : normalAttributes;
 
 				if (!runtimeStore.IterParent (out parent, iter))
 					renderer.Text = target.FullName;
@@ -229,6 +235,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var configurationComboVBox = new VBox ();
 			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
 			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
+
+			// bold attributes for running runtime targets / (emulators)
+			boldAttributes.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
 
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;

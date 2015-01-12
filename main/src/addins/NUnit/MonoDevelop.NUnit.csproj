@@ -124,44 +124,44 @@
     <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
       <LogicalName>NUnitAssemblyGroup.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-running-16.png">
-      <LogicalName>unit-running-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-running-16.png">
+      <LogicalName>unit-running-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-running-16%402x.png">
-      <LogicalName>unit-running-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-running-16%402x.png">
+      <LogicalName>unit-running-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-failed-16.png">
-      <LogicalName>unit-failed-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16.png">
+      <LogicalName>unit-failed-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-failed-16%402x.png">
-      <LogicalName>unit-failed-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16%402x.png">
+      <LogicalName>unit-failed-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-mixed-results-16.png">
-      <LogicalName>unit-mixed-results-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16.png">
+      <LogicalName>unit-mixed-results-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-mixed-results-16%402x.png">
-      <LogicalName>unit-mixed-results-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16%402x.png">
+      <LogicalName>unit-mixed-results-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-not-yet-run-16.png">
-      <LogicalName>unit-not-yet-run-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16.png">
+      <LogicalName>unit-not-yet-run-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-not-yet-run-16%402x.png">
-      <LogicalName>unit-not-yet-run-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16%402x.png">
+      <LogicalName>unit-not-yet-run-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-skipped-16.png">
-      <LogicalName>unit-skipped-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16.png">
+      <LogicalName>unit-skipped-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-skipped-16%402x.png">
-      <LogicalName>unit-skipped-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16%402x.png">
+      <LogicalName>unit-skipped-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-loading-16.png">
-      <LogicalName>unit-loading-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-loading-16.png">
+      <LogicalName>unit-loading-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-success-16.png">
-      <LogicalName>unit-success-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-success-16.png">
+      <LogicalName>unit-success-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-success-16%402x.png">
-      <LogicalName>unit-success-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-success-16%402x.png">
+      <LogicalName>unit-success-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\NUnitTestClass.xft.xml">
       <LogicalName>NUnitTestClass.xft.xml</LogicalName>
@@ -172,38 +172,44 @@
     <EmbeddedResource Include="templates\NUnitProject.xpt.xml">
       <LogicalName>NUnitProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\project-nunit-overlay-32.png">
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
+      <LogicalName>project-nunit-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32%402x.png">
+      <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-light-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\project-nunit-overlay-32%402x.png">
+    </EmbeddedResource><!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32%402x.png">
       <LogicalName>project-nunit-overlay-light-32@2x.png</LogicalName>
-    </EmbeddedResource>
+    </EmbeddedResource><!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16.png">
-      <LogicalName>pad-unit-test-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16.png">
+      <LogicalName>pad-unit-test-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16%402x.png">
-      <LogicalName>pad-unit-test-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16%402x.png">
+      <LogicalName>pad-unit-test-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-results-16.png">
-      <LogicalName>pad-unit-test-results-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-results-16.png">
+      <LogicalName>pad-unit-test-results-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-results-16%402x.png">
-      <LogicalName>pad-unit-test-results-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-results-16%402x.png">
+      <LogicalName>pad-unit-test-results-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-inconclusive-16.png">
-      <LogicalName>unit-inconclusive-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16.png">
+      <LogicalName>unit-inconclusive-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-inconclusive-16%402x.png">
-      <LogicalName>unit-inconclusive-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16%402x.png">
+      <LogicalName>unit-inconclusive-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-run-16.png">
-      <LogicalName>unit-run-light-16.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-run-16.png">
+      <LogicalName>unit-run-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\unit-run-16%402x.png">
-      <LogicalName>unit-run-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="Gui\icons\unit-run-16%402x.png">
+      <LogicalName>unit-run-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

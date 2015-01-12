@@ -674,6 +674,8 @@ namespace MonoDevelop.CSharp.Completion
 			return CreateTooltipInformation (compilation, file, null, textEditorData, formattingPolicy, entity, smartWrap, createFooter);
 		}
 
+			if (type.Kind == TypeKind.Unknown)
+				return tooltipInfo;
 		#region IOverloadedCompletionData implementation 
 	
 		class OverloadSorter : IComparer<ICompletionData>

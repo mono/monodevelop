@@ -2140,10 +2140,13 @@ namespace Mono.TextEditor
 				if (previewWindow.IsEmptyText) {
 					previewWindow.Destroy ();
 					previewWindow = null;
+					codeSegmentTooltipTimeoutId = 0;
 					return false;
 				}
-				if (textEditor == null || textEditor.GdkWindow == null)
+				if (textEditor == null || textEditor.GdkWindow == null) {
+					codeSegmentTooltipTimeoutId = 0;
 					return false;
+				}
 				int ox = 0, oy = 0;
 				textEditor.GdkWindow.GetOrigin (out ox, out oy);
 				ox += textEditor.Allocation.X;
@@ -2166,6 +2169,7 @@ namespace Mono.TextEditor
 				int destY = System.Math.Max (0, oy + y);
 				previewWindow.Move (destX, destY);
 				previewWindow.ShowAll ();
+				codeSegmentTooltipTimeoutId = 0;
 				return false;
 			});
 		}

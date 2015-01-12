@@ -268,6 +268,7 @@
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\ColorizationTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -55,6 +56,11 @@ namespace MonoDevelop.PackageManagement.Commands
 			if (ShouldRestorePackages) {
 				RestoreAndCheckForUpdates ();
 			} else if (ShouldCheckForUpdates && AnyProjectHasPackages ()) {
+				// Use background dispatch even though the check is not done on the
+				// background dispatcher thread so that the solution load completes before
+				// the check for updates starts. Otherwise the check for updates finishes
+				// before the solution loads and the status bar never reports that
+				// package updates were being checked.
 				DispatchService.BackgroundDispatch (() => {
 					CheckForUpdates ();
 				});
@@ -103,8 +109,11 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void CheckForUpdates ()
 		{
-			var checker = new PackageUpdateChecker ();
-			checker.Run ();
+			try {
+				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Check for NuGet package updates error.", ex);
+			}
 		}
 	}
 }

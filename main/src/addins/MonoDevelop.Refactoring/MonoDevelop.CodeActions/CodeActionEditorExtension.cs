@@ -406,6 +406,7 @@ namespace MonoDevelop.CodeActions
 //				document.Editor.SuppressTooltips = false;
 			};
 			menu.ShowAll ();
+			menu.SelectFirst (true);
 			menu.MotionNotifyEvent += (o, args) => {
 				Gtk.Widget widget = Editor;
 				if (args.Event.Window == widget.GdkWindow) {

@@ -194,23 +194,23 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\light\prefs-code-actions-16.png">
-      <LogicalName>prefs-code-actions-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-actions-16.png">
+      <LogicalName>prefs-code-actions-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-actions-16%402x.png">
-      <LogicalName>prefs-code-actions-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-actions-16%402x.png">
+      <LogicalName>prefs-code-actions-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-rules-16.png">
-      <LogicalName>prefs-code-rules-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-rules-16.png">
+      <LogicalName>prefs-code-rules-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-rules-16%402x.png">
-      <LogicalName>prefs-code-rules-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-rules-16%402x.png">
+      <LogicalName>prefs-code-rules-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-analysis-16.png">
-      <LogicalName>prefs-code-analysis-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16.png">
+      <LogicalName>prefs-code-analysis-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-analysis-16%402x.png">
-      <LogicalName>prefs-code-analysis-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16%402x.png">
+      <LogicalName>prefs-code-analysis-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

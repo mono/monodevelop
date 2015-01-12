@@ -91,8 +91,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			CanFocus = true;
 			resizeCursor = new Cursor (CursorType.SbHDoubleArrow);
 			handCursor = new Cursor (CursorType.Hand1);
-			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-light-16.png");
-			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-light-16.png");
+			discloseDown = Xwt.Drawing.Image.FromResource ("disclose-arrow-down-16.png");
+			discloseUp = Xwt.Drawing.Image.FromResource ("disclose-arrow-up-16.png");
 		}
 
 		protected override void OnDestroyed ()

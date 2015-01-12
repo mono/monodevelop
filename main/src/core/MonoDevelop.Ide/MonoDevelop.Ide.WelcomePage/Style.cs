@@ -90,10 +90,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 						public static class PinButton
 						{
-							public const string NormalImage = "unstar-overlay-light-16.png";
-							public const string NormalHoverImage = "unstar-overlay-hover-light-16.png";
-							public const string PinnedImage = "star-overlay-light-16.png";
-							public const string PinnedHoverImage = "star-overlay-hover-light-16.png";
+							public const string NormalImage = "unstar-overlay-16.png";
+							public const string NormalHoverImage = "unstar-overlay-hover-16.png";
+							public const string PinnedImage = "star-overlay-16.png";
+							public const string PinnedHoverImage = "star-overlay-hover-16.png";
 						}
 					}
 				}
