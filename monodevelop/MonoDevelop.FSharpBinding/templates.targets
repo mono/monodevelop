@@ -49,6 +49,42 @@
     <None Include="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication/AppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication/Main.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/Library.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/Application.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/Application/AppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/Application/Main.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Projects/Application/MainMenu.xib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Files/WindowWithController.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Files/WindowWithController/Window.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Files/WindowWithController/Window.xib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates/MonoMac/XamMacUnified/Files/WindowWithController/WindowController.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
 
     <None Include="Templates/Android/MonoDroidActivity.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

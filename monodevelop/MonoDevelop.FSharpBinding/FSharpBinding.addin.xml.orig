@@ -34,9 +34,28 @@
     <Import file="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml"/>
     <Import file="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
 
+    <!--- F# Xamarin Mac templates -->
     <Import file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
     <Import file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
     <Import file="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
+
+    <!--- F# Xamarin Mac unified templates -->
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication.xpt.xml"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication/AppDelegate.fs"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication/Main.fs"/>
+
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/Library.xpt.xml"/>
+
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/Application.xpt.xml"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/Application/AppDelegate.fs"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/Application/Main.fs"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Projects/Application/MainMenu.xib"/>
+
+    <Import file="Templates/MonoMac/XamMacUnified/Files/WindowWithController.xft.xml"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Files/WindowWithController/Window.fs"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Files/WindowWithController/Window.xib"/>
+    <Import file="Templates/MonoMac/XamMacUnified/Files/WindowWithController/WindowController.fs"/>
+
 
     <!--- F# Android templates -->
     <Import file = "Templates/Android/MonoDroidActivity.xft.xml" />
@@ -489,18 +508,17 @@
 
 	<Extension path="/MonoDevelop/Ide/FileTemplates">
 		<Condition id="MonoMacInstalled">
-			<FileTemplate id="FSharpMonoMacPlist" file="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml"/>
-			<FileTemplate id="FSharpMonoMacApplicationManifest" file="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml"/>
-			<FileTemplate id="FSharpMonoMacApplicationDocumentManifest" file ="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml"/>
 			<FileTemplate id="FSharpMonoMacWindowWithControllerXib" file ="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml"/>
 		</Condition>
 
 		<Condition id="XamMacInstalled">
-			<FileTemplate id="FSharpXamMacPlist" file="Templates/MonoMac/XamMac/XamMacPlist.xft.xml"/>
-			<FileTemplate id="FSharpXamMacApplicationManifest" file="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml"/>
-			<FileTemplate id="FSharpXamMacApplicationDocumentManifest" file="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml"/>
 			<FileTemplate id="FSharpXamMacWindowWithControllerXib" file ="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml"/>
 		</Condition>
+
+    <!-- Normally the condition would be <Condition id="XamMacInstalled"> but the msbuild target for F# will be installed with the next version of monomac-->
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets" />
+      <FileTemplate id="FSharpXamMac2WindowWithController" file="Templates/MonoMac/XamMacUnified/Files/WindowWithController.xft.xml"/>
+    </Condition>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
@@ -513,6 +531,19 @@
 			<ProjectTemplate id="FSharpXamMacProject" file="Templates/MonoMac/XamMac/XamMacProject.xpt.xml"/>
 			<ProjectTemplate id="FSharpXamMacProjectEmpty" file="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml"/>
 		</Condition>
+    
+    <!-- Normally the condition would be <Condition id="XamMacInstalled"> but the msbuild target for F# will be installed with the next version of monomac-->
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets"/>
+        <ProjectTemplate id="XamMac2Application" file="Templates/MonoMac/XamMacUnified/Projects/Application.xpt.xml"/>
+        <ProjectTemplate id="XamMac2Library" file="Templates/MonoMac/XamMacUnified/Projects/Library.xpt.xml"/>
+        <ProjectTemplate id="XamMac2EmptyApplication" file="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication.xpt.xml"/>
+    </Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.MonoMac.XamMac2Project">
+		<AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets"/>
+		<RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+    <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
 	</Extension>
   </Module>
 
