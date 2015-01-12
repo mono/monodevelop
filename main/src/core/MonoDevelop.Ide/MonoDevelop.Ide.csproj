@@ -2791,6 +2791,7 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
