@@ -69,6 +69,17 @@ namespace Mono.TextTemplating.Tests
 			string WinOutput = OutputSample1.Replace ("\\n", "\\r\\n").Replace ("\n", "\r\n");
 			Generate (WinInput, WinOutput, "\r\n");
 		}
+
+		[Test]
+		public void DefaultLanguage ()
+		{
+			DummyHost host = new DummyHost ();
+			string template = @"<#= DateTime.Now #>";
+			ParsedTemplate pt = ParsedTemplate.FromText (template, host);
+			Assert.AreEqual (0, host.Errors.Count);
+			TemplateSettings settings = TemplatingEngine.GetSettings (host, pt);
+			Assert.AreEqual (settings.Language, "C#");
+		}
 		
 		//NOTE: we set the newline property on the code generator so that the whole files has matching newlines,
 		// in order to match the newlines in the verbatim code blocks
