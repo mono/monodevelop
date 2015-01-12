@@ -390,6 +390,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return false;
 		}
+
+		static bool IsInsideMember (this DocumentRegion region, IUnresolvedTypeDefinition cl)
+		{
+			if (region.IsEmpty || cl == null || !cl.BodyRegion.IsInside (region.Begin))
+				return false;
+			foreach (var member in cl.Members) {
+				if (member.BodyRegion.IsEmpty)
+					continue;
+				if (member.BodyRegion.IsInside (region.Begin) && member.BodyRegion.IsInside (region.End)) 
+					return true;
+			}
+			foreach (var inner in cl.NestedTypes) {
+				if (region.IsInsideMember (inner))
+					return true;
+			}
+			return false;
+		}
 		
 	}
 }

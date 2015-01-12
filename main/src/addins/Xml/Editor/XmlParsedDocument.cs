@@ -29,8 +29,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -53,7 +53,7 @@ namespace MonoDevelop.Xml.Editor
 					{
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
 							yield return new FoldingRegion ("<![CDATA[ ]]>", node.Region);
-					}
+					} 
 					else if (node is XComment)
 					{
 						if (node.Region.EndLine - node.Region.BeginLine > 2)
@@ -65,7 +65,7 @@ namespace MonoDevelop.Xml.Editor
 						if (el.IsClosed && el.ClosingTag.Region.EndLine - el.Region.BeginLine > 2) {
 							yield return new FoldingRegion
 								(string.Format ("<{0}...>", el.Name.FullName),
-								 new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));
+								 new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));
 						}
 					}
 					else if (node is XDocType)

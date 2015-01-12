@@ -463,7 +463,7 @@ namespace MonoDevelop.CSharp
 			PathEntry entry;
 			if (unit == null || !unit.UserRegions.Any ())
 				return null;
-			var reg = unit.UserRegions.LastOrDefault (r => r.Region.IsInside (loc));
+			var reg = unit.UserRegions.LastOrDefault (r => r.Region.Contains (loc));
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {

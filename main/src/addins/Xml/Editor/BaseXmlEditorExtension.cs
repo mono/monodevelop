@@ -34,8 +34,6 @@ using System.Linq;
 
 using Gtk;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -44,7 +42,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
@@ -193,7 +190,7 @@ namespace MonoDevelop.Xml.Editor
 			get { return tracker; }
 		}
 		
-		protected string GetBufferText (DomRegion region)
+		protected string GetBufferText (DocumentRegion region)
 		{
 			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
@@ -280,7 +277,7 @@ namespace MonoDevelop.Xml.Editor
 			var buf = this.Editor;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			var currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			var currentLocation = new DocumentLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 
@@ -410,7 +407,7 @@ namespace MonoDevelop.Xml.Editor
 
 
 
-		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, TextLocation currentLocation)
+		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
 
 		{
 
@@ -683,13 +680,13 @@ namespace MonoDevelop.Xml.Editor
 				//pick out the locations, with some offsets to account for the parsing model
 				var s = contents? el.Region.End : el.Region.Begin;
 				var e = contents? el.ClosingTag.Region.Begin : el.ClosingTag.Region.End;
-				EditorSelect (new DomRegion (s, e));
+				EditorSelect (new DocumentRegion (s, e));
 			} else {
 				LoggingService.LogDebug ("No end tag found for selection");
 			}
 		}
 		
-		protected void EditorSelect (DomRegion region)
+		protected void EditorSelect (DocumentRegion region)
 		{
 			int s = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int e = Editor.LocationToOffset (region.EndLine, region.EndColumn);
@@ -1020,7 +1017,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			var el = n as XElement;
 			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
-				region = new DomRegion (region.Begin, el.ClosingTag.Region.End);
+				region = new DocumentRegion (region.Begin, el.ClosingTag.Region.End);
 			}
 			EditorSelect (region);
 		}		

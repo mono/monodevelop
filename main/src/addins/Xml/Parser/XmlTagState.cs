@@ -28,8 +28,8 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Parser
 {
@@ -142,7 +142,7 @@ namespace MonoDevelop.Xml.Parser
 			return null;
 		}
 		
-		protected virtual void Close (XElement element, IXmlParserContext context, TextLocation location)
+		protected virtual void Close (XElement element, IXmlParserContext context, DocumentLocation location)
 		{
 			//have already checked that element is not null, i.e. top of stack is our element
 			if (element.IsClosed)

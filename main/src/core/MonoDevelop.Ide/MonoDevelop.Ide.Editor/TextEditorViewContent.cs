@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Editor
 							marker.IsCollapsed = folded;
 							continue;
 						}
-						if (marker != null && region.Region.IsInside (caretLocation.Line, caretLocation.Column))
+						if (marker != null && region.Region.Contains (caretLocation.Line, caretLocation.Column))
 							marker.IsCollapsed = false;
 					}
 					if (firstTime) {

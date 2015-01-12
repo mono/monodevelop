@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
@@ -33,7 +33,7 @@ namespace MonoDevelop.Xml.Dom
 	{
 		public XElement RootElement { get; private set; }
 
-		public XDocument () : base (new TextLocation (1, 1)) {}
+		public XDocument () : base (new DocumentLocation (1, 1)) {}
 		protected override XObject NewInstance () { return new XDocument (); }
 
 		public override string FriendlyPathRepresentation {
