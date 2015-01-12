@@ -106,6 +106,9 @@
 			<Category id="c" name="C/C++" />
 			<Category id="general" name="General" default="true" />
 		</Category>
+		<Category id="unsupported" name="Unsupported">
+			<Category id="monomac" name="MonoMac (Open Source)" />
+		</Category>
 	</Category>
 </Extension>
 
