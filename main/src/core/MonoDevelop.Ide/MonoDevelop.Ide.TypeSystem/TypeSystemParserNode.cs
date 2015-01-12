@@ -79,8 +79,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static bool IsCompileBuildAction(string buildAction)
 		{
-			return buildAction == MonoDevelop.Projects.BuildAction.Compile ||
-			buildAction == ApiDefinitionBuildAction;
+			return
+				buildAction == MonoDevelop.Projects.BuildAction.Compile ||
+				buildAction == ApiDefinitionBuildAction || 
+				buildAction == "BMacInputs";
 		}
 	}
 
