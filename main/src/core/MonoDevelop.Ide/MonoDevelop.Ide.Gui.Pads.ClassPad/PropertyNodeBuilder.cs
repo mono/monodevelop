@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			IProperty data = dataObject as IProperty;
 			nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
+			// nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 	}
 }

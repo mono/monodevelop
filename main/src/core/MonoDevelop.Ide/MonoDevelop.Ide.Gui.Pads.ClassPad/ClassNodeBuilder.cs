@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			ClassData classData = dataObject as ClassData;
 			nodeInfo.Label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			nodeInfo.Icon = Context.GetIcon (classData.Class.GetStockIcon ());
+			// nodeInfo.Icon = Context.GetIcon (classData.Class.GetStockIcon ());
 		}
 		/*
 		private string GetNameWithGenericParameters (IType c)

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -122,42 +121,42 @@ namespace MonoDevelop.Ide.TypeSystem
 			Stock.Event, Stock.PrivateEvent, Stock.Event, Stock.ProtectedEvent, Stock.InternalEvent, Stock.ProtectedOrInternalEvent, Stock.InternalAndProtectedEvent
 		};
 
-		public static IconId GetStockIcon (this INamedElement element)
-		{
-			if (element is IType)
-				return ((IType)element).GetStockIcon ();
-			if (element is ITypeParameter)
-				return ((ITypeParameter)element).GetStockIcon ();
-			if (element is IUnresolvedEntity)
-				return ((IUnresolvedEntity)element).GetStockIcon ();
-			return ((IEntity)element).GetStockIcon ();
-		}
-		
-		public static IconId GetStockIcon (this ITypeDefinition entity)
-		{
-			return GetStockIcon ((IType)entity);
-		}
-
-		public static IconId GetStockIcon (this IType entity)
-		{
-			var def = entity.GetDefinition ();
-			if (def == null)
-				return Class;
-			switch (def.Kind) {
-			case TypeKind.Class:
-				return typeIconTable [0, (int)def.Accessibility];
-			case TypeKind.Enum:
-				return typeIconTable [1, (int)def.Accessibility];
-			case TypeKind.Interface:
-				return typeIconTable [2, (int)def.Accessibility];
-			case TypeKind.Struct:
-				return typeIconTable [3, (int)def.Accessibility];
-			case TypeKind.Delegate:
-				return typeIconTable [4, (int)def.Accessibility];
-			default:
-				return typeIconTable [0, (int)def.Accessibility];
-			}
-		}
+//		public static IconId GetStockIcon (this INamedElement element)
+//		{
+//			if (element is IType)
+//				return ((IType)element).GetStockIcon ();
+//			if (element is ITypeParameter)
+//				return ((ITypeParameter)element).GetStockIcon ();
+//			if (element is IUnresolvedEntity)
+//				return ((IUnresolvedEntity)element).GetStockIcon ();
+//			return ((IEntity)element).GetStockIcon ();
+//		}
+//		
+//		public static IconId GetStockIcon (this ITypeDefinition entity)
+//		{
+//			return GetStockIcon ((IType)entity);
+//		}
+//
+//		public static IconId GetStockIcon (this IType entity)
+//		{
+//			var def = entity.GetDefinition ();
+//			if (def == null)
+//				return Class;
+//			switch (def.Kind) {
+//			case TypeKind.Class:
+//				return typeIconTable [0, (int)def.Accessibility];
+//			case TypeKind.Enum:
+//				return typeIconTable [1, (int)def.Accessibility];
+//			case TypeKind.Interface:
+//				return typeIconTable [2, (int)def.Accessibility];
+//			case TypeKind.Struct:
+//				return typeIconTable [3, (int)def.Accessibility];
+//			case TypeKind.Delegate:
+//				return typeIconTable [4, (int)def.Accessibility];
+//			default:
+//				return typeIconTable [0, (int)def.Accessibility];
+//			}
+//		}
 
 		static int GetIndex (Microsoft.CodeAnalysis.Accessibility accessibility)
 		{
@@ -224,24 +223,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static IconId GetStockIcon (this IUnresolvedTypeDefinition def)
-		{
-			switch (def.Kind) {
-			case TypeKind.Class:
-				return typeIconTable [0, (int)def.Accessibility];
-			case TypeKind.Enum:
-				return typeIconTable [1, (int)def.Accessibility];
-			case TypeKind.Interface:
-				return typeIconTable [2, (int)def.Accessibility];
-			case TypeKind.Struct:
-				return typeIconTable [3, (int)def.Accessibility];
-			case TypeKind.Delegate:
-				return typeIconTable [4, (int)def.Accessibility];
-			default:
-				return typeIconTable [0, (int)def.Accessibility];
-			}
-		}
-
 		static int GetTypeIndex (Microsoft.CodeAnalysis.TypeKind typeKind)
 		{
 			switch (typeKind) {
@@ -273,96 +254,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
-		}
-		
-		public static IconId GetStockIcon (this IField field)
-		{
-			return GetStockIcon ((IEntity)field);
-		}
-		
-		public static IconId GetStockIcon (this IVariable variable)
-		{
-			return Field;
-		}
-		
-		public static IconId GetStockIcon (this IParameter parameter)
-		{
-			return Field;
-		}
-		
-		public static IconId GetStockIcon (this IUnresolvedTypeParameter parameter)
-		{
-			return Field;
-		}
-		
-		public static IconId GetStockIcon (this IEntity entity, bool showAccessibility = true)
-		{
-			switch (entity.SymbolKind) {
-			case SymbolKind.TypeDefinition:
-				return GetStockIcon ((IType)entity);
-			case SymbolKind.Field:
-				if (showAccessibility)
-					return fieldIconTable [(int)entity.Accessibility];
-				else
-					return fieldIconTable [0];
-			case SymbolKind.Method:
-			case SymbolKind.Constructor:
-			case SymbolKind.Destructor:
-			case SymbolKind.Operator:
-				if (showAccessibility) {
-					if (((IMethod)entity).IsExtensionMethod)
-						return extensionMethodIconTable [(int)entity.Accessibility];
-					return methodIconTable [(int)entity.Accessibility];
-				} else {
-					if (((IMethod)entity).IsExtensionMethod)
-						return extensionMethodIconTable [0];
-					return methodIconTable [0];
-				}
-			case SymbolKind.Property:
-			case SymbolKind.Indexer:
-				if (showAccessibility)
-					return propertyIconTable [(int)entity.Accessibility];
-				else
-					return propertyIconTable [0];
-			case SymbolKind.Event:
-				if (showAccessibility)
-					return eventIconTable [(int)entity.Accessibility];
-				else
-					return eventIconTable [0];
-			}
-			return "";
-		}
-		public static IconId GetStockIcon (this IUnresolvedEntity entity, bool showAccessibility = true)
-		{
-			switch (entity.SymbolKind) {
-			case SymbolKind.TypeDefinition:
-				return GetStockIcon ((IUnresolvedTypeDefinition)entity);
-			case SymbolKind.Field:
-				if (showAccessibility)
-					return fieldIconTable [(int)entity.Accessibility];
-				else
-					return fieldIconTable [0];
-			case SymbolKind.Method:
-			case SymbolKind.Constructor:
-			case SymbolKind.Destructor:
-			case SymbolKind.Operator:
-				if (showAccessibility)
-					return methodIconTable [(int)entity.Accessibility];
-				else
-					return methodIconTable [0];
-			case SymbolKind.Property:
-			case SymbolKind.Indexer:
-				if (showAccessibility)
-					return propertyIconTable [(int)entity.Accessibility];
-				else
-					return propertyIconTable [0];
-			case SymbolKind.Event:
-				if (showAccessibility)
-					return eventIconTable [(int)entity.Accessibility];
-				else
-					return eventIconTable [0];
-			}
-			return "";
 		}
 	}
 }
