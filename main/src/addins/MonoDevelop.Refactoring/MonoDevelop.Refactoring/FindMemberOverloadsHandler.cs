@@ -29,7 +29,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Analysis;
 
 namespace MonoDevelop.Refactoring
 {

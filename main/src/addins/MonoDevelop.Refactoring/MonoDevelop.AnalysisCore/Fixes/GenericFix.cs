@@ -25,25 +25,23 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.Refactoring;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
-	public class GenericResults : FixableResult
-	{
-		public GenericResults (TextSpan region, string message, DiagnosticSeverity level,
-			IssueMarker mark, params GenericFix[] fixes)
-			: base (region, message, level, mark)
-		{
-			this.Fixes = fixes;
-		}
-	}
+//	public class GenericResults : FixableResult
+//	{
+//		public GenericResults (TextSpan region, string message, DiagnosticSeverity level,
+//			IssueMarker mark, params GenericFix[] fixes)
+//			: base (region, message, level, mark)
+//		{
+//			this.Fixes = fixes;
+//		}
+//	}
 	
 	public class GenericFix : IAnalysisFix, IAnalysisFixAction
 	{

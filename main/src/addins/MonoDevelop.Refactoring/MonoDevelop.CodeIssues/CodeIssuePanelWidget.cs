@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Refactoring;
 using GLib;
 using MonoDevelop.Components;
 using Gdk;
@@ -283,7 +282,7 @@ namespace MonoDevelop.CodeIssues
 			col.MinWidth = 100;
 			col.Expand = false;
 
-			var comboBoxStore = new ListStore (typeof(string), typeof(Severity));
+			var comboBoxStore = new ListStore (typeof(string), typeof(DiagnosticSeverity));
 //			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Error), DiagnosticSeverity.Error);
 			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);

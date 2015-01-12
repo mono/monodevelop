@@ -31,7 +31,6 @@ using Gdk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;

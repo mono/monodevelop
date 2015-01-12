@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.Analysis;
 using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;

@@ -35,7 +35,6 @@ using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
-using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
 using System.Threading;
 using System.IO;
@@ -101,11 +100,11 @@ namespace MonoDevelop.AnalysisCore
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			MonoDevelop.Ide.Gui.Document document;
-			IList<FixableResult> results;
-			if (!GetFixes (out document, out results))
-				return;
-			PopulateInfos (info, document, results);
+//			MonoDevelop.Ide.Gui.Document document;
+//			IList<FixableResult> results;
+//			if (!GetFixes (out document, out results))
+//				return;
+//			PopulateInfos (info, document, results);
 		}
 		
 		protected override void Run (object dataItem)
@@ -137,33 +136,33 @@ namespace MonoDevelop.AnalysisCore
 
 		}
 		
-		public static bool GetFixes (out MonoDevelop.Ide.Gui.Document document, out IList<FixableResult> results)
-		{
-			results = null;
-			document = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
-			if (document == null)
-				return false;
-			
-			var ext = document.GetContent<ResultsEditorExtension> ();
-			if (ext == null)
-				return false;
-			
-			var list = ext.GetResultsAtOffset (document.Editor.CaretOffset).OfType<FixableResult> ().ToList ();
-			list.Sort (ResultCompareImportanceDesc);
-			results = list;
-
-			if (results.Count > 0)
-				return true;
-
-			var codeActionExtension = document.GetContent <CodeActionEditorExtension> ();
-			if (codeActionExtension != null) {
-				var fixes = codeActionExtension.GetCurrentFixes ();
-				if (fixes != null)
-					return !fixes.IsEmpty;
-			} 
-			return false;
-		}
-		
+//		public static bool GetFixes (out MonoDevelop.Ide.Gui.Document document, out IList<FixableResult> results)
+//		{
+//			results = null;
+//			document = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+//			if (document == null)
+//				return false;
+//			
+//			var ext = document.GetContent<ResultsEditorExtension> ();
+//			if (ext == null)
+//				return false;
+//			
+//			var list = ext.GetResultsAtOffset (document.Editor.CaretOffset).OfType<FixableResult> ().ToList ();
+//			list.Sort (ResultCompareImportanceDesc);
+//			results = list;
+//
+//			if (results.Count > 0)
+//				return true;
+//
+//			var codeActionExtension = document.GetContent <CodeActionEditorExtension> ();
+//			if (codeActionExtension != null) {
+//				var fixes = codeActionExtension.GetCurrentFixes ();
+//				if (fixes != null)
+//					return !fixes.IsEmpty;
+//			} 
+//			return false;
+//		}
+//		
 		static int ResultCompareImportanceDesc (Result r1, Result r2)
 		{
 			int c = ((int)r1.Level).CompareTo ((int)r2.Level);
@@ -172,113 +171,113 @@ namespace MonoDevelop.AnalysisCore
 			return string.Compare (r1.Message, r2.Message, StringComparison.Ordinal);
 		}
 		
-		public static void PopulateInfos (CommandArrayInfo infos, MonoDevelop.Ide.Gui.Document doc, IEnumerable<FixableResult> results)
-		{
-//			//FIXME: ellipsize long messages
-//			int mnemonic = 1;
+//		public static void PopulateInfos (CommandArrayInfo infos, MonoDevelop.Ide.Gui.Document doc, IEnumerable<FixableResult> results)
+//		{
+////			//FIXME: ellipsize long messages
+////			int mnemonic = 1;
+////
+////			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
+////			var fixes = codeActionExtension.GetCurrentFixes ();
+////			if (fixes != null) {
+////				foreach (var _fix in fixes.Where (CodeActionEditorExtension.IsAnalysisOrErrorFix)) {
+////					var fix = _fix;
+////					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
+////						continue;
+////					var escapedLabel = fix.Title.Replace ("_", "__");
+////					var label = (mnemonic <= 10)
+////						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+////							: "  " + escapedLabel;
+////					infos.Add (label, fix);
+////				}
+////			}
+////
+////			foreach (var result in results) {
+////				bool firstAction = true;
+////				foreach (var action in GetActions (doc, result)) {
+////					if (firstAction) {
+////						//FIXME: make this header item insensitive but not greyed out
+////						infos.Add (new CommandInfo (result.Message.Replace ("_", "__"), false, false) {
+////							Icon = GetIcon (result.Level)
+////						}, null);
+////						firstAction = false;
+////					}
+////					var escapedLabel = action.Label.Replace ("_", "__");
+////					var label = (mnemonic <= 10)
+////						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+////						: "  " + escapedLabel;
+////					infos.Add (label, action);
+////				}
+////				if (result.HasOptionsDialog) {
+////					var declSet = new CommandInfoSet ();
+////					declSet.Text = GettextCatalog.GetString ("_Options for \"{0}\"", result.OptionsTitle);
+////
+////					bool hasBatchFix = false;
+////					foreach (var fix in result.Fixes.OfType<IAnalysisFixAction> ().Where (f => f.SupportsBatchFix)) {
+////						hasBatchFix = true;
+////						var title = string.Format (GettextCatalog.GetString ("Apply in file: {0}"), fix.Label);
+////						declSet.CommandInfos.Add (title, new System.Action(fix.BatchFix));
+////					}
+////					if (hasBatchFix)
+////						declSet.CommandInfos.AddSeparator ();
+////
+////					var ir = result as InspectorResults;
+////					if (ir != null) {
+////						var inspector = ir.Inspector;
+////
+////						if (inspector.CanSuppressWithAttribute) {
+////							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with attribute"), new System.Action(delegate {
+////								inspector.SuppressWithAttribute (doc, ir.Region); 
+////							}));
+////						}
+////
+////						if (inspector.CanDisableWithPragma) {
+////							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with #pragma"), new System.Action(delegate {
+////								inspector.DisableWithPragma (doc, ir.Region); 
+////							}));
+////						}
+////
+////						if (inspector.CanDisableOnce) {
+////							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable Once"), new System.Action(delegate {
+////								inspector.DisableOnce (doc, ir.Region); 
+////							}));
+////						}
+////
+////						if (inspector.CanDisableAndRestore) {
+////							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and Restore"), new System.Action(delegate {
+////								inspector.DisableAndRestore (doc, ir.Region); 
+////							}));
+////						}
+////					}
+////
+////					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure Rule"), result);
+////
+////					infos.Add (declSet);
+////				}
+////			}
+//		}
+//		
+//		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
+//		{
+//			foreach (var fix in result.Fixes)
+//				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
+//					foreach (var action in handler.GetFixes (doc.Editor, doc, fix))
+//						yield return action;
 //
-//			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
-//			var fixes = codeActionExtension.GetCurrentFixes ();
-//			if (fixes != null) {
-//				foreach (var _fix in fixes.Where (CodeActionEditorExtension.IsAnalysisOrErrorFix)) {
-//					var fix = _fix;
-//					if (fix is AnalysisContextActionProvider.AnalysisCodeAction)
-//						continue;
-//					var escapedLabel = fix.Title.Replace ("_", "__");
-//					var label = (mnemonic <= 10)
-//						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
-//							: "  " + escapedLabel;
-//					infos.Add (label, fix);
-//				}
+//		}
+//
+//		static string GetIcon (Severity severity)
+//		{
+//			switch (severity) {
+//			case Severity.Error:
+//				return Ide.Gui.Stock.Error;
+//			case Severity.Warning:
+//				return Ide.Gui.Stock.Warning;
+//			case Severity.Hint:
+//				return Ide.Gui.Stock.Information;
+//			default:
+//				return null;
 //			}
-//
-//			foreach (var result in results) {
-//				bool firstAction = true;
-//				foreach (var action in GetActions (doc, result)) {
-//					if (firstAction) {
-//						//FIXME: make this header item insensitive but not greyed out
-//						infos.Add (new CommandInfo (result.Message.Replace ("_", "__"), false, false) {
-//							Icon = GetIcon (result.Level)
-//						}, null);
-//						firstAction = false;
-//					}
-//					var escapedLabel = action.Label.Replace ("_", "__");
-//					var label = (mnemonic <= 10)
-//						? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
-//						: "  " + escapedLabel;
-//					infos.Add (label, action);
-//				}
-//				if (result.HasOptionsDialog) {
-//					var declSet = new CommandInfoSet ();
-//					declSet.Text = GettextCatalog.GetString ("_Options for \"{0}\"", result.OptionsTitle);
-//
-//					bool hasBatchFix = false;
-//					foreach (var fix in result.Fixes.OfType<IAnalysisFixAction> ().Where (f => f.SupportsBatchFix)) {
-//						hasBatchFix = true;
-//						var title = string.Format (GettextCatalog.GetString ("Apply in file: {0}"), fix.Label);
-//						declSet.CommandInfos.Add (title, new System.Action(fix.BatchFix));
-//					}
-//					if (hasBatchFix)
-//						declSet.CommandInfos.AddSeparator ();
-//
-//					var ir = result as InspectorResults;
-//					if (ir != null) {
-//						var inspector = ir.Inspector;
-//
-//						if (inspector.CanSuppressWithAttribute) {
-//							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with attribute"), new System.Action(delegate {
-//								inspector.SuppressWithAttribute (doc, ir.Region); 
-//							}));
-//						}
-//
-//						if (inspector.CanDisableWithPragma) {
-//							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with #pragma"), new System.Action(delegate {
-//								inspector.DisableWithPragma (doc, ir.Region); 
-//							}));
-//						}
-//
-//						if (inspector.CanDisableOnce) {
-//							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable Once"), new System.Action(delegate {
-//								inspector.DisableOnce (doc, ir.Region); 
-//							}));
-//						}
-//
-//						if (inspector.CanDisableAndRestore) {
-//							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and Restore"), new System.Action(delegate {
-//								inspector.DisableAndRestore (doc, ir.Region); 
-//							}));
-//						}
-//					}
-//
-//					declSet.CommandInfos.Add (GettextCatalog.GetString ("_Configure Rule"), result);
-//
-//					infos.Add (declSet);
-//				}
-//			}
-		}
-		
-		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
-		{
-			foreach (var fix in result.Fixes)
-				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
-					foreach (var action in handler.GetFixes (doc.Editor, doc, fix))
-						yield return action;
-
-		}
-
-		static string GetIcon (Severity severity)
-		{
-			switch (severity) {
-			case Severity.Error:
-				return Ide.Gui.Stock.Error;
-			case Severity.Warning:
-				return Ide.Gui.Stock.Warning;
-			case Severity.Hint:
-				return Ide.Gui.Stock.Information;
-			default:
-				return null;
-			}
-		}
+//		}
 	}
 
 	class ExportRulesHandler : CommandHandler

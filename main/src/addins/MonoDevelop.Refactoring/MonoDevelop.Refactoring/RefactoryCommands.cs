@@ -101,12 +101,6 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 
-		public static object GetItem (TextEditor editor, DocumentContext doc, out ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult)
-		{
-			resolveResult = null;
-			return null;
-		}
-
 		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (document == null)
@@ -114,11 +108,10 @@ namespace MonoDevelop.Refactoring
 			var unit = await document.GetSemanticModelAsync (cancellationToken);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
-
 				try {
 					var token = root.FindToken (offset);
-
-					return new RefactoringSymbolInfo (unit.GetSymbolInfo (token.Parent)) {
+					var symbol = unit.GetSymbolInfo (token.Parent);
+					return new RefactoringSymbolInfo (symbol) {
 						DeclaredSymbol = unit.GetDeclaredSymbol (token.Parent)
 					};
 				} catch (Exception) {

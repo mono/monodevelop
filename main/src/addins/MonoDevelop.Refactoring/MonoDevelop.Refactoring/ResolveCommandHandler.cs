@@ -742,12 +742,12 @@ namespace MonoDevelop.Refactoring
 					return;
 				}
 
-				var generator = doc.CreateCodeGenerator (editor);
+				// var generator = doc.CreateCodeGenerator (editor);
 
 				//				if (resolveResult is NamespaceResolveResult) {
 				//					generator.AddLocalNamespaceImport (doc, ns, loc);
 				//				} else {
-				generator.AddGlobalNamespaceImport (editor, doc, ns);
+				// generator.AddGlobalNamespaceImport (editor, doc, ns);
 				//				}
 			}
 		}

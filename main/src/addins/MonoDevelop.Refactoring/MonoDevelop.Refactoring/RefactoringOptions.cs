@@ -116,14 +116,6 @@ namespace MonoDevelop.Refactoring
 			return result.ToString ();
 		}
 
-		public CodeGenerator CreateCodeGenerator ()
-		{
-			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
-			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
-			return result;
-		}
-		
 		public static string GetIndent (TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
 			return GetWhitespaces (editor, member.SpanStart);

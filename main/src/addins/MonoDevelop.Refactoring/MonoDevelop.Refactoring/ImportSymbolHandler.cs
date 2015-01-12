@@ -37,9 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring
@@ -161,19 +159,19 @@ namespace MonoDevelop.Refactoring
 		#endregion
 		
 		#region ICompletionData implementation
-		public override IconId Icon {
-			get {
-				return type.GetStockIcon ();
-			}
-		}
-		string displayText = null;
-		public override string DisplayText {
-			get {
-				if (displayText == null)
-					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
-				return displayText;
-			}
-		}
+//		public override IconId Icon {
+//			get {
+//				return type.GetStockIcon ();
+//			}
+//		}
+//		string displayText = null;
+//		public override string DisplayText {
+//			get {
+//				if (displayText == null)
+//					displayText = ambience.GetString (type, OutputFlags.IncludeGenerics);
+//				return displayText;
+//			}
+//		}
 		
 		static string GetDefaultDisplaySelection (string description, bool isSelected)
 		{

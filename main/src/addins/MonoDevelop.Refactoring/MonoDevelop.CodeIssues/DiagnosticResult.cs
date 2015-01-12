@@ -26,7 +26,6 @@
 //#define PROFILE
 using System;
 using MonoDevelop.AnalysisCore;
-using ICSharpCode.NRefactory.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
