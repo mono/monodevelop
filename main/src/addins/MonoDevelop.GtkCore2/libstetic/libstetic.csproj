@@ -8,7 +8,7 @@
     <ProjectGuid>{90CBA7FD-CB46-4711-97BB-2420DC01F016}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>libstetic2</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>Stetic</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
