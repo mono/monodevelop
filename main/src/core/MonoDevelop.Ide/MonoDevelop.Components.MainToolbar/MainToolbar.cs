@@ -40,7 +40,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Text;
 

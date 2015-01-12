@@ -32,7 +32,6 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using Gtk;
@@ -128,9 +127,7 @@ namespace MonoDevelop.Components.MainToolbar
 		class WorkerResult 
 		{
 			public List<ProjectFile> filteredFiles = null;
-			public List<ITypeDefinition> filteredTypes = null;
-			public List<IMember> filteredMembers  = null;
-			
+
 			public string pattern = null;
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;

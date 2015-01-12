@@ -37,8 +37,6 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 
@@ -235,15 +233,6 @@ namespace MonoDevelop.Ide.Tasks
 					UpdateCommentTagsForProject (sln, p);
 				}
 			});
-		}
-		
-		
-		static IEnumerable<Tag> GetSpecialComments (IProjectContent ctx, string name)
-		{
-			var doc = ctx.GetFile (name) as ParsedDocument;
-			if (doc == null)
-				return Enumerable.Empty<Tag> ();
-			return (IEnumerable<Tag>)doc.TagComments;
 		}
 		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)

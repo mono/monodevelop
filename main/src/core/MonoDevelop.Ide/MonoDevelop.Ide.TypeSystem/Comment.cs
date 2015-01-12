@@ -26,7 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -55,7 +56,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public DomRegion Region {
+		public bool HasRegion {
+			get {
+				return !Region.IsEmpty;
+			}
+		}
+
+		public DocumentRegion Region {
 			get;
 			set;
 		}

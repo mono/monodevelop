@@ -2728,7 +2728,6 @@
     <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\AnimatedIcon.cs" />
     <Compile Include="MonoDevelop.Ide\DefaultWebCertificateProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ParsedFileEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\MimeTypeExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentView.cs" />
     <Compile Include="MonoDevelop.Components\VPanedThin.cs" />

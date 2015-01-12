@@ -107,16 +107,14 @@ namespace MonoDevelop.Ide.Editor
 
 		public static IErrorMarker CreateErrorMarker (TextEditor editor, Error info)
 		{
-			int offset    = info.Region.Offset;
-			int endOffset = info.Region.EndOffset;
+			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
+			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
 			if (endOffset < offset) {
 				endOffset = offset + 1;
 				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
 					endOffset++;
-				info = new Error (info.ErrorType, info.Message, TextSegment.FromBounds (offset, endOffset));
 			}
-
-			return editor.TextMarkerFactory.CreateErrorMarker (editor, info);
+			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
 		}
 		#endregion
 	}

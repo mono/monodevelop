@@ -821,7 +821,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 
 				foreach (var error in doc.Errors) {
-					var newTask = new QuickTask (error.Message, error.Region.Offset, error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
+					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					tasks.Add (newTask);
 				}
 			}

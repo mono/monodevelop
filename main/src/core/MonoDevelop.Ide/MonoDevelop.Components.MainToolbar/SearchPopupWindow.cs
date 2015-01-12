@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using Gtk;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;

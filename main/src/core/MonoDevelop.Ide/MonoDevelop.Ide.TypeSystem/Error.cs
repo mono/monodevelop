@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly ErrorType errorType;
 		readonly string message;
-		readonly ISegment region;
+		readonly DocumentRegion region;
 
 		/// <summary>
 		/// The type of the error.
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <summary>
 		/// The region of the error.
 		/// </summary>
-		public ISegment Region { get { return region; } }
+		public DocumentRegion Region { get { return region; } }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
@@ -75,7 +76,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='region'>
 		/// The region of the error.
 		/// </param>
-		public Error (ErrorType errorType, string message, ISegment region)
+		public Error (ErrorType errorType, string message, DocumentRegion region)
 		{
 			this.errorType = errorType;
 			this.message = message;
@@ -94,11 +95,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='location'>
 		/// The location of the error.
 		/// </param>
-		public Error (ErrorType errorType, string message, int location)
+		public Error (ErrorType errorType, string message, DocumentLocation location)
 		{
 			this.errorType = errorType;
 			this.message = message;
-			this.region = new TextSegment (location, 0);
+			this.region = new DocumentRegion (location, location);
 		}
 
 		/// <summary>
@@ -114,7 +115,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.errorType = errorType;
 			this.message = message;
-			this.region = TextSegment.Invalid;
+			this.region = DocumentRegion.Empty;
 		}
 	}
 }

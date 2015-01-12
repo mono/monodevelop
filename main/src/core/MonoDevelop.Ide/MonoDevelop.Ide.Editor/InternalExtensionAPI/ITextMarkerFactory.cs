@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Editor
 
 		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length);
 		ISmartTagMarker CreateSmartTagMarker (TextEditor editor, int offset, DocumentLocation realLocation);
-		IErrorMarker CreateErrorMarker (TextEditor editor, Error info);
+		IErrorMarker CreateErrorMarker (TextEditor editor, Error info, int offset, int length);
 		#endregion
 	}
 }
