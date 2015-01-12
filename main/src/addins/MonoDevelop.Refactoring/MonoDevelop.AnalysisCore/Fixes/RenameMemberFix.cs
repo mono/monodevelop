@@ -27,10 +27,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
-using ICSharpCode.NRefactory.Semantics;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor;
 
@@ -41,14 +39,14 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public string NewName { get; private set; }
 		public string OldName { get; private set; }
 		public string IdString { get; set; }
-		public IEntity Item { get; private set; }
-		
-		public RenameMemberFix (IEntity item, string oldName, string newName)
-		{
-			this.OldName = oldName;
-			this.NewName = newName;
-			this.Item = item;
-		}
+//		public IEntity Item { get; private set; }
+//		
+//		public RenameMemberFix (IEntity item, string oldName, string newName)
+//		{
+//			this.OldName = oldName;
+//			this.NewName = newName;
+//			this.Item = item;
+//		}
 		
 		public string FixType { get { return "RenameMember"; } }
 	}
@@ -62,13 +60,13 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			var renameFix = (RenameMemberFix)fix;
 			var refactoring = new RenameRefactoring ();
 			var options = new RefactoringOptions (editor, doc) {
-				SelectedItem = renameFix.Item,
+			//	SelectedItem = renameFix.Item,
 			};
 			
-			if (renameFix.Item == null) {
-				ResolveResult resolveResult;
-				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.DocumentContext, out resolveResult);
-			}
+//			if (renameFix.Item == null) {
+//				ResolveResult resolveResult;
+//				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.DocumentContext, out resolveResult);
+//			}
 //			
 //			if (!refactoring.IsValid (options))
 //				yield break;

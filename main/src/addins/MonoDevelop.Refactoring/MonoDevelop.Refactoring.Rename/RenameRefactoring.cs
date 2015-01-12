@@ -96,13 +96,10 @@ namespace MonoDevelop.Refactoring.Rename
 				
 				var links = new List<TextLink> ();
 				var link = new TextLink ("name");
-				int baseOffset = Int32.MaxValue;
+
 				foreach (var r in locations) {
-					baseOffset = Math.Min (baseOffset, r.Item2.Start);
-				}
-				foreach (var r in locations) {
-					var segment = new TextSegment (r.Item2.Start - baseOffset, r.Item2.Length);
-					if (segment.Offset <= editor.CaretOffset - baseOffset && editor.CaretOffset - baseOffset <= segment.EndOffset) {
+					var segment = new TextSegment (r.Item2.Start, r.Item2.Length);
+					if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
