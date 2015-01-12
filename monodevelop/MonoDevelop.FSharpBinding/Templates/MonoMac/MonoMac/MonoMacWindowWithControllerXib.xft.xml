@@ -30,7 +30,6 @@ type ${Name} =
     inherit NSWindow
 
     new () = { inherit NSWindow () }
-
     new (handle : IntPtr) = { inherit NSWindow (handle) }
 
     [<Export ("initWithCoder:")>]
@@ -49,7 +48,6 @@ type ${Name}Controller =
     inherit NSWindowController
 
     new () = { inherit NSWindowController ("${Name}") }
-
     new (handle : IntPtr) = { inherit NSWindowController (handle) }
 ]]></UnformattedFile>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">
