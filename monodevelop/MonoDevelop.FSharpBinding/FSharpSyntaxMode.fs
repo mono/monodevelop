@@ -270,9 +270,13 @@ module internal Patterns =
         }
 
     let (|Keyword|_|) ts =
-        if (ts.TokenInfo.ColorClass) = FSharpTokenColorKind.Keyword || 
-           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = FSharpTokenColorKind.Keyword)  then Some(Keyword)
-        else None
+        match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
+        | FSharpTokenColorKind.Keyword, _ -> Some(Keyword)
+        | _, Some (_range, extra) when extra = FSharpTokenColorKind.Keyword ->  
+            Some Keyword
+        | _, Some (_range, extra) ->
+            None
+        | _ -> None
 
     let (|Comment|_|) ts =
         if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Comment then Some Comment
@@ -321,6 +325,7 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_PREFIX_OP
         | Parser.tokenId.TOKEN_COLON_EQUALS
         | Parser.tokenId.TOKEN_BAR_BAR
+        | Parser.tokenId.TOKEN_RARROW
             -> Some Punctuation
         | _ -> None
 
@@ -674,7 +679,10 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             match tokenSymbol with
             | UnusedCode -> style.ExcludedCode
             | ComputationExpression
-            | Keyword -> style.KeywordTypes
+            | Keyword -> 
+                Option.ofNull (this.GetKeyword (token.TokenName.ToLowerInvariant ()))
+                |> Option.map (fun keywords -> style.GetChunkStyle keywords.Color)
+                |> Option.fill style.KeywordTypes
             | Comment -> style.CommentsSingleLine
             | StringLiteral -> style.String
             | NumberLiteral -> style.Number
