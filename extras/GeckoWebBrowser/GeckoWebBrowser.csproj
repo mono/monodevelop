@@ -8,7 +8,7 @@
     <ProjectGuid>{3D17ADF3-209C-4E76-8E38-A701F798DA0B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.GeckoWebBrowser</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>GeckoWebBrowser</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

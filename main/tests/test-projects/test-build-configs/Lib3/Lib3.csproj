@@ -8,7 +8,7 @@
     <ProjectGuid>{D4A08E68-9AFC-4E6E-912B-7BACE81B586E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Lib3</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug+Extra|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
