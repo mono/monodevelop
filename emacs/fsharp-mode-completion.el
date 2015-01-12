@@ -758,8 +758,12 @@ display a short summary in the minibuffer."
 
 (defun fsharp-ac-handle-project (data)
   (let* ((project (gethash "Project" data))
-         (files (gethash "Files" data))
+         (files (-map 'file-truename (gethash "Files" data)))
          (oldprojdata (gethash project fsharp-ac--project-data)))
+
+    ;; Use the canonicalised filenames
+    (puthash "Files" files data)
+
     ;; Remove any files previously associated with this
     ;; project as if reloading, they may have changed
     (when oldprojdata
