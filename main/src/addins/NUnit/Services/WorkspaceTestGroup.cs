@@ -26,14 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.IO;
-using System.Collections;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-using NUnit.Core;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.NUnit
 {
