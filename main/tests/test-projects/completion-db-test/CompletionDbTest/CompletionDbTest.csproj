@@ -8,7 +8,7 @@
     <ProjectGuid>{F0E1243E-3125-4180-AC7B-21028ED68516}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>CompletionDbTest</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>CompletionDbTest</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

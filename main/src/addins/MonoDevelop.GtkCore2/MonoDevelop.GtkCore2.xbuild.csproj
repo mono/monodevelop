@@ -8,7 +8,7 @@
     <ProjectGuid>{4F2E994F-E4F5-407A-8D80-80E3377DEF6E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.GtkCore2</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.GtkCore</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

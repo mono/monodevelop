@@ -8,7 +8,7 @@
     <ProjectGuid>{8F7C6D09-049C-4454-B527-39D95D7731B2}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>project-ref-with-spaces</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
