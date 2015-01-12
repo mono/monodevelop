@@ -8,7 +8,7 @@
     <ProjectGuid>{F9A9BFBB-57DC-4143-9276-15D82083B56F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>AspNetEdit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>AspNetEdit</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -8,7 +8,7 @@
     <ProjectGuid>{50A54FBA-D5B3-49F3-AC28-A7EE6AF145B5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>JavaBinding</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>JavaBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

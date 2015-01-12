@@ -8,7 +8,7 @@
     <ProjectGuid>{A0ADC42C-3DF3-4246-864F-AC56CA5A0B6A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>MonoDevelop.Database.Sql.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Database.Sql.Tests</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
