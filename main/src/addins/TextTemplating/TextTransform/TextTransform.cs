@@ -122,12 +122,9 @@ namespace Mono.TextTemplating
 			}
 			
 			if (preprocess == null) {
-				Console.Write ("Processing '{0}'... ", inputFile);
 				generator.ProcessTemplate (inputFile, outputFile);
 				if (generator.Errors.HasErrors) {
-					Console.WriteLine ("failed.");
-				} else {
-					Console.WriteLine ("completed successfully.");
+					Console.WriteLine ("Processing '{0}' failed.", inputFile);
 				}
 			} else {
 				string className = preprocess;
@@ -138,21 +135,12 @@ namespace Mono.TextTemplating
 					className = preprocess.Substring (s + 1);
 				}
 				
-				Console.Write ("Preprocessing '{0}' into class '{1}.{2}'... ", inputFile, classNamespace, className);
 				string language;
 				string[] references;
 				generator.PreprocessTemplate (inputFile, className, classNamespace, outputFile, System.Text.Encoding.UTF8,
 					out language, out references);
 				if (generator.Errors.HasErrors) {
-					Console.WriteLine ("failed.");
-				} else {
-					Console.WriteLine ("completed successfully:");
-					Console.WriteLine ("    Language: {0}", language);
-					if (references != null && references.Length > 0) {
-						Console.WriteLine (" References:");
-						foreach (string r in references)
-							Console.WriteLine ("    {0}", r);
-					}
+					Console.Write ("Preprocessing '{0}' into class '{1}.{2}' failed.", inputFile, classNamespace, className);
 				}
 			}
 			
