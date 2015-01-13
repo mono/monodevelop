@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError (msg, ex);
 			}
 
-			if (string.IsNullOrEmpty (secondaryText) && (ex is System.IO.IOException)) {
+			if (string.IsNullOrEmpty (secondaryText) && ((ex is System.IO.IOException) || (ex is ApplicationException))) {
 				secondaryText = ex.Message;
 			}
 
