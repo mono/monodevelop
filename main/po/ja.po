@@ -17114,7 +17114,7 @@ msgstr "<b>登録済みスキーマ</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:1
 msgid "<b>Default File Associations</b>"
-msgstr "<b>既定ののファイル関連付け</b>"
+msgstr "<b>既定のファイル関連付け</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:51
 msgid "Unhandled error saving schema changes."
