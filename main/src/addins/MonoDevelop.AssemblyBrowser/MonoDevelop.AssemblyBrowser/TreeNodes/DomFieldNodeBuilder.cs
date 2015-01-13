@@ -72,7 +72,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 			if (field.IsPrivate || field.IsInternal)
 				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
-			nodeInfo.Icon = Context.GetIcon (field.GetStockIcon ());
+			// nodeInfo.Icon = Context.GetIcon (field.GetStockIcon ());
 		}
 		
 		#region IAssemblyBrowserNodeBuilder

@@ -728,7 +728,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								memberListStore.AppendValues (ImageService.GetIcon (member.GetStockIcon (), Gtk.IconSize.Menu),
+								memberListStore.AppendValues (null, //ImageService.GetIcon (member.GetStockIcon (), Gtk.IconSize.Menu),
 								                              member.Name,
 								                              member.DeclaringTypeDefinition.FullName,
 								                              kv.Key.Assembly.FullName,
@@ -820,7 +820,7 @@ namespace MonoDevelop.AssemblyBrowser
 							foreach (var type in kv.Value) {
 								if (worker.CancellationPending)
 									return;
-								typeListStore.AppendValues (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
+								typeListStore.AppendValues (null, //ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu),
 								                            type.Name,
 								                            type.Namespace,
 								                            kv.Key.Assembly.FullName,

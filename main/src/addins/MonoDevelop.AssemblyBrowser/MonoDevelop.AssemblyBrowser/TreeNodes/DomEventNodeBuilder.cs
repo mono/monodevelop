@@ -70,7 +70,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			if (evt.IsPrivate || evt.IsInternal)
 				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
-			nodeInfo.Icon = Context.GetIcon (evt.GetStockIcon ());
+			//nodeInfo.Icon = Context.GetIcon (evt.GetStockIcon ());
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
