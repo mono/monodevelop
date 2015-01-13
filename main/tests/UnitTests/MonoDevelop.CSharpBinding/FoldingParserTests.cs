@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharpBinding
 			var generatedFoldings = new List<FoldingRegion> (doc.Foldings);
 			Assert.AreEqual (foldingList.Count, generatedFoldings.Count, "Folding count differs.");
 			foreach (var generated in generatedFoldings) {
-				Assert.IsTrue (foldingList.Any (f => f == generated.Region), "fold not found:" + generated.Region);
+				Assert.IsTrue (foldingList.Any (f => f == (DomRegion)generated.Region), "fold not found:" + generated.Region);
 			}
 			return doc;
 		}

@@ -112,9 +112,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
-					Workspace.UpdateFileContent (file.FileName);
+					var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
+					Workspace.UpdateFileContent (file.FileName, text);
 				}
 			};
+		}
+
+		public static void NotifyFileChange (string fileName, string text)
+		{
+			Workspace.UpdateFileContent (fileName, text);
 		}
 
 		public static void Load (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)

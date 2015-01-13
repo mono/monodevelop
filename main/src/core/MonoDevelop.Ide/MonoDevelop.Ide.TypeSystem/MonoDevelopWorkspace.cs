@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -387,9 +388,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return CurrentSolution.GetDocument (documentId); 
 		}
 
-		public void UpdateFileContent (string fileName)
+		public void UpdateFileContent (string fileName, string text)
 		{
-			// TODO
+			SourceText newText = SourceText.From (text);
+			foreach (var project in this.projectDataMap.Keys) {
+				var docId = this.GetDocumentId (project, fileName);
+				if (docId == null)
+					continue;
+				base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+			}
 		}
 
 		public void AddProject (MonoDevelop.Projects.Project project)

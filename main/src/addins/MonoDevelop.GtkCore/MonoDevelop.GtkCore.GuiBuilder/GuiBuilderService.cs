@@ -324,7 +324,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
-			
 			if (project.UsePartialTypes) {
 				CodeNamespace cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
@@ -334,6 +333,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				type.Attributes = MemberAttributes.Public;
 				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
 				cns.Types.Add (type);
+				type.Members.Add (
+					new CodeMemberMethod () {
+						Name = "Build"
+					}
+				);
 				
 				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
 					// When a component is being renamed, we have to generate the 
@@ -370,10 +374,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				text = fileStream.ToString ();
 				text = FormatGeneratedFile (fileName, text, project, provider);
 			}
-			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			TypeSystemService.ParseFile (project, fileName);
+			RoslynTypeSystemService.NotifyFileChange (fileName, text);
 //			
 //			if (ProjectDomService.HasDom (project)) {
 //				// Only update the parser database if the project is actually loaded in the IDE.

@@ -554,10 +554,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public Compilation GetParserContext ()
 		{
-			var dom = RoslynTypeSystemService.GetCompilationAsync (Project).Result;
+			System.Threading.Tasks.Task<Compilation> task;
+			do {
+				task = RoslynTypeSystemService.GetCompilationAsync (Project);
+				task.Wait (500);
+			} while (!task.IsCompleted);
+
+			var dom = task.Result;
 			if (dom != null && needsUpdate) {
 				needsUpdate = false;
-//				dom.ForceUpdate ();
 			}
 			return dom;
 		}
