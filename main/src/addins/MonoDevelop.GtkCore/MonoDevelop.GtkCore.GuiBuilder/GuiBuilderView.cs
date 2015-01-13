@@ -103,7 +103,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			CloseDesigner ();
 			CloseProject ();
 			if (project != null) {
-				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName);
+				GuiBuilderWindow w = GuiBuilderDisplayBinding.GetWindow (this.ContentName, project);
 				if (w != null) {
 					AttachWindow (w);
 					if (designerStatus != null)

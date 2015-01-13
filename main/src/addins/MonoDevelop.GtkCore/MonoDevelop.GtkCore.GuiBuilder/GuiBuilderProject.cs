@@ -356,7 +356,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
 					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
-					string path = Path.Combine (dir, c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat) + ".xml");
+					string path = Path.Combine (dir, c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat) + ".xml");
 					if (!System.IO.File.Exists (path))
 						continue;
 					XmlDocument xmldoc = new XmlDocument ();
@@ -386,7 +386,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 				foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
 					var c = semanticModel.GetDeclaredSymbol (classDeclaration);
-					GuiBuilderWindow win = GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat));
+					GuiBuilderWindow win = GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.MinimallyQualifiedFormat));
 					if (win != null)
 						toDelete.Add (win);
 				}

@@ -91,16 +91,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			if (targetObject == null)
 				return;
-			
-			var doc = TypeSystemService.ParseFile (project, fileName);
+			FileService.NotifyFileChanged (fileName);
 			classFile = fileName;
 			
-			if (doc != null) {
-				var cls = GetClass ();
+			var cls = GetClass ();
+			if (cls != null) {
 				UpdateBindings (targetObject, cls);
-			
-				if (cls != null)
-					targetObject.GeneratePublic = cls.DeclaredAccessibility == Accessibility.Public;
+				targetObject.GeneratePublic = cls.DeclaredAccessibility == Accessibility.Public;
 			}
 		}
 		

@@ -33,6 +33,8 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
+using System;
+using ICSharpCode.NRefactory6.CSharp;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -57,7 +59,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (fileName.IsNullOrEmpty)
 				return false;
 			
-			if (GetWindow (fileName) == null)
+			if (GetWindow (fileName, ownerProject) == null)
 				return false;
 			
 			excludeThis = true;
@@ -71,31 +73,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			var content = db.CreateContent (fileName, mimeType, ownerProject);
-			GuiBuilderView view = new GuiBuilderView (content, GetWindow (fileName));
+			var window = GetWindow (fileName, ownerProject);
+			if (window == null)
+				throw new InvalidOperationException ("GetWindow == null");
+			GuiBuilderView view = new GuiBuilderView (content, window);
 			excludeThis = false;
 			return view;
 		}
 		
-		internal static GuiBuilderWindow GetWindow (string file)
+		internal static GuiBuilderWindow GetWindow (string file, Project project)
 		{
 			if (!IdeApp.Workspace.IsOpen)
 				return null;
-
-			Project project = null;
-			foreach (Project p in IdeApp.Workspace.GetAllProjects ()) {
-				if (p.IsFileInProject (file)) {
-					project = p;
-					break;
-				}
-			}
-			
 			if (!GtkDesignInfo.HasDesignedObjects (project))
 				return null;
-
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
-			
 			var docId = RoslynTypeSystemService.GetDocument (project, file);
 			if (docId == null)
 				return null;
@@ -105,10 +99,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var semanticModel = doc.GetSemanticModelAsync ().Result;
 			if (semanticModel == null)
 				return null;
-
-			foreach (var classDeclaration in semanticModel.SyntaxTree.GetRoot ().DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
+			var root = semanticModel.SyntaxTree.GetRoot ();
+			foreach (var classDeclaration in root.DescendantNodesAndSelf (child => !(child is BaseTypeDeclarationSyntax)).OfType<ClassDeclarationSyntax> ()) {
 				var c = semanticModel.GetDeclaredSymbol (classDeclaration);
-				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.FullyQualifiedFormat));
+				GuiBuilderWindow win = info.GuiBuilderProject.GetWindowForClass (c.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat));
 				if (win != null)
 					return win;
 			}
