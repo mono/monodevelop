@@ -1919,7 +1919,7 @@ namespace Mono.TextEditor
 		{
 			VisualLocationTranslator trans = new VisualLocationTranslator (this);
 
-			clickLocation = trans.PointToLocation (x, y);
+			clickLocation = trans.PointToLocation (x, y, snapCharacters: true);
 			if (clickLocation.Line < DocumentLocation.MinLine || clickLocation.Column < DocumentLocation.MinColumn)
 				return false;
 			DocumentLine line = Document.GetLine (clickLocation.Line);
@@ -2043,7 +2043,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			DocumentLocation docLocation = PointToLocation (args.X, args.Y);
+			DocumentLocation docLocation = PointToLocation (args.X, args.Y, snapCharacters: true);
 			if (docLocation.Line < DocumentLocation.MinLine || docLocation.Column < DocumentLocation.MinColumn)
 				return;
 			
@@ -2271,7 +2271,7 @@ namespace Mono.TextEditor
 		List<IActionTextLineMarker> newMarkers = new List<IActionTextLineMarker> ();
 		protected internal override void MouseHover (MarginMouseEventArgs args)
 		{
-			var loc = PointToLocation (args.X, args.Y);
+			var loc = PointToLocation (args.X, args.Y, snapCharacters: true);
 			if (loc.Line < DocumentLocation.MinLine || loc.Column < DocumentLocation.MinColumn)
 				return;
 			var line = Document.GetLine (loc.Line);
@@ -2935,6 +2935,7 @@ namespace Mono.TextEditor
 
 			TextViewMargin.LayoutWrapper layoutWrapper;
 			int index;
+			bool snapCharacters;
 
 			bool ConsumeLayout (int xp, int yp)
 			{
@@ -2947,16 +2948,25 @@ namespace Mono.TextEditor
 					layoutWrapper.Layout.IndexToLineX (index, false, out lineNr, out xp1);
 					layoutWrapper.Layout.IndexToLineX (index + 1, false, out lineNr, out xp2);
 					index = TranslateIndexToUTF8 (layoutWrapper.Layout.Text, index);
+
+					if (snapCharacters && !IsNearX1 (xp, xp1, xp2))
+						index++;
 					return true;
 				}
 				index = line.Length;
 				return false;
 			}
 
-			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
+			static bool IsNearX1 (int pos, int x1, int x2)
+			{
+				return System.Math.Abs (x1 - pos) < System.Math.Abs (x2 - pos);
+			}
+
+			public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 			{
 				lineNumber = System.Math.Min (margin.YToLine (yp + margin.textEditor.VAdjustment.Value), margin.Document.LineCount);
 				line = lineNumber <= margin.Document.LineCount ? margin.Document.GetLine (lineNumber) : null;
+				this.snapCharacters = snapCharacters;
 				if (line == null)
 					return DocumentLocation.Empty;
 				
@@ -3036,19 +3046,19 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
+		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (xp, yp, endAtEol, snapCharacters);
 		}
-		
-		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false)
+
+		public DocumentLocation PointToLocation (Cairo.Point p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
-		
-		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false)
+
+		public DocumentLocation PointToLocation (Cairo.PointD p, bool endAtEol = false, bool snapCharacters = false)
 		{
-			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol);
+			return new VisualLocationTranslator (this).PointToLocation (p.X, p.Y, endAtEol, snapCharacters);
 		}
 		
 		public Cairo.Point LocationToPoint (int line, int column)
