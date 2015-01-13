@@ -52,7 +52,7 @@ namespace MonoDevelop.TextTemplating.Parser
 			}
 			var errors = new List<Error> ();
 			foreach (System.CodeDom.Compiler.CompilerError err in template.Errors) {
-				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, new TextSegment (readOnlyDoc.LocationToOffset (err.Line, err.Column), 0)));
+				errors.Add (new Error (err.IsWarning ? ErrorType.Warning : ErrorType.Error, err.ErrorText, new DocumentLocation (err.Line, err.Column)));
 			}
 			var doc = new T4ParsedDocument (fileName, template.RawSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
