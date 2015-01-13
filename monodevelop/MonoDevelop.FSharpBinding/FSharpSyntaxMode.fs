@@ -140,8 +140,12 @@ module FSharpSyntaxModeInternals =
         else
             None
 
+    let containsFunctionDef (subText : string) =
+        let endOfBlockDef = subText.IndexOf( '*')
+        subText.IndexOf ( ')', endOfBlockDef) <> -1
+
     let (|FoundBlockCommentBegin|_|) (subText: string, _curSpan, state: SpanParserState, i:int, len:int) =
-        if (subText.StartsWith(openBlockComment) && state = General) then
+        if (subText.StartsWith(openBlockComment) && state = General && not (containsFunctionDef subText)) then
             let newState = Comment
             let spanBegin = CommentSpan(), i, len
             let newi = i+2
@@ -234,8 +238,8 @@ module FSharpSyntaxModeInternals =
                         let span = EndIfBlockSpan()
                         if this.CurSpan <> null && typeof<AbstractBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
                             this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
-                        this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
-                        this.FoundSpanEnd.Invoke(span, i + textOffset + 6, 0)
+                        this.FoundSpanBegin.Invoke(span, i, 6)
+                        this.FoundSpanEnd.Invoke(span, i + 6, 0)
                         true
                     elif (this.CurSpan = null || (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code")) then
                         let spanLength = 
@@ -519,8 +523,7 @@ module internal Patterns =
         if ts.TokenInfo.ColorClass = FSharpTokenColorKind.InactiveCode then Some UnusedCode
         else None
 
-    let isAbstractBlockSpan (span: Span) =
-        typeof<FSharpSyntaxModeInternals.AbstractBlockSpan>.IsAssignableFrom(span.GetType())
+    let isAbstractBlockSpan (span: Span) = span.Rule = ""
 
     let lineStartsWithAbstractBlockSpan (spanStack: CloneableStack<Span>) =
         if spanStack = null || spanStack.Count = 0 then false
@@ -544,21 +547,18 @@ module internal Patterns =
     let hasSpans (line: DocumentLine) =
         line <> null && line.StartSpan <> null && line.StartSpan.Count > 0
 
-    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument, line: DocumentLine, offset, length, style: Highlighting.ColorScheme) =
+    let (|ExcludedCode|StringCode|CommentCode|OtherCode|) (document: TextDocument, line: DocumentLine, offset, length, style: Highlighting.ColorScheme) =
         let docText = document.GetTextAt(offset, length)
-        //if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
-        if docText.StartsWith("#") then
-            PreProcessorCode style.Preprocessor.Name
-        elif (hasSpans(line)) then
+        if hasSpans(line) then
             if not (lineStartsWithAbstractBlockSpan line.StartSpan)  then
-                if (containsAbstractBlockSpan line.StartSpan) &&
-                    (getAbstractBlockSpan line.StartSpan).Disabled  then
-                    ExcludedCode style.ExcludedCode.Name
-                elif hasSpans(line) && line.StartSpan.Peek().Rule = "String" || line.StartSpan.Peek().Rule = "VerbatimString" || line.StartSpan.Peek().Rule = "TripleQuotedString" then
-                    StringCode style.String.Name
-                elif hasSpans(line) && (line.StartSpan.Peek().Rule = "Comment" || line.StartSpan.Peek().Rule = "MultiComment") then
-                    CommentCode style.CommentsMultiLine.Name
-                else OtherCode (style.PlainText.Name, docText)
+                if (containsAbstractBlockSpan line.StartSpan) && (getAbstractBlockSpan line.StartSpan).Disabled  then
+                    ExcludedCode style.ExcludedCode.Name else
+                match line.StartSpan.Peek() with
+                | span when span.Rule = "String" || span.Rule = "VerbatimString" || span.Rule = "TripleQuotedString" ->
+                    StringCode span.Color
+                | span when span.Rule = "Comment" || span.Rule = "MultiComment" ->
+                    CommentCode span.Color
+                | _ -> OtherCode (style.PlainText.Name, docText)
             elif containsAbstractBlockSpan line.StartSpan &&
                (getAbstractBlockSpan line.StartSpan).Disabled then
                 ExcludedCode style.ExcludedCode.Name
@@ -714,7 +714,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         let tokens = 
             List.unfold (scanToken tokenizer) 0L
             |> List.map (makeChunk line.LineNumber style offset)
-        tokens |> Seq.ofList
+        tokens
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
     let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
@@ -737,14 +737,16 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         try
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset, length, styleName))
-            | PreProcessorCode _ -> base.GetChunks(style, line, offset, length)
             | OtherCode (_, lineText) when semanticHighlightingEnabled -> 
                 let tokens = getLexedTokens(style, line, offset, lineText)
-                if (tokens |> Seq.isEmpty || (tokens |> Seq.last).EndOffset < offset + lineText.Length ) then
+                if (tokens |> List.isEmpty || (tokens |> List.last).EndOffset < offset + lineText.Length ) then
                     base.GetChunks(style, line, offset, length)
                 else
-                    tokens
-            | CommentCode styleName -> Seq.singleton(Chunk(offset, length, styleName ))
+                    tokens |> Seq.ofList
+            | CommentCode styleName ->
+                Seq.singleton(Chunk(offset, length, styleName ))
+            | StringCode styleName ->
+                Seq.singleton(Chunk(offset, length, styleName ))
             | _ -> base.GetChunks(style, line, offset, length)
         with
             | exn ->
