@@ -215,7 +215,7 @@ namespace MonoDevelop.CSharp.Project
 				foreach (var c in ctx.Assembly.GlobalNamespace.GetTypeMembers ()) {
 					foreach (var m in c.GetMembers().OfType<IMethodSymbol> ()) {
 						if (m.IsStatic && m.Name == "Main")
-							classListStore.AppendValues (c.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+							classListStore.AppendValues (c.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
 					}
 				}
 				classListFilled = true;
