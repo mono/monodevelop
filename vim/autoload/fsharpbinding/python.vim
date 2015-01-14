@@ -295,9 +295,6 @@ endfunction
 
 function! fsharpbinding#python#FsiPurge()
     let prelude = s:pyeval('fsi.purge()')
-    for l in l:prelude
-        echom l
-    endfor
 endfunction
 
 function! fsharpbinding#python#FsiReset(fsi_path)
@@ -307,17 +304,57 @@ Statics.fsi = FSharpInteractive(vim.eval('a:fsi_path'))
 fsi = Statics.fsi
 fsi.cd(vim.eval("expand('%:p:h')"))
 EOF
+    exec 'bd fsi-out'
     echo "fsi reset"
 endfunction
 
 function! fsharpbinding#python#FsiSend(text)
-python << EOF
-#file_dir = vim.eval("expand('%:p:h')")
+    python << EOF
 path = vim.current.buffer.name
 (row, col) = vim.current.window.cursor
-#fsi.cd(file_dir)
 fsi.set_loc(path, row)
 fsi.send(vim.eval('a:text'))
+EOF
+endfunction
+
+function! fsharpbinding#python#FsiShow()
+    try
+        if bufnr('fsi-out') == -1
+            exec 'badd fsi-out'
+        else
+            exec 'vsplit fsi-out'
+            setlocal buftype=nofile
+            setlocal bufhidden=hide
+            setlocal noswapfile
+            exec 'wincmd p'
+        endif
+    catch
+        echohl WarningMsg "failed to display fsi output" 
+    endtry
+endfunction
+
+function! fsharpbinding#python#FsiRead(time_out)
+python << EOF
+lines = fsi.read_until_prompt(int(vim.eval('a:time_out')))
+fsiBuf = None
+for b in vim.buffers:
+    if 'fsi-out' in b.name:
+        fsiBuf = b
+        break
+if fsiBuf != None:
+    fsiBuf.append(lines)
+    for w in vim.current.tabpage.windows:
+        if fsiBuf.name in w.buffer.name:
+            w.cursor = len(fsiBuf) - 1, 0
+            vim.command('exe %s"wincmd w"' % w.number)
+            vim.command('exe "normal! G"')
+            vim.command('exe "wincmd p"')
+            break
+#echo first nonempty line
+for l in lines:
+    if l != "":
+        vim.command('echo "%s"' % l)
+        break
 EOF
 endfunction
 
@@ -326,10 +363,10 @@ function! fsharpbinding#python#FsiEval(text)
     "clear anything in the buffer
         call fsharpbinding#python#FsiPurge()
         call fsharpbinding#python#FsiSend(a:text)
-        let lines = s:pyeval('fsi.read_until_prompt()')
-        for l in lines
-            echom l
-        endfor
+        if bufnr('fsi-out') == -1
+            exec 'badd fsi-out'
+        endif
+        call fsharpbinding#python#FsiRead(5)
     catch
         echohl WarningMsg "fsi eval failure" 
     endtry
@@ -338,23 +375,12 @@ endfunction
 function! fsharpbinding#python#FsiSendLine()
     let text = getline('.')
     call fsharpbinding#python#FsiEval(text)
-    exec "normal" "j"
-endfunction
-
-function! fsharpbinding#python#FsiSendLineSilent()
-    let text = getline('.')
-    call fsharpbinding#python#FsiSend(text)
-    exec "normal" "j"
+    exec 'normal j'
 endfunction
 
 function! fsharpbinding#python#FsiSendSel()
     let text = s:get_visual_selection()
     call fsharpbinding#python#FsiEval(text)
-endfunction
-
-function! fsharpbinding#python#FsiSendSelSilent()
-    let text = s:get_visual_selection()
-    call fsharpbinding#python#FsiSend(text)
 endfunction
 
 let &cpo = s:cpo_save
