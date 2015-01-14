@@ -52,9 +52,10 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 #####FSharp Interactive
 * `:FsiEval` Evaluates an fsharp expression in the fsi 
 * `:FsiReset` Resets the current fsharp interactive
-* `:FsiRead` Displays any lines written by the fsi but not yet output as vim messages 
-* `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output.
-* `Ctrl-Alt-Enter` Send either the current selection or the current line to the fsharp interactive but does not output the result as vim messages.
+* `:FsiRead` Outputs any lines written by the fsi but not yet output as vim messages 
+* `:FsiShow` Opens the _fsi-out_ buffer in a split window. 
+* `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output the first line of the output. All output will be written to the _fsi-out_ buffer.
+* `leader<i>` Same as Alt-Enter
 
 ###On-the-fly syntax checking
 

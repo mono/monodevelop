@@ -45,7 +45,7 @@ if Statics.fsac == None:
     Statics.fsac = FSAutoComplete(fsharp_dir, debug)
 if Statics.fsi == None:
     debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
-    Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
+    Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'), debug)
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
 
@@ -73,14 +73,13 @@ EOF
     com! -buffer -nargs=* -complete=file RunProject call fsharpbinding#python#RunProject(<f-args>)
     
     "fsi
-    com! -buffer FsiRead call fsharpbinding#python#FsiPurge()
+    com! -buffer FsiShow call fsharpbinding#python#FsiShow()
+    com! -buffer FsiRead call fsharpbinding#python#FsiRead(0.5) "short timeout as there may not be anything to read
     com! -buffer FsiReset call fsharpbinding#python#FsiReset(g:fsharp_interactive_bin)
     com! -buffer -nargs=1 FsiEval call fsharpbinding#python#FsiEval(<q-args>)
 
     nnoremap  :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
     vnoremap  :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
-    nnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendLineSilent()<cr>
-    vnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendSelSilent()<cr>
     nnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
     vnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
 

@@ -2,12 +2,14 @@ from subprocess import Popen, PIPE
 from os import path
 import string
 import threading
+import tempfile
 import Queue
 import uuid
 import hidewin
 
 class FSharpInteractive:
-    def __init__(self, fsi_path):
+    def __init__(self, fsi_path, is_debug = False):
+        self._debug = is_debug
         #self.logfiledir = tempfile.gettempdir() + "/log.txt"
         #self.logfile = open(self.logfiledir, "w")
         id = 'vim-' + str(uuid.uuid4())
@@ -15,10 +17,9 @@ class FSharpInteractive:
         opts = { 'stdin': PIPE, 'stdout': PIPE, 'stderr': PIPE, 'shell': False, 'universal_newlines': True }
         hidewin.addopt(opts)
         self.p = Popen(command, **opts) 
-        #try:
-         #   self.p = Popen(command, **opts) 
-        #except WindowsError:
-         #   self.p = Popen(command[1:], **opts)
+
+        logfiledir = tempfile.gettempdir() + "/fsi-log.txt"
+        self.logfile = open(logfiledir, "w")
 
         self.should_work = True
         self.lines = Queue.Queue()
@@ -30,6 +31,11 @@ class FSharpInteractive:
         self.err_worker.start()
         x = self.purge()
 
+    def _log(self, msg):
+        if self._debug:
+            self.logfile.write(msg + "\n")
+            self.logfile.flush()
+
     def shutdown(self):
         print "shutting down fsi"
         self.should_work = False
@@ -39,7 +45,9 @@ class FSharpInteractive:
         self.p.stdin.write("#" + str(line_num) + " @\"" + path + "\"\n")
             
     def send(self, txt):
-        self.p.stdin.write(txt + ";;\n")
+        self.p.stdin.write(txt + "\n")
+        self.p.stdin.write(";;\n")
+        self._log(">" + txt + ";;")
 
     def cd(self, path):
         self.p.stdin.write("System.IO.Directory.SetCurrentDirectory(@\"" + path + "\");;\n")
@@ -57,10 +65,10 @@ class FSharpInteractive:
                 break
         return items
 
-    def read_until_prompt(self):
+    def read_until_prompt(self, time_out):
         output = []
         try:
-            l = self.lines.get(True, 10) #wait longer for first - this assumes there will be a resonse.
+            l = self.lines.get(True, time_out) 
             if 'SERVER-PROMPT>' in l:
                 return output
             output.append(str(l).rstrip())
@@ -68,8 +76,10 @@ class FSharpInteractive:
                 l = self.read_one()
                 if 'SERVER-PROMPT>' in l:
                     return output
-                output.append(str(l.rstrip()))
-        except:
+                output.append(str(l).rstrip())
+            return output
+        except Exception as ex:
+            outputl.append(".....") #indicate that there may be more lines of output
             return output
 
     def read_one(self):
@@ -77,10 +87,15 @@ class FSharpInteractive:
 
     def _work(self):
         while(self.should_work):
-            l = self.p.stdout.readline()
-            self.lines.put(l, True)
+            try:
+                l = self.p.stdout.readline()
+                self.lines.put(l, True)
+                self._log(l)
+            except Exception as ex:
+                print ex
 
     def _err_work(self):
         while(self.should_work):
             l = self.p.stderr.readline()
             self.lines.put(l, True)
+            self._log( "err: " + l)
