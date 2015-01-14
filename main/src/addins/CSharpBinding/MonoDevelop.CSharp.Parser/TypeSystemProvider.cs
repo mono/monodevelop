@@ -77,7 +77,6 @@ namespace MonoDevelop.CSharp.Parser
 			} catch (Exception) {
 				time = DateTime.UtcNow;
 			}
-			Console.WriteLine ("Parsed" + unit);
 			result.LastWriteTimeUtc = time;
 			result.Add (GetSemanticTags (unit));
 			result.Add (GenerateFoldings (unit, result));
