@@ -61,10 +61,10 @@ namespace MonoDevelop.CSharp
 //			}
 //		}
 		
-		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
-		{
-			return parser.Parse (new ICSharpCode.NRefactory.Editor.StringTextSource (data.Text), data.FileName);
-		}
+//		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
+//		{
+//			return parser.Parse (new ICSharpCode.NRefactory.Editor.StringTextSource (data.Text), data.FileName);
+//		}
 		
 //		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
 //		{

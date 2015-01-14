@@ -53,35 +53,6 @@ namespace MonoDevelop.CSharp.Formatting
 			return engine.GetCopyData (new TextSpan (offset, length));
 		}
 
-		class Segment : ICSharpCode.NRefactory.Editor.ISegment
-		{
-			readonly int offset;
-			readonly int length;
-
-			public int Offset {
-				get { return offset; }
-			}
-
-			public int Length {
-				get { return length; }
-			}
-
-			public int EndOffset {
-				get { return Offset + Length; }
-			}
-
-			public Segment (int offset, int length)
-			{
-				this.offset = offset;
-				this.length = length;
-			}
-
-			public override string ToString ()
-			{
-				return string.Format ("[Script.Segment: Offset={0}, Length={1}, EndOffset={2}]", Offset, Length, EndOffset);
-			}
-		}
-	
 		public override void PostFomatPastedText (int insertionOffset, int insertedChars)
 		{
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||

@@ -79,6 +79,8 @@ namespace MonoDevelop.CodeActions
 					await descriptor.GetProvider ().ComputeRefactoringsAsync (new CodeRefactoringContext (analysisDocument, span,
 						(ca) => actions.Add (Tuple.Create (descriptor, ca)),
 						cancellationToken));
+				} catch (OperationCanceledException) {
+					break;
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
 					continue;

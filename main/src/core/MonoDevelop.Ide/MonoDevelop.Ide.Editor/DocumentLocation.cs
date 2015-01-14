@@ -191,6 +191,16 @@ namespace MonoDevelop.Ide.Editor
 			return new DocumentLocation (location.Line, location.Column);
 		}
 
+		public static implicit operator Microsoft.CodeAnalysis.Text.LinePosition (DocumentLocation location)
+		{
+			return new Microsoft.CodeAnalysis.Text.LinePosition (location.Line - 1, location.Column - 1);
+		}
+
+		public static implicit operator DocumentLocation(Microsoft.CodeAnalysis.Text.LinePosition location)
+		{
+			return new DocumentLocation (location.Line + 1, location.Character + 1);
+		}
+
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>

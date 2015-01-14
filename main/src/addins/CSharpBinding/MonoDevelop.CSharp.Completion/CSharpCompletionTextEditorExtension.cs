@@ -1145,12 +1145,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IDebuggerExpressionResolver implementation
 
-		static string GetIdentifierName (IReadonlyTextDocument editor, ICSharpCode.NRefactory.CSharp.Identifier id, out int startOffset)
-		{
-			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
-
-			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
-		}
+//		static string GetIdentifierName (IReadonlyTextDocument editor, ICSharpCode.NRefactory.CSharp.Identifier id, out int startOffset)
+//		{
+//			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
+//
+//			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
+//		}
 
 //		internal static string ResolveExpression (IReadonlyTextDocument editor, ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, out int startOffset)
 //		{
