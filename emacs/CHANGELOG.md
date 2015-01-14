@@ -1,3 +1,8 @@
+## 1.5.1 (2015-01-14)
+
+Bugfixes:
+  - #923: Autocompletion not working on Emacs 24.4+ on Windows
+
 ## 1.5.0 (2014-11-25)
 
 Incorporate FSharp.AutoComplete version 0.13.3, which has corrected help text for the parse command and uses FCS 0.0.81.
