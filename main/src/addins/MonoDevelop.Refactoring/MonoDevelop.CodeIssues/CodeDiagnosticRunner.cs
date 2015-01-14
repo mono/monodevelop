@@ -84,7 +84,10 @@ namespace MonoDevelop.CodeIssues
 				if (syntaxTreeTask.IsCanceled)
 					return Enumerable.Empty<Result> ();
 
-				var model = compilation.GetSemanticModel (syntaxTreeTask.Result);
+				var tree = syntaxTreeTask.Result;
+				if (tree == null)
+					return Enumerable.Empty<Result> ();
+				var model = compilation.GetSemanticModel (tree);
 				model.GetDiagnostics ();
 				model.GetSyntaxDiagnostics ();
 				model.GetDeclarationDiagnostics ();
