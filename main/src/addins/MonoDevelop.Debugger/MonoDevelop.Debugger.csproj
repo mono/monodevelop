@@ -148,6 +148,7 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
+    <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
