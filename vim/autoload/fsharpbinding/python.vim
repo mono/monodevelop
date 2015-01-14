@@ -52,7 +52,7 @@ fsautocomplete.project(vim.eval("a:1"))
 EOF
     elseif exists('b:proj_file')
     python << EOF
-    fsautocomplete.project(vim.eval("b:proj_file"))
+fsautocomplete.project(vim.eval("b:proj_file"))
 EOF
     endif
 endfunction
