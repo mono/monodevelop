@@ -41,7 +41,7 @@
 
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
                 <UnformattedFile name="MainWindow.fs">
-<![CDATA[namespace ${ProjectName}
+<![CDATA[namespace ${Namespace}
 
     module MainWindow =
     

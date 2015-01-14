@@ -21,7 +21,7 @@
     <!-- Template Content -->
     <TemplateFiles>
         <UnformattedFile name="AssemblyInfo.fs" AddStandardHeader="True">
-            <![CDATA[module ${ProjectName}.AssemblyInfo
+            <![CDATA[namespace ${Namespace}
 open System.Reflection
 open System.Runtime.CompilerServices
 
