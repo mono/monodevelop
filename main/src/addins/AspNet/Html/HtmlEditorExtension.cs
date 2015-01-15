@@ -26,9 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet.Html
 			
 			XElement el = n as XElement;
 			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
-				region = new DomRegion (region.Begin, el.ClosingTag.Region.End);
+				region = new DocumentRegion (region.Begin, el.ClosingTag.Region.End);
 			}
 			
 			int s = Editor.LocationToOffset (region.BeginLine, region.BeginColumn );

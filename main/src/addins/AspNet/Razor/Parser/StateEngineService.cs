@@ -25,10 +25,10 @@
 // THE SOFTWARE.
 
 using System.Diagnostics;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Core;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			EndCodeFragment<T> (context, context.LocationMinus (minus));
 		}
 
-		public static void EndCodeFragment<T> (IXmlParserContext context, TextLocation loc) where T : XNode
+		public static void EndCodeFragment<T> (IXmlParserContext context, DocumentLocation loc) where T : XNode
 		{
 			var top = context.Nodes.Pop ();
 			var node = top as T;

@@ -34,13 +34,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.WebForms;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet.WebForms
 					);
 				} else {
 					string controlType = element.Attributes.GetValue (new XName ("type"), true);
-					IType type = docRefMan.GetType (element.Name.Prefix, element.Name.Name, controlType);
+					var type = docRefMan.GetType (element.Name.Prefix, element.Name.Name, controlType);
 	
 					if (type == null) {
 						Errors.Add (
@@ -111,7 +111,7 @@ namespace MonoDevelop.AspNet.WebForms
 	
 	public class CodeBehindMember
 	{
-		public CodeBehindMember (string name, IType type, TextLocation location)
+		public CodeBehindMember (string name, INamedTypeSymbol type, DocumentLocation location)
 		{
 			this.Name = name;
 			this.Type = type;
@@ -119,7 +119,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}		
 		
 		public string Name { get; private set; }
-		public IType Type { get; private set; }
-		public TextLocation Location { get; private set; }
+		public INamedTypeSymbol Type { get; private set; }
+		public DocumentLocation Location { get; private set; }
 	}
 }

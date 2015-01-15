@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -38,6 +37,7 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -70,10 +70,10 @@ namespace MonoDevelop.AspNet.WebForms
 			var type = AspNetAppProject.DetermineWebSubtype (fileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
-					errors.Add (new Error (ErrorType.Error, "File directive is missing", 1, 1));
+					errors.Add (new Error (ErrorType.Error, "File directive is missing", new DocumentLocation (1, 1)));
 				} else {
 					type = info.Subtype;
-					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", 1, 1));
+					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", new DocumentLocation (1, 1)));
 				}
 			}
 			

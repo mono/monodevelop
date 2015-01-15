@@ -31,12 +31,12 @@ using PP = System.IO.Path;
 
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms;
 using Gtk;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -467,18 +467,18 @@ namespace MonoDevelop.AspNet.Commands
 
 		class TypeDataProvider
 		{
-			public List<ITypeDefinition> TypesList { get; private set; }
+			public List<INamedTypeSymbol> TypesList { get; private set; }
 			public List<string> TypeNamesList { get; private set; }
 			Ambience ambience;
 
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = TypeSystemService.GetCompilation (project);
-				TypesList = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
+				var ctx = RoslynTypeSystemService.GetCompilationAsync (project).Result;
+				TypesList = new List<INamedTypeSymbol> (ctx.Assembly.GlobalNamespace.GetTypeMembers ());
 				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 				foreach (var typeDef in TypesList) {
-					TypeNamesList.Add (ambience.GetString ((IEntity)typeDef, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+					TypeNamesList.Add (AmbienceService.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				}
 			}
 		}

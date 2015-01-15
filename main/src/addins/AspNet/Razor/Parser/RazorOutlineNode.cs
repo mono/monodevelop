@@ -25,16 +25,16 @@
 // THE SOFTWARE.
 
 using System.Web.Razor.Parser.SyntaxTree;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
 	class RazorOutlineNode
 	{
 		public string Name { get; set; }
-		public DomRegion Location { get; set; }
+		public DocumentRegion Location { get; set; }
 
 		public RazorOutlineNode (XElement el)
 		{

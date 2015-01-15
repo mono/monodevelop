@@ -26,11 +26,9 @@
 
 using System;
 using System.IO;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -43,35 +41,36 @@ namespace MonoDevelop.AspNet.Commands
 
 		protected override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			var currentLocation = doc.Editor.CaretLocation;
-
-			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			string controllerName = controller.Name;
-			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
-			if (pos > 0)
-				controllerName = controllerName.Remove (pos);
-
-			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
-
-			string actionName = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
-			var viewFoldersPaths = new [] {
-				baseDirectory.Combine ("Views", controllerName),
-				baseDirectory.Combine ("Views", "Shared")
-			};
-			var viewExtensions = new [] { ".aspx", ".cshtml" };
-
-			foreach (var folder in viewFoldersPaths) {
-				foreach (var ext in viewExtensions) {
-					var possibleFile = folder.Combine (actionName + ext);
-					if (File.Exists (possibleFile)) {
-						IdeApp.Workbench.OpenDocument (possibleFile, doc.Project);
-						return;
-					}
-				}
-			}
-
-			MessageService.ShowError ("Matching view cannot be found.");
+// TODO: Roslyn port
+//			var doc = IdeApp.Workbench.ActiveDocument;
+//			var currentLocation = doc.Editor.CaretLocation;
+//
+//			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
+//			string controllerName = controller.Name;
+//			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+//			if (pos > 0)
+//				controllerName = controllerName.Remove (pos);
+//
+//			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
+//
+//			string actionName = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
+//			var viewFoldersPaths = new [] {
+//				baseDirectory.Combine ("Views", controllerName),
+//				baseDirectory.Combine ("Views", "Shared")
+//			};
+//			var viewExtensions = new [] { ".aspx", ".cshtml" };
+//
+//			foreach (var folder in viewFoldersPaths) {
+//				foreach (var ext in viewExtensions) {
+//					var possibleFile = folder.Combine (actionName + ext);
+//					if (File.Exists (possibleFile)) {
+//						IdeApp.Workbench.OpenDocument (possibleFile, doc.Project);
+//						return;
+//					}
+//				}
+//			}
+//
+//			MessageService.ShowError ("Matching view cannot be found.");
 		}
 	}
 }

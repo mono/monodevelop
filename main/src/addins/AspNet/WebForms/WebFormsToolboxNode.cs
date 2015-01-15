@@ -30,7 +30,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Linq;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Ide;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Ide.Editor;
@@ -35,7 +34,7 @@ namespace MonoDevelop.AspNet.Razor.Dom
 {
 	public abstract class RazorCodeFragment : XContainer
 	{
-		protected RazorCodeFragment (TextLocation start) : base (start)
+		protected RazorCodeFragment (DocumentLocation start) : base (start)
 		{
 		}
 
@@ -55,7 +54,7 @@ namespace MonoDevelop.AspNet.Razor.Dom
 			}
 		}
 
-		public bool IsEndingBracket (TextLocation bracketLocation)
+		public bool IsEndingBracket (DocumentLocation bracketLocation)
 		{
 			// If document isn't entirely loaded
 			if (Document == null || Document.LineCount < Region.BeginLine)
@@ -70,7 +69,7 @@ namespace MonoDevelop.AspNet.Razor.Dom
 			return SimpleBracketMatcher.GetMatchingBracketOffset (Document, firstBracketOffset) == currentBracketOffset;
 		}
 
-		public bool FindFirstBracket (TextLocation currentLocation)
+		public bool FindFirstBracket (DocumentLocation currentLocation)
 		{
 			if (Document.LineCount < Region.BeginLine)
 				return false;

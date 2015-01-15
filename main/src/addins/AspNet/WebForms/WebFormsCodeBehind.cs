@@ -34,12 +34,12 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -185,13 +185,13 @@ namespace MonoDevelop.AspNet.WebForms
 				return result;
 			
 			var dom = refman.Compilation;
-			var cls = ReflectionHelper.ParseReflectionName (className).Resolve (dom);
+			var cls = dom.GetTypeByMetadataName (className);
 			var members = GetDesignerMembers (memberList.Members.Values, cls, filename);
 			
 			//add fields for each control in the page
 			
 			foreach (var member in members) {
-				var type = new CodeTypeReference (member.Type.FullName);
+				var type = new CodeTypeReference (member.Type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
 				typeDecl.Members.Add (new CodeMemberField (type, member.Name) { Attributes = MemberAttributes.Family });
 			}
 			return result;
@@ -204,22 +204,23 @@ namespace MonoDevelop.AspNet.WebForms
 		/// <returns>The filtered list of non-conflicting members.</returns>
 		// TODO: check compatibilty with existing members
 		public static IEnumerable<CodeBehindMember> GetDesignerMembers (
-			IEnumerable<CodeBehindMember> members, IType cls, string designerFile)
+			IEnumerable<CodeBehindMember> members, INamedTypeSymbol cls, string designerFile)
 		{
 			var existingMembers = new HashSet<string> ();
 			while (cls != null) {
-				if (cls.GetDefinition () == null)
-					break;
+//				if (cls.GetDefinition () == null)
+//					break;
 				foreach (var member in cls.GetMembers ()) {
-					if (member.Accessibility == Accessibility.Private || member.Accessibility == Accessibility.Internal)
+					if (member.DeclaredAccessibility == Accessibility.Private || member.DeclaredAccessibility == Accessibility.Internal)
 						continue;
-					if (member.Region.FileName == designerFile)
+					if (member.Locations.Any (loc => loc.IsInSource &&  loc.SourceTree.FilePath == designerFile))
 						continue;
 					existingMembers.Add (member.Name);
 				}
-				if (cls.DirectBaseTypes.All (t => t.Kind == TypeKind.Interface))
+				// TODO: check 
+				if (cls.Interfaces.Any ())
 					break;
-				cls = cls.DirectBaseTypes.First(t => t.Kind != TypeKind.Interface);
+				cls = cls.BaseType;
 			}
 			return members.Where (m => !existingMembers.Contains (m.Name));
 		}

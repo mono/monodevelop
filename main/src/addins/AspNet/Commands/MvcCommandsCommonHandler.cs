@@ -26,11 +26,9 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
-using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -44,18 +42,18 @@ namespace MonoDevelop.AspNet.Commands
 				info.Enabled = info.Visible = false;
 				return;
 			}
-
-			var currentLocation = doc.Editor.CaretLocation;
-			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
-				info.Enabled = info.Visible = false;
-				return;
-			}
-
-			var correctReturnTypes = new [] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
-			var member = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)) as IUnresolvedMethod;
-			if (member == null || !member.IsPublic || correctReturnTypes.All (t => t != member.ReturnType.ToString ()))
-				info.Enabled = info.Visible = false;
+			// TODO: Roslyn port
+//			var currentLocation = doc.Editor.CaretLocation;
+//			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
+//			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
+//				info.Enabled = info.Visible = false;
+//				return;
+//			}
+//
+//			var correctReturnTypes = new [] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
+//			var member = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)) as IUnresolvedMethod;
+//			if (member == null || !member.IsPublic || correctReturnTypes.All (t => t != member.ReturnType.ToString ()))
+//				info.Enabled = info.Visible = false;
 		}
 	}
 }

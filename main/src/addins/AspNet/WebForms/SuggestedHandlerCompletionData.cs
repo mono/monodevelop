@@ -32,20 +32,20 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.DesignerSupport;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	class SuggestedHandlerCompletionData : CompletionData
 	{
-		readonly Project project;
+		readonly MonoDevelop.Projects.Project project;
 		readonly CodeMemberMethod methodInfo;
-		readonly IType codeBehindClass;
-		readonly IUnresolvedTypeDefinition codeBehindClassPart;
+		readonly INamedTypeSymbol codeBehindClass;
+		readonly INamedTypeSymbol codeBehindClassPart;
 		
-		public SuggestedHandlerCompletionData (Project project, CodeMemberMethod methodInfo, IType codeBehindClass, IUnresolvedTypeDefinition codeBehindClassPart)
+		public SuggestedHandlerCompletionData (MonoDevelop.Projects.Project project, CodeMemberMethod methodInfo, INamedTypeSymbol codeBehindClass, INamedTypeSymbol codeBehindClassPart)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;
@@ -84,10 +84,12 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			
 			//generate the codebehind method
-			if (codeBehindClassPart != null && project != null)
-				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClassPart, methodInfo, false);
-			else
-				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClass.GetDefinition ().Parts.First (), methodInfo, false);
+
+			// TODO: Roslyn port.
+//			if (codeBehindClassPart != null && project != null)
+//				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClassPart, methodInfo, false);
+//			else
+//				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClass.GetDefinition ().Parts.First (), methodInfo, false);
 		}
 	}
 }

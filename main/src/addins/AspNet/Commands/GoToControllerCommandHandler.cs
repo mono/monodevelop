@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -52,14 +51,15 @@ namespace MonoDevelop.AspNet.Commands
 
 		protected override void Run ()
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			var name = doc.FileName.ParentDirectory.FileName;
-			var controller = doc.ProjectContent.GetAllTypeDefinitions ().FirstOrDefault (t => t.Name == name + "Controller");
-
-			if (controller != null)
-				IdeApp.Workbench.OpenDocument (controller.UnresolvedFile.FileName, doc.Project);
-			else
-				MessageService.ShowError ("Matching controller cannot be found.");
+			// TODO: Roslyn port
+//			var doc = IdeApp.Workbench.ActiveDocument;
+//			var name = doc.FileName.ParentDirectory.FileName;
+//			var controller = doc.ProjectContent.GetAllTypeDefinitions ().FirstOrDefault (t => t.Name == name + "Controller");
+//
+//			if (controller != null)
+//				IdeApp.Workbench.OpenDocument (controller.UnresolvedFile.FileName, doc.Project);
+//			else
+//				MessageService.ShowError ("Matching controller cannot be found.");
 		}
 	}
 	

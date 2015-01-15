@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
-using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -44,15 +43,15 @@ namespace MonoDevelop.AspNet.Commands
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var project = (AspNetAppProject)doc.Project;
 			var currentLocation = doc.Editor.CaretLocation;
-
-			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
-			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
-			if (pos > 0)
-				controllerName = controllerName.Remove (pos);
-
-			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
-			AddView (project, path, actionName);
+			// TODO: Roslyn port
+//			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
+//			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
+//			if (pos > 0)
+//				controllerName = controllerName.Remove (pos);
+//
+//			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
+//			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
+//			AddView (project, path, actionName);
 		}
 
 		public static void AddView (AspNetAppProject project, string path, string name)

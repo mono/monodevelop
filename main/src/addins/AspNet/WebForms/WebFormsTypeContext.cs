@@ -103,8 +103,9 @@ namespace MonoDevelop.AspNet.WebForms
 		void UpdateCompilation ()
 		{
 			const string dummyAsmName = "CompiledAspNetPage";
-			IUnresolvedAssembly asm = new DefaultUnresolvedAssembly (dummyAsmName);
-			compilation = new SimpleCompilation (asm, GetReferencedAssemblies ());
+			// TODO: Roslyn port!
+//			IUnresolvedAssembly asm = new DefaultUnresolvedAssembly (dummyAsmName);
+//			compilation = new SimpleCompilation (asm, GetReferencedAssemblies ());
 		}
 		
 		public INamedTypeSymbol GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
@@ -373,67 +374,67 @@ namespace MonoDevelop.AspNet.WebForms
 
 			return usings;
 		}
-
-		IEnumerable<IAssemblyReference> GetReferencedAssemblies ()
-		{
-			var references = new HashSet<IAssemblyReference> ();
-
-			if (project != null)
-				references.Add (TypeSystemService.GetCompilation (project).MainAssembly.UnresolvedAssembly);
-
-			if (doc != null)
-				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
-					references.Add (asm);
-
-			foreach (var asm in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name)))
-				references.Add (asm);
-
-			references.Remove (null);
-
-			return references;
- 		}
-
-		IAssemblyReference GetReferencedAssembly (string assemblyName)
-		{
-			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
-			if (string.IsNullOrEmpty (parsed.Name))
-				return null;
-
-			var r = GetProjectReference (parsed);
-			if (r != null)
-				return r;
-
-			string path = GetAssemblyPath (assemblyName);
-			if (path != null)
-				return TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path);
-
-			return null;
-		}
-
-		IAssemblyReference GetProjectReference (AssemblyName parsed)
-		{
-			if (project == null)
-				return null;
-
-			var dllName = parsed.Name + ".dll";
-
-			foreach (var reference in project.References) {
-				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
-					foreach (string refPath in reference.GetReferencedFileNames (null))
-						if (Path.GetFileName (refPath) == dllName)
-							return TypeSystemService.LoadAssemblyContext (project.TargetRuntime, project.TargetFramework, refPath);
-				}
-				else
-					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
-						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
-						if (p == null)
-							continue;
-						return TypeSystemService.GetCompilation (p).MainAssembly.UnresolvedAssembly;
-					}
-			}
-
-			return null;
-		}
+// TODO: Roslyn port
+//		IEnumerable<IAssemblyReference> GetReferencedAssemblies ()
+//		{
+//			var references = new HashSet<IAssemblyReference> ();
+//
+//			if (project != null)
+//				references.Add (TypeSystemService.GetCompilation (project).MainAssembly.UnresolvedAssembly);
+//
+//			if (doc != null)
+//				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
+//					references.Add (asm);
+//
+//			foreach (var asm in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name)))
+//				references.Add (asm);
+//
+//			references.Remove (null);
+//
+//			return references;
+// 		}
+//
+//		IAssemblyReference GetReferencedAssembly (string assemblyName)
+//		{
+//			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
+//			if (string.IsNullOrEmpty (parsed.Name))
+//				return null;
+//
+//			var r = GetProjectReference (parsed);
+//			if (r != null)
+//				return r;
+//
+//			string path = GetAssemblyPath (assemblyName);
+//			if (path != null)
+//				return TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path);
+//
+//			return null;
+//		}
+//
+//		IAssemblyReference GetProjectReference (AssemblyName parsed)
+//		{
+//			if (project == null)
+//				return null;
+//
+//			var dllName = parsed.Name + ".dll";
+//
+//			foreach (var reference in project.References) {
+//				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
+//					foreach (string refPath in reference.GetReferencedFileNames (null))
+//						if (Path.GetFileName (refPath) == dllName)
+//							return TypeSystemService.LoadAssemblyContext (project.TargetRuntime, project.TargetFramework, refPath);
+//				}
+//				else
+//					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
+//						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
+//						if (p == null)
+//							continue;
+//						return TypeSystemService.GetCompilation (p).MainAssembly.UnresolvedAssembly;
+//					}
+//			}
+//
+//			return null;
+//		}
 
 		string GetAssemblyPath (string assemblyName)
 		{
@@ -559,34 +560,35 @@ namespace MonoDevelop.AspNet.WebForms
 				yield break;
 
 			//return classes if they derive from system.web.ui.control
-			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
-				if (!type.IsAbstract && type.IsPublic)
-					yield return type;
-
-			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
-				yield return baseType;
-			}
+			// TODO: Roslyn port!
+//			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
+//				if (!type.IsAbstract && type.IsPublic)
+//					yield return type;
+//
+//			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
+//				yield return baseType;
+//			}
 		}
 
 		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
-			var type = ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
-			if (type.Kind == TypeKind.Unknown)
+			var type = Compilation.GetTypeByMetadataName (fullName);
+			if (type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
 		}
 
 		public string GetControlPrefix (INamedTypeSymbol control)
 		{
-			if (control.Namespace == "System.Web.UI.WebControls")
+			if (control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) == "System.Web.UI.WebControls")
 				return "asp";
-			if (control.Namespace == "System.Web.UI.HtmlControls")
+			if (control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) == "System.Web.UI.HtmlControls")
 				return string.Empty;
 
 			//todo: handle user controls
 			foreach (var info in GetControls ().OfType<WebFormsPageInfo.AssemblyRegisterDirective> ()) {
-				if (info.Namespace == control.Namespace) {
+				if (info.Namespace == control.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)) {
 					if (AssemblyTypeLookup (info.Namespace, control.Name) != null)
 						return info.TagPrefix;
 				}
@@ -608,8 +610,8 @@ namespace MonoDevelop.AspNet.WebForms
 		INamedTypeSymbol GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
-			var type = ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
-			if (type.Kind == TypeKind.Unknown)
+			var type = Compilation.GetTypeByMetadataName (name);
+			if (type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
 		}

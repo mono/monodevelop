@@ -29,11 +29,11 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -70,7 +70,7 @@ namespace MonoDevelop.AspNet.WebForms
 							
 							yield return new FoldingRegion (
 								string.Format ("<{0}#{1}... >", el.Name.FullName, controlId),
-							    new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));       
+							    new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));       
 						}
 						continue;
 					}

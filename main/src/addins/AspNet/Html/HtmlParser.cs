@@ -30,8 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.TypeSystem;
-
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Xml.Dom;

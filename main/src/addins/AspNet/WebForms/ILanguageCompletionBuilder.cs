@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory6.CSharp.Completion;
@@ -89,7 +88,7 @@ namespace MonoDevelop.AspNet.WebForms
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (ICompilation dom, WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
+		public DocumentInfo (Microsoft.CodeAnalysis.Compilation dom, WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
 		{
 			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
@@ -97,7 +96,7 @@ namespace MonoDevelop.AspNet.WebForms
 			BuildExpressionAndScriptsLists ();
 		}
 		
-		public ICompilation Dom { get; private set; }
+		public Microsoft.CodeAnalysis.Compilation Dom { get; private set; }
 		public WebFormsParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public IEnumerable<string> Imports { get; private set; }

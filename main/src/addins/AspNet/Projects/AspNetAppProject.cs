@@ -36,8 +36,6 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 
-using ICSharpCode.NRefactory.TypeSystem;
-
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Core.Assemblies;
