@@ -103,9 +103,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void StaticConstructorStepping ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("Sdb can't step in static constructor.");
-			}
 			InitializeTest ();
 			AddBreakpoint ("6c42f31b-ca4f-4963-bca1-7d7c163087f1");
 			StartTest ("StaticConstructorStepping");
@@ -505,19 +502,46 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
+		public void BreakpointInsideOneLineDelegateNoDisplayClass ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+			AddBreakpoint ("e72a2fa6-2d95-4f96-b3d0-ba321da3cb55", statement: "Console.WriteLine");
+			StartTest ("BreakpointInsideOneLineDelegateNoDisplayClass");
+			CheckPosition ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+			StepOver ("e72a2fa6-2d95-4f96-b3d0-ba321da3cb55", "Console.WriteLine");
+			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			StepOut ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+		}
+
+		[Test]
 		public void BreakpointInsideOneLineDelegate ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Atm debugger-libs is in charge of placing breakpoints. It either needs more information about Instructions or Runtime has to place breakpoints based on filename+line+column.");
-			}
 			InitializeTest ();
 			AddBreakpoint ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
-			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd");
+			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd", statement: "button.SetTitle");
 			StartTest ("BreakpointInsideOneLineDelegate");
 			CheckPosition ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
 			StepOver ("22af08d6-dafc-47f1-b8d1-bee1526840fd", "button.SetTitle");
 			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
 			StepOut ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+		}
+
+		[Test]
+		public void BreakpointInsideOneLineDelegateAsync ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b6a65e9e-5db2-4850-969a-b3747b2459af", statement: "button.SetTitle");
+			AddBreakpoint ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
+			StartTest ("BreakpointInsideOneLineDelegateAsync");
+			CheckPosition ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
+			StepOver ("b6a65e9e-5db2-4850-969a-b3747b2459af", "button.SetTitle");
+			if (Session is SoftDebuggerSession) {
+				StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			} else {
+				StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb", 1);//Feels like CorDebugger bug
+			}
+			StepOut ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
 		}
 
 		/// <summary>
@@ -769,7 +793,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void SetNextStatementTest ()
 		{
 			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
+				Assert.Ignore ("TODO: Bug 26033");
 			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -784,7 +808,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void SetNextStatementTest2 ()
 		{
 			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
+				Assert.Ignore ("TODO: Bug 26033");
 			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -798,7 +822,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void SetNextStatementTest3 ()
 		{
 			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
+				Assert.Ignore ("TODO: Bug 26033");
 			}
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
@@ -1069,6 +1093,31 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Fail ("Unexcpected Error list has following items:" + string.Join (",", unexpectedError));
 			if (unexpectedDebug.Count > 0)
 				Assert.Fail ("Unexcpected Debug list has following items:" + string.Join (",", unexpectedDebug));
+		}
+
+		[Test]
+		public void Bug25358 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("4b30f826-2ba0-4b53-ab36-85b2cdde1069");
+			StartTest ("TestBug25358");
+			CheckPosition ("4b30f826-2ba0-4b53-ab36-85b2cdde1069");
+			var val = Eval ("e");
+			val = val.GetChild ("Message");
+			Assert.AreEqual ("\"2b2c4423-accf-4c2c-af31-7d8dcee31c32\"", val.Value);
+		}
+
+		[Test]
+		public void Bug21410 ()
+		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("Runtime bug.");
+			}
+			InitializeTest ();
+			AddBreakpoint ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5");
+			StartTest ("TestBug21410");
+			CheckPosition ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5");
+			StepOver ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5", 1);
 		}
 	}
 }
