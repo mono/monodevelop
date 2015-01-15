@@ -277,15 +277,27 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
 			}
+
+			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
+				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
+				if (referencedProject == null)
+					continue;
+				if (RoslynTypeSystemService.IsOutputTrackedProject (referencedProject)) {
+					var fileName = referencedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+					yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
+				}
+			}
 		}
 
 		IEnumerable<ProjectReference> GetProjectReferences (MonoDevelop.Projects.Project p)
 		{
 			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
-				var referencedProject = pr as MonoDevelop.Projects.Project;
-				if (referencedProject != null) {
-					yield return new ProjectReference (GetProjectId (referencedProject));
-				}
+				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
+				if (referencedProject == null)
+					continue;
+				if (RoslynTypeSystemService.IsOutputTrackedProject (referencedProject))
+					continue;
+				yield return new ProjectReference (GetProjectId (referencedProject));
 			}
 		}
 

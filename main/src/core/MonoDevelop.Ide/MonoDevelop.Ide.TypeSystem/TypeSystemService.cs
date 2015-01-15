@@ -197,17 +197,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			});
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
-					break;
-				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
-					break;
-				}
-			});
 
 			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
 				if (!TrackFileChanges)
@@ -242,55 +231,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 			};
-			if (IdeApp.ProjectOperations != null) {
-				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
-			}
-			if (IdeApp.Workspace != null) {
-				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
-			}
-		}
-
-		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
-		{
-			foreach (var pr in projectContents.ToArray ()) {
-				var project = pr.Key as DotNetProject;
-				if (project != null)
-					CheckProjectOutput (project, true);
-
-				pr.Value.referencesConnected = false;
-			}
-		}
-
-		static readonly List<string> outputTrackedProjects = new List<string> ();
-
-		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
-		{
-			if (project == null)
-				throw new ArgumentNullException ("project");
-			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
-				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
-
-				var wrapper = GetProjectContentWrapper (project);
-				if (wrapper == null)
-					return;
-				bool update = wrapper.UpdateTrackedOutputAssembly (fileName);
-				if (autoUpdate && update) {
-					wrapper.ReconnectAssemblyReferences ();
-
-					// update documents
-					foreach (var openDocument in IdeApp.Workbench.Documents) {
-						openDocument.ReparseDocument ();
-					}
-				}
-			}
-		}
-
-		static void HandleEndBuild (object sender, BuildEventArgs args)
-		{
-			var project = args.SolutionItem as DotNetProject;
-			if (project == null)
-				return;
-			CheckProjectOutput (project, true);
 		}
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
@@ -1631,18 +1571,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					Counters.ParserService.ProjectsLoaded++;
 					ProjectContentWrapper wrapper;
 					projectContents [project] = wrapper = new ProjectContentWrapper (project);
-					var dotNetProject = project as DotNetProject;
-					if (dotNetProject != null)
-						CheckProjectOutput (dotNetProject, false);
 
 					project.FileAddedToProject += OnFileAdded;
 					project.FileRemovedFromProject += OnFileRemoved;
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
 
-					if (dotNetProject != null) {
-						StartFrameworkLookup (dotNetProject);
-					}
+//					if (dotNetProject != null) {
+//						StartFrameworkLookup (dotNetProject);
+//					}
 					return wrapper;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Parser database for project '" + project.Name + " could not be loaded", ex);
@@ -2417,111 +2354,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return assemblies.Values;
 		}
 
-		class FrameworkTask
-		{
-			public int RetryCount { get; set; }
-
-			public Task<FrameworkLookup> Task { get; set; }
-		}
-
-		readonly static Dictionary<string, FrameworkTask> frameworkLookup = new Dictionary<string, FrameworkTask> ();
-
-		static void StartFrameworkLookup (DotNetProject netProject)
-		{
-			if (netProject == null)
-				throw new ArgumentNullException ("netProject");
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				if (netProject.TargetFramework == null)
-					return;
-				var frameworkName = netProject.TargetFramework.Name;
-				if (!frameworkLookup.TryGetValue (frameworkName, out result))
-					frameworkLookup [frameworkName] = result = new FrameworkTask ();
-				if (result.Task != null)
-					return;
-				result.Task = Task.Factory.StartNew (delegate {
-					return GetFrameworkLookup (netProject);
-				});
-			}
-		}
-
-		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
-		{
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
-					if (!result.Task.IsCompleted) {
-						lookup = null;
-						return false;
-					}
-					lookup = result.Task.Result;
-					return true;
-				}
-			}
-			lookup = null;
-			return false;
-		}
-
-		public static bool RecreateFrameworkLookup (DotNetProject netProject)
-		{
-			lock (frameworkLookup) {
-				FrameworkTask result;
-				var frameworkName = netProject.TargetFramework.Name;
-				if (!frameworkLookup.TryGetValue (frameworkName, out result))
-					return false;
-				if (result.RetryCount > 5) {
-					LoggingService.LogError ("Can't create framework lookup for:" + frameworkName);
-					return false;
-				}
-				result.RetryCount++;
-				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", frameworkName, result.RetryCount);
-				result.Task = null;
-				StartFrameworkLookup (netProject);
-				return true;
-			}
-		}
-
-		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
-		{
-			FrameworkLookup result;
-			string fileName;
-			var cache = GetCacheDirectory (netProject.TargetFramework);
-			fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
-			try {
-				if (File.Exists (fileName)) {
-					result = FrameworkLookup.Load (fileName);
-					if (result != null) {
-						return result;
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
-			}
-
-			try {
-				using (var creator = FrameworkLookup.Create (fileName)) {
-					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
-						var ctx = LoadAssemblyContext (assembly.Location);
-						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
-							if (!type.IsPublic)
-								continue;
-							creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
-						}
-					}
-				}
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while storing framework lookup", e);
-				return FrameworkLookup.Empty;
-			}
-
-			try {
-				result = FrameworkLookup.Load (fileName);
-				return result;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error loading framework lookup", e);
-				return FrameworkLookup.Empty;
-			}
-		}
 
 		public static ProjectContentWrapper GetProjectContentWrapper (Project project)
 		{

@@ -29,6 +29,10 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Mono.Addins;
+using MonoDevelop.Projects;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -76,8 +80,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
 
-		static readonly List<string> outputTrackedProjects = new List<string> ();
-
 		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
@@ -116,6 +118,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					Workspace.UpdateFileContent (file.FileName, text);
 				}
 			};
+
+			IntitializeTrackedProjectHandling ();
 		}
 
 		public static void NotifyFileChange (string fileName, string text)
@@ -186,7 +190,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return w.GetDocumentId (projectId, fileName);
 		}
 
-		public static Project GetProject (MonoDevelop.Projects.Project project)
+		public static Microsoft.CodeAnalysis.Project GetProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
@@ -201,7 +205,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("project");
 			var w = Workspace;
 			var projectId = w.GetProjectId (project); 
-			Project roslynProject = w.CurrentSolution.GetProject (projectId);
+			var roslynProject = w.CurrentSolution.GetProject (projectId);
 			return await roslynProject.GetCompilationAsync (cancellationToken);
 		}
 
@@ -235,26 +239,181 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		#region Tracked project handling
+		static readonly List<string> outputTrackedProjects = new List<string> ();
 
-//		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
+		static void IntitializeTrackedProjectHandling ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
+				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					outputTrackedProjects.Add (projectType);
+					break;
+				case ExtensionChange.Remove:
+					outputTrackedProjects.Remove (projectType);
+					break;
+				}
+			});
+			if (IdeApp.ProjectOperations != null)
+				IdeApp.ProjectOperations.EndBuild += HandleEndBuild;
+			if (IdeApp.Workspace != null)
+				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+
+
+		}
+
+		static void HandleEndBuild (object sender, BuildEventArgs args)
+		{
+			var project = args.SolutionItem as DotNetProject;
+			if (project == null)
+				return;
+			CheckProjectOutput (project, true);
+		}
+
+		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+				var project = pr as DotNetProject;
+				if (project != null)
+					CheckProjectOutput (project, true);
+			}
+		}
+
+		internal static bool IsOutputTrackedProject (DotNetProject project)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			return project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase));
+		}
+
+		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			if (IsOutputTrackedProject (project)) {
+				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+				if (!File.Exists (fileName))
+					return;
+				FileService.NotifyFileChanged (fileName);
+				if (autoUpdate) {
+					// update documents
+					foreach (var openDocument in IdeApp.Workbench.Documents) {
+						openDocument.ReparseDocument ();
+					}
+				}
+			}
+		}
+		#endregion
+
+// TODO: Port framework lookup to NR6
+//		#region FrameworkLookup
+//		class FrameworkTask
 //		{
-//			if (project == null)
-//				throw new ArgumentNullException ("project");
-//			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
-//				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+//			public int RetryCount { get; set; }
 //
-//				var wrapper = GetProjectContentWrapper (project);
-//				bool update = wrapper.UpdateTrackedOutputAssembly (fileName);
-//				if (autoUpdate && update) {
-//					wrapper.ReconnectAssemblyReferences ();
+//			public Task<FrameworkLookup> Task { get; set; }
+//		}
 //
-//					// update documents
-//					foreach (var openDocument in IdeApp.Workbench.Documents) {
-//						openDocument.ReparseDocument ();
-//					}
-//				}
+//		readonly static Dictionary<string, FrameworkTask> frameworkLookup = new Dictionary<string, FrameworkTask> ();
+//
+//		static void StartFrameworkLookup (DotNetProject netProject)
+//		{
+//			if (netProject == null)
+//				throw new ArgumentNullException ("netProject");
+//			lock (frameworkLookup) {
+//				FrameworkTask result;
+//				if (netProject.TargetFramework == null)
+//					return;
+//				var frameworkName = netProject.TargetFramework.Name;
+//				if (!frameworkLookup.TryGetValue (frameworkName, out result))
+//					frameworkLookup [frameworkName] = result = new FrameworkTask ();
+//				if (result.Task != null)
+//					return;
+//				result.Task = Task.Factory.StartNew (delegate {
+//					return GetFrameworkLookup (netProject);
+//				});
 //			}
 //		}
+//
+//		public static bool TryGetFrameworkLookup (DotNetProject project, out FrameworkLookup lookup)
+//		{
+//			lock (frameworkLookup) {
+//				FrameworkTask result;
+//				if (frameworkLookup.TryGetValue (project.TargetFramework.Name, out result)) {
+//					if (!result.Task.IsCompleted) {
+//						lookup = null;
+//						return false;
+//					}
+//					lookup = result.Task.Result;
+//					return true;
+//				}
+//			}
+//			lookup = null;
+//			return false;
+//		}
+//
+//		public static bool RecreateFrameworkLookup (DotNetProject netProject)
+//		{
+//			lock (frameworkLookup) {
+//				FrameworkTask result;
+//				var frameworkName = netProject.TargetFramework.Name;
+//				if (!frameworkLookup.TryGetValue (frameworkName, out result))
+//					return false;
+//				if (result.RetryCount > 5) {
+//					LoggingService.LogError ("Can't create framework lookup for:" + frameworkName);
+//					return false;
+//				}
+//				result.RetryCount++;
+//				LoggingService.LogInfo ("Trying to recreate framework lookup for {0}, try {1}.", frameworkName, result.RetryCount);
+//				result.Task = null;
+//				StartFrameworkLookup (netProject);
+//				return true;
+//			}
+//		}
+//
+//		static FrameworkLookup GetFrameworkLookup (DotNetProject netProject)
+//		{
+//			FrameworkLookup result;
+//			string fileName;
+//			var cache = GetCacheDirectory (netProject.TargetFramework);
+//			fileName = Path.Combine (cache, "FrameworkLookup_" + FrameworkLookup.CurrentVersion + ".dat");
+//			try {
+//				if (File.Exists (fileName)) {
+//					result = FrameworkLookup.Load (fileName);
+//					if (result != null) {
+//						return result;
+//					}
+//				}
+//			} catch (Exception e) {
+//				LoggingService.LogWarning ("Can't read framework cache - recreating...", e);
+//			}
+//
+//			try {
+//				using (var creator = FrameworkLookup.Create (fileName)) {
+//					foreach (var assembly in GetFrameworkAssemblies (netProject)) {
+//						var ctx = LoadAssemblyContext (assembly.Location);
+//						foreach (var type in ctx.Ctx.GetAllTypeDefinitions ()) {
+//							if (!type.IsPublic)
+//								continue;
+//							creator.AddLookup (assembly.Package.Name, assembly.FullName, type);
+//						}
+//					}
+//				}
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Error while storing framework lookup", e);
+//				return FrameworkLookup.Empty;
+//			}
+//
+//			try {
+//				result = FrameworkLookup.Load (fileName);
+//				return result;
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Error loading framework lookup", e);
+//				return FrameworkLookup.Empty;
+//			}
+//		}
+//		#endregion
 	}
 
 }
