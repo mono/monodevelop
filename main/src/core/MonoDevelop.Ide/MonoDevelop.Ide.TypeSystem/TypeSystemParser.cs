@@ -28,6 +28,7 @@ using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public abstract ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null);
+		public abstract ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null);
 
 		/// <summary>
 		/// Parse the specified file. The file content should be read by the type system parser.
@@ -67,10 +68,20 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public virtual ParsedDocument Parse (bool storeAst, string fileName, Project project = null)
+		public virtual ParsedDocument Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null)
 		{
 			using (var stream = TextFileUtility.OpenStream (fileName)) 
 				return Parse (storeAst, fileName, stream, project);
+		}
+
+		public virtual bool CanGenerateCodeBehind (string mimeType, string buildAction, string[] supportedLanguages)
+		{
+			return false;
+		}
+
+		public virtual TextAndVersion GenerateTextAndVersion (string mimeType, string buildAction, string[] supportedLanguages, string fileName)
+		{
+			throw new NotSupportedException ();
 		}
 	}
 }

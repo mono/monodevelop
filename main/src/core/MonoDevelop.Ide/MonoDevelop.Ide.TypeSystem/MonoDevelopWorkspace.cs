@@ -238,9 +238,28 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
 		{
-			return p.Files
-				.Where (f => TypeSystemParserNode.IsCompileBuildAction (f.BuildAction))
-				.Select (f => CreateDocumentInfo (id, f));
+			foreach (var f in p.Files) {
+				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
+					yield return CreateDocumentInfo (id, f);
+					continue;
+				}
+				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
+				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
+				if (node == null || !node.Parser.CanGenerateCodeBehind (mimeType, f.BuildAction, p.SupportedLanguages))
+					continue;
+				var textAndVersion = node.Parser.GenerateTextAndVersion (mimeType, f.BuildAction, p.SupportedLanguages, f.FilePath);
+
+				yield return DocumentInfo.Create (
+					id.GetOrCreateDocumentId (f.Name),
+					f.FilePath.ChangeExtension (".g" + f.FilePath.Extension), 
+					null, 
+					SourceCodeKind.Regular,
+					TextLoader.From (textAndVersion), 
+					f.Name, 
+					System.Text.Encoding.Default, 
+					false
+				);
+			}
 		}
 
 		IEnumerable<MetadataReference> GetMetadataReferences (MonoDevelop.Projects.Project p)

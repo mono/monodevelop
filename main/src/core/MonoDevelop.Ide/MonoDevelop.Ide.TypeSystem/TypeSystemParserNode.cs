@@ -99,6 +99,4 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 	}
-
 }
-

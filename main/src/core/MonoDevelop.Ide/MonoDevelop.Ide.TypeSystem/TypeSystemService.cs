@@ -239,7 +239,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return n != null ? n.Parser : null;
 		}
 
-		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
+		internal static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
 				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
