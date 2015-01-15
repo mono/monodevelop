@@ -1,15 +1,22 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
 	abstract class LibApr
 	{
-		public static readonly int APR_OS_DEFAULT = 0xFFF;
-		public static readonly int APR_WRITE = 2;
-		public static readonly int APR_CREATE = 4;
-		public static readonly int APR_TRUNCATE = 16;
+		public const int APR_OS_DEFAULT = 0xFFF;
+		public const int APR_WRITE = 2;
+		public const int APR_CREATE = 4;
+		public const int APR_TRUNCATE = 16;
+
+		public const int APR_OS_START_ERROR = 20000;
+		public const int APR_OS_ERRSPACE_SIZE = 50000;
+		public const int APR_OS_START_STATUS =(APR_OS_START_ERROR + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USERERR =(APR_OS_START_STATUS + APR_OS_ERRSPACE_SIZE);
+		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 		
 		public static LibApr GetLib (int ver)
 		{
@@ -42,8 +49,39 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			Marshal.StructureToPtr (structure, ptr, false);
 			return ptr;
 		}
-		
-		public abstract int initialize();
+
+		public IEnumerable<T> hash_foreach<T> (IntPtr pool, IntPtr hash) where T : struct
+		{
+			IntPtr item = hash_first (pool, hash);
+			IntPtr hash_name, hash_val;
+			int length;
+
+			while (item != IntPtr.Zero) {
+				hash_this (item, out hash_name, out length, out hash_val);
+				yield return (T)Marshal.PtrToStructure (hash_val, typeof (T));
+				item = hash_next (item);
+			}
+		}
+
+		public bool hash_iterate<T> (ref IntPtr item, out T res, out string name) where T : struct
+		{
+			IntPtr hash_name, hash_val;
+			int length;
+
+			if (item == IntPtr.Zero) {
+				res = new T ();
+				name = null;
+				return false;
+			}
+
+			hash_this (item, out hash_name, out length, out hash_val);
+			name = Marshal.PtrToStringAnsi (hash_name);
+			res = (T)Marshal.PtrToStructure (hash_val, typeof (T));
+			item = hash_next (item);
+			return true;
+		}
+
+		protected abstract int initialize();
 		public abstract int pool_create_ex(out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator);
 		public abstract void pool_destroy(IntPtr pool);
 		public abstract IntPtr hash_first(IntPtr pool, IntPtr hash);
@@ -56,19 +94,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		public abstract IntPtr pcalloc (IntPtr pool, [MarshalAs (UnmanagedType.SysInt)] int size);
 		public abstract int file_open(ref IntPtr newf, string fname, int flag, int perm, IntPtr pool); 
 		public abstract int file_close (IntPtr file);
-		
-		public const int APR_OS_START_ERROR = 20000;
-		public const int APR_OS_ERRSPACE_SIZE = 50000;
-		public const int APR_OS_START_STATUS =(APR_OS_START_ERROR + APR_OS_ERRSPACE_SIZE);
-		public const int APR_OS_START_USERERR =(APR_OS_START_STATUS + APR_OS_ERRSPACE_SIZE);
-		public const int APR_OS_START_USEERR = APR_OS_START_USERERR;
 	}
 
 	sealed class LibApr0: LibApr
 	{
 		const string aprlib = "libapr-0.so.0";
 		
-		public override int initialize() { return apr_initialize (); }
+		protected override int initialize() { return apr_initialize (); }
 		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
 		public override void pool_destroy(IntPtr pool) { apr_pool_destroy (pool); }
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }
@@ -101,7 +133,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 	{
 		const string aprlib = "libapr-1.so.0";
 		
-		public override int initialize() { return apr_initialize (); }
+		protected override int initialize() { return apr_initialize (); }
 		public override int pool_create_ex (out IntPtr pool, IntPtr parent, IntPtr abort, IntPtr allocator) { return apr_pool_create_ex(out pool, parent, abort, allocator); }
 		public override void pool_destroy(IntPtr pool) { apr_pool_destroy (pool); }
 		public override IntPtr hash_first(IntPtr pool, IntPtr hash) { return apr_hash_first (pool, hash); }

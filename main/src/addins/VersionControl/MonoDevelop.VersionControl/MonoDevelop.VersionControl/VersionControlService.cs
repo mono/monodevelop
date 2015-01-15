@@ -23,6 +23,7 @@ namespace MonoDevelop.VersionControl
 	{
 		static Xwt.Drawing.Image overlay_modified;
 		static Xwt.Drawing.Image overlay_removed;
+		static Xwt.Drawing.Image overlay_renamed;
 		static Xwt.Drawing.Image overlay_conflicted;
 		static Xwt.Drawing.Image overlay_added;
 		internal static Xwt.Drawing.Image overlay_controled;
@@ -55,22 +56,23 @@ namespace MonoDevelop.VersionControl
 		{
 			IdeApp.Initialized += delegate {
 				try {
-					overlay_modified = Xwt.Drawing.Image.FromResource("modified-overlay-light-16.png");
-					overlay_removed = Xwt.Drawing.Image.FromResource("removed-overlay-light-16.png");
-					overlay_conflicted = Xwt.Drawing.Image.FromResource("conflict-overlay-light-16.png");
-					overlay_added = Xwt.Drawing.Image.FromResource("added-overlay-light-16.png");
-					overlay_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-light-16.png");
-					overlay_unversioned = Xwt.Drawing.Image.FromResource("unversioned-overlay-light-16.png");
-					overlay_protected = Xwt.Drawing.Image.FromResource("lock-required-overlay-light-16.png");
-					overlay_unlocked = Xwt.Drawing.Image.FromResource("unlocked-overlay-light-16.png");
-					overlay_locked = Xwt.Drawing.Image.FromResource("locked-overlay-light-16.png");
-					overlay_ignored = Xwt.Drawing.Image.FromResource("ignored-overlay-light-16.png");
+					overlay_modified = Xwt.Drawing.Image.FromResource("modified-overlay-16.png");
+					overlay_removed = Xwt.Drawing.Image.FromResource("removed-overlay-16.png");
+					overlay_renamed = Xwt.Drawing.Image.FromResource("renamed-overlay-16.png");
+					overlay_conflicted = Xwt.Drawing.Image.FromResource("conflict-overlay-16.png");
+					overlay_added = Xwt.Drawing.Image.FromResource("added-overlay-16.png");
+					overlay_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-16.png");
+					overlay_unversioned = Xwt.Drawing.Image.FromResource("unversioned-overlay-16.png");
+					overlay_protected = Xwt.Drawing.Image.FromResource("lock-required-overlay-16.png");
+					overlay_unlocked = Xwt.Drawing.Image.FromResource("unlocked-overlay-16.png");
+					overlay_locked = Xwt.Drawing.Image.FromResource("locked-overlay-16.png");
+					overlay_ignored = Xwt.Drawing.Image.FromResource("ignored-overlay-16.png");
 
 					icon_modified = ImageService.GetIcon ("vc-file-modified", Gtk.IconSize.Menu);
 					icon_removed = ImageService.GetIcon ("vc-file-removed", Gtk.IconSize.Menu);
 					icon_conflicted = ImageService.GetIcon ("vc-file-conflicted", Gtk.IconSize.Menu);
 					icon_added = ImageService.GetIcon ("vc-file-added", Gtk.IconSize.Menu);
-					icon_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-light-16.png");
+					icon_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-16.png");
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while loading icons.", e);
 				}

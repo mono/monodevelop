@@ -575,7 +575,7 @@ namespace Mono.TextEditor
 			if (!HasIndentationTracker || Options.IndentStyle != IndentStyle.Virtual)
 				return;
 			var line = Document.GetLine (Caret.Line);
-			if (line != null && line.Length > 0 && GetIndentationString (Caret.Location) == Document.GetTextAt (line.Offset, line.Length))
+			if (line != null && line.Length > 0 && GetIndentationString (caret.Line - 1, int.MaxValue) == Document.GetTextAt (line.Offset, line.Length))
 				Remove (line.Offset, line.Length);
 		}
 

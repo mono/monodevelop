@@ -407,7 +407,7 @@ namespace MonoDevelop.VersionControl.Views
 				int startLine = widget.Editor.YToLine (widget.Editor.VAdjustment.Value + evnt.Y);
 				var ann = startLine > 0 && startLine <= annotations.Count ? annotations[startLine - 1] : null;
 				if (ann != null)
-					TooltipText = GetCommitMessage (startLine, true);
+					TooltipText = GetCommitMessage (startLine - 1, true);
 
 				highlightPositon = evnt.Y;
 				if (highlightAnnotation != ann) {

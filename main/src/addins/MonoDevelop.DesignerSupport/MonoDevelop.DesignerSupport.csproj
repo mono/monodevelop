@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -174,29 +174,29 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\compact-display-16.png">
-      <LogicalName>compact-display-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\compact-display-16.png">
+      <LogicalName>compact-display-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\compact-display-16%402x.png">
-      <LogicalName>compact-display-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\compact-display-16%402x.png">
+      <LogicalName>compact-display-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-properties-16.png">
-      <LogicalName>pad-properties-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-properties-16.png">
+      <LogicalName>pad-properties-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-properties-16%402x.png">
-      <LogicalName>pad-properties-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-properties-16%402x.png">
+      <LogicalName>pad-properties-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-toolbox-16.png">
-      <LogicalName>pad-toolbox-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-toolbox-16.png">
+      <LogicalName>pad-toolbox-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-toolbox-16%402x.png">
-      <LogicalName>pad-toolbox-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-toolbox-16%402x.png">
+      <LogicalName>pad-toolbox-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-document-outline-16.png">
-      <LogicalName>pad-document-outline-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-document-outline-16.png">
+      <LogicalName>pad-document-outline-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pad-document-outline-16%402x.png">
-      <LogicalName>pad-document-outline-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pad-document-outline-16%402x.png">
+      <LogicalName>pad-document-outline-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

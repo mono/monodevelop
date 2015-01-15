@@ -338,6 +338,7 @@ namespace MonoDevelop.CodeActions
 				document.Editor.SuppressTooltips = false;
 			};
 			menu.ShowAll ();
+			menu.SelectFirst (true);
 			menu.MotionNotifyEvent += (o, args) => {
 				if (args.Event.Window == Editor.Parent.TextArea.GdkWindow) {
 					StartMenuCloseTimer ();

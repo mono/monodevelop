@@ -1307,7 +1307,6 @@ namespace Mono.TextEditor
 		{
 			if (scrollWindowTimer != 0) {
 				GLib.Source.Remove (scrollWindowTimer);
-				
 				scrollWindowTimer = 0;
 			}
 		}

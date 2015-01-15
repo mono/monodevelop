@@ -59,6 +59,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
+		public void ExecuteAllTasks<T> ()
+		{
+			foreach (FakeTask<T> task in FakeTasksCreated) {
+				task.ExecuteTaskCompletely ();
+			}
+		}
+
 		public void ExecuteTask (int index)
 		{
 			var task = FakeTasksCreated [index] as FakeTask<PackagesForSelectedPageResult>;
