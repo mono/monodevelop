@@ -40,8 +40,7 @@ namespace MonoDevelop.Ide.Projects
 		Color categoriesBackgroundColor = new Color (225, 228, 232);
 		Color templateListBackgroundColor = new Color (240, 240, 240);
 		Color templateBackgroundColor = new Color (255, 255, 255);
-		Color templateSectionSeparatorColor = new Gdk.Color (208, 208, 208);
-		Color selectedRowBackgroundColor = new Color (19, 112, 216);
+		Color templateSectionSeparatorColor = new Color (208, 208, 208);
 
 		VBox centreVBox;
 		HBox templatesHBox;
@@ -133,8 +132,6 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
 			templateCategoriesTreeView.ModifyBase (StateType.Normal, categoriesBackgroundColor);
-			templateCategoriesTreeView.ModifyBase (StateType.Selected, selectedRowBackgroundColor);
-			templateCategoriesTreeView.ModifyText (StateType.Selected, whiteColor);
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesVBox.PackStart (templateCategoriesScrolledWindow, true, true, 0);
@@ -152,8 +149,6 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
 			templatesTreeView.ModifyBase (StateType.Normal, templateListBackgroundColor);
-			templatesTreeView.ModifyBase (StateType.Selected, selectedRowBackgroundColor);
-			templatesTreeView.ModifyText (StateType.Selected, whiteColor);
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
 			templatesVBox.PackStart (templatesScrolledWindow, true, true, 0);
