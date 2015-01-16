@@ -86,6 +86,29 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.AreEqual ("Hello" + Environment.NewLine + " World!", data.Document.Text);
 		}
 
+		/// <summary>
+		/// Bug 25602 - "Automatic" Indentation adds or removes Tabs!
+		/// </summary>
+		[Test]
+		public void TestBug25602 ()
+		{
+			var data = Create (@"
+using System;
+
+#if DEBUG
+namespace TestBadFormating
+#endif
+{
+	// Some test code here bla baaa...$
+	class MainClass
+	{
+");
+			MiscActions.InsertNewLine (data);
+			Assert.AreEqual (2, data.Caret.Column);
+		}
+
+
+
 		[Test()]
 		public void TestUndo ()
 		{

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
@@ -41,6 +42,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
 		FakeFileRemover fileRemover;
+		List<PackageOperationMessage> messagesLogged;
 
 		void CreateSolution ()
 		{
@@ -61,6 +63,19 @@ namespace MonoDevelop.PackageManagement.Tests
 			operations.Add (operation);
 
 			action.Operations = operations;
+		}
+
+		void RecordMessagesLogged ()
+		{
+			messagesLogged = new List<PackageOperationMessage> ();
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => messagesLogged.Add (e.Message);
+		}
+
+		void AssertMessageIsLogged (string expectedMessage)
+		{
+			List<string> messages = messagesLogged.Select (m => m.ToString ()).ToList ();
+
+			Assert.That (messages, Contains.Item (expectedMessage));
 		}
 
 		[Test]
@@ -359,7 +374,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			action.UpdateIfPackageDoesNotExistInProject = false;
-			var expectedPackage = new FakePackage ("Test");
+			var expectedPackage = new FakePackage ("Test", "1.1");
 			action.Package = expectedPackage;
 			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
 			action.Execute ();
@@ -422,6 +437,42 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Execute ();
 
 			Assert.AreEqual (packageVersion2, fakeProject.PackagePassedToUpdatePackage);
+		}
+
+		[Test]
+		public void Execute_NewerPrereleaseInstalledAndTryToUpdateToOlderStableRelease_UpdateIsNotInstalled ()
+		{
+			CreateSolution ();
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "1.2");
+			fakeProject.FakePackages.Add (new FakePackage ("MyPackage", "1.3.0.6275-pre1"));
+			action.PackageId = "MyPackage";
+			fakeProject.Name = "MyProject";
+			action.UpdateIfPackageDoesNotExistInProject = false;
+			RecordMessagesLogged ();
+
+			action.Execute ();
+
+			Assert.IsNull (fakeProject.PackagePassedToUpdatePackage);
+			Assert.IsFalse (fakeProject.IsUpdatePackageCalled);
+			AssertMessageIsLogged ("No updates available for 'MyPackage' in project 'MyProject'.");
+		}
+
+		[Test]
+		public void Execute_NewerPrereleaseInstalledAndTryToUpdateToOlderStableReleaseAndUpdateIfPackageDoesNotExistInProject_UpdateIsNotInstalled ()
+		{
+			CreateSolution ();
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "1.2");
+			fakeProject.FakePackages.Add (new FakePackage ("MyPackage", "1.3.0.6275-pre1"));
+			action.PackageId = "MyPackage";
+			fakeProject.Name = "MyProject";
+			action.UpdateIfPackageDoesNotExistInProject = true;
+			RecordMessagesLogged ();
+
+			action.Execute ();
+
+			Assert.IsNull (fakeProject.PackagePassedToUpdatePackage);
+			Assert.IsFalse (fakeProject.IsUpdatePackageCalled);
+			AssertMessageIsLogged ("No updates available for 'MyPackage' in project 'MyProject'.");
 		}
 	}
 }

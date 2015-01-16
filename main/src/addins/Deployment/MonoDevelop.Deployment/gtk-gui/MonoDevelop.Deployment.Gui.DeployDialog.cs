@@ -82,7 +82,7 @@ namespace MonoDevelop.Deployment.Gui
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.image2 = new global::Gtk.Image ();
 			this.image2.Name = "image2";
-			this.image2.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("package-light-48.png");
+			this.image2.Pixbuf = global::Gdk.Pixbuf.LoadFromResource ("package-48.png");
 			this.vbox2.Add (this.image2);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.image2]));
 			w2.Position = 0;

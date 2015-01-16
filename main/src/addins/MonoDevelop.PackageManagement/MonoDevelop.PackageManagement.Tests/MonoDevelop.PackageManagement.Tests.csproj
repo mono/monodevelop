@@ -200,6 +200,11 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileRemover.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithConstraintProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\EnsureNuGetPackageBuildImportsTargetUpdaterTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingSolutionPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\CheckForUpdatesProgressMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForUpdatesProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\TestableCheckForUpdatesTaskRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

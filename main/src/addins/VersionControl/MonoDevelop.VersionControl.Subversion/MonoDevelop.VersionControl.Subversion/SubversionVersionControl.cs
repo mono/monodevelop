@@ -190,10 +190,11 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public string GetUnifiedDiff (FilePath path, bool recursive, bool remoteDiff)
 		{
-			if (remoteDiff)
-				return GetUnifiedDiff (path, SvnRevision.Head, path, SvnRevision.Working, recursive);
-			else
-				return GetUnifiedDiff (path, SvnRevision.Base, path, SvnRevision.Working, recursive);
+			return GetUnifiedDiff (path,
+				remoteDiff ? SvnRevision.Head : SvnRevision.Base,
+				path,
+				SvnRevision.Working,
+				recursive);
 		}
 
 		public abstract string GetUnifiedDiff (FilePath path1, SvnRevision revision1, FilePath path2, SvnRevision revision2, bool recursive);

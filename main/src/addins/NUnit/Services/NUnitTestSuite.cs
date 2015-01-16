@@ -27,11 +27,6 @@
 //
 
 
-using System;
-using System.IO;
-using System.Collections;
-using MonoDevelop.Core;
-using NUnit.Core;
 using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit

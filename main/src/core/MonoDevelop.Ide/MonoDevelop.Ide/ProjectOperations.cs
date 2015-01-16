@@ -1756,6 +1756,7 @@ namespace MonoDevelop.Ide
 					} else if (targetProject.Files.GetFile (newFile) == null) {
 						ProjectFile projectFile = (ProjectFile) file.Clone ();
 						projectFile.Name = newFile;
+						targetProject.Files.Add (projectFile);
 						if (targetParent == null) {
 							if (file == sourceParent)
 								targetParent = projectFile;
@@ -1763,7 +1764,6 @@ namespace MonoDevelop.Ide
 							if (projectFile.DependsOn == sourceParent.Name)
 								projectFile.DependsOn = targetParent.Name;
 						}
-						targetProject.Files.Add (projectFile);
 					}
 				}
 				

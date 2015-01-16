@@ -155,8 +155,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-light-32.png" size = "Dnd" />
-		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-light-16.png" size = "Menu" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-packaging-project" icon = "md-project|res:package-16.png" size = "Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">

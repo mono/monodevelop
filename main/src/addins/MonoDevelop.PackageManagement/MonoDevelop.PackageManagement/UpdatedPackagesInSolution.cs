@@ -40,16 +40,32 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagementEvents packageManagementEvents;
+		CheckForUpdatesTaskRunner taskRunner;
+		List<ParentPackageOperationEventArgs> packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
 		List<UpdatedPackagesInProject> projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
 
 		public UpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementEvents packageManagementEvents)
+			: this (
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents,
+				new CheckForUpdatesTaskRunner ())
+		{
+		}
+
+		public UpdatedPackagesInSolution (
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents,
+			CheckForUpdatesTaskRunner taskRunner)
 		{
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagementEvents = packageManagementEvents;
+			this.taskRunner = taskRunner;
 
 			this.packageManagementEvents.ParentPackageInstalled += PackageInstalled;
 			this.packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
@@ -68,25 +84,56 @@ namespace MonoDevelop.PackageManagement
 		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e)
 		{
 			GuiDispatch (() => {
-				UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
-				updatedPackages.RemovePackage (e.Package);
+				if (taskRunner.IsRunning) {
+					packageOperationsDuringCheckForUpdates.Add (e);
+				} else {
+					RemoveUpdatedPackages (e);
+				}
 			});
+		}
+
+		void RemoveUpdatedPackages (ParentPackageOperationEventArgs e)
+		{
+			UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
+			if (updatedPackages.AnyPackages ()) {
+				updatedPackages.RemovePackage (e.Package);
+				updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
+			}
 		}
 
 		public void Clear ()
 		{
+			taskRunner.Stop ();
 			projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
+			packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationEventArgs> ();
 		}
 
 		public void CheckForUpdates ()
 		{
-			foreach (IPackageManagementProject project in GetProjectsWithPackages ()) {
-				CheckForUpdates (project);
-			}
+			GuiDispatch (() => {
+				Clear ();
+				var task = new CheckForUpdatesTask (this, GetProjectsWithPackages ());
+				taskRunner.Start (task);
+			});
+		}
+
+		public void CheckForUpdatesCompleted (CheckForUpdatesTask task)
+		{
+			projectsWithUpdatedPackages = task.ProjectsWithUpdatedPackages.ToList ();
+
+			RemovePackagesUpdatedDuringCheckForUpdates ();
 
 			if (AnyUpdates ()) {
 				packageManagementEvents.OnUpdatedPackagesAvailable ();
 			}
+		}
+
+		void RemovePackagesUpdatedDuringCheckForUpdates ()
+		{
+			foreach (ParentPackageOperationEventArgs e in packageOperationsDuringCheckForUpdates) {
+				RemoveUpdatedPackages (e);
+			}
+			packageOperationsDuringCheckForUpdates.Clear ();
 		}
 
 		IEnumerable<IPackageManagementProject> GetProjectsWithPackages ()
@@ -96,10 +143,8 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<IPackageManagementProject> GetProjects ()
 		{
-			return GuiSyncDispatch (() => {
-				IPackageRepository repository = registeredPackageRepositories.CreateAggregateRepository ();
-				return solution.GetProjects (repository).ToList ();
-			});
+			IPackageRepository repository = registeredPackageRepositories.CreateAggregateRepository ();
+			return solution.GetProjects (repository).ToList ();
 		}
 
 		bool HasPackages (IPackageManagementProject project)
@@ -107,7 +152,7 @@ namespace MonoDevelop.PackageManagement
 			return FileExists (project.Project.GetPackagesConfigFilePath ());
 		}
 
-		void CheckForUpdates (IPackageManagementProject project)
+		public UpdatedPackagesInProject CheckForUpdates (IPackageManagementProject project)
 		{
 			LogCheckingForUpdates (project.Name);
 
@@ -115,13 +160,9 @@ namespace MonoDevelop.PackageManagement
 			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
 			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
 
-			if (packages.Any ()) {
-				GuiDispatch (() => {
-					projectsWithUpdatedPackages.Add (new UpdatedPackagesInProject (project.Project, packages));
-				});
-			}
-
 			LogPackagesFound (packages.Count);
+
+			return new UpdatedPackagesInProject (project.Project, packages);
 		}
 
 		void LogCheckingForUpdates (string projectName)

@@ -70,10 +70,7 @@ namespace MonoDevelop.VersionControl
 
 		public FilePath[] Paths {
 			get {
-				FilePath[] paths = new FilePath[Count];
-				for (int n=0; n < Count; n++)
-					paths [n] = this [n].Path;
-				return paths;
+				return this.Select (v => v.Path).ToArray ();
 			}
 		}
 

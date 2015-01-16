@@ -49,94 +49,14 @@ namespace MonoDevelop.Platform
 			else
 				dialog = new CommonSaveFileDialog ();
 
-			SetCommonFormProperties (data, dialog);
+			dialog.SetCommonFormProperties (data);
 
 			if (!GdkWin32.RunModalWin32Dialog (dialog, parent))
 				return false;
 
-			GetCommonFormProperties (data, dialog);
+			dialog.GetCommonFormProperties (data);
 
 			return true;
-		}
-
-		internal static void SetCommonFormProperties (SelectFileDialogData data, CommonFileDialog dialog)
-		{
-			if (!string.IsNullOrEmpty (data.Title))
-				dialog.Title = data.Title;
-
-			dialog.InitialDirectory = data.CurrentFolder;
-
-			var fileDialog = dialog as CommonOpenFileDialog;
-			if (fileDialog != null) {
-				fileDialog.Multiselect = data.SelectMultiple;
-				if (data.Action == FileChooserAction.SelectFolder) {
-					fileDialog.IsFolderPicker = true;
-					return;
-				}
-			}
-
-			SetFilters (data, dialog);
-
-			dialog.DefaultFileName = data.InitialFileName;
-		}
-
-		static FilePath FilterFileName (SelectFileDialogData data, string fileName)
-		{
-			FilePath result = fileName;
-			// FileDialog doesn't show the file extension when saving a file and chooses the extension based
-			// the file filter. But * is no valid extension so the default file name extension needs to be set in that case.
-			if (result.Extension == ".*") {
-				var ext = Path.GetExtension (data.InitialFileName);
-				if (!string.IsNullOrEmpty (ext))
-					result = result.ChangeExtension (ext);
-			} 
-			return result;
-		}
-
-		internal static void GetCommonFormProperties (SelectFileDialogData data, CommonFileDialog dialog)
-		{
-			var fileDialog = dialog as CommonOpenFileDialog;
-			if (fileDialog != null)
-				data.SelectedFiles = fileDialog.FileNames.Select (f => FilterFileName (data, f)).ToArray ();
-			else
-				data.SelectedFiles = new[] { FilterFileName (data, dialog.FileName) };
-		}
-
-		static void SetFilters (SelectFileDialogData data, CommonFileDialog dialog)
-		{
-			foreach (var f in data.Filters)
-				dialog.Filters.Add (new CommonFileDialogFilter (f.Name, string.Join (",", f.Patterns)));
-
-			SetDefaultExtension (data, dialog);
-		}
-
-		static void SetDefaultExtension (SelectFileDialogData data, CommonFileDialog dialog)
-		{
-			var defExt = data.DefaultFilter == null ? null : data.DefaultFilter.Patterns.FirstOrDefault ();
-			if (defExt == null)
-				return;
-			// FileDialog doesn't show the file extension when saving a file,
-			// so we try to look for the precise filter if none was specified.
-			if (!string.IsNullOrEmpty (data.InitialFileName) && data.Action == FileChooserAction.Save && defExt == "*") {
-				string ext = Path.GetExtension (data.InitialFileName);
-				if (!string.IsNullOrEmpty (ext)) {
-					var pattern = "*" + ext;
-					foreach (var f in data.Filters) {
-						foreach (var p in f.Patterns) {
-							if (string.Equals (p, pattern, StringComparison.OrdinalIgnoreCase)) {
-								dialog.DefaultExtension = p.TrimStart ('*', '.');
-								return;
-							}
-						}
-					}
-				}
-			}
-
-			defExt = defExt.Trim();
-			defExt = defExt.Replace("*.", null);
-			defExt = defExt.Replace(".", null);
-
-			dialog.DefaultExtension = defExt;
 		}
 	}
 }

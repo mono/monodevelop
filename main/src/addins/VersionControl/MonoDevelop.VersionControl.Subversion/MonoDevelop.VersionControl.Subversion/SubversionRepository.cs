@@ -217,8 +217,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			// svn will successfully revert the first entry (the directory) and then throw an error when trying to revert the
 			// second and third entries because by reverting the directory the files are implicitly reverted. Try to work around
 			// this issue.
-			Array.Sort<FilePath>(localPaths);
-			Array.Reverse (localPaths);
+			Array.Sort<FilePath> (localPaths, (a, b) => b.CompareTo (a));
 			Svn.Revert (localPaths, recurse, monitor);
 		}
 
@@ -532,14 +531,14 @@ namespace MonoDevelop.VersionControl.Subversion
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
 			if (localPaths != null) {
-				ArrayList list = new ArrayList ();
+				var list = new List<DiffInfo> ();
 				foreach (string path in localPaths) {
 					string diff = Svn.GetUnifiedDiff (path, false, remoteDiff);
 					if (string.IsNullOrEmpty (diff))
 						continue;
 					list.AddRange (GenerateUnifiedDiffInfo (diff, baseLocalPath, new FilePath[] { path }));
 				}
-				return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
+				return list.ToArray ();
 			} else {
 				string diff = Svn.GetUnifiedDiff (baseLocalPath, true, remoteDiff);
 				return GenerateUnifiedDiffInfo (diff, baseLocalPath, null);
@@ -550,8 +549,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, SvnRevision.Base));
 			Annotation nextRev = new Annotation (GettextCatalog.GetString ("working copy"), "<uncommitted>", DateTime.MinValue);
-			var baseDocument = new Mono.TextEditor.TextDocument (GetBaseText (repositoryPath));
-			var workingDocument = new Mono.TextEditor.TextDocument (File.ReadAllText (repositoryPath));
+			var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
+			var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
 			
 			// "SubversionException: blame of the WORKING revision is not supported"
 			foreach (var hunk in baseDocument.Diff (workingDocument)) {

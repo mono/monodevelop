@@ -195,12 +195,15 @@ namespace Mono.TextTemplating
 			return null;
 		}
 		
-		//FIXME: implement
 		protected virtual string ResolveAssemblyReference (string assemblyReference)
 		{
-			//foreach (string referencePath in ReferencePaths) {
-			//	
-			//}
+			if (System.IO.Path.IsPathRooted (assemblyReference))
+ 				return assemblyReference;
+ 			foreach (string referencePath in ReferencePaths) {
+ 				var path = System.IO.Path.Combine (referencePath, assemblyReference);
+ 				if (System.IO.File.Exists (path))
+ 					return path;
+ 			}
 			return assemblyReference;
 		}
 		

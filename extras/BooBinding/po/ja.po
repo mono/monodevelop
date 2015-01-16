@@ -2,20 +2,21 @@
 # Copyright (C) 2004 Atsushi Enomoto
 # This file is distributed under the same license as the PACKAGE package.
 # Atsushi Enomoto <atsushi@ximian.com>, 2004.
+# Akira Nakagawa <matyapiro31@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-03-04 18:11:19-0500\n"
-"PO-Revision-Date: 2008-01-24 01:53:35+0900\n"
-"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
-"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
+"PO-Revision-Date: 2015-01-10 21:14+0900\n"
+"Last-Translator: Akira Nakagawa <matyapiro31@gmail.com>\n"
+"Language-Team: 日本語 <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: MonoDevelop.Gettext \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:7
 msgid "Gtk# Project"
@@ -78,7 +79,7 @@ msgstr "コード生成方法"
 
 #: ../BooBinding.addin.xml:69
 msgid "Boo source code"
-msgstr ""
+msgstr "Boo ソースコード"
 
 #: ../BooBinding.addin.xml:90 ../BooBinding.addin.xml:98
 msgid "Boo Shell"
@@ -169,7 +170,7 @@ msgstr "フォント"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:57
 msgid "Use default monospace font"
-msgstr "デフォルトの等幅フォントを使用"
+msgstr "既定のの等幅フォントを使用"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
 msgid "Use custom font:"

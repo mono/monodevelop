@@ -64,11 +64,6 @@ namespace Mono.TextTemplating
 			
 			var remainingArgs = optionSet.Parse (args);
 			
-			if (string.IsNullOrEmpty (outputFile)) {
-				Console.Error.WriteLine ("No output file specified.");
-				return -1;
-			}
-			
 			if (remainingArgs.Count != 1) {
 				Console.Error.WriteLine ("No input file specified.");
 				return -1;
@@ -80,6 +75,17 @@ namespace Mono.TextTemplating
 				return -1;
 			}
 			
+			if (string.IsNullOrEmpty (outputFile)) {
+				outputFile = inputFile;
+				if (Path.HasExtension (outputFile)) {
+					var dir = Path.GetDirectoryName (outputFile);
+					var fn = Path.GetFileNameWithoutExtension (outputFile);
+					outputFile = Path.Combine (dir, fn + ".txt");
+				} else {
+					outputFile = outputFile + ".txt";
+				}
+			}
+
 			//FIXME: implement quoting and escaping for values
 			foreach (var par in parameters) {
 				var split = par.Split ('!');
@@ -116,12 +122,9 @@ namespace Mono.TextTemplating
 			}
 			
 			if (preprocess == null) {
-				Console.Write ("Processing '{0}'... ", inputFile);
 				generator.ProcessTemplate (inputFile, outputFile);
 				if (generator.Errors.HasErrors) {
-					Console.WriteLine ("failed.");
-				} else {
-					Console.WriteLine ("completed successfully.");
+					Console.WriteLine ("Processing '{0}' failed.", inputFile);
 				}
 			} else {
 				string className = preprocess;
@@ -132,21 +135,12 @@ namespace Mono.TextTemplating
 					className = preprocess.Substring (s + 1);
 				}
 				
-				Console.Write ("Preprocessing '{0}' into class '{1}.{2}'... ", inputFile, classNamespace, className);
 				string language;
 				string[] references;
 				generator.PreprocessTemplate (inputFile, className, classNamespace, outputFile, System.Text.Encoding.UTF8,
 					out language, out references);
 				if (generator.Errors.HasErrors) {
-					Console.WriteLine ("failed.");
-				} else {
-					Console.WriteLine ("completed successfully:");
-					Console.WriteLine ("    Language: {0}", language);
-					if (references != null && references.Length > 0) {
-						Console.WriteLine (" References:");
-						foreach (string r in references)
-							Console.WriteLine ("    {0}", r);
-					}
+					Console.Write ("Preprocessing '{0}' into class '{1}.{2}' failed.", inputFile, classNamespace, className);
 				}
 			}
 			

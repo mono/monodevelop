@@ -73,20 +73,39 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			if (ShouldUpdatePackage()) {
+			if (ShouldUpdatePackage ()) {
 				using (IDisposable monitor = CreateFileMonitor ()) {
-					Project.UpdatePackage(Package, this);
+					Project.UpdatePackage (Package, this);
 				}
-				OnParentPackageInstalled();
+				OnParentPackageInstalled ();
+			} else {
+				LogNoUpdatesAvailableForPackage (GetPackageId ());
 			}
 		}
 		
 		bool ShouldUpdatePackage()
 		{
 			if (!UpdateIfPackageDoesNotExistInProject) {
-				return PackageIdExistsInProject();
+				return PackageIdExistsInProject () && ProjectHasOlderPackageInstalled (Package);
+			} else if (PackageIdExistsInProject ()) {
+				return ProjectHasOlderPackageInstalled (Package);
 			}
 			return true;
+		}
+
+		bool ProjectHasOlderPackageInstalled (IPackage package)
+		{
+			if (package != null) {
+				return Project.HasOlderPackageInstalled (package);
+			}
+
+			return true;
+		}
+
+		void LogNoUpdatesAvailableForPackage (string packageId)
+		{
+			string message = String.Format ("No updates available for '{0}' in project '{1}'.", packageId, Project.Name);
+			Logger.Log (MessageLevel.Info, message);
 		}
 
 		IDisposable CreateFileMonitor ()

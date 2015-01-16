@@ -56,7 +56,7 @@ namespace MonoDevelop.Platform
 			else
 				dialog = new CustomCommonSaveFileDialog ();
 
-			SelectFileDialogHandler.SetCommonFormProperties (data, dialog);
+			dialog.SetCommonFormProperties (data);
 
 			CustomCommonFileDialogComboBox encodingCombo = null;
 			if (data.ShowEncodingSelector) {
@@ -114,7 +114,7 @@ namespace MonoDevelop.Platform
 							closeSolution.Visible = hasBench;
 						dialog.ApplyControlPropertyChange ("Items", viewerCombo);
 					} catch (Exception ex) {
-						LoggingService.LogError (e.ToString ());
+						LoggingService.LogInternalError (ex);
 					}
 				};
 			}
@@ -122,7 +122,7 @@ namespace MonoDevelop.Platform
 			if (!GdkWin32.RunModalWin32Dialog (dialog, parent))
 				return false;
 
-			SelectFileDialogHandler.GetCommonFormProperties (data, dialog);
+			dialog.GetCommonFormProperties (data);
 			if (encodingCombo != null)
 				data.Encoding = ((EncodingComboItem)encodingCombo.Items [encodingCombo.SelectedIndex]).Encoding;
 
@@ -147,10 +147,9 @@ namespace MonoDevelop.Platform
 
 			try {
 				nativeDialog.GetSelectedItems (out resultsArray);
-			} catch (Exception ex) {
+			} catch (COMException ex) {
 				//we get E_FAIL when there is no selection
-				var ce = ex.InnerException as COMException;
-				if (ce != null && ce.ErrorCode == -2147467259)
+				if (ex != null && ex.ErrorCode == -2147467259)
 					return filenames;
 				throw;
 			}
@@ -179,7 +178,6 @@ namespace MonoDevelop.Platform
 				i = 1;
 			}
 
-			int j = 1;
 			foreach (var e in TextEncoding.ConversionEncodings) {
 				combo.Items.Add (new EncodingComboItem (Encoding.GetEncoding (e.CodePage), string.Format ("{0} ({1})", e.Name, e.Id)));
 				if (selectedEncoding != null && e.CodePage == selectedEncoding.WindowsCodePage)

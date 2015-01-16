@@ -76,30 +76,32 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "vc-add-command" resource = "vcs-added-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-remove-command" resource = "vcs-removed-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-add-command" resource = "vcs-added-16.png" size="Menu" />
+		<StockIcon stockid = "vc-remove-command" resource = "vcs-removed-16.png" size="Menu" />
+		<StockIcon stockid = "vc-rename-command" resource = "vcs-renamed-16.png" size="Menu" />
 		<StockIcon stockid = "vc-resolve-command" resource = "vcs-conflicted-16.png" size="Menu" />
-		<StockIcon stockid = "vc-revert-command" resource = "revert-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-diff" resource = "diff-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-log" resource = "log-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-status" resource = "local-status-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-update" resource = "pull-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-push" resource = "push-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-commit" resource = "commit-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-remote-status" resource = "remote-status-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-comment" resource = "comment-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-status-refresh" resource = "refresh-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-version-control" resource = "version-control-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-file-added" resource = "vcs-added-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-file-removed" resource = "vcs-removed-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-file-modified" resource = "vcs-modified-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-file-conflicted" resource = "vcs-conflicted-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-repository" resource = "repository-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-tag" resource = "tag-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-branch" resource = "branch-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-prefs-git" resource="prefs-git-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-prefs-commit-message-style" resource="prefs-commit-message-style-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-prefs-version-control-general" resource="prefs-version-control-general-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-revert-command" resource = "revert-16.png" size="Menu" />
+		<StockIcon stockid = "vc-diff" resource = "diff-16.png" size="Menu" />
+		<StockIcon stockid = "vc-log" resource = "log-16.png" size="Menu" />
+		<StockIcon stockid = "vc-status" resource = "local-status-16.png" size="Menu" />
+		<StockIcon stockid = "vc-update" resource = "pull-16.png" size="Menu" />
+		<StockIcon stockid = "vc-push" resource = "push-16.png" size="Menu" />
+		<StockIcon stockid = "vc-commit" resource = "commit-16.png" size="Menu" />
+		<StockIcon stockid = "vc-remote-status" resource = "remote-status-16.png" size="Menu" />
+		<StockIcon stockid = "vc-comment" resource = "comment-16.png" size="Menu" />
+		<StockIcon stockid = "vc-status-refresh" resource = "refresh-16.png" size="Menu" />
+		<StockIcon stockid = "md-version-control" resource = "version-control-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-added" resource = "vcs-added-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-removed" resource = "vcs-removed-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-renamed" resource = "vcs-renamed-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-modified" resource = "vcs-modified-16.png" size="Menu" />
+		<StockIcon stockid = "vc-file-conflicted" resource = "vcs-conflicted-16.png" size="Menu" />
+		<StockIcon stockid = "vc-repository" resource = "repository-16.png" size="Menu" />
+		<StockIcon stockid = "vc-tag" resource = "tag-16.png" size="Menu" />
+		<StockIcon stockid = "vc-branch" resource = "branch-16.png" size="Menu" />
+		<StockIcon stockid = "md-prefs-git" resource="prefs-git-16.png" size="Menu" />
+		<StockIcon stockid = "md-prefs-commit-message-style" resource="prefs-commit-message-style-16.png" size="Menu" />
+		<StockIcon stockid = "md-prefs-version-control-general" resource="prefs-version-control-general-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

@@ -35,11 +35,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableUpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			CheckForUpdatesTaskRunner taskRunner)
 			: base (
 				solution,
 				registeredPackageRepositories,
-				packageManagementEvents)
+				packageManagementEvents,
+				taskRunner)
 		{
 			FileExistsAction = path => {
 				return true;

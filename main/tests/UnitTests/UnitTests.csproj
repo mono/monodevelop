@@ -255,6 +255,7 @@
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
+    <Compile Include="MonoDevelop.Ide.FindInFiles\ColorizationTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TestableProjectTemplateCategorizer.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FinalProjectConfigurationTests.cs" />

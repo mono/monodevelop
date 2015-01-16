@@ -8,7 +8,6 @@ namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
 	{
-		string globalComment = string.Empty;
 		// Commits should be atomic and small. Therefore having a List instead
 		// of a HashSet should be faster in most cases.
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
@@ -27,6 +26,7 @@ namespace MonoDevelop.VersionControl
 				basePath = bp + System.IO.Path.DirectorySeparatorChar;
 
 			this.basePath = basePath;
+			GlobalComment = "";
 		}
 		
 		public IDictionary ExtendedProperties {
@@ -38,8 +38,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string GlobalComment {
-			get { return globalComment; }
-			set { globalComment = value; }
+			get;
+			set;
 		}
 		
 		public bool IsEmpty {
@@ -87,10 +87,7 @@ namespace MonoDevelop.VersionControl
 
 		public bool ContainsFile (FilePath fileName)
 		{
-			foreach (var item in items)
-				if (item.LocalPath == fileName)
-					return true;
-			return false;
+			return items.Any (item => item.LocalPath == fileName);
 		}
 
 		public ChangeSetItem AddFile (FilePath file)
@@ -117,10 +114,7 @@ namespace MonoDevelop.VersionControl
 
 		public ChangeSetItem GetFileItem (FilePath file)
 		{
-			foreach (ChangeSetItem it in items)
-				if (it.LocalPath == file)
-					return it;
-			return null;
+			return items.Find (it => it.LocalPath == file);
 		}
 
 		public void RemoveFile (FilePath file)
@@ -149,9 +143,7 @@ namespace MonoDevelop.VersionControl
 		{
 			repo = other.repo;
 			basePath = other.basePath;
-			items = new List<ChangeSetItem> ();
-			foreach (ChangeSetItem cit in other.items)
-				items.Add (cit.Clone ());
+			items = new List<ChangeSetItem> (other.items.Select (cit => cit.Clone()));
 		}
 	}
 	
@@ -165,10 +157,7 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string Comment {
-			get {
-				string txt = VersionControlService.GetCommitComment (LocalPath);
-				return txt ?? String.Empty;
-			}
+			get { return VersionControlService.GetCommitComment (LocalPath) ?? String.Empty; }
 			set { VersionControlService.SetCommitComment (LocalPath, value, true); }
 		}
 		
