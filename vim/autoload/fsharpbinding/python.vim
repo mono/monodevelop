@@ -96,6 +96,7 @@ if first.startswith('Multiple') or first.startswith('type'):
 else:
     vim.command('echo "%s"' % first)
 EOF
+    let b:fsharp_buffer_changed = 0
 endfunction
 
 
@@ -104,11 +105,11 @@ endfunction
 
 " fsautocomplete format
 " {"StartLine":4,"StartLineAlternate":5,"EndLine":4,"EndLineAlternate":5,"StartColumn":0,"EndColumn":4,"Severity":"Error","Message":"The value or constructor 'asdf' is not defined","Subcategory":"typecheck","FileName":"/Users/karlnilsson/code/kjnilsson/fsharp-vim/test.fsx"}
-function! fsharpbinding#python#FindErrors()
+function! fsharpbinding#python#CurrentErrors()
     let result = []
     let buf = bufnr('%')
     try
-        let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
+        let errs = pyeval('fsautocomplete.errors_current()')
         for e in errs
             call add(result,
                 \{'lnum': e['StartLineAlternate'],
@@ -124,7 +125,6 @@ function! fsharpbinding#python#FindErrors()
     endtry
     return result
 endfunction
-
 
 function! fsharpbinding#python#Complete(findstart, base)
     let line = getline('.')
@@ -158,6 +158,7 @@ fsautocomplete.parse(b.name, True, b)
 vim.command('return %s' % fsautocomplete.complete(b.name, row, col, vim.eval('a:base')))
 EOF
     endif
+    let b:fsharp_buffer_changed = 0
 endfunction
 
 
@@ -198,7 +199,47 @@ else:
 EOF
 endfunction
 
+function! fsharpbinding#python#OnBufWritePre()
+    "ensure a parse has been requested before BufWritePost is called
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+    let b:fsharp_buffer_changed = 0
+endfunction
+
+function! fsharpbinding#python#OnInsertLeave()
+    if exists ("b:fsharp_buffer_changed") != 0 
+        if b:fsharp_buffer_changed == 1
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+        endif
+    endif
+endfunction
+
+function! fsharpbinding#python#OnCursorHold()
+    if exists ("g:fsharp_only_check_errors_on_write") != 0 
+        if g:fsharp_only_check_errors_on_write != 1 
+            exec "SyntasticCheck"
+        endif
+    endif
+    let b:fsharp_buffer_changed = 0
+endfunction
+
+function! fsharpbinding#python#OnTextChanged()
+    let b:fsharp_buffer_changed = 1
+    "TODO: make an parse_async that writes to the server on a background thread
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+endfunction
+
+function! fsharpbinding#python#OnTextChangedI()
+    let b:fsharp_buffer_changed = 1
+endfunction
+
 function! fsharpbinding#python#OnBufEnter()
+    set updatetime=500
 python << EOF
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
@@ -206,6 +247,13 @@ v = vim.current.buffer.vars
 if "proj_file" in v:
     fsautocomplete.project(v["proj_file"])
 EOF
+    "set makeprg
+    if !filereadable(expand("%:p:h")."/Makefile")
+        if exists('b:proj_file')
+            let &l:makeprg=g:fsharp_xbuild_path . ' ' . b:proj_file . ' /verbosity:quiet /nologo /p:Configuration=Debug'
+            setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
+        endif
+    endif
 endfunction
 
 function! fsharpbinding#python#FsiPurge()

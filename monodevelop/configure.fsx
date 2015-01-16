@@ -10,7 +10,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "5.6.2"
+let FSharpVersion = "5.8.0"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -150,6 +150,7 @@ FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 
 //process test project
 FileReplace (testProject + ".orig", testProject, "INSERT_FSPROJ_MDROOT", mdDir)
+FileReplace (testProject          , testProject, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (testProject          , testProject, "INSERT_PROJ_TAG", tag)
 
 match getMdExe mdDir with
@@ -170,8 +171,8 @@ if isWindows then
     System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),
        sprintf """
 @echo off
-set MSBUILD=%%WINDIR%%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
-%%MSBUILD%% MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
+set MSBUILD=%%ProgramFiles(x86)%%\MSBuild\12.0\Bin\MSBuild.exe
+"%%MSBUILD%%" MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
 set MDROOT="%s"
 rmdir /s /q pack
 mkdir pack\windows\%s

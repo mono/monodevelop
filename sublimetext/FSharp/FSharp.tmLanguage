@@ -26,6 +26,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#type-generic</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#constants</string>
 		</dict>
 		<dict>
@@ -104,6 +108,35 @@
 				</dict>
 			</array>
 		</dict>
+		<key>async-workflows</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>(async)(?=\s+\{)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(\})</string>
+					<key>name</key>
+					<string>meta.sequence.definition.fsharp</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
 		<key>attributes</key>
 		<dict>
 			<key>patterns</key>
@@ -131,7 +164,7 @@
 			<array>
 				<dict>
 					<key>begin</key>
-					<string>(')</string>
+					<string>(?&lt;!\w)(')</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -231,9 +264,15 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\(\)</string>
+					<string>\b(None|Some)\b</string>
 					<key>name</key>
 					<string>constant.language.unit.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\(\)</string>
+					<key>name</key>
+					<string>constant.language.option.fsharp</string>
 				</dict>
 				<dict>
 					<key>match</key>
@@ -324,7 +363,7 @@
 				</dict>
 				<dict>
 					<key>begin</key>
-					<string>\b(val|val|let|and|member|override|use)\s?(rec|inline|mutable)?(\s+\(?([a-zA-Z.\|_][a-zA-Z0-9.|_]*)\)?\w*)\b</string>
+					<string>\b(ref|val|val|let|and|member|override|use)\s?(rec|inline|mutable)?(\s+\(?([a-zA-Z.\|_][a-zA-Z0-9.|_]*)\)?\w*)\b</string>
 					<key>beginCaptures</key>
 					<dict>
 						<key>1</key>
@@ -367,6 +406,10 @@
 					<key>include</key>
 					<string>#sequences</string>
 				</dict>
+				<dict>
+					<key>include</key>
+					<string>#async-workflows</string>
+				</dict>
 			</array>
 		</dict>
 		<key>keywords</key>
@@ -389,7 +432,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(new|in|as|if|then|else|elif|for|begin|end|match|with|when|type|inherit|null|do)\b</string>
+					<string>\b(try|finally|new|in|as|if|then|else|elif|raise|for|begin|end|match|with|when|type|inherit|null|do)\b</string>
 					<key>name</key>
 					<string>keyword.other.fsharp</string>
 				</dict>
@@ -401,21 +444,21 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>=|&gt;=|&lt;=|&lt;&gt;|&lt;|&gt;</string>
-					<key>name</key>
-					<string>keyword.comparison.fsharp</string>
-				</dict>
-				<dict>
-					<key>match</key>
 					<string>(\|&gt;|\|\?&gt;|\-&gt;|\&lt;\-|:&gt;|:|\[|\]|\;|_|&amp;&amp;)</string>
 					<key>name</key>
-					<string>entity.name</string>
+					<string>keyword.operator.name</string>
 				</dict>
 				<dict>
 					<key>match</key>
 					<string>\|</string>
 					<key>name</key>
 					<string>keyword.other.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>=|&gt;=|&lt;=|&lt;&gt;|&lt;|&gt;</string>
+					<key>name</key>
+					<string>keyword.comparison.fsharp</string>
 				</dict>
 			</array>
 		</dict>
@@ -911,10 +954,26 @@
 				</dict>
 			</array>
 		</dict>
+		<key>type-generic</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>\'[a-zA-Z](?!\')</string>
+					<key>name</key>
+					<string>storage.type.generic.fsharp</string>
+				</dict>
+			</array>
+		</dict>
 		<key>variables</key>
 		<dict>
 			<key>patterns</key>
 			<array>
+				<dict>
+					<key>include</key>
+					<string>#type-generic</string>
+				</dict>
 				<dict>
 					<key>match</key>
 					<string>\(\)</string>
@@ -923,7 +982,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(?&lt;=:)[a-zA-Z]\w*</string>
+					<string>(?&lt;=:)\s*[a-zA-Z][\w.']*</string>
 					<key>name</key>
 					<string>storage.type.name.fsharp</string>
 				</dict>

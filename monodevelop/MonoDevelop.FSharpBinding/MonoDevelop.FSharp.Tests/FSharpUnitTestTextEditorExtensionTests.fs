@@ -12,6 +12,9 @@ open MonoDevelop.Ide.TypeSystem
 open FsUnit
 open MonoDevelop.Debugger
 
+#if MDVERSION_5_5
+#else
+
 [<TestFixture>]
 type FSharpUnitTestTextEditorExtensionTests() =
     inherit TestBase()
@@ -118,3 +121,4 @@ module Test =
         let testExtension = createDoc normalAndDoubleTick []
         let tests = testExtension.GatherUnitTests()
         tests.Count |> should equal 0
+#endif

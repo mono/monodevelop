@@ -7,6 +7,7 @@ bin_d  = $(abspath bin)
 
 # Elisp files required for tests.
 src_files         = $(wildcard ./*.el)
+obj_files         = $(patsubst %.el,%.elc,$(src_files))
 integration_tests = $(test_d)/integration-tests.el
 unit_tests        = $(filter-out $(integration_tests), $(wildcard $(test_d)/*tests.el))
 utils             = $(test_d)/test-common.el
@@ -29,7 +30,7 @@ dest_bin  = $(HOME)/.emacs.d/fsharp-mode/bin/
 
 # ----------------------------------------------------------------------------
 
-.PHONY : env test unit-test integration-test packages clean-elc install
+.PHONY : test unit-test integration-test packages clean-elc install byte-compile check-compile check-compile run
 
 # Building
 
@@ -74,7 +75,7 @@ integration-test : $(ac_exe) packages
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) --batch -f run-fsharp-integration-tests
 
-test-all : unit-test integration-test check-compile
+test-all : unit-test integration-test check-compile check-declares
 
 packages :
 	HOME=$(tmp_d) ;\
@@ -86,12 +87,19 @@ byte-compile : packages
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
           -f batch-byte-compile $(src_files)
 
-check-compile : packages
+check-declares : packages
+	HOME=$(tmp_d) ;\
+	$(emacs) -batch --eval "(package-initialize)"\
+          --eval '(when (check-declare-directory "$(base_d)/emacs") (kill-emacs 1)))'
+
+check-compile : packages $(obj_files)
+
+.el.elc:
 	HOME=$(tmp_d) ;\
 	$(emacs) -batch --eval "(package-initialize)"\
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
 	  --eval '(setq byte-compile-error-on-warn t)' \
-          -f batch-byte-compile $(src_files)
+          -f batch-byte-compile $<
 
 run : $(ac_exe) packages
 	HOME=$(tmp_d) ;\

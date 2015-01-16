@@ -2,7 +2,7 @@
 
 Syntax and indent files have been copied from [fsharp-vim](http://github.com/kongo2002/fsharp-vim) with kind permissions from [kongo2002](https://github.com/kongo2002).
 
-Requires vim compiled with python support.
+Requires vim 7.4 compiled with python support.
 
 This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported.
 
@@ -40,16 +40,18 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 ###Commands
 
 #####General
-* `:ParseProject` reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
-* `:BuildProject` calls xbuild on the fsproj for the current file (if any).
-* `leader<t>` echoes the type of the expression currently pointed to by the cursor.
+* `:make` Calls xbuild on the fsproj for the current file (if any).
+* `:ParseProject` Reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
+* `:BuildProject` Calls xbuild on the fsproj for the current file (if any). Can also take a path to the proj file to build.
+* `:RunProject` Runs the project for the current file (if any). 
+* `leader<t>` Echoes the type of the expression currently pointed to by the cursor.
 * `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
-* `leader<s>` takes you back from where _go to declaration_ was triggered.
+* `leader<s>` Takes you back from where _go to declaration_ was triggered.
 
 #####FSharp Interactive
-* `:FsiEval` evaluates an fsharp expression in the fsi 
-* `:FsiReset` resets the current fsharp interactive
-* `:FsiRead` displays any lines written by the fsi but not yet output as vim messages 
+* `:FsiEval` Evaluates an fsharp expression in the fsi 
+* `:FsiReset` Resets the current fsharp interactive
+* `:FsiRead` Displays any lines written by the fsi but not yet output as vim messages 
 * `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output.
 * `Ctrl-Alt-Enter` Send either the current selection or the current line to the fsharp interactive but does not output the result as vim messages.
 
@@ -57,18 +59,11 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 
 > Interactive syntax/type checking requires [syntastic][syntastic]
 
-By default your F# files will be syntax/type checked on every open/save of a
-vim buffer.  In case you prefer your changes to be checked continuously
-*on-the-fly* you can do so with a *autocommand* in your `.vimrc` like this:
+By default your F# files will be syntax/type checked on every open/save of a vim buffer as well as after 500ms of inactivity in Normal mode.  
+In case you would prefer not to have you errors checked continuously add the following to your vimrc:
 
 ~~~.vim
-" set the update interval to your preference
-set updatetime=500
-
-augroup fsharp_au
-  au!
-  au CursorHold *.fs,*.fsi,*.fsx SyntasticCheck
-augroup END
+let g:fsharp_only_check_errors_on_write = 1
 ~~~
 
 ###Settings
@@ -82,6 +77,12 @@ let g:fsharpbinding_debug = 1
 
 This will create two log files `log.txt` and `log2.txt` in your temporary folder
 (i.e. `/tmp/`).
+
+You can set the msbuild/xbuild path. On windows it is very likely you need to do this unless msbuild is in your path.
+
+~~~.vim
+let g:fsharp_xbuild_path = "/path/to/xbuild/or/msbuild"
+~~~
 
 
 [syntastic]: https://github.com/scrooloose/syntastic

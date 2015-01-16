@@ -5,46 +5,48 @@
 
 namespace MonoDevelop.FSharp
 
+open System
 open MonoDevelop.Projects
 open MonoDevelop.Core.Serialization
 
 /// Serializable type respresnting F# compiler parameters
-type FSharpCompilerParameters() as this = 
-  inherit ConfigurationParameters()
-  let asBool (s:string) = (System.String.Compare(s, "true", System.StringComparison.InvariantCultureIgnoreCase) = 0)
+type FSharpCompilerParameters() = 
+  inherit DotNetConfigurationParameters()
+
+  let asBool (s:string) = (String.Compare(s, "true", StringComparison.InvariantCultureIgnoreCase) = 0)
   let asString (b:bool) = if b then "true" else "false"
-   
-  do this.platformTarget <- "anycpu"
-  
-  [<field:ItemProperty("PlatformTarget",DefaultValue="anycpu"); DefaultValue>]
-  val mutable private platformTarget : string
-        
-  [<field:ItemProperty("DebugSymbols"); DefaultValue>]
+
   // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
   // This keeps the text of the project file identical to Visual Studio.
-  val mutable private  debugSymbols : string
+  let mutable debugSymbols = "true"
 
-  [<field:ItemProperty("DebugType"); DefaultValue>]
-  val mutable private  debugType : string
-
-  [<field:ItemProperty("Optimize"); DefaultValue>]
   // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
   // This keeps the text of the project file identical to Visual Studio.
-  val mutable private optimize : string
+  let mutable optimize = "false"
 
-  [<field:ItemProperty("DocumentationFile"); DefaultValue>]
-  val mutable private documentationFile : string
-
-  [<field:ItemProperty("Tailcalls"); DefaultValue>]
   // This is logically a boolean but we serialize as a string to always save as lower-case "true" rather than "True"
   // This keeps the text of the project file identical to Visual Studio.
-  val mutable private generateTailCalls : string
+  let mutable generateTailCalls = "true"
 
-  [<field:ItemProperty("DefineConstants"); DefaultValue>]
-  val mutable private defineConstants : string
+  override val NoStdLib = false with get, set
+#if MDVERSION_5_6_3
+  member val DebugType = "" with get, set
+#else
+#if MDVERSION_5_5_4
+  member val DebugType = "" with get, set
+#else
+#if MDVERSION_5_5
+  member val DebugType = "" with get, set
+#else
+  override val DebugType = "" with get, set
+#endif
+#endif
+#endif
 
-  [<field:ItemProperty("OtherFlags"); DefaultValue>]
-  val mutable private otherFlags : string
+  member val DefineConstants = "" with get, set
+  member val OtherFlags = "" with get, set
+  member val DocumentationFile = "" with get, set
+  member val PlatformTarget = "anycpu" with get, set
 
   override x.AddDefineSymbol(symbol) =
     if System.String.IsNullOrEmpty x.DefineConstants then
@@ -60,43 +62,27 @@ type FSharpCompilerParameters() as this =
       
   override x.GetDefineSymbols () =
     x.DefineConstants.Split (';', ',', ' ', '\t')
-    |> Seq.where (fun s -> not (System.String.IsNullOrWhiteSpace(s)))
+    |> Seq.where (not << String.IsNullOrWhiteSpace)
 
   override x.HasDefineSymbol(symbol) =
     x.DefineConstants.Split(';', ',', ' ', '\t') |> Array.exists (fun s -> symbol = s)
 
-  member x.DefineConstants 
-    with get() = if x.defineConstants = null then "" else x.defineConstants
-    and set(value) = x.defineConstants <- value
-
-  member x.OtherFlags
-    with get() = if x.otherFlags = null then "" else x.otherFlags
-    and set(value) = x.otherFlags <- value
-
-  member x.DocumentationFile
-    with get() = if x.documentationFile = null then "" else x.documentationFile
-    and set(value) = x.documentationFile <- value
-
   member x.GenerateTailCalls
-    with get() = asBool x.generateTailCalls
+    with get() = asBool generateTailCalls
     and set(value) = 
-        if x.generateTailCalls <> asString value then 
-            x.generateTailCalls <- asString value 
+        if generateTailCalls <> asString value then 
+            generateTailCalls <- asString value 
         
   member x.Optimize
-    with get() = asBool x.optimize
+    with get() = asBool optimize
     and set(value) = 
-        if x.optimize <> asString value then 
-            x.optimize <- asString value
-            x.debugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")
+        if optimize <> asString value then 
+            optimize <- asString value
+            x.DebugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")
         
   member x.DebugSymbols
-    with get() = asBool x.debugSymbols
+    with get() = asBool debugSymbols
     and set(value) = 
-        if x.debugSymbols <> asString value then 
-            x.debugSymbols <- asString value
-            x.debugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")
-        
-  member x.PlatformTarget
-    with get() = if x.platformTarget = null then "anycpu" else x.platformTarget
-    and set(value) = x.platformTarget <- value
+        if debugSymbols <> asString value then 
+            debugSymbols <- asString value
+            x.DebugType <- (if x.DebugSymbols then (if x.Optimize then "pdbonly" else "full") else "none")

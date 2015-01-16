@@ -36,7 +36,7 @@ type FSharpReferenceFinder() =
             | _ -> None
         | _ -> None
 
-    override x.FindReferences(project, projectContent, files, progressMonitor, symbols) =
+    override x.FindReferences(project, projectContent, _files, _progressMonitor, symbols) =
       // If the breakpoint is not triggered by a 'Find References' action,
       // then it probably means the inferred set of files to search for a symbol has not been correctly determined
       // by MD/XS.  The logic of 'what to search' used by XS is quite convoluted and depends on properties of
@@ -45,7 +45,7 @@ type FSharpReferenceFinder() =
       seq { 
         for symbol in symbols do 
           match symbol with
-          | SymbolWithRegion(region) & SymbolWithFSharpInfo(fsSymbol) ->
+          | SymbolWithRegion(_region) & SymbolWithFSharpInfo(fsSymbol) ->
             
             // Get the active document, but only to 
             //   (a) determine if this is a script
@@ -57,9 +57,9 @@ type FSharpReferenceFinder() =
             // Get the source, but only in order to infer the project options for a script.
             let activeDocSource = activeDoc.Editor.Text
             
-            let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgs(project, activeDocFileName)
+            let projectFilename, projectFiles, projectArgs = MonoDevelop.getCheckerArgs(project, activeDocFileName)
             let references = 
-                try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
+                try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, fsSymbol.FSharpSymbol) 
                     |> Async.RunSynchronously)
                 with _ -> None
 

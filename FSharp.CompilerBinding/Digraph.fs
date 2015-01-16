@@ -31,7 +31,6 @@ module Digraph =
         order
       else
         let n = List.head rts
-        let children = Map.find n g
         let order' = n::order
         let g' = Map.remove n g
         let rts' = roots g'

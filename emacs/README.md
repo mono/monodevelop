@@ -89,25 +89,27 @@ Visual Studio and Xamarin Studio/Monodevelop. To create a new project file,
 it is recommended that you take an existing project file and modify the list
 of source files. One such project file can be found in the fsharp-mode repository [here](https://github.com/fsharp/fsharpbinding/blob/master/emacs/test/Test1/Test1.fsproj).
 
-If, on loading a new `.fs` file, the intellisense process is not running and
-a `.fsproj` file is found in the current or an enclosing directory, the
-intellisense process will be launched, and the project loaded.
-
-Currently intellisense features can be offered for just one project at
-a time. To load a new F# project, use <kbd>C-c C-p</kbd>.
+If, on loading a new `.fs` file, a `.fsproj` file is found in the
+current or an enclosing directory, the intellisense process will be
+launched if necessary, and the project loaded. When a project file is
+loaded for the first time, this will be reported in the
+minibuffer. Projects can also be manually loaded using <kbd>C-c
+C-p</kbd>. This may be needed if a project file is in an unusual
+location relative to a source file, or if the project file has been
+modified (for example to add or remove a source file).
 
 ### Scripts
 
-F# scripts (`.fsx` files) are standalone, and require no project file. As a
-result, intellisense can be offered for many script files concurrently with a project. If you wish open a script file and the intellisense process is not yet running, it will be launched automatically.
+F# scripts (`.fsx` files) are standalone, and require no project file. If you wish open a script file and the intellisense process is not yet running, it will be launched automatically.
 
 ## Configuration
 
 ### Compiler and REPL paths
 
-The F# compiler and interpreter should be set to good defaults for your
-OS as long as the relevant executables can be found on your PATH. If you
-have a non-standard setup you may need to configure these paths manually.
+The F# compiler and interpreter should be set to good defaults for
+your OS as long as the relevant executables can be found on your PATH
+or in other standard locations. If you have a non-standard setup you
+may need to configure these paths manually.
 
 On Windows:
 
@@ -203,7 +205,7 @@ You have requested some intellisense information (such as completions or a toolt
 
 ### `Error: this file is not part of the loaded project.`
 
-In this case you have requested intellisense for the visited file, which is a standard `.fs` file *not* included in the current loaded project. This mode can currently only provide intellisense for one project at a time. Try loading the appropriate project with <kbd>C-c C-p</kbd>.
+In this case you have requested intellisense for the visited file, which is a standard `.fs` file *not* included in the current loaded project. Try loading the appropriate project with <kbd>C-c C-p</kbd>.
 
 ### Windows completion menu performance
 
@@ -211,7 +213,7 @@ There are some issues with the `pos-tip` library used to display the documentati
 
 ### Installing from Git
 
-If you installed by cloning the git repository and you are having problem, please sanity check by running `make test-all` in the `emacs` folder.
+If you installed by cloning the git repository and you are having problems, please sanity check by running `make test-all` in the `emacs` folder.
 
 ## Contributing
 

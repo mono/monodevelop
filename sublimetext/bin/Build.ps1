@@ -18,6 +18,7 @@ param([switch]$Clean,
 
 
 $script:thisDir = split-path $MyInvocation.MyCommand.Path -parent
+$script:config = resolve-path (join-path $thisDir "..\plugin_dev.json") -erroraction silentlycontinue
 
 $msg = @"
 You need to set `$global:STPackagesPath to Sublime Text 3's packages path.
@@ -37,12 +38,29 @@ For more information on Sublime Text's packages path, see:
 http://docs.sublimetext.info/en/latest/basic_concepts.html#the-packages-directory
 "@
 
+if ($config) {
+    $configData = convertfrom-json "$(get-content $config)" -erroraction silentlycontinue
+}
+
+if ($configData) {
+    $script:STPackagesPath = $configData.packages_path
+    if (-not (test-path $script:STPackagesPath)) {
+        throw "$script:STPackagesPath does not exist"
+    }
+}
+
 
 if (-not (test-path variable:\STPackagesPath) -or
     ($global:STPackagesPath -eq $null) -or
     -not (test-path $global:STPackagesPath)) {
-    throw $msg
-    exit 1
+    if (-not $configData) {
+        throw $msg
+        exit 1
+    }
+}
+
+if (-not $script:STPackagesPath) {
+    $script:STPackagesPath = $global:STPackagesPath
 }
 
 if ($Full) {
@@ -54,14 +72,14 @@ if ($Full) {
 # Check that we don't have both FSharp.sublime-package and FSharp at the same time.
 # This may cause conflicts.
 write-verbose 'checking installed packages...'
-$STInstalledPackagesPath = (resolve-path (join-path $global:STPackagesPath "..\Installed Packages"))
+$STInstalledPackagesPath = (resolve-path (join-path $script:STPackagesPath "..\Installed Packages"))
 $package = get-item "$STInstalledPackagesPath\FSharp.sublime-package" -erroraction silentlycontinue
 
 if ($package) {
     throw "you can't have .../Installed Packages/FSharp.sublime-package and .../Packages/FSharp at the same time"
 }
 
-write-debug "path to Sublime Text 3 packages is: '$global:STPackagesPath'"
+write-debug "path to Sublime Text 3 packages is: '$script:STPackagesPath'"
 
 if ($Restart) {
     try {
@@ -75,7 +93,7 @@ if ($Restart) {
     }
 }
 
-$fsharpPackageDir = "$global:STPackagesPath\FSharp"
+$fsharpPackageDir = "$script:STPackagesPath\FSharp"
 write-debug "target path is: $fsharpPackageDir"
 write-verbose "creating '$fsharpPackageDir' directory..."
 [void] (new-item -itemtype 'directory' $fsharpPackageDir -force -erroraction stop)

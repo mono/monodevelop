@@ -58,7 +58,7 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
     let withCol = if hasWith.IsSome then None else Some interfaceData.Range.EndColumn
     indentCol, withCol
     
-  override x.Run (context: IRefactoringContext, script:obj) = 
+  override x.Run (_context: IRefactoringContext, _script:obj) = 
      let line = fsSymbolUse.RangeAlternate.StartLine
 
      let startindent, withCol = getIndentAndWithColumn()
@@ -92,27 +92,30 @@ type ImplementInterfaceCodeActionProvider() as x =
     x.Description <- "Implement this interface"
   override x.IdString = "ImplementInterfaceCodeActionProvider" 
 
-  override x.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
+  override x.GetActions(doc: Document, _ctx: obj, location: TextLocation, _cancellation: CancellationToken) = 
     if doc.ParsedDocument <> null then
-      match doc.ParsedDocument.Ast with
-        | :? ParseAndCheckResults as ast -> seq {
-            match ast.ParseTree with 
-            | Some parseTree ->
-              let lineStr = doc.Editor.GetLineText(location.Line)
-              let pos = mkPos location.Line location.Column
-              let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
-              let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
-              
-              match interfaceData, symbol with 
-              | Some iface, Some sy -> 
-                 match sy.Symbol with
-                 | :? FSharpEntity as e when e.IsInterface ->
-                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast, doc.Editor.Options.IndentationSize) :> _
-                 | _ -> ()
-              | _ -> ()
-            | _ -> ()
-          }
-        | _ -> Seq.empty
+        match doc.ParsedDocument.Ast with
+        | :? ParseAndCheckResults as ast ->
+            seq {
+                match ast.ParseTree with 
+                | Some parseTree ->
+                    let pos = mkPos location.Line location.Column
+                    let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
+                    match interfaceData with 
+                    | Some iface ->
+                        let lineStr = doc.Editor.GetLineText(location.Line)
+                        let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
+                        match symbol with
+                        | Some sy ->
+                            match sy.Symbol with
+                            | :? FSharpEntity as e when e.IsInterface ->
+                                 yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast, doc.Editor.Options.IndentationSize) :> _
+                            | _ -> ()
+                        | _ -> ()
+                    | _ -> ()
+                | _ -> ()
+            }
+          | _ -> Seq.empty
      else Seq.empty
      
 type NRefactoryCodeActionSource() = 

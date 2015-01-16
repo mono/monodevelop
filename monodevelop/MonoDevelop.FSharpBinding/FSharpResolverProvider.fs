@@ -30,11 +30,11 @@ type FSharpResolverProvider() =
 
         LoggingService.LogInfo "ResolverProvider: Getting results of type checking"
         // Try to get typed result - with the specified timeout
-        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
+        let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
@@ -56,9 +56,7 @@ type FSharpResolverProvider() =
                         | Some filename -> DomRegion(filename, 0, 0)
 
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
-                let lastIdent = match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with
-                                | Some(_, identIsland) -> Seq.last identIsland
-                                | None -> ""
+                let lastIdent = Symbols.lastIdent col lineStr
                 let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, domRegion)
                 return resolveResult, domRegion }
         match results |> Async.RunSynchronously with
@@ -71,9 +69,9 @@ type FSharpResolverProvider() =
         LoggingService.LogError("ResolverProvider: Exception while retrieving resolve result", exn)
         null
 
-    member x.GetLanguageItem(doc:Document, offset:int, identifier:string) : ResolveResult =
-      let (result, region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
+    member x.GetLanguageItem(doc:Document, offset:int, _identifier:string) : ResolveResult =
+      let (result, _region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
       result
 
     /// Returns string with tool-tip from 'FSharpLocalResolveResult'
-    member x.CreateTooltip(document, offset, result, errorInformation, modifierState) = null
+    member x.CreateTooltip(_document, _offset, _result, _errorInformation, _modifierState) = null

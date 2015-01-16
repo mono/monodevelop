@@ -31,10 +31,10 @@ type HighlightUsagesExtension() as this =
             let source = this.Editor.Text
             let projectContent = this.Document.ProjectContent
 
-            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgs(this.Document.Project, currentFile)
+            let projectFilename, files, args = MonoDevelop.getCheckerArgs(this.Document.Project, currentFile)
 
             let symbolReferences =
-                try Async.RunSynchronously(async{return! MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args, framework)},
+                try Async.RunSynchronously(async{return! MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args)},
                                            timeout = ServiceSettings.blockingTimeout,
                                            cancellationToken = token)
                 with

@@ -81,12 +81,16 @@ If set to nil, display in a help buffer instead.")
 (defvar fsharp-ac-debug nil)
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
-(defvar fsharp-ac-project-files nil)
-(defvar fsharp-ac--output-file nil)
+(defvar fsharp-ac--project-data (make-hash-table :test 'equal)
+  "Data returned by fsautocomplete for loaded projects.")
+(defvar fsharp-ac--project-files (make-hash-table :test 'equal)
+  "Reverse mapping from files to the project that contains them.")
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate nil)
 (defvar fsharp-ac-current-helptext (make-hash-table :test 'equal))
+(defvar fsharp-ac-last-parsed-ticks 0
+  "BUFFER's tick counter, when the file was parsed.")
 
 (defconst fsharp-ac--log-buf "*fsharp-debug*")
 (defconst fsharp-ac--completion-procname "fsharp-complete")
@@ -116,7 +120,7 @@ since the last request."
   (when (or (/= (buffer-chars-modified-tick) fsharp-ac-last-parsed-ticks)
             force-sync)
     (save-restriction
-      (let ((file (file-truename (buffer-file-name))))
+      (let ((file (fsharp-ac--buffer-truename)))
         (widen)
         (fsharp-ac--log (format "Parsing \"%s\"\n" file))
         (process-send-string
@@ -144,17 +148,25 @@ since the last request."
 ;;; ----------------------------------------------------------------------------
 ;;; File Parsing and loading
 
+(defun fsharp-ac--buffer-truename (&optional buf)
+  "Get the truename of BUF, or the current buffer by default.
+For indirect buffers return the truename of the base buffer."
+  (if (buffer-base-buffer buf)
+      (file-truename (buffer-file-name (buffer-base-buffer buf)))
+    (file-truename (buffer-file-name buf))))
+
 (defun fsharp-ac/load-project (file)
   "Load the specified fsproj FILE as a project."
   (interactive
   ;; Prompt user for an fsproj, searching for a default.
    (let* ((proj (fsharp-mode/find-fsproj buffer-file-name))
-          (relproj (file-relative-name proj (file-name-directory buffer-file-name)))
-          (prompt (if proj (format "Path to project (default %s): " relproj)
+          (relproj (when proj (file-relative-name proj (file-name-directory buffer-file-name))))
+          (prompt (if relproj (format "Path to project (default %s): " relproj)
                     "Path to project: ")))
      (list (read-file-name prompt nil (fsharp-mode/find-fsproj buffer-file-name) t))))
+
   (when (fsharp-ac--valid-project-p file)
-    (fsharp-ac--reset)
+    (setq fsharp-ac-intellisense-enabled t)
     (when (not (fsharp-ac--process-live-p))
       (fsharp-ac/start-process))
     ;; Load given project.
@@ -190,14 +202,18 @@ since the last request."
                        (downcase (file-name-extension file)))))
 
 (defun fsharp-ac--in-project-p (file)
-  (member file fsharp-ac-project-files))
+  (gethash file fsharp-ac--project-files))
 
 (defun fsharp-ac--reset ()
-  (setq fsharp-ac-project-files nil
-        fsharp-ac--output-file nil
-        fsharp-ac-status 'idle
+  (when fsharp-ac-idle-timer
+    (cancel-timer fsharp-ac-idle-timer))
+  (setq fsharp-ac-status 'idle
+        fsharp-ac-idle-timer nil
+        fsharp-ac-completion-process nil
         fsharp-ac-current-candidate nil)
-  (clrhash fsharp-ac-current-helptext)
+  (-each (list fsharp-ac-current-helptext
+               fsharp-ac--project-data
+               fsharp-ac--project-files) 'clrhash)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -220,22 +236,26 @@ since the last request."
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
     (when (fsharp-ac--process-live-p)
-      (kill-process fsharp-ac-completion-process))))
+      (kill-process fsharp-ac-completion-process)))
+  (fsharp-ac--reset))
 
 (defun fsharp-ac/start-process ()
   "Launch the F# completion process in the background."
   (interactive)
 
-  (when (fsharp-ac--process-live-p)
-    (kill-process fsharp-ac-completion-process))
+  (when fsharp-ac-intellisense-enabled
+    (when (fsharp-ac--process-live-p)
+      (kill-process fsharp-ac-completion-process))
 
-  (condition-case nil
-      (progn
-        (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-        (fsharp-ac--reset-timer))
-    (error
-     (setq fsharp-ac-intellisense-enabled nil)
-     (message "Failed to start fsautocomplete. Disabling intellisense."))))
+    (condition-case err
+        (progn
+          (fsharp-ac--reset)
+          (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+          (fsharp-ac--reset-timer))
+      (error
+       (setq fsharp-ac-intellisense-enabled nil)
+       (message "Failed to start fsautocomplete (%s). Disabling intellisense. To reenable, set fsharp-ac-intellisense-enabled to t."
+                (error-message-string err))))))
 
 (defun fsharp-ac--process-sentinel (process event)
   "Default sentinel used by `fsharp-ac--configure-proc`."
@@ -248,14 +268,12 @@ since the last request."
                 (setq fsharp-ac-last-parsed-ticks 0)
                 (fsharp-ac-clear-errors))))
           (buffer-list))
-    (setq fsharp-ac-status 'idle
-          fsharp-ac-completion-process nil
-          fsharp-ac-project-files nil
-          fsharp-ac--output-file nil
-          fsharp-ac-idle-timer nil
-          fsharp-ac-verbose nil)))
+    (fsharp-ac--reset)))
 
 (defun fsharp-ac--configure-proc ()
+  (let ((fsac (car (last fsharp-ac-complete-command))))
+    (unless (file-exists-p fsac)
+      (error "%s not found" fsac)))
   (let ((proc (let (process-connection-type)
                 (apply 'start-process
                        fsharp-ac--completion-procname
@@ -268,16 +286,12 @@ since the last request."
           (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
-          (setq fsharp-ac-status 'idle
-                fsharp-ac--output-file nil
-                fsharp-ac-project-files nil)
           (with-current-buffer (process-buffer proc)
             (delete-region (point-min) (point-max)))
           (add-to-list 'ac-modes 'fsharp-mode)
           (log-psendstr proc "outputmode json\n")
           proc)
-      (fsharp-ac-message-safely "Failed to launch: '%s'"
-                                (s-join " " fsharp-ac-complete-command))
+      (error "Failed to launch: '%s'" (s-join " " fsharp-ac-complete-command))
       nil)))
 
 (defun fsharp-ac--reset-timer ()
@@ -323,7 +337,7 @@ since the last request."
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
-      (file-truename (buffer-file-name))
+      (fsharp-ac--buffer-truename)
       (line-number-at-pos)
       (current-column)))
 
@@ -397,7 +411,7 @@ since the last request."
 (defun fsharp-ac-can-make-request (&optional quiet)
   "Test whether it is possible to make a request with the compiler binding.
 The current buffer must be an F# file that exists on disk."
-  (let ((file (file-truename (buffer-file-name))))
+  (let ((file (fsharp-ac--buffer-truename)))
     (cond
      ((null file)
       (unless quiet
@@ -437,7 +451,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
   (when (fsharp-ac-can-make-request quiet)
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request "tooltip"
-                                 (file-truename (buffer-file-name))
+                                 (fsharp-ac--buffer-truename)
                                  (line-number-at-pos)
                                  (current-column))))
 
@@ -447,7 +461,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "finddecl"
-                                (file-truename (buffer-file-name))
+                                (fsharp-ac--buffer-truename)
                                 (line-number-at-pos)
                                 (current-column))))
 
@@ -486,8 +500,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
 (defun fsharp-ac/complete-at-point (&optional quiet)
   (interactive)
   (when (and (fsharp-ac-can-make-request quiet)
-           (eq fsharp-ac-status 'idle)
-           fsharp-ac-intellisense-enabled)
+           (eq fsharp-ac-status 'idle))
       (fsharp-ac--ac-start)))
 
 ;;; ----------------------------------------------------------------------------
@@ -496,9 +509,6 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
 (defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
-
-(defvar fsharp-ac-last-parsed-ticks 0
-  "BUFFER's tick counter, when the file was parsed.")
 
 (defun fsharp-ac--parse-current-file ()
   (when (and (eq major-mode 'fsharp-mode)
@@ -552,7 +562,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
          (ofaces (mapcar (lambda (o) (overlay-get o 'face))
                          (overlays-in beg end)))
          )
-    (unless (or (not (string= (file-truename buffer-file-name)
+    (unless (or (not (string= (fsharp-ac--buffer-truename)
                               (file-truename file)))
              (and (eq face 'fsharp-warning-face)
                  (memq 'fsharp-error-face ofaces)))
@@ -656,7 +666,8 @@ around to the start of the buffer."
                   msg))
             (error
              (fsharp-ac--log (format "Malformed JSON: %s" (buffer-substring-no-properties (point-min) (point-max))))
-             (message "Error: F# completion process produced malformed JSON."))))))))
+             (message "Error: F# completion process produced malformed JSON (%s)."
+                      (buffer-substring-no-properties (point-min) (point-max))))))))))
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter STR from the completion process PROC and handle appropriately."
@@ -746,11 +757,20 @@ display a short summary in the minibuffer."
         (princ str)))))
 
 (defun fsharp-ac-handle-project (data)
-  (let ((files (gethash "Files" data))
-        (output (gethash "Output" data)))
-    (setq fsharp-ac--output-file (file-truename output))
-    (setq fsharp-ac-project-files (-map 'file-truename files))
-    (fsharp-ac-parse-file (car (last fsharp-ac-project-files)))))
+  (let* ((project (gethash "Project" data))
+         (files (gethash "Files" data))
+         (oldprojdata (gethash project fsharp-ac--project-data)))
+    ;; Remove any files previously associated with this
+    ;; project as if reloading, they may have changed
+    (when oldprojdata
+      (-each (gethash "Files" oldprojdata)
+        (lambda (f) (remhash f fsharp-ac--project-files))))
+
+    (puthash project data fsharp-ac--project-data)
+    (-map (lambda (f) (puthash f project fsharp-ac--project-files)) files)
+
+    (when (not oldprojdata)
+      (fsharp-ac-message-safely "Loaded F# project '%s'" (file-relative-name project)))))
 
 (defun fsharp-ac-handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)

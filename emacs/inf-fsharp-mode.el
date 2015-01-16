@@ -25,6 +25,7 @@
 ;; Boston, MA 02110-1301, USA.
 
 (require 'comint)
+(require 'fsharp-mode-completion)
 (with-no-warnings (require 'cl))
 
 ;; User modifiable variables

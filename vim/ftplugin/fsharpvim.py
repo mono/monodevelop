@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import json
 import threading
+import hidewin
 
 class Statics:
     fsac = None
@@ -28,16 +29,22 @@ class Interaction:
             self.logfile.write("> " + txt)
             self.logfile.flush()
 
+    def read(self):
+        self.event.wait(self._timeOut)
+        if self.debug:
+            self.logfile.write('msg received %s\n' % self.data)
+        return self.data
+
     def send(self, command):
         self.data = None
         self.event.clear()
         self._write(command)
-        self.event.wait(self._timeOut)
+        return self.read()
 
-        if self.debug:
-            self.logfile.write('msg received %s\n' % self.data)
-
-        return self.data
+    def send_async(self, command):
+        self.data = None
+        self.event.clear()
+        self._write(command)
 
     # only on worker thread
     def update(self, data):
@@ -53,7 +60,8 @@ class FSAutoComplete:
             self.logfile = None
 
         command = ['mono', dir + '/bin/fsautocomplete.exe']
-        opts = { 'stdin': PIPE, 'stdout': PIPE, 'universal_newlines': True }
+        opts = { 'stdin': PIPE, 'stdout': PIPE, 'stderr': PIPE, 'universal_newlines': True }
+        hidewin.addopt(opts)
         try:
             self.p = Popen(command, **opts)
         except WindowsError:
@@ -168,6 +176,13 @@ class FSAutoComplete:
             self.send(line + "\n")
         msg = self._errors.send("<<EOF>>\n")
         return msg
+
+    def errors_current(self):
+        msg = self._errors.read()
+        if msg == None:
+            return []
+        else:
+            return msg
 
     def tooltip(self, fn, line, column):
         msg = self._tooltip.send('tooltip "%s" %d %d 500\n' % (fn, line, column))

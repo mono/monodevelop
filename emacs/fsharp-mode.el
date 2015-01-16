@@ -7,7 +7,7 @@
 ;;         2012-2014 Robin Neatherway <robin.neatherway@gmail.com>
 ;; Maintainer: Robin Neatherway
 ;; Keywords: languages
-;; Version: 1.4.2
+;; Version: 1.5.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -263,8 +263,7 @@ and whether it is in a project directory.")
 If FILE is part of an F# project, load the project.
 Otherwise, treat as a stand-alone file."
   (when fsharp-ac-intellisense-enabled
-    (or (when (not (fsharp-ac--process-live-p))
-          (fsharp-ac/load-project (fsharp-mode/find-fsproj file)))
+    (or (fsharp-ac/load-project (fsharp-mode/find-fsproj file))
         (fsharp-ac/load-file file))
     (auto-complete-mode 1)
     (setq ac-auto-start nil
@@ -363,12 +362,15 @@ FSHARP-AC--OUTPUT-FILE), then this will be used as a default. If
 the current system is not Windows then the command string will be
 passed to `mono'."
   (interactive)
-  (let* ((default (if (and fsharp-ac--output-file
+  (let* ((project (gethash (fsharp-ac--buffer-truename) fsharp-ac--project-files))
+         (projdata (when project (gethash project fsharp-ac--project-data)))
+         (outputfile (when projdata (gethash "Output" projdata)))
+         (default (if (and outputfile
                            (s-equals? "exe"
-                                      (downcase (file-name-extension fsharp-ac--output-file))))
+                                      (downcase (file-name-extension outputfile))))
                       (if fsharp-ac-using-mono
-                          (s-concat "mono " fsharp-ac--output-file)
-                        fsharp-ac--output-file)
+                          (s-concat "mono " outputfile)
+                        outputfile)
                     ""))
          (cmd (read-from-minibuffer "Run: "
                                     default

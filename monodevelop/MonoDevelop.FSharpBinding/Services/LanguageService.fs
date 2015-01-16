@@ -11,6 +11,7 @@ open System.IO
 open System.Xml
 open System.Text
 open System.Diagnostics
+open Mono.TextEditor
 open MonoDevelop.Ide
 open MonoDevelop.Core
 open MonoDevelop.Projects
@@ -19,13 +20,22 @@ open ExtCore
 open ExtCore.Caching
 open ExtCore.Control
 
-module Option =
-    let tryCast<'a> (o: obj): 'a option = 
-        match o with
-        | null -> None
-        | :? 'a as a -> Some a
-        | _ -> Printf.kprintf System.Diagnostics.Debug.Fail "Cannot cast %O to %O" (o.GetType()) typeof<'a>.Name
-               None
+module Symbols =
+
+  ///Given a column and line string returns the identifier portion of the string
+  let lastIdent column lineString =
+      match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
+      | Some (_, identIsland) -> Seq.last identIsland
+      | None -> ""
+
+  ///Returns a TextSegment that is trimmed to only include the identifier
+  let getTextSegment (doc:TextDocument) (symbolUse:FSharpSymbolUse) column line =
+    let lastIdent = lastIdent  column line
+    let (startLine, startColumn), (endLine, endColumn) = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+
+    let startOffset = doc.LocationToOffset(startLine, startColumn+1)
+    let endOffset = doc.LocationToOffset(endLine, endColumn+1)
+    TextSegment.FromBounds(startOffset, endOffset)
 
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
@@ -83,7 +93,6 @@ module internal TipFormatter =
              let args = argsText.Split(',')
              if nameAndCount.Contains "`" then
                  let ps = nameAndCount.Split( [| '`' |],StringSplitOptions.RemoveEmptyEntries)
-                 let name = ps.[0]
                  let noArgs =
                      try int (ps.[1].Split([| '.' |], StringSplitOptions.RemoveEmptyEntries).[0] )
                      with _ -> 0
@@ -142,7 +151,7 @@ module internal TipFormatter =
       else "/Type/Members/Member[@MemberName='" + name + "']"
 
   /// Try to find the MonoDoc documentation for a file/key pair representing an entity with documentation
-  let findMonoDocProviderForEntity (file, key) =
+  let findMonoDocProviderForEntity (_file, key) =
 
       match key with
       | Type(typ) ->
@@ -152,7 +161,7 @@ module internal TipFormatter =
           maybe {let! doc = tryGetDoc (parentId)
                  let docXml = doc.SelectSingleNode (typeMemberFormatter name)
                  return docXml.OuterXml }
-      | Method(parentId, name, count, args) ->
+      | Method(parentId, name, _count, args) ->
           maybe {
                   let! doc = tryGetDoc (parentId)
                   let nodeXmls = doc.SelectNodes (typeMemberFormatter name)
@@ -234,9 +243,9 @@ module internal TipFormatter =
   let private extractParamTipFromElement paramName element =
       match element with
       | FSharpToolTipElement.None -> None
-      | FSharpToolTipElement.Single (it, comment) -> extractParamTipFromComment paramName comment
+      | FSharpToolTipElement.Single (_it, comment) -> extractParamTipFromComment paramName comment
       | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | FSharpToolTipElement.CompositionError err -> None
+      | FSharpToolTipElement.CompositionError _err -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (FSharpToolTipText elements) =
@@ -256,21 +265,20 @@ module internal MonoDevelop =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
+            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
                    let args = CompilerArguments.generateCompilerOptions(project,
                                                                         fsconfig,
                                                                         None,
                                                                         CompilerArguments.getTargetFramework projConfig.TargetFramework.Id,
                                                                         config,
                                                                         false) |> Array.ofList
-                   let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
-                   return args, framework }
+                   return args }
 
         match arguments with
-        | Some (args, framework) -> fileName, files, args, framework
+        | Some args -> fileName, files, args
         | None -> LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
-                  fileName, files, [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
+                  fileName, files, [||]
 
     let getConfig () =
         match MonoDevelop.Ide.IdeApp.Workspace with
@@ -278,12 +286,10 @@ module internal MonoDevelop =
         | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
     let getCheckerArgs(project: Project, filename: string) =
-        let ext = Path.GetExtension(filename)
-
         match project with
-        | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript") ->
+        | :? DotNetProject as dnp when not (FSharp.CompilerBinding.LanguageService.IsAScript filename) ->
             getCheckerArgsFromProject(dnp, getConfig())
-        | _ -> filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
+        | _ -> filename, [|filename|], [||]
 
 /// Provides functionality for working with the F# interactive checker running in background
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
@@ -313,6 +319,11 @@ type MDLanguageService() =
   // Call this before Instance is called
   static member DisableVirtualFileSystem() =
         vfs <- lazy (Shim.FileSystem)
+
+          /// Is the specified extension supported F# file?
+  static member SupportedFileName fileName =
+    let ext = Path.GetExtension fileName
+    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"] |> List.exists ((=) ext)
 
 /// Various utilities for working with F# language service
 module internal ServiceUtils =

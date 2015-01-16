@@ -3,13 +3,13 @@
 # license that can be found in the LICENSE file.)
 
 from subprocess import Popen
+import logging
 import os
 
-from . import PluginLogger
 from .plat import supress_window
 
 
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def killwin32(proc):

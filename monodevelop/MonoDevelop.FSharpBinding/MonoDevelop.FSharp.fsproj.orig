@@ -10,8 +10,6 @@
     <RootNamespace>FSharp.MonoDevelop</RootNamespace>
     <AssemblyName>FSharpBinding</AssemblyName>
     <Name>MonoDevelop.FSharp</Name>
-    <!-- disable this for now, xbuild hangs if it launches the terminate-and-stay-resident server -->
-    <!-- <OtherFlags> /resident </OtherFlags> -->
     <UsePartialTypes>False</UsePartialTypes>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -32,6 +30,8 @@
     <GenerateXmlDoc>false</GenerateXmlDoc>
     <GenerateTailCalls>false</GenerateTailCalls>
     <StartAction>Program</StartAction>
+    <OtherFlags>--warnon:1182</OtherFlags>
+
     <StartProgram>INSERT_FSPROJ_MDEXE</StartProgram>
     <StartWorkingDirectory>INSERT_FSPROJ_MDROOT</StartWorkingDirectory>
     <CustomCommands>
@@ -76,7 +76,10 @@
   <ItemGroup>
     <Compile Include="Services\Utils.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
+    <Compile Include="Services\Lexer.fs" />
     <Compile Include="Services\CodeGeneration.fs" />
+    <Compile Include="Services\UntypedAst.fs" />
+    <Compile Include="Services\TypedAstUtilities.fs" />
     <Compile Include="Services\InterfaceStubGenerator.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
@@ -193,7 +196,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>packages\FSharp.Compiler.Service.0.0.79\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>packages\FSharp.Compiler.Service.0.0.81\lib\net45\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
@@ -208,7 +211,7 @@
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="FantomasLib">
-      <HintPath>packages\Fantomas.1.5.0\lib\FantomasLib.dll</HintPath>
+      <HintPath>packages\Fantomas.1.6.0\lib\FantomasLib.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.CodeDom">
       <HintPath>packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>

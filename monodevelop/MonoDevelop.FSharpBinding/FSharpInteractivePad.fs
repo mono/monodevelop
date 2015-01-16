@@ -59,7 +59,7 @@ type FSharpInteractivePad() =
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
     else
       let file = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-      CompilerArguments.supportedExtension(Path.GetExtension(file))
+      MDLanguageService.SupportedFileName (file)
 
   let getCorrectDirectory () = 
     if IdeApp.Workbench.ActiveDocument <> null && isInsideFSharpFile() then
@@ -72,7 +72,7 @@ type FSharpInteractivePad() =
         let ses = InteractiveSession()
         let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ))
         let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ))
-        ses.Exited.Add(fun e -> 
+        ses.Exited.Add(fun _ -> 
           textReceived.Dispose()
           promptReady.Dispose()
           if killIntent = NoIntent then
@@ -272,7 +272,7 @@ type FSharpInteractivePad() =
         |> Seq.distinct
         |> Seq.toArray 
      
-    let orderAssemblyReferences = FSharp.CompilerBinding.OrderAssemblyReferences()
+    let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
     let orderedreferences = orderAssemblyReferences.Order references
     ensureCorrectDirectory()
     sendCommand orderedreferences
