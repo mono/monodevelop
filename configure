@@ -262,6 +262,10 @@ if [ -d "$prefix" ]; then
 	export PKG_CONFIG_PATH=$prefix/lib/pkgconfig:$prefix/share/pkgconfig:$PKG_CONFIG_PATH
 fi
 
+if test `uname` = "Darwin" && test "x$profile" = "xdefault"; then
+	profile="mac"
+fi
+
 validate_profile "$profile"
 if [ ! $? -eq 1 ]; then
 	echo "The build profile '$profile' does not exist. A new profile will be created."
@@ -284,7 +288,8 @@ fi
 configure_packages
 [ $? -eq 1 ] && exit 1
 
-echo -n "SUBDIRS = " > config.make
+echo "PROFILE = $profile" > config.make
+echo -n "SUBDIRS = " >> config.make
 
 echo Configuration Summary
 echo ---------------------

@@ -483,5 +483,20 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.FindProjectByName ("PortableLibrary");
 			var refs = p.GetReferencedAssemblies (p.Configurations [0].Selector).Select (r => Path.GetFileName (r)).ToArray ();
 		}
+
+		[Test]
+		public void SanitizeProjectNamespace ()
+		{
+			var info = new ProjectCreateInformation {
+				ProjectBasePath = "/tmp/test",
+				ProjectName = "abc.0"
+			};
+			var project = new DotNetAssemblyProject ("C#", info, null);
+			Assert.AreEqual ("abc", project.DefaultNamespace);
+
+			info.ProjectName = "a.";
+			project = new DotNetAssemblyProject ("C#", info, null);
+			Assert.AreEqual ("a", project.DefaultNamespace);
+		}
 	}
 }

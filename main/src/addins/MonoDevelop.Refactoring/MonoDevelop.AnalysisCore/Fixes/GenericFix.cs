@@ -48,8 +48,8 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public override string OptionsTitle { get { return GetTitle (Inspector); } }
 		public override void ShowResultOptionsDialog ()
 		{
-			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "CodeIssuePanel", dialog => {
-				var panel = dialog.GetPanel<CodeIssuePanel> ("CodeIssuePanel");
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+				var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
 				if (panel == null)
 					return;
 				panel.Widget.SelectCodeIssue (Inspector.IdString);

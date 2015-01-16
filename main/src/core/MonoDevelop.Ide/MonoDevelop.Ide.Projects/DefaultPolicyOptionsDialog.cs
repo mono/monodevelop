@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Projects
 					FillPolicySets ();
 					policiesCombo.Active = sets.IndexOf (pset);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be loaded"));
+					MessageService.ShowError (GettextCatalog.GetString ("The policy set could not be loaded"), ex);
 				}
 			}
 		}
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Projects
 					currentSet.SaveToFile (dlg.SelectedFile);
 					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = dlg.SelectedFile.ParentDirectory;
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be saved"));
+					MessageService.ShowError (GettextCatalog.GetString ("The policy set could not be saved"), ex.Message, ex);
 				}
 			}
 		}

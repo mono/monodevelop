@@ -181,8 +181,10 @@ namespace Mono.TextEditor
 					}
 				}
 
-				if (same)
+				if (same) {
+					timerId = 0;
 					return false;
+				}
 			}
 
 			oldFolds = curFolds;

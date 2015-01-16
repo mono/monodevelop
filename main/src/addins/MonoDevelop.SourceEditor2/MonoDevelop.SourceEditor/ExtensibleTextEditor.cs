@@ -68,7 +68,7 @@ namespace MonoDevelop.SourceEditor
 
 		static ExtensibleTextEditor ()
 		{
-			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-light-15.png");
+			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-15.png");
 
 			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
 				if (!lineSegment.IsBookmarked)
@@ -266,8 +266,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void ReportExtensionError (Exception ex) 
 		{
-			MonoDevelop.Core.LoggingService.LogError ("Error in text editor extension chain", ex);
-			MessageService.ShowException (ex, "Error in text editor extension chain");
+			LoggingService.LogInternalError ("Error in text editor extension chain", ex);
 		}
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {
@@ -1040,6 +1039,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #endregion
-		
+	
 	}
 }

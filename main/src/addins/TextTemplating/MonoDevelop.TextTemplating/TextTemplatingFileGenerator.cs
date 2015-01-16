@@ -29,6 +29,7 @@ using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.TextTemplating
 		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return Task.Factory.StartNew (delegate {
-				using (var host = new ProjectFileTemplatingHost (file)) {
+				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
 					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					

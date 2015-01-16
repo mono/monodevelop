@@ -380,11 +380,6 @@ namespace MonoDevelop.DesignerSupport
 				OnToolboxUsed (CurrentConsumer, selectedItem);
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Error dragging toolbox item.", ex);
-				//run this dialog on a timeout so it doesn't block the drag completing
-				GLib.Timeout.Add (100, delegate {
-					MessageService.ShowException (ex, "Error dragging toolbox item.");
-					return false;
-				});
 			}
 		}
 		

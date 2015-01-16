@@ -287,7 +287,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.Process;
 			}
 			
-			const string commitChars = " <>()[]{}=+-*/%~&|!";
+			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return KeyActions.Process;
 			}
 			
-			if (char.IsPunctuation (keyChar) || commitChars.Contains (keyChar)) {
+			if (commitChars.Contains (keyChar)) {
 				bool hasMismatches;
 				var curword = PartialWord;
 				int match = FindMatchedEntry (curword, out hasMismatches);

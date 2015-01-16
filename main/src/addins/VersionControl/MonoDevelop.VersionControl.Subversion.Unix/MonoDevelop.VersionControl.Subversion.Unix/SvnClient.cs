@@ -547,15 +547,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				                           recurse, ctx, localpool));
 				
 				IntPtr item = apr.hash_first (localpool, hash);
-				while (item != IntPtr.Zero) {
-					IntPtr nameptr, val;
-					int namelen;
-					apr.hash_this (item, out nameptr, out namelen, out val);
-					
-					string name = Marshal.PtrToStringAnsi (nameptr);
-					var ent = (LibSvnClient.svn_dirent_t) Marshal.PtrToStructure (val, typeof (LibSvnClient.svn_dirent_t));				
-					item = apr.hash_next (item);
-					
+				LibSvnClient.svn_dirent_t ent;
+				string name;
+				while (apr.hash_iterate<LibSvnClient.svn_dirent_t>(ref item, out ent, out name)) {
 					var dent = new DirectoryEntry {
 						Name = name,
 						IsDirectory = ent.kind == LibSvnClient.svn_node_kind_t.Dir,
@@ -1020,17 +1014,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		static void GetProps (StringBuilder props, IntPtr pool, IntPtr result)
 		{
-			LibSvnClient.svn_string_t new_props;
-			IntPtr hash_name, hash_val;
-			IntPtr hash_item = apr.hash_first (pool, result);
-			int length;
-
-			while (hash_item != IntPtr.Zero) {
-				apr.hash_this (hash_item, out hash_name, out length, out hash_val);
-				new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+			foreach (var new_props in apr.hash_foreach<LibSvnClient.svn_string_t> (pool, result))
 				props.Append (Marshal.PtrToStringAnsi (new_props.data));
-				hash_item = apr.hash_next (hash_item);
-			}
 		}
 
 		public override void Ignore (FilePath[] paths)
@@ -1612,17 +1597,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					smessage = smessage.Trim ();
 				
 				List<RevisionPath> items = new List<RevisionPath>();
-
 				IntPtr item = apr.hash_first (pool, apr_hash_changed_paths);
-				while (item != IntPtr.Zero) {
-					IntPtr nameptr, val;
-					int namelen;
-					apr.hash_this (item, out nameptr, out namelen, out val);
-					
-					string name = Marshal.PtrToStringAnsi (nameptr);
-					LibSvnClient.svn_log_changed_path_t ch = (LibSvnClient.svn_log_changed_path_t) Marshal.PtrToStructure (val, typeof(LibSvnClient.svn_log_changed_path_t));
-					item = apr.hash_next (item);
-					
+				LibSvnClient.svn_log_changed_path_t ch;
+				string name;
+
+				while (apr.hash_iterate(ref item, out ch, out name)) {
 					RevisionAction ac;
 					switch (ch.action) {
 						case 'A': ac = RevisionAction.Add; break;

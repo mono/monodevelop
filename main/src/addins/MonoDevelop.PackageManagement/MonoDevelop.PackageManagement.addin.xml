@@ -1,4 +1,4 @@
-﻿<ExtensionModel>
+<ExtensionModel>
 
 	<Runtime>
 		<Import assembly="MonoDevelop.PackageManagement.dll" />
@@ -97,10 +97,10 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-nuget-package" resource="reference-light-48.png" />
-		<StockIcon stockid="md-nuget-package-source" resource="package-source-light-32.png" size="Dnd" />
-		<StockIcon stockid="md-prefs-package" resource="prefs-package-light-16.png" size="Menu" />
-		<StockIcon stockid="md-prefs-package-source" resource="prefs-package-source-light-16.png" size="Menu" />
+		<StockIcon stockid="md-nuget-package" resource="reference-48.png" />
+		<StockIcon stockid="md-nuget-package-source" resource="package-source-32.png" size="Dnd" />
+		<StockIcon stockid="md-prefs-package" resource="prefs-package-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-package-source" resource="prefs-package-source-16.png" size="Menu" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
@@ -144,5 +144,9 @@
 
 	<Extension path="/MonoDevelop/Ide/SearchCategories">
 		<Class class="MonoDevelop.PackageManagement.SearchPackagesSearchCategory" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildExtensions">
+		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
 	</Extension>
 </ExtensionModel>

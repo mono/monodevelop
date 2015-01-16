@@ -29,6 +29,7 @@
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -110,5 +111,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return style.SearchResult;
 		}
+
+		internal string PathMarkup, FileNameMarkup, ProjectNameMarkup, TextMarkup;
 	}
 }

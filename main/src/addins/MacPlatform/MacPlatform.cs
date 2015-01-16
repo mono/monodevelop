@@ -55,7 +55,7 @@ namespace MonoDevelop.MacIntegration
 {
 	public class MacPlatformService : PlatformService
 	{
-		const string monoDownloadUrl = "http://www.go-mono.com/mono-downloads/download.html";
+		const string monoDownloadUrl = "http://www.mono-project.com/download/";
 
 		TimerCounter timer = InstrumentationService.CreateTimerCounter ("Mac Platform Initialization", "Platform Service");
 		TimerCounter mimeTimer = InstrumentationService.CreateTimerCounter ("Mac Mime Database", "Platform Service");
@@ -279,6 +279,54 @@ namespace MonoDevelop.MacIntegration
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 				};
 			}
+
+			PatchGtkTheme ();
+		}
+
+		// This will dynamically generate a gtkrc for certain widgets using system control colors.
+		void PatchGtkTheme ()
+		{
+			string color_hex, text_hex;
+
+			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+				NSControlTint tint = NSColor.CurrentControlTint;
+				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+
+				color_hex = ConvertColorToHex (color);
+				text_hex = ConvertColorToHex (text);
+			} else {
+				color_hex = "#c5d4e0";
+				text_hex = "#000";
+			}
+
+			string gtkrc = String.Format (@"
+				style ""treeview"" = ""default"" {{
+					GtkTreeView::odd-row-color = ""#f5f5f5""
+
+					base[SELECTED] = ""{0}""
+					base[ACTIVE] = ""{0}""
+					text[SELECTED] = ""{1}""
+					text[ACTIVE] = ""{1}""
+					engine ""xamarin"" {{
+						roundness = 0
+						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						glazestyle = 1
+					}}
+				}}
+
+        style ""menu-item"" {{
+          bg[SELECTED] = ""{0}""
+        }}
+
+				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+        widget_class ""*.<GtkMenuItem>*"" style ""menu-item""
+				",
+				color_hex,
+				text_hex
+			);
+
+			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -647,6 +695,24 @@ namespace MonoDevelop.MacIntegration
 				color.GetRgba (out r, out g, out b, out a);
 			}
 			return new Cairo.Color (r, g, b, a);
+		}
+
+		static string ConvertColorToHex (NSColor color)
+		{
+			nfloat r, g, b, a;
+
+			if (color.ColorSpaceName == NSColorSpace.DeviceWhite) {
+				a = 1.0f;
+				r = g = b = color.WhiteComponent;
+			} else {
+				color.GetRgba (out r, out g, out b, out a);
+			}
+
+			return String.Format ("#{0}{1}{2}",
+				((int)(r * 255)).ToString ("x2"),
+				((int)(g * 255)).ToString ("x2"),
+				((int)(b * 255)).ToString ("x2")
+			);
 		}
 
 		internal static int GetTitleBarHeight ()

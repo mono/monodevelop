@@ -90,29 +90,32 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.UnlockGui ();
 
 			statusBar.EndProgress ();
-			try {
-				if (Errors.Length > 0 || Warnings.Length > 0) {
-					if (Errors.Length > 0) {
-						statusBar.ShowError (Errors [Errors.Length - 1].Message);
-					} else if (SuccessMessages.Length == 0) {
-						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
-					}
 
-					DesktopService.ShowGlobalProgressError ();
+			if (!IsCancelRequested) {
+				try {
+					if (Errors.Length > 0 || Warnings.Length > 0) {
+						if (Errors.Length > 0) {
+							statusBar.ShowError (Errors [Errors.Length - 1].Message);
+						} else if (SuccessMessages.Length == 0) {
+							statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
+						}
 
-					base.OnCompleted ();
+						DesktopService.ShowGlobalProgressError ();
+
+						base.OnCompleted ();
 					
-					if (showErrorDialogs)
-						this.ShowResultDialog ();
-					return;
+						if (showErrorDialogs)
+							this.ShowResultDialog ();
+						return;
+					}
+				
+					if (SuccessMessages.Length > 0)
+						statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
+				
+				} finally {
+					statusBar.StatusSourcePad = statusSourcePad;
+					statusBar.Dispose ();
 				}
-				
-				if (SuccessMessages.Length > 0)
-					statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
-				
-			} finally {
-				statusBar.StatusSourcePad = statusSourcePad;
-				statusBar.Dispose ();
 			}
 
 			DesktopService.SetGlobalProgress (Progress);

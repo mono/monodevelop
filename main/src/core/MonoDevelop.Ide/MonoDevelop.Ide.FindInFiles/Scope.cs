@@ -119,21 +119,21 @@ namespace MonoDevelop.Ide.FindInFiles
 							continue;
 						if (alreadyVisited.Contains (file.FullPath))
 							continue;
-						alreadyVisited.Add (file.FileName);
+						alreadyVisited.Add (file.FullPath);
 						results.Enqueue (new FileProvider (file.FullPath));
 					}
 					results.SetComplete ();
 				});
 
-				var allProjectFiles = IdeApp.Workspace.GetAllProjects ().SelectMany (project => project.Files).Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name)).Select (f => new Tuple<Project,string>(f.Project,f.Name)).ToArray ();
+				var allProjectFiles = IdeApp.Workspace.GetAllProjects ().SelectMany (project => project.Files).Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name)).Select (f => new Tuple<Project,string>(f.Project,f.FilePath)).ToArray ();
 				await Task.Factory.StartNew (delegate {
 					foreach (var ft in allProjectFiles.Where (f => File.Exists (f.Item2))) {
 						var file = ft.Item2;
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))
 							continue;
-						if (alreadyVisited.Contains (file))
+						if (alreadyVisited.Contains (file.FullPath))
 							continue;
-						alreadyVisited.Add (file);
+						alreadyVisited.Add (file.FullPath);
 						results.Enqueue (new FileProvider (file, ft.Item1));
 					}
 					results.SetComplete ();
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
-				var allFiles = project.Files.Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => f.Name).ToArray ();
+				var allFiles = project.Files.Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => f.FilePath.FullPath).ToArray ();
 				return Task.Factory.StartNew (delegate {
 					foreach (string file in allFiles) {
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))

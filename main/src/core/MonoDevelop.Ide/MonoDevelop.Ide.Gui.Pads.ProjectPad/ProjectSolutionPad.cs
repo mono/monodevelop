@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -93,16 +94,28 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (doc != null && doc.Project != null) {
 				string file = doc.FileName;
 				if (file != null) {
-					ProjectFile pf = doc.Project.Files.GetFile (file);
-					if (pf != null) {
-						ITreeNavigator nav = treeView.GetNodeAtObject (pf, true);
-						if (nav != null) {
-							nav.ExpandToNode ();
-							nav.Selected = true;
+					if (!SelectFile (doc.Project, file)) {
+						foreach (var project in IdeApp.Workspace.GetAllProjects ()) {
+							if (project is SharedAssetsProject && SelectFile (project, file))
+								return;
 						}
 					}
 				}
 			}
+		}
+
+		bool SelectFile (Project project, string file)
+		{
+			var pf = project.Files.GetFile (file);
+			if (pf != null) {
+				var nav = treeView.GetNodeAtObject (pf, true);
+				if (nav != null) {
+					nav.ExpandToNode ();
+					nav.Selected = true;
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

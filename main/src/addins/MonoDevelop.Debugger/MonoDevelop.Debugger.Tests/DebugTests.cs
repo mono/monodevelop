@@ -99,8 +99,21 @@ namespace MonoDevelop.Debugger.Tests
 			case "Mono.Debugger.Soft":
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
 					.OfType<MonoTargetRuntime> ()
-					.OrderByDescending(o => o.Version)
-					.FirstOrDefault ();
+					.OrderByDescending ((o) => {
+					//Attempt to find latest version of Mono registred in IDE and use that for unit tests
+					if (string.IsNullOrWhiteSpace (o.Version) || o.Version == "Unknown")
+						return new Version (0, 0, 0, 0);
+					int indexOfBeforeDetails = o.Version.IndexOf (" (", StringComparison.Ordinal);
+					if (indexOfBeforeDetails == -1)
+						return new Version (0, 0, 0, 0);
+					string hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
+					Version version;
+					if (Version.TryParse (hopefullyVersion, out version)) {
+						return version;
+					} else {
+						return new Version (0, 0, 0, 0);
+					}
+				}).FirstOrDefault ();
 				break;
 			default:
 				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -145,6 +158,7 @@ namespace MonoDevelop.Debugger.Tests
 
 			Session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
+			ops.ProjectAssembliesOnly = true;
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			ops.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
@@ -358,7 +372,7 @@ namespace MonoDevelop.Debugger.Tests
 			Session.SetNextStatement (SourceFile.Name, line, column);
 		}
 
-		public void AddCatchpoint(string exceptionName, bool includeSubclasses)
+		public void AddCatchpoint (string exceptionName, bool includeSubclasses)
 		{
 			Session.Breakpoints.Add (new Catchpoint (exceptionName, includeSubclasses));
 		}
@@ -396,6 +410,15 @@ namespace MonoDevelop.Debugger.Tests
 			var result = val.GetChild (name, ops);
 
 			return result != null ? result.Sync () : null;
+		}
+
+		public static ObjectValue[] GetAllChildrenSync (this ObjectValue val)
+		{
+			var children = val.GetAllChildren ();
+			foreach (var child in children) {
+				child.Sync ();
+			}
+			return children;
 		}
 	}
 }

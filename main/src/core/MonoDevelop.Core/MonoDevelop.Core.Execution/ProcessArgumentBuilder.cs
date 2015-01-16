@@ -42,7 +42,7 @@ namespace MonoDevelop.Core.Execution
 		}
 		
 		// .NET doesn't allow escaping chars other than " and \ inside " quotes
-		static string escapeDoubleQuoteCharsStr = "\\\"";
+		const string escapeDoubleQuoteCharsStr = "\\\"";
 		
 		public ProcessArgumentBuilder ()
 		{

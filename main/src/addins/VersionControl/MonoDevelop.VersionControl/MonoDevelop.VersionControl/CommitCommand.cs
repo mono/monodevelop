@@ -28,7 +28,7 @@ namespace MonoDevelop.VersionControl
 				VersionControlService.NotifyAfterCommit (vc, changeSet, false);
 			}
 			catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
+				MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 			}
 		}
 

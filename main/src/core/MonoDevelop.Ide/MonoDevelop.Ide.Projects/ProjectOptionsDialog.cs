@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Projects
 				else if (File.Exists (newFile))
 					FileService.RenameFile (newFile, oldFile);
 				item.Name = oldName;
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be renamed."));
+				MessageService.ShowError (GettextCatalog.GetString ("The project could not be renamed."), ex);
 				return;
 			}
 			item.NeedsReload = false;

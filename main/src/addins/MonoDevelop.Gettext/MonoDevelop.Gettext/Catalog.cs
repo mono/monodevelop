@@ -215,7 +215,7 @@ namespace MonoDevelop.Gettext
 				originalNewLine = charsetFinder.NewLine;
 			} catch (Exception e) {
 				string msg = "Error during getting charset of file '" + poFile + "'.";
-				LoggingService.LogFatalError (msg, e);
+				LoggingService.LogInternalError (msg, e);
 				if (monitor != null)
 					monitor.ReportError (msg, e);
 				return false;

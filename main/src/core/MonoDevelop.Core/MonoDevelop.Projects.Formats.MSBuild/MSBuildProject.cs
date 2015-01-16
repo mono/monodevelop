@@ -630,14 +630,54 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			elemCache.Remove (grp.Element);
 			grp.Element.ParentNode.RemoveChild (grp.Element);
 		}
+
+		public IEnumerable<MSBuildTarget> Targets {
+			get {
+				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Target", XmlNamespaceManager))
+					yield return new MSBuildTarget (elem);
+			}
+		}
 	}
 	
+	public class MSBuildTarget: MSBuildObject
+	{
+		public MSBuildTarget (XmlElement elem): base (elem)
+		{
+		}
 
-	
-	
-	
-	
-	
-	
+		public string Name {
+			get { return EvaluatedElement.GetAttribute ("Name"); }
+			set { Element.SetAttribute ("Name", value); }
+		}
 
+		public IEnumerable<MSBuildTask> Tasks {
+			get {
+				foreach (XmlNode node in Element.ChildNodes) {
+					var elem = node as XmlElement;
+					if (MSBuildTask.IsTask (elem))
+						yield return new MSBuildTask (elem);
+				}
+			}
+		}
+	}
+
+	public class MSBuildTask: MSBuildObject
+	{
+		public static bool IsTask (XmlElement elem)
+		{
+			if (elem == null)
+				return false;
+
+			return elem.LocalName == "Error";
+		}
+
+		public MSBuildTask (XmlElement elem): base (elem)
+		{
+		}
+
+		public string Name {
+			get { return EvaluatedElement.GetAttribute ("Name"); }
+			set { Element.SetAttribute ("Name", value); }
+		}
+	}
 }

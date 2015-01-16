@@ -175,10 +175,16 @@ namespace ICSharpCode.PackageManagement
 
 		IEnumerable<IPackage> GetSolutionPackages (PackageSearchCriteria search)
 		{
-			return solutionPackageRepository
-				.GetPackages ()
-				.Find (search.SearchText)
-				.FilterByPrerelease (IncludePrerelease);
+			try {
+				return solutionPackageRepository
+					.GetPackages ()
+					.Find (search.SearchText)
+					.FilterByPrerelease (IncludePrerelease)
+					.ToList ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to get solution packages so these will not be shown.", ex);
+				return Enumerable.Empty<IPackage> ();
+			}
 		}
 
 		protected override PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)

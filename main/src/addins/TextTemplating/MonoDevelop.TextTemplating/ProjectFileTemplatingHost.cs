@@ -33,15 +33,17 @@ namespace MonoDevelop.TextTemplating
 	class ProjectFileTemplatingHost : MonoDevelopTemplatingHost
 	{
 		ProjectFile file;
+		ConfigurationSelector activeConfiguration;
 
-		public ProjectFileTemplatingHost (ProjectFile file)
+		public ProjectFileTemplatingHost (ProjectFile file, ConfigurationSelector activeConfiguration)
 		{
 			this.file = file;
+			this.activeConfiguration = activeConfiguration;
 		}
 
 		protected override string SubstitutePlaceholders (string s)
 		{
-			var model = file.Project.ParentSolution.GetStringTagModel ();
+			var model = file.Project.GetStringTagModel (activeConfiguration);
 			return StringParserService.Parse (s, model);
 		}
 	}

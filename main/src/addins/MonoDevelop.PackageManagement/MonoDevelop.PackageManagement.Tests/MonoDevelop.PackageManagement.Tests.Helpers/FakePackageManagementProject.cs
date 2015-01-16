@@ -308,6 +308,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool HasOlderPackageInstalled (IPackage package)
 		{
+			IPackage matchedPackage = FakePackages.FirstOrDefault (p => p.Id == package.Id);
+			if (matchedPackage != null) {
+				return matchedPackage.Version < package.Version;
+			}
 			return false;
 		}
 

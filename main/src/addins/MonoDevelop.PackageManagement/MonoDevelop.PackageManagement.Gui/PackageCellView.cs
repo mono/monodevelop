@@ -1,4 +1,4 @@
-﻿//
+//
 // PackageCellView.cs
 //
 // Author:
@@ -227,7 +227,7 @@ namespace MonoDevelop.PackageManagement
 			Image image = GetValue (ImageField);
 
 			if (image == null) {
-				image = Selected ? defaultPackageImageDark : defaultPackageImageLight;
+				image = defaultPackageImage;
 			}
 
 			if (PackageImageNeedsResizing (image)) {
@@ -317,8 +317,7 @@ namespace MonoDevelop.PackageManagement
 		Image checkedCheckBoxWithBackgroundColorImage;
 		Image uncheckedCheckBoxWithBackgroundColorImage;
 
-		static readonly Image defaultPackageImageLight = Image.FromResource (typeof(PackageCellView), "reference-light-48.png");
-		static readonly Image defaultPackageImageDark = Image.FromResource (typeof(PackageCellView), "reference-dark-48.png");
+		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "reference-48.png");
 	}
 }
 

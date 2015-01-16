@@ -134,17 +134,17 @@ namespace MonoDevelop.VersionControl.Views
 			widget = main;
 
 			buttonCommit = new Gtk.Button () {
-				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-light-16.png")).ToGtkWidget (),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Commit...")
 			};
 			buttonCommit.Image.Show ();
 			buttonRevert = new Gtk.Button () {
-				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("revert-light-16.png")).ToGtkWidget (),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("revert-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Revert")
 			};
 			buttonRevert.Image.Show ();
 			showRemoteStatus = new Gtk.Button () {
-				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("remote-status-light-16.png")).ToGtkWidget (),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("remote-status-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Show Remote Status")
 			};
 			showRemoteStatus.Image.Show ();
@@ -170,7 +170,7 @@ namespace MonoDevelop.VersionControl.Views
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
 			colCommit.Spacing = 2;
-			colCommit.Widget = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-light-16.png")).ToGtkWidget ();
+			colCommit.Widget = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-16.png")).ToGtkWidget ();
 			colCommit.Widget.Show ();
 			colCommit.PackStart (cellToggle, false);
 			colCommit.PackStart (crc, false);
@@ -230,7 +230,7 @@ namespace MonoDevelop.VersionControl.Views
 			HBox labBox = new HBox ();
 			labelCommit = new Gtk.Label (GettextCatalog.GetString ("Commit message:"));
 			labelCommit.Xalign = 0;
-			labBox.PackStart (new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("comment-light-16.png")).ToGtkWidget (), false, false, 0);
+			labBox.PackStart (new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("comment-16.png")).ToGtkWidget (), false, false, 0);
 			labBox.PackStart (labelCommit, true, true, 3);
 
 			commitMessageLabelBox.Add (labBox);
@@ -317,7 +317,7 @@ namespace MonoDevelop.VersionControl.Views
 				toolbar.Add (showRemoteStatus);
 
 			var btnCreatePatch = new Gtk.Button () {
-				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("diff-light-16.png")).ToGtkWidget (),
+				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("diff-16.png")).ToGtkWidget (),
 				Label = GettextCatalog.GetString ("Create Patch")
 			};
 			btnCreatePatch.Image.Show ();

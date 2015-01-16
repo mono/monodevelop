@@ -78,6 +78,10 @@
       <Project>{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}</Project>
       <Name>Shell</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt.Gtk.Windows\Xwt.Gtk.Windows.csproj">
+      <Project>{252117CA-0ABB-4F36-BFC8-DE23A8089BB9}</Project>
+      <Name>Xwt.Gtk.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\AddFileDialogHandler.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="CustomDialogs\CustomCommonOpenFileDialog.cs" />
     <Compile Include="CustomDialogs\CustomCommonFileDialogComboBox.cs" />
     <Compile Include="CustomDialogs\CustomCommonSaveFileDialog.cs" />
+    <Compile Include="Dialogs\CommonFileDialogExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">

@@ -71,5 +71,6 @@ namespace MonoDevelop.Projects
 		}
 
 		public virtual bool NoStdLib { get; set; }
+		public virtual string DebugType { get { return ""; } set {} }
 	}
 }

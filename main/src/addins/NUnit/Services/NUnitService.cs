@@ -35,7 +35,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using Mono.Addins;
 using MonoDevelop.Projects;
-using NUnit.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;

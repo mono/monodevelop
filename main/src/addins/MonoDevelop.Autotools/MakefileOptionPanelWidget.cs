@@ -216,7 +216,7 @@ namespace MonoDevelop.Autotools
 					ShowMakefileNotFoundError (e);
 					return false;
 				} catch (Exception e) {
-					MessageService.ShowException (parentDialog, e, GettextCatalog.GetString ("Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName));
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString ("Specified makefile is invalid: {0}", tmpData.AbsoluteMakefileName), null, e);
 					return false;
 				}
 
@@ -744,8 +744,7 @@ namespace MonoDevelop.Autotools
 					ShowMakefileNotFoundError (e);
 			} catch (Exception e) {
 				if (showError)
-					MessageService.ShowException (parentDialog,e,
-						GettextCatalog.GetString ("Error while trying to read the specified Makefile"));
+					MessageService.ShowError (parentDialog, GettextCatalog.GetString ("Error while trying to read the specified Makefile"), null, e);
 				return null;
 			}
 
@@ -938,9 +937,7 @@ namespace MonoDevelop.Autotools
 
 		void ShowMakefileNotFoundError (Exception e)
 		{
-				MessageService.ShowException (parentDialog, 
-			                                  e,
-			                                  GettextCatalog.GetString ("Unable to find the specified Makefile. You need to specify the path to an existing Makefile for use with the 'Makefile Integration' feature."));
+			MessageService.ShowError (parentDialog, GettextCatalog.GetString ("Unable to find the specified Makefile. You need to specify the path to an existing Makefile for use with the 'Makefile Integration' feature."));
 		}
 
 		// Returns true if either

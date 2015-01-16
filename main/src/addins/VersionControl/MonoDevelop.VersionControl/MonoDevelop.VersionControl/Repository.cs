@@ -88,14 +88,8 @@ namespace MonoDevelop.VersionControl
 		// Version control system that manages this repository
 		public VersionControlSystem VersionControlSystem {
 			get {
-				if (vcs == null && vcsName != null) {
-					foreach (VersionControlSystem v in VersionControlService.GetVersionControlSystems ()) {
-						if (v.Id == vcsName) {
-							vcs = v;
-							break;
-						}
-					}
-				}
+				if (vcs == null && vcsName != null)
+					vcs = VersionControlService.GetVersionControlSystems ().FirstOrDefault (v => v.Id == vcsName);
 				return vcs;
 			}
 			
@@ -675,10 +669,7 @@ namespace MonoDevelop.VersionControl
 		// it can be a list of files to compare.
 		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
 		{
-			List<FilePath> paths = new List<FilePath> ();
-			foreach (ChangeSetItem item in cset.Items)
-				paths.Add (item.LocalPath);
-			return PathDiff (cset.BaseLocalPath, paths.ToArray (), remoteDiff);
+			return PathDiff (cset.BaseLocalPath, cset.Items.Select (i => i.LocalPath).ToArray (), remoteDiff);
 		}
 		
 		/// <summary>
@@ -714,7 +705,7 @@ namespace MonoDevelop.VersionControl
 		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
 		{
 			basePath = basePath.FullPath;
-			ArrayList list = new ArrayList ();
+			var list = new List<DiffInfo> ();
 			using (StringReader sr = new StringReader (diffContent)) {
 				string line;
 				StringBuilder content = new StringBuilder ();
@@ -763,7 +754,7 @@ namespace MonoDevelop.VersionControl
 					list.Add (new DiffInfo (basePath, fileName, content.ToString ()));
 				}
 			}
-			return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
+			return list.ToArray ();
 		}
 		
 		/// <summary>
@@ -862,27 +853,26 @@ namespace MonoDevelop.VersionControl
 	
 	public class DiffInfo
 	{
-		FilePath fileName;
-		FilePath basePath;
-		string content;
-		
 		public DiffInfo (FilePath basePath, FilePath fileName, string content)
 		{
-			this.basePath = basePath;
-			this.fileName = fileName;
-			this.content = content.Replace ("\r","");
+			BasePath = basePath;
+			FileName = fileName;
+			Content = content.Replace ("\r","");
 		}
 		
 		public FilePath FileName {
-			get { return fileName; }
+			get;
+			private set;
 		}
 		
 		public string Content {
-			get { return content; }
+			get;
+			private set;
 		}
 		
 		public FilePath BasePath {
-			get { return basePath; }
+			get;
+			private set;
 		}
 	}
 

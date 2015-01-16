@@ -531,8 +531,7 @@ namespace MonoDevelop.Xml.Editor
 				try {
 					IdeApp.Workbench.OpenDocument (stylesheetFileName, Document.Project);
 				} catch (Exception ex) {
-					LoggingService.LogError ("Could not open document.", ex);
-					MessageService.ShowException (ex, "Could not open document.");
+					MessageService.ShowError ("Could not open document.", ex);
 				}
 			}
 		}
@@ -561,8 +560,7 @@ namespace MonoDevelop.Xml.Editor
 					    Math.Max (1, schemaObject.LinePosition));
 				}
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
-				MessageService.ShowException (ex, "Could not open document.");
+				MessageService.ShowError ("Could not open document.", ex);
 			}
 		}
 		

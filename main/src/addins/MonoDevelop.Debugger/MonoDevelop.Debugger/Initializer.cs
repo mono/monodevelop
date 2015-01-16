@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
+			if (disassemblyDoc != null && IdeApp.Workbench.ActiveDocument == disassemblyDoc && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
 			
 			var frame = DebuggingService.CurrentFrame;
@@ -73,11 +73,19 @@ namespace MonoDevelop.Debugger
 			
 			FilePath file = frame.SourceLocation.FileName;
 			int line = frame.SourceLocation.Line;
-			
-			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
-				Document doc = IdeApp.Workbench.OpenDocument (file, line, 1, OpenDocumentOptions.Debugger);
-				if (doc != null)
-					return;
+			if (line != -1) {
+				if (!file.IsNullOrEmpty && System.IO.File.Exists (file)) {
+					if (IdeApp.Workbench.OpenDocument (file, null, line, 1, OpenDocumentOptions.Debugger) != null)
+						return;
+				}
+				if (frame.SourceLocation.FileHash != null) {
+					var newFilePath = SourceCodeLookup.FindSourceFile (file, frame.SourceLocation.FileHash);
+					if (newFilePath != null) {
+						frame.UpdateSourceFile (newFilePath);
+						if (IdeApp.Workbench.OpenDocument (newFilePath, null, line, 1, OpenDocumentOptions.Debugger) != null)
+							return;
+					}
+				}
 			}
 
 			// If we don't have an address space, we can't disassemble
@@ -115,16 +123,10 @@ namespace MonoDevelop.Debugger
 			if (bt != null) {
 				for (int n=0; n<bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
-					if (!sf.IsExternalCode && sf.SourceLocation.Line != -1) {
-						bool found = !string.IsNullOrEmpty (sf.SourceLocation.FileName)
-							&& System.IO.File.Exists (sf.SourceLocation.FileName);
-						if (found) {
-							if (n != DebuggingService.CurrentFrameIndex)
-								DebuggingService.CurrentFrameIndex = n;
-							break;
-						} else {
-							LoggingService.LogWarning ("Debugger could not find file '{0}'", sf.SourceLocation.FileName);
-						}
+					if (sf.SourceLocation.Line != -1) {
+						if (n != DebuggingService.CurrentFrameIndex)
+							DebuggingService.CurrentFrameIndex = n;
+						break;
 					}
 				}
 			}

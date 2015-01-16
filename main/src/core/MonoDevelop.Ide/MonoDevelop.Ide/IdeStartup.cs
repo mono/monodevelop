@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide
 
 				// load previous combine
 				RecentFile openedProject = null;
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
 					if (openedProject != null)
 						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith ((t) => IdeApp.OpenFiles (startupInfo.RequestedFileList));
@@ -257,12 +257,8 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (error != null) {
-				LoggingService.LogFatalError (null, error);
-				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString (
-					"MonoDevelop failed to start. The following error has been reported: {0}",
-					error.Message
-				));
-				MessageService.ShowException (error, message);
+				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start"));
+				MessageService.ShowFatalError (message, null, error);
 				return 1;
 			}
 
@@ -612,12 +608,12 @@ namespace MonoDevelop.Ide
 		
 		static void HandleException (Exception ex, bool willShutdown)
 		{
-			var msg = String.Format ("An unhandled exception has occured. Terminating MonoDevelop? {0}", willShutdown);
+			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);
 			else
-				LoggingService.LogCriticalError (msg, ex);
+				LoggingService.LogInternalError (msg, ex);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>

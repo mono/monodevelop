@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>NUnit Library Project</_Name>
 		<_Category>NUnit</_Category>
-		<Icon>md-project|res:project-nunit-overlay-light-32.png</Icon>
+		<Icon>md-project|res:project-nunit-overlay-32.png</Icon>
 		<_Description>Creates an NUnit library</_Description>
 		<LanguageName>C#,VBNet</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>

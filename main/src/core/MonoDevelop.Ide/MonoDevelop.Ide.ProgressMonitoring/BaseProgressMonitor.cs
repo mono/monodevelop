@@ -43,11 +43,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		public static void ShowResultDialog (this ProgressMonitor monitor)
 		{
 			if (monitor.Errors.Length == 1 && !monitor.HasWarnings) {
-				var error = monitor.Errors [0];
-				if (error.Exception != null)
-					MessageService.ShowException (error.Exception, error.Message);
-				else
-					MessageService.ShowError (error.Message);
+				MessageService.ShowError (monitor.Errors [0], error.Exception);
 			}
 			else if (!monitor.HasErrors && monitor.Warnings.Length == 1) {
 				MessageService.ShowWarning (monitor.Warnings[0]);

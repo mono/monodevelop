@@ -1392,7 +1392,7 @@ namespace MonoDevelop.Projects
 						if (!string.IsNullOrEmpty (f.DependsOn))
 							unresolvedDeps.Add (f);
 					}
-					file.DependsOnFile = null;
+					file.DependsOn = null;
 				}
 			}
 			NotifyModified ("Files");

@@ -1279,8 +1279,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								handler.SetCurrentNode (nav);
 								handler.RenameItem (e.NewText);
 							} catch (Exception ex) {
-								MessageService.ShowException (ex);
-								LoggingService.LogError (ex.ToString ());
+								LoggingService.LogInternalError (ex);
 							}
 							nav.MoveToPosition (pos);
 						}
@@ -1297,7 +1296,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				builder.Update ();
 			}
 			catch (Exception ex) {
-				MessageService.ShowException (ex, "The item could not be renamed");
+				LoggingService.LogInternalError ("The item could not be renamed", ex);
 			}
 		}
 
@@ -2248,9 +2247,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			static CustomCellRendererText ()
 			{
-				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button-light.png");
-				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down-light.png");
-				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover-light.png");
+				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button.png");
+				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down.png");
+				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover.png");
 			}
 
 			[GLib.Property ("text-markup")]

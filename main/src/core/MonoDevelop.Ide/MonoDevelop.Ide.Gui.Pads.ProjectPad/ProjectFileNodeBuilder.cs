@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} catch (ArgumentException) { // new file name with wildcard (*, ?) characters in it
 				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 			} catch (IOException ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("There was an error renaming the file."));
+				MessageService.ShowError (GettextCatalog.GetString ("There was an error renaming the file."), ex);
 			}
 		}
 		
@@ -345,7 +345,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 
 				if (file.HasChildren) {
-					foreach (var child in file.DependentChildren) {
+					foreach (var child in file.DependentChildren.ToArray()) {
 						project.Files.Remove (child);
 						if (result == AlertButton.Delete)
 							FileService.DeleteFile (child.Name);

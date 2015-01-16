@@ -67,6 +67,8 @@ namespace MonoDevelop.MacInterop
 		
 		public static NSWindow GetWindow (Gtk.Window window)
 		{
+			if (window.GdkWindow == null)
+				return null;
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
 			if (ptr == IntPtr.Zero)
 				return null;

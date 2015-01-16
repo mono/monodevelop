@@ -165,7 +165,7 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "quartz" {
+    engine "xamarin" {
     }
 }
 
@@ -204,21 +204,6 @@ style "tooltip"
     
     engine "xamarin" {
     	roundness = 0
-    }
-}
-
-style "treeview" = "default"
-{
-    GtkTreeView::odd-row-color = "#f5f5f5"
-    
-    base[SELECTED] = "#c5d4e0"
-    base[ACTIVE] = "#c5d4e0"
-    text[SELECTED] = "#000"
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.0, 0.95, 0.95, 0.90}
-        glazestyle = 1
     }
 }
 
@@ -403,7 +388,6 @@ widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*"     style "toolbar-button"
 
-widget_class "*.<GtkTreeView>*"         style "treeview"
 widget_class "*.GtkTreeView.GtkButton"  style "tree-header"
 widget_class "*.GtkList.GtkButton"  style "tree-header"
 

@@ -312,8 +312,7 @@ namespace Mono.TextTemplating
 			
 			//resolve the CodeDOM provider
 			if (String.IsNullOrEmpty (settings.Language)) {
-				pt.LogError ("No language was specified for the template");
-				return settings;
+				settings.Language = "C#";
 			}
 			
 			if (settings.Language == "C#v3.5") {
@@ -604,7 +603,7 @@ namespace Mono.TextTemplating
 			var initializeMeth = new CodeMemberMethod {
 				Name = "Initialize",
 				ReturnType = new CodeTypeReference (typeof (void), CodeTypeReferenceOptions.GlobalReference),
-				Attributes = MemberAttributes.Family
+				Attributes = MemberAttributes.Public
 			};
 			if (!settings.IncludePreprocessingHelpers)
 				initializeMeth.Attributes |= MemberAttributes.Override;

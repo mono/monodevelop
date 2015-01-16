@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl;
@@ -323,14 +324,10 @@ namespace SubversionAddinWindows
 			var args = new SvnLogArgs {
 				Range = new SvnRevisionRange (GetRevision (revisionStart), GetRevision (revisionEnd)),
 			};
-			lock (client) 
-				client.Log (path, args, delegate (object o, SvnLogEventArgs a) {
-					var paths = new List<RevisionPath> ();
-					foreach (SvnChangeItem item in a.ChangedPaths) {
-						paths.Add (new RevisionPath (item.Path, ConvertRevisionAction (item.Action), ""));
-					}
-					list.Add (new SvnRevision (repo, (int) a.Revision, a.Time, a.Author, a.LogMessage, paths.ToArray ()));
-				});
+			lock (client)
+				client.Log (path, args, (o, a) =>
+					list.Add (new SvnRevision (repo, (int)a.Revision, a.Time, a.Author, a.LogMessage,
+						a.ChangedPaths.Select (item => new RevisionPath (item.Path, ConvertRevisionAction (item.Action), "")).ToArray ())));
 			return list;
 		}
 
@@ -352,9 +349,7 @@ namespace SubversionAddinWindows
 				LogMessage = message,
 			};
 			BindMonitor (monitor);
-			var uris = new List<Uri> ();
-			foreach (string path in paths)
-				uris.Add (new Uri (path));
+			var uris = paths.Select (p => new Uri (p)).ToArray ();
 			lock (client) 
 				client.RemoteCreateDirectories (uris, args);
 		}
@@ -435,8 +430,7 @@ namespace SubversionAddinWindows
 					else
 						throw;
 				} catch (SvnWorkingCopyPathNotFoundException e) {
-					var fp = new FilePath (e.File);
-					list.Add (VersionInfo.CreateUnversioned (fp, fp.IsDirectory));
+					list.Add (VersionInfo.CreateUnversioned (e.File, Directory.Exists (e.File)));
 				}
 			}
 			return list;
@@ -475,10 +469,9 @@ namespace SubversionAddinWindows
 			if (ent.WorkingCopyInfo != null)
 				newRev = new SvnRevision (repo, (int) ent.Revision);
 
-			var ret = new VersionInfo (ent.FullPath, repoPath, ent.NodeKind == SvnNodeKind.Directory,
-											   status, newRev,
-											   rs, rr);
-			return ret;
+			return new VersionInfo (ent.FullPath, repoPath, ent.NodeKind == SvnNodeKind.Directory,
+				status, newRev,
+				rs, rr);
 		}
 
 		static VersionStatus ConvertStatus (SvnSchedule schedule, SvnStatus status)
