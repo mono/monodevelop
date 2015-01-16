@@ -18,10 +18,11 @@ class FSharpInteractive:
         hidewin.addopt(opts)
         self.p = Popen(command, **opts) 
 
-        logfiledir = tempfile.gettempdir() + "/fsi-log.txt"
-        self.logfile = open(logfiledir, "w")
+        if is_debug:
+            logfiledir = tempfile.gettempdir() + "/fsi-log.txt"
+            self.logfile = open(logfiledir, "w")
 
-        self.should_work = True
+        self._should_work = True
         self.lines = Queue.Queue()
         self.worker = threading.Thread(target=self._work, args=[])
         self.worker.daemon = True
@@ -30,6 +31,7 @@ class FSharpInteractive:
         self.err_worker.daemon = True
         self.err_worker.start()
         x = self.purge()
+        self._current_path = None
 
     def _log(self, msg):
         if self._debug:
@@ -38,7 +40,7 @@ class FSharpInteractive:
 
     def shutdown(self):
         print "shutting down fsi"
-        self.should_work = False
+        self._should_work = False
         self.p.kill()
 
     def set_loc(self, path, line_num):
@@ -50,9 +52,12 @@ class FSharpInteractive:
         self._log(">" + txt + ";;")
 
     def cd(self, path):
+        if self._current_path == path:
+            return
         self.p.stdin.write("System.IO.Directory.SetCurrentDirectory(@\"" + path + "\");;\n")
         self.p.stdin.write("#silentCd @\"" + path + "\";;\n")
         self.purge()
+        self._current_path = path
 
     def purge(self):
         items = []
@@ -79,14 +84,14 @@ class FSharpInteractive:
                 output.append(str(l).rstrip())
             return output
         except Exception as ex:
-            outputl.append(".....") #indicate that there may be more lines of output
+            output.append(".....") #indicate that there may be more lines of output
             return output
 
     def read_one(self):
         return self.lines.get(True, 0.5)
 
     def _work(self):
-        while(self.should_work):
+        while(self._should_work):
             try:
                 l = self.p.stdout.readline()
                 self.lines.put(l, True)
@@ -95,7 +100,7 @@ class FSharpInteractive:
                 print ex
 
     def _err_work(self):
-        while(self.should_work):
+        while(self._should_work):
             l = self.p.stderr.readline()
             self.lines.put(l, True)
             self._log( "err: " + l)
