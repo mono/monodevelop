@@ -787,6 +787,11 @@ namespace MonoDevelop.Projects
 				projectBuilder.Refresh ();
 		}
 
+		public void ReloadProjectBuilder ()
+		{
+			CleanupProjectBuilder ();
+		}
+
 		#endregion
 
 		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>

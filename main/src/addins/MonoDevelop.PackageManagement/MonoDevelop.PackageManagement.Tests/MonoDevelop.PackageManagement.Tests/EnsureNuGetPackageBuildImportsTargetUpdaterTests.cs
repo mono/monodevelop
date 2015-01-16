@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			using (updater) {
 				PackageManagementMSBuildExtension.Updater = updater;
 				msbuildExtension = new PackageManagementMSBuildExtension ();
-				msbuildExtension.SaveProject (null, null, msbuildProject);
+				msbuildExtension.UpdateProject (msbuildProject);
 			}
 		}
 

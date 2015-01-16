@@ -233,13 +233,13 @@ namespace MonoDevelop.Ide.Tasks
 
 		void CopyUserTaskClicked (object o, EventArgs args)
 		{
-			Task task;
+			UserTask task;
 			TreeModel model;
 			TreeIter iter;
 
 			if (view.Selection.GetSelected (out model, out iter))
 			{
-				task = (Task) model.GetValue (iter, (int)Columns.UserTask);
+				task = (UserTask) model.GetValue (iter, (int)Columns.UserTask);
 			}
 			else return; // no one selected
 

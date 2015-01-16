@@ -491,11 +491,11 @@ namespace MonoDevelop.Projects
 				ProjectBasePath = "/tmp/test",
 				ProjectName = "abc.0"
 			};
-			var project = new DotNetAssemblyProject ("C#", info, null);
+			DotNetProject project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, null);
 			Assert.AreEqual ("abc", project.DefaultNamespace);
 
 			info.ProjectName = "a.";
-			project = new DotNetAssemblyProject ("C#", info, null);
+			project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, null);
 			Assert.AreEqual ("a", project.DefaultNamespace);
 		}
 	}

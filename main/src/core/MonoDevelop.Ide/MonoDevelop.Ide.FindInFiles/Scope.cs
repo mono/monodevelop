@@ -131,9 +131,9 @@ namespace MonoDevelop.Ide.FindInFiles
 						var file = ft.Item2;
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))
 							continue;
-						if (alreadyVisited.Contains (file.FullPath))
+						if (alreadyVisited.Contains (file))
 							continue;
-						alreadyVisited.Add (file.FullPath);
+						alreadyVisited.Add (file);
 						results.Enqueue (new FileProvider (file, ft.Item1));
 					}
 					results.SetComplete ();

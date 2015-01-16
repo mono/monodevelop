@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide.Gui
 
 			statusBar.EndProgress ();
 
-			if (!IsCancelRequested) {
+			if (!CancellationToken.IsCancellationRequested) {
 				try {
 					if (Errors.Length > 0 || Warnings.Length > 0) {
 						if (Errors.Length > 0) {

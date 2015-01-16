@@ -646,7 +646,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public string Name {
-			get { return EvaluatedElement.GetAttribute ("Name"); }
+			get { return Element.GetAttribute ("Name"); }
 			set { Element.SetAttribute ("Name", value); }
 		}
 
@@ -676,7 +676,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public string Name {
-			get { return EvaluatedElement.GetAttribute ("Name"); }
+			get { return Element.GetAttribute ("Name"); }
 			set { Element.SetAttribute ("Name", value); }
 		}
 	}

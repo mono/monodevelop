@@ -439,10 +439,10 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		IAsyncOperation openingItemOper;
+		System.Threading.CancellationTokenSource openingItemCancellationSource;
 
 		internal bool WorkspaceItemIsOpening {
-			get { return openingItemOper != null && !openingItemOper.IsCompleted; }
+			get { return openingItemCancellationSource != null; }
 		}
 
 		public Task<bool> OpenWorkspaceItem (string filename)
@@ -457,8 +457,10 @@ namespace MonoDevelop.Ide
 		
 		public async Task<bool> OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
 		{
-			if (openingItemOper != null && !openingItemOper.IsCompleted && closeCurrent)
-				openingItemOper.Cancel ();
+			if (openingItemCancellationSource != null && closeCurrent) {
+				openingItemCancellationSource.Cancel ();
+				openingItemCancellationSource = null;
+			}
 
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
@@ -478,15 +480,19 @@ namespace MonoDevelop.Ide
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
 			bool reloading = IsReloading;
 
-			var oper = monitor.AsyncOperation;
-			openingItemOper = oper;
-			oper.Completed += delegate {
-				if (oper == openingItemOper)
-					openingItemOper = null;
-			};
 			IdeApp.Workbench.LockGui ();
 
-			return await BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+			var cancellationSource = openingItemCancellationSource = new System.Threading.CancellationTokenSource ();
+			monitor = monitor.WithCancellationSource (cancellationSource);
+
+			var oper = BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+
+			try {
+				return await oper;
+			} finally {
+				if (openingItemCancellationSource == cancellationSource)
+					openingItemCancellationSource = null;
+			}
 		}
 		
 		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
@@ -564,11 +570,11 @@ namespace MonoDevelop.Ide
 			using (monitor) {
 				try {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
-					if (!monitor.IsCancelRequested)
+					if (!monitor.CancellationToken.IsCancellationRequested)
 						Items.Add (item);
 					else {
 						item.Dispose ();
-						return;
+						return false;
 					}
 					if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
 						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
@@ -585,8 +591,6 @@ namespace MonoDevelop.Ide
 				timer.Trace ("Reattaching documents");
 				ReattachDocumentProjects (null);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-			} finally {
-				timer.End ();
 			}
 			return true;
 		}

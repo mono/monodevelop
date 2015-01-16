@@ -33,7 +33,7 @@ namespace MonoDevelop.PackageManagement
 	public class CheckForUpdatesProgressMonitor : IDisposable
 	{
 		ProgressMonitorStatusMessage progressMessage;
-		IProgressMonitor progressMonitor;
+		ProgressMonitor progressMonitor;
 		PackageUpdatesEventMonitor eventMonitor;
 
 		public CheckForUpdatesProgressMonitor ()

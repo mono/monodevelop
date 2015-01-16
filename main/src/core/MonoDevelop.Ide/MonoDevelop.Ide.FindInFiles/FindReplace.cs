@@ -90,39 +90,45 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
+
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
 			try {
 				int totalWork = await scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 				string content;
-				var results = new System.Collections.Concurrent.ConcurrentBag<SearchResult>();
 
-				Parallel.ForEach (scope.GetFiles (monitor, filter), provider => { 
-					if (monitor.IsCancelRequested)
-						return;
-					Interlocked.Increment (ref searchedFilesCount);
-					try {
-						content = provider.ReadString ();
+				var files = new ResultQueue<FileProvider> ();
+				scope.GetFiles (monitor, filter, files);
+
+				await Task.Factory.StartNew (delegate {
+					FileProvider provider;
+					while (files.TryDequeue (out provider)) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							break;
+						SearchedFilesCount++;
+						try {
+							content = provider.ReadString ();
+							if (replacePattern != null)
+								provider.BeginReplace (content);
+						} catch (System.IO.FileNotFoundException) {
+							Application.Invoke (delegate {
+								MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
+							});
+							continue;
+						}
+						foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								break;
+							FoundMatchesCount++;
+							results.Enqueue (result);
+						}
 						if (replacePattern != null)
-							provider.BeginReplace (content);
-					} catch (System.IO.FileNotFoundException) {
-						Application.Invoke (delegate {
-							MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
-						});
-						return;
+							provider.EndReplace ();
+						if (SearchedFilesCount % step == 0)
+							monitor.Step (1); 
 					}
-					foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
-						if (monitor.IsCancelRequested)
-							return;
-						FoundMatchesCount++;
-						results.Add (result); 
-					}
-					if (replacePattern != null)
-						provider.EndReplace ();
-					if (searchedFilesCount % step == 0)
-						monitor.Step (1); 
+					results.SetComplete ();
 				});
-				return results;
 			} finally {
 				monitor.EndTask ();
 				IsRunning = false;

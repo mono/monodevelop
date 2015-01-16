@@ -120,7 +120,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void DisposeProjectBuilder ()
 		{
-			DotNetProject.DisposeProjectBuilder ();
+			DotNetProject.ReloadProjectBuilder ();
 		}
 	}
 }

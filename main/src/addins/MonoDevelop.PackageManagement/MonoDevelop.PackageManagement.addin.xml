@@ -146,7 +146,7 @@
 		<Class class="MonoDevelop.PackageManagement.SearchPackagesSearchCategory" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/ProjectModel/MSBuildExtensions">
+	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class="MonoDevelop.PackageManagement.PackageManagementMSBuildExtension" />
 	</Extension>
 </ExtensionModel>

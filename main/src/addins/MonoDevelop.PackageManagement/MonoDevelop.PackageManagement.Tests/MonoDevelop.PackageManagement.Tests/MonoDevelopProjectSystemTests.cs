@@ -1165,7 +1165,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			int targetCountBeforeSave = msbuildProject.Targets.Count ();
 			project.SaveAction = () => {
 				var msbuildExtension = new PackageManagementMSBuildExtension ();
-				msbuildExtension.SaveProject (null, null, msbuildProject);
+				msbuildExtension.UpdateProject (msbuildProject);
 			};
 
 			projectSystem.RemoveImport (targetPath);
