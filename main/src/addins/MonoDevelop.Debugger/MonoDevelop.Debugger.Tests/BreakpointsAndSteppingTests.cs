@@ -792,9 +792,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Bug 26033");
-			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -807,9 +804,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest2 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Bug 26033");
-			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -821,9 +815,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest3 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Bug 26033");
-			}
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
 			StartTest ("SimpleMethod");
@@ -1103,7 +1094,7 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("TestBug25358");
 			CheckPosition ("4b30f826-2ba0-4b53-ab36-85b2cdde1069");
 			var val = Eval ("e");
-			val = val.GetChild ("Message");
+			val = val.GetChildSync ("Message", EvaluationOptions.DefaultOptions);
 			Assert.AreEqual ("\"2b2c4423-accf-4c2c-af31-7d8dcee31c32\"", val.Value);
 		}
 
