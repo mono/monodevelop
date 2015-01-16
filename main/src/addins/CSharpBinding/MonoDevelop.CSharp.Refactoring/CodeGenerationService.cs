@@ -44,7 +44,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.TypeSystem
+namespace MonoDevelop.CSharp.Refactoring
 {
 	public static class CodeGenerationService
 	{
@@ -239,19 +239,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return indentLevel;
 		}
-		public static CodeGenerator CreateCodeGenerator (this Ide.Gui.Document doc)
+		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this Ide.Gui.Document doc)
 		{
-			return CodeGenerator.CreateGenerator (doc);
+			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (doc);
 		}
 
-		public static CodeGenerator CreateCodeGenerator (this DocumentContext documentContext, TextEditor editor)
+		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this DocumentContext documentContext, TextEditor editor)
 		{
-			return CodeGenerator.CreateGenerator (editor, documentContext);
+			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (editor, documentContext);
 		}
 
-		public static CodeGenerator CreateCodeGenerator (this ITextDocument data, ICompilation compilation)
+		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this ITextDocument data, ICompilation compilation)
 		{
-			return CodeGenerator.CreateGenerator (data, compilation);
+			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (data, compilation);
 		}
 		
 		static IUnresolvedTypeDefinition GetMainPart (IType t)

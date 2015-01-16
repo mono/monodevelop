@@ -17,4 +17,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.SourceEditor")]
 [assembly: InternalsVisibleTo("Xamarin.OSXEditor")]
 [assembly: InternalsVisibleTo("MonoDevelop.Refactoring")]
+[assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding")]
 [assembly: InternalsVisibleTo("Xamarin.Ide")]

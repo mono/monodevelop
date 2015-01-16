@@ -157,12 +157,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			generators.Remove (node.MimeType);
 		}
 
-		protected void SetIndentTo (IUnresolvedTypeDefinition implementingType)
-		{
-			if (IndentLevel < 0)
-				IndentLevel = AutoIndent ? CodeGenerationService.CalculateBodyIndentLevel (implementingType) : 0;
-		}
-
 		static bool CompareMethods (IMethod interfaceMethod, IMethod typeMethod)
 		{
 			if (typeMethod.IsExplicitInterfaceImplementation)

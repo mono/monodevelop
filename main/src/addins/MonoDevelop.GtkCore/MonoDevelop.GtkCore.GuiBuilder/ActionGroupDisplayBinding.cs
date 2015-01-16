@@ -42,6 +42,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
+using MonoDevelop.CSharp.Refactoring;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder

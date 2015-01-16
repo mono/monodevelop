@@ -39,7 +39,6 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
 using System.Collections.Immutable;
-using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem

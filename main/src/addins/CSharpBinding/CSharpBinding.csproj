@@ -317,6 +317,7 @@
     <Compile Include="MonoDevelop.CSharp\SemanticErrorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

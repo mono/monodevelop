@@ -147,6 +147,10 @@
       <Name>ICSharpCode.NRefactory6.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\CSharpBinding\CSharpBinding.csproj">
+      <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
+      <Name>CSharpBinding</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
