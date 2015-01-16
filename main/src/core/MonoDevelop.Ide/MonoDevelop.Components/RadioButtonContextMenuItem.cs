@@ -38,11 +38,6 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		public RadioButtonContextMenuItem (Xwt.Command command)
-		{
-			LoadCommandProperties (command);
-		}
-
 		public RadioButtonContextMenuItem (string label)
 		{
 			Label = label;

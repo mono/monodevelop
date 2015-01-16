@@ -34,11 +34,6 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		public CheckBoxContextMenuItem (Xwt.Command command): base (command)
-		{
-			LoadCommandProperties (command);
-		}
-
 		public CheckBoxContextMenuItem (string label)
 		{
 			Label = label;

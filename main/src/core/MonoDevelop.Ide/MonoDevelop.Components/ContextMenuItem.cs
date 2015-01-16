@@ -42,20 +42,9 @@ namespace MonoDevelop.Components
 				UseMnemonic = true;
 		}
 
-		public ContextMenuItem (Xwt.Command command) : this()
-		{
-			LoadCommandProperties (command);
-		}
-
 		public ContextMenuItem (string label) : this()
 		{
 			Label = label;
-		}
-
-		protected void LoadCommandProperties (Xwt.Command command)
-		{
-			Label = command.Label;
-			Image = command.Icon;
 		}
 
 		public bool IsSeparator {
