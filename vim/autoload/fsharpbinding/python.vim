@@ -293,10 +293,6 @@ EOF
     endif
 endfunction
 
-function! fsharpbinding#python#FsiPurge()
-    let prelude = s:pyeval('fsi.purge()')
-endfunction
-
 function! fsharpbinding#python#FsiReset(fsi_path)
     python << EOF
 fsi.shutdown()
@@ -333,23 +329,30 @@ function! fsharpbinding#python#FsiShow()
     endtry
 endfunction
 
-function! fsharpbinding#python#FsiRead(time_out)
+function! fsharpbinding#python#FsiPurge()
 python << EOF
-lines = fsi.read_until_prompt(int(vim.eval('a:time_out')))
-fsiBuf = None
+lines = fsi.purge()
 for b in vim.buffers:
     if 'fsi-out' in b.name:
-        fsiBuf = b
+        b.append(lines)
         break
-if fsiBuf != None:
-    fsiBuf.append(lines)
-    for w in vim.current.tabpage.windows:
-        if fsiBuf.name in w.buffer.name:
-            w.cursor = len(fsiBuf) - 1, 0
-            vim.command('exe %s"wincmd w"' % w.number)
-            vim.command('exe "normal! G"')
-            vim.command('exe "wincmd p"')
-            break
+EOF
+endfunction
+
+function! fsharpbinding#python#FsiRead(time_out)
+python << EOF
+lines = fsi.read_until_prompt(float(vim.eval('a:time_out')))
+for b in vim.buffers:
+    if 'fsi-out' in b.name:
+        b.append(lines)
+        for w in vim.current.tabpage.windows:
+            if b.name in w.buffer.name:
+                w.cursor = len(b) - 1, 0
+                vim.command('exe %s"wincmd w"' % w.number)
+                vim.command('exe "normal! G"')
+                vim.command('exe "wincmd p"')
+                break
+        break
 #echo first nonempty line
 for l in lines:
     if l != "":
