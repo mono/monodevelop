@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildBeforeRunCheckBox = new global::Gtk.CheckButton ();
 			this.buildBeforeRunCheckBox.CanFocus = true;
 			this.buildBeforeRunCheckBox.Name = "buildBeforeRunCheckBox";
-			this.buildBeforeRunCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build solution before running");
+			this.buildBeforeRunCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build project before running");
 			this.buildBeforeRunCheckBox.DrawIndicator = true;
 			this.buildBeforeRunCheckBox.UseUnderline = true;
 			this.vbox66.Add (this.buildBeforeRunCheckBox);
@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.runWithWarningsCheckBox = new global::Gtk.CheckButton ();
 			this.runWithWarningsCheckBox.CanFocus = true;
 			this.runWithWarningsCheckBox.Name = "runWithWarningsCheckBox";
-			this.runWithWarningsCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Run solution if build completed with warnings");
+			this.runWithWarningsCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Run project if build completed with warnings");
 			this.runWithWarningsCheckBox.DrawIndicator = true;
 			this.runWithWarningsCheckBox.UseUnderline = true;
 			this.vbox66.Add (this.runWithWarningsCheckBox);
@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.buildBeforeTestCheckBox = new global::Gtk.CheckButton ();
 			this.buildBeforeTestCheckBox.CanFocus = true;
 			this.buildBeforeTestCheckBox.Name = "buildBeforeTestCheckBox";
-			this.buildBeforeTestCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build solution before executing unit tests");
+			this.buildBeforeTestCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Build project before executing unit tests");
 			this.buildBeforeTestCheckBox.DrawIndicator = true;
 			this.buildBeforeTestCheckBox.UseUnderline = true;
 			this.vbox66.Add (this.buildBeforeTestCheckBox);
