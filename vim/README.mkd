@@ -8,17 +8,21 @@ This software is still alpha quality and was adapted from http://github.com/timr
 
 ###Installing
 
+fsharpbinding-vim requires mono and fsharp installed. To build and install you will need to be able to xbuild any .fsproj file. 
+
 #####OSX and linux
 
-1. Install [pathogen][pathogen]
+1. Install [pathogen][pathogen] and [syntastic][syntastic]
 
 2. Run *make install* inside the vim directory. This will copy the necessary contents to your ~/.vim/bundle directory.
 
 #####Windows
 
-1. Install [pathogen][pathogen]
+1. Install [pathogen][pathogen] and [syntastic][syntastic]
 
-2. TODO (You can manually copy the required files to you bundle directory after building FSharp.AutoComplete in Visual Studio.)
+2. Run _install.cmd_ 
+
+3. Currently you will most likely need to set g:fsharp_xbuild_path and g:fsharp_interactive_bin to approapriate values. 
 
 #####Syntastic
 
