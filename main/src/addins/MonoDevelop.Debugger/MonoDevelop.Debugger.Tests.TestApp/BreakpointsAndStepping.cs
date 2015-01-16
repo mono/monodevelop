@@ -150,12 +150,27 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			action ();/*f3b6862d-732b-4f68-81f5-f362d5a092e2*/
 		}
 
+		public static void BreakpointInsideOneLineDelegateNoDisplayClass ()
+		{
+			var button = new Button ();
+			button.Clicked += (sender, e) => Console.WriteLine (); /*e72a2fa6-2d95-4f96-b3d0-ba321da3cb55*/
+			button.MakeClick ();/*e0a96c37-577f-43e3-9a20-2cdd8bf7824e*/
+		}
+
 		public void BreakpointInsideOneLineDelegate ()
 		{
 			var button = new Button ();
 			int numClicks = 0;
 			button.Clicked += (object sender, EventArgs e) => button.SetTitle (String.Format ("clicked {0} times", numClicks++));/*22af08d6-dafc-47f1-b8d1-bee1526840fd*/
 			button.MakeClick ();/*67ae4cce-22b3-49d8-8221-7e5b26a5e79b*/
+		}
+
+		public void BreakpointInsideOneLineDelegateAsync ()
+		{
+			var button = new Button ();
+			int numClicks = 0;
+			button.Clicked += async (sender, e) => button.SetTitle (String.Format ("clicked {0} times", numClicks++));/*b6a65e9e-5db2-4850-969a-b3747b2459af*/
+			button.MakeClick ();
 		}
 
 		public class Button
@@ -585,6 +600,67 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				EventsNeedRefresh = true;/*4863ebb7-8c90-4704-af8b-66a9f53657b9*/
 				CurrentDate = date;
 				FirstDayOfWeek = date.AddDays (-1 * (int)date.DayOfWeek);
+			}
+		}
+
+		public void TestBug25358 ()
+		{
+			try {
+				throw new Exception ("2b2c4423-accf-4c2c-af31-7d8dcee31c32");
+			} catch (IOException e) {
+				Console.WriteLine (e);
+			} catch (Exception e) {
+				Console.WriteLine (e);/*4b30f826-2ba0-4b53-ab36-85b2cdde1069*/
+			}
+		}
+
+		public void TestBug21410 ()
+		{
+			Bug21410.Test ();
+		}
+
+		class Bug21410
+		{
+
+			interface willy
+			{
+			}
+
+			class snarf
+			{
+			}
+
+			class flap : snarf, willy
+			{
+			}
+
+			class point
+			{
+				public string Acme = "";
+				public snarf Lst = new flap ();
+			}
+
+			class zork
+			{
+				public point Point = new point ();
+			}
+
+			class narf
+			{
+				public zork Zork = new zork ();
+			}
+
+			static narf _narf = new narf ();
+
+			public static void Test ()
+			{
+				doStuff (_narf.Zork.Point.Acme, _narf.Zork.Point.Acme, (willy)_narf.Zork.Point.Lst, _narf.Zork.Point.Acme, (willy)_narf.Zork.Point.Lst);/*5e6663d0-9088-40ad-914d-0fcc05b2d0d5*/
+				doStuff (_narf.Zork.Point.Acme, _narf.Zork.Point.Acme, (willy)_narf.Zork.Point.Lst, _narf.Zork.Point.Acme, (willy)_narf.Zork.Point.Lst);
+			}
+
+			static void doStuff (string str, string str2, willy lst, string str3,
+			                     willy lst2)
+			{
 			}
 		}
 	}

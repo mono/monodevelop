@@ -2784,6 +2784,15 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Components\CheckBoxContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenu.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuItemCollection.cs" />
+    <Compile Include="MonoDevelop.Components\RadioButtonContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\RadioButtonContextMenuItemGroup.cs" />
+    <Compile Include="MonoDevelop.Components\SeparatorContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuExtensionsMac.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuExtensionsGtk.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
