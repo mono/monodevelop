@@ -111,6 +111,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='message'>
 		/// The description of the error.
 		/// </param>
+		public Error (ErrorType errorType, string message, int line, int column) : this (errorType, message, line, column) 
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
+		/// </summary>
+		/// <param name='errorType'>
+		/// The error type.
+		/// </param>
+		/// <param name='message'>
+		/// The description of the error.
+		/// </param>
 		public Error (ErrorType errorType, string message)
 		{
 			this.errorType = errorType;
