@@ -105,7 +105,17 @@ namespace MonoDevelop.Debugger
 
 			if (IdeApp.Workspace.IsOpen) {
 				var it = GetRunTarget ();
-				IAsyncOperation op = IdeApp.ProjectOperations.Build (it);
+
+				var buildTarget = it;
+				var executionTarget = buildTarget as IExecutableWorkspaceObject;
+				if (executionTarget != null) {
+					var buildDeps = executionTarget.GetExecutionDependencies ().ToList ();
+					if (buildDeps.Count > 1)
+						throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+					buildTarget = buildDeps [0];
+				}
+
+				IAsyncOperation op = IdeApp.ProjectOperations.Build (buildTarget);
 				op.Completed += delegate {
 					if (op.SuccessWithWarnings && !IdeApp.Preferences.RunWithWarnings)
 						return;
