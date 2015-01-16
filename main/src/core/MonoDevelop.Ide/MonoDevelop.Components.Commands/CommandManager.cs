@@ -773,42 +773,8 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget = null)
 		{
 #if MAC
-			parent.GrabFocus ();
-			int x, y;
-			if (evt != null) {
-				x = (int)evt.X;
-				y = (int)evt.Y;
-			} else {
-				Gdk.ModifierType mod;
-				parent.GdkWindow.GetPointer (out x, out y, out mod);
-
-				var titleBarHeight = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight ();
-				y -= titleBarHeight;
-			}
-
-			Gtk.Application.Invoke (delegate {
-				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
-				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-				var menu = CreateNSMenu (entrySet, initialCommandTarget);
-				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
-				var toplevel = parent.Toplevel as Gtk.Window;
-				int trans_x, trans_y;
-				parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
-
-				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
-				var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
-				int w,h;
-				toplevel.GetSize (out w, out h);
-				pt.Y = h - pt.Y;
-
-				var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
-					pt,
-					0, 0,
-					MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
-					null, 0, 0, 0);
-
-				AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
-			});
+			var menu = CreateNSMenu (entrySet, initialCommandTarget);
+			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
 #else
 			var menu = CreateMenu (entrySet);
 			if (menu != null)
