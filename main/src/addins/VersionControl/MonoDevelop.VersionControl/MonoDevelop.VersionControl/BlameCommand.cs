@@ -49,7 +49,12 @@ namespace MonoDevelop.VersionControl
 				return items.All (CanShow);
 			
 			foreach (var item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+				var document = IdeApp.Workbench.OpenDocument (new FileOpenInformation (item.Path, null) {
+					Line = -1,
+					Column = -1,
+					Options = OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer,
+					DisplayBinding = DisplayBindingService.GetBindings<SourceEditor.SourceEditorDisplayBinding>().Single(),
+				});
 				if (document != null)
 					document.Window.SwitchView (document.Window.FindView<IBlameView> ());
 			}
