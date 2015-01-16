@@ -306,7 +306,16 @@ namespace MonoDevelop.Ide.Commands
                 if (!IdeApp.Preferences.BuildBeforeExecuting)
 					IdeApp.ProjectOperations.Execute (target, executionHandler);
                 else {
-                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
+					var buildTarget = target;
+					var executionTarget = buildTarget as IExecutableWorkspaceObject;
+					if (executionTarget != null) {
+						var buildDeps = executionTarget.GetExecutionDependencies ().ToList ();
+						if (buildDeps.Count > 1)
+							throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+						buildTarget = buildDeps [0];
+					}
+
+					IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (buildTarget);
                     asyncOperation.Completed += delegate {
                         if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
                             IdeApp.ProjectOperations.Execute (target, executionHandler);
