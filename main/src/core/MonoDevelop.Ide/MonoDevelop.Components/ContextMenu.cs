@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -57,6 +58,18 @@ namespace MonoDevelop.Components
 			}
 			if (Items.Count > 0 && Items[Items.Count - 1] is SeparatorContextMenuItem)
 				Items.RemoveAt (Items.Count - 1);
+		}
+
+		public void Show (Gtk.Widget parent, Gdk.EventButton evt)
+		{
+			#if MAC
+			if (Platform.IsMac) {
+				ContextMenuExtensionsMac.ShowContextMenu (parent, evt, this);
+				return;
+			}
+			#endif
+
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this);
 		}
 	}
 }

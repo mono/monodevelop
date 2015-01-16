@@ -2774,7 +2774,6 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
     <Compile Include="MonoDevelop.Components\CheckBoxContextMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\ContextMenu.cs" />
-    <Compile Include="MonoDevelop.Components\ContextMenuExtensions.cs" />
     <Compile Include="MonoDevelop.Components\ContextMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\ContextMenuItemCollection.cs" />
     <Compile Include="MonoDevelop.Components\RadioButtonContextMenuItem.cs" />
