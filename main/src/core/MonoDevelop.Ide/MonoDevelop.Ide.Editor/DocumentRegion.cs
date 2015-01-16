@@ -134,17 +134,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			return !left.Equals(right);
 		}
-#if !STANDALONE
-		public static implicit operator ICSharpCode.NRefactory.TypeSystem.DomRegion (DocumentRegion location)
-		{
-			return new ICSharpCode.NRefactory.TypeSystem.DomRegion (location.Begin.Line, location.Begin.Column, location.End.Line, location.End.Column);
-		}
-		
-		public static implicit operator DocumentRegion (ICSharpCode.NRefactory.TypeSystem.DomRegion location)
-		{
-			return new DocumentRegion (location.Begin.Line, location.Begin.Column, location.End.Line, location.End.Column);
-		}
-#endif
+
 		public TextSegment GetSegment (TextEditor document)
 		{
 			if (document == null)

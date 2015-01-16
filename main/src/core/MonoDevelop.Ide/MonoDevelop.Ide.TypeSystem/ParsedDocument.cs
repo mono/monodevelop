@@ -323,7 +323,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					
 					yield return new FoldingRegion (txt,
-						new DomRegion (comment.Region.Begin, end),
+						new DocumentRegion (comment.Region.Begin, end),
 						FoldType.Comment);
 					i = j - 1;
 				}
@@ -393,12 +393,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static bool IsInsideMember (this DocumentRegion region, IUnresolvedTypeDefinition cl)
 		{
-			if (region.IsEmpty || cl == null || !cl.BodyRegion.IsInside (region.Begin))
+			if (region.IsEmpty || cl == null || !cl.BodyRegion.IsInside (region.Begin.Line, region.Begin.Column))
 				return false;
 			foreach (var member in cl.Members) {
 				if (member.BodyRegion.IsEmpty)
 					continue;
-				if (member.BodyRegion.IsInside (region.Begin) && member.BodyRegion.IsInside (region.End)) 
+				if (member.BodyRegion.IsInside (region.Begin.Line, region.Begin.Column) && member.BodyRegion.IsInside (region.End.Line, region.End.Column)) 
 					return true;
 			}
 			foreach (var inner in cl.NestedTypes) {

@@ -181,16 +181,6 @@ namespace MonoDevelop.Ide.Editor
 			return !(left < right);
 		}
 
-		public static implicit operator ICSharpCode.NRefactory.TextLocation (DocumentLocation location)
-		{
-			return new ICSharpCode.NRefactory.TextLocation (location.Line, location.Column);
-		}
-
-		public static implicit operator DocumentLocation(ICSharpCode.NRefactory.TextLocation location)
-		{
-			return new DocumentLocation (location.Line, location.Column);
-		}
-
 		public static implicit operator Microsoft.CodeAnalysis.Text.LinePosition (DocumentLocation location)
 		{
 			return new Microsoft.CodeAnalysis.Text.LinePosition (location.Line - 1, location.Column - 1);

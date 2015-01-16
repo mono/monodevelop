@@ -25,8 +25,7 @@
 //
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -38,37 +37,37 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 		
-		public DomRegion Region {
+		public DocumentRegion Region {
 			get;
 			set;
 		}
 		
-		public TextLocation Start {
+		public DocumentLocation Start {
 			get;
 			set;
 		}
 		
-		public TextLocation End {
+		public DocumentLocation End {
 			get;
 			set;
 		}
 		
-		public ConditionBlock (string flag) : this (flag, TextLocation.Empty)
+		public ConditionBlock (string flag) : this (flag, DocumentLocation.Empty)
 		{
 		}
 
-		public ConditionBlock (string flag, TextLocation start)
+		public ConditionBlock (string flag, DocumentLocation start)
 		{
 			this.Flag = flag;
 			this.Start = start;
-			this.Region = DomRegion.Empty;
+			this.Region = DocumentRegion.Empty;
 		}
 	}
 	
 	[Serializable]
 	public class ConditionalRegion : ConditionBlock
 	{
-		public DomRegion ElseBlock {
+		public DocumentRegion ElseBlock {
 			get;
 			set;
 		}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.TextTemplating.Parser
 {
@@ -105,7 +106,7 @@ namespace MonoDevelop.TextTemplating.Parser
 						name = "<#@" + dir.Name + "...#>";
 					}
 					
-					DomRegion region = new DomRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
+					var region = new DocumentRegion (seg.TagStartLocation.Line, seg.TagStartLocation.Column,
 				                                      seg.EndLocation.Line, seg.EndLocation.Column);
 					
 					yield return new FoldingRegion (name, region, false);
