@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='message'>
 		/// The description of the error.
 		/// </param>
-		public Error (ErrorType errorType, string message, int line, int column) : this (errorType, message, line, column) 
+		public Error (ErrorType errorType, string message, int line, int column) : this (errorType, message, new DocumentLocation (line, column)) 
 		{
 		}
 
