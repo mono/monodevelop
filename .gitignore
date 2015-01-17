@@ -27,6 +27,10 @@ lib/FsUnit
 FSharp.AutoComplete/test/unit/build
 FSharp.AutoComplete/packages
 
+# Vim
+
+vim/packages
+
 # Emacs
 *.elc
 emacs/deps
