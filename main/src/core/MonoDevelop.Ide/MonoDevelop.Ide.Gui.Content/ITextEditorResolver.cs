@@ -29,26 +29,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
 	public interface ITextEditorResolver
 	{
-		ResolveResult GetLanguageItem (int offset);
-		ResolveResult GetLanguageItem (int offset, string expression);
+		ISymbol GetLanguageItem (int offset);
+		ISymbol GetLanguageItem (int offset, string expression);
 	}
 	
 	public interface ITextEditorResolverProvider
 	{
-		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion);
-		ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier);
-
-		string CreateTooltip (MonoDevelop.Ide.Gui.Document document, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState);
-
+		ISymbol GetLanguageItem (Document document, int offset, out DocumentRegion expressionRegion);
+		ISymbol GetLanguageItem (Document document, int offset, string identifier);
 	}
 
 	public static class TextEditorResolverService
@@ -77,7 +72,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return codon.CreateResolver ();
 		}
 
-		public static ResolveResult GetLanguageItem (this MonoDevelop.Ide.Gui.Document document, int offset, out DomRegion expressionRegion)
+		public static ISymbol GetLanguageItem (this Document document, int offset, out DocumentRegion expressionRegion)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
@@ -86,7 +81,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (textEditorResolver != null) {
 				return textEditorResolver.GetLanguageItem (document, offset, out expressionRegion);
 			}
-			expressionRegion = DomRegion.Empty;
+			expressionRegion = DocumentRegion.Empty;
 			return null;
 		}
 	}

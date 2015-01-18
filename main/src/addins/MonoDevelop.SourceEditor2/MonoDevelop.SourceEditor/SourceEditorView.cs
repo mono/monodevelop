@@ -1868,10 +1868,12 @@ namespace MonoDevelop.SourceEditor
 			if (TextEditor.IsSomethingSelected) {
 				expression = TextEditor.SelectedText;
 			} else {
-				DomRegion region;
+				MonoDevelop.Ide.Editor.DocumentRegion region;
 				var rr = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-				if (rr != null && !rr.IsError)
-					expression = TextEditor.GetTextBetween (region.Begin, region.End);
+				if (rr != null)
+					expression = TextEditor.GetTextBetween (
+						region.BeginLine, region.BeginColumn, 
+						region.EndLine, region.EndColumn);
 			}
 
 			DebuggingService.ShowExpressionEvaluator (expression);
@@ -2207,13 +2209,13 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITextEditorResolver implementation 
 		
-		public ResolveResult GetLanguageItem (int offset)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset)
 		{
-			DomRegion region;
+			MonoDevelop.Ide.Editor.DocumentRegion region;
 			return SourceEditorWidget.TextEditor.GetLanguageItem (offset, out region);
 		}
 		
-		public ResolveResult GetLanguageItem (int offset, string expression)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
 			return SourceEditorWidget.TextEditor.GetLanguageItem (offset, expression);
 		}

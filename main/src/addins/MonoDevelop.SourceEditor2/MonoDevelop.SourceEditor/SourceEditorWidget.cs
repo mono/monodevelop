@@ -1278,20 +1278,8 @@ namespace MonoDevelop.SourceEditor
 		#region Help
 		internal void MonodocResolver ()
 		{
-			DomRegion region;
+			MonoDevelop.Ide.Editor.DocumentRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			if (res is UnknownIdentifierResolveResult) {
-				var uir = (UnknownIdentifierResolveResult)res;
-				IdeApp.HelpOperations.SearchHelpFor (uir.Identifier);
-				return;
-			}
-
-			if (res is UnknownMemberResolveResult) {
-				var uir = (UnknownMemberResolveResult)res;
-				IdeApp.HelpOperations.SearchHelpFor (uir.MemberName);
-				return;
-			}
-
 			string url = HelpService.GetMonoDocHelpUrl (res);
 			if (url != null)
 				IdeApp.HelpOperations.ShowHelp (url);
@@ -1299,9 +1287,9 @@ namespace MonoDevelop.SourceEditor
 		
 		internal void MonodocResolverUpdate (CommandInfo cinfo)
 		{
-			DomRegion region;
+			MonoDevelop.Ide.Editor.DocumentRegion region;
 			var res = TextEditor.GetLanguageItem (TextEditor.Caret.Offset, out region);
-			if (res == null ||/* !IdeApp.HelpOperations.CanShowHelp (res) && */ !(res is UnknownIdentifierResolveResult || res is UnknownMemberResolveResult))
+			if (HelpService.GetMonoDocHelpUrl (res) == null)
 				cinfo.Bypass = true;
 		}
 		

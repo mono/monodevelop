@@ -525,10 +525,10 @@ namespace MonoDevelop.SourceEditor
 		
 		int           oldOffset = -1;
 
-		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, out MonoDevelop.Ide.Editor.DocumentRegion region)
 		{
 			oldOffset = offset;
-			region = DomRegion.Empty;
+			region = MonoDevelop.Ide.Editor.DocumentRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
 				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
@@ -540,7 +540,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (IsSomethingSelected) {
 				var result = GetLanguageItem (Caret.Offset, Document.GetTextAt (SelectionRange));
-				if (result != null && !result.IsError)
+				if (result != null)
 					return CodeTemplateContext.InExpression;
 			}
 			return CodeTemplateContext.Standard;
@@ -553,7 +553,7 @@ namespace MonoDevelop.SourceEditor
 			internal set { this.textEditorResolverProvider = value; }
 		}
 		
-		public ResolveResult GetLanguageItem (int offset, string expression)
+		public Microsoft.CodeAnalysis.ISymbol GetLanguageItem (int offset, string expression)
 		{
 			oldOffset = offset;
 			

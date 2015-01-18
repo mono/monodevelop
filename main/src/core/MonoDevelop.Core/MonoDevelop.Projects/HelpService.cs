@@ -135,49 +135,11 @@ namespace MonoDevelop.Projects
 		
 		//note: this method is very careful to check that the generated URLs exist in MonoDoc
 		//because if we send nonexistent URLS to MonoDoc, it shows empty pages
-		public static string GetMonoDocHelpUrl (ResolveResult result)
+		public static string GetMonoDocHelpUrl (Microsoft.CodeAnalysis.ISymbol result)
 		{
 			if (result == null)
 				return null;
-			
-//			if (result is AggregatedResolveResult) 
-//				result = ((AggregatedResolveResult)result).PrimaryResult;
-			
-			
-			if (result is NamespaceResolveResult) {
-				string namespc = ((NamespaceResolveResult)result).NamespaceName;
-				//verify that the namespace exists in the help tree
-				//FIXME: GetHelpXml doesn't seem to work for namespaces, so forced to do full render
-				Monodoc.Node dummy;
-				if (!String.IsNullOrEmpty (namespc) && HelpTree != null && HelpTree.RenderUrl ("N:" + namespc, out dummy) != null)
-					return "N:" + namespc;
-				else
-					return null;
-			}
-			
-			IMember member = null;
-//			if (result is MethodGroupResolveResult)
-//				member = ((MethodGroupResolveResult)result).Methods.FirstOrDefault ();
-//			else 
-			if (result is MemberResolveResult)
-				member = ((MemberResolveResult)result).Member;
-			
-			if (member != null && member.GetMonodocDocumentation () != null)
-				return member.GetIdString ();
-			
-			var type = result.Type;
-			if (type != null && !String.IsNullOrEmpty (type.FullName)) {
-				string t = "T:" + type.FullName;
-				try {
-					var tree = HelpTree;
-					if (tree != null && tree.GetHelpXml (t) != null)
-						return t;
-				} catch (Exception) {
-					return null;
-				}
-			}
-			
-			return null;
+			return result.GetDocumentationCommentId ();
 		}
 	}
 	
