@@ -65,6 +65,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 		}
 
+		/// <summary>
+		/// If false the window button isn't inserted into the page bar.
+		/// </summary>
+		public virtual bool IsVisible { 
+			get { return true; }
+		}
+
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
 			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
