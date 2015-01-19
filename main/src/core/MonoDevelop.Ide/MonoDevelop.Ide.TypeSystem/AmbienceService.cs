@@ -50,17 +50,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			// may not have been initialized in testing environment.
 			if (AddinManager.IsInitialized) {
-				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
-					var ambience = args.ExtensionNode as MimeTypeExtensionNode;
-					switch (args.Change) {
-					case ExtensionChange.Add:
-						ambiences[ambience.MimeType] = (Ambience) ambience.CreateInstance ();
-						break;
-					case ExtensionChange.Remove:
-						ambiences.Remove (ambience.MimeType);
-						break;
-					}
-				});
+//				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Ambiences", delegate(object sender, ExtensionNodeEventArgs args) {
+//					var ambience = args.ExtensionNode as MimeTypeExtensionNode;
+//					switch (args.Change) {
+//					case ExtensionChange.Add:
+//						ambiences[ambience.MimeType] = (Ambience) ambience.CreateInstance ();
+//						break;
+//					case ExtensionChange.Remove:
+//						ambiences.Remove (ambience.MimeType);
+//						break;
+//					}
+//				});
 			}
 		}
 		
