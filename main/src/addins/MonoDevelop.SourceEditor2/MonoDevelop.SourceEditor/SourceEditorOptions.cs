@@ -130,9 +130,6 @@ namespace MonoDevelop.SourceEditor
 				case "TabIsReindent": 
 					this.TabIsReindent = (bool)args.NewValue;
 					break;
-				case "EnableSemanticHighlighting":
-					this.EnableSemanticHighlighting = (bool)args.NewValue;
-					break;
 				case "AutoInsertMatchingBracket":
 					this.AutoInsertMatchingBracket = (bool)args.NewValue;
 					break;
@@ -156,9 +153,6 @@ namespace MonoDevelop.SourceEditor
 					break;
 				case "HighlightCaretLine":
 					base.HighlightCaretLine = (bool)args.NewValue;
-					break;
-				case "EnableSyntaxHighlighting":
-					base.EnableSyntaxHighlighting = (bool)args.NewValue;
 					break;
 				case "HighlightMatchingBracket":
 					base.HighlightMatchingBracket = (bool)args.NewValue;
@@ -211,7 +205,6 @@ namespace MonoDevelop.SourceEditor
 		void LoadAllPrefs ()
 		{
 			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
-			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", true);
 			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
 			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
 			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
@@ -220,7 +213,6 @@ namespace MonoDevelop.SourceEditor
 			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
-			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
 			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
 			base.FontName = PropertyService.Get ("FontName", "Mono 10");
@@ -283,17 +275,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		bool enableSemanticHighlighting;
 		public bool EnableSemanticHighlighting {
 			get {
-				return enableSemanticHighlighting;
-			}
-			set {
-				if (value != this.enableSemanticHighlighting) {
-					this.enableSemanticHighlighting = value;
-					PropertyService.Set ("EnableSemanticHighlighting", value);
-					OnChanged (EventArgs.Empty);
-				}
+				return true;
 			}
 		}
 		/*
@@ -589,9 +573,11 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public override bool EnableSyntaxHighlighting {
+			get {
+				return true;
+			}
 			set {
-				PropertyService.Set ("EnableSyntaxHighlighting", value);
-				base.EnableSyntaxHighlighting = value;
+				// nothing
 			}
 		}
 		
