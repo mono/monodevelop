@@ -138,7 +138,7 @@ namespace MonoDevelop.CodeGeneration
 			} while (store.IterNext (ref iter));
 
 			var output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Editor, (SyntaxNode)options.EnclosingMember ?? options.EnclosingPart) + "\t";
+			string indent = options.Editor.GetVirtualIndentationString (options.Editor.CaretLine);
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();
@@ -149,6 +149,7 @@ namespace MonoDevelop.CodeGeneration
 
 			if (output.Length > 0) {
 				var data = options.Editor;
+				data.EnsureCaretIsNotVirtual ();
 				data.InsertAtCaret (output.ToString ().TrimStart ());
 			}
 		}

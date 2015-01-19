@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeGeneration
 	
 	static class CodeGenerationService
 	{
-		static List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
+		static readonly List<ICodeGenerator> codeGenerators = new List<ICodeGenerator>();
 		
 		static CodeGenerationService ()
 		{

@@ -38,6 +38,8 @@ using Microsoft.CodeAnalysis.Simplification;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Gui.Content;
+using Microsoft.CodeAnalysis.Formatting;
+using System.Diagnostics;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -59,13 +61,18 @@ namespace MonoDevelop.CodeGeneration
 			get;
 			private set;
 		}
-		
+
+		public SyntaxNode EnclosingMemberSyntax {
+			get;
+			private set;
+		}
+
 		public TypeDeclarationSyntax EnclosingPart {
 			get;
 			private set;
 		}
 		
-		public MemberDeclarationSyntax EnclosingMember {
+		public ISymbol EnclosingMember {
 			get;
 			private set;
 		}
@@ -94,12 +101,17 @@ namespace MonoDevelop.CodeGeneration
 
 		internal CodeGenerationOptions (TextEditor editor,  DocumentContext ctx)
 		{
+			Editor = editor;
+			DocumentContext = ctx;
 			var analysisDocument = ctx.AnalysisDocument;
 			if (analysisDocument != null)
 				CurrentState = analysisDocument.GetSemanticModelAsync ().Result;
 			offset = editor.CaretOffset;
 			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
-			EnclosingMember = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
+			EnclosingMemberSyntax = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
+			if (EnclosingMemberSyntax != null)
+				EnclosingMember = CurrentState.GetDeclaredSymbol (EnclosingMemberSyntax);
+
 			EnclosingPart = node.AncestorsAndSelf ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
 			if (EnclosingPart != null)
 				EnclosingType = CurrentState.GetDeclaredSymbol (EnclosingPart) as ITypeSymbol;
@@ -123,5 +135,34 @@ namespace MonoDevelop.CodeGeneration
 			return new CodeGenerationOptions (document, ctx);
 		}
 		
+		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			node = node.WithAdditionalAnnotations (Formatter.Annotation, Simplifier.Annotation);
+
+			var text = Editor.Text;
+			string nodeText = node.ToString ();
+			text = text.Insert (offset, nodeText);
+
+
+			var backgroundDocument = DocumentContext.AnalysisDocument.WithText (SourceText.From (text));
+
+			var currentRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken);
+
+			node = currentRoot.FindNode (TextSpan.FromBounds(offset, offset + nodeText.Length));
+
+			currentRoot = currentRoot.TrackNodes (node);
+			backgroundDocument = backgroundDocument.WithSyntaxRoot (currentRoot);
+			backgroundDocument = await Simplifier.ReduceAsync (backgroundDocument, TextSpan.FromBounds (offset, offset + nodeText.Length), FormattingOptions, cancellationToken).ConfigureAwait(false);
+			backgroundDocument = await Formatter.FormatAsync (backgroundDocument, Formatter.Annotation, FormattingOptions, cancellationToken).ConfigureAwait(false);
+
+			var newRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken);
+
+			var formattedNode = newRoot.GetCurrentNode (node);
+			if (formattedNode == null) {
+				LoggingService.LogError ("Fatal error: Can't find current formatted node in code generator document.");
+				return nodeText;
+			}
+			return formattedNode.ToString ();
+		}
 	}
 }
