@@ -560,7 +560,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			guiDocument.DocumentParsed -= HandleDocumentParsed;
-			PropertyService.PropertyChanged -= HandlePropertyChanged;
 		}
 
 		#endregion
