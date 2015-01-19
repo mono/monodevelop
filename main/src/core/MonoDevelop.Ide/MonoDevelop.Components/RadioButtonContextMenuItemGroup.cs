@@ -1,9 +1,10 @@
-// IBuildTarget.cs
+//
+// RadioButtonContextMenuItemGroup.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Greg Munn <greg.munn@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
+using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Components
 {
-	public interface IBuildTarget: IWorkspaceObject
+	public class RadioButtonContextMenuItemGroup
 	{
-		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
-		bool SupportsTarget (string target);
-		bool NeedsBuilding (ConfigurationSelector configuration);
-		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
-
-		//TODO: move these to IExecutableWorkspaceObject when we break API
-		void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
-		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
-	}
-
-	public interface IExecutableWorkspaceObject : IBuildTarget
-	{
-		/// <summary>
-		/// Gets the build targets that should be built before the project is executed.
-		/// If the project itself is not executed, it will not be built.
-		/// </summary>
-		IEnumerable<IBuildTarget> GetExecutionDependencies ();
+		internal List<object> Items = new List<object> ();
 	}
 }

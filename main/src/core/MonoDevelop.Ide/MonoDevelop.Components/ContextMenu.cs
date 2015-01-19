@@ -1,9 +1,10 @@
-// IBuildTarget.cs
+﻿//
+// ContextMenu.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Greg Munn <greg.munn@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-using System.Collections.Generic;
+using System;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Components
 {
-	public interface IBuildTarget: IWorkspaceObject
+	public class ContextMenu
 	{
-		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
-		bool SupportsTarget (string target);
-		bool NeedsBuilding (ConfigurationSelector configuration);
-		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
+		readonly ContextMenuItemCollection items;
 
-		//TODO: move these to IExecutableWorkspaceObject when we break API
-		void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
-		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
-	}
+		public ContextMenu ()
+		{
+			items = new ContextMenuItemCollection (this);
+		}
 
-	public interface IExecutableWorkspaceObject : IBuildTarget
-	{
+		public ContextMenuItemCollection Items {
+			get { return items; }
+		}
+
 		/// <summary>
-		/// Gets the build targets that should be built before the project is executed.
-		/// If the project itself is not executed, it will not be built.
+		/// Removes all separators of the menu which follow another separator
 		/// </summary>
-		IEnumerable<IBuildTarget> GetExecutionDependencies ();
+		public void CollapseSeparators ()
+		{
+			bool wasSeparator = true;
+			for (int n=0; n<Items.Count; n++) {
+				if (Items[n] is SeparatorContextMenuItem) {
+					if (wasSeparator)
+						Items.RemoveAt (n--);
+					else
+						wasSeparator = true;
+				} else
+					wasSeparator = false;
+			}
+			if (Items.Count > 0 && Items[Items.Count - 1] is SeparatorContextMenuItem)
+				Items.RemoveAt (Items.Count - 1);
+		}
+
+		public void Show (Gtk.Widget parent, Gdk.EventButton evt)
+		{
+			#if MAC
+			if (Platform.IsMac) {
+				ContextMenuExtensionsMac.ShowContextMenu (parent, evt, this);
+				return;
+			}
+			#endif
+
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this);
+		}
 	}
 }

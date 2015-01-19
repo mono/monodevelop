@@ -1007,7 +1007,7 @@
           <widget class="Gtk.CheckButton" id="buildBeforeRunCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Build solution before running</property>
+            <property name="Label" translatable="yes">Build project before running</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
@@ -1023,7 +1023,7 @@
           <widget class="Gtk.CheckButton" id="runWithWarningsCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Run solution if build completed with warnings</property>
+            <property name="Label" translatable="yes">Run project if build completed with warnings</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>
@@ -1039,7 +1039,7 @@
           <widget class="Gtk.CheckButton" id="buildBeforeTestCheckBox">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">Build solution before executing unit tests</property>
+            <property name="Label" translatable="yes">Build project before executing unit tests</property>
             <property name="DrawIndicator">True</property>
             <property name="HasLabel">True</property>
             <property name="UseUnderline">True</property>

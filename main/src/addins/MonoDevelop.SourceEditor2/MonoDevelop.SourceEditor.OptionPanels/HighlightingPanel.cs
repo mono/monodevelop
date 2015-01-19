@@ -69,9 +69,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.buttonEdit.Clicked += HandleButtonEdithandleClicked;
 			this.buttonNew.Clicked += HandleButtonNewClicked;
 			this.buttonExport.Clicked += HandleButtonExportClicked;
-			this.enableHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
-			this.enableSemanticHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting;
-			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
 			this.styleTreeview.Selection.Changed += HandleStyleTreeviewSelectionChanged;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			ShowStyles ();
@@ -216,7 +213,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)
 		{
-			this.enableSemanticHighlightingCheckbutton.Sensitive = this.enableHighlightingCheckbutton.Active;
 		}
 
 		internal static void UpdateActiveDocument ()
@@ -233,11 +229,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
-			if (DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting != this.enableSemanticHighlightingCheckbutton.Active) {
-				DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
-				UpdateActiveDocument ();
-			}
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				ColorScheme sheme = ((Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
