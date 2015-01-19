@@ -886,6 +886,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnNextInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (false);
+			});
 		}
 
 		protected override void OnNextLine ( )
@@ -1002,6 +1005,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnStepInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (true);
+			});
 		}
 
 		protected override void OnStepLine ( )
