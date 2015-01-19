@@ -891,7 +891,7 @@
               </packing>
             </child>
             <child>
-              <widget class="MonoDevelop.Ide.Gui.Components.EnvVarList" id="envvarlist1">
+              <widget class="MonoDevelop.Ide.Gui.Components.EnvVarList" id="envVarList">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="ShadowType">In</property>

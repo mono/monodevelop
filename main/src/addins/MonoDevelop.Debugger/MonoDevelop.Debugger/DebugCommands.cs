@@ -275,7 +275,7 @@ namespace MonoDevelop.Debugger
 			try {
 				bool isOK;
 
-				 while ((isOK = (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)) 
+				while ((isOK = (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)) 
 					&& !Validate (dlg));
 
 				if (isOK)

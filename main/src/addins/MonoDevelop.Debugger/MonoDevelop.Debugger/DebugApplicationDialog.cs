@@ -33,46 +33,30 @@ namespace MonoDevelop.Debugger
 		public DebugApplicationDialog ()
 		{
 			this.Build ();
-
 		}
 
 		public Dictionary<string,string> EnvironmentVariables {
 			get {
 				var envVars = new Dictionary<string, string> ();
-				this.envvarlist1.StoreValues (envVars);
+				this.envVarList.StoreValues (envVars);
 				return envVars;
 			}
-			set {
-				this.envvarlist1.LoadValues (value);
-			}
+			set { this.envVarList.LoadValues (value); }
 		}
 
 		public string WorkingDirectory {
-			get {
-				return this.folderEntry.Path;
-			}
-			set {
-				this.folderEntry.Path = value;
-			}
+			get { return this.folderEntry.Path; }
+			set { this.folderEntry.Path = value; }
 		}
 
 		public string SelectedFile {
-			get {
-				return this.fileEntry.Path;
-			}
-
-			set {
-				this.fileEntry.Path = value;
-			}
+			get { return this.fileEntry.Path; }
+			set { this.fileEntry.Path = value; }
 		}
 
 		public string Arguments {
-			get {
-				return this.argsEntry.Text;
-			}
-			set {
-				this.argsEntry.Text = value;
-			}
+			get { return this.argsEntry.Text; }
+			set { this.argsEntry.Text = value; }
 		}
 	}
 }

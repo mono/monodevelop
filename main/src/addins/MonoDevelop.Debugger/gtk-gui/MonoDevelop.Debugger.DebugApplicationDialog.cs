@@ -22,7 +22,7 @@ namespace MonoDevelop.Debugger
 		
 		private global::Gtk.Label label6;
 		
-		private global::MonoDevelop.Ide.Gui.Components.EnvVarList envvarlist1;
+		private global::MonoDevelop.Ide.Gui.Components.EnvVarList envVarList;
 		
 		private global::Gtk.Button buttonCancel;
 		
@@ -130,12 +130,12 @@ namespace MonoDevelop.Debugger
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
-			this.envvarlist1 = new global::MonoDevelop.Ide.Gui.Components.EnvVarList ();
-			this.envvarlist1.CanFocus = true;
-			this.envvarlist1.Name = "envvarlist1";
-			this.envvarlist1.ShadowType = ((global::Gtk.ShadowType)(1));
-			this.vbox5.Add (this.envvarlist1);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.envvarlist1]));
+			this.envVarList = new global::MonoDevelop.Ide.Gui.Components.EnvVarList ();
+			this.envVarList.CanFocus = true;
+			this.envVarList.Name = "envVarList";
+			this.envVarList.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.vbox5.Add (this.envVarList);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.envVarList]));
 			w10.Position = 2;
 			w1.Add (this.vbox5);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox5]));
