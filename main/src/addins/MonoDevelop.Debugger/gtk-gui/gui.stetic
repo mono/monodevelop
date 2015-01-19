@@ -729,6 +729,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Debugger.DebugApplicationDialog" design-size="656 300">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Debug Application</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

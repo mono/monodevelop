@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger
 {
-	public partial class DebugApplicationDialog : Gtk.Dialog
+	internal partial class DebugApplicationDialog : Gtk.Dialog
 	{
 		public DebugApplicationDialog ()
 		{
