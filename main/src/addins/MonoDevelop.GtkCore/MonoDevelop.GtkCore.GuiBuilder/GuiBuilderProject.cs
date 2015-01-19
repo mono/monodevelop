@@ -340,10 +340,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		void OnFileAdded (object sender, ProjectFileEventArgs e)
 		{
 			foreach (ProjectFileEventInfo args in e) {
-				var docId = RoslynTypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
+				var docId = TypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
+				var doc = TypeSystemService.Workspace.GetDocument (docId);
 				if (doc == null)
 					continue;
 	
@@ -373,10 +373,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			foreach (ProjectFileEventInfo args in e) {
 
-				var docId = RoslynTypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
+				var docId = TypeSystemService.GetDocument (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
+				var doc = TypeSystemService.Workspace.GetDocument (docId);
 				if (doc == null)
 					continue;
 				var semanticModel = doc.GetSemanticModelAsync ().Result;
@@ -556,7 +556,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			System.Threading.Tasks.Task<Compilation> task;
 			do {
-				task = RoslynTypeSystemService.GetCompilationAsync (Project);
+				task = TypeSystemService.GetCompilationAsync (Project);
 				task.Wait (500);
 			} while (!task.IsCompleted);
 

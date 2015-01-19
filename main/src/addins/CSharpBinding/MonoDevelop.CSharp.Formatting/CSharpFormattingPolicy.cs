@@ -564,7 +564,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public CSharpFormattingPolicy ()
 		{
-			this.options = RoslynTypeSystemService.Workspace.Options;
+			this.options = TypeSystemService.Workspace.Options;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

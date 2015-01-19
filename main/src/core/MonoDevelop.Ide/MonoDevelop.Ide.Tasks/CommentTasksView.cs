@@ -202,19 +202,20 @@ namespace MonoDevelop.Ide.Tasks
 
 		void UpdateCommentTagsForProject (Solution solution, Project project)
 		{
-			var ctx = TypeSystemService.GetProjectContentWrapper (project);
-			if (ctx == null)
-				return;
-			var tags = ctx.GetExtensionObject<ProjectCommentTags> ();
-			if (tags == null) {
-				tags = new ProjectCommentTags ();
-				ctx.UpdateExtensionObject (tags);
-				tags.Update (ctx.Project);
-			} else {
-				foreach (var kv in tags.Tags) {
-					UpdateCommentTags (solution, kv.Key, kv.Value);
-				}
-			}
+			// TODO: Roslyn port.
+//			var ctx = TypeSystemService.GetProjectContentWrapper (project);
+//			if (ctx == null)
+//				return;
+//			var tags = ctx.GetExtensionObject<ProjectCommentTags> ();
+//			if (tags == null) {
+//				tags = new ProjectCommentTags ();
+//				ctx.UpdateExtensionObject (tags);
+//				tags.Update (ctx.Project);
+//			} else {
+//				foreach (var kv in tags.Tags) {
+//					UpdateCommentTags (solution, kv.Key, kv.Value);
+//				}
+//			}
 		}
 		
 		void LoadSolutionContents (Solution sln)

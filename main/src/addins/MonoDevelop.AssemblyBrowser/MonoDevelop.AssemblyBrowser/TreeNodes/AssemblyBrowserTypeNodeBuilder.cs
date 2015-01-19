@@ -104,9 +104,11 @@ namespace MonoDevelop.AssemblyBrowser
 				var simpleCompilation = new SimpleCompilation (mainAssembly);
 				return new SimpleTypeResolveContext (simpleCompilation.MainAssembly);
 			}
-			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var compilation = TypeSystemService.GetCompilation (project);
-			return new SimpleTypeResolveContext (compilation.MainAssembly);
+			// TODO: roslyn port ?
+			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			// var compilation = TypeSystemService.GetCompilation (project);
+			// return new SimpleTypeResolveContext (compilation.MainAssembly);
+			return null;
 		}
 		
 		protected IMember Resolve (ITreeNavigator treeBuilder, IUnresolvedMember member, ITypeDefinition currentType = null)
@@ -122,9 +124,11 @@ namespace MonoDevelop.AssemblyBrowser
 				var simpleCompilation = new SimpleCompilation (mainAssembly);
 				return type.Resolve (new SimpleTypeResolveContext (simpleCompilation.MainAssembly));
 			}
-			var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
-			var ctx = TypeSystemService.GetCompilation (project);
-			return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
+			// TODO: roslyn port ?
+			// var project = (Project)treeBuilder.GetParentDataItem (typeof(Project), true);
+			// var ctx = TypeSystemService.GetCompilation (project);
+			// return ctx.MainAssembly.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameters.Count);
+			return null;
 		}
 	}
 }

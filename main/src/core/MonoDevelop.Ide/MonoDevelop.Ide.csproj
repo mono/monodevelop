@@ -2794,7 +2794,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\RoslynTypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTextLoader.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceTextContainer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
@@ -2902,6 +2901,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\LineEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Error.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MetadataReferenceCache.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\IFoldingParser.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService_WorkspaceHandling.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

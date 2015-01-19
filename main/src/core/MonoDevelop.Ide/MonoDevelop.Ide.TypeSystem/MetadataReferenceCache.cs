@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (timeStamp != File.GetLastWriteTimeUtc (path)) {
 					foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-						var workspace = RoslynTypeSystemService.GetWorkspace (solution);
+						var workspace = TypeSystemService.GetWorkspace (solution);
 						foreach (var projId in InUseBy) {
 							while (!workspace.TryApplyChanges (workspace.CurrentSolution.GetProject (projId).RemoveMetadataReference (Reference).Solution)) {
 							}
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					CreateNewReference ();
 					foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-						var workspace = RoslynTypeSystemService.GetWorkspace (solution);
+						var workspace = TypeSystemService.GetWorkspace (solution);
 						foreach (var projId in InUseBy) {
 							while (!workspace.TryApplyChanges (workspace.CurrentSolution.GetProject (projId).AddMetadataReference (Reference).Solution)) {
 							}

@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
 				if (referencedProject == null)
 					continue;
-				if (RoslynTypeSystemService.IsOutputTrackedProject (referencedProject)) {
+				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 					yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
 				}
@@ -313,7 +313,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;
 				if (referencedProject == null)
 					continue;
-				if (RoslynTypeSystemService.IsOutputTrackedProject (referencedProject))
+				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
 				yield return new ProjectReference (GetProjectId (referencedProject));
 			}

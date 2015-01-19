@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.WebForms
 		protected override string GenerateInfo (string filename)
 		{
 			try {
-				var doc = TypeSystemService.ParseFile (filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as WebFormsParsedDocument;
+				var doc = TypeSystemService.ParseFile (null, filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as WebFormsParsedDocument;
 				if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 					return doc.Info.InheritedClass;
 			} catch (Exception ex) {

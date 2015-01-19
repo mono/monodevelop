@@ -52,7 +52,7 @@ namespace MonoDevelop.Refactoring.Rename
 				locations.Add (Tuple.Create (loc.SourceTree.FilePath, loc.SourceSpan));
 			}
 					
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result) {
 				foreach (var loc in mref.Locations) {
 					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
 				}
@@ -84,7 +84,7 @@ namespace MonoDevelop.Refactoring.Rename
 				fileNames.Add (loc.SourceTree.FilePath);
 			}
 					
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result) {
 				foreach (var loc in mref.Locations) {
 					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
 					fileNames.Add (loc.Document.FilePath);

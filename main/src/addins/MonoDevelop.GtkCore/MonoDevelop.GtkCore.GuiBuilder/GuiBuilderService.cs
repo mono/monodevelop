@@ -376,7 +376,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			RoslynTypeSystemService.NotifyFileChange (fileName, text);
+			TypeSystemService.NotifyFileChange (fileName, text);
 //			
 //			if (ProjectDomService.HasDom (project)) {
 //				// Only update the parser database if the project is actually loaded in the IDE.

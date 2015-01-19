@@ -70,16 +70,16 @@ namespace MonoDevelop.Refactoring
 					IEnumerable<ISymbol> task;
 
 					if (symbol.ContainingType != null && symbol.ContainingType.TypeKind == TypeKind.Interface) {
-						task = SymbolFinder.FindImplementationsAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result; 
+						task = SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result; 
 					} else if (symbol.Kind == SymbolKind.NamedType) {
 						var type = (INamedTypeSymbol)symbol;
 						if (type.TypeKind == TypeKind.Interface) {
-							task = SymbolFinder.FindImplementationsAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result; 
+							task = SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result; 
 						} else {
-							task = type.FindDerivedClassesAsync (RoslynTypeSystemService.Workspace.CurrentSolution).Result.Cast<ISymbol> ();
+							task = type.FindDerivedClassesAsync (TypeSystemService.Workspace.CurrentSolution).Result.Cast<ISymbol> ();
 						}
 					} else {
-						task = SymbolFinder.FindOverridesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result;
+						task = SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result;
 					}
 					foreach (var foundSymbol in task) {
 						foreach (var loc in foundSymbol.Locations)

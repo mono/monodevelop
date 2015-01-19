@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Highlighting
 						ReferenceUsageType = ReferenceUsageType.Declariton	
 					};
 			}
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
 				foreach (var loc in mref.Locations) {
 					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
 						ReferenceUsageType = ReferenceUsageType.Read	

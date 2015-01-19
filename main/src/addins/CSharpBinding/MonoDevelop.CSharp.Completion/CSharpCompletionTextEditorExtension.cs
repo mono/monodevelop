@@ -272,7 +272,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 
 				var semanticModel = await analysisDocument.GetSemanticModelAsync (token);
-				var engine = new CompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
+				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
 				foreach (var symbol in completionResult) {
 					list.Add (symbol); 
@@ -535,7 +535,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 				var semanticModel = await analysisDocument.GetSemanticModelAsync ();
-				var engine = new ParameterHintingEngine (RoslynTypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
 				return engine.GetParameterDataProvider (analysisDocument, semanticModel, offset, token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 

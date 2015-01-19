@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
-				RoslynTypeSystemService.Load (solution, monitor);
+				TypeSystemService.Load (solution, monitor);
 			content.Project = project;
 			doc.SetProject (project);
 

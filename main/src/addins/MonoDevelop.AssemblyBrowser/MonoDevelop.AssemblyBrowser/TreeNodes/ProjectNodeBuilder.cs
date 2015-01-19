@@ -75,33 +75,35 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var project = (Project)dataObject;
-			var ctx = TypeSystemService.GetProjectContext (project);
-			if (ctx == null)
-				return;
-			
-			var namespaces = new Dictionary<string, Namespace> ();
-
-			foreach (var type in ctx.TopLevelTypeDefinitions) {
-				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
-				if (!namespaces.ContainsKey (namespaceName))
-					namespaces [namespaceName] = new Namespace (namespaceName);
-				
-				var ns = namespaces [namespaceName];
-				ns.Types.Add (type);
-			}
-			
-			foreach (var ns in namespaces.Values) {
-				builder.AddChild (ns);
-			}
+			// TODO: Roslyn port.
+//			var ctx = TypeSystemService.GetProjectContext (project);
+//			if (ctx == null)
+//				return;
+//			
+//			var namespaces = new Dictionary<string, Namespace> ();
+//
+//			foreach (var type in ctx.TopLevelTypeDefinitions) {
+//				string namespaceName = string.IsNullOrEmpty (type.Namespace) ? "-" : type.Namespace;
+//				if (!namespaces.ContainsKey (namespaceName))
+//					namespaces [namespaceName] = new Namespace (namespaceName);
+//				
+//				var ns = namespaces [namespaceName];
+//				ns.Types.Add (type);
+//			}
+//			
+//			foreach (var ns in namespaces.Values) {
+//				builder.AddChild (ns);
+//			}
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var project = (Project)dataObject;
-			var ctx = TypeSystemService.GetProjectContext (project);
-			if (ctx == null)
+			// TODO: Roslyn port.
+			//var ctx = TypeSystemService.GetProjectContext (project);
+			//if (ctx == null)
 				return false;
-			return ctx.TopLevelTypeDefinitions.Any ();
+			// return ctx.TopLevelTypeDefinitions.Any ();
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

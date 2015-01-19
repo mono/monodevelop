@@ -44,7 +44,7 @@ namespace MonoDevelop.Refactoring
 		public static void FindRefs (ISymbol symbol)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
+			var solution = TypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var loc in symbol.Locations) {
@@ -90,7 +90,7 @@ namespace MonoDevelop.Refactoring
 		public static void FindRefs (ISymbol obj, Task<Compilation> compilation)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
+			var solution = TypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation.Result)) {

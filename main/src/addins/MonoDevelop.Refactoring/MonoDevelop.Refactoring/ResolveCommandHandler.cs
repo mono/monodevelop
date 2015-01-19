@@ -432,7 +432,7 @@ namespace MonoDevelop.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 
-					var comp = RoslynTypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
 					if (comp == null)
 						continue;
 					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
@@ -660,7 +660,7 @@ namespace MonoDevelop.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 
-					var comp = RoslynTypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
 					if (comp == null)
 						continue;
 					if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (curProject)))

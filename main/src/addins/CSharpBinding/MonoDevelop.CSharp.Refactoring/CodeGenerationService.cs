@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool isOpen;
 			var filePath = part.SourceTree.FilePath;
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
+			var parsedDocument = TypeSystemService.ParseFile (null, data.FileName, data.MimeType, data.Text);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type, part);
 			
@@ -681,8 +681,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				sw.WriteLine (ns.ToString ());
 			}
 			FileService.NotifyFileChanged (fileName); 
-			var roslynProject = RoslynTypeSystemService.GetProject (project); 
-			var id = RoslynTypeSystemService.Workspace.GetDocumentId (roslynProject.Id, fileName); 
+			var roslynProject = TypeSystemService.GetProject (project); 
+			var id = TypeSystemService.Workspace.GetDocumentId (roslynProject.Id, fileName); 
 			if (id == null)
 				return null;
 			var model = roslynProject.GetDocument (id).GetSemanticModelAsync ().Result;

@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace {
 			get {
-				return RoslynTypeSystemService.Workspace;
+				return TypeSystemService.Workspace;
 			}
 		}
 

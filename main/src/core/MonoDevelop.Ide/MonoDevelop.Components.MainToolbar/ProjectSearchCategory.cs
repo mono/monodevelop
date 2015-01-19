@@ -78,7 +78,7 @@ namespace MonoDevelop.Components.MainToolbar
 					var projects = IdeApp.Workspace.GetAllProjects ();
 					
 					foreach (var p in projects) {
-						var pctx = RoslynTypeSystemService.GetCompilationAsync (p).Result;
+						var pctx = TypeSystemService.GetCompilationAsync (p).Result;
 						if (pctx == null)
 							continue;
 						foreach (var type in pctx.GetAllTypes ())

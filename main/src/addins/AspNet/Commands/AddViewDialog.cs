@@ -474,7 +474,7 @@ namespace MonoDevelop.AspNet.Commands
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = RoslynTypeSystemService.GetCompilationAsync (project).Result;
+				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
 				TypesList = new List<INamedTypeSymbol> (ctx.Assembly.GlobalNamespace.GetTypeMembers ());
 				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 				foreach (var typeDef in TypesList) {

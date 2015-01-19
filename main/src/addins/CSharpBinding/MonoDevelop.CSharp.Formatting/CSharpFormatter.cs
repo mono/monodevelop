@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var inputTree = CSharpSyntaxTree.ParseText (SourceText.From (input));
 
-			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), RoslynTypeSystemService.Workspace, policy.CreateOptions (textPolicy));
+			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
 			var result = doc.ToFullString ();
 			return result.Substring (startOffset, endOffset + result.Length - input.Length);
 		}

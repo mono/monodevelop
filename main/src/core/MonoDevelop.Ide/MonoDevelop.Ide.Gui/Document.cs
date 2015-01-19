@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (analysisDocument == null)
 					return null;
-				return RoslynTypeSystemService.Workspace.GetDocument (analysisDocument);
+				return TypeSystemService.Workspace.GetDocument (analysisDocument);
 			}
 		}
  		
@@ -212,7 +212,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public override Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = RoslynTypeSystemService.GetProject (Project); 
+			var project = TypeSystemService.GetProject (Project); 
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -541,7 +541,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			if (analysisDocument != null) {
-				RoslynTypeSystemService.Workspace.InformDocumentClose (analysisDocument, FileName);
+				TypeSystemService.Workspace.InformDocumentClose (analysisDocument, FileName);
 				analysisDocument = null;
 			}
 			if (Editor != null) {
@@ -558,7 +558,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			RoslynTypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
+			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
 			window = null;
 
 			parsedDocument = null;
@@ -678,7 +678,6 @@ namespace MonoDevelop.Ide.Gui
 			SetProject (project);
 		}
 
-		TypeSystemService.ProjectContentWrapper currentWrapper;
 		internal void SetProject (Project project)
 		{
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
@@ -695,7 +694,7 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-			RoslynTypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
+			TypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
 			ListenToProjectLoad (project);
 		}
 
@@ -708,10 +707,6 @@ namespace MonoDevelop.Ide.Gui
 
 		void ListenToProjectLoad (Project project)
 		{
-			if (currentWrapper != null) {
-				currentWrapper.Loaded -= HandleInLoadChanged;
-				currentWrapper = null;
-			}
 			StartReparseThread ();
 		}
 
@@ -756,9 +751,9 @@ namespace MonoDevelop.Ide.Gui
 		void EnsureAnalysisDocumentIsOpen ()
 		{
 			if (analysisDocument == null && Project != null) {
-				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
+				analysisDocument = TypeSystemService.GetDocument (this.Project, this.FileName);
 				if (analysisDocument != null) {
-					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
+					TypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
 				}
 			}
 		}
@@ -768,8 +763,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			lock (reparseLock) {
 				EnsureAnalysisDocumentIsOpen ();
-				if (currentWrapper != null)
-					currentWrapper.EnsureReferencesAreLoaded ();
 
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
@@ -869,7 +862,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public override OptionSet GetOptionSet ()
 		{
-			return RoslynTypeSystemService.Workspace.Options;
+			return TypeSystemService.Workspace.Options;
 		}
 	}
 	

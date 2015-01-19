@@ -505,7 +505,7 @@ namespace MonoDevelop.CSharp
 			var unit = await analysisDocument.GetSyntaxTreeAsync ();
 			if (unit == null)
 				return;
-			amb = new AstAmbience (RoslynTypeSystemService.Workspace.Options);
+			amb = new AstAmbience (TypeSystemService.Workspace.Options);
 			
 			var loc = Editor.CaretLocation;
 			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();

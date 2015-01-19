@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring
 		public static void FindExtensionMethods (ISymbol declaredSymbol)
 		{
 		/*	using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
+				var solution = TypeSystemService.Workspace.CurrentSolution;
 				foreach (var project in solution.Projects) {
 					var comp = project.GetCompilationAsync ().Result;
 					foreach (var type in comp.)

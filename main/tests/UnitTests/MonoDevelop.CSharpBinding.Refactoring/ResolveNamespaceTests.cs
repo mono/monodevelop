@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
-				RoslynTypeSystemService.Load (solution, monitor);
+				TypeSystemService.Load (solution, monitor);
 			
 			content.Project = project;
 
@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 //			doc.TryResolveAt (location, out resolveResult, out node);
 			var result = ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.CaretLocation);
 			
-			RoslynTypeSystemService.Workspace.UnloadSolution ();
+			TypeSystemService.Workspace.UnloadSolution ();
 
 			return result;
 		}

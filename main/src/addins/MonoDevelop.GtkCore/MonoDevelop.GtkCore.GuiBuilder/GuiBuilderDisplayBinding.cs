@@ -90,10 +90,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			GtkDesignInfo info = GtkDesignInfo.FromProject (project);
 			if (file.StartsWith (info.GtkGuiFolder))
 				return null;
-			var docId = RoslynTypeSystemService.GetDocument (project, file);
+			var docId = TypeSystemService.GetDocument (project, file);
 			if (docId == null)
 				return null;
-			var doc = RoslynTypeSystemService.Workspace.GetDocument (docId);
+			var doc = TypeSystemService.Workspace.GetDocument (docId);
 			if (doc == null)
 				return null;
 			var semanticModel = doc.GetSemanticModelAsync ().Result;

@@ -1,5 +1,5 @@
 ﻿//
-// RoslynTypeSystemService.cs
+// TypeSystemService.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.TypeSystem
 //		}
 //	}
 
-	public static class RoslynTypeSystemService
+	public static partial class TypeSystemService
 	{
 		static readonly MonoDevelopWorkspace emptyWorkspace;
 
@@ -98,29 +98,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return GetWorkspace (solution);
 			}
 		}
-		
-		static RoslynTypeSystemService ()
-		{
-			try {
-				emptyWorkspace = new MonoDevelopWorkspace ();
-			} catch (Exception e) {
-				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
-			}
 
-			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
-//				if (!TrackFileChanges)
-//					return;
-				foreach (var file in e) {
-					// Open documents are handled by the Document class itself.
-					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
-						continue;
-					var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
-					Workspace.UpdateFileContent (file.FileName, text);
-				}
-			};
-
-			IntitializeTrackedProjectHandling ();
-		}
 
 		public static void NotifyFileChange (string fileName, string text)
 		{
@@ -212,7 +190,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
 			using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
-				Task.Run (() => RoslynTypeSystemService.Load (args.Item, progressMonitor));
+				Task.Run (() => TypeSystemService.Load (args.Item, progressMonitor));
 			}
 		}
 

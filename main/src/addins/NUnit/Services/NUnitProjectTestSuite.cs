@@ -78,7 +78,7 @@ namespace MonoDevelop.NUnit
 			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
 			var csc = new CancellationTokenSource ();
-			var task = RoslynTypeSystemService.GetCompilationAsync (project, csc.Token);
+			var task = TypeSystemService.GetCompilationAsync (project, csc.Token);
 			task.Wait (2000);
 			if (!task.IsCompleted) {
 				csc.Cancel ();

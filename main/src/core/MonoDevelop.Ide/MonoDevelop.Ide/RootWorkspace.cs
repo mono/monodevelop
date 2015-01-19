@@ -1002,7 +1002,7 @@ namespace MonoDevelop.Ide
 		{
 			try {
 				using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
-					MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Load (item, progressMonitor);
+					MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, progressMonitor);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
@@ -1070,7 +1070,7 @@ namespace MonoDevelop.Ide
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
-			MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Unload (item);
+			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
 
 			NotifyDescendantItemRemoved (this, args);
 		}
