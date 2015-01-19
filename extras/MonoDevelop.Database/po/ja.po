@@ -57,7 +57,7 @@ msgstr "データベース'{0}'に接続できません"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:192
 msgid "Query duration: {0}"
-msgstr "クエリの期限: {0}"
+msgstr "クエリの実行時間: {0}"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:209
 #: ../MonoDevelop.Database.Components/Widgets/SelectTableWidget.cs:71
@@ -92,7 +92,7 @@ msgstr "MySqlデータベース"
 
 #: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:60
 msgid "Character Set:"
-msgstr "文字セット:"
+msgstr "文字集合:"
 
 #: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:69
 #: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:71
@@ -157,7 +157,7 @@ msgstr "本当に接続 '{0})' を削除しますか?"
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:187
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:188
 msgid "Drop"
-msgstr "ドロップ"
+msgstr ""
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:248
 msgid "Are you sure you want to drop database '{0}'"
@@ -307,7 +307,7 @@ msgstr "データベース"
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:176
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
 msgid "Database Provider List"
-msgstr "データベースのプロバイダリスト"
+msgstr "データベースのプロバイダの一覧"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Edit Connection"
@@ -431,7 +431,7 @@ msgstr "ユーザの削除"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:278
 msgid "Toggle System Objects"
-msgstr "システム オブジェクトをトグル"
+msgstr "システム オブジェクトを切り替える"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:284
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:396
@@ -447,7 +447,7 @@ msgstr "データベースの作成"
 
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 msgid "Visualize Data As"
-msgstr "右の形式でデータを可視化します "
+msgstr "次の形式でデータを可視化します "
 
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:95
@@ -514,15 +514,15 @@ msgstr "セッター"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:103
 msgid "of"
-msgstr "of"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "Y"
-msgstr "はい"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "N"
-msgstr "いいえ"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:31
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Views/TextVisualizerView.cs:61
@@ -800,7 +800,7 @@ msgstr "主キー制約 '{0}' は1つ以上の列に適用されなければな�
 #: ../MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.addin.xml:28
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:41
 msgid "Generate Data Classes"
-msgstr "データベースのクラスの作成"
+msgstr "データクラスの作成"
 
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:65
 msgid "Location:"
