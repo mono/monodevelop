@@ -42,6 +42,8 @@ using MonoDevelop.Core.ProgressMonitoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Refactoring
 {
@@ -113,8 +115,14 @@ namespace MonoDevelop.Refactoring
 
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
+			var csc = new CancellationTokenSource (200);
 
-			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, doc.Editor.CaretLocation);
+			PossibleNamespaceResult possibleNamespaces;
+			try {
+				possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange, csc.Token);
+			} catch (OperationCanceledException) {
+				return;
+			}
 
 			foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 				var reference = t.Reference;
@@ -204,21 +212,24 @@ namespace MonoDevelop.Refactoring
 		}*/
 
 
-		public static PossibleNamespaceResult GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentContext doc, DocumentLocation loc, CancellationToken cancellationToken = default(CancellationToken))
+		public static PossibleNamespaceResult GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentContext doc, ISegment loc, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (loc == null)
+				throw new ArgumentNullException ("loc");
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var semanticModel = analysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
-			var location = RefactoringService.GetCorrectResolveLocation (editor, loc);
-			var offset = editor.LocationToOffset (location);
 			bool addUsings = true;
 			bool fullyQualify = true;
 
-			var token = semanticModel.SyntaxTree.GetRoot (cancellationToken).FindToken (offset);
-			var node = token.Parent;
+			var root = semanticModel.SyntaxTree.GetRoot (cancellationToken);
+
+			var node = root.FindNode (TextSpan.FromBounds (loc.Offset, loc.EndOffset));
+			if (node == null)
+				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var resolveResult = semanticModel.GetSymbolInfo (node, cancellationToken); 
 
 
@@ -227,9 +238,9 @@ namespace MonoDevelop.Refactoring
 			List<PossibleNamespace> foundNamespaces;
 			if (node.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.SimpleMemberAccessExpression &&
 				node.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InvocationExpression) {
-				foundNamespaces = GetPossibleNamespacesForExtensionMethods (editor, doc, semanticModel, node, resolveResult, offset).ToList ();
+				foundNamespaces = GetPossibleNamespacesForExtensionMethods (editor, doc, semanticModel, node, resolveResult, loc.Offset, cancellationToken).ToList ();
 			} else {
-				foundNamespaces = GetPossibleNamespacesForTypes (editor, doc, semanticModel, node, resolveResult, offset).ToList ();
+				foundNamespaces = GetPossibleNamespacesForTypes (editor, doc, semanticModel, node, resolveResult, loc.Offset, cancellationToken).ToList ();
 			}
 
 			//			if (!(resolveResult is AmbiguousTypeResolveResult)) {
@@ -398,7 +409,7 @@ namespace MonoDevelop.Refactoring
 
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForTypes (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForTypes (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (resolveResult.Symbol != null)
 				yield break;
@@ -420,7 +431,7 @@ namespace MonoDevelop.Refactoring
 				identifier.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
-			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
+			compilations.Add (Tuple.Create (doc.GetCompilationAsync (cancellationToken).Result, (MonoDevelop.Projects.ProjectReference)null));
 			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
 			var solution = netProject != null ? netProject.ParentSolution : null;
 			if (solution != null) {
@@ -432,7 +443,7 @@ namespace MonoDevelop.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 
-					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken).Result;
 					if (comp == null)
 						continue;
 					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
@@ -482,13 +493,13 @@ namespace MonoDevelop.Refactoring
 
 					// Search nested types.
 					foreach (var type in curNs.GetTypeMembers ()) {
-						if (!semanticModel.IsAccessible (location, type))
+						if (type.DeclaredAccessibility != Accessibility.Public && !semanticModel.IsAccessible (location, type))
 							continue;
 						typeStack.Push (type);
 						while (typeStack.Count > 0) {
 							var nested = typeStack.Pop ();
 							foreach (var childType in nested.GetTypeMembers ()) {
-								if (!semanticModel.IsAccessible (location, childType))
+								if (childType.DeclaredAccessibility != Accessibility.Public && !semanticModel.IsAccessible (location, childType))
 									continue;
 								if (childType.Arity == tc && (childType.Name == name || childType.Name == possibleAttributeName)) {
 									if (CanReference(doc, requiredReference))
@@ -632,7 +643,7 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForExtensionMethods (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForExtensionMethods (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (resolveResult.Symbol != null)
 				yield break;
@@ -648,7 +659,7 @@ namespace MonoDevelop.Refactoring
 			int tc = GetTypeParameterCount (node, out identifier);
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
-			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
+			compilations.Add (Tuple.Create (doc.GetCompilationAsync (cancellationToken).Result, (MonoDevelop.Projects.ProjectReference)null));
 			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
 			var solution = netProject != null ? netProject.ParentSolution : null;
 			if (solution != null) {
@@ -660,7 +671,7 @@ namespace MonoDevelop.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 
-					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken).Result;
 					if (comp == null)
 						continue;
 					if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (curProject)))

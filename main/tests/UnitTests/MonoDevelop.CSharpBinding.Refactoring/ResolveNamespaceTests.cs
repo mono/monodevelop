@@ -102,7 +102,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var location = doc.Editor.CaretLocation;
 //			AstNode node;
 //			doc.TryResolveAt (location, out resolveResult, out node);
-			var result = ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.CaretLocation);
+			var result = ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange);
 			
 			TypeSystemService.Workspace.UnloadSolution ();
 

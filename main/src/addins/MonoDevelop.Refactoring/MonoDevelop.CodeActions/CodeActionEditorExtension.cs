@@ -303,7 +303,7 @@ namespace MonoDevelop.CodeActions
 			var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
 					Editor,
 					DocumentContext,
-					Editor.CaretLocation);
+					Editor.SelectionRange);
 			if (possibleNamespaces.Count > 0) {
 
 				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
