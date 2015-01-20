@@ -63,10 +63,10 @@ namespace MonoDevelop.Ide.Projects {
 		bool newSolution;
 		string lastName = "";
 		ProjectTemplate selectedItem;
-		SolutionItem currentEntry;
+		List <SolutionItem> currentEntries;
 		SolutionFolder parentFolder;
 		CombineEntryFeatureSelector featureList;
-		IWorkspaceFileObject newItem;
+		List <IWorkspaceFileObject> newItems;
 		Category recentCategory;
 		List<string> recentTemplates = new List<string> ();
 		bool disposeNewItem = true;
@@ -215,8 +215,10 @@ namespace MonoDevelop.Ide.Projects {
 				cat_text_render = null;
 			}
 
-			if (disposeNewItem && newItem != null)
-				newItem.Dispose ();
+			if (disposeNewItem && newItems != null) {
+				foreach (var newItem in newItems)
+					newItem.Dispose ();
+			}
 
 			base.OnDestroyed ();
 		}
@@ -288,9 +290,10 @@ namespace MonoDevelop.Ide.Projects {
 			}
 		}
 
+		//TODO: this should return multiple items
 		public IWorkspaceObject NewItem {
 			get {
-				return newItem;
+				return newItems == null ? null : newItems [0];
 			}
 		}
 		
@@ -327,27 +330,27 @@ namespace MonoDevelop.Ide.Projects {
 				if (!CreateProject ())
 					return;
 				
-				Solution parentSolution = null;
-				
 				if (parentFolder == null) {
-					WorkspaceItem item = (WorkspaceItem) newItem;
-					parentSolution = item as Solution;
+					//NOTE: we can only create one solution, so if the first item is a solution, it's the only item
+					var parentSolution = newItems [0] as Solution;
 					if (parentSolution != null) {
 						if (parentSolution.RootFolder.Items.Count > 0)
-							currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
+							currentEntries = new List<SolutionItem> (parentSolution.GetAllSolutionItems ());
 						parentFolder = parentSolution.RootFolder;
 					}
 				} else {
-					SolutionItem item = (SolutionItem) newItem;
-					parentSolution = parentFolder.ParentSolution;
-					currentEntry = item;
+					currentEntries = new List<SolutionItem> ();
+					foreach (SolutionItem item in newItems) {
+						currentEntries.Add (item);
+					}
 				}
 				
 				if (btn_new.Label == Gtk.Stock.GoForward) {
 					// There are features to show. Go to the next page
-					if (currentEntry != null) {
+					// NOTE: we only show features for the first project
+					if (currentEntries != null && currentEntries.Count > 0) {
 						try {
-							featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
+							featureList.Fill (parentFolder, currentEntries [0], SolutionItemFeatures.GetFeatures (parentFolder, currentEntries [0]));
 						}
 						catch (Exception ex) {
 							LoggingService.LogError (ex.ToString ());
@@ -369,22 +372,27 @@ namespace MonoDevelop.Ide.Projects {
 			if (!newSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				if (currentEntry is SolutionEntityItem) {
-					// Inherit the file format from the solution
-					SolutionEntityItem eitem = (SolutionEntityItem) currentEntry;
-					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
-					IdeApp.ProjectOperations.Save (eitem);
+				foreach (var currentEntry in currentEntries) {
+					var eitem = (SolutionEntityItem)currentEntry;
+					if (eitem != null) {
+						// Inherit the file format from the solution
+						eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
+						IdeApp.ProjectOperations.Save (eitem);
+					}
+					parentFolder.AddItem (currentEntry, true);
 				}
-				parentFolder.AddItem (currentEntry, true);
 			}
 
 			if (notebook.Page == 1)
 				featureList.ApplyFeatures ();
 			
-			if (parentFolder != null)
+			if (parentFolder != null) {
 				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
-			else
-				IdeApp.ProjectOperations.Save (newItem);
+			} else {
+				foreach (var newItem in newItems) {
+					IdeApp.ProjectOperations.Save (newItem);
+				}
+			}
 
 			if (openSolution) {
 				var op = selectedItem.OpenCreatedSolution ();
@@ -476,18 +484,19 @@ namespace MonoDevelop.Ide.Projects {
 				return false;
 			}
 
-			if (newItem != null) {
-				newItem.Dispose ();
-				newItem = null;
+			if (newItems != null) {
+				foreach (var newItem in newItems)
+					newItem.Dispose ();
+				newItems = null;
 			}
 			
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 				if (newSolution)
-					newItem = item.CreateWorkspaceItem (cinfo);
+					newItems = item.CreateWorkspaceItem (cinfo);
 				else
-					newItem = item.CreateProject (parentFolder, cinfo);
-				if (newItem == null)
+					newItems = item.CreateProject (parentFolder, cinfo);
+				if (newItems == null)
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
