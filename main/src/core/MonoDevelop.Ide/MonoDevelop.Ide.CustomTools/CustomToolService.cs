@@ -25,18 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Extensions;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using Mono.Addins;
-using MonoDevelop.Projects;
-using System.IO;
-using MonoDevelop.Ide.Tasks;
 using System.CodeDom.Compiler;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -119,14 +118,13 @@ namespace MonoDevelop.Ide.CustomTools
 			} else {
 				Update (monitor, fileEnumerator, force, 0, 0, 0);
 			}
-
 		}
 
 		static void Update (IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int succeeded, int warnings, int errors)
 		{
 			ProjectFile file = fileEnumerator.Current;
 			ProjectFile genFile = null;
-			ISingleFileCustomTool tool = null;
+			ISingleFileCustomTool tool;
 
 			//Find the first file in the collection, which has got generator tool
 			while (((tool = GetGenerator (file.Generator)) == null
@@ -179,9 +177,9 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.EndTask ();
 
 			if (errors > 0)
-				monitor.ReportError (GettextCatalog.GetString ("Errors in files generation."), null);
+				monitor.ReportError (GettextCatalog.GetString ("Errors in file generation."), null);
 			else if (warnings > 0)
-				monitor.ReportSuccess (GettextCatalog.GetString ("Warnings in files generation."));
+				monitor.ReportSuccess (GettextCatalog.GetString ("Warnings in file generation."));
 			else
 				monitor.ReportSuccess (GettextCatalog.GetString ("Generated files successfully."));
 

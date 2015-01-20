@@ -39,30 +39,33 @@ namespace MonoDevelop.TextTemplating
 		Generate
 	}
 
-	public class GenerateCommandHandler : CommandHandler
+	class GenerateCommandHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
 
-			if (wob is ProjectFile) {
-				CustomToolService.Update (wob as ProjectFile, true);
-			} else {
-				IEnumerable<ProjectFile> files = null;
-
-				Solution solution = wob as Solution;
-				if (solution != null) {
-					foreach (Project p in solution.GetAllProjects ())
-						files = (files == null) ? GetFilesToUpdate (p) : files.Concat (GetFilesToUpdate (p));
-				} else if (wob is Project) {
-					files = GetFilesToUpdate (wob as Project);
-				}
-
-				CustomToolService.Update (files, true);
+			var pf = wob as ProjectFile;
+			if (pf != null) {
+				CustomToolService.Update (pf, true);
+				return;
 			}
+
+			IEnumerable<ProjectFile> files;
+
+			var solution = wob as Solution;
+			if (solution != null) {
+				files = solution.GetAllProjects ().SelectMany (GetFilesToUpdate);
+			} else if (wob is Project) {
+				files = GetFilesToUpdate ((Project)wob);
+			} else {
+				return;
+			}
+
+			CustomToolService.Update (files, true);
 		}
 
-		private IEnumerable<ProjectFile> GetFilesToUpdate(Project project)
+		static IEnumerable<ProjectFile> GetFilesToUpdate (Project project)
 		{
 			return project.Files.Where (
 				f => f.Generator == typeof(TextTemplatingFileGenerator).Name
@@ -70,35 +73,24 @@ namespace MonoDevelop.TextTemplating
 			);
 		}
 
-		private void UpdateFilesInProject(Project project)
-		{
-			foreach (ProjectFile file in project.Files) {
-				if (file.Generator == typeof(TextTemplatingFileGenerator).Name
-					|| file.Generator == typeof(TextTemplatingFilePreprocessor).Name) {
-					CustomToolService.Update (file, true);
-				}
-			}
-		}
-
 		protected override void Update (CommandInfo info)
 		{
 			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
 
 			if (wob is Solution || wob is Project) {
-				info.Text = GettextCatalog.GetString ("Process Templates");
+				info.Text = GettextCatalog.GetString ("Process T4 Templates");
 				info.Enabled = true;
-			} else if (wob is ProjectFile) {
-				var file = wob as ProjectFile;
-				if (file.Generator == typeof(TextTemplatingFileGenerator).Name
-				    || file.Generator == typeof(TextTemplatingFilePreprocessor).Name) {
-					info.Text = GettextCatalog.GetString ("Process Template");
-					info.Enabled = true;
-				} else {
-					info.Enabled = false;
-				}
-			} else {
-				info.Enabled = false;
+				return;
 			}
+
+			var file = wob as ProjectFile;
+			if (file != null && file.Generator == typeof(TextTemplatingFileGenerator).Name
+					|| file.Generator == typeof(TextTemplatingFilePreprocessor).Name) {
+				info.Text = GettextCatalog.GetString ("Process T4 Template");
+				info.Enabled = true;
+				return;
+			}
+			info.Enabled = false;
 		}
 	}
 }
