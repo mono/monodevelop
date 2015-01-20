@@ -227,7 +227,7 @@ namespace MonoDevelop.Refactoring
 
 			var root = semanticModel.SyntaxTree.GetRoot (cancellationToken);
 
-			var node = root.FindNode (TextSpan.FromBounds (loc.Offset, loc.EndOffset));
+			var node = root.FindNode (TextSpan.FromBounds (loc.Offset, loc.EndOffset)) as ExpressionSyntax;
 			if (node == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var resolveResult = semanticModel.GetSymbolInfo (node, cancellationToken); 

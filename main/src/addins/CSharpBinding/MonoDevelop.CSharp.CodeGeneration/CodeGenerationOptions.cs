@@ -47,44 +47,54 @@ namespace MonoDevelop.CodeGeneration
 	{
 		readonly int offset;
 
-		public TextEditor Editor {
+		public TextEditor Editor
+		{
 			get;
 			private set;
 		}
 
-		public DocumentContext DocumentContext {
+		public DocumentContext DocumentContext
+		{
 			get;
 			private set;
 		}
 
-		public ITypeSymbol EnclosingType {
+		public ITypeSymbol EnclosingType
+		{
 			get;
 			private set;
 		}
 
-		public SyntaxNode EnclosingMemberSyntax {
+		public SyntaxNode EnclosingMemberSyntax
+		{
 			get;
 			private set;
 		}
 
-		public TypeDeclarationSyntax EnclosingPart {
+		public TypeDeclarationSyntax EnclosingPart
+		{
 			get;
 			private set;
 		}
-		
-		public ISymbol EnclosingMember {
+
+		public ISymbol EnclosingMember
+		{
 			get;
 			private set;
 		}
-		
-		public string MimeType {
-			get {
+
+		public string MimeType
+		{
+			get
+			{
 				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
-		
-		public OptionSet FormattingOptions {
-			get {
+
+		public OptionSet FormattingOptions
+		{
+			get
+			{
 				var doc = DocumentContext;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
 				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
@@ -94,12 +104,13 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 
-		public SemanticModel CurrentState {
+		public SemanticModel CurrentState
+		{
 			get;
 			private set;
 		}
 
-		internal CodeGenerationOptions (TextEditor editor,  DocumentContext ctx)
+		internal CodeGenerationOptions (TextEditor editor, DocumentContext ctx)
 		{
 			Editor = editor;
 			DocumentContext = ctx;
@@ -109,6 +120,8 @@ namespace MonoDevelop.CodeGeneration
 			offset = editor.CaretOffset;
 			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
 			EnclosingMemberSyntax = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
+			if (EnclosingMemberSyntax is BaseTypeDeclarationSyntax)
+				EnclosingMemberSyntax = null;
 			if (EnclosingMemberSyntax != null)
 				EnclosingMember = CurrentState.GetDeclaredSymbol (EnclosingMemberSyntax);
 
@@ -116,12 +129,12 @@ namespace MonoDevelop.CodeGeneration
 			if (EnclosingPart != null)
 				EnclosingType = CurrentState.GetDeclaredSymbol (EnclosingPart) as ITypeSymbol;
 		}
-		
+
 		public string CreateShortType (ITypeSymbol fullType)
 		{
 			return fullType.ToMinimalDisplayString (CurrentState, offset);
 		}
-		
+
 		public CodeGenerator CreateCodeGenerator ()
 		{
 			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
@@ -129,14 +142,15 @@ namespace MonoDevelop.CodeGeneration
 				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
 		}
-		
+
 		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
 		{
 			return new CodeGenerationOptions (document, ctx);
 		}
-		
+
 		public async Task<string> OutputNode (SyntaxNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			node = Formatter.Format (node, TypeSystemService.Workspace, FormattingOptions, cancellationToken);
 			node = node.WithAdditionalAnnotations (Formatter.Annotation, Simplifier.Annotation);
 
 			var text = Editor.Text;
