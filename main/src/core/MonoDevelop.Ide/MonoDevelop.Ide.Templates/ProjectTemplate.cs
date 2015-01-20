@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Templates
 			return asyncOperation;
 		}
 
-		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
+		public List<IWorkspaceFileObject> CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
 			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
@@ -238,23 +238,37 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
-			return workspaceItemInfo.WorkspaceItem;
+			return new List<IWorkspaceFileObject> { workspaceItemInfo.WorkspaceItem };
 		}
 
-		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public List<IWorkspaceFileObject> CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
-			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
-			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
+			var solutionEntryItems = new List<IWorkspaceFileObject> ();
 
-			SavePackageReferences (solutionEntryItem, descriptor);
+			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
+				ProjectCreateInformation entryProjectCI;
+				var entry = descriptor as ICustomProjectCIEntry;
+				if (entry != null)
+					entryProjectCI = entry.CreateProjectCI (cInfo);
+				else
+					entryProjectCI = cInfo;
 
-			this.createdProjectInformation = cInfo;
+				var solutionItemDesc = descriptor;
 
-			return solutionEntryItem;
+				SolutionEntityItem solutionEntryItem = solutionItemDesc.CreateItem (entryProjectCI, this.languagename);
+				solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
+
+				SavePackageReferences (solutionEntryItem, solutionItemDesc);
+
+				this.createdProjectInformation = cInfo;
+
+				solutionEntryItems.Add (solutionEntryItem);
+			}
+
+			return solutionEntryItems;
 		}
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
