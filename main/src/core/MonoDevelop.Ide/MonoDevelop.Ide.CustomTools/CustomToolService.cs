@@ -171,8 +171,18 @@ namespace MonoDevelop.Ide.CustomTools
 		static void WriteSummaryResults (IProgressMonitor monitor, int succeeded, int warnings, int errors)
 		{
 			monitor.Log.WriteLine ();
-			monitor.Log.WriteLine (GettextCatalog.GetString ("{0} files processed total. {1} generated successfully, {2} with warnings, {3} with errors"),
-				succeeded + warnings + errors, succeeded, warnings, errors);
+
+			int total = succeeded + warnings + errors;
+
+			//this might not be correct for languages where pluralization affects the other arguments
+			//but gettext doesn't really have an answer for sentences with multiple plurals
+			monitor.Log.WriteLine (
+				GettextCatalog.GetPluralString (
+					"{0} file processed total. {1} generated successfully, {2} with warnings, {3} with errors",
+					"{0} files processed total. {1} generated successfully, {2} with warnings, {3} with errors",
+					total,
+					total, succeeded, warnings, errors)
+			);
 			//ends the root task
 			monitor.EndTask ();
 

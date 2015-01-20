@@ -67,10 +67,13 @@ namespace MonoDevelop.TextTemplating
 
 		static IEnumerable<ProjectFile> GetFilesToUpdate (Project project)
 		{
-			return project.Files.Where (
-				f => f.Generator == typeof(TextTemplatingFileGenerator).Name
-				|| f.Generator == typeof(TextTemplatingFilePreprocessor).Name
-			);
+			return project.Files.Where (IsTemplate);
+		}
+
+		static bool IsTemplate (ProjectFile pf)
+		{
+			return pf.Generator == typeof(TextTemplatingFileGenerator).Name
+			|| pf.Generator == typeof(TextTemplatingFilePreprocessor).Name;
 		}
 
 		protected override void Update (CommandInfo info)
@@ -79,18 +82,18 @@ namespace MonoDevelop.TextTemplating
 
 			if (wob is Solution || wob is Project) {
 				info.Text = GettextCatalog.GetString ("Process T4 Templates");
-				info.Enabled = true;
+				info.Enabled = info.Visible = true;
 				return;
 			}
 
 			var file = wob as ProjectFile;
-			if (file != null && file.Generator == typeof(TextTemplatingFileGenerator).Name
-					|| file.Generator == typeof(TextTemplatingFilePreprocessor).Name) {
+			if (file != null && IsTemplate (file)) {
 				info.Text = GettextCatalog.GetString ("Process T4 Template");
-				info.Enabled = true;
+				info.Enabled = info.Visible = true;
 				return;
 			}
-			info.Enabled = false;
+
+			info.Enabled = info.Visible = false;
 		}
 	}
 }
