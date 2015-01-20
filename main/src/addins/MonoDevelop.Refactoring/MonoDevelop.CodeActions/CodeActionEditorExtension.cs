@@ -188,7 +188,7 @@ namespace MonoDevelop.CodeActions
 								continue;
 
 							try {
-								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret,
+								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
 									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
 									token));
 							} catch (Exception ex) {

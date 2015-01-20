@@ -59,7 +59,7 @@ namespace MonoDevelop.CodeIssues
 				var compilation = task.Result;
 				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 
-				var options = new AnalyzerOptions(new AdditionalStream[0], new Dictionary<string, string> ());
+				var options = new AnalyzerOptions(System.Collections.Immutable.ImmutableArray<AdditionalStream>.Empty, System.Collections.Immutable.ImmutableDictionary<string, string>.Empty);
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
 				foreach (var issue in CodeDiagnosticService.GetCodeIssues (language)) {
@@ -95,7 +95,7 @@ namespace MonoDevelop.CodeIssues
 
 				var diagnosticList = driver.GetDiagnosticsAsync ().Result;
 				return diagnosticList
-					.Where (d => !string.IsNullOrEmpty (d.Description))
+					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

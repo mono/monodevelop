@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeIssues
 				if (analyzerAttr != null) {
 					DiagnosticAnalyzer analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
 					foreach (var diag in analyzer.SupportedDiagnostics) {
-						analyzers.Add (new CodeDiagnosticDescriptor (diag.Title, new [] { "C#" }, type, nrefactoryAnalyzerAttribute));
+						analyzers.Add (new CodeDiagnosticDescriptor (diag.Title.ToString (), new [] { "C#" }, type, nrefactoryAnalyzerAttribute));
 					}
 				}
 				

@@ -398,7 +398,7 @@ namespace MonoDevelop.CSharp.Parser
 			case LangVersion.Version5:
 				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
 			}
-			return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Experimental;
+			return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 		}
 	}
 	

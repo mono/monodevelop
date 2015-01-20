@@ -171,7 +171,7 @@ namespace MonoDevelop.CodeIssues
 					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Item1.Name);
 					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 1) {
 						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
-							title = subIssue.Description;
+							title = subIssue.Description.ToString ();
 							MarkupSearchResult (filter, ref title);
 							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node.Item1, subIssue), subIssue.Description);
 						}

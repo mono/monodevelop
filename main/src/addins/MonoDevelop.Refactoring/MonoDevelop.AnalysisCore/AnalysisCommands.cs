@@ -314,12 +314,12 @@ namespace MonoDevelop.AnalysisCore
 
 					foreach (var node in g.OrderBy (n => n.Name, StringComparer.Ordinal)) {
 						var title = node.Name;
-						var desc = node.GetProvider ().SupportedDiagnostics.First ().Description != title ? node.GetProvider ().SupportedDiagnostics.First ().Description : "";
+						var desc = node.GetProvider ().SupportedDiagnostics.First ().Description.ToString () != title ? node.GetProvider ().SupportedDiagnostics.First ().Description : "";
 						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.DiagnosticSeverity + "</td></tr>");
 						if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 							foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
-								title = subIssue.Description;
-								desc = subIssue.Description != title ? subIssue.Description : "";
+								title = subIssue.Description.ToString ();
+								desc = subIssue.Description.ToString () != title ? subIssue.Description : "";
 								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + node.GetSeverity (subIssue) + "</td></tr>");
 							}
 						}

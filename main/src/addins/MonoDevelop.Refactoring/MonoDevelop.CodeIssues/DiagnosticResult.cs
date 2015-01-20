@@ -66,8 +66,9 @@ namespace MonoDevelop.CodeIssues
 
 		IssueMarker GetIssueMarker ()
 		{
-			if (diagnostic.Category == IssueCategories.RedundanciesInCode || diagnostic.Category == IssueCategories.RedundanciesInDeclarations)
-				return IssueMarker.GrayOut;
+// TODO: Roslyn API change - Category was made internal :(
+//			if (diagnostic.Category == IssueCategories.RedundanciesInCode || diagnostic.Category == IssueCategories.RedundanciesInDeclarations)
+//				return IssueMarker.GrayOut;
 			if (diagnostic.Severity == DiagnosticSeverity.Info)
 				return IssueMarker.DottedLine;
 			return IssueMarker.WavedLine;
