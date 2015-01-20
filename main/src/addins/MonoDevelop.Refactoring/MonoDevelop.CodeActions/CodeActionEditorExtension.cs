@@ -298,6 +298,27 @@ namespace MonoDevelop.CodeActions
 			ShowFixesMenu (document.Editor.Parent, rect, menu);
 		}
 
+		#if MAC
+		class ClosingMenuDelegate : AppKit.NSMenuDelegate
+		{
+			readonly TextEditorData data;
+
+			public ClosingMenuDelegate (TextEditorData editor_data)
+			{
+				data = editor_data;
+			}
+
+			public override void MenuWillHighlightItem (AppKit.NSMenu menu, AppKit.NSMenuItem item)
+			{
+			}
+
+			public override void MenuDidClose (AppKit.NSMenu menu)
+			{
+				data.SuppressTooltips = false;
+			}
+		}
+		#endif
+
 		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
 		{
 			#if MAC
@@ -310,6 +331,7 @@ namespace MonoDevelop.CodeActions
 			// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 			var menu = CreateNSMenu (entrySet);
+			menu.Delegate = new ClosingMenuDelegate (document.Editor);
 			var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
 			var toplevel = parent.Toplevel as Gtk.Window;
 			int trans_x, trans_y;
