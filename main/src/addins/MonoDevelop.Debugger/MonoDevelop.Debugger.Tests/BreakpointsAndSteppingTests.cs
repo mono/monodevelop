@@ -439,6 +439,38 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2ProjectAssembliesOnly ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
+		}
+
+		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2 ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = false;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9", -1);
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
+		}
+
+		/// <summary>
 		/// Bug 3565
 		/// </summary>
 		[Test]
