@@ -32,6 +32,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -51,7 +52,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region AbstractParser overrides
 		
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader textReader, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource textReader, Project project = null)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			
@@ -59,7 +60,7 @@ namespace MonoDevelop.VersionControl.Views
 			DefaultUnresolvedProperty currentRegion = null;
 			
 			string eol = Environment.NewLine;
-			string content = textReader.ReadToEnd ();
+			string content = textReader.Text;
 			Match eolMatch = eolExpression.Match (content);
 			if (eolMatch != null && eolMatch.Success)
 				eol = eolMatch.Groups ["eol"].Value;
