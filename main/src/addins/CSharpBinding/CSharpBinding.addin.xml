@@ -181,6 +181,7 @@
 		<Panel id = "CSharpFormatting" _label = "C# Format" mimeType="text/x-csharp" class = "MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanel" />
 	</Extension>
 
+<!--	
 	<Extension path = "/MonoDevelop/Refactoring/CodeActions">
 		<Action mimeType="text/x-csharp"
 			_title = "Move type to another file"
@@ -191,10 +192,10 @@
 			_description = "Converts constant fields to enumeration"
 			class = "MonoDevelop.CSharp.Refactoring.CodeActions.ConvertToEnumAction" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Refactoring/CodeIssues">
 		<CodeIssue mimeType="text/x-csharp" severity = "Error" class="MonoDevelop.CSharp.Refactoring.CodeIssues.MonoTODOIssue"/>
-	</Extension>
+	</Extension> -->
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorResolver">
 		<Resolver class = "MonoDevelop.CSharp.Resolver.TextEditorResolverProvider" mimeType="text/x-csharp" />
@@ -239,14 +240,6 @@
 <!--		<Class class = "MonoDevelop.CodeGeneration.RaiseEventMethodGenerator" />
 		<Class class = "MonoDevelop.CodeGeneration.EqualityMembersGenerator" /> -->
 		<Class class = "MonoDevelop.CodeGeneration.WriteLineGenerator" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
-		<Source class ="MonoDevelop.CSharp.Refactoring.CodeActions.NRefactoryCodeActionSource"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Refactoring/CodeIssueSource">
-		<Source class ="MonoDevelop.CSharp.Refactoring.CodeIssues.NRefactoryCodeIssueSource"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
