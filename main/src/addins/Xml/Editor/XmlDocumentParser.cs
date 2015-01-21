@@ -31,18 +31,19 @@ using System.IO;
 
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Parser;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Xml.Editor
 {
 	class XmlDocumentParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
 		{
 			var doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			try {
 				var xmlParser = new XmlParser (new XmlRootState (), true);
-				xmlParser.Parse (content);
+				xmlParser.Parse (content.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				// TODO error conversion!
 				//doc.Add (xmlParser.Errors);
