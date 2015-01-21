@@ -37,15 +37,14 @@ namespace MonoDevelop.TextTemplating.Parser
 {
 	public class T4Parser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, Project project = null)
 		{
 
 			ParsedTemplate template = new ParsedTemplate (fileName);
-			var txt = content.ReadToEnd ();
-			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (txt), fileName);
+			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (content, fileName);
 
 			try {
-				var tk = new Tokeniser (fileName, txt);
+				var tk = new Tokeniser (fileName, readOnlyDoc.Text);
 				template.ParseWithoutIncludes (tk);
 			} catch (ParserException ex) {
 				template.LogError (ex.Message, ex.Location);
