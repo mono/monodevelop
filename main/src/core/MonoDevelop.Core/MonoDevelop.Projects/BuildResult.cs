@@ -26,11 +26,9 @@
 //
 //
 
-using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Projects
 {
@@ -39,8 +37,6 @@ namespace MonoDevelop.Projects
 		int warningCount;
 		int errorCount;
 		int buildCount = 1;
-		int failedBuildCount;
-		string compilerOutput;
 		List<BuildError> errors = new List<BuildError> ();
 		IBuildTarget sourceTarget;
 		
@@ -50,14 +46,14 @@ namespace MonoDevelop.Projects
 		
 		public BuildResult (string compilerOutput, int buildCount, int failedBuildCount)
 		{
-			this.compilerOutput = compilerOutput;
+			CompilerOutput = compilerOutput;
 			this.buildCount = buildCount;
-			this.failedBuildCount = failedBuildCount;
+			FailedBuildCount = failedBuildCount;
 		}
 		
 		public BuildResult (CompilerResults compilerResults, string compilerOutput)
 		{
-			this.compilerOutput = compilerOutput;
+			CompilerOutput = compilerOutput;
 			
 			if (compilerResults != null) {
 				foreach (CompilerError err in compilerResults.Errors) {
@@ -75,8 +71,8 @@ namespace MonoDevelop.Projects
 			errors.Clear ();
 			warningCount = errorCount = 0;
 			buildCount = 1;
-			failedBuildCount = 0;
-			compilerOutput = "";
+			FailedBuildCount = 0;
+			CompilerOutput = "";
 			sourceTarget = null;
 		}
 		
@@ -97,7 +93,7 @@ namespace MonoDevelop.Projects
 		
 		public void AddWarning (string file, int line, int col, string errorNum, string text)
 		{
-			BuildError ce = new BuildError (file, line, col, errorNum, text);
+			var ce = new BuildError (file, line, col, errorNum, text);
 			ce.IsWarning = true;
 			Append (ce);
 		}
@@ -120,9 +116,9 @@ namespace MonoDevelop.Projects
 			warningCount += res.WarningCount;
 			errorCount += res.ErrorCount;
 			buildCount += res.BuildCount;
-			failedBuildCount += res.failedBuildCount;
+			FailedBuildCount += res.FailedBuildCount;
 			if (!string.IsNullOrEmpty (res.CompilerOutput))
-				compilerOutput += "\n" + res.CompilerOutput;
+				CompilerOutput += "\n" + res.CompilerOutput;
 			return this;
 		}
 		
@@ -144,16 +140,13 @@ namespace MonoDevelop.Projects
 				warningCount++;
 			else {
 				errorCount++;
-				if (failedBuildCount == 0)
-					failedBuildCount = 1;
+				if (FailedBuildCount == 0)
+					FailedBuildCount = 1;
 			}
 			return this;
 		}
 
-		public string CompilerOutput {
-			get { return compilerOutput; }
-			set { compilerOutput = value; }
-		}
+		public string CompilerOutput { get; set; }
 		
 		public int WarningCount {
 			get { return warningCount; }
@@ -168,13 +161,10 @@ namespace MonoDevelop.Projects
 			set { buildCount = value; }
 		}
 		
-		public int FailedBuildCount {
-			get { return failedBuildCount; }
-			set { failedBuildCount = value; }
-		}
+		public int FailedBuildCount { get; set; }
 		
 		public bool Failed {
-			get { return failedBuildCount > 0; }
+			get { return FailedBuildCount > 0; }
 		}
 
 		public IBuildTarget SourceTarget {
@@ -190,140 +180,6 @@ namespace MonoDevelop.Projects
 					}
 				}
 			}
-		}
-	}
-	
-	public class BuildError
-	{
-		string fileName;
-		int line;
-		int column;
-		string errorNumber;
-		string errorText;
-		bool isWarning = false;
-		IBuildTarget sourceTarget;
-
-		public BuildError () : this (String.Empty, 0, 0, String.Empty, String.Empty)
-		{
-		}
-
-		public BuildError (string fileName, int line, int column, string errorNumber, string errorText)
-		{
-			this.fileName = fileName;
-			this.line = line;
-			this.column = column;
-			this.errorNumber = errorNumber;
-			this.errorText = errorText;
-		}
-		
-		public BuildError (CompilerError error)
-		{
-			this.fileName = error.FileName;
-			this.line = error.Line;
-			this.column = error.Column;
-			this.errorNumber = error.ErrorNumber;
-			this.errorText = error.ErrorText;
-			this.isWarning = error.IsWarning;
-		}
-
-		public override string ToString ()
-		{
-			System.Text.StringBuilder sb = new System.Text.StringBuilder ();
-			if (!string.IsNullOrEmpty (fileName)) {
-				sb.Append (fileName);
-				if (line > 1) {
-					sb.Append ('(').Append (line);
-					if (column > 1)
-						sb.Append (',').Append (column);
-					sb.Append (')');
-				}
-				sb.Append (" : ");
-			}
-			if (isWarning)
-				sb.Append ("warning");
-			else
-				sb.Append ("error");
-			
-			if (!string.IsNullOrEmpty (errorNumber))
-				sb.Append (' ').Append (errorNumber);
-			
-			sb.Append (": ").Append (errorText);
-			return sb.ToString ();
-		}
-
-		public int Line
-		{
-			get { return line; }
-			set { line = value; }
-		}
-
-		public int Column
-		{
-			get { return column; }
-			set { column = value; }
-		}
-
-		public string ErrorNumber
-		{
-			get { return errorNumber; }
-			set { errorNumber = value; }
-		}
-
-		public string ErrorText
-		{
-			get { return errorText; }
-			set { errorText = value; }
-		}
-
-		public bool IsWarning
-		{
-			get { return isWarning; }
-			set { isWarning = value; }
-		}
-
-		public string FileName
-		{
-			get { return fileName; }
-			set { fileName = value; }
-		}
-		
-		public IBuildTarget SourceTarget {
-			get { return sourceTarget; }
-			set { sourceTarget = value; }
-		}
-		
-		//FIXME: this doesn't get hanlde the complete MSBuild error format, see
-		//http://blogs.msdn.com/b/msbuild/archive/2006/11/03/msbuild-visual-studio-aware-error-messages-and-message-formats.aspx
-		static Regex regexError = new Regex (
-			@"^(\s*(?<file>[^\(]+)(\((?<line>\d*)(,(?<column>\d*[\+]*))?\))?:\s+)*(?<level>\w+)\s+(?<number>..\d+):\s*(?<message>.*)",
-			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-		
-		public static BuildError FromMSBuildErrorFormat (string lineText)
-		{
-			Match match = regexError.Match (lineText);
-			if (!match.Success)
-				return null;
-			
-			return new BuildError () {
-				FileName    = match.Result ("${file}") ?? "",
-				IsWarning   = match.Result ("${level}") == "warning",
-				ErrorNumber = match.Result ("${number}"),
-				ErrorText   = match.Result ("${message}"),
-				Line        = GetLineNumber (match.Result ("${line}")),
-				Column      = GetLineNumber (match.Result ("${column}")),
-			};
-		}
-		
-		static int GetLineNumber (string textValue)
-		{
-			if (string.IsNullOrEmpty (textValue))
-				return 0;
-			
-			int val;
-			if (Int32.TryParse (textValue, out val))
-				return val;
-			
-			return -1;
 		}
 	}
 }

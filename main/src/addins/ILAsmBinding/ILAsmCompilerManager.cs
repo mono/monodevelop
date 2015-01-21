@@ -217,7 +217,6 @@ namespace ILAsmBinding
 			return exitCode;
 		}
 
-		static readonly Regex regexError = new Regex (@"^(\s*(?<file>.*?)\s?\((?<line>\d*)(,\s(?<column>\d*[\+]*))?\)\s(:|)\s+)*(?<level>\w+)\s*(:|(--))\s*(?<message>.*)", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		static BuildError CreateErrorFromString (string errorString)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from breaking this.
@@ -226,25 +225,8 @@ namespace ILAsmBinding
 			    errorString.StartsWith ("Compilation succeeded", StringComparison.Ordinal) ||
 			    errorString.StartsWith ("Compilation failed", StringComparison.Ordinal))
 				return null;
-			
-			Match match = regexError.Match(errorString);
-			if (!match.Success) 
-				return null;
-			
-			var error = new BuildError ();
-			error.FileName = match.Result ("${file}") ?? "";
-			
-			string line = match.Result ("${line}");
-			error.Line = !string.IsNullOrEmpty (line) ? Int32.Parse (line) : 0;
-			
-			string col = match.Result ("${column}");
-			if (!string.IsNullOrEmpty (col)) 
-				error.Column = col == "255+" ? -1 : Int32.Parse (col);
-			
-			error.IsWarning   = match.Result ("${level}") == "warning";
-			error.ErrorNumber = match.Result ("${number}");
-			error.ErrorText   = match.Result ("${message}");
-			return error;
+
+			return BuildError.FromMSBuildErrorFormat (errorString);
 		}
 	}
 }
