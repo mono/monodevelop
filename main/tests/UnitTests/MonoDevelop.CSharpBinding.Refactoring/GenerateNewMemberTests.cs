@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 				}
 			}
 			
-			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Text);
+			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data);
 
 //			var foundPoints = CodeGenerationService.GetInsertionPoints (doc.Editor, parsedFile, parsedFile.TopLevelTypeDefinitions.First ());
 //			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
