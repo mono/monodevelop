@@ -114,9 +114,8 @@ namespace MonoDevelop.CodeGeneration
 		{
 			Editor = editor;
 			DocumentContext = ctx;
-			var analysisDocument = ctx.AnalysisDocument;
-			if (analysisDocument != null)
-				CurrentState = analysisDocument.GetSemanticModelAsync ().Result;
+			if (ctx.ParsedDocument != null)
+				CurrentState = ctx.ParsedDocument.GetAst<SemanticModel> ();
 			offset = editor.CaretOffset;
 			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
 			EnclosingMemberSyntax = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();

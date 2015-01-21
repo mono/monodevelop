@@ -57,7 +57,6 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		SemanticModel resolver;
 		SyntaxNode root;
-		CancellationTokenSource src;
 
 		public CSharpSyntaxMode (TextEditor editor, DocumentContext documentContext) : base (editor, documentContext)
 		{
@@ -67,32 +66,15 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected override void DocumentParsed ()
 		{
-			if (src != null)
-				src.Cancel ();
 			resolver = null;
-			src = new CancellationTokenSource ();
-			var analysisDocument = documentContext.AnalysisDocument;
-			if (analysisDocument == null)
+			var newResolver = documentContext.ParsedDocument.GetAst<SemanticModel> ();
+			if (newResolver == null)
 				return;
-			var cancellationToken = src.Token;
-			System.Threading.Tasks.Task.Factory.StartNew (delegate {
-				analysisDocument.GetSemanticModelAsync (cancellationToken).ContinueWith (newResolverTask => {
-					var newResolver = newResolverTask.Result;
-					if (newResolver == null)
-						return;
-					if (!cancellationToken.IsCancellationRequested) {
-						Gtk.Application.Invoke (delegate {
-							if (cancellationToken.IsCancellationRequested)
-								return;
-							resolver = newResolver;
-							root = resolver.SyntaxTree.GetRoot ();
-							UpdateSemanticHighlighting ();
-						});
-					}
-				}, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously | 
-					System.Threading.Tasks.TaskContinuationOptions.NotOnCanceled | 
-					System.Threading.Tasks.TaskContinuationOptions.NotOnFaulted);
-			}, cancellationToken);
+			Gtk.Application.Invoke (delegate {
+				resolver = newResolver;
+				root = resolver.SyntaxTree.GetRoot ();
+				UpdateSemanticHighlighting ();
+			});
 		}
 
 		public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)

@@ -69,10 +69,10 @@ namespace MonoDevelop.SourceEditor
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return null;
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.ParsedDocument;
 			if (analysisDocument == null)
 				return null;
-			var unit = analysisDocument.GetSemanticModelAsync ().Result;
+			var unit = analysisDocument.GetAst<SemanticModel> ();;
 			if (unit == null)
 				return null;
 			

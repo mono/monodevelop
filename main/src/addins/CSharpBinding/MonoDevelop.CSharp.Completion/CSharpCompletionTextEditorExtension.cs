@@ -184,7 +184,7 @@ namespace MonoDevelop.CSharp.Completion
 			var newDocument = DocumentContext.AnalysisDocument;
 			if (newDocument == null) 
 				return;
-			var semanticModel = await Task.Run<SemanticModel> (async () => await newDocument.GetSemanticModelAsync ());
+			var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
 
 			if (validTypeSystemSegmentTree != null)
@@ -271,7 +271,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 
-				var semanticModel = await analysisDocument.GetSemanticModelAsync (token);
+				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
 				foreach (var symbol in completionResult) {
@@ -531,12 +531,12 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 
 			try {
-				var analysisDocument = DocumentContext.AnalysisDocument;
-				if (analysisDocument == null)
+				var parsedDocument = DocumentContext.ParsedDocument;
+				if (parsedDocument == null)
 					return null;
-				var semanticModel = await analysisDocument.GetSemanticModelAsync ();
+				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				return engine.GetParameterDataProvider (analysisDocument, semanticModel, offset, token);
+				return engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 

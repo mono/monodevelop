@@ -54,7 +54,9 @@ namespace MonoDevelop.CSharp.Resolver
 
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, string identifier)
 		{
-			var model = document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			if (document.ParsedDocument == null)
+				return null;
+			var model = document.ParsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
 				return null;
 			foreach (var symbol in model.LookupSymbols (offset, name: identifier)) {

@@ -71,7 +71,22 @@ namespace MonoDevelop.CSharp.Parser
 //			};
 			
 			CSharpParseOptions options = GetCompilerArguments (project);
-			var unit = CSharpSyntaxTree.ParseText (SourceText.From (content.Text), options, fileName);
+			SyntaxTree unit = null;
+
+			if (project != null) {
+				var projectId = TypeSystemService.Workspace.GetProjectId (project);
+				var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
+				var documentId = TypeSystemService.GetDocument (project, fileName);
+				var curDoc = curProject.GetDocument (documentId);
+				var model  =  curDoc.GetSemanticModelAsync ().Result;
+				unit = model.SyntaxTree;
+				result.Ast = model;
+			}
+
+			if (unit == null) {
+				unit = CSharpSyntaxTree.ParseText (SourceText.From (content.Text), options, fileName);
+			} 
+
 			DateTime time;
 			try {
 				time = System.IO.File.GetLastWriteTimeUtc (fileName);

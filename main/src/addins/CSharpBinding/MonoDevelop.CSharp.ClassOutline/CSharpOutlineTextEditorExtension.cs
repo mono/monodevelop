@@ -149,9 +149,9 @@ namespace MonoDevelop.CSharp.ClassOutline
 				JumpToDeclaration (true);
 			};
 
-			var analysisDocument = DocumentContext.AnalysisDocument;
+			var analysisDocument = DocumentContext.ParsedDocument;
 			if (analysisDocument != null)
-				lastCU = analysisDocument.GetSemanticModelAsync ().Result;
+				lastCU = analysisDocument.GetAst<SemanticModel> ();
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 			UpdateSorting ();
@@ -292,19 +292,15 @@ namespace MonoDevelop.CSharp.ClassOutline
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			var analysisDocument = DocumentContext.AnalysisDocument;
+			var analysisDocument = DocumentContext.ParsedDocument;
 			if (analysisDocument == null)
 				return;
-			analysisDocument.GetSemanticModelAsync ().ContinueWith (cu => {
-				lastCU = cu.Result;
-				//limit update rate to 3s
-				if (!refreshingOutline) {
-					refreshingOutline = true;
-					refillOutlineStoreId = GLib.Timeout.Add (3000, RefillOutlineStore);
-				}
-			}, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously | 
-				System.Threading.Tasks.TaskContinuationOptions.NotOnCanceled | 
-				System.Threading.Tasks.TaskContinuationOptions.NotOnFaulted);
+			lastCU = analysisDocument.GetAst<SemanticModel> ();
+			//limit update rate to 3s
+			if (!refreshingOutline) {
+				refreshingOutline = true;
+				refillOutlineStoreId = GLib.Timeout.Add (3000, RefillOutlineStore);
+			}
 		}
 
 		bool RefillOutlineStore ()
