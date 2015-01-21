@@ -77,6 +77,12 @@ namespace MonoDevelop.CodeGeneration
 			return createConstructor;
 		}
 
+		internal static TypeSyntax ConvertType (ITypeSymbol symbol)
+		{
+			// TODO: There needs to be a better way doing that.
+			return SyntaxFactory.ParseTypeName (symbol.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
+		}
+
 		class CreateConstructor : AbstractGenerateAction
 		{
 			public CreateConstructor (CodeGenerationOptions options) : base (options)
@@ -119,12 +125,6 @@ namespace MonoDevelop.CodeGeneration
 				if (char.IsUpper (member.Name[0]))
 					return char.ToLower (member.Name[0]) + member.Name.Substring (1);
 				return member.Name;
-			}
-
-			TypeSyntax ConvertType (ITypeSymbol symbol)
-			{
-				// TODO: There needs to be a better way doing that.
-				return SyntaxFactory.ParseTypeName (symbol.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
 			}
 
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)

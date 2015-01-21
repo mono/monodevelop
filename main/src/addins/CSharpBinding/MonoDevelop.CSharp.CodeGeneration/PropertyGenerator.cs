@@ -25,15 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using Gtk;
-using System.Collections.Generic;
-using MonoDevelop.Refactoring;
-using System.Text;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text;
+using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -85,7 +85,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+				foreach (var field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
 					if (field.IsImplicitlyDeclared)
 						continue;
 					var list = Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ().Where (f => f.Name == CreatePropertyName (field));
@@ -97,7 +97,7 @@ namespace MonoDevelop.CodeGeneration
 			static string CreatePropertyName (ISymbol member)
 			{
 				int i = 0;
-				while (i + 1 < member.Name.Length && member.Name[i] == '_')
+				while (i + 1 < member.Name.Length && member.Name [i] == '_')
 					i++;
 				if (i + 1 >= member.Name.Length)
 					return char.ToUpper (member.Name [i]).ToString ();
@@ -106,11 +106,49 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				var generator = Options.CreateCodeGenerator ();
-				generator.AutoIndent = false;
-				foreach (IFieldSymbol field in includedMembers)
-					yield return "";
-				//					yield return generator.CreateFieldEncapsulation (Options.EnclosingPart, field, CreatePropertyName (field), Accessibility.Public, ReadOnly);
+				foreach (IFieldSymbol field in includedMembers) {
+					var node = SyntaxFactory.PropertyDeclaration (
+						CreateConstructorGenerator.ConvertType (field.Type),
+						CreatePropertyName (field)
+					);
+
+					node = node.AddAccessorListAccessors (
+						SyntaxFactory.AccessorDeclaration (
+							SyntaxKind.GetAccessorDeclaration, 
+							SyntaxFactory.Block (
+								SyntaxFactory.ReturnStatement (
+									SyntaxFactory.MemberAccessExpression (
+										SyntaxKind.SimpleMemberAccessExpression,
+										SyntaxFactory.ThisExpression (),
+										SyntaxFactory.IdentifierName (field.Name)
+									)
+								)
+							)
+						)
+					);
+					if (!ReadOnly) {
+						node = node.AddAccessorListAccessors (
+							SyntaxFactory.AccessorDeclaration (
+								SyntaxKind.SetAccessorDeclaration, 
+								SyntaxFactory.Block (
+									SyntaxFactory.ExpressionStatement (
+										SyntaxFactory.AssignmentExpression (
+											SyntaxKind.SimpleAssignmentExpression,
+											SyntaxFactory.MemberAccessExpression (
+												SyntaxKind.SimpleMemberAccessExpression,
+												SyntaxFactory.ThisExpression (),
+												SyntaxFactory.IdentifierName (field.Name)
+											),
+											SyntaxFactory.IdentifierName ("value")
+										)
+									)
+								)
+							)
+						);
+					}
+					yield return Options.OutputNode (node).Result;
+				}
+
 			}
 		}
 	}
