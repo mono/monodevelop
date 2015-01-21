@@ -368,7 +368,12 @@ namespace MonoDevelop.Ide.Projects
 		void MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
-				controller.Create ();
+				try {
+					CanMoveToNextPage = false;
+					controller.Create ();
+				} finally {
+					CanMoveToNextPage = true;
+				}
 				return;
 			}
 
