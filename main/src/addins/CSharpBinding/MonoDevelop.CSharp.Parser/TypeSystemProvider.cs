@@ -37,12 +37,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Parser
 {
 	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, MonoDevelop.Projects.Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
 		{
 			var result = new DefaultParsedDocument (fileName);
 
@@ -70,7 +71,7 @@ namespace MonoDevelop.CSharp.Parser
 //			};
 			
 			CSharpParseOptions options = GetCompilerArguments (project);
-			var unit = CSharpSyntaxTree.ParseText (SourceText.From (content.ReadToEnd ()), options, fileName);
+			var unit = CSharpSyntaxTree.ParseText (SourceText.From (content.Text), options, fileName);
 			DateTime time;
 			try {
 				time = System.IO.File.GetLastWriteTimeUtc (fileName);

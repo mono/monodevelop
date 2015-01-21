@@ -737,7 +737,7 @@ namespace MonoDevelop.Ide.Gui
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
 				TypeSystemService.AddSkippedFile (currentParseFile);
-				string currentParseText = editor.Text;
+				var currentParseText = editor.CreateDocumentSnapshot ();
 				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText);
 			} finally {
 
@@ -774,7 +774,7 @@ namespace MonoDevelop.Ide.Gui
 				if (IsProjectContextInUpdate) {
 					return;
 				}
-				string currentParseText = Editor.Text;
+				var currentParseText = Editor.CreateDocumentSnapshot ();
 				string mimeType = Editor.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);

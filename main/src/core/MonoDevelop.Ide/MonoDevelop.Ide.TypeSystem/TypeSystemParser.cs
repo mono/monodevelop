@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public abstract ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null);
+		public abstract ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null);
 
 		/// <summary>
 		/// Parse the specified file. The file content should be read by the type system parser.
@@ -70,8 +70,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </param>
 		public virtual ParsedDocument Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null)
 		{
-			using (var stream = TextFileUtility.OpenStream (fileName)) 
-				return Parse (storeAst, fileName, stream, project);
+			var src = StringTextSource.ReadFrom (fileName);
+			return Parse (storeAst, fileName, src, project);
 		}
 
 		public virtual bool CanGenerateCodeBehind (string mimeType, string buildAction, string[] supportedLanguages)

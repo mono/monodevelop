@@ -134,12 +134,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static ParsedDocument ParseFile (Project project, string fileName)
 		{
-			string text;
+			StringTextSource text;
 
 			try {
 				if (!File.Exists (fileName))
 					return null;
-				text = TextFileUtility.ReadAllText (fileName);
+				text = StringTextSource.ReadFrom (fileName);
 			} catch (Exception) {
 				return null;
 			}
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, ITextSource content)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, new StringReader (content), project);
+				var result = parser.Parse (true, fileName, content, project);
 //				lock (projectWrapperUpdateLock) {
 //					ProjectContentWrapper wrapper;
 //					if (project != null) {
@@ -200,12 +200,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
-			return ParseFile (project, fileName, mimeType, content.ReadToEnd ());
+			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()));
 		}
 
 		public static ParsedDocument ParseFile (Project project, IReadonlyTextDocument data)
 		{
-			return ParseFile (project, data.FileName, data.MimeType, data.Text);
+			return ParseFile (project, data.FileName, data.MimeType, data);
 		}
 
 		#region Folding parsers
