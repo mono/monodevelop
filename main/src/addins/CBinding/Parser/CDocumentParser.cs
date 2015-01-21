@@ -35,6 +35,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Core.Text;
 
 namespace CBinding.Parser
 {
@@ -43,13 +44,13 @@ namespace CBinding.Parser
 	/// </summary>
 	public class CDocumentParser:  TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader reader, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource reader, Project project = null)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			ProjectInformation pi = ProjectInformationManager.Instance.Get (project);
 			
-			string content = reader.ReadToEnd ();
+			string content = reader.Text;
 			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 			
 			var globals = new DefaultUnresolvedTypeDefinition ("", GettextCatalog.GetString ("(Global Scope)"));
