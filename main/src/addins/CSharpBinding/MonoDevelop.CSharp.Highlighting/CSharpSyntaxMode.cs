@@ -56,6 +56,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	class CSharpSyntaxMode : SemanticHighlighting
 	{
 		SemanticModel resolver;
+		SyntaxNode root;
 		CancellationTokenSource src;
 
 		public CSharpSyntaxMode (TextEditor editor, DocumentContext documentContext) : base (editor, documentContext)
@@ -84,6 +85,7 @@ namespace MonoDevelop.CSharp.Highlighting
 							if (cancellationToken.IsCancellationRequested)
 								return;
 							resolver = newResolver;
+							root = resolver.SyntaxTree.GetRoot ();
 							UpdateSemanticHighlighting ();
 						});
 					}
@@ -99,7 +101,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (resolver == null)
 				return result;
 			var visitor = new HighlightingVisitior (resolver, result.Add, default (CancellationToken), segment);
-			visitor.Visit (resolver.SyntaxTree.GetRoot ()); 
+			visitor.Visit (root); 
 			return result;
 		}
 		#endregion
