@@ -35,12 +35,13 @@ using MonoDevelop.Projects;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html.Parser;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Html
 {
 	public class HtmlParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource tr, Project project = null)
 		{
 			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (fileName);
 			doc.Flags = ParsedDocumentFlags.NonSerializable;
@@ -50,7 +51,7 @@ namespace MonoDevelop.AspNet.Html
 					new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true)),
 					true);
 				
-				xmlParser.Parse (tr);
+				xmlParser.Parse (tr.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.Add (xmlParser.Errors);
 				if (doc.XDocument != null)

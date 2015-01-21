@@ -38,12 +38,13 @@ using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource tr, Project project = null)
 		{
 			var info = new WebFormsPageInfo ();
 			var errors = new List<Error> ();
@@ -54,7 +55,7 @@ namespace MonoDevelop.AspNet.WebForms
 			);
 			
 			try {
-				parser.Parse (tr);
+				parser.Parse (tr.CreateReader ());
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
 				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));

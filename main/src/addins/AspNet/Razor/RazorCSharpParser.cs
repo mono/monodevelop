@@ -51,6 +51,7 @@ using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.Razor.Parser;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.AspNet.Razor
 			};
 		}
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, MonoDevelop.Projects.Project project = null)
+		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
 		{
 			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
@@ -94,7 +95,7 @@ namespace MonoDevelop.AspNet.Razor
 
 			var errors = new List<Error> ();
 
-			using (var source = new SeekableTextReader (content)) {
+			using (var source = new SeekableTextReader (content.CreateReader ())) {
 				var textChange = CreateTextChange (source);
 				var parseResult = editorParser.CheckForStructureChanges (textChange);
 				if (parseResult == PartialParseResult.Rejected) {
