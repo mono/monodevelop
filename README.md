@@ -1,4 +1,4 @@
-**MonoDevelop** is a full-featured integrated development environment (IDE) for mono
+**MonoDevelop**(now **Xamarin Studio**) is a full-featured integrated development environment (IDE) for mono
 using Gtk#.
 
 See http://www.monodevelop.com for more info.  
