@@ -181,10 +181,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		async void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			var newDocument = DocumentContext.AnalysisDocument;
-			if (newDocument == null) 
+			var parsedDocument = DocumentContext.ParsedDocument;
+			if (parsedDocument == null) 
 				return;
-			var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+			if (semanticModel == null) 
+				return;
 			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
 
 			if (validTypeSystemSegmentTree != null)
@@ -270,8 +272,9 @@ namespace MonoDevelop.CSharp.Completion
 				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
-
-				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+				
+				var parsedDocument = DocumentContext.UpdateParseDocument ();
+				var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
 				foreach (var symbol in completionResult) {

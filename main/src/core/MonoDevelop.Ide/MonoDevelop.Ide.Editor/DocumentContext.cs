@@ -139,7 +139,9 @@ namespace MonoDevelop.Ide.Editor
 		public abstract Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		public abstract OptionSet GetOptionSet ();
-		
+
+		public abstract ParsedDocument UpdateParseDocument ();
+
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.
 		public event EventHandler Saved;

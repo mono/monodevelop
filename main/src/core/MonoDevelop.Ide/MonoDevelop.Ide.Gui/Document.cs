@@ -728,7 +728,7 @@ namespace MonoDevelop.Ide.Gui
 		/// <returns>
 		/// A <see cref="ParsedDocument"/> that contains the current dom.
 		/// </returns>
-		public ParsedDocument UpdateParseDocument ()
+		public override ParsedDocument UpdateParseDocument ()
 		{
 			try {
 				EnsureAnalysisDocumentIsOpen ();
