@@ -767,6 +767,7 @@ namespace MonoDevelop.Projects
 			foreach (FileEventInfo fi in e) {
 				ProjectFile file = GetProjectFile (fi.FileName);
 				if (file != null) {
+					SetFastBuildCheckDirty ();
 					try {
 						NotifyFileChangedInProject (file);
 					} catch {
