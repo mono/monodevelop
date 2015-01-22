@@ -280,6 +280,7 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var symbol in completionResult) {
 					list.Add (symbol); 
 				}
+				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", list);
 				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
 				list.AutoSelect = completionResult.AutoSelect;
