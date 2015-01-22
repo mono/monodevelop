@@ -290,6 +290,10 @@
     <CodeTemplate file="Templates/FSharp-templates.xml" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/TypeSystem/OutputTracking">
+     <Track languageName = "F#"/>
+  </Extension>
+
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">
@@ -516,7 +520,7 @@
 		</Condition>
 
     <!-- Normally the condition would be <Condition id="XamMacInstalled"> but the msbuild target for F# will be installed with the next version of monomac-->
-    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets" />
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets">
       <FileTemplate id="FSharpXamMac2WindowWithController" file="Templates/MonoMac/XamMacUnified/Files/WindowWithController.xft.xml"/>
     </Condition>
 	</Extension>
@@ -533,7 +537,7 @@
 		</Condition>
     
     <!-- Normally the condition would be <Condition id="XamMacInstalled"> but the msbuild target for F# will be installed with the next version of monomac-->
-    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets"/>
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets">
         <ProjectTemplate id="XamMac2Application" file="Templates/MonoMac/XamMacUnified/Projects/Application.xpt.xml"/>
         <ProjectTemplate id="XamMac2Library" file="Templates/MonoMac/XamMacUnified/Projects/Library.xpt.xml"/>
         <ProjectTemplate id="XamMac2EmptyApplication" file="Templates/MonoMac/XamMacUnified/Projects/EmptyApplication.xpt.xml"/>
