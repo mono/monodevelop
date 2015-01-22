@@ -38,6 +38,8 @@ using Gtk;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using System.Diagnostics;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -45,7 +47,7 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		SearchPopupWindow widget;
 
-		public ProjectSearchCategory (SearchPopupWindow widget) : base (GettextCatalog.GetString("Solution"))
+		public ProjectSearchCategory (SearchPopupWindow widget) : base (GettextCatalog.GetString ("Solution"))
 		{
 			this.widget = widget;
 			this.lastResult = new WorkerResult (widget);
@@ -56,44 +58,52 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
-		IEnumerable<INamedTypeSymbol> types {
-			get {
-				getTypesTimer.BeginTiming ();
-				try {
-					foreach (var doc in IdeApp.Workbench.Documents) {
-						// We only want to check it here if it's not part
-						// of the open combine. Otherwise, it will get
-						// checked down below.
-						if (doc.Project == null && doc.IsFile) {
-							var info = doc.ParsedDocument;
-							if (info != null) {
-								var ctx = doc.GetCompilationAsync ().Result;
-								foreach (var type in ctx.GetAllTypes ()) {
-									yield return type;
-								}
-							}
+		static IReadOnlyList<INamedTypeSymbol> GetTypes (CancellationToken token)
+		{
+			getTypesTimer.BeginTiming ();
+			try {
+				var result = new List<INamedTypeSymbol> ();
+				foreach (var doc in IdeApp.Workbench.Documents) {
+					token.ThrowIfCancellationRequested();
+					// We only want to check it here if it's not part
+					// of the open combine. Otherwise, it will get
+					// checked down below.
+					if (doc.Project == null && doc.IsFile) {
+						var info = doc.ParsedDocument;
+						if (info != null) {
+							var ctx = doc.GetCompilationAsync (token).Result;
+							result.AddRange (ctx.GetAllTypes ());
 						}
 					}
-					
-					var projects = IdeApp.Workspace.GetAllProjects ();
-					
-					foreach (var p in projects) {
-						var pctx = TypeSystemService.GetCompilationAsync (p).Result;
-						if (pctx == null)
-							continue;
-						foreach (var type in pctx.GetAllTypes ())
-							if (type.Locations.First ().IsInSource)
-								yield return type;
-					}
-				} finally {
-					getTypesTimer.EndTiming ();
 				}
+
+				var taskList = new List<Task<List<INamedTypeSymbol>>> ();
+				foreach (var p in TypeSystemService.Workspace.CurrentSolution.Projects) {
+					taskList.Add(p.GetCompilationAsync (token).ContinueWith (task => {
+						var tList = new List<INamedTypeSymbol> ();
+						foreach (var type in task.Result.GetAllTypes (token)) {
+							if (type.Locations.First ().IsInSource)
+								tList.Add (type);
+						}
+						return tList;
+					}, TaskContinuationOptions.OnlyOnRanToCompletion));
+				}
+				foreach (var t in taskList) {
+					t.Wait();
+					if (t.Status == TaskStatus.RanToCompletion)
+						result.AddRange(t.Result);
+				}
+				return result;
+			} catch (OperationCanceledException) {
+				return ImmutableList<INamedTypeSymbol>.Empty;
+			} finally {
+				getTypesTimer.EndTiming ();
 			}
 		}
 
 		WorkerResult lastResult;
-		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d"};
-		string[] memberTags = new [] { "member", "m", "p", "f", "evt"};
+		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d" };
+		string[] memberTags = new [] { "member", "m", "p", "f", "evt" };
 
 		public override bool IsValidTag (string tag)
 		{
@@ -110,9 +120,10 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
 					newResult.Tag = searchPattern.Tag;
-					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag) ;
+					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
-					var firstType = types.FirstOrDefault ();
+					var allTypes = GetTypes (token);
+					var firstType = allTypes.FirstOrDefault ();
 					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Locations.First ().SourceTree.FilePath) : AmbienceService.DefaultAmbience;
 					
 					string toMatch = searchPattern.Pattern;
@@ -123,7 +134,7 @@ namespace MonoDevelop.Components.MainToolbar
 						oldLastResult = new WorkerResult (widget);
 //					var now = DateTime.Now;
 
-					AllResults (oldLastResult, newResult, token);
+					AllResults (oldLastResult, newResult, allTypes, token);
 					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 //					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
@@ -135,7 +146,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}, token);
 		}
 
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
+		void AllResults (WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<INamedTypeSymbol> completeTypeList, CancellationToken token)
 		{
 			if (newResult.isGotoFilePattern)
 				return;
@@ -144,7 +155,7 @@ namespace MonoDevelop.Components.MainToolbar
 			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
 				newResult.filteredTypes = new List<INamedTypeSymbol> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
-				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
+				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : completeTypeList;
 				foreach (var type in allTypes) {
 					if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
 						return;
@@ -211,7 +222,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 					getMembersTimer.BeginTiming ();
 					try {
-						foreach (var type in types) {
+						foreach (var type in completeTypeList) {
 							if (type.IsDelegateType ())
 								continue;
 							//							foreach (var p in type.Parts) {
@@ -225,7 +236,7 @@ namespace MonoDevelop.Components.MainToolbar
 									newResult.filteredMembers.Add (Tuple.Create (type, member));
 									newResult.results.AddResult (curResult);
 								}
-								}
+							}
 							//	}
 						}
 					} finally {
@@ -234,7 +245,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 		}
-		
+
 		class WorkerResult
 		{
 			public string Tag {
@@ -248,6 +259,7 @@ namespace MonoDevelop.Components.MainToolbar
 			string pattern2;
 			char firstChar;
 			char[] firstChars;
+
 			public string pattern {
 				get {
 					return pattern2;
@@ -255,41 +267,42 @@ namespace MonoDevelop.Components.MainToolbar
 				set {
 					pattern2 = value;
 					if (pattern2.Length == 1) {
-						firstChar = pattern2[0];
+						firstChar = pattern2 [0];
 						firstChars = new [] { char.ToUpper (firstChar), char.ToLower (firstChar) };
 					} else {
 						firstChars = null;
 					}
 				}
 			}
+
 			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			public Ambience ambience;
 			public StringMatcher matcher;
-			
+
 			public WorkerResult (Widget widget)
 			{
 				results = new ResultsDataSource (widget);
 			}
-			
+
 			internal SearchResult CheckFile (ProjectFile file)
 			{
 				int rank;
 				string matchString = System.IO.Path.GetFileName (file.FilePath);
-				if (MatchName (matchString, out rank)) 
+				if (MatchName (matchString, out rank))
 					return new FileSearchResult (pattern, matchString, rank, file, true);
 				
 				if (!FullSearch)
 					return null;
 				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (matchString, out rank)) 
+				if (MatchName (matchString, out rank))
 					return new FileSearchResult (pattern, matchString, rank, file, false);
 				
 				return null;
 			}
-			
+
 			internal SearchResult CheckType (INamedTypeSymbol type)
 			{
 				int rank;
@@ -341,7 +354,7 @@ namespace MonoDevelop.Components.MainToolbar
 					doesMatch = idx >= 0;
 					if (doesMatch) {
 						matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
-						if (name[idx] != firstChar)
+						if (name [idx] != firstChar)
 							matchRank /= 2;
 						return true;
 					} else {
