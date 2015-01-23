@@ -79,9 +79,13 @@ namespace MonoDevelop.CSharp.Parser
 				var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
 				var documentId = TypeSystemService.GetDocument (project, fileName);
 				var curDoc = curProject.GetDocument (documentId);
-				var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
-				unit = model.SyntaxTree;
-				result.Ast = model;
+				try {
+					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
+					unit = model.SyntaxTree;
+					result.Ast = model;
+				} catch (AggregateException) {
+					return Task.FromResult (result);
+				}
 			}
 
 			if (unit == null) {

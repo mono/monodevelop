@@ -86,10 +86,10 @@ namespace MonoDevelop.CodeIssues
 				var tree = model.SyntaxTree;
 				if (tree == null)
 					return Enumerable.Empty<Result> ();
-				model.GetDiagnostics ();
-				model.GetSyntaxDiagnostics ();
-				model.GetDeclarationDiagnostics ();
-				model.GetMethodBodyDiagnostics ();
+				model.GetDiagnostics (null, cancellationToken);
+				model.GetSyntaxDiagnostics (null, cancellationToken);
+				model.GetDeclarationDiagnostics (null, cancellationToken);
+				model.GetMethodBodyDiagnostics (null, cancellationToken);
 
 				var diagnosticList = driver.GetDiagnosticsAsync ().Result;
 				return diagnosticList

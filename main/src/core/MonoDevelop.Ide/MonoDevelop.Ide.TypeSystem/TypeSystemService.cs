@@ -190,6 +190,8 @@ namespace MonoDevelop.Ide.TypeSystem
 //					}
 //				}
 				return result;
+			} catch (OperationCanceledException) {
+				return Task.FromResult ((ParsedDocument)null);
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
 				return Task.FromResult ((ParsedDocument)null);

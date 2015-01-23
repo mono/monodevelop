@@ -52,7 +52,7 @@ namespace MonoDevelop.CSharp
 				throw;
 			}catch (Exception ex) {
 				LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
-				return null;
+				return Task.FromResult (visitor.FoundTests);
 			}
 			return Task.FromResult (visitor.FoundTests);
 		}
