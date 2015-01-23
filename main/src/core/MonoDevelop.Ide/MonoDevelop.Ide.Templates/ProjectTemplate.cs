@@ -247,6 +247,7 @@ namespace MonoDevelop.Ide.Templates
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
 			var solutionEntryItems = new List<IWorkspaceFileObject> ();
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
 			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
 				ProjectCreateInformation entryProjectCI;
@@ -273,7 +274,6 @@ namespace MonoDevelop.Ide.Templates
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
 		{
-			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
 				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);
