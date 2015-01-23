@@ -277,6 +277,8 @@ namespace MonoDevelop.CSharp.Completion
 				var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
+				if (completionResult == CompletionResult.Empty)
+					return null;
 				foreach (var symbol in completionResult) {
 					list.Add (symbol); 
 				}
