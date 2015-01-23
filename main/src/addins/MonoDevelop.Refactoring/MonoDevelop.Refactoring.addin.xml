@@ -57,7 +57,7 @@
 	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
-	
+
 		<Category _name = "Code Navigation" id = "CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 					defaultHandler = "MonoDevelop.Refactoring.GotoDeclarationHandler"
@@ -78,11 +78,7 @@
 		</Category>
 		
 		<Category _name = "Refactoring" id = "Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
-				defaultHandler = "MonoDevelop.Refactoring.ResolveCommandHandler"
-				type="array"
-				_label = "Resolve"/> 
-		
+
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations"
 				defaultHandler = "MonoDevelop.Refactoring.CurrentRefactoryOperationsHandler"
 				type="array"
@@ -108,8 +104,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>
-		
 		<ItemSet id = "Fix" _label = "Fix" autohide="true"
 			insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
 			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />

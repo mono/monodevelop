@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 	/// or what primary sort key values the individual node groups have. This class is
 	/// serialized to the configuration file MonoDevelopProperties.xml.
 	/// </remarks>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension"/>
+	/// <seealso cref="MonoDevelop.CSharp.ClassOutline.CSharpOutlineTextEditorExtension"/>
 	class OutlineSettings
 	{
 		const string KEY_GROUP_ORDER = "MonoDevelop.DesignerSupport.ClassOutline.GroupOrder";

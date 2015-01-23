@@ -496,7 +496,7 @@ namespace MonoDevelop.CSharp
 		}
 
 
-		async void UpdatePath (object sender, EventArgs e)
+		void UpdatePath (object sender, EventArgs e)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
@@ -509,7 +509,7 @@ namespace MonoDevelop.CSharp
 			amb = new AstAmbience (TypeSystemService.Workspace.Options);
 			
 			var loc = Editor.CaretLocation;
-			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();
+//			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();
 
 			var root = unit.GetRoot ();
 			SyntaxNode token;

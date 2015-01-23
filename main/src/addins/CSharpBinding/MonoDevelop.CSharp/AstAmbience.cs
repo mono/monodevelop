@@ -38,11 +38,11 @@ namespace MonoDevelop.CSharp
 {
 	class AstAmbience
 	{
-		OptionSet options;
+//		OptionSet options;
 		
 		public AstAmbience (OptionSet options)
 		{
-			this.options = options;
+//			this.options = options;
 		}
 		
 		static bool IsObsolete (MemberDeclarationSyntax entity)

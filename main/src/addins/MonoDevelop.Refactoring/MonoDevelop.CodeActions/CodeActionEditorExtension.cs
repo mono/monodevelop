@@ -249,7 +249,7 @@ namespace MonoDevelop.CodeActions
 		} 
 			
 
-		class FixMenuEntry
+		internal class FixMenuEntry
 		{
 			public static readonly FixMenuEntry Separator = new FixMenuEntry ("-", null);
 			public readonly string Label;
@@ -263,7 +263,7 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		class FixMenuDescriptor : FixMenuEntry
+		internal class FixMenuDescriptor : FixMenuEntry
 		{
 			readonly List<FixMenuEntry> items = new List<FixMenuEntry> ();
 
@@ -292,6 +292,8 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
+		internal static Action<TextEditor, DocumentContext, FixMenuDescriptor> AddPossibleNamespace;
+
 		void PopupQuickFixMenu (Gdk.EventButton evt, Action<FixMenuDescriptor> menuAction)
 		{
 			FixMenuDescriptor menu = new FixMenuDescriptor ();
@@ -299,53 +301,13 @@ namespace MonoDevelop.CodeActions
 			//ResolveResult resolveResult;
 			//ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
-			
-			var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
-					Editor,
-					DocumentContext,
-					Editor.SelectionRange);
-			if (possibleNamespaces.Count > 0) {
 
-				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
-					menu.Add (new FixMenuEntry (t.GetImportText (), delegate {
-						new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, null, t.Reference, true, possibleNamespaces.Node).Run ();
-					}));
-					items++;
-				}
-
-				if (possibleNamespaces.AddUsings) {
-					foreach (var t in possibleNamespaces.Where (tp => tp.IsAccessibleWithGlobalUsing)) {
-						string ns = t.Namespace;
-						var reference = t.Reference;
-						menu.Add (new FixMenuEntry (t.GetImportText (), 
-							delegate {
-								new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, true, possibleNamespaces.Node).Run ();
-							})
-						);
-						items++;
-					}
-				}
-
-				if (possibleNamespaces.AddFullyQualifiedName) {
-					foreach (var t in possibleNamespaces) {
-						string ns = t.Namespace;
-						var reference = t.Reference;
-						var node2 = possibleNamespaces.Node;
-						menu.Add (new FixMenuEntry (t.GetInsertNamespaceText (Editor.GetTextBetween (node2.Span.Start, node2.Span.End)),
-							delegate {
-								new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, false, node2).Run ();
-							})
-						);
-						items++;
-					}
-				}
-				/*
-				if (menu.Children.Any () && Fixes != null && !Fixes.IsEmpty) {
-					fixMenu = new FixMenuDescriptor (GettextCatalog.GetString ("Quick Fixes"));
-					menu.Add (fixMenu);
-					items++;
-				}*/
+			if (AddPossibleNamespace != null) {
+				AddPossibleNamespace (Editor, DocumentContext, menu);
+				items = menu.Items.Count;
 			}
+
+
 			PopulateFixes (fixMenu, ref items);
 			if (items == 0) {
 				return;

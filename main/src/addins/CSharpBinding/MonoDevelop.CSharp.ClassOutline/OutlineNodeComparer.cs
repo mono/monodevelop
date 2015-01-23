@@ -42,7 +42,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 	/// This implementation uses a primary sort key (int based on node's group) and
 	/// a secondary sort key (string based on node's name) for comparison.
 	/// </remarks>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
+	/// <seealso cref="MonoDevelop.CSharp.ClassOutline.OutlineSettings"/>
 	class OutlineNodeComparer : IComparer<TreeIter>
 	{
 		const string DEFAULT_REGION_NAME = "region";

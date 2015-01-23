@@ -8,7 +8,14 @@
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
+				defaultHandler = "MonoDevelop.CSharp.Refactoring.ResolveCommandHandler"
+				type="array"
+				_label = "Resolve"/> 
+	</Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProject
 			language="C#"
@@ -258,5 +265,9 @@
 	
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>
 	</Extension>
 </ExtensionModel>

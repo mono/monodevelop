@@ -116,7 +116,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		class XmlDocCompletionData : CompletionData//, IListData
 		{
-			readonly CSharpCompletionTextEditorExtension ext;
+			//readonly CSharpCompletionTextEditorExtension ext;
 			readonly string title;
 			/*
 			#region IListData implementation
@@ -135,7 +135,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			public XmlDocCompletionData (CSharpCompletionTextEditorExtension ext, string title, string description, string insertText) : base (title, "md-keyword", description, insertText ?? title)
 			{
-				this.ext = ext;
+				// this.ext = ext;
 				this.title = title;
 			}
 

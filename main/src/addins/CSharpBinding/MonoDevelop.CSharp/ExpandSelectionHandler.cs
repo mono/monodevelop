@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		protected async override void Run ()
+		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)

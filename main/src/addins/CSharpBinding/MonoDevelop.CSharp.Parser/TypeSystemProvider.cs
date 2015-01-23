@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Parser
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
 			}
 
-			var tagComments = CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
+//			var tagComments = CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 			
 //			parser.CompilationUnitCallback = delegate (CompilerCompilationUnit top) {
 //				foreach (var special in top.SpecialsBag.Specials) {

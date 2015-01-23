@@ -92,11 +92,11 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("type");
 			if (type.TypeKind == TypeKind.Error)
 				return "?";
-			if (type.TypeKind == TypeKind.ArrayType) {
+			if (type.TypeKind == TypeKind.Array) {
 				var arrayType = (IArrayTypeSymbol)type;
 				return GetTypeReferenceString (arrayType.ElementType, highlight) + "[" + new string (',', arrayType.Rank - 1) + "]";
 			}
-			if (type.TypeKind == TypeKind.PointerType)
+			if (type.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
 			string displayString;
 
@@ -138,7 +138,6 @@ namespace MonoDevelop.CSharp
 			return GetTypeMarkup (type);
 		}
 
-		string reason;
 
 		public string GetMarkup (Microsoft.CodeAnalysis.ISymbol entity)
 		{
@@ -438,7 +437,7 @@ namespace MonoDevelop.CSharp
 				return GetDelegateMarkup ((INamedTypeSymbol)t);
 			if (t.TypeKind == TypeKind.TypeParameter)
 				return GetTypeParameterMarkup (t);
-			if (t.TypeKind == TypeKind.ArrayType || t.TypeKind == TypeKind.PointerType)
+			if (t.TypeKind == TypeKind.Array || t.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (t);
 			if (t.SpecialType == SpecialType.System_Nullable_T)
 				return GetNullableMarkup (t);
@@ -474,7 +473,7 @@ namespace MonoDevelop.CSharp
 				result.Append (GetTypeNameWithParameters (t));
 			}
 
-			if (t.TypeKind == TypeKind.ArrayType)
+			if (t.TypeKind == TypeKind.Array)
 				return result.ToString ();
 
 			bool first = true;

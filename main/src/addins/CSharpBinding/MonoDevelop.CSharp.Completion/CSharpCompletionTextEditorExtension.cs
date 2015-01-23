@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharp.Completion
 			base.Dispose ();
 		}
 
-		async void HandleDocumentParsed (object sender, EventArgs e)
+		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null) 
@@ -255,7 +255,7 @@ namespace MonoDevelop.CSharp.Completion
 			CSharpCompletionDataList List { get; set; }
 		}
 		
-		async Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
+		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -290,7 +290,7 @@ namespace MonoDevelop.CSharp.Completion
 				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
 				if (ctrlSpace)
 					list.AutoCompleteUniqueMatch = true;
-			} catch (TaskCanceledException e) {
+			} catch (TaskCanceledException) {
 				return null;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
@@ -343,7 +343,7 @@ namespace MonoDevelop.CSharp.Completion
 //			} catch (Exception e) {
 //				LoggingService.LogError ("Error while getting completion data.", e);
 //			}
-			return (ICompletionDataList)list;
+			return Task.FromResult ((ICompletionDataList)list);
 		}
 		
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
@@ -524,7 +524,7 @@ namespace MonoDevelop.CSharp.Completion
 //		}
 		
 
-		public override async Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			if (completionChar != '(' && completionChar != ',')
@@ -542,7 +542,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				return engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token);
+				return Task.FromResult (engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 

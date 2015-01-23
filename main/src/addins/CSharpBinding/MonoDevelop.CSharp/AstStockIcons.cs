@@ -43,7 +43,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId Field = "md-field";
 		static readonly IconId Interface = "md-interface";
 		static readonly IconId Method = "md-method";
-		static readonly IconId ExtensionMethod = "md-extensionmethod";
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
@@ -56,7 +55,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId InternalField = "md-internal-field";
 		static readonly IconId InternalInterface = "md-internal-interface";
 		static readonly IconId InternalMethod = "md-internal-method";
-		static readonly IconId InternalExtensionMethod = "md-internal-extensionmethod";
 		static readonly IconId InternalProperty = "md-internal-property";
 		static readonly IconId InternalStruct = "md-internal-struct";
 
@@ -67,7 +65,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId InternalAndProtectedField = "md-InternalAndProtected-field";
 		static readonly IconId InternalAndProtectedInterface = "md-InternalAndProtected-interface";
 		static readonly IconId InternalAndProtectedMethod = "md-InternalAndProtected-method";
-		static readonly IconId InternalAndProtectedExtensionMethod = "md-InternalAndProtected-extensionmethod";
 		static readonly IconId InternalAndProtectedProperty = "md-InternalAndProtected-property";
 		static readonly IconId InternalAndProtectedStruct = "md-InternalAndProtected-struct";
 
@@ -78,7 +75,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId PrivateField = "md-private-field";
 		static readonly IconId PrivateInterface = "md-private-interface";
 		static readonly IconId PrivateMethod = "md-private-method";
-		static readonly IconId PrivateExtensionMethod = "md-private-extensionmethod";
 		static readonly IconId PrivateProperty = "md-private-property";
 		static readonly IconId PrivateStruct = "md-private-struct";
 
@@ -89,7 +85,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId ProtectedField = "md-protected-field";
 		static readonly IconId ProtectedInterface = "md-protected-interface";
 		static readonly IconId ProtectedMethod = "md-protected-method";
-		static readonly IconId ProtectedExtensionMethod = "md-protected-extensionmethod";
 		static readonly IconId ProtectedProperty = "md-protected-property";
 		static readonly IconId ProtectedStruct = "md-protected-struct";
 		
@@ -100,7 +95,6 @@ namespace MonoDevelop.CSharp
 		static readonly IconId ProtectedOrInternalField = "md-ProtectedOrInternal-field";
 		static readonly IconId ProtectedOrInternalInterface = "md-ProtectedOrInternal-interface";
 		static readonly IconId ProtectedOrInternalMethod = "md-ProtectedOrInternal-method";
-		static readonly IconId ProtectedOrInternalExtensionMethod = "md-ProtectedOrInternal-extensionmethod";
 		static readonly IconId ProtectedOrInternalProperty = "md-ProtectedOrInternal-property";
 		static readonly IconId ProtectedOrInternalStruct = "md-ProtectedOrInternal-struct";
 		
@@ -116,9 +110,6 @@ namespace MonoDevelop.CSharp
 		};
 		static readonly IconId[] methodIconTable = {
 			AstStockIcons.Method, AstStockIcons.PrivateMethod, AstStockIcons.Method, AstStockIcons.ProtectedMethod, AstStockIcons.InternalMethod, AstStockIcons.ProtectedOrInternalMethod, AstStockIcons.InternalAndProtectedMethod
-		};
-		static readonly IconId[] extensionMethodIconTable = {
-			AstStockIcons.ExtensionMethod, AstStockIcons.PrivateExtensionMethod, AstStockIcons.ExtensionMethod, AstStockIcons.ProtectedExtensionMethod, AstStockIcons.InternalExtensionMethod, AstStockIcons.ProtectedOrInternalExtensionMethod, AstStockIcons.InternalAndProtectedExtensionMethod
 		};
 		static readonly IconId[] propertyIconTable = {
 			AstStockIcons.Property, AstStockIcons.PrivateProperty, AstStockIcons.Property, AstStockIcons.ProtectedProperty, AstStockIcons.InternalProperty, AstStockIcons.ProtectedOrInternalProperty, AstStockIcons.InternalAndProtectedProperty
@@ -220,8 +211,8 @@ namespace MonoDevelop.CSharp
 			GetAccessibility (element, out acc);
 
 			if (element is BaseMethodDeclarationSyntax) {
-				var method = element as MethodDeclarationSyntax;
 				// TODO!
+				// var method = element as MethodDeclarationSyntax;
 				//				if (method.ParameterList.Parameters.First ())
 				//	return extensionMethodIconTable [(int) (acc)];
 				return methodIconTable [(int) (acc)];

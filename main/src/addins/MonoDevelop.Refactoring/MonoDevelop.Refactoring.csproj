@@ -158,7 +158,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />

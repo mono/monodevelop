@@ -41,9 +41,7 @@ namespace MonoDevelop.CSharp
 {
 	class UnitTestTextEditorExtension : AbstractUnitTestTextEditorExtension
 	{
-		static readonly IList<UnitTestLocation> emptyResult = new List<UnitTestLocation> ();
-
-		public override async Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token)
+		public override Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token)
 		{
 			var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 
@@ -56,7 +54,7 @@ namespace MonoDevelop.CSharp
 				LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
 				return null;
 			}
-			return visitor.FoundTests;
+			return Task.FromResult (visitor.FoundTests);
 		}
 
 		class NUnitVisitor : CSharpSyntaxWalker
