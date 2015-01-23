@@ -75,13 +75,13 @@ namespace MonoDevelop.CSharp
 			if (doc == null)
 				return;
 			var selectionRange = doc.Editor.SelectionRange;
-			var parsedDocument = await doc.AnalysisDocument.GetSyntaxTreeAsync ();
+			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return;
-			var unit = parsedDocument.GetRoot ();
-			if (unit == null)
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			if (model == null)
 				return;
-			
+			var unit = model.SyntaxTree.GetRoot ();
 			var node = unit.FindNode (Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (selectionRange.Offset, selectionRange.EndOffset));
 			if (node == null)
 				return;

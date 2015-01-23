@@ -37,7 +37,10 @@ namespace MonoDevelop.CSharp.Resolver
 		public ISymbol GetLanguageItem (MonoDevelop.Ide.Gui.Document document, int offset, out DocumentRegion expressionRegion)
 		{
 			expressionRegion = DocumentRegion.Empty;
-			var model = document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var parsedDocument = document.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
+			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
 				return null;
 			foreach (var symbol in model.LookupSymbols (offset)) {

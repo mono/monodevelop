@@ -498,13 +498,14 @@ namespace MonoDevelop.CSharp
 
 		async void UpdatePath (object sender, EventArgs e)
 		{
-			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
+			var parsedDocument = DocumentContext.ParsedDocument;
+			if (parsedDocument == null)
 				return;
 			var caretOffset = Editor.CaretOffset;
-			var unit = await analysisDocument.GetSyntaxTreeAsync ();
-			if (unit == null)
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			if (model == null)
 				return;
+			var unit = model.SyntaxTree;
 			amb = new AstAmbience (TypeSystemService.Workspace.Options);
 			
 			var loc = Editor.CaretLocation;

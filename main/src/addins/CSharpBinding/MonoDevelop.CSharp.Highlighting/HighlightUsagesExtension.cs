@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return new UsageData ();
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.ParsedDocument;
 			if (analysisDocument == null)
 				return new UsageData ();
 

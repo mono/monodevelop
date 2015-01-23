@@ -55,10 +55,7 @@ namespace MonoDevelop.CSharp
 			if (DocumentContext.IsProjectContextInUpdate)
 				return;
 			src = new CancellationTokenSource ();
-			
-			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
-				return;
+
 			var cancellationToken = src.Token;
 			var newResolver = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 			if (newResolver == null)
