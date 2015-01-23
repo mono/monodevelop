@@ -448,11 +448,11 @@ namespace MonoDevelop.Ide.Gui
 			if (info.Line >= 1 && ipos != null) {
 				doc.DisableAutoScroll ();
 				doc.RunWhenLoaded (() => {
-					ipos.SetCaretLocation (
-						info.Line,
-						info.Column >= 1 ? info.Column : 1,
-						info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine)
-					);
+					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+					if (info.Offset >= 0) {
+						loc = ipos.OffsetToLocation (info.Offset);
+					}
+					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 					if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
 						ipos.CenterToCaret ();
 				});
