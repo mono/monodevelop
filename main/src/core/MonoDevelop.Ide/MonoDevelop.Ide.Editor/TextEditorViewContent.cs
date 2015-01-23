@@ -304,6 +304,7 @@ namespace MonoDevelop.Ide.Editor
 				action ();
 				return;
 			}
+
 			Task.Factory.StartNew (action);
 		}
 
@@ -319,7 +320,7 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
 				if (normalParser != null) {
-					parsedDocument = normalParser.Parse (true, textEditor.FileName, new StringTextSource (text), null);
+					parsedDocument = normalParser.Parse (true, textEditor.FileName, new StringTextSource (text), null).Result;
 				}
 			}
 			if (parsedDocument != null) {

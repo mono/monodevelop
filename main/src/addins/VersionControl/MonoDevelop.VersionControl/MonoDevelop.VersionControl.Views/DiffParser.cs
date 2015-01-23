@@ -51,10 +51,10 @@ namespace MonoDevelop.VersionControl.Views
 		static Regex eolExpression = new Regex (@"(?<eol>\r\n|\n|\r)", RegexOptions.Compiled);
 		
 		#region AbstractParser overrides
-		
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource textReader, Project project = null)
+
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource textReader, Project project, System.Threading.CancellationToken cancellationToken)
 		{
-			var doc = new DefaultParsedDocument (fileName);
+			ParsedDocument doc = new DefaultParsedDocument (fileName);
 			
 			DefaultUnresolvedTypeDefinition currentFile = null;
 			DefaultUnresolvedProperty currentRegion = null;
@@ -111,7 +111,7 @@ namespace MonoDevelop.VersionControl.Views
 				                                          currentRegion.BodyRegion.BeginColumn, 
 				                                          Math.Max (1, linenum - 2), int.MaxValue);
 			
-			return doc;
+			return System.Threading.Tasks.Task.FromResult (doc);
 		}
 		
 		#endregion

@@ -81,13 +81,13 @@ namespace MonoDevelop.AspNet.Razor
 			};
 		}
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, CancellationToken cancellationToken)
 		{
 			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
 			this.project = project as DotNetProject;
 			if (currentDocument == null && !TryAddDocument (fileName))
-				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
+				return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ()));
 
 			this.aspProject = project as AspNetAppProject;
 
@@ -130,7 +130,7 @@ namespace MonoDevelop.AspNet.Razor
 				HostKind = kind,
 			};
 
-			return new RazorCSharpParsedDocument (fileName, pageInfo);
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (fileName, pageInfo));
 		}
 
 		bool TryAddDocument (string fileName)

@@ -28,7 +28,6 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
-using MonoDevelop.Ide.Tasks;
 using Mono.CSharp;
 using System.Linq;
 using MonoDevelop.Core;
@@ -38,16 +37,18 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Parser
 {
 	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
 		{
-			var result = new DefaultParsedDocument (fileName);
+			ParsedDocument result = new DefaultParsedDocument (fileName);
 
 			if (project != null) {
+				
 				var projectFile = project.Files.GetFile (fileName);
 				if (projectFile != null && !TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
@@ -78,7 +79,7 @@ namespace MonoDevelop.CSharp.Parser
 				var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
 				var documentId = TypeSystemService.GetDocument (project, fileName);
 				var curDoc = curProject.GetDocument (documentId);
-				var model  =  curDoc.GetSemanticModelAsync ().Result;
+				var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 				unit = model.SyntaxTree;
 				result.Ast = model;
 			}
@@ -97,7 +98,7 @@ namespace MonoDevelop.CSharp.Parser
 			result.Add (GetSemanticTags (unit));
 			result.Add (GenerateFoldings (unit, result));
 
-			return result;
+			return Task.FromResult (result);
 		}
 		
 		IEnumerable<FoldingRegion> GenerateFoldings (SyntaxTree unit, ParsedDocument doc)

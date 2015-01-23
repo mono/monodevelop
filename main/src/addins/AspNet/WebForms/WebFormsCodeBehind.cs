@@ -74,7 +74,7 @@ namespace MonoDevelop.AspNet.WebForms
 			var result = new BuildResult ();
 
 			//parse the ASP.NET file
-			var parsedDocument = TypeSystemService.ParseFile (project, file.FilePath) as WebFormsParsedDocument;
+			var parsedDocument = TypeSystemService.ParseFile (project, file.FilePath).Result as WebFormsParsedDocument;
 			if (parsedDocument == null) {
 				result.AddError (string.Format ("Failed to parse file '{0}'", file.Name));
 				return result;
@@ -152,7 +152,7 @@ namespace MonoDevelop.AspNet.WebForms
 					ProjectFile resolvedMaster = project.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					WebFormsParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)
-						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath) as WebFormsParsedDocument;
+						masterParsedDocument = TypeSystemService.ParseFile (project, resolvedMaster.FilePath).Result as WebFormsParsedDocument;
 					if (masterParsedDocument != null && !String.IsNullOrEmpty (masterParsedDocument.Info.InheritedClass))
 						masterTypeName = masterParsedDocument.Info.InheritedClass;
 				} catch (Exception ex) {

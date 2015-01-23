@@ -37,9 +37,8 @@ namespace MonoDevelop.TextTemplating.Parser
 {
 	public class T4Parser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, Project project, System.Threading.CancellationToken cancellationToken)
 		{
-
 			ParsedTemplate template = new ParsedTemplate (fileName);
 			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (content, fileName);
 
@@ -56,7 +55,7 @@ namespace MonoDevelop.TextTemplating.Parser
 			var doc = new T4ParsedDocument (fileName, template.RawSegments, errors);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 
-			return doc;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
 		}
 	}
 }

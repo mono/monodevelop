@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource tr, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource tr, Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			var info = new WebFormsPageInfo ();
 			var errors = new List<Error> ();
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.WebForms
 			var result = new WebFormsParsedDocument (fileName, type, info, xDoc);
 			result.Add (errors);
 			
-			return result;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)result);
 		}
 	}
 }

@@ -44,7 +44,7 @@ namespace CBinding.Parser
 	/// </summary>
 	public class CDocumentParser:  TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource reader, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource reader, Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			var doc = new DefaultParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
@@ -72,7 +72,7 @@ namespace CBinding.Parser
 			}
 			
 			//doc.TopLevelTypeDefinitions.Add (globals);
-			return doc;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
 		}
 		
 		/// <summary>

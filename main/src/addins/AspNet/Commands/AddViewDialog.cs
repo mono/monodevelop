@@ -363,7 +363,7 @@ namespace MonoDevelop.AspNet.Commands
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
+			var pd = TypeSystemService.ParseFile (project, realPath).Result as WebFormsParsedDocument;
 			
 			if (pd != null) {
 				try {

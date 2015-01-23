@@ -37,7 +37,7 @@ namespace MonoDevelop.Xml.Editor
 {
 	class XmlDocumentParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			var doc = new XmlParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
@@ -56,7 +56,7 @@ namespace MonoDevelop.Xml.Editor
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
 			}
-			return doc;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
 		}
 	}
 }

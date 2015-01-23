@@ -738,7 +738,8 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
-				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText);
+				CancelOldParsing();
+				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
 			} finally {
 
 				OnDocumentParsed (EventArgs.Empty);
@@ -759,6 +760,12 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		object reparseLock = new object();
+		CancellationTokenSource parseTokenSource = new CancellationTokenSource();
+		void CancelOldParsing()
+		{
+			parseTokenSource.Cancel ();
+			parseTokenSource = new CancellationTokenSource ();
+		}
 		internal void StartReparseThread ()
 		{
 			lock (reparseLock) {
@@ -777,15 +784,18 @@ namespace MonoDevelop.Ide.Gui
 
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
+				CancelOldParsing();
+				var token = parseTokenSource.Token;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
-					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
-					Application.Invoke (delegate {
-						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-						if (isClosed)
-							return;
-						this.parsedDocument = currentParsedDocument;
-						OnDocumentParsed (EventArgs.Empty);
+					TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+						Application.Invoke (delegate {
+							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+							if (isClosed || task.Result == null)
+								return;
+							this.parsedDocument = task.Result;
+							OnDocumentParsed (EventArgs.Empty);
+						});
 					});
 					parseTimeout = 0;
 				});

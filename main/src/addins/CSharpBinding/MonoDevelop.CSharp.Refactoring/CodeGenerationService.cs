@@ -92,12 +92,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool isOpen;
 			var filePath = part.SourceTree.FilePath;
 			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (null, data.FileName, data.MimeType, data);
+			var parsedDocument = TypeSystemService.ParseFile (null, data.FileName, data.MimeType, data).Result;
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type, part);
 			
 			var suitableInsertionPoint = GetSuitableInsertionPoint (data, insertionPoints, type, part, newMember);
-			
+
 			/*
 			var generator = CreateCodeGenerator (data, type.Compilation);
 

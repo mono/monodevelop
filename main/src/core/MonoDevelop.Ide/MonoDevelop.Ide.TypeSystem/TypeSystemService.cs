@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName)
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			StringTextSource text;
 
@@ -144,20 +144,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 			}
 
-			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text);
+			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, ITextSource content)
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			var parser = GetParser (mimeType);
 			if (parser == null)
-				return null;
+				return Task.FromResult ((ParsedDocument)null);
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, content, project);
+				var result = parser.Parse (true, fileName, content, project, cancellationToken);
 //				lock (projectWrapperUpdateLock) {
 //					ProjectContentWrapper wrapper;
 //					if (project != null) {
@@ -192,20 +192,20 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
-				return null;
+				return Task.FromResult ((ParsedDocument)null);
 			} finally {
 				t.Dispose ();
 			}
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()));
+			return ParseFile (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
 		}
 
-		public static ParsedDocument ParseFile (Project project, IReadonlyTextDocument data)
+		public static Task<ParsedDocument> ParseFile (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return ParseFile (project, data.FileName, data.MimeType, data);
+			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
 		#region Folding parsers

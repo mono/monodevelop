@@ -41,7 +41,7 @@ namespace MonoDevelop.AspNet.Html
 {
 	public class HtmlParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, ITextSource tr, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource tr, Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (fileName);
 			doc.Flags = ParsedDocumentFlags.NonSerializable;
@@ -60,7 +60,7 @@ namespace MonoDevelop.AspNet.Html
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);
 			}
-			return doc;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)doc);
 		}
 		
 		IEnumerable<Error> Validate (XDocument doc)

@@ -29,6 +29,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -54,7 +56,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public abstract ParsedDocument Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null);
+		public abstract Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
 		/// Parse the specified file. The file content should be read by the type system parser.
@@ -68,10 +70,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public virtual ParsedDocument Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null)
+		public virtual Task<ParsedDocument> Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var src = StringTextSource.ReadFrom (fileName);
-			return Parse (storeAst, fileName, src, project);
+			return Parse (storeAst, fileName, src, project, cancellationToken);
 		}
 
 		public virtual bool CanGenerateCodeBehind (string mimeType, string buildAction, string[] supportedLanguages)
