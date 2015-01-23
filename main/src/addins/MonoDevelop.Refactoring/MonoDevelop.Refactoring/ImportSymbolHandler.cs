@@ -88,10 +88,10 @@ namespace MonoDevelop.Refactoring
 			}
 			result.GenerateUsing = true;
 			
-			var analysisDocument = doc.AnalysisDocument;
-			if (analysisDocument == null)
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
 				return result;
-			var model = analysisDocument.GetSemanticModelAsync ().Result;
+			var model = parsedDocument.GetAst<SemanticModel> ();
 			
 			return result;
 		}

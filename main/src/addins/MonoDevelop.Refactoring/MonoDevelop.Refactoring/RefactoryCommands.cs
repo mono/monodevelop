@@ -101,11 +101,13 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 
-		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			var unit = await document.GetSemanticModelAsync (cancellationToken);
+			if (document.ParsedDocument == null)
+				return RefactoringSymbolInfo.Empty;
+			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
 				try {
@@ -127,10 +129,7 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var analysisDocument = doc.AnalysisDocument;
-			if (analysisDocument == null)
-				return;
-			var info = GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result;
+			var info = GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 
 			bool added = false;
 

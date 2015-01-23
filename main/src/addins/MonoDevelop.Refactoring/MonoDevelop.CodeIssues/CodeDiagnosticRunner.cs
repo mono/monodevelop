@@ -77,17 +77,15 @@ namespace MonoDevelop.CodeIssues
 					out compilation,
 					CancellationToken.None
 				);
-
-				var syntaxTreeTask = input.AnalysisDocument.GetSyntaxTreeAsync ();
-				if (!syntaxTreeTask.IsCompleted)
-					syntaxTreeTask.Wait ();
-				if (syntaxTreeTask.IsCanceled)
+				if (input.ParsedDocument == null)
+					return Enumerable.Empty<Result> ();
+				var model = input.ParsedDocument.GetAst<SemanticModel> ();
+				if (model == null)
 					return Enumerable.Empty<Result> ();
 
-				var tree = syntaxTreeTask.Result;
+				var tree = model.SyntaxTree;
 				if (tree == null)
 					return Enumerable.Empty<Result> ();
-				var model = compilation.GetSemanticModel (tree);
 				model.GetDiagnostics ();
 				model.GetSyntaxDiagnostics ();
 				model.GetDeclarationDiagnostics ();

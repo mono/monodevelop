@@ -44,6 +44,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -115,12 +116,12 @@ namespace MonoDevelop.Refactoring
 
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-			var csc = new CancellationTokenSource (200);
+			var csc = new CancellationTokenSource (2000);
 
 			PossibleNamespaceResult possibleNamespaces;
 			try {
 				possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange, csc.Token);
-			} catch (OperationCanceledException) {
+			} catch (TaskCanceledException) {
 				return;
 			}
 
@@ -218,10 +219,10 @@ namespace MonoDevelop.Refactoring
 				throw new ArgumentNullException ("loc");
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			var analysisDocument = doc.AnalysisDocument;
+			var analysisDocument = doc.ParsedDocument;
 			if (analysisDocument == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
-			var semanticModel = analysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
+			var semanticModel = analysisDocument.GetAst<SemanticModel> (); 
 			bool addUsings = true;
 			bool fullyQualify = true;
 
@@ -435,6 +436,7 @@ namespace MonoDevelop.Refactoring
 			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
 			var solution = netProject != null ? netProject.ParentSolution : null;
 			if (solution != null) {
+				var tuples = new List<Tuple<Task<Compilation>, MonoDevelop.Projects.ProjectReference>> ();
 				foreach (var curProject in solution.GetAllProjects ()) {
 					if (curProject == netProject || referencedItems.Contains (curProject))
 						continue;
@@ -442,12 +444,13 @@ namespace MonoDevelop.Refactoring
 					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
 					if (otherRefes.Contains (netProject))
 						continue;
-
-					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken).Result;
-					if (comp == null)
-						continue;
-					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
+					
+					tuples.Add (Tuple.Create (TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken), new MonoDevelop.Projects.ProjectReference (curProject)));
 				}
+				foreach (var tuple in tuples) {
+					compilations.Add (Tuple.Create (tuple.Item1.Result, tuple.Item2));
+				}
+				Console.WriteLine ("found compilations: " + compilations.Count);
 			}
 
 			//			FrameworkLookup frameworkLookup;
@@ -474,10 +477,9 @@ namespace MonoDevelop.Refactoring
 				var compilation = comp.Item1;
 				var requiredReference = comp.Item2;
 				var ns = new Stack<INamespaceSymbol> ();
-				ns.Push (semanticModel.Compilation.GlobalNamespace);
+				ns.Push (requiredReference == null ? comp.Item1.GlobalNamespace : comp.Item1.Assembly.GlobalNamespace);
 				while (ns.Count > 0) {
 					var curNs = ns.Pop ();
-
 					foreach (var type in curNs.GetTypeMembers (name, tc)) {
 						if (!semanticModel.IsAccessible (location, type))
 							continue;
@@ -488,7 +490,7 @@ namespace MonoDevelop.Refactoring
 							if (!semanticModel.IsAccessible (location, type))
 								continue;
 							yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
-						} 
+						}
 					}
 
 					// Search nested types.
@@ -680,6 +682,8 @@ namespace MonoDevelop.Refactoring
 			}
 
 			var name = identifier.ToString ();
+			if (targetExpression.Symbol == null)
+				yield break;
 			ITypeSymbol tsym = GetReturnType(targetExpression.Symbol);
 			foreach (var comp in compilations) {
 				var compilation = comp.Item1;

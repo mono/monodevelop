@@ -39,10 +39,7 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var analysisDocument = doc.AnalysisDocument;
-			if (analysisDocument == null)
-				return;
-			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result);
+			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result);
 		}
 		
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)

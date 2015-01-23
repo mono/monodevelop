@@ -66,17 +66,20 @@ namespace MonoDevelop.CodeActions
 				throw new ArgumentNullException ("editor");
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			var analysisDocument = doc.AnalysisDocument;
+			var parsedDocument = doc.ParsedDocument;
 			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
-			if (analysisDocument == null)
+			if (parsedDocument == null)
 				return actions;
-			var root = await doc.AnalysisDocument.GetSyntaxRootAsync ();
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			if (model == null)
+				return actions;
+			var root = model.SyntaxTree.GetRoot();
 			if (span.End > root.Span.End)
 				return actions;
 
 			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(editor.MimeType))) {
 				try {
-					await descriptor.GetProvider ().ComputeRefactoringsAsync (new CodeRefactoringContext (analysisDocument, span,
+					await descriptor.GetProvider ().ComputeRefactoringsAsync (new CodeRefactoringContext (doc.AnalysisDocument, span,
 						(ca) => actions.Add (Tuple.Create (descriptor, ca)),
 						cancellationToken));
 				} catch (OperationCanceledException) {

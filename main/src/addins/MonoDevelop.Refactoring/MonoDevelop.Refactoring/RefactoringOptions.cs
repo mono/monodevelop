@@ -37,6 +37,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring
 {
@@ -80,7 +81,7 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (Document doc) : this(doc.Editor, doc)
+		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc)
 		{
 		}
 
@@ -135,12 +136,12 @@ namespace MonoDevelop.Refactoring
 		{
 			if (editor == null)
 				throw new System.ArgumentNullException ("editor");
-			var analysisDocument = doc.AnalysisDocument;
-			if (analysisDocument == null)
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
 				return ImmutableArray<string>.Empty;
 			var result = ImmutableArray<string>.Empty.ToBuilder ();
-			var sm = await analysisDocument.GetSyntaxRootAsync (cancellationToken); 
-			var node = sm.FindNode (TextSpan.FromBounds (offset, offset)); 
+			var sm = parsedDocument.GetAst<SemanticModel> (); 
+			var node = sm.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset)); 
 			
 			while (node != null) {
 				var cu = node as CompilationUnitSyntax;
