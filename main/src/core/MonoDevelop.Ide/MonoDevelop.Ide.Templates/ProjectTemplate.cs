@@ -260,13 +260,15 @@ namespace MonoDevelop.Ide.Templates
 				var solutionItemDesc = descriptor;
 
 				SolutionEntityItem solutionEntryItem = solutionItemDesc.CreateItem (entryProjectCI, this.languagename);
-				solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
+				if (solutionEntryItem != null) {
+					solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
 
-				SavePackageReferences (solutionEntryItem, solutionItemDesc);
+					SavePackageReferences (solutionEntryItem, solutionItemDesc);
 
-				this.createdProjectInformation = cInfo;
+					this.createdProjectInformation = cInfo;
 
-				solutionEntryItems.Add (solutionEntryItem);
+					solutionEntryItems.Add (solutionEntryItem);
+				}
 			}
 
 			return solutionEntryItems;
