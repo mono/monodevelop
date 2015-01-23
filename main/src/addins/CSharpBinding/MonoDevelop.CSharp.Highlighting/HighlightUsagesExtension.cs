@@ -78,11 +78,11 @@ namespace MonoDevelop.CSharp.Highlighting
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return new UsageData ();
-			var analysisDocument = doc.ParsedDocument;
+			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return new UsageData ();
 
-			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset, token);
+			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset, token);
 			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
 				return new UsageData ();
 			return new UsageData {
