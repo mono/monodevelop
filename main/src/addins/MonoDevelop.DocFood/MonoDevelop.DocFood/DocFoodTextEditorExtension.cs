@@ -157,13 +157,15 @@ namespace MonoDevelop.DocFood
 		
 		ISymbol GetMemberToDocument ()
 		{
-			var analysisDocument = DocumentContext.AnalysisDocument;
-			if (analysisDocument == null)
+			var parsedDocument = DocumentContext.ParsedDocument;
+			if (parsedDocument == null)
 				return null;
-			var parsedDocument = analysisDocument.GetSemanticModelAsync ().Result;
+			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+			if (semanticModel == null)
+				return null;
 			var caretOffset = Editor.CaretOffset;
 			var offset = caretOffset;
-			var root = parsedDocument.SyntaxTree.GetRoot ();
+			var root = semanticModel.SyntaxTree.GetRoot ();
 
 			while (offset < Editor.Length) {
 				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
@@ -172,7 +174,7 @@ namespace MonoDevelop.DocFood
 					continue;
 				}
 
-				var declaredSymbol = parsedDocument.GetDeclaredSymbol (node); 
+				var declaredSymbol = semanticModel.GetDeclaredSymbol (node); 
 				if (declaredSymbol != null)
 					return declaredSymbol;
 				offset = node.FullSpan.End + 1;
