@@ -141,11 +141,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 
 			// Handle code completion
-			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
+			if (descriptor.KeyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
 				completionTokenSrc = new CancellationTokenSource ();
 				var token = completionTokenSrc.Token;
+				var caretOffset = Editor.CaretOffset;
 				var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
 				if (task != null) {
 					task.ContinueWith ((Task<ICompletionDataList> rt, object completionList) => {
@@ -154,9 +155,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 						Application.Invoke (delegate {
 							int triggerWordLength = rt.Result.TriggerWordLength;
 
-							if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-								|| (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
-								currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+							if (triggerWordLength > 0 && (triggerWordLength < caretOffset
+							    || (triggerWordLength == 1 && caretOffset == 1))) {
+								currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
 								currentCompletionContext.TriggerWordLength = triggerWordLength;
 							}
 							if (completionList != null) {
