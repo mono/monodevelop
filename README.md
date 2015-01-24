@@ -8,6 +8,8 @@ See http://www.monodevelop.com for more info.
 Directory organization
 ----------------------
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mono/monodevelop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 There are two main directories:
 
  * `main`: The core MonoDevelop assemblies and add-ins (all in a single
