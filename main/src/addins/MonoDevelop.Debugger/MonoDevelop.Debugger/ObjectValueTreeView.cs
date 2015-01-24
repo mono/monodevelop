@@ -40,6 +40,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using Mono.TextEditor;
+using System.Linq;
 
 
 namespace MonoDevelop.Debugger
@@ -262,7 +263,7 @@ namespace MonoDevelop.Debugger
 						cr.Stroke ();
 
 						int YOffset = (cell_area.Height - h) / 2;
-						if (((ObjectValueTreeView)widget).CompactView)
+						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
 							YOffset += 1;
 						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
 							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
@@ -415,7 +416,7 @@ namespace MonoDevelop.Debugger
 					SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
 				}
 			}
-			foreach (var s in evalSpinnersIcons) {
+			foreach (var s in evalSpinnersIcons.ToArray()) {
 				if (store.IterIsValid (s.Key) && Selection.IterIsSelected (s.Key)) {
 					if (!s.Value) {
 						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-selected-16", IconSize.Menu);

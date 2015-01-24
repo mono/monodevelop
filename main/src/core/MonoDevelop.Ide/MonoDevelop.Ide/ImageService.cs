@@ -797,7 +797,11 @@ namespace MonoDevelop.Ide
 			{
 				if (Animation == null) {
 					Animation = AnimatedIcon.StartAnimation (delegate (Xwt.Drawing.Image pix) {
-						TreeStore.SetValue (Iter,Column,pix);
+						if (TreeStore.IterIsValid (Iter)) {
+							TreeStore.SetValue (Iter, Column, pix);
+						} else {
+							UnregisterTreeAnimation (this);
+						}
 					});
 				}
 			}
