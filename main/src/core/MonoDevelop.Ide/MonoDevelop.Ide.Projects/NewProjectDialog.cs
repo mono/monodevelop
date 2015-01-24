@@ -372,8 +372,8 @@ namespace MonoDevelop.Ide.Projects {
 			if (!newSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				foreach (var currentEntry in currentEntries) {
-					var eitem = (SolutionEntityItem)currentEntry;
+				foreach (SolutionItem currentEntry in currentEntries) {
+					var eitem = currentEntry as SolutionEntityItem;
 					if (eitem != null) {
 						// Inherit the file format from the solution
 						eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
@@ -511,10 +511,10 @@ namespace MonoDevelop.Ide.Projects {
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 				if (newSolution)
-					newItems = item.CreateWorkspaceItem (cinfo);
+					newItems = CreateWorkspaceItems (item, cinfo);
 				else
-					newItems = item.CreateProject (parentFolder, cinfo);
-				if (newItems == null)
+					newItems = CreateProjects (item, parentFolder, cinfo);
+				if (!newItems.Any ())
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
@@ -537,6 +537,23 @@ namespace MonoDevelop.Ide.Projects {
 			cinfo.ParentFolder = parentFolder;
 			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 			return cinfo;
+		}
+
+		static List<IWorkspaceFileObject> CreateWorkspaceItems (ProjectTemplate item, ProjectCreateInformation cinfo)
+		{
+			var items = new List<IWorkspaceFileObject> ();
+			WorkspaceItem newItem = item.CreateWorkspaceItem (cinfo);
+			if (newItem != null) {
+				items.Add (newItem);
+			}
+			return items;
+		}
+
+		static List<IWorkspaceFileObject> CreateProjects (ProjectTemplate item, SolutionFolder parent, ProjectCreateInformation cinfo)
+		{
+			return item.CreateProjects (parent, cinfo)
+				.Select (project => (IWorkspaceFileObject)project)
+				.ToList ();
 		}
 
 		void InstallProjectTemplatePackages (Solution sol)

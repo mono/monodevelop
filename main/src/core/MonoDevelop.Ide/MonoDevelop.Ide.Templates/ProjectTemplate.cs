@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Templates
 			return asyncOperation;
 		}
 
-		public List<IWorkspaceFileObject> CreateWorkspaceItem (ProjectCreateInformation cInfo)
+		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
 			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
@@ -238,15 +238,15 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
-			return new List<IWorkspaceFileObject> { workspaceItemInfo.WorkspaceItem };
+			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public List<IWorkspaceFileObject> CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			var solutionEntryItems = new List<IWorkspaceFileObject> ();
+			var solutionEntryItems = new List<SolutionEntityItem> ();
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
 			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
