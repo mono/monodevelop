@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("GtkCore", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
+	EnabledByDefault = false,
 	Category = "IDE extensions")]
 
 [assembly:AddinName ("GTK# Visual Designer")]
