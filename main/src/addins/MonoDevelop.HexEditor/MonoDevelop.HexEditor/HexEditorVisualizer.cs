@@ -38,11 +38,7 @@ namespace MonoDevelop.HexEditor
 {
 	public class HexEditorVisualizer : ValueVisualizer
 	{
-		Mono.MHex.HexEditor hexEditor;
-
-		public HexEditorVisualizer ()
-		{
-		}
+		Mono.MHex.HexEditorDebugger hexEditor;
 
 		#region IValueVisualizer implementation
 
@@ -52,6 +48,8 @@ namespace MonoDevelop.HexEditor
 
 		public override bool CanVisualize (ObjectValue val)
 		{
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData"))
+				return true;
 			switch (val.TypeName) {
 			case "sbyte[]": return true;
 			case "byte[]": return true;
@@ -63,6 +61,8 @@ namespace MonoDevelop.HexEditor
 
 		public override bool IsDefaultVisualizer (ObjectValue val)
 		{
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData"))
+				return true;
 			switch (val.TypeName) {
 			case "sbyte[]":
 			case "byte[]": return true;
@@ -86,11 +86,13 @@ namespace MonoDevelop.HexEditor
 			options.ChunkRawStrings = true;
 
 			IBuffer buffer = null;
+			hexEditor = new Mono.MHex.HexEditorDebugger ();
 
-			hexEditor = new Mono.MHex.HexEditor ();
-
-			if (val.TypeName != "string") {
-				var raw = (RawValueArray) val.GetRawValue (options);
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData")) {
+				var raw = (RawValueArray)((RawValue)val.GetRawValue ()).CallMethod ("ToArray");
+				buffer = new RawByteArrayBuffer (raw);
+			} else if (val.TypeName != "string") {
+				var raw = (RawValueArray)val.GetRawValue (options);
 
 				switch (val.TypeName) {
 				case "sbyte[]":
@@ -104,11 +106,11 @@ namespace MonoDevelop.HexEditor
 					break;
 				}
 			} else {
-				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (options));
+				buffer = new RawStringBuffer ((RawValueString)val.GetRawValue (options));
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
-			hexEditor.Sensitive = CanEdit (val);
+			hexEditor.Editor.Sensitive = CanEdit (val);
 
 			var xwtScrollView = new Xwt.ScrollView (hexEditor);
 			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);
