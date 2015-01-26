@@ -2078,6 +2078,24 @@
     <EmbeddedResource Include="icons\spinner-selected-5-16%402x.png">
       <LogicalName>spinner-selected-5-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24.png">
+      <LogicalName>done-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24%402x.png">
+      <LogicalName>done-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32.png">
+      <LogicalName>done-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32%402x.png">
+      <LogicalName>done-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48.png">
+      <LogicalName>done-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48%402x.png">
+      <LogicalName>done-48@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
