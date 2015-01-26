@@ -372,12 +372,23 @@ namespace MonoDevelop.Ide.Projects {
 			if (!newSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				foreach (var currentEntry in currentEntries) {
-					var eitem = (SolutionEntityItem)currentEntry;
+				foreach (SolutionItem currentEntry in currentEntries) {
+					var eitem = currentEntry as SolutionEntityItem;
 					if (eitem != null) {
 						// Inherit the file format from the solution
 						eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
+
+						// Remove any references to other projects and add them back after the
+						// project is saved because a project reference cannot be resolved until
+						// the project has a parent solution.
+						List<ProjectReference> projectReferences = GetProjectReferences (eitem);
+						if (projectReferences.Any ())
+							eitem.Items.RemoveRange (projectReferences);
+
 						IdeApp.ProjectOperations.Save (eitem);
+
+						if (projectReferences.Any ())
+							eitem.Items.AddRange (projectReferences);
 					}
 					parentFolder.AddItem (currentEntry, true);
 				}
@@ -414,7 +425,14 @@ namespace MonoDevelop.Ide.Projects {
 
 			Respond (ResponseType.Ok);
 		}
-		
+
+		List<ProjectReference> GetProjectReferences (SolutionEntityItem solutionItem)
+		{
+			return solutionItem.Items.OfType<ProjectReference> ()
+				.Where (item => item.ReferenceType == ReferenceType.Project)
+				.ToList ();
+		}
+
 		bool CreateProject ()
 		{
 			if (templateView.CurrentlySelected != null) {
@@ -493,10 +511,10 @@ namespace MonoDevelop.Ide.Projects {
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 				if (newSolution)
-					newItems = item.CreateWorkspaceItem (cinfo);
+					newItems = CreateWorkspaceItems (item, cinfo);
 				else
-					newItems = item.CreateProject (parentFolder, cinfo);
-				if (newItems == null)
+					newItems = CreateProjects (item, parentFolder, cinfo);
+				if (!newItems.Any ())
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
@@ -519,6 +537,23 @@ namespace MonoDevelop.Ide.Projects {
 			cinfo.ParentFolder = parentFolder;
 			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 			return cinfo;
+		}
+
+		static List<IWorkspaceFileObject> CreateWorkspaceItems (ProjectTemplate item, ProjectCreateInformation cinfo)
+		{
+			var items = new List<IWorkspaceFileObject> ();
+			WorkspaceItem newItem = item.CreateWorkspaceItem (cinfo);
+			if (newItem != null) {
+				items.Add (newItem);
+			}
+			return items;
+		}
+
+		static List<IWorkspaceFileObject> CreateProjects (ProjectTemplate item, SolutionFolder parent, ProjectCreateInformation cinfo)
+		{
+			return item.CreateProjects (parent, cinfo)
+				.Select (project => (IWorkspaceFileObject)project)
+				.ToList ();
 		}
 
 		void InstallProjectTemplatePackages (Solution sol)

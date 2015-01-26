@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Templates
 			return asyncOperation;
 		}
 
-		public List<IWorkspaceFileObject> CreateWorkspaceItem (ProjectCreateInformation cInfo)
+		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
 			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
@@ -238,15 +238,16 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
-			return new List<IWorkspaceFileObject> { workspaceItemInfo.WorkspaceItem };
+			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public List<IWorkspaceFileObject> CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			var solutionEntryItems = new List<IWorkspaceFileObject> ();
+			var solutionEntryItems = new List<SolutionEntityItem> ();
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
 			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
 				ProjectCreateInformation entryProjectCI;
@@ -259,13 +260,15 @@ namespace MonoDevelop.Ide.Templates
 				var solutionItemDesc = descriptor;
 
 				SolutionEntityItem solutionEntryItem = solutionItemDesc.CreateItem (entryProjectCI, this.languagename);
-				solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
+				if (solutionEntryItem != null) {
+					solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
 
-				SavePackageReferences (solutionEntryItem, solutionItemDesc);
+					SavePackageReferences (solutionEntryItem, solutionItemDesc);
 
-				this.createdProjectInformation = cInfo;
+					this.createdProjectInformation = cInfo;
 
-				solutionEntryItems.Add (solutionEntryItem);
+					solutionEntryItems.Add (solutionEntryItem);
+				}
 			}
 
 			return solutionEntryItems;
@@ -273,7 +276,6 @@ namespace MonoDevelop.Ide.Templates
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
 		{
-			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
 				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);
