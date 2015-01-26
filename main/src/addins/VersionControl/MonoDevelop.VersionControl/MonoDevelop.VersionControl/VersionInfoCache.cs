@@ -42,13 +42,13 @@ namespace MonoDevelop.VersionControl
 
 		public void ClearCachedVersionInfo (FilePath rootPath)
 		{
-			rootPath = rootPath.CanonicalPath;
+			var canonicalPath = rootPath.CanonicalPath;
 			lock (fileStatus) {
-				foreach (var p in fileStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath))
+				foreach (var p in fileStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == canonicalPath))
 					p.Value.RequiresRefresh = true;
 			}
 			lock (directoryStatus) {
-				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath))
+				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == canonicalPath))
 					p.Value.RequiresRefresh = true;
 			}
 		}

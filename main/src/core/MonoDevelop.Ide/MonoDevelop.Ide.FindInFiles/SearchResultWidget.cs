@@ -491,10 +491,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			pathRenderer.Markup = projectNameMarkup;
 		}
-		public static string ColorToPangoMarkup (Gdk.Color color)
-		{
-			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
-		}
 
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
@@ -572,48 +568,7 @@ namespace MonoDevelop.Ide.FindInFiles
 							searchColor = color1;
 						}
 						if (searchResult.StartIndex != searchResult.EndIndex) {
-							var markupBuilder = new StringBuilder();
-							bool inMarkup = false, inEntity = false, closed = false;
-							int i = 0;
-							for (int j = 0; j < textMarkup.Length; j++) {
-								var ch = textMarkup [j];
-								if (inEntity) {
-									if (ch == ';')
-										inEntity = false;
-									markupBuilder.Append (ch);
-									continue;
-								}
-								if (inMarkup) {
-									if (ch == '>')
-										inMarkup = false;
-									markupBuilder.Append (ch);
-									continue;
-								}
-								if (i == searchResult.EndIndex) {
-									markupBuilder.Append ("</span>");
-									markupBuilder.Append (textMarkup.Substring (j));
-									closed = true;
-									break;
-								}
-								if (ch == '&') {
-									inEntity = true;
-									markupBuilder.Append (ch);
-									continue;
-								}
-								if (ch == '<') {
-									inMarkup = true;
-									markupBuilder.Append (ch);
-									continue;
-								}
-								if (i == searchResult.StartIndex) {
-									markupBuilder.Append ("<span background=\"" + ColorToPangoMarkup ((HslColor)searchColor) + "\">");
-								}
-								markupBuilder.Append (ch);
-								i++;
-							}
-							if (!closed)
-								markupBuilder.Append ("</span>");
-							textMarkup = markupBuilder.ToString ();
+							textMarkup = PangoHelper.ColorMarkupBackground (textMarkup, (int)searchResult.StartIndex, (int)searchResult.EndIndex, searchColor);
 						}
 					}
 				} catch (Exception e) {
@@ -624,7 +579,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			textRenderer.Markup = textMarkup;
 		}
-		
+
+
 		static int FindPosition (string markup, int pos, out string tag)
 		{
 			bool inTag = false;
@@ -859,6 +815,71 @@ namespace MonoDevelop.Ide.FindInFiles
 				return doc;
 			}
 			
+		}
+	}
+
+	public static class PangoHelper
+	{
+		public static string ColorToPangoMarkup (Gdk.Color color)
+		{
+			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
+		}
+
+		public static string ColorMarkupBackground (string textMarkup, int startIndex, int endIndex, HslColor searchColor)
+		{
+			var markupBuilder = new StringBuilder();
+			bool inMarkup = false, inEntity = false, closed = false;
+			int i = 0;
+			for (int j = 0; j < textMarkup.Length; j++) {
+				var ch = textMarkup [j];
+				if (inEntity) {
+					if (ch == ';') {
+						inEntity = false;
+						i++;
+					}
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (inMarkup) {
+					if (ch == '>') {
+						inMarkup = false;
+						markupBuilder.Append (ch);
+						if (i > startIndex && markupBuilder.ToString ().EndsWith("</span>")) {
+							if (!closed)
+								markupBuilder.Append ("</span>");
+							markupBuilder.Append (textMarkup.Substring(j + 1));
+							return ColorMarkupBackground (markupBuilder.ToString (), i, endIndex, searchColor);
+						}
+						continue;
+					}
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (i == endIndex) {
+					markupBuilder.Append ("</span>");
+					markupBuilder.Append (textMarkup.Substring (j));
+					closed = true;
+					break;
+				}
+				if (ch == '&') {
+					inEntity = true;
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (ch == '<') {
+					inMarkup = true;
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (i == startIndex) {
+					markupBuilder.Append ("<span background=\"" + ColorToPangoMarkup (searchColor) + "\">");
+				}
+				markupBuilder.Append (ch);
+				i++;
+			}
+			if (!closed)
+				markupBuilder.Append ("</span>");
+			return markupBuilder.ToString ();
 		}
 	}
 }

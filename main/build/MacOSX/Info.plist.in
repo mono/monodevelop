@@ -33,6 +33,34 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>monodevelop.sln.icns</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>csproj</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>@APP_NAME@ C# Project</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>monodevelop.sln.icns</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fsproj</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>@APP_NAME@ F# Project</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>cs</string>
@@ -71,6 +99,30 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>F# Sketch File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fs</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>F# Source File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>fsx</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>F# Script File</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSIsAppleDefaultForType</key>

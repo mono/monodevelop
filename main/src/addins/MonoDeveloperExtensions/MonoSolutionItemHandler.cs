@@ -167,10 +167,7 @@ namespace MonoDeveloper
 				}
 			}
 		}
-		
-		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
-			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-				
+
 		public BuildResult RunTarget (MonoDevelop.Core.IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget)
@@ -191,20 +188,22 @@ namespace MonoDeveloper
 					tw.UnchainWriter (output);
 					tw.UnchainWriter (monitor.Log);
 
-					CompilerResults cr = new CompilerResults (null);
-					string[] lines = output.ToString().Split ('\n');
+					var result = new BuildResult (output.ToString (), 1, 0);
+
+					string[] lines = result.CompilerOutput.Split ('\n');
 					foreach (string line in lines) {
-						CompilerError err = CreateErrorFromString (line);
-						if (err != null) cr.Errors.Add (err);
+						var err = CreateErrorFromString (line);
+						if (err != null)
+							result.Append (err);
 					}
 
-					return new BuildResult (cr, output.ToString());
+					return result;
 				}
 			}
 
 		}
 		
-		private CompilerError CreateErrorFromString (string error_string)
+		private BuildError CreateErrorFromString (string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from braeking this.
 			if (error_string.StartsWith ("WROTE SYMFILE") ||
@@ -214,27 +213,7 @@ namespace MonoDeveloper
 			    error_string.StartsWith ("Compilation failed"))
 				return null;
 
-			CompilerError error = new CompilerError();
-
-			Match match=regexError.Match(error_string);
-			if (!match.Success)
-				return null;
-
-			string level = match.Result("${level}");
-			if (level == "warning")
-				error.IsWarning = true;
-			else if (level != "error")
-				return null;
-			
-			if (String.Empty != match.Result("${file}"))
-				error.FileName = Path.Combine (project.BaseDirectory, match.Result("${file}"));
-			if (String.Empty != match.Result("${line}"))
-				error.Line=Int32.Parse(match.Result("${line}"));
-			if (String.Empty != match.Result("${column}"))
-				error.Column = Int32.Parse(match.Result("${column}"));
-			error.ErrorNumber = match.Result ("${number}");
-			error.ErrorText = match.Result ("${message}");
-			return error;
+			return BuildError.FromMSBuildErrorFormat (error_string);
 		}
 		
 		void OnFileAddedToProject (object s, ProjectFileEventArgs args)

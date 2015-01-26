@@ -17,14 +17,14 @@ PACKAGE_VERSION_LABEL="m4_esyscmd_s([grep ^Label ../version.config|cut -d "=" -f
 COMPAT_ADDIN_VERSION=m4_esyscmd_s([grep ^CompatVersion ../version.config|cut -d "=" -f 2|tr -d '\n'])
 
 AC_PATH_PROG(MONO, mono)
-AC_PATH_PROG(MCS, gmcs)
+AC_PATH_PROG(MCS, mcs)
 
 if test "x$MONO" = "x" ; then
 	AC_MSG_ERROR([Can't find "mono" in your PATH])
 fi
 
 if test "x$MCS" = "x" ; then
-  AC_MSG_ERROR([Can't find "gmcs" in your PATH])
+  AC_MSG_ERROR([Can't find "mcs" in your PATH])
 fi
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
@@ -235,7 +235,7 @@ fi
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb ko"
+ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb ko uk"
 AC_SUBST(ALL_LINGUAS)
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)

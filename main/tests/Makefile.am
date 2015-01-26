@@ -47,9 +47,7 @@ TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
 test:
-	@if test "$(assembly)" = "MonoDevelop.VersionControl.Subversion.Tests.dll" && test "x$(MACOS_10_10)" = "xyes"; then \
-		echo "Svn does not work on Yosemite. Bailing out..."; \
-	elif test -n "$(assembly)"; then \
+	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
 				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \

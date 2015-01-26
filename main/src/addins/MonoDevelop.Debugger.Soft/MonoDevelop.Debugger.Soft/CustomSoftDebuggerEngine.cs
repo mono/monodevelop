@@ -58,9 +58,14 @@ namespace MonoDevelop.Debugger.Soft
 		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
 			//WORKAROUND: explicit generic type argument works around a gmcs 2.6.x type inference bug 
-			return InvokeSynch<SoftDebuggerStartInfo> (GetDebuggerInfo) ??
-				//HACK: flag object so we can cancel the session
-				new DebuggerStartInfo ();
+			var dsi = InvokeSynch<SoftDebuggerStartInfo> (GetDebuggerInfo);
+			//HACK: flag object so we can cancel the session
+			if (dsi == null)
+				return new DebuggerStartInfo ();
+
+			var cmd = (DotNetExecutionCommand) c;
+			SoftDebuggerEngine.SetUserAssemblyNames (dsi, cmd.UserAssemblyPaths);
+			return dsi;
 		}
 		
 		static SoftDebuggerStartInfo GetDebuggerInfo ()

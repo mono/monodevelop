@@ -22,7 +22,6 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,7 +33,6 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -42,6 +40,8 @@
     <DefineConstants>DEBUG,MAC</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;1573</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -49,6 +49,9 @@
     <DefineConstants>MAC</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;1573</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
+    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,7 +74,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -190,23 +193,23 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\light\prefs-code-actions-16.png">
-      <LogicalName>prefs-code-actions-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-actions-16.png">
+      <LogicalName>prefs-code-actions-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-actions-16%402x.png">
-      <LogicalName>prefs-code-actions-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-actions-16%402x.png">
+      <LogicalName>prefs-code-actions-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-rules-16.png">
-      <LogicalName>prefs-code-rules-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-rules-16.png">
+      <LogicalName>prefs-code-rules-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-rules-16%402x.png">
-      <LogicalName>prefs-code-rules-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-rules-16%402x.png">
+      <LogicalName>prefs-code-rules-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-analysis-16.png">
-      <LogicalName>prefs-code-analysis-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16.png">
+      <LogicalName>prefs-code-analysis-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-code-analysis-16%402x.png">
-      <LogicalName>prefs-code-analysis-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16%402x.png">
+      <LogicalName>prefs-code-analysis-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

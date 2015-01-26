@@ -315,10 +315,10 @@ namespace Mono.TextEditor.Highlighting
 						});
 					}
 					IsFinished = true;
-					ManualResetEvent.Set ();
 				} finally {
 					doc = null;
 					mode = null;
+					ManualResetEvent.Set ();
 				}
 			}
 		}

@@ -447,5 +447,20 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (file, r.HintPath);
 
 		}
+
+		[Test]
+		public void SanitizeProjectNamespace ()
+		{
+			var info = new ProjectCreateInformation {
+				ProjectBasePath = "/tmp/test",
+				ProjectName = "abc.0"
+			};
+			var project = new DotNetAssemblyProject ("C#", info, null);
+			Assert.AreEqual ("abc", project.DefaultNamespace);
+
+			info.ProjectName = "a.";
+			project = new DotNetAssemblyProject ("C#", info, null);
+			Assert.AreEqual ("a", project.DefaultNamespace);
+		}
 	}
 }

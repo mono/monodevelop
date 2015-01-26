@@ -233,6 +233,7 @@ namespace MonoDevelop.Projects
 			yield return new StringTagDescription ("ProjectConfigName", GettextCatalog.GetString ("Project Configuration Name"));
 			yield return new StringTagDescription ("ProjectConfigPlat", GettextCatalog.GetString ("Project Configuration Platform"));
 			yield return new StringTagDescription ("TargetFile", GettextCatalog.GetString ("Target File"));
+			yield return new StringTagDescription ("TargetPath", GettextCatalog.GetString ("Target Path"));
 			yield return new StringTagDescription ("TargetName", GettextCatalog.GetString ("Target Name"));
 			yield return new StringTagDescription ("TargetDir", GettextCatalog.GetString ("Target Directory"));
 			yield return new StringTagDescription ("TargetExt", GettextCatalog.GetString ("Target Extension"));

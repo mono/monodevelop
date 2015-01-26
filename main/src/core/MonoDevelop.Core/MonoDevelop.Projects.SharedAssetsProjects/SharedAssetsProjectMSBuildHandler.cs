@@ -39,6 +39,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public SharedAssetsProjectMSBuildHandler ()
 		{
+			// Shared projects use msbuild by default. Without this, referencing projects assume that a SAP
+			// doesn't support msbuild and they fall back to MD's build system.
+			UseMSBuildEngineByDefault = true;
 		}
 
 		protected override void LoadProject (IProgressMonitor monitor, MSBuildProject msproject)

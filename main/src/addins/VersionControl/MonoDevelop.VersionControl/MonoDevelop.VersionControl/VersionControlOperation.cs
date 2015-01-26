@@ -30,16 +30,16 @@ namespace MonoDevelop.VersionControl
 	[Flags]
 	public enum VersionControlOperation
 	{
-		None = 0,
-		Add = 1,
-		Remove = 2,
-		Commit = 4,
-		Revert = 8,
-		Update = 16,
-		Lock = 32,
-		Unlock = 64,
-		Annotate = 128,
-		Log = 256
+		None = 0x0,
+		Add = 0x1,
+		Remove = 0x2,
+		Commit = 0x4,
+		Revert = 0x8,
+		Update = 0x10,
+		Lock = 0x20,
+		Unlock = 0x40,
+		Annotate = 0x80,
+		Log = 0x100
 	}
 }
 

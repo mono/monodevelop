@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.Projects
 {
@@ -34,7 +35,11 @@ namespace MonoDevelop.Projects
 	{
 		BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration);
 		bool SupportsTarget (string target);
+
+		[Obsolete ("This method will be removed in future releases")]
 		bool NeedsBuilding (ConfigurationSelector configuration);
+
+		[Obsolete ("This method will be removed in future releases")]
 		void SetNeedsBuilding (bool needsBuilding, ConfigurationSelector configuration);
 
 		//TODO: move these to IExecutableWorkspaceObject when we break API

@@ -6,7 +6,7 @@ script_name=./`basename $0`
 
 #
 # Script to check versions of dependencies
-# To check the version for all dependencies, just run the script with no arguments
+# To check the version for all dependencies, just run the script with no arguments.
 # To check the version for a specific dependency, run the script with "check <dependency>"
 # To reset a dependency to the needed version, run the script with "reset <dependency>"
 # It is also possible to pass "reset all" to reset all dependencies

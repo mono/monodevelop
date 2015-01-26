@@ -60,6 +60,16 @@ namespace MonoDevelop.Core.Execution
 		/// </summary>
 		public bool Enabled { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/> is notable.
+		/// </summary>
+		/// <remarks>
+		/// This is introduced to be able to highlight execution targets for whatever reason makes sense for the project. 
+		/// For example, the android add-in uses this to indicate which emulators are currently running but other addins can use this
+		/// for their own purposes
+		/// </remarks>
+		public bool Notable { get; set; }
+
 		public override bool Equals (object obj)
 		{
 			var t = obj as ExecutionTarget;

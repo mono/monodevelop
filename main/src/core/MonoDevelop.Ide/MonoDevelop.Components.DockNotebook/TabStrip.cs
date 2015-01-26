@@ -41,8 +41,8 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class TabStrip: EventBox, IAnimatable
 	{
-		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-light-12.png");
-		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-light-12.png");
+		static Xwt.Drawing.Image tabbarPrevImage = Xwt.Drawing.Image.FromResource ("tabbar-prev-12.png");
+		static Xwt.Drawing.Image tabbarNextImage = Xwt.Drawing.Image.FromResource ("tabbar-next-12.png");
 
 		List<Widget> children = new List<Widget> ();
 		readonly DockNotebook notebook;

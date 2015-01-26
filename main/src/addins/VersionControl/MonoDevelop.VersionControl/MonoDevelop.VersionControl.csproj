@@ -114,74 +114,80 @@
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\light\added-overlay-16.png">
-      <LogicalName>added-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\added-overlay-16.png">
+      <LogicalName>added-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\added-overlay-16%402x.png">
-      <LogicalName>added-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\added-overlay-16%402x.png">
+      <LogicalName>added-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\modified-overlay-16.png">
-      <LogicalName>modified-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\modified-overlay-16.png">
+      <LogicalName>modified-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\modified-overlay-16%402x.png">
-      <LogicalName>modified-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\modified-overlay-16%402x.png">
+      <LogicalName>modified-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\conflict-overlay-16.png">
-      <LogicalName>conflict-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\conflict-overlay-16.png">
+      <LogicalName>conflict-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\conflict-overlay-16%402x.png">
-      <LogicalName>conflict-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\conflict-overlay-16%402x.png">
+      <LogicalName>conflict-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\locked-overlay-16.png">
-      <LogicalName>locked-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\locked-overlay-16.png">
+      <LogicalName>locked-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\locked-overlay-16%402x.png">
-      <LogicalName>locked-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\locked-overlay-16%402x.png">
+      <LogicalName>locked-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\removed-overlay-16.png">
-      <LogicalName>removed-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\removed-overlay-16.png">
+      <LogicalName>removed-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\removed-overlay-16%402x.png">
-      <LogicalName>removed-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\removed-overlay-16%402x.png">
+      <LogicalName>removed-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ignored-overlay-16.png">
-      <LogicalName>ignored-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\renamed-overlay-16.png">
+      <LogicalName>renamed-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\ignored-overlay-16%402x.png">
-      <LogicalName>ignored-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\renamed-overlay-16%402x.png">
+      <LogicalName>renamed-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\repository-16.png">
-      <LogicalName>repository-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\ignored-overlay-16.png">
+      <LogicalName>ignored-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\repository-16%402x.png">
-      <LogicalName>repository-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\ignored-overlay-16%402x.png">
+      <LogicalName>ignored-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\versioned-overlay-16.png">
-      <LogicalName>versioned-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\repository-16.png">
+      <LogicalName>repository-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\versioned-overlay-16%402x.png">
-      <LogicalName>versioned-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\repository-16%402x.png">
+      <LogicalName>repository-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\unversioned-overlay-16.png">
-      <LogicalName>unversioned-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\versioned-overlay-16.png">
+      <LogicalName>versioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\unversioned-overlay-16%402x.png">
-      <LogicalName>unversioned-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\versioned-overlay-16%402x.png">
+      <LogicalName>versioned-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\lock-required-overlay-16.png">
-      <LogicalName>lock-required-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\unversioned-overlay-16.png">
+      <LogicalName>unversioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\lock-required-overlay-16%402x.png">
-      <LogicalName>lock-required-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\unversioned-overlay-16%402x.png">
+      <LogicalName>unversioned-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\unlocked-overlay-16.png">
-      <LogicalName>unlocked-overlay-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\lock-required-overlay-16.png">
+      <LogicalName>lock-required-overlay-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\unlocked-overlay-16%402x.png">
-      <LogicalName>unlocked-overlay-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\lock-required-overlay-16%402x.png">
+      <LogicalName>lock-required-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16.png">
+      <LogicalName>unlocked-overlay-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16%402x.png">
+      <LogicalName>unlocked-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
@@ -189,125 +195,131 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\version-control-16.png">
-      <LogicalName>version-control-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\version-control-16.png">
+      <LogicalName>version-control-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\version-control-16%402x.png">
-      <LogicalName>version-control-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\version-control-16%402x.png">
+      <LogicalName>version-control-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\log-16.png">
-      <LogicalName>log-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\log-16.png">
+      <LogicalName>log-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\log-16%402x.png">
-      <LogicalName>log-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\log-16%402x.png">
+      <LogicalName>log-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\diff-16.png">
-      <LogicalName>diff-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\diff-16.png">
+      <LogicalName>diff-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\diff-16%402x.png">
-      <LogicalName>diff-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\diff-16%402x.png">
+      <LogicalName>diff-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pull-16.png">
-      <LogicalName>pull-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\pull-16.png">
+      <LogicalName>pull-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\pull-16%402x.png">
-      <LogicalName>pull-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\pull-16%402x.png">
+      <LogicalName>pull-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\push-16.png">
-      <LogicalName>push-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\push-16.png">
+      <LogicalName>push-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\push-16%402x.png">
-      <LogicalName>push-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\push-16%402x.png">
+      <LogicalName>push-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\refresh-16.png">
-      <LogicalName>refresh-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\refresh-16.png">
+      <LogicalName>refresh-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\refresh-16%402x.png">
-      <LogicalName>refresh-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\refresh-16%402x.png">
+      <LogicalName>refresh-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\local-status-16.png">
-      <LogicalName>local-status-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\local-status-16.png">
+      <LogicalName>local-status-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\local-status-16%402x.png">
-      <LogicalName>local-status-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\local-status-16%402x.png">
+      <LogicalName>local-status-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\commit-16.png">
-      <LogicalName>commit-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\commit-16.png">
+      <LogicalName>commit-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\commit-16%402x.png">
-      <LogicalName>commit-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\commit-16%402x.png">
+      <LogicalName>commit-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\remote-status-16.png">
-      <LogicalName>remote-status-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\remote-status-16.png">
+      <LogicalName>remote-status-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\remote-status-16%402x.png">
-      <LogicalName>remote-status-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\remote-status-16%402x.png">
+      <LogicalName>remote-status-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-added-16.png">
-      <LogicalName>vcs-added-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-added-16.png">
+      <LogicalName>vcs-added-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-added-16%402x.png">
-      <LogicalName>vcs-added-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-added-16%402x.png">
+      <LogicalName>vcs-added-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-removed-16.png">
-      <LogicalName>vcs-removed-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-removed-16.png">
+      <LogicalName>vcs-removed-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-removed-16%402x.png">
-      <LogicalName>vcs-removed-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-removed-16%402x.png">
+      <LogicalName>vcs-removed-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-conflicted-16.png">
-      <LogicalName>vcs-conflicted-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-renamed-16.png">
+      <LogicalName>vcs-renamed-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-conflicted-16%402x.png">
-      <LogicalName>vcs-conflicted-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-renamed-16%402x.png">
+      <LogicalName>vcs-renamed-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-modified-16.png">
-      <LogicalName>vcs-modified-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-conflicted-16.png">
+      <LogicalName>vcs-conflicted-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\vcs-modified-16%402x.png">
-      <LogicalName>vcs-modified-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-conflicted-16%402x.png">
+      <LogicalName>vcs-conflicted-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\comment-16.png">
-      <LogicalName>comment-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-modified-16.png">
+      <LogicalName>vcs-modified-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\comment-16%402x.png">
-      <LogicalName>comment-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\vcs-modified-16%402x.png">
+      <LogicalName>vcs-modified-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\revert-16.png">
-      <LogicalName>revert-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\comment-16.png">
+      <LogicalName>comment-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\revert-16%402x.png">
-      <LogicalName>revert-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\comment-16%402x.png">
+      <LogicalName>comment-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\branch-16.png">
-      <LogicalName>branch-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\revert-16.png">
+      <LogicalName>revert-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\branch-16%402x.png">
-      <LogicalName>branch-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\revert-16%402x.png">
+      <LogicalName>revert-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\tag-16.png">
-      <LogicalName>tag-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\branch-16.png">
+      <LogicalName>branch-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\tag-16%402x.png">
-      <LogicalName>tag-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\branch-16%402x.png">
+      <LogicalName>branch-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-git-16.png">
-      <LogicalName>prefs-git-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\tag-16.png">
+      <LogicalName>tag-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-git-16%402x.png">
-      <LogicalName>prefs-git-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\tag-16%402x.png">
+      <LogicalName>tag-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16.png">
-      <LogicalName>prefs-commit-message-style-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-git-16.png">
+      <LogicalName>prefs-git-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16%402x.png">
-      <LogicalName>prefs-commit-message-style-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-git-16%402x.png">
+      <LogicalName>prefs-git-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-version-control-general-16.png">
-      <LogicalName>prefs-version-control-general-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16.png">
+      <LogicalName>prefs-commit-message-style-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-version-control-general-16%402x.png">
-      <LogicalName>prefs-version-control-general-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16%402x.png">
+      <LogicalName>prefs-commit-message-style-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-general-16.png">
+      <LogicalName>prefs-version-control-general-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-general-16%402x.png">
+      <LogicalName>prefs-version-control-general-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -319,7 +331,6 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\EditRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\SelectRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl\AddRemoveMoveCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeSet.cs" />
     <Compile Include="MonoDevelop.VersionControl\CheckoutCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Commands.cs" />
@@ -396,6 +407,7 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

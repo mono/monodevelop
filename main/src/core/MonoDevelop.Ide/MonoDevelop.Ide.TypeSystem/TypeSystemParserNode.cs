@@ -79,8 +79,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static bool IsCompileBuildAction(string buildAction)
 		{
-			return buildAction == MonoDevelop.Projects.BuildAction.Compile ||
-			buildAction == ApiDefinitionBuildAction;
+			return
+				buildAction == MonoDevelop.Projects.BuildAction.Compile ||
+				buildAction == ApiDefinitionBuildAction || 
+				buildAction == "BMacInputs";
 		}
 	}
 
@@ -96,6 +98,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			set {
 				projectType = value;
+			}
+		}
+
+		[NodeAttribute (Description="The language name.")]
+		string languageName;
+
+		public string LanguageName {
+			get {
+				return languageName;
+			}
+			set {
+				languageName = value;
 			}
 		}
 	}

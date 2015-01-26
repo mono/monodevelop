@@ -10,6 +10,7 @@
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -26,7 +27,6 @@
         <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
       </CustomCommands>
     </CustomCommands>
-    <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
@@ -38,7 +38,6 @@
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -203,89 +202,89 @@
     <EmbeddedResource Include="MonoDevelop.SourceEditor\searchoptions.png">
       <LogicalName>searchoptions.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-busy-16.png">
-      <LogicalName>issues-busy-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-busy-16.png">
+      <LogicalName>issues-busy-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-busy-16%402x.png">
-      <LogicalName>issues-busy-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-busy-16%402x.png">
+      <LogicalName>issues-busy-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-error-16.png">
-      <LogicalName>issues-error-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-error-16.png">
+      <LogicalName>issues-error-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-error-16%402x.png">
-      <LogicalName>issues-error-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-error-16%402x.png">
+      <LogicalName>issues-error-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-ok-16.png">
-      <LogicalName>issues-ok-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-ok-16.png">
+      <LogicalName>issues-ok-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-ok-16%402x.png">
-      <LogicalName>issues-ok-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-ok-16%402x.png">
+      <LogicalName>issues-ok-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-suggestion-16.png">
-      <LogicalName>issues-suggestion-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-suggestion-16.png">
+      <LogicalName>issues-suggestion-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-suggestion-16%402x.png">
-      <LogicalName>issues-suggestion-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-suggestion-16%402x.png">
+      <LogicalName>issues-suggestion-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-warning-16.png">
-      <LogicalName>issues-warning-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-warning-16.png">
+      <LogicalName>issues-warning-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\issues-warning-16%402x.png">
-      <LogicalName>issues-warning-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\issues-warning-16%402x.png">
+      <LogicalName>issues-warning-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-bookmark-15.png">
-      <LogicalName>gutter-bookmark-light-15.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-bookmark-15.png">
+      <LogicalName>gutter-bookmark-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-bookmark-15%402x.png">
-      <LogicalName>gutter-bookmark-light-15@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-bookmark-15%402x.png">
+      <LogicalName>gutter-bookmark-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-error-15.png">
-      <LogicalName>gutter-error-light-15.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-error-15.png">
+      <LogicalName>gutter-error-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-error-15%402x.png">
-      <LogicalName>gutter-error-light-15@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-error-15%402x.png">
+      <LogicalName>gutter-error-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-warning-15.png">
-      <LogicalName>gutter-warning-light-15.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-warning-15.png">
+      <LogicalName>gutter-warning-15.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\gutter-warning-15%402x.png">
-      <LogicalName>gutter-warning-light-15@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\gutter-warning-15%402x.png">
+      <LogicalName>gutter-warning-15@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-markers-rulers-16.png">
-      <LogicalName>prefs-markers-rulers-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16.png">
+      <LogicalName>prefs-markers-rulers-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-markers-rulers-16%402x.png">
-      <LogicalName>prefs-markers-rulers-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16%402x.png">
+      <LogicalName>prefs-markers-rulers-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-syntax-highlighting-16.png">
-      <LogicalName>prefs-syntax-highlighting-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16.png">
+      <LogicalName>prefs-syntax-highlighting-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-syntax-highlighting-16%402x.png">
-      <LogicalName>prefs-syntax-highlighting-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-text-editor-general-16.png">
-      <LogicalName>prefs-text-editor-general-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16.png">
+      <LogicalName>prefs-text-editor-general-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-text-editor-general-16%402x.png">
-      <LogicalName>prefs-text-editor-general-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16%402x.png">
+      <LogicalName>prefs-text-editor-general-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-text-editor-behavior-16.png">
-      <LogicalName>prefs-text-editor-behavior-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16.png">
+      <LogicalName>prefs-text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-text-editor-behavior-16%402x.png">
-      <LogicalName>prefs-text-editor-behavior-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16.png">
-      <LogicalName>prefs-completion-appearance-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-completion-appearance-16.png">
+      <LogicalName>prefs-completion-appearance-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16%402x.png">
-      <LogicalName>prefs-completion-appearance-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-completion-appearance-16%402x.png">
+      <LogicalName>prefs-completion-appearance-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16.png">
-      <LogicalName>prefs-completion-behavior-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-completion-behavior-16.png">
+      <LogicalName>prefs-completion-behavior-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16%402x.png">
-      <LogicalName>prefs-completion-behavior-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-completion-behavior-16%402x.png">
+      <LogicalName>prefs-completion-behavior-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

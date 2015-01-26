@@ -345,7 +345,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 
 				if (file.HasChildren) {
-					foreach (var child in file.DependentChildren) {
+					foreach (var child in file.DependentChildren.ToArray()) {
 						project.Files.Remove (child);
 						if (result == AlertButton.Delete)
 							FileService.DeleteFile (child.Name);

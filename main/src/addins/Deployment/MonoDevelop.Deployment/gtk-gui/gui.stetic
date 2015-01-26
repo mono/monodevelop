@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
@@ -239,7 +239,7 @@
                 <child>
                   <widget class="Gtk.Image" id="image2">
                     <property name="MemberName" />
-                    <property name="Pixbuf">resource:package-light-48.png</property>
+                    <property name="Pixbuf">resource:package-48.png</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
