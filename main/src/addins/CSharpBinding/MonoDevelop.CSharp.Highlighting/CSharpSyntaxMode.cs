@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Analysis;
 using Microsoft.CodeAnalysis.Text;
@@ -55,8 +56,8 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class CSharpSyntaxMode : SemanticHighlighting
 	{
-		SemanticModel resolver;
-		SyntaxNode root;
+		HighlightingSegmentTree highlightTree;
+		CancellationTokenSource src = new CancellationTokenSource ();
 
 		public CSharpSyntaxMode (TextEditor editor, DocumentContext documentContext) : base (editor, documentContext)
 		{
@@ -66,34 +67,67 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected override void DocumentParsed ()
 		{
-			resolver = null;
-			var newResolver = documentContext.ParsedDocument.GetAst<SemanticModel> ();
-			if (newResolver == null)
+			var resolver = documentContext.ParsedDocument.GetAst<SemanticModel> ();
+			if (resolver == null)
 				return;
-			Gtk.Application.Invoke (delegate {
-				resolver = newResolver;
-				root = resolver.SyntaxTree.GetRoot ();
-				UpdateSemanticHighlighting ();
-			});
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			var token = src.Token;
+
+			System.Threading.Tasks.Task.Factory.StartNew(delegate {
+				var root = resolver.SyntaxTree.GetRoot (token);
+				var newTree = new HighlightingSegmentTree ();
+
+				var visitor = new HighlightingVisitior (resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
+				visitor.Visit (root);
+
+				Gtk.Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					if (highlightTree != null) {
+						highlightTree.RemoveListener ();
+					}
+					highlightTree = newTree;
+					highlightTree.InstallListener (editor);
+					UpdateSemanticHighlighting ();
+				});
+			}, token);
 		}
 
 		public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)
 		{
 			var result = new List<ColoredSegment> ();
-			if (resolver == null)
+			if (highlightTree == null)
 				return result;
-			var visitor = new HighlightingVisitior (resolver, result.Add, default (CancellationToken), segment);
-			visitor.Visit (root); 
-			return result;
+			return highlightTree.GetSegmentsOverlapping (segment).Select (seg => seg.GetColoredSegment () );
 		}
 		#endregion
 	}
 
+	class StyledTreeSegment : TreeSegment
+	{
+		string style;
+
+		public StyledTreeSegment (int offset, int length, string colorStyleKey) : base (offset, length)
+		{
+			this.style = colorStyleKey;
+		}
+
+		public ColoredSegment GetColoredSegment ()
+		{
+			return new ColoredSegment (Offset, Length, style);
+		}
+	}
+
+	class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>
+	{
+	}
+
 	class HighlightingVisitior : SemanticHighlightingVisitor<string>
 	{
-		readonly Action<ColoredSegment> colorizeCallback;
+		readonly Action<StyledTreeSegment> colorizeCallback;
 
-		public HighlightingVisitior (SemanticModel resolver, Action<ColoredSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
+		public HighlightingVisitior (SemanticModel resolver, Action<StyledTreeSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException ("resolver");
@@ -145,7 +179,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected override void Colorize (TextSpan span, string color)
 		{
-			colorizeCallback (new ColoredSegment (span.Start, span.Length, color));
+			colorizeCallback (new StyledTreeSegment (span.Start, span.Length, color));
 		}
 	}
 }
