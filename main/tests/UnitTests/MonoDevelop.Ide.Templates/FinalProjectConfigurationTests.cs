@@ -292,6 +292,19 @@ namespace MonoDevelop.Ide.Templates
 			config.ProjectName = "a;b";
 			Assert.IsFalse (config.IsValid ());
 		}
+
+		[Test]
+		public void NewProjectOnlyAndCreateProjectDirectory ()
+		{
+			CreateProjectConfig (@"d:\projects\MySolution");
+			config.ProjectName = "MyProject";
+			config.SolutionName = "MySolution";
+			config.CreateProjectDirectoryInsideSolutionDirectory = true;
+			config.CreateSolution = false;
+
+			AssertPathsAreEqual (@"d:\projects\MySolution\MyProject", config.ProjectLocation);
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.SolutionLocation);
+		}
 	}
 }
 

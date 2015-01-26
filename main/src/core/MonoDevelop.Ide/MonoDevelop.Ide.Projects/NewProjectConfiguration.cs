@@ -90,8 +90,10 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				if (CreateSeparateSolutionDirectory)
 					return Path.Combine (Location, GetValidDir (SolutionName));
-				else
+				else if (CreateSolution)
 					return Path.Combine (Location, GetValidDir (ProjectName));
+				else
+					return Location;
 			}
 		}
 
