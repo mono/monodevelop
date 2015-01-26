@@ -144,6 +144,17 @@ namespace MonoDevelop.Ide.Editor
 			return new TextSegment (begin, end - begin);
 		}
 
+		public static implicit operator Microsoft.CodeAnalysis.Text.LinePositionSpan (DocumentRegion location)
+		{
+			return new Microsoft.CodeAnalysis.Text.LinePositionSpan (location.Begin, location.End);
+		}
+
+		public static implicit operator DocumentRegion(Microsoft.CodeAnalysis.Text.LinePositionSpan location)
+		{
+			return new DocumentRegion (location.Start, location.End);
+		}
+
+
 		public override string ToString ()
 		{
 			return string.Format ("[DocumentRegion: Begin={0}, End={1}]", Begin, End);

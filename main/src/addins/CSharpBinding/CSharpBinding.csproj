@@ -314,7 +314,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp\SemanticErrorTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />

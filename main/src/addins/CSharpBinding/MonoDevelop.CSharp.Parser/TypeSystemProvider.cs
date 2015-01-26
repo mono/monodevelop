@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Parser
 	{
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
 		{
-			ParsedDocument result = new DefaultParsedDocument (fileName);
+			var result = new DefaultParsedDocument (fileName);
 
 			if (project != null) {
 				
@@ -83,8 +83,15 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
+					result.Add (new Lazy<List<Error>> ( () => 
+						model
+							.GetDiagnostics (null, cancellationToken)
+							.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+							.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
+							.ToList ()
+					));
 				} catch (AggregateException) {
-					return Task.FromResult (result);
+					return Task.FromResult ((ParsedDocument)result);
 				}
 			}
 
@@ -101,10 +108,26 @@ namespace MonoDevelop.CSharp.Parser
 			result.LastWriteTimeUtc = time;
 			result.Add (GetSemanticTags (unit));
 			result.Add (GenerateFoldings (unit, result));
-
-			return Task.FromResult (result);
+			return Task.FromResult ((ParsedDocument)result);
 		}
-		
+
+		static DocumentRegion GetRegion (Diagnostic diagnostic)
+		{
+			var lineSpan = diagnostic.Location.GetLineSpan ();
+			return new DocumentRegion (lineSpan.StartLinePosition, lineSpan.EndLinePosition);
+		}
+
+		static ErrorType GetErrorType (DiagnosticSeverity severity)
+		{
+			switch (severity) {
+			case DiagnosticSeverity.Error:
+				return ErrorType.Error;
+			case DiagnosticSeverity.Warning:
+				return ErrorType.Warning;
+			}
+			return ErrorType.Unknown;
+		}
+
 		IEnumerable<FoldingRegion> GenerateFoldings (SyntaxTree unit, ParsedDocument doc)
 		{
 			foreach (var fold in doc.ConditionalRegions.ToFolds ())

@@ -221,11 +221,15 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public class DefaultParsedDocument : ParsedDocument
 	{
-
+		Lazy<List<Error>> lazyErrors;
 		List<Error> errors = new List<Error> ();
 		
 		public override IList<Error> Errors {
 			get {
+				if (lazyErrors != null) {
+					errors = lazyErrors.Value;
+					lazyErrors = null;
+				}
 				return errors;
 			} 
 		}
@@ -235,11 +239,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			Flags |= ParsedDocumentFlags.NonSerializable;
 		}
 
+		public void Add (Lazy<List<Error>> lazyErrors)
+		{
+			this.lazyErrors = lazyErrors;
+		}
+
 		public void Add (Error error)
 		{
 			errors.Add (error);
 		}
-		
+
 		public void Add (IEnumerable<Error> errors)
 		{
 			this.errors.AddRange (errors);
