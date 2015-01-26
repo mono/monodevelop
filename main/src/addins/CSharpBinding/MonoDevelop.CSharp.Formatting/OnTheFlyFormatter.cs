@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Gui.Content;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -47,16 +48,16 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (editor, context, 0, editor.Length);
 		}
 
-//		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
-//		{
-//			Format (editor, context, location, location, false);
-//		} 
-//
-//		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
-//		{
-//			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
-//		}
-		
+		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
+		//		{
+		//			Format (editor, context, location, location, false);
+		//		} 
+		//
+		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
+		//		{
+		//			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
+		//		}
+
 		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true)
 		{
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
@@ -70,30 +71,29 @@ namespace MonoDevelop.CSharp.Formatting
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			Format (policyParent, mimeTypeChain, editor, context, offset, offset, false, true);
-		}		
+		}
 
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false)
+		static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false)
 		{
 			TextSpan span;
 			if (exact) {
 				span = new TextSpan (startOffset, endOffset - startOffset);
 			} else {
-				var ext = context.GetContent<CSharpCompletionTextEditorExtension> ();
-				if (ext != null) {
-					var seg = ext.GetMemberSegmentAt (endOffset) ?? ext.GetMemberSegmentAt (startOffset);
-					if (seg != null) {
-						span = new TextSpan (seg.Offset, endOffset - seg.Offset);
-					} else {
-						span = new TextSpan (0, endOffset);
-					}
-				} else {
-					span = new TextSpan (0, endOffset);
-				}
+				span = new TextSpan (0, endOffset);
 			}
 
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
 					var syntaxTree = context.AnalysisDocument.GetSyntaxTreeAsync ().Result;
+
+					if (formatLastStatementOnly) {
+						var root = syntaxTree.GetRoot ();
+						var token = root.FindToken (endOffset);
+						var parent = token.Parent;
+						if (parent != null)
+							span = parent.FullSpan;
+					}
+
 					var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 					var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 
