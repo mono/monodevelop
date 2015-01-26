@@ -315,7 +315,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepIn (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.StepLine ();
+			Session.StepInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 
@@ -327,7 +327,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepOver (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.NextLine ();
+			Session.NextInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 

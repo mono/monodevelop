@@ -303,18 +303,37 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
-		
+
+		bool IsShortcutHandledByEmbeddedNSView (Gdk.Window window, KeyboardShortcut[] accels)
+		{
+			if (Mono.TextEditor.GtkWorkarounds.HasNSTextFieldFocus (window)) {
+				foreach (KeyboardShortcut ks in accels) {
+					if (ks.Modifier == Gdk.ModifierType.MetaMask && (
+					        ks.Key == Gdk.Key.a || ks.Key == Gdk.Key.c ||
+					        ks.Key == Gdk.Key.x || ks.Key == Gdk.Key.v ||
+					        ks.Key == Gdk.Key.z)) {
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
 			if (!IsEnabled)
 				return;
-			
+
 			RegisterUserInteraction ();
 			
 			bool complete;
 			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
-			
+
+			if (IsShortcutHandledByEmbeddedNSView (e.Event.Window, accels))
+				return;
+
 			if (!complete) {
 				// incomplete accel
 				e.RetVal = true;

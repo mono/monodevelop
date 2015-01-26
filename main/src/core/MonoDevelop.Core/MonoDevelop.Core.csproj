@@ -471,6 +471,8 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
+    <Compile Include="MonoDevelop.Projects\BuildError.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

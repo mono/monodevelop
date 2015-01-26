@@ -533,7 +533,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			// Control+X|Y conflicts with Control+X|Y, Control+X
 			if (b1 == b2)
 				return true;
-			int i = b1.IndexOf ('|');
+
+			int i = -1;
+			// If it ends with | then we're matching something like Cmd-|
+			// and it's not being used as an 'or'.
+			if (!b1.EndsWith ("|"))
+				i = b1.IndexOf ('|');
 			if (i == -1)
 				return b2.StartsWith (b1 + "|");
 			else

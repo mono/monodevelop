@@ -51,7 +51,6 @@ namespace MonoDevelop.VersionControl
 				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == canonicalPath))
 					p.Value.RequiresRefresh = true;
 			}
-			rootPath = canonicalPath;
 		}
 
 		public VersionInfo GetStatus (FilePath localPath)
