@@ -13,7 +13,7 @@
 	</Conditions>
 	
 	<TemplateFiles>
-		<File name="${Name}.fs" ><![CDATA[
+		<UnformattedFile name="${Name}.fs" ><![CDATA[
 namespace ${Namespace}
 
 open System
@@ -30,6 +30,6 @@ open Android.Widget
 
 type ${Name} = class end
 
-]]></File>
+]]></UnformattedFile>
 	</TemplateFiles>
 </Template>

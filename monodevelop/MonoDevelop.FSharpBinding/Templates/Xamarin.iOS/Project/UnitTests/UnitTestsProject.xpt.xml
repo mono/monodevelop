@@ -39,7 +39,7 @@ Currently the Unified API is available as a preview, is subject to change, and s
 				<Directory name="Resources" />
 				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_Universal.plist.xml" />
 				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
-				<File name="UnitTestAppDelegate.fs" AddStandardHeader="True" src="UnitTestAppDelegate.fs" />
+				<UnformattedFile name="UnitTestAppDelegate.fs" AddStandardHeader="True" src="UnitTestAppDelegate.fs" />
 			</Files>
 		</Project>
 	</Combine>

@@ -37,7 +37,7 @@
 			</References>
 			<Files>
 				<Directory name="Resources">
-					<File name="Resource.designer.fs" src="OpenGLApplication/Resource.fs" />
+					<UnformattedFile name="Resource.designer.fs" src="OpenGLApplication/Resource.fs" />
 					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
 					<Directory name="layout">
 						<File name="Main.axml" src="OpenGLApplication/Main.axml" />
@@ -53,14 +53,14 @@
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
-					<File name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
+					<UnformattedFile name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
 				</Directory>
 				<Directory name="Assets">
 					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />
 					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 				</Directory>
-				<File name="GLView1.fs" src="OpenGLApplication/GLView1.fs" />
-				<File name="MainActivity.fs" src="OpenGLApplication/MainActivity.fs" />
+				<UnformattedFile name="GLView1.fs" src="OpenGLApplication/GLView1.fs" />
+				<UnformattedFile name="MainActivity.fs" src="OpenGLApplication/MainActivity.fs" />
 			</Files>
 		</Project>
 	</Combine>

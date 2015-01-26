@@ -53,13 +53,13 @@
 					</Directory>
 				</Directory>
 				<Directory name="Properties">
-					<File name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
+					<UnformattedFile name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
 					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 				</Directory>
 				<Directory name="Assets">
 					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />
 				</Directory>
-				<File name="MainActivity.fs" src="MonoDroidApplication/MainActivity.fs" />
+				<UnformattedFile name="MainActivity.fs" src="MonoDroidApplication/MainActivity.fs" />
 			</Files>
 		</Project>
 	</Combine>

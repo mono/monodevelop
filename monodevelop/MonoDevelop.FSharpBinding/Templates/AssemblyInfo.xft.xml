@@ -20,8 +20,8 @@
 
     <!-- Template Content -->
     <TemplateFiles>
-        <File name="AssemblyInfo.fs" AddStandardHeader="True">
-            <![CDATA[module ${ProjectName}.AssemblyInfo
+        <UnformattedFile name="AssemblyInfo.fs" AddStandardHeader="True">
+            <![CDATA[namespace ${Namespace}
 open System.Reflection
 open System.Runtime.CompilerServices
 
@@ -40,7 +40,6 @@ open System.Runtime.CompilerServices
 //[<assembly: AssemblyDelaySign(false)>]
 //[<assembly: AssemblyKeyFile("")>]
 
-()
-]]></File>
+()]]></UnformattedFile>
     </TemplateFiles>
 </Template>

@@ -418,6 +418,17 @@ module Pervasive =
             try Path.GetFileName path
             with _ -> path
 
+    type Text.StringBuilder with
+        ///Apply a predicate to the last character of the StringBuilder instance
+        member x.LastCharacterIs f =
+            if x.Length > 0 then f x.[x.Length - 1]
+            else false
+
+        ///Apply a predicate to the first character of the StringBuilder instance
+        member x.FirstCharacterIs f =
+            if x.Length > 0 then f x.[0]
+            else false
+
 module Reflection =
     open System.Reflection
 

@@ -37,11 +37,10 @@
 			</References>
 			<Files>
 				<Directory name="Resources" />
-				<FileTemplateReference TemplateID="FSharpXamMacApplicationManifest" />
+				<FileTemplateReference TemplateID="XamMacApplicationManifest" />
 				<FileTemplateReference TemplateID="FSharpXamMacWindowWithControllerXib" name="MainWindow" />
-				<File name="AppDelegate.fs" >
-<![CDATA[
-namespace ${Namespace}
+				<UnformattedFile name="AppDelegate.fs" >
+<![CDATA[namespace ${Namespace}
 
 open System
 open System.Drawing
@@ -54,9 +53,6 @@ open MonoMac.AppKit
 type AppDelegate () =
     inherit NSApplicationDelegate ()
 
-    [<DefaultValue>]
-    val mutable mainWindowController : ${Namespace}.MainWindowController
-
     override x.FinishedLaunching (notification) =
         let mainWindowController = new ${Namespace}.MainWindowController ()
         mainWindowController.Window.MakeKeyAndOrderFront (x)
@@ -66,8 +62,7 @@ module main =
     let main args =
         NSApplication.Init ()
         NSApplication.Main (args)
-        0
-]]></File>
+        0]]></UnformattedFile>
 				<File name="MainMenu.xib">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">

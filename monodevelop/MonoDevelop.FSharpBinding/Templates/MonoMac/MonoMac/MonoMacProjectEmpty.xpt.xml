@@ -36,7 +36,7 @@
 			</References>
 			<Files>
 				<Directory name="Resources" />
-				<FileTemplateReference TemplateID="FSharpMonoMacApplicationManifest" />
+				<FileTemplateReference TemplateID="MonoMacApplicationManifest" />
 			</Files>
 		</Project>
 	</Combine>

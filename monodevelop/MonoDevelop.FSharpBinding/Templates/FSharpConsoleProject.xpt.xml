@@ -34,7 +34,7 @@
       </References>
       <Files>
         <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-        <File name = "Program.fs" AddStandardHeader="True">
+        <UnformattedFile name = "Program.fs" AddStandardHeader="True">
         <![CDATA[// Learn more about F# at http://fsharp.net
 // See the 'F# Tutorial' project for more help.
 
@@ -42,7 +42,7 @@
 let main argv = 
     printfn "%A" argv
     0 // return an integer exit code
-]]></File>
+]]></UnformattedFile>
       </Files>
     </Project>
   </Combine>

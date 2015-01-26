@@ -36,7 +36,7 @@
 			</References>
 			<Files>
 				<Directory name="Resources" />
-				<FileTemplateReference TemplateID="FSharpXamMacApplicationManifest" />
+				<FileTemplateReference TemplateID="XamMacApplicationManifest" />
 			</Files>
 		</Project>
 	</Combine>

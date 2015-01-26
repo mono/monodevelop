@@ -8,9 +8,34 @@ open MonoDevelop.Projects
 open MonoDevelop.Ide.StandardHeader
 open System.Text
 open MonoDevelop.Ide.Gui.Content
+open ExtCore
 
 type UnformattedTextFileDescriptionTemplate() =
     inherit TextFileDescriptionTemplate()
+
+    let getDefaultNs (potential:string) =
+        let sb = StringBuilder potential.Length
+
+        for c in potential do
+            match c with
+            | c when Char.IsLetter c || c = '_' || c = '.' ->
+                sb.Append c |> ignore
+            | c when Char.IsDigit c && sb.LastCharacterIs ((=) '.') || sb.Length = 0 ->
+                sb.Append '_' |> ignore
+                sb.Append c |> ignore
+            | c when Char.IsDigit c ->
+                sb.Append c |> ignore
+            | _ ->
+                sb.Append '_' |> ignore
+
+        if sb.LastCharacterIs ((=) '.') then sb.Remove (sb.Length - 1, 1) |> ignore
+        sb.ToString ()
+
+    override x.ModifyTags (policyParent, project, language, identifier, fileName, tags) =
+        base.ModifyTags (policyParent, project, language, identifier, fileName, &tags)
+
+        let ns = getDefaultNs project.Name
+        tags.["Namespace"] <- ns
 
     override x.CreateFileContent(policyParent, project, language, fileName, identifier) =
         let tags = new Dictionary<_, _> ()

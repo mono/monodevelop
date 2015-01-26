@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Cocoa Window with Controller</_Name>
 		<Icon>xib-template-window</Icon>
-		<_Category>F#/Mac (open source)</_Category>
+		<_Category>F#/Mac/Open source</_Category>
 		<LanguageName>F#</LanguageName>
 		<ProjectType>MonoMac</ProjectType>
 		<_Description>Creates an Cocoa Window with a Controller, for MonoMac.</_Description>
@@ -17,8 +17,8 @@
 	
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="${Name}.fs" ><![CDATA[
-namespace ${Namespace}
+		<UnformattedFile name="${Name}.fs" >
+<![CDATA[namespace ${Namespace}
 
 open System
 open MonoMac.ObjCRuntime
@@ -30,14 +30,13 @@ type ${Name} =
     inherit NSWindow
 
     new () = { inherit NSWindow () }
-
     new (handle : IntPtr) = { inherit NSWindow (handle) }
 
     [<Export ("initWithCoder:")>]
     new (coder : NSCoder) = { inherit NSWindow (coder) }
-]]></File>
-		<File name="${Name}Controller.fs" ><![CDATA[
-namespace ${Namespace}
+]]></UnformattedFile>
+		<UnformattedFile name="${Name}Controller.fs" >
+<![CDATA[namespace ${Namespace}
 
 open System
 open MonoMac.ObjCRuntime
@@ -49,9 +48,8 @@ type ${Name}Controller =
     inherit NSWindowController
 
     new () = { inherit NSWindowController ("${Name}") }
-
     new (handle : IntPtr) = { inherit NSWindowController (handle) }
-]]></File>
+]]></UnformattedFile>
 		<File name="${Name}.xib" DefaultExtension=".xib" SuppressAutoOpen="True">
 <![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">

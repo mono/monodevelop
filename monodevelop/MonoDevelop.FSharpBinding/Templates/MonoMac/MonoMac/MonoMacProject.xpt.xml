@@ -37,7 +37,7 @@
 			</References>
 			<Files>
 				<Directory name="Resources" />
-				<FileTemplateReference TemplateID="FSharpMonoMacApplicationManifest" />
+				<FileTemplateReference TemplateID="MonoMacApplicationManifest" />
 				<FileTemplateReference TemplateID="FSharpMonoMacWindowWithControllerXib" name="MainWindow" />
 				<File name="AppDelegate.fs" >
 <![CDATA[
@@ -53,9 +53,6 @@ open MonoMac.AppKit
 [<Register ("AppDelegate")>]
 type AppDelegate () =
     inherit NSApplicationDelegate ()
-
-    [<DefaultValue>]
-    val mutable mainWindowController : ${Namespace}.MainWindowController
 
     override x.FinishedLaunching (notification) =
         let mainWindowController = new ${Namespace}.MainWindowController ()

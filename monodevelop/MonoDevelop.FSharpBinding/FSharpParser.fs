@@ -111,7 +111,7 @@ type FSharpParser() =
                     try
                         LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash)
                         Async.RunSynchronously (
-                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, storeAst), 
+                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, storeAst, false), 
                             timeout = ServiceSettings.maximumTimeout)
                     with
                     | :? TimeoutException ->

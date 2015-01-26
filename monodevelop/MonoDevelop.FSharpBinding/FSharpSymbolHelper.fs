@@ -1,4 +1,4 @@
-﻿module MonoDevelop.FSharp.FSharpSymbolHelper
+﻿namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.Reflection
@@ -6,6 +6,22 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
 open MonoDevelop.Ide
 open MonoDevelop.Components
+
+module Symbols =
+    ///Given a column and line string returns the identifier portion of the string
+    let lastIdent column lineString =
+        match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
+        | Some (_, identIsland) -> Seq.last identIsland
+        | None -> ""
+
+    ///Returns a TextSegment that is trimmed to only include the identifier
+    let getTextSegment (doc:TextDocument) (symbolUse:FSharpSymbolUse) column line =
+        let lastIdent = lastIdent  column line
+        let (startLine, startColumn), (endLine, endColumn) = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+
+        let startOffset = doc.LocationToOffset(startLine, startColumn+1)
+        let endOffset = doc.LocationToOffset(endLine, endColumn+1)
+        TextSegment.FromBounds(startOffset, endOffset)
 
 [<AutoOpen>]
 module FSharpTypeExt =
@@ -108,7 +124,7 @@ module ExtendedPatterns =
                     else
                         if not symbol.IsModuleValueOrMember then ClosureOrNestedFunction symbol
                         else Function symbol                       
-                | Some fullType -> Val symbol
+                | Some _fullType -> Val symbol
                 | None -> Unknown
         | _ -> Unknown
 
@@ -200,7 +216,7 @@ module SymbolTooltips =
         | true, false -> b
         | false, false -> a + " " + b
 
-    let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>> option) =
+    let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>>) =
         let xmlDoc, xmlDocSig = 
             match symbol with
             | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
@@ -214,11 +230,8 @@ module SymbolTooltips =
         if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
         else
             if String.IsNullOrWhiteSpace xmlDocSig then
-                match backupSig with
-                | Some backup ->
-                     match backup.Force() with
-                     | Some (key, file) ->Lookup (key, Some file)
-                     | None -> XmlDoc.EmptyDoc
+                match backupSig.Force() with
+                | Some (key, file) -> Lookup (key, Some file)
                 | None -> XmlDoc.EmptyDoc
             else Lookup(xmlDocSig, symbol.Assembly.FileName)
 
@@ -234,8 +247,10 @@ module SymbolTooltips =
     let getFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
         let indent = String.replicate indent " "
         let functionName =
-            if isConstructor func then func.EnclosingEntity.DisplayName
-            else func.DisplayName
+            let name = 
+                if isConstructor func then func.EnclosingEntity.DisplayName
+                else func.DisplayName
+            escapeText name
 
         let modifiers =
             let accessibility =
@@ -360,7 +375,7 @@ module SymbolTooltips =
                 else asType Keyword "val"
             prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
 
-    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_> option) =
+    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_>) =
         match symbol with
         | Entity fse ->
             try
@@ -389,7 +404,7 @@ module SymbolTooltips =
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function, needs FCS support
-            let signature = func.FullType.Format symbol.DisplayContext
+            let signature = escapeText <|func.FullType.Format symbol.DisplayContext
             let summary = getSummaryFromSymbol func backUpSig
             ToolTip(signature, summary)
 

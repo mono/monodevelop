@@ -45,7 +45,7 @@ if Statics.fsac == None:
     Statics.fsac = FSAutoComplete(fsharp_dir, debug)
 if Statics.fsi == None:
     debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
-    Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
+    Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'), debug)
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
 
@@ -57,7 +57,7 @@ if '.fs' == ext or '.fsi' == ext:
     projs = filter(lambda f: '.fsproj' == os.path.splitext(f)[1], os.listdir(dir))
     if len(projs):
         proj_file = os.path.join(dir, projs[0])
-        b.vars["proj_file"] = proj_file
+        vim.command("let b:proj_file = '%s'" % proj_file)
         fsautocomplete.project(proj_file)
 fsautocomplete.parse(b.name, True, b)
 EOF
@@ -69,17 +69,17 @@ EOF
     com! -buffer LogFile call fsharpbinding#python#LoadLogFile()
     com! -buffer -nargs=* -complete=file ParseProject call fsharpbinding#python#ParseProject(<f-args>)
     com! -buffer -nargs=* -complete=file BuildProject call fsharpbinding#python#BuildProject(<f-args>)
+    com! -buffer -nargs=* -complete=file RunTests call fsharpbinding#python#RunTests(<f-args>)
     com! -buffer -nargs=* -complete=file RunProject call fsharpbinding#python#RunProject(<f-args>)
     
     "fsi
-    com! -buffer FsiRead call fsharpbinding#python#FsiPurge()
+    com! -buffer FsiShow call fsharpbinding#python#FsiShow()
+    com! -buffer FsiRead call fsharpbinding#python#FsiRead(0.5) "short timeout as there may not be anything to read
     com! -buffer FsiReset call fsharpbinding#python#FsiReset(g:fsharp_interactive_bin)
     com! -buffer -nargs=1 FsiEval call fsharpbinding#python#FsiEval(<q-args>)
 
     nnoremap  :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
     vnoremap  :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
-    nnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendLineSilent()<cr>
-    vnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendSelSilent()<cr>
     nnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
     vnoremap <leader>i :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
 
@@ -88,11 +88,14 @@ EOF
         " closing the scratch window after leaving insert mode
         " is common practice
         au BufWritePre  *.fs,*.fsi,*fsx call fsharpbinding#python#OnBufWritePre() 
-        au TextChanged  *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChanged()
-        au TextChangedI *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChangedI()
-        au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
+        if version > 703
+            " these events new in Vim 7.4
+            au TextChanged  *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChanged()
+            au TextChangedI *.fs,*.fsi,*fsx call fsharpbinding#python#OnTextChangedI()
+            au CursorHold   *.fs,*.fsi,*fsx call fsharpbinding#python#OnCursorHold()
+            au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
+        endif
         au BufEnter     *.fs,*.fsi,*fsx call fsharpbinding#python#OnBufEnter()
-        au InsertLeave  *.fs,*.fsi,*fsx call fsharpbinding#python#OnInsertLeave()
         au InsertLeave  *.fs,*.fsi,*fsx  if pumvisible() == 0|silent! pclose|endif
     augroup END
 

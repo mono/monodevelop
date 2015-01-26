@@ -2,23 +2,27 @@
 
 Syntax and indent files have been copied from [fsharp-vim](http://github.com/kongo2002/fsharp-vim) with kind permissions from [kongo2002](https://github.com/kongo2002).
 
-Requires vim 7.4 compiled with python support.
+> Requires vim 7.3 or higher compiled with python support.
 
 This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported.
 
 ###Installing
 
+fsharpbinding-vim requires mono and fsharp installed. To build and install you will need to be able to xbuild any .fsproj file. 
+
 #####OSX and linux
 
-1. Install [pathogen][pathogen]
+1. Install [pathogen][pathogen] and [syntastic][syntastic]
 
 2. Run *make install* inside the vim directory. This will copy the necessary contents to your ~/.vim/bundle directory.
 
 #####Windows
 
-1. Install [pathogen][pathogen]
+1. Install [pathogen][pathogen] and [syntastic][syntastic]
 
-2. TODO (You can manually copy the required files to you bundle directory after building FSharp.AutoComplete in Visual Studio.)
+2. Run _install.cmd_ 
+
+3. Currently you will most likely need to set g:fsharp_xbuild_path and g:fsharp_interactive_bin to approapriate values. 
 
 #####Syntastic
 
@@ -44,20 +48,22 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 * `:ParseProject` Reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` Calls xbuild on the fsproj for the current file (if any). Can also take a path to the proj file to build.
 * `:RunProject` Runs the project for the current file (if any). 
+* `:RunTests` If `g:fsharp_test_runner` is set it will build the current project and run any tests. (Currently only tested with nunit-console.exe)
 * `leader<t>` Echoes the type of the expression currently pointed to by the cursor.
-* `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
+* `leader<d>` _go to declaration_ in current window. 
 * `leader<s>` Takes you back from where _go to declaration_ was triggered.
 
 #####FSharp Interactive
 * `:FsiEval` Evaluates an fsharp expression in the fsi 
 * `:FsiReset` Resets the current fsharp interactive
-* `:FsiRead` Displays any lines written by the fsi but not yet output as vim messages 
-* `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output.
-* `Ctrl-Alt-Enter` Send either the current selection or the current line to the fsharp interactive but does not output the result as vim messages.
+* `:FsiRead` Outputs any lines written by the fsi but not yet output as vim messages 
+* `:FsiShow` Opens the _fsi-out_ buffer in a split window. 
+* `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output the first line of the output. All output will be written to the _fsi-out_ buffer.
+* `leader<i>` Same as Alt-Enter
 
 ###On-the-fly syntax checking
 
-> Interactive syntax/type checking requires [syntastic][syntastic]
+> Interactive syntax/type checking requires vim 7.4 or higher and [syntastic][syntastic]
 
 By default your F# files will be syntax/type checked on every open/save of a vim buffer as well as after 500ms of inactivity in Normal mode.  
 In case you would prefer not to have you errors checked continuously add the following to your vimrc:
@@ -84,6 +90,11 @@ You can set the msbuild/xbuild path. On windows it is very likely you need to do
 let g:fsharp_xbuild_path = "/path/to/xbuild/or/msbuild"
 ~~~
 
+This setting needs to point to a suitable test runner (such as nunit-console.exe)
+
+~~~.vim
+let g:fsharp_test_runner = "/path/to/test/runner"
+~~~
 
 [syntastic]: https://github.com/scrooloose/syntastic
 [airline]: https://github.com/bling/vim-airline

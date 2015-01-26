@@ -42,8 +42,8 @@
 			<!-- A window template -->
 
 				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
-                <File name="MainWindow.fs">
-<![CDATA[namespace ${ProjectName}
+                <UnformattedFile name="MainWindow.fs">
+<![CDATA[namespace ${Namespace}
 
     module MainWindow =
     
@@ -60,9 +60,9 @@
             member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
                 Application.Quit ()
                 e.RetVal <- true]]>
-				</File>
+				</UnformattedFile>
              
-             <File name="Main.fs">
+             <UnformattedFile name="Main.fs">
                 <![CDATA[namespace ${ProjectName}
     module Main =
         
@@ -77,7 +77,7 @@
             Application.Run()
             0
 ]]>
-             </File>
+             </UnformattedFile>
 			</Files>
 		</Project>
 	</Combine>

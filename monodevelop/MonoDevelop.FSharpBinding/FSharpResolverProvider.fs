@@ -34,12 +34,12 @@ type FSharpResolverProvider() =
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource) |> AsyncMaybe.liftAsync
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
                 let! fsSymbolUse = tyRes.GetSymbol(line, col, lineStr)
-                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
+                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
                 let domRegion =
                     match findDeclarationResult with
                     | FSharpFindDeclResult.DeclFound(m) ->
@@ -59,7 +59,7 @@ type FSharpResolverProvider() =
                 let lastIdent = Symbols.lastIdent col lineStr
                 let resolveResult = NRefactory.createResolveResult(doc.ProjectContent, fsSymbolUse.Symbol, lastIdent, domRegion)
                 return resolveResult, domRegion }
-        match results |> Async.RunSynchronously with
+        match Async.RunSynchronously (results, ServiceSettings.blockingTimeout) with
         | Some (res, dom) ->
             region <- dom
             res

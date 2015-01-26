@@ -10,8 +10,8 @@
   </TemplateConfiguration>
 
   <TemplateFiles>
-    <File DefaultExtension=".fs" DefaultName="source" AddStandardHeader="True">
-    </File>
+    <UnformattedFile DefaultExtension=".fs" DefaultName="source" AddStandardHeader="True">
+    </UnformattedFile>
   </TemplateFiles>
 
   <FileOptions/>

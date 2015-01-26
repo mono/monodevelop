@@ -11,8 +11,8 @@
 	</TemplateConfiguration>
 	
 	<TemplateFiles>
-		<File AddStandardHeader="True">
-<![CDATA[namespace ${ProjectName}
+		<UnformattedFile AddStandardHeader="True">
+<![CDATA[namespace ${Namespace}
 open System
 open NUnit.Framework
 
@@ -23,7 +23,7 @@ type Test() =
     member x.TestCase() =
         Assert.IsTrue(true)
 ]]>
-             	</File>
+             	</UnformattedFile>
 	</TemplateFiles>
 	
 	<FileOptions/>

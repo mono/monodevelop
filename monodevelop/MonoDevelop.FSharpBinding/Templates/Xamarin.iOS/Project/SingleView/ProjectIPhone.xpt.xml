@@ -40,9 +40,9 @@ Currently the Unified API is available as a preview, is subject to change, and s
 				</Directory>
 				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_iPhone.plist.xml" />
 				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
-				<File name="${SafeProjectName}ViewController.fs" AddStandardHeader="True"
+				<UnformattedFile name="${SafeProjectName}ViewController.fs" AddStandardHeader="True"
 					src="IPhone/ViewController.fs" />
-				<File name="AppDelegate.fs" AddStandardHeader="True" src="Common/AppDelegate.fs" />
+				<UnformattedFile name="AppDelegate.fs" AddStandardHeader="True" src="Common/AppDelegate.fs" />
 			</Files>
 		</Project>
 	</Combine>

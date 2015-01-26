@@ -89,8 +89,8 @@ module FSharpSyntaxModeInternals =
         | String
         | Comment
 
-    let (|FoundTripleStringBegin|_|) (subText: string, _curSpan, state: SpanParserState, i:int, len:int) =
-        if (subText.StartsWith(tripleString) && state <> TripleString) then
+    let (|FoundTripleStringBegin|_|) (subText: string, (curSpan: Span), state: SpanParserState, i:int, len:int) =
+        if subText.StartsWith(tripleString) && state <> TripleString  && curSpan.Rule <> "String" then
             let newState = TripleString
             let spanBegin = StringSpan(), i, len
             let newi = i+3
@@ -98,8 +98,8 @@ module FSharpSyntaxModeInternals =
         else
             None
 
-    let (|FoundTripleStringEnd|_|) (subText: string, curSpan, state: SpanParserState, i:int, len:int) =
-        if (subText.StartsWith(tripleString) && state = TripleString) then
+    let (|FoundTripleStringEnd|_|) (subText: string, (curSpan: Span), state: SpanParserState, i:int, len:int) =
+        if subText.StartsWith(tripleString) && (state = TripleString || curSpan.Rule = "String") then
             let newState = General
             let spanEnd = curSpan, i, len
             let newi = i+3
@@ -140,8 +140,12 @@ module FSharpSyntaxModeInternals =
         else
             None
 
+    let containsFunctionDef (subText : string) =
+        let endOfBlockDef = subText.IndexOf( '*')
+        subText.IndexOf ( ')', endOfBlockDef) <> -1
+
     let (|FoundBlockCommentBegin|_|) (subText: string, _curSpan, state: SpanParserState, i:int, len:int) =
-        if (subText.StartsWith(openBlockComment) && state = General) then
+        if (subText.StartsWith(openBlockComment) && state = General && not (containsFunctionDef subText)) then
             let newState = Comment
             let spanBegin = CommentSpan(), i, len
             let newi = i+2
@@ -234,8 +238,8 @@ module FSharpSyntaxModeInternals =
                         let span = EndIfBlockSpan()
                         if this.CurSpan <> null && typeof<AbstractBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
                             this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
-                        this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
-                        this.FoundSpanEnd.Invoke(span, i + textOffset + 6, 0)
+                        this.FoundSpanBegin.Invoke(span, i, 6)
+                        this.FoundSpanEnd.Invoke(span, i + 6, 0)
                         true
                     elif (this.CurSpan = null || (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code")) then
                         let spanLength = 
@@ -259,7 +263,7 @@ module FSharpSyntaxModeInternals =
                 base.ScanSpan(&i)
 
 
-open MonoDevelop.FSharp.FSharpSymbolHelper
+open MonoDevelop.FSharp.Symbols
 [<AutoOpen>]
 module internal Patterns =
     type TokenSymbol = 
@@ -270,9 +274,13 @@ module internal Patterns =
         }
 
     let (|Keyword|_|) ts =
-        if (ts.TokenInfo.ColorClass) = FSharpTokenColorKind.Keyword || 
-           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = FSharpTokenColorKind.Keyword)  then Some(Keyword)
-        else None
+        match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
+        | FSharpTokenColorKind.Keyword, _ -> Some(Keyword)
+        | _, Some (_range, extra) when extra = FSharpTokenColorKind.Keyword ->  
+            Some Keyword
+        | _, Some (_range, extra) ->
+            None
+        | _ -> None
 
     let (|Comment|_|) ts =
         if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Comment then Some Comment
@@ -321,6 +329,7 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_PREFIX_OP
         | Parser.tokenId.TOKEN_COLON_EQUALS
         | Parser.tokenId.TOKEN_BAR_BAR
+        | Parser.tokenId.TOKEN_RARROW
             -> Some Punctuation
         | _ -> None
 
@@ -514,8 +523,7 @@ module internal Patterns =
         if ts.TokenInfo.ColorClass = FSharpTokenColorKind.InactiveCode then Some UnusedCode
         else None
 
-    let isAbstractBlockSpan (span: Span) =
-        typeof<FSharpSyntaxModeInternals.AbstractBlockSpan>.IsAssignableFrom(span.GetType())
+    let isAbstractBlockSpan (span: Span) = span.Rule = ""
 
     let lineStartsWithAbstractBlockSpan (spanStack: CloneableStack<Span>) =
         if spanStack = null || spanStack.Count = 0 then false
@@ -539,21 +547,18 @@ module internal Patterns =
     let hasSpans (line: DocumentLine) =
         line <> null && line.StartSpan <> null && line.StartSpan.Count > 0
 
-    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument, line: DocumentLine, offset, length, style: Highlighting.ColorScheme) =
+    let (|ExcludedCode|StringCode|CommentCode|OtherCode|) (document: TextDocument, line: DocumentLine, offset, length, style: Highlighting.ColorScheme) =
         let docText = document.GetTextAt(offset, length)
-        //if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
-        if docText.StartsWith("#") then
-            PreProcessorCode style.Preprocessor.Name
-        elif (hasSpans(line)) then
+        if hasSpans(line) then
             if not (lineStartsWithAbstractBlockSpan line.StartSpan)  then
-                if (containsAbstractBlockSpan line.StartSpan) &&
-                    (getAbstractBlockSpan line.StartSpan).Disabled  then
-                    ExcludedCode style.ExcludedCode.Name
-                elif hasSpans(line) && line.StartSpan.Peek().Rule = "String" || line.StartSpan.Peek().Rule = "VerbatimString" || line.StartSpan.Peek().Rule = "TripleQuotedString" then
-                    StringCode style.String.Name
-                elif hasSpans(line) && (line.StartSpan.Peek().Rule = "Comment" || line.StartSpan.Peek().Rule = "MultiComment") then
-                    CommentCode style.CommentsMultiLine.Name
-                else OtherCode (style.PlainText.Name, docText)
+                if (containsAbstractBlockSpan line.StartSpan) && (getAbstractBlockSpan line.StartSpan).Disabled  then
+                    ExcludedCode style.ExcludedCode.Name else
+                match line.StartSpan.Peek() with
+                | span when span.Rule = "String" || span.Rule = "VerbatimString" || span.Rule = "TripleQuotedString" ->
+                    StringCode span.Color
+                | span when span.Rule = "Comment" || span.Rule = "MultiComment" ->
+                    CommentCode span.Color
+                | _ -> OtherCode (style.PlainText.Name, docText)
             elif containsAbstractBlockSpan line.StartSpan &&
                (getAbstractBlockSpan line.StartSpan).Disabled then
                 ExcludedCode style.ExcludedCode.Name
@@ -561,33 +566,48 @@ module internal Patterns =
                 OtherCode (style.PlainText.Name, docText)
         else OtherCode (style.PlainText.Name, docText)
 
+module internal Rules =
+    let baseMode =
+        let assembly = Reflection.Assembly.GetExecutingAssembly ()
+        let manifest =
+            assembly.GetManifestResourceNames ()
+            |> Seq.tryFind (fun s -> s.Contains ("FSharpSyntaxMode"))
+        
+        manifest
+        |> Option.map (fun manifest ->
+            let provider = new ResourceStreamProvider (assembly, manifest)
+            use stream = provider.Open ()
+            let baseMode = SyntaxMode.Read (stream)
+            baseMode)
+
+
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
 type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     inherit SyntaxMode()
+
+    do match Rules.baseMode with
+       | Some baseMode ->
+           this.rules <- ResizeArray (baseMode.Rules)
+           this.keywords <- ResizeArray (baseMode.Keywords)
+           this.spans <- baseMode.Spans |> Array.ofSeq
+           this.matches <- baseMode.Matches
+           this.prevMarker <- baseMode.PrevMarker
+           this.SemanticRules <- ResizeArray (baseMode.SemanticRules)
+           this.keywordTable <- baseMode.keywordTable
+           this.keywordTableIgnoreCase <- baseMode.keywordTableIgnoreCase
+           this.properties <- baseMode.Properties
+       | None -> ()
+
     // Mutable Local Variables
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
+    let mutable colourizations = None
 
     let handlePropertyChanged =
         EventHandler<PropertyChangedEventArgs>
             (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
                                     semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
-
-    let getDefineSymbols (project: MonoDevelop.Projects.Project option) =
-        [ let workspace = IdeApp.Workspace
-          if workspace = null then
-              if this.Document <> null && (this.Document.FileName.EndsWith(".fsx") || this.Document.FileName.EndsWith(".fsscript")) then
-                  yield "INTERACTIVE"
-              else
-                  yield "COMPILED"
-          match project with
-          | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
-                      | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
-                          for s in configuration.GetDefineSymbols() do
-                              yield s
-                      | _ -> ()
-          | None -> ()]
 
     let getProject (doc : Gui.Document) =
         if doc <> null && doc.Project <> null then Some doc.Project else
@@ -598,8 +618,9 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
              else Seq.head projects |> Some
 
     let project = getProject document
+    let fileName = document.FileName.FileName
 
-    let sourceTokenizer= SourceTokenizer(getDefineSymbols project, document.FileName.FileName)
+    let sourceTokenizer = SourceTokenizer(CompilerArguments.getDefineSymbols fileName project, fileName)
 
     let handleConfigurationChanged =
         EventHandler
@@ -619,6 +640,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     let getAndProcessSymbols (pd:ParseAndCheckResults) =
         async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
                do symbolsInFile <- symbols
+               do colourizations <- pd.GetExtraColorizations()
+
                if document <> null &&
                   document.Editor <> null &&
                   document.Editor.Parent <> null &&
@@ -635,17 +658,17 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                         |> tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * FSharpTokenColorKind)[] option) (token: FSharpTokenInfo) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
             | None -> None
             | Some(symbols) ->
                 symbols
-                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
+                |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
-            match extraColorInfo with
+            match colourizations with
             | None -> None
             | Some(extraColourInfo) ->
                 extraColourInfo
@@ -656,7 +679,10 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             match tokenSymbol with
             | UnusedCode -> style.ExcludedCode
             | ComputationExpression
-            | Keyword -> style.KeywordTypes
+            | Keyword -> 
+                Option.ofNull (this.GetKeyword (token.TokenName.ToLowerInvariant ()))
+                |> Option.map (fun keywords -> style.GetChunkStyle keywords.Color)
+                |> Option.fill style.KeywordTypes
             | Comment -> style.CommentsSingleLine
             | StringLiteral -> style.String
             | NumberLiteral -> style.Number
@@ -680,16 +706,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
     let scanToken (tokenizer:FSharpLineTokenizer) s =
         match tokenizer.ScanToken(s) with
-         | Some t, s -> Some(t, s)
-         | _ -> None
+        | Some t, s -> Some(t, s)
+        | _ -> None
 
-    let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
+    let getLexedTokens (style, line:DocumentLine, offset, lineText) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         let tokens = 
-            Seq.unfold (scanToken tokenizer) 0L
-            |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
-            |> List.ofSeq
-        tokens |> Seq.ofList
+            List.unfold (scanToken tokenizer) 0L
+            |> List.map (makeChunk line.LineNumber style offset)
+        tokens
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
     let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
@@ -704,28 +729,24 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
         let defines =
             if (this.Document = null) then List.empty
-            else getDefineSymbols(project)
+            else CompilerArguments.getDefineSymbols fileName project
 
         FSharpSyntaxModeInternals.FSharpSpanParser(this, ss, defines) :> SyntaxMode.SpanParser
 
     override this.GetChunks(style, line, offset, length) =
         try
-            let extraColorInfo =
-                maybe { let! document = Option.ofNull document
-                        let! parsedDocument = Option.ofNull document.ParsedDocument
-                        let! pc = tryCast<ParseAndCheckResults> parsedDocument.Ast
-                        return! pc.GetExtraColorizations() }
-
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset, length, styleName))
-            | PreProcessorCode _ -> base.GetChunks(style, line, offset, length)
             | OtherCode (_, lineText) when semanticHighlightingEnabled -> 
-                let tokens = getLexedTokens(style, line, offset, lineText, extraColorInfo)
-                if (tokens |> Seq.isEmpty || (tokens |> Seq.last).EndOffset < offset + lineText.Length ) then
+                let tokens = getLexedTokens(style, line, offset, lineText)
+                if (tokens |> List.isEmpty || (tokens |> List.last).EndOffset < offset + lineText.Length ) then
                     base.GetChunks(style, line, offset, length)
                 else
-                    tokens
-            | CommentCode styleName -> Seq.singleton(Chunk(offset, length, styleName ))
+                    tokens |> Seq.ofList
+            | CommentCode styleName ->
+                Seq.singleton(Chunk(offset, length, styleName ))
+            | StringCode styleName ->
+                Seq.singleton(Chunk(offset, length, styleName ))
             | _ -> base.GetChunks(style, line, offset, length)
         with
             | exn ->
