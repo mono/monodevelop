@@ -1466,7 +1466,11 @@ namespace MonoDevelop.Ide.Gui
 		void JumpToLine ()
 		{
 			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
-			ipos.SetCaretLocation (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+			var loc = new DocumentLocation (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
+			if (fileInfo.Offset >= 0) {
+				loc = ipos.OffsetToLocation (fileInfo.Offset);
+			}
+			ipos.SetCaretLocation (loc, fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 		}
 	}
 	
