@@ -10,8 +10,6 @@ namespace MonoDevelop.Debugger.Viewers
 		
 		private global::Gtk.Label label1;
 		
-		private global::Gtk.ComboBox comboVisualizers;
-		
 		private global::Gtk.Button buttonCancel;
 		
 		private global::Gtk.Button buttonSave;
@@ -45,26 +43,20 @@ namespace MonoDevelop.Debugger.Viewers
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.comboVisualizers = global::Gtk.ComboBox.NewText ();
-			this.comboVisualizers.Name = "comboVisualizers";
-			this.hbox1.Add (this.comboVisualizers);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.comboVisualizers]));
-			w3.Position = 1;
 			this.mainBox.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.hbox1]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.mainBox [this.hbox1]));
+			w3.Position = 0;
+			w3.Expand = false;
+			w3.Fill = false;
 			w1.Add (this.mainBox);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.mainBox]));
-			w5.Position = 0;
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(w1 [this.mainBox]));
+			w4.Position = 0;
 			// Internal child MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.ActionArea
-			global::Gtk.HButtonBox w6 = this.ActionArea;
-			w6.Name = "dialog1_ActionArea";
-			w6.Spacing = 10;
-			w6.BorderWidth = ((uint)(5));
-			w6.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w5 = this.ActionArea;
+			w5.Name = "dialog1_ActionArea";
+			w5.Spacing = 10;
+			w5.BorderWidth = ((uint)(5));
+			w5.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -74,9 +66,9 @@ namespace MonoDevelop.Debugger.Viewers
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonCancel]));
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w6 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5 [this.buttonCancel]));
+			w6.Expand = false;
+			w6.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonSave = new global::Gtk.Button ();
 			this.buttonSave.CanDefault = true;
@@ -86,17 +78,16 @@ namespace MonoDevelop.Debugger.Viewers
 			this.buttonSave.UseUnderline = true;
 			this.buttonSave.Label = "gtk-save";
 			this.AddActionWidget (this.buttonSave, -10);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w6 [this.buttonSave]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w5 [this.buttonSave]));
+			w7.Position = 1;
+			w7.Expand = false;
+			w7.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 628;
 			this.DefaultHeight = 433;
 			this.Hide ();
-			this.comboVisualizers.Changed += new global::System.EventHandler (this.OnComboVisualizersChanged);
 			this.buttonSave.Clicked += new global::System.EventHandler (this.OnSaveClicked);
 		}
 	}

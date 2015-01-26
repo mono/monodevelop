@@ -73,7 +73,16 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool OpenSolution { get; set; }
 		public bool IsNewItemCreated { get; private set; }
-		public IWorkspaceFileObject NewItem { get; private set; }
+
+		public IWorkspaceFileObject NewItem {
+			get { 
+				if (processedTemplate != null) {
+					return processedTemplate.WorkspaceItems.FirstOrDefault ();
+				}
+				return null;
+			}
+		}
+
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
 		public string SelectedTemplateId { get; set; }
@@ -92,7 +101,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		ProcessedTemplateResult processedTemplate;
-		SolutionItem currentEntry;
+		List <SolutionItem> currentEntries;
 		bool disposeNewItem = true;
 
 		public NewProjectDialogController ()
@@ -116,8 +125,8 @@ namespace MonoDevelop.Ide.Projects
 
 			dialog.ShowDialog ();
 
-			if (disposeNewItem && NewItem != null)
-				NewItem.Dispose ();
+			if (disposeNewItem)
+				DisposeExistingNewItems ();
 
 			return IsNewItemCreated;
 		}
@@ -428,41 +437,53 @@ namespace MonoDevelop.Ide.Projects
 			Solution parentSolution = null;
 
 			if (ParentFolder == null) {
-				WorkspaceItem item = (WorkspaceItem) NewItem;
-				parentSolution = item as Solution;
+				//NOTE: we can only create one solution, so if the first item is a solution, it's the only item
+				parentSolution = processedTemplate.WorkspaceItems.FirstOrDefault () as Solution;
 				if (parentSolution != null) {
 					if (parentSolution.RootFolder.Items.Count > 0)
-						currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
+						currentEntries = new List<SolutionItem> (parentSolution.GetAllSolutionItems ());
 					ParentFolder = parentSolution.RootFolder;
 				}
 			} else {
-				SolutionItem item = (SolutionItem) NewItem;
 				parentSolution = ParentFolder.ParentSolution;
-				currentEntry = item;
+				currentEntries = processedTemplate.WorkspaceItems.OfType<SolutionItem> ().ToList ();
 			}
 
 			// New combines (not added to parent combines) already have the project as child.
 			if (!projectConfiguration.CreateSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				if (currentEntry is SolutionEntityItem) {
-					// Inherit the file format from the solution
-					SolutionEntityItem eitem = (SolutionEntityItem) currentEntry;
-					eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
-					IdeApp.ProjectOperations.Save (eitem);
+				foreach (SolutionItem currentEntry in currentEntries) {
+					var eitem = currentEntry as SolutionEntityItem;
+					if (eitem != null) {
+						// Inherit the file format from the solution
+						eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
+
+						// Remove any references to other projects and add them back after the
+						// project is saved because a project reference cannot be resolved until
+						// the project has a parent solution.
+						List<ProjectReference> projectReferences = GetProjectReferences (eitem);
+						if (projectReferences.Any ())
+							eitem.Items.RemoveRange (projectReferences);
+
+						IdeApp.ProjectOperations.Save (eitem);
+
+						if (projectReferences.Any ())
+							eitem.Items.AddRange (projectReferences);
+					}
+					ParentFolder.AddItem (currentEntry, true);
 				}
-				ParentFolder.AddItem (currentEntry, true);
 			}
 
 			if (ParentFolder != null)
 				IdeApp.ProjectOperations.Save (ParentFolder.ParentSolution);
 			else
-				IdeApp.ProjectOperations.Save (NewItem);
+				IdeApp.ProjectOperations.Save (processedTemplate.WorkspaceItems);
 
 			CreateVersionControlItems ();
 
 			if (OpenSolution) {
-				DisposeExistingNewItem ();
+				DisposeExistingNewItems ();
 				var op = OpenCreatedSolution (processedTemplate);
 				op.Completed += delegate {
 					if (op.Success) {
@@ -496,6 +517,13 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		List<ProjectReference> GetProjectReferences (SolutionEntityItem solutionItem)
+		{
+			return solutionItem.Items.OfType<ProjectReference> ()
+				.Where (item => item.ReferenceType == ReferenceType.Project)
+				.ToList ();
+		}
+
 		bool CreateProject ()
 		{
 			if (!projectConfiguration.IsValid ()) {
@@ -527,12 +555,11 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 			}
 
-			DisposeExistingNewItem ();
+			DisposeExistingNewItems ();
 
 			try {
 				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetTemplateForProcessing (), projectConfiguration, ParentFolder);
-				NewItem = result.WorkspaceItem;
-				if (NewItem == null)
+				if (!result.WorkspaceItems.Any ())
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
@@ -545,11 +572,12 @@ namespace MonoDevelop.Ide.Projects
 			return true;
 		}
 
-		void DisposeExistingNewItem ()
+		void DisposeExistingNewItems ()
 		{
-			if (NewItem != null) {
-				NewItem.Dispose ();
-				NewItem = null;
+			if (processedTemplate != null) {
+				foreach (IDisposable item in processedTemplate.WorkspaceItems) {
+					item.Dispose ();
+				}
 			}
 		}
 

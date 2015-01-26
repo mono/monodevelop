@@ -385,54 +385,41 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("DebuggerNonUserCodeMethod");
 			CheckPosition ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 3);
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: SoftDebugger is not marking frames with [DebuggerNonUserCode] as IsExternalCode when ProjectAssembliesOnly == true.");
-			}
 		}
 
 		/// <summary>
@@ -449,6 +436,38 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("806c13f8-8a59-4ae0-83a2-33191368af47");//This actually means it hit 2nd breakpoint
 			//because [DebuggerStepperBoundary] actually means if you step into this method
 			//its looks like pressing F5
+		}
+
+		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2ProjectAssembliesOnly ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
+		}
+
+		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2 ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = false;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9", -1);
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
 		}
 
 		/// <summary>

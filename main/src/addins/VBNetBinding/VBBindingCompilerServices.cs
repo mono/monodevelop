@@ -49,15 +49,9 @@ namespace MonoDevelop.VBNetBinding {
 	/// </summary>
 	public class VBBindingCompilerServices
 	{
-		//matches "/home/path/Default.aspx.vb (40,31) : Error VBNC30205: Expected end of statement."
-		//and "Error : VBNC99999: vbnc crashed nearby this location in the source code."
-		//and "Error : VBNC99999: Unexpected error: Object reference not set to an instance of an object" 
-		static Regex regexError = new Regex (@"^\s*((?<file>.*)\s?\((?<line>\d*)(,(?<column>\d*))?\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
-		                                     RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-		
 		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProjectParameters projectparameters, string outputFileName)
 		{
-			DotNetProject project = (DotNetProject) configuration.ParentItem;
+			var project = configuration.ParentItem;
 			StringBuilder sb = new StringBuilder ();
 			
 			sb.AppendFormat ("\"-out:{0}\"", outputFileName);
@@ -306,9 +300,9 @@ namespace MonoDevelop.VBNetBinding {
 		
 		BuildResult ParseOutput(TempFileCollection tf, string output)
 		{
-			CompilerResults results = new CompilerResults (tf);
+			var result = new BuildResult (output, 1, 0);
 
-			using (StringReader sr = new StringReader (output)) {			
+			using (var sr = new StringReader (output)) {
 				while (true) {
 					string curLine = sr.ReadLine();
 
@@ -321,43 +315,27 @@ namespace MonoDevelop.VBNetBinding {
 						continue;
 					}
 					
-					CompilerError error = CreateErrorFromString (curLine);
+					var error = CreateErrorFromString (curLine);
 					
 					if (error != null)
-						results.Errors.Add (error);
+						result.Append (error);
 				}
 			}
-			return new BuildResult (results, output);
+			return result;
 		}
 		
 		
-		private static CompilerError CreateErrorFromString (string error_string)
+		static BuildError CreateErrorFromString (string error_string)
 		{
-			Match match;
-			int i;
-			
-			match = regexError.Match (error_string);
+			var err = BuildError.FromMSBuildErrorFormat (error_string);
 			    
-			if (match.Success) {
-				CompilerError error = new CompilerError ();
-
-				error.IsWarning = match.Result ("${level}").ToLowerInvariant () == "warning";
-				error.ErrorNumber = match.Result("${number}");
-				error.ErrorText = match.Result("${message}");
-				error.FileName = match.Result ("${file}").Trim ();
-				if (int.TryParse (match.Result ("${line}"), out i))
-					error.Line = i;
-				if (int.TryParse (match.Result ("${column}"), out i))
-					error.Column = i;
-				
+			if (err != null) {
 				// Workaround for bug #484351. Vbnc incorrectly emits this warning.
-				if (error.ErrorNumber == "VBNC2009" && error.ErrorText != null && error.ErrorText.IndexOf ("optioninfer") != -1)
+				if (err.ErrorNumber == "VBNC2009" && err.ErrorText != null && err.ErrorText.IndexOf ("optioninfer", StringComparison.Ordinal) != -1)
 					return null;
-				
-				return error;
 			}
 
-			return null;
+			return err;
 		}
 		
 		private int DoCompilation (string compilerName, string responseFileName, TempFileCollection tf, string working_dir, ExecutionEnvironment envVars, ref string output)

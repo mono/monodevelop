@@ -315,39 +315,56 @@ namespace MonoDevelop.Ide.Templates
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			ISolutionItemDescriptor descriptor = GetFirstEntryDescriptor (solutionDescriptor, cInfo);;
-			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
-			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
+			var solutionEntryItems = new List<SolutionEntityItem> ();
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
-			SavePackageReferences (solutionEntryItem, descriptor, cInfo);
+			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
+				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
+				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
 
-			this.createdProjectInformation = cInfo;
+				SolutionEntityItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
+				if (solutionEntryItem != null) {
+					solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, solutionEntryItem);
 
-			return solutionEntryItem;
+					SavePackageReferences (solutionEntryItem, solutionItemDescriptor, itemCreateInfo);
+
+					solutionEntryItems.Add (solutionEntryItem);
+				}
+			}
+
+			createdProjectInformation = cInfo;
+
+			return solutionEntryItems;
 		}
 
-		static ISolutionItemDescriptor GetFirstEntryDescriptor (SolutionDescriptor solutionDescriptor, ProjectCreateInformation cInfo)
+		static IEnumerable<ISolutionItemDescriptor> GetItemsToCreate (SolutionDescriptor solutionDescriptor, ProjectCreateInformation cInfo)
 		{
 			foreach (ISolutionItemDescriptor descriptor in solutionDescriptor.EntryDescriptors) {
 				var projectDescriptor = descriptor as ProjectDescriptor;
 				if ((projectDescriptor != null) && !projectDescriptor.ShouldCreateProject (cInfo)) {
 					// Skip.
 				} else {
-					return descriptor;
+					yield return descriptor;
 				}
 			}
+		}
 
-			return solutionDescriptor.EntryDescriptors [0];
+		static ProjectCreateInformation GetItemSpecificCreateInfo (ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
+		{
+			var entry = descriptor as ICustomProjectCIEntry;
+				if (entry != null)
+					return entry.CreateProjectCI (cInfo);
+
+			return cInfo;
 		}
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
 		{
-			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
 				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences (cInfo));
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);

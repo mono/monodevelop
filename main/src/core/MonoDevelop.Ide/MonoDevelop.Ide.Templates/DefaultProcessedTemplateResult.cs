@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
@@ -32,13 +33,18 @@ namespace MonoDevelop.Ide.Templates
 	internal class DefaultProcessedTemplateResult : ProcessedTemplateResult
 	{
 		readonly ProjectTemplate template;
+		readonly List<IWorkspaceFileObject> workspaceItems;
 
-		internal DefaultProcessedTemplateResult (ProjectTemplate template, IWorkspaceFileObject itemCreated, string projectBasePath)
+		internal DefaultProcessedTemplateResult (ProjectTemplate template, IEnumerable<IWorkspaceFileObject> itemsCreated, string projectBasePath)
 		{
 			this.template = template;
-			WorkspaceItem = itemCreated;
+			workspaceItems = itemsCreated.ToList ();
 			SolutionFileName = template.CreatedSolutionName;
 			ProjectBasePath = projectBasePath;
+		}
+
+		public override IEnumerable<IWorkspaceFileObject> WorkspaceItems {
+			get { return workspaceItems; }
 		}
 
 		public override bool HasPackages ()

@@ -31,9 +31,10 @@ namespace MonoDevelop.Ide.Templates
 {
 	public abstract class ProcessedTemplateResult
 	{
-		public IWorkspaceFileObject WorkspaceItem { get; protected set; }
 		public string SolutionFileName { get; protected set; }
 		public string ProjectBasePath { get; protected set; }
+
+		public abstract IEnumerable<IWorkspaceFileObject> WorkspaceItems { get; }
 
 		public abstract IEnumerable<string> Actions { get; }
 

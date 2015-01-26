@@ -134,6 +134,33 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			b = testClass;/*f86fa865-ed31-4c9f-8280-a54c3f06ee29*/
 		}
 
+		public void DebuggerStepperBoundaryMethod2 ()
+		{
+			var a = new TestStepperBoundary ();
+			a.Test1 ();/*f3a22b38-596a-4463-a562-20b342fdec12*/
+			a.Test3 ();
+			a.Test3 ();/*4721f27a-a268-4529-b327-c39f208c08c5*/
+		}
+
+		[DebuggerNonUserCode]
+		class TestStepperBoundary
+		{
+			public void Test1 ()
+			{
+				Test2 ();/*d110546f-a622-4ec3-9564-1c51bfec28f9*/
+			}
+
+			[DebuggerStepperBoundary]
+			public void Test2 ()
+			{
+				Test3 ();
+			}
+
+			public void Test3 ()
+			{
+			}
+		}
+
 		public void DebuggerStepThroughMethod ()
 		{
 			var testClass = new TestClass ();

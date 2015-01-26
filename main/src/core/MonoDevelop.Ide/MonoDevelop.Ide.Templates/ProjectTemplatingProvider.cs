@@ -59,15 +59,18 @@ namespace MonoDevelop.Ide.Templates
 
 		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
-			IWorkspaceFileObject newItem = null;
+			IEnumerable<IWorkspaceFileObject> newItems = null;
 			ProjectCreateInformation cinfo = CreateProjectCreateInformation (config, parentFolder);
 
-			if (parentFolder == null)
-				newItem = template.Template.CreateWorkspaceItem (cinfo);
-			else
-				newItem = template.Template.CreateProject (parentFolder, cinfo);
-
-			return new DefaultProcessedTemplateResult (template.Template, newItem, cinfo.ProjectBasePath);
+			if (parentFolder == null) {
+				IWorkspaceFileObject newItem = template.Template.CreateWorkspaceItem (cinfo);
+				if (newItem != null) {
+					newItems = new [] { newItem };
+				}
+			} else {
+				newItems = template.Template.CreateProjects (parentFolder, cinfo);
+			}
+			return new DefaultProcessedTemplateResult (template.Template, newItems, cinfo.ProjectBasePath);
 		}
 
 		ProjectCreateInformation CreateProjectCreateInformation (NewProjectConfiguration config, SolutionFolder parentFolder)
