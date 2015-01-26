@@ -420,7 +420,7 @@ namespace MonoDevelop.Projects
 
 
 		#pragma warning disable 169
-		[ItemProperty ("DisableFastUpToDateCheck")]
+		[ItemProperty ("DisableFastUpToDateCheck", DefaultValue=false)]
 		bool disableFastUpToDateCheck;
 		#pragma warning restore 169
 
