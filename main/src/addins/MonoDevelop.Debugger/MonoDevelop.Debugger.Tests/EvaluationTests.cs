@@ -703,6 +703,22 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
+		public void NullableEquality ()
+		{
+			var val = Eval ("nullableBool == null");
+			Assert.AreEqual ("false", val.Value);
+
+			val = Eval ("nullableBool != null");
+			Assert.AreEqual ("true", val.Value);
+
+			val = Eval ("nullableBool != false");
+			Assert.AreEqual ("true", val.Value);
+
+			val = Eval ("nullableBool == true");
+			Assert.AreEqual ("true", val.Value);
+		}
+
+		[Test]
 		public void ConditionalExpression ()
 		{
 			ObjectValue val = Eval ("true ? \"yes\" : \"no\"");
