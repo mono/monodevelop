@@ -96,13 +96,13 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			IdeApp.Initialize (new NullProgressMonitor ()); 
 		}
 
-		MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespaceResult GetResult (string input)
+		MonoDevelop.CSharp.Refactoring.ResolveCommandHandler.PossibleNamespaceResult GetResult (string input)
 		{
 			var doc = Setup (input);
 			var location = doc.Editor.CaretLocation;
 //			AstNode node;
 //			doc.TryResolveAt (location, out resolveResult, out node);
-			var result = ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange);
+			var result = MonoDevelop.CSharp.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange);
 			
 			TypeSystemService.Workspace.UnloadSolution ();
 
