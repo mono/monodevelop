@@ -274,18 +274,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					noStdLib = parameters.NoStdLib;
 				}
 			}
-
-			if (!noStdLib && netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
-				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
-					                typeof(object).Assembly.FullName,
-					                null,
-					                netProject.TargetFramework
-				                );
-				if (corLibRef != null) {
-					yield return MetadataReferenceCache.LoadReference (GetProjectId (p), corLibRef.Location);
-				}
-			}
-
+			var hashSet = new HashSet<string> ();
 			foreach (string file in netProject.GetReferencedAssemblies (MonoDevelop.Projects.ConfigurationSelector.Default, false)) {
 				string fileName;
 				if (!Path.IsPathRooted (file)) {
@@ -293,6 +282,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					fileName = Path.GetFullPath (file);
 				}
+				if (hashSet.Contains (fileName))
+					continue;
+				hashSet.Add (fileName);
 				yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
 			}
 
