@@ -445,7 +445,7 @@ namespace MonoDevelop.Ide.Gui
 		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
 		{
 			var ipos = doc.Editor;
-			if (info.Line >= 1 && ipos != null) {
+			if ((info.Line >= 1 || info.Offset >= 0) && ipos != null) {
 				doc.DisableAutoScroll ();
 				doc.RunWhenLoaded (() => {
 					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);

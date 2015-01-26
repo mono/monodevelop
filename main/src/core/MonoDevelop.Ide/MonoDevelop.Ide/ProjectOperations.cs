@@ -238,12 +238,12 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
 		{
-			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
+			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = provider.ReadString ();
-			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
+			int position = location.SourceSpan.Start;
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 					break;
@@ -293,14 +293,11 @@ namespace MonoDevelop.Ide
 			var locations = symbol.Locations;
 			
 			if (askIfMultipleLocations && locations.Length > 1) {
-//				var type = visitable as ICSharpCode.NRefactory.TypeSystem.IType;
-//				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
-//					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-//						foreach (var part in type.GetDefinition ().Parts)
-//							monitor.ReportResult (GetJumpTypePartSearchResult (part));
-//					}
-//					return;
-//				}
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+					foreach (var part in locations)
+						monitor.ReportResult (GetJumpTypePartSearchResult (symbol, part));
+				}
+				return;
 			}
 			JumpTo (symbol, locations.FirstOrDefault (), project);
 		}

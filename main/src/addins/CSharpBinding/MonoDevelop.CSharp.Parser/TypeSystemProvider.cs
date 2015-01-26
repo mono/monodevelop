@@ -43,6 +43,7 @@ namespace MonoDevelop.CSharp.Parser
 {
 	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
+		static readonly List<Error> emptyList = new List<Error> ();
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			var result = new DefaultParsedDocument (fileName);
@@ -83,13 +84,17 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
-					result.Add (new Lazy<List<Error>> ( () => 
-						model
-							.GetDiagnostics (null, cancellationToken)
-							.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-							.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
-							.ToList ()
-					));
+					result.Add (new Lazy<List<Error>> (() => {
+						try {
+							return model
+								.GetDiagnostics (null, cancellationToken)
+								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+								.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
+								.ToList ();
+						} catch (OperationCanceledException) {
+							return emptyList;
+						}
+					}));
 				} catch (AggregateException) {
 					return Task.FromResult ((ParsedDocument)result);
 				}
