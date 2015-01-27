@@ -5,6 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
 		<Category>mac/app/classic</Category>
+		<Icon>md-project-mac</Icon>
 		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>An empty Mac project.</_Description>
