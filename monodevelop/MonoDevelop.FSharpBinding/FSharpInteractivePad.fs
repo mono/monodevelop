@@ -47,7 +47,7 @@ type KillIntent =
   | Kill
   | NoIntent // Unexpected kill, or from #q/#quit, so we prompt  
 
-type FSharpInteractivePad() =
+type FSharpInteractivePad() as this =
   inherit MonoDevelop.Ide.Gui.AbstractPadContent()
   let view = new ConsoleView()
   let mutable killIntent = NoIntent
@@ -72,9 +72,16 @@ type FSharpInteractivePad() =
         let ses = InteractiveSession()
         let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ))
         let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ))
+        let colourSchemChanged =
+            PropertyService.PropertyChanged.Subscribe
+                (fun _ (eventArgs:PropertyChangedEventArgs) -> 
+                                   if eventArgs.Key = "ColorScheme" &&
+                                      eventArgs.OldValue <> eventArgs.NewValue then
+                                      this.UpdateColors ())
         ses.Exited.Add(fun _ -> 
           textReceived.Dispose()
           promptReady.Dispose()
+          colourSchemChanged.Dispose()
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
               Debug.WriteLine (sprintf "Interactive: process stopped")
