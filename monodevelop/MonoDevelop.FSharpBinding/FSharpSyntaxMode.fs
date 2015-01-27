@@ -98,7 +98,7 @@ module FSharpSyntaxModeInternals =
         else None
 
     let (|FoundTripleStringEnd|_|) (subText: string, (curSpan: Span), state: SpanParserState, i:int, len:int) =
-        if subText.StartsWith(tripleString) && (state = TripleString || curSpan.Rule <> "String") then
+        if subText.StartsWith(tripleString) && (state = TripleString || curSpan.Rule = "String") then
             let newState = General
             let spanEnd = curSpan, i, len
             let newi = i+3
