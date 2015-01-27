@@ -403,11 +403,11 @@ namespace MonoDevelop.Debugger.Tests
 			//Assert.AreEqual ("", val.Value);
 
 			val = Eval ("GenerateList(\"someString\", 5)");
-			Assert.AreEqual ("Count=5", val.Value);
+			Assert.AreEqual ("Count=5", val.Value.Replace (" ", ""));//Remove spaces is for references source and old mono compatiblity
 			Assert.AreEqual ("System.Collections.Generic.List<string>", val.TypeName);
 
 			val = Eval ("GenerateList(2.0, 6)");
-			Assert.AreEqual ("Count=6", val.Value);
+			Assert.AreEqual ("Count=6", val.Value.Replace (" ", ""));//Remove spaces is for references source and old mono compatiblity
 			Assert.AreEqual ("System.Collections.Generic.List<double>", val.TypeName);
 
 			val = Eval ("done.GetDefault()");
@@ -419,7 +419,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("object", val.TypeName);
 
 			val = Eval ("new Dictionary<int,string>()");
-			Assert.AreEqual ("Count=0", val.Value);
+			Assert.AreEqual ("Count=0", val.Value.Replace (" ", ""));//Remove spaces is for references source and old mono compatiblity
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string>", val.TypeName);
 
 			val = Eval ("done.Property");
