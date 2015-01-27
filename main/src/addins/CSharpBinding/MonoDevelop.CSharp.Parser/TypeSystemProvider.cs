@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Parser
 		static readonly List<Error> emptyList = new List<Error> ();
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
 		{
-			var result = new DefaultParsedDocument (fileName);
+			var result = new CSharpParsedDocument (fileName);
 
 			if (project != null) {
 				
@@ -84,17 +84,6 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
-//					result.Add (new Lazy<List<Error>> (() => {
-//						try {
-//							return model
-//								.GetDiagnostics (null, cancellationToken)
-//								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-//								.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
-//								.ToList ();
-//						} catch (OperationCanceledException) {
-//							return emptyList;
-//						}
-//					}));
 				} catch (AggregateException) {
 					return Task.FromResult ((ParsedDocument)result);
 				}
@@ -104,6 +93,8 @@ namespace MonoDevelop.CSharp.Parser
 				unit = CSharpSyntaxTree.ParseText (SourceText.From (content.Text), options, fileName);
 			} 
 
+			result.Unit = unit;
+
 			DateTime time;
 			try {
 				time = System.IO.File.GetLastWriteTimeUtc (fileName);
@@ -111,41 +102,9 @@ namespace MonoDevelop.CSharp.Parser
 				time = DateTime.UtcNow;
 			}
 			result.LastWriteTimeUtc = time;
-			result.AddRange (GetSemanticTags (unit));
-			result.AddRange (GenerateFoldings (unit, result));
 			return Task.FromResult ((ParsedDocument)result);
 		}
 
-		static DocumentRegion GetRegion (Diagnostic diagnostic)
-		{
-			var lineSpan = diagnostic.Location.GetLineSpan ();
-			return new DocumentRegion (lineSpan.StartLinePosition, lineSpan.EndLinePosition);
-		}
-
-		static ErrorType GetErrorType (DiagnosticSeverity severity)
-		{
-			switch (severity) {
-			case DiagnosticSeverity.Error:
-				return ErrorType.Error;
-			case DiagnosticSeverity.Warning:
-				return ErrorType.Warning;
-			}
-			return ErrorType.Unknown;
-		}
-
-		IEnumerable<FoldingRegion> GenerateFoldings (SyntaxTree unit, ParsedDocument doc)
-		{
-			foreach (var fold in doc.GetConditionalRegionsAsync().Result.ToFolds ())
-				yield return fold;
-			
-			foreach (var fold in doc.GetCommentsAsync().Result.ToFolds ())
-				yield return fold;
-			
-			var visitor = new FoldingVisitor ();
-			visitor.Visit (unit.GetRoot ());
-			foreach (var fold in visitor.Foldings)
-				yield return fold;
-		}
 
 		class FoldingVisitor : CSharpSyntaxWalker
 		{
@@ -241,35 +200,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		static IEnumerable<Tag> GetSemanticTags (SyntaxTree unit)
-		{
-			var visitor = new SemanticTagVisitor ();
-			visitor.Visit (unit.GetRoot ());
-			foreach (var fold in visitor.Tags)
-				yield return fold;
-		}
 
-		public class SemanticTagVisitor : CSharpSyntaxWalker
-		{
-			public List<Tag> Tags =  new List<Tag> ();
-
-			public override void VisitThrowStatement (Microsoft.CodeAnalysis.CSharp.Syntax.ThrowStatementSyntax node)
-			{
-				base.VisitThrowStatement (node);
-				var createExpression = node.Expression as ObjectCreationExpressionSyntax;
-				if (createExpression == null)
-					return;
-				var st = createExpression.Type.ToString ();
-				if (st == "NotImplementedException" || st == "System.NotImplementedException") {
-					var loc = node.GetLocation ().GetLineSpan ();
-					if (createExpression.ArgumentList.Arguments.Count > 0) {
-						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException({0}) thrown.", createExpression.ArgumentList.Arguments.First ().ToString ()), new DocumentRegion (loc.StartLinePosition, loc.EndLinePosition)));
-					} else {
-						Tags.Add (new Tag ("High", GettextCatalog.GetString ("NotImplementedException thrown."), new DocumentRegion (loc.StartLinePosition, loc.EndLinePosition)));
-					}
-				}
-			}
-		}
 //
 //		void VisitMcsUnit ()
 //		{
