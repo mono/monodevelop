@@ -112,6 +112,17 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
+
+		static CSharpCompletionTextEditorExtension ()
+		{
+			var methodInfo = typeof(Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance  | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
+			if (methodInfo == null)
+				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
+			
+			WithFrozenPartialSemanticsAsync = (doc, token) => (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object[] { token });
+		}
+
 		public CSharpCompletionTextEditorExtension ()
 		{
 		}
@@ -273,10 +284,11 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 				
-				var parsedDocument = DocumentContext.UpdateParseDocument ();
-				var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).Result;
+				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
+
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
-				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
+				var completionResult = engine.GetCompletionData (partialDoc, semanticModel, offset, ctrlSpace, token);
 				if (completionResult == CompletionResult.Empty)
 					return null;
 				foreach (var symbol in completionResult) {
