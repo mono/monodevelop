@@ -90,13 +90,12 @@ module FSharpSyntaxModeInternals =
         | Comment
 
     let (|FoundTripleStringBegin|_|) (subText: string, (curSpan: Span), state: SpanParserState, i:int, len:int) =
-        if subText.StartsWith(tripleString) && state <> TripleString  && curSpan.Rule <> "String" then
+        if subText.StartsWith(tripleString) && (state <> TripleString || curSpan = null || curSpan.Rule <> "String") then
             let newState = TripleString
             let spanBegin = StringSpan(), i, len
             let newi = i+3
             FoundTripleStringBegin(newState, spanBegin, newi) |> Some
-        else
-            None
+        else None
 
     let (|FoundTripleStringEnd|_|) (subText: string, (curSpan: Span), state: SpanParserState, i:int, len:int) =
         if subText.StartsWith(tripleString) && (state = TripleString || curSpan.Rule = "String") then
@@ -104,8 +103,7 @@ module FSharpSyntaxModeInternals =
             let spanEnd = curSpan, i, len
             let newi = i+3
             FoundTripleStringEnd(newState, spanEnd, newi) |> Some
-        else
-            None
+        else None
             
     let (|FoundVerbatimStringBegin|_|) (subText: string, _curSpan, state: SpanParserState, i:int, len:int) =
         if (subText.StartsWith(verbatimString) && state = General) then
