@@ -700,6 +700,18 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("string", richChildren [7].TypeName);
 				Assert.AreEqual ("\"stringB\"", richChildren [7].Value);
 			}
+
+			val = Eval ("numbers.GetLength(0)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
@@ -1430,11 +1442,6 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			//When fixed put into Inheriting test
-			val = Eval ("b.TestMethod (\"23\")");
-			Assert.AreEqual ("25", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-
-			//When fixed put into Inheriting test
 			val = Eval ("b.TestMethod (42)");
 			Assert.AreEqual ("44", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
@@ -1454,19 +1461,6 @@ namespace MonoDevelop.Debugger.Tests
 
 			val = Eval ("base.TestMethodBaseNotOverrided ()");
 			Assert.AreEqual ("1", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
-
-			//When fixed put into MemberReference
-			val = Eval ("numbers.GetLength(0)");
-			if (!AllowTargetInvokes) {
-				var options = Session.Options.EvaluationOptions.Clone ();
-				options.AllowTargetInvoke = true;
-
-				Assert.IsTrue (val.IsNotSupported);
-				val.Refresh (options);
-				val = val.Sync ();
-			}
-			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
 			//When fixed put into TypeReferenceGeneric
@@ -1778,6 +1772,41 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+
+			if (soft != null && soft.ProtocolVersion < new Version (2, 40))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
+			val = Eval ("b.TestMethod (\"23\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("25", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			if (Session is SoftDebuggerSession) {
+				val = Eval ("System.Text.Encoding.UTF8.GetPreamble ()");
+				if (!AllowTargetInvokes) {
+					var options = Session.Options.EvaluationOptions.Clone ();
+					options.AllowTargetInvoke = true;
+
+					Assert.IsTrue (val.IsNotSupported);
+					val.Refresh (options);
+					val = val.Sync ();
+				}
+				Assert.AreEqual ("byte[]", val.TypeName);
+				Assert.AreEqual ("{byte[3]}", val.Value);
+				var bytes = ((RawValueArray)val.GetRawValue ()).ToArray ();
+				Assert.AreEqual (239, bytes.GetValue (0));
+				Assert.AreEqual (187, bytes.GetValue (1));
+				Assert.AreEqual (191, bytes.GetValue (2));
+			} else {
+				Assert.Ignore ("Not working on CorDebugger");
+			}
 		}
 
 		[Test]
