@@ -54,6 +54,16 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
 		}
 
+		public bool Editable {
+			get {
+				return TextView.Editable;
+			}
+			set {
+				TextView.CursorVisible = value;
+				TextView.Editable = value;
+			}
+		}
+
 		static bool IsCompletionChar (char c)
 		{
 			return (char.IsLetterOrDigit (c) || char.IsPunctuation (c) || char.IsSymbol (c) || char.IsWhiteSpace (c));
