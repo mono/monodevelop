@@ -393,7 +393,7 @@ namespace MonoDevelop.CSharp
 
 			public string GetMarkup (int n)
 			{
-				return GLib.Markup.EscapeText (DocumentContext.ParsedDocument.UserRegions.ElementAt (n).Name);
+				return GLib.Markup.EscapeText (DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n).Name);
 			}
 			
 			internal static Xwt.Drawing.Image Pixbuf {
@@ -409,12 +409,12 @@ namespace MonoDevelop.CSharp
 
 			public object GetTag (int n)
 			{
-				return DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
+				return DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n);
 			}
 
 			public void ActivateItem (int n)
 			{
-				var reg = DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
+				var reg = DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n);
 				var extEditor = editor;
 				if (extEditor != null) {
 					extEditor.SetCaretLocation(Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn, true);
@@ -425,7 +425,7 @@ namespace MonoDevelop.CSharp
 				get {
 					if (DocumentContext.ParsedDocument == null)
 						return 0;
-					return DocumentContext.ParsedDocument.UserRegions.Count ();
+					return DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.Count ();
 				}
 			}
 
@@ -461,9 +461,9 @@ namespace MonoDevelop.CSharp
 		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
-			if (unit == null || !unit.UserRegions.Any ())
+			if (unit == null || !unit.GetUserRegionsAsync().Result.Any ())
 				return null;
-			var reg = unit.UserRegions.LastOrDefault (r => r.Region.Contains (loc));
+			var reg = unit.GetUserRegionsAsync().Result.LastOrDefault (r => r.Region.Contains (loc));
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {

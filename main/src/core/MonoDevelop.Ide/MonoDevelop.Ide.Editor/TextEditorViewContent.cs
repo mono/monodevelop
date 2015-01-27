@@ -194,8 +194,9 @@ namespace MonoDevelop.Ide.Editor
 					RemoveErrorUnderlines ();
 
 					// Else we underline the error
-					if (parsedDocument.Errors != null) {
-						foreach (var error in parsedDocument.Errors) {
+					var errors = parsedDocument.GetErrorsAsync().Result;
+					if (errors != null) {
+						foreach (var error in errors) {
 							UnderLineError (error);
 						}
 					}
@@ -221,9 +222,12 @@ namespace MonoDevelop.Ide.Editor
 			System.Action action = delegate {
 				try {
 					var foldSegments = new List<IFoldSegment> ();
-					bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
+					var defines = parsedDocument.GetDefinesAsync(token).Result;
+					if (defines == null)
+						return;
+					bool updateSymbols = defines.Count != symbols.Count;
 					if (!updateSymbols) {
-						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+						foreach (PreProcessorDefine define in defines) {
 							if (token.IsCancellationRequested)
 								return;
 							if (!symbols.Contains (define.Define)) {
@@ -234,11 +238,11 @@ namespace MonoDevelop.Ide.Editor
 					}
 					if (updateSymbols) {
 						symbols.Clear ();
-						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+						foreach (PreProcessorDefine define in defines) {
 							symbols.Add (define.Define);
 						}
 					}
-					foreach (FoldingRegion region in parsedDocument.Foldings) {
+					foreach (FoldingRegion region in parsedDocument.GetFoldingsAsync(token).Result) {
 						if (token.IsCancellationRequested)
 							return;
 						var type = FoldingType.Unknown;
@@ -815,12 +819,12 @@ namespace MonoDevelop.Ide.Editor
 		{
 			tasks.Clear ();
 			if (doc != null) {
-				foreach (var cmt in doc.TagComments) {
+				foreach (var cmt in doc.GetTagCommentsAsync().Result) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
 					tasks.Add (newTask);
 				}
 
-				foreach (var error in doc.Errors) {
+				foreach (var error in doc.GetErrorsAsync().Result) {
 					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					tasks.Add (newTask);
 				}

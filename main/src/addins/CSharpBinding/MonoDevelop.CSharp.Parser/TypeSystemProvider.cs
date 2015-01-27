@@ -84,17 +84,17 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
-					result.Add (new Lazy<List<Error>> (() => {
-						try {
-							return model
-								.GetDiagnostics (null, cancellationToken)
-								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-								.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
-								.ToList ();
-						} catch (OperationCanceledException) {
-							return emptyList;
-						}
-					}));
+//					result.Add (new Lazy<List<Error>> (() => {
+//						try {
+//							return model
+//								.GetDiagnostics (null, cancellationToken)
+//								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+//								.Select ((Diagnostic diag) => new Error (GetErrorType(diag.Severity), diag.GetMessage (), GetRegion (diag)))
+//								.ToList ();
+//						} catch (OperationCanceledException) {
+//							return emptyList;
+//						}
+//					}));
 				} catch (AggregateException) {
 					return Task.FromResult ((ParsedDocument)result);
 				}
@@ -111,8 +111,8 @@ namespace MonoDevelop.CSharp.Parser
 				time = DateTime.UtcNow;
 			}
 			result.LastWriteTimeUtc = time;
-			result.Add (GetSemanticTags (unit));
-			result.Add (GenerateFoldings (unit, result));
+			result.AddRange (GetSemanticTags (unit));
+			result.AddRange (GenerateFoldings (unit, result));
 			return Task.FromResult ((ParsedDocument)result);
 		}
 
@@ -135,10 +135,10 @@ namespace MonoDevelop.CSharp.Parser
 
 		IEnumerable<FoldingRegion> GenerateFoldings (SyntaxTree unit, ParsedDocument doc)
 		{
-			foreach (var fold in doc.ConditionalRegions.ToFolds ())
+			foreach (var fold in doc.GetConditionalRegionsAsync().Result.ToFolds ())
 				yield return fold;
 			
-			foreach (var fold in doc.Comments.ToFolds ())
+			foreach (var fold in doc.GetCommentsAsync().Result.ToFolds ())
 				yield return fold;
 			
 			var visitor = new FoldingVisitor ();

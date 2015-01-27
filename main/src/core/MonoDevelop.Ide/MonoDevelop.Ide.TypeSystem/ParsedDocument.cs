@@ -30,6 +30,7 @@ using System.Text;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -47,58 +48,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			get { return lastWriteTimeUtc; }
 			set { lastWriteTimeUtc = value; }
 		}
-		
-		[NonSerialized]
-		List<Comment> comments = new List<Comment> ();
 
-		public IList<Comment> Comments {
-			get {
-				return comments;
-			}
-		}
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this instance is invalid and needs to be reparsed.
-		/// </summary>
-		public bool IsInvalid {
-			get;
-			set;
-		}
-
-		List<Tag> tagComments = new List<Tag> ();
-		public IList<Tag> TagComments {
-			get {
-				return tagComments;
-			}
-		}
-		
-		IEnumerable<FoldingRegion> foldings = null;
-		public virtual IEnumerable<FoldingRegion> Foldings {
-			get {
-				return foldings ?? Enumerable.Empty<FoldingRegion> ();
-			}
-		}
-		
-		public IEnumerable<FoldingRegion> UserRegions {
-			get {
-				return Foldings.Where (f => f.Type == FoldType.UserRegion);
-			}
-		}
-		
-		List<PreProcessorDefine> defines = new List<PreProcessorDefine> ();
-		public IList<PreProcessorDefine> Defines {
-			get {
-				return defines;
-			}
-		}
-		
-		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
-		public IList<ConditionalRegion> ConditionalRegions {
-			get {
-				return conditionalRegions;
-			}
-		}
-		
 		[NonSerialized]
 		ParsedDocumentFlags flags;
 		public ParsedDocumentFlags Flags {
@@ -119,16 +70,32 @@ namespace MonoDevelop.Ide.TypeSystem
 				fileName = value;
 			}
 		}
-		
-		public virtual IList<Error> Errors {
-			get {
-				return new Error[0];
-			}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is invalid and needs to be reparsed.
+		/// </summary>
+		public bool IsInvalid {
+			get;
+			set;
 		}
-		
+
+		public abstract Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken));
+
+		public async Task<IEnumerable<FoldingRegion>> GetUserRegionsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var foldings = await GetFoldingsAsync (cancellationToken).ConfigureAwait (false);
+			return foldings.Where (f => f.Type == FoldType.UserRegion);
+		}
+
+		public abstract Task<IReadOnlyList<PreProcessorDefine>> GetDefinesAsync (CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IReadOnlyList<ConditionalRegion>> GetConditionalRegionsAsync (CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken));
+
 		public bool HasErrors {
 			get {
-				return Errors.Any (e => e.ErrorType == ErrorType.Error);
+				return GetErrorsAsync ().Result.Any (e => e.ErrorType == ErrorType.Error);
 			}
 		}
 		
@@ -153,105 +120,115 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.fileName = fileName;
 		}
-		
-		
-		public void Add (Comment comment)
-		{
-			comments.Add (comment);
-		}
-		
-		public void Add (Tag tagComment)
-		{
-			tagComments.Add (tagComment);
-		}
-		
-		public void Add (PreProcessorDefine define)
-		{
-			defines.Add (define);
-		}
-		
-		public void Add (ConditionalRegion region)
-		{
-			conditionalRegions.Add (region);
-		}
-
-		List<FoldingRegion> EnsureFoldingList ()
-		{
-			if (this.foldings == null || !(foldings is List<FoldingRegion>))
-				this.foldings = new List<FoldingRegion> ();
-			return (List<FoldingRegion>)foldings;
-		}
-		
-		public void Add (FoldingRegion region)
-		{
-			EnsureFoldingList ().Add (region);
-		}
-		
-		public void Add (IEnumerable<Comment> comments)
-		{
-			this.comments.AddRange (comments);
-		}
-		
-		public void Add (IEnumerable<Tag> tagComments)
-		{
-			this.tagComments.AddRange (tagComments);
-		}
-		
-		public void Add (IEnumerable<PreProcessorDefine> defines)
-		{
-			this.defines.AddRange (defines);
-		}
-		
-		public void Add (IEnumerable<FoldingRegion> folds)
-		{
-			if (foldings == null) {
-				this.foldings = folds;
-				return;
-			}
-			if (foldings != null && !(foldings is List<FoldingRegion>))
-				EnsureFoldingList ().AddRange (foldings);
-			EnsureFoldingList ().AddRange (folds);
-		}
-		
-		public void Add (IEnumerable<ConditionalRegion> conditionalRegions)
-		{
-			this.conditionalRegions.AddRange (conditionalRegions);
-		}
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument
 	{
-		Lazy<List<Error>> lazyErrors;
-		List<Error> errors = new List<Error> ();
-		
-		public override IList<Error> Errors {
-			get {
-				if (lazyErrors != null) {
-					errors = lazyErrors.Value;
-					lazyErrors = null;
-				}
-				return errors;
-			} 
-		}
-
 		public DefaultParsedDocument (string fileName) : base (fileName)
 		{
 			Flags |= ParsedDocumentFlags.NonSerializable;
 		}
 
-		public void Add (Lazy<List<Error>> lazyErrors)
+		List<Comment> comments = new List<Comment> ();
+
+		public void Add (Comment comment)
 		{
-			this.lazyErrors = lazyErrors;
+			comments.Add (comment);
 		}
+
+		public void AddRange (IEnumerable<Comment> comments)
+		{
+			this.comments.AddRange (comments);
+		}
+
+		public override Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<Comment>> (comments);
+		}
+
+		List<Tag> tagComments = new List<Tag> ();
+
+		public void Add (Tag tagComment)
+		{
+			tagComments.Add (tagComment);
+		}
+
+		public void AddRange (IEnumerable<Tag> tagComments)
+		{
+			this.tagComments.AddRange (tagComments);
+		}
+
+		public override Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<Tag>> (tagComments);
+		}
+
+		List<FoldingRegion> foldingRegions = new List<FoldingRegion> ();
+
+		public void Add (FoldingRegion foldingRegion)
+		{
+			foldingRegions.Add (foldingRegion);
+		}
+
+		public void AddRange (IEnumerable<FoldingRegion> foldingRegions)
+		{
+			this.foldingRegions.AddRange (foldingRegions);
+		}
+
+		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<FoldingRegion>> (foldingRegions);
+		}
+
+		List<PreProcessorDefine> preProcessorDefines = new List<PreProcessorDefine> ();
+
+		public void Add (PreProcessorDefine preProcessorDefine)
+		{
+			preProcessorDefines.Add (preProcessorDefine);
+		}
+
+		public void AddRange (IEnumerable<PreProcessorDefine> preProcessorDefines)
+		{
+			this.preProcessorDefines.AddRange (preProcessorDefines);
+		}
+
+		public override Task<IReadOnlyList<PreProcessorDefine>> GetDefinesAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<PreProcessorDefine>> (preProcessorDefines);
+		}
+
+		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
+
+		public void Add (ConditionalRegion region)
+		{
+			conditionalRegions.Add (region);
+		}
+
+		public void AddRange (IEnumerable<ConditionalRegion> conditionalRegions)
+		{
+			this.conditionalRegions.AddRange (conditionalRegions);
+		}
+
+		public override Task<IReadOnlyList<ConditionalRegion>> GetConditionalRegionsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<ConditionalRegion>> (conditionalRegions);
+		}
+
+		List<Error> errors = new List<Error> ();
 
 		public void Add (Error error)
 		{
 			errors.Add (error);
 		}
 
-		public void Add (IEnumerable<Error> errors)
+		public void AddRange (IEnumerable<Error> errors)
 		{
 			this.errors.AddRange (errors);
+		}
+
+		public override Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return Task.FromResult<IReadOnlyList<Error>> (errors);
 		}
 	}
 
@@ -262,7 +239,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return region.BeginLine <= 0 || region.EndLine <= region.BeginLine;
 		}
 		
-		public static IEnumerable<FoldingRegion> ToFolds (this IList<Comment> comments)
+		public static IEnumerable<FoldingRegion> ToFolds (this IReadOnlyList<Comment> comments)
 		{
 			for (int i = 0; i < comments.Count; i++) {
 				Comment comment = comments [i];

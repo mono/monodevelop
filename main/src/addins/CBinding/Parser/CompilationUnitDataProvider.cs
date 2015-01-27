@@ -59,7 +59,7 @@ namespace CBinding.Parser
 		
 		public string GetMarkup (int n)
 		{
-			return GLib.Markup.EscapeText (DocumentContext.ParsedDocument.UserRegions.ElementAt (n).Name);
+			return GLib.Markup.EscapeText (DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n).Name);
 		}
 		
 		internal static Xwt.Drawing.Image Pixbuf
@@ -74,13 +74,13 @@ namespace CBinding.Parser
 		
 		public object GetTag (int n)
 		{
-			return DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
+			return DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n);
 		}
 		
 		
 		public void ActivateItem (int n)
 		{
-			var reg = DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
+			var reg = DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.ElementAt (n);
 			var extEditor = editor;
 			if (extEditor != null) {
 				extEditor.CaretLocation = new DocumentLocation (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
@@ -93,7 +93,7 @@ namespace CBinding.Parser
 			get {
 				if (DocumentContext.ParsedDocument == null)
 					return 0;
-				return DocumentContext.ParsedDocument.UserRegions.Count ();
+				return DocumentContext.ParsedDocument.GetUserRegionsAsync().Result.Count ();
 			}
 		}
 		

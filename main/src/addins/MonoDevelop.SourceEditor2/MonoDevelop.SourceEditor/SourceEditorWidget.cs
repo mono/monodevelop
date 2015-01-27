@@ -1340,16 +1340,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		void UpdateQuickTasks (ParsedDocument doc)
+		async void UpdateQuickTasks (ParsedDocument doc)
 		{
 			tasks.Clear ();
 			
-			foreach (var cmt in doc.TagComments) {
+			foreach (var cmt in await doc.GetTagCommentsAsync()) {
 				var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
 				tasks.Add (newTask);
 			}
 			
-			foreach (var error in doc.Errors) {
+			foreach (var error in await doc.GetErrorsAsync()) {
 				var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 				tasks.Add (newTask);
 			}

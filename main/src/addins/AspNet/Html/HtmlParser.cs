@@ -53,9 +53,9 @@ namespace MonoDevelop.AspNet.Html
 				
 				xmlParser.Parse (tr.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				doc.Add (xmlParser.Errors);
+				doc.AddRange (xmlParser.Errors);
 				if (doc.XDocument != null)
-					doc.Add (Validate (doc.XDocument));
+					doc.AddRange (Validate (doc.XDocument));
 			}
 			catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing HTML document", ex);

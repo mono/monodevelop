@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return result;
 		}
 
-		static void AddErrorsToResult (BuildResult result, string filename, IList<Error> errors)
+		static void AddErrorsToResult (BuildResult result, string filename, IEnumerable<Error> errors)
 		{
 			foreach (var err in errors) {
 				if (err.ErrorType == ErrorType.Warning)
@@ -110,7 +110,7 @@ namespace MonoDevelop.AspNet.WebForms
 			ccu = null;
 			var result = new BuildResult ();
 			string className = document.Info.InheritedClass;
-			AddErrorsToResult (result, filename, document.Errors);
+			AddErrorsToResult (result, filename, document.GetErrorsAsync().Result);
 			if (result.ErrorCount > 0)
 				return result;
 			

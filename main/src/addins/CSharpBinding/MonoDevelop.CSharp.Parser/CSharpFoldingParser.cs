@@ -252,7 +252,7 @@ namespace MonoDevelop.CSharp.Parser
 					ptr++;
 				}
 			}
-			foreach (var fold in result.Comments.ToFolds ()) {
+			foreach (var fold in result.GetCommentsAsync().Result.ToFolds ()) {
 				result.Add (fold);
 			}
 			return result;

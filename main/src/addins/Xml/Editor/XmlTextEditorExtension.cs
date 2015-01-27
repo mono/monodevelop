@@ -859,7 +859,7 @@ namespace MonoDevelop.Xml.Editor
 				return;
 			if (inferredCompletionData == null
 			    || (doc.LastWriteTimeUtc - inferredCompletionData.TimeStampUtc).TotalSeconds >= 5
-			        && doc.Errors.Count <= inferredCompletionData.ErrorCount)
+					&& doc.GetErrorsAsync().Result.Count <= inferredCompletionData.ErrorCount)
 			{
 				inferenceQueued = true;
 				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
@@ -867,7 +867,7 @@ namespace MonoDevelop.Xml.Editor
 						InferredXmlCompletionProvider newData = new InferredXmlCompletionProvider ();
 						newData.Populate (doc.XDocument);
 						newData.TimeStampUtc = DateTime.UtcNow;
-						newData.ErrorCount = doc.Errors.Count;
+						newData.ErrorCount = doc.GetErrorsAsync().Result.Count;
 						this.inferenceQueued = false;
 						this.inferredCompletionData = newData;
 					} catch (Exception ex) {

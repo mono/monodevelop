@@ -82,7 +82,7 @@ namespace MonoDevelop.Xml.MSBuild
 		{
 			var ctx = new MSBuildResolveContext ();
 			ctx.Populate (doc.XDocument);
-			if (doc.Errors.Count > 0)
+			if (doc.GetErrorsAsync().Result.Count > 0)
 				ctx.Merge (previous);
 			return ctx;
 		}

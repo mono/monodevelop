@@ -34,6 +34,7 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -51,8 +52,13 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		public WebFormsPageInfo Info { get; private set; }
 		public WebSubtype Type { get; private set; }
-		
-		public override IEnumerable<FoldingRegion> Foldings {
+
+		public override System.Threading.Tasks.Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
+		{
+			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
+		}
+
+		public IEnumerable<FoldingRegion> Foldings {
 			get {				
 				if (XDocument == null)
 					yield break;

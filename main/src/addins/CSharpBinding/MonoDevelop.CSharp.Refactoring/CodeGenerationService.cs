@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
 			
-			foreach (var region in parsedDocument.UserRegions.Where (r => type.BodyRegion.IsInside (r.Region.Begin.Line, r.Region.Begin.Column))) {
+			foreach (var region in parsedDocument.GetUserRegionsAsync().Result.Where (r => type.BodyRegion.IsInside (r.Region.Begin.Line, r.Region.Begin.Column))) {
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
@@ -333,7 +333,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
 			var bodyRegion = new DocumentRegion (data.OffsetToLocation (part.SourceSpan.Start), data.OffsetToLocation (part.SourceSpan.End));
-			foreach (var region in parsedDocument.UserRegions.Where (r => bodyRegion.Contains (r.Region.Begin))) {
+			foreach (var region in parsedDocument.GetUserRegionsAsync().Result.Where (r => bodyRegion.Contains (r.Region.Begin))) {
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));

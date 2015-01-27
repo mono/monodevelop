@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			
 			var result = new WebFormsParsedDocument (fileName, type, info, xDoc);
-			result.Add (errors);
+			result.AddRange (errors);
 			
 			return System.Threading.Tasks.Task.FromResult((ParsedDocument)result);
 		}
