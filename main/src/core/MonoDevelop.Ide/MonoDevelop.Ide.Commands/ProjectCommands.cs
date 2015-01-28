@@ -307,7 +307,7 @@ namespace MonoDevelop.Ide.Commands
 			var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (target);
 			op.Completed += delegate {
 				if (op.Success)
-					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget, executionHandler);
 			};
         }
 
