@@ -380,11 +380,14 @@ namespace MonoDevelop.Ide.CustomTools
 		public static string GetFileNamespace (ProjectFile file, string outputFile)
 		{
 			string ns = file.CustomToolNamespace;
-			if (string.IsNullOrEmpty (ns) && !string.IsNullOrEmpty (outputFile)) {
-				var dnp = file.Project as DotNetProject;
-				if (dnp != null)
-					ns = dnp.GetDefaultNamespace (outputFile);
-			}
+			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
+				return ns;
+			var dnp = file.Project as DotNetProject;
+			if (dnp != null)
+				return dnp.GetDefaultNamespace (outputFile);
+			var sap = file.Project as MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject;
+			if (sap != null)
+				return sap.GetDefaultNamespace (outputFile);
 			return ns;
 		}
 
