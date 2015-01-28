@@ -102,11 +102,11 @@ namespace MonoDevelop.CSharp
 
 			if (ctx != null) {
 				SemanticModel model = null;
-				var analysisDocument = ctx.ParsedDocument;
-				if (analysisDocument != null) {
-					model = analysisDocument.GetAst<SemanticModel> ();
+				var parsedDocument = ctx.ParsedDocument;
+				if (parsedDocument != null) {
+					model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
 				}
-				displayString = type.ToMinimalDisplayString (model, offset);
+				displayString = model != null ? type.ToMinimalDisplayString (model, offset) : type.Name;
 			} else {
 				displayString = type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 			}
