@@ -1056,8 +1056,13 @@ namespace MonoDevelop.Debugger
 					if (ns != null)
 						return ns.GetFullName ();
 					var result = rr as INamedTypeSymbol;
-					if (result != null && !(result.TypeKind == TypeKind.Dynamic && result.GetFullName () == "dynamic"))
-						return result.GetFullName ();
+					if (result != null && !(result.TypeKind == TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
+						return result.ToDisplayString (new SymbolDisplayFormat (
+							typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+							miscellaneousOptions:
+							SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+							SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+					}
 				}
 			}
 			return null;

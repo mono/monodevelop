@@ -62,8 +62,19 @@ namespace MonoDevelop.CSharp.Resolver
 			var model = document.ParsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
 				return null;
+
+			int index = identifier.IndexOf ("`");
+			int arity = 0;
+			if (index != -1) {
+				arity = int.Parse (identifier.Substring (index + 1));
+				identifier = identifier.Remove (index);
+			}
+
 			foreach (var symbol in model.LookupSymbols (offset, name: identifier)) {
-				return symbol;
+				var typeSymbol = symbol as INamedTypeSymbol;
+				if (typeSymbol != null && (arity == 0 || arity == typeSymbol.Arity)) {
+					return symbol;
+				}
 			}
 			return null;
 		}
