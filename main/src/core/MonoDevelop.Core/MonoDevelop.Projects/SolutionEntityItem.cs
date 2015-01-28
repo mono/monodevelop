@@ -345,7 +345,7 @@ namespace MonoDevelop.Projects
 		public virtual bool ItemFilesChanged {
 			get { return fileStatusTracker.ItemFilesChanged; }
 		}
-		
+
 		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget) {
@@ -361,7 +361,11 @@ namespace MonoDevelop.Projects
 					return new BuildResult ();
 				}
 			}
-			return base.OnRunTarget (monitor, target, configuration);
+
+			var result = base.OnRunTarget (monitor, target, configuration);
+			if (!result.Failed && target == ProjectService.BuildTarget)
+				SetFastBuildCheckClean (configuration);
+			return result;
 		}
 		
 		protected internal virtual void OnSave (IProgressMonitor monitor)
@@ -413,9 +417,40 @@ namespace MonoDevelop.Projects
 			fileStatusTracker.ResetLoadTimes ();
 			base.OnNameChanged (e);
 		}
+
+
+		#pragma warning disable 169
+		[ItemProperty ("DisableFastUpToDateCheck", DefaultValue=false)]
+		bool disableFastUpToDateCheck;
+		#pragma warning restore 169
+
+		//the configuration of the last build that completed successfully
+		//null if any file in the project has since changed
+		string fastUpToDateCheckGoodConfig;
+
+		public virtual bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
+				return true;
+			var cfg = GetConfiguration (configuration);
+			return cfg == null || cfg.Id != fastUpToDateCheckGoodConfig;
+		}
+
+		protected void SetFastBuildCheckDirty ()
+		{
+			fastUpToDateCheckGoodConfig = null;
+		}
+
+		void SetFastBuildCheckClean (ConfigurationSelector configuration)
+		{
+			var cfg = GetConfiguration (configuration);
+			fastUpToDateCheckGoodConfig = cfg != null ? cfg.Id : null;
+		}
 		
 		protected virtual void OnSaved (SolutionItemEventArgs args)
 		{
+			SetFastBuildCheckDirty ();
+
 			if (Saved != null)
 				Saved (this, args);
 		}

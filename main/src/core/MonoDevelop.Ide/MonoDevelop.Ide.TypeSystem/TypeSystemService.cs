@@ -50,6 +50,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using Mono.CSharp.Nullable;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -115,6 +116,32 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			IntitializeTrackedProjectHandling ();
 		}
+/*
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					outputTrackedProjects.Add (node);
+					break;
+				case ExtensionChange.Remove:
+					outputTrackedProjects.Remove (node);
+					break;
+				}
+			});
+
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
+
+		static bool IsOutputTracked (DotNetProject project)
+		{
+			foreach (var projectType in project.GetProjectTypes ()) {
+				if (outputTrackedProjects.Any (otp => otp.ProjectType != null && string.Equals (otp.ProjectType, projectType, StringComparison.OrdinalIgnoreCase))) {
+					return true;
+				}
+			}
+			return outputTrackedProjects.Any (otp => otp.LanguageName != null && string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase));
+		}
+
+*/
 
 		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
 		{

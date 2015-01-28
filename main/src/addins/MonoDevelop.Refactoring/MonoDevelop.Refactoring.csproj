@@ -40,6 +40,8 @@
     <DefineConstants>DEBUG,MAC</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;1573</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -47,6 +49,9 @@
     <DefineConstants>MAC</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <NoWarn>1591;1573</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Refactoring\MonoDevelop.Refactoring.xml</DocumentationFile>
+    <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -115,7 +120,7 @@
     <Reference Include="System.Composition.TypedParts">
       <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>

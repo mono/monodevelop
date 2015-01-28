@@ -38,6 +38,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
+		string schemeName;
+
+
 		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme));
 		
 		public HighlightingPanel ()
@@ -45,10 +48,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.Build ();
 			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
 			styleTreeview.Model = styleStore;
+			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
 		}
 		
 		protected override void OnDestroyed ()
 		{
+			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
+
 			if (styleStore != null) {
 				styleStore.Dispose ();
 				styleStore = null;
@@ -68,9 +74,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.buttonEdit.Clicked += HandleButtonEdithandleClicked;
 			this.buttonNew.Clicked += HandleButtonNewClicked;
 			this.buttonExport.Clicked += HandleButtonExportClicked;
-			this.enableHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
-			this.enableSemanticHighlightingCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting;
-			this.enableHighlightingCheckbutton.Toggled += EnableHighlightingCheckbuttonToggled;
 			this.styleTreeview.Selection.Changed += HandleStyleTreeviewSelectionChanged;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			ShowStyles ();
@@ -96,6 +99,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var sheme = (Mono.TextEditor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
 			if (sheme == null)
 				return;
+			
+			DefaultSourceEditorOptions.Instance.ColorScheme = sheme.Name;
 			this.buttonExport.Sensitive = true;
 			string fileName = sheme.FileName;
 			if (fileName == null)
@@ -215,7 +220,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		void EnableHighlightingCheckbuttonToggled (object sender, EventArgs e)
 		{
-			this.enableSemanticHighlightingCheckbutton.Sensitive = this.enableHighlightingCheckbutton.Active;
 		}
 
 		internal static void UpdateActiveDocument ()
@@ -232,17 +236,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		public virtual void ApplyChanges ()
 		{
-			DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = this.enableHighlightingCheckbutton.Active;
-			if (DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting != this.enableSemanticHighlightingCheckbutton.Active) {
-				DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = this.enableSemanticHighlightingCheckbutton.Active;
-				UpdateActiveDocument ();
-			}
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				ColorScheme sheme = ((Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
-				DefaultSourceEditorOptions.Instance.ColorScheme = sheme != null ? sheme.Name : null;
+				DefaultSourceEditorOptions.Instance.ColorScheme = schemeName = sheme != null ? sheme.Name : null;
 			}
 		}
+
 		OptionsDialog dialog;
 		
 		public void Initialize (OptionsDialog dialog, object dataObject)

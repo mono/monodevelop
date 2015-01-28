@@ -115,7 +115,7 @@
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
@@ -2794,7 +2794,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTextLoader.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopSourceTextContainer.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
@@ -2852,6 +2851,15 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Components\CheckBoxContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenu.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuItemCollection.cs" />
+    <Compile Include="MonoDevelop.Components\RadioButtonContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\RadioButtonContextMenuItemGroup.cs" />
+    <Compile Include="MonoDevelop.Components\SeparatorContextMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuExtensionsMac.cs" />
+    <Compile Include="MonoDevelop.Components\ContextMenuExtensionsGtk.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />

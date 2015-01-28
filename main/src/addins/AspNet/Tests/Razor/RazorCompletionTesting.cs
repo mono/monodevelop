@@ -126,11 +126,11 @@ namespace MonoDevelop.AspNet.Tests.Razor
 	{
 		public Document	Doc { get; set; }
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, MonoDevelop.Core.Text.ITextSource content, Project project, System.Threading.CancellationToken cancellationToken)
 		{
 			Doc.Editor.FileName = fileName;
 			OpenDocuments.Add (Doc.Editor);
-			return base.Parse (storeAst, fileName, content, project);
+			return base.Parse (storeAst, fileName, content, project, cancellationToken);
 		}
 	}
 

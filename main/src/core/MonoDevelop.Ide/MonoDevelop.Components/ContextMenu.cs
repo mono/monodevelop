@@ -1,10 +1,10 @@
 ﻿//
-// SharedProjectNodeBuilder.cs
+// ContextMenu.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Greg Munn <greg.munn@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,34 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.SharedAssetsProjects;
+using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
+namespace MonoDevelop.Components
 {
-	class SapNodeBuilder: ProjectNodeBuilder
+	public class ContextMenu
 	{
-		public override Type NodeDataType {
-			get {
-				return typeof(SharedAssetsProject);
-			}
-		}
+		readonly ContextMenuItemCollection items;
 
-		public override Type CommandHandlerType {
-			get {
-				return typeof(SapCommandHandler);
-			}
-		}
-	}
-
-	class SapCommandHandler: ProjectNodeCommandHandler
-	{
-		/*		[CommandUpdateHandler (ProjectCommands.SetAsStartupProject)]
-		public void UpdateSetAsStartupProject (CommandInfo ci)
+		public ContextMenu ()
 		{
-			Project project = (Project) CurrentNode.DataItem;
-			ci.Visible = project.SupportsExecute;
-		}*/
+			items = new ContextMenuItemCollection (this);
+		}
 
+		public ContextMenuItemCollection Items {
+			get { return items; }
+		}
+
+		/// <summary>
+		/// Removes all separators of the menu which follow another separator
+		/// </summary>
+		public void CollapseSeparators ()
+		{
+			bool wasSeparator = true;
+			for (int n=0; n<Items.Count; n++) {
+				if (Items[n] is SeparatorContextMenuItem) {
+					if (wasSeparator)
+						Items.RemoveAt (n--);
+					else
+						wasSeparator = true;
+				} else
+					wasSeparator = false;
+			}
+			if (Items.Count > 0 && Items[Items.Count - 1] is SeparatorContextMenuItem)
+				Items.RemoveAt (Items.Count - 1);
+		}
+
+		public void Show (Gtk.Widget parent, Gdk.EventButton evt)
+		{
+			#if MAC
+			if (Platform.IsMac) {
+				ContextMenuExtensionsMac.ShowContextMenu (parent, evt, this);
+				return;
+			}
+			#endif
+
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this);
+		}
 	}
 }
-

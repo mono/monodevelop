@@ -48,6 +48,10 @@ namespace MonoDevelop.Debugger
 			view.ConsoleInput += OnViewConsoleInput;
 			view.ShadowType = Gtk.ShadowType.None;
 			view.ShowAll ();
+			view.Editable = DebuggingService.IsPaused;
+			DebuggingService.PausedEvent += DebuggerPaused;
+			DebuggingService.ResumedEvent += DebuggerResumed;
+			DebuggingService.StoppedEvent += DebuggerStopped;
 		}
 
 		void OnViewConsoleInput (object sender, ConsoleInputEventArgs e)
@@ -262,6 +266,24 @@ namespace MonoDevelop.Debugger
 
 		public void Dispose ()
 		{
+			DebuggingService.PausedEvent -= DebuggerPaused;
+			DebuggingService.ResumedEvent -= DebuggerResumed;
+			DebuggingService.StoppedEvent -= DebuggerStopped;
+		}
+
+		void DebuggerResumed (object sender, EventArgs e)
+		{
+			view.Editable = false;
+		}
+
+		void DebuggerPaused (object sender, EventArgs e)
+		{
+			view.Editable = true;
+		}
+
+		void DebuggerStopped (object sender, EventArgs e)
+		{
+			view.Editable = false;
 		}
 	}
 }

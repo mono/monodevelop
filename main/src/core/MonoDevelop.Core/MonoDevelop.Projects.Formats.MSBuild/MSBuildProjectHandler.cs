@@ -299,10 +299,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (err.File != null)
 							file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
-						if (err.IsWarning)
-							br.AddWarning (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
-						else
-							br.AddError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
+						br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
+							Subcategory = err.Subcategory,
+							EndLine = err.EndLineNumber,
+							EndColumn = err.EndColumnNumber,
+							IsWarning = err.IsWarning
+						});
 					}
 					return br;
 				}

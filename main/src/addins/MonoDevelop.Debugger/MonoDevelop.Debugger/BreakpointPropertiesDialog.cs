@@ -688,20 +688,20 @@ namespace MonoDevelop.Debugger
 		{
 			classes.Add ("System.Exception");
 			// TODO : Roslyn port.
-//			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-//				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
-//				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
-//					classes.Add (t.ReflectionName);
-//			} else {
-//				// no need to unload this assembly context, it's not cached.
-//				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
-//				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
-//				if (unresolvedAssembly != null && mscorlib != null) {
-//					var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
-//					foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
-//						classes.Add (t.ReflectionName);
-//				}
-//			}
+			/*if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
+				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+					classes.Add (t.ReflectionName);
+			} else {
+				// no need to unload this assembly context, it's not cached.
+				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
+				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
+				if (unresolvedAssembly != null && mscorlib != null) {
+					var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
+					foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
+						classes.Add (t.ReflectionName);
+				}
+			}*/
 			entryExceptionType.SetCodeCompletionList (classes.ToList ());
 		}
 

@@ -365,8 +365,6 @@ namespace MonoDevelop.CSharp.Parser
 		internal static Microsoft.CodeAnalysis.CSharp.LanguageVersion ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
-			case LangVersion.Default:
-				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 			case LangVersion.ISO_1:
 				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
 			case LangVersion.ISO_2:
@@ -377,6 +375,10 @@ namespace MonoDevelop.CSharp.Parser
 				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
 			case LangVersion.Version5:
 				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
+			case LangVersion.Version6:
+				return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
+			case LangVersion.Default:
+				break;
 			}
 			return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 		}

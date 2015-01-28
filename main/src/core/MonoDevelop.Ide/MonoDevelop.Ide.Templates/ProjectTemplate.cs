@@ -241,25 +241,41 @@ namespace MonoDevelop.Ide.Templates
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public SolutionEntityItem CreateProject (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionEntityItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
-			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
-			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
+			var solutionEntryItems = new List<SolutionEntityItem> ();
+			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
-			SavePackageReferences (solutionEntryItem, descriptor);
+			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
+				ProjectCreateInformation entryProjectCI;
+				var entry = descriptor as ICustomProjectCIEntry;
+				if (entry != null)
+					entryProjectCI = entry.CreateProjectCI (cInfo);
+				else
+					entryProjectCI = cInfo;
 
-			this.createdProjectInformation = cInfo;
+				var solutionItemDesc = descriptor;
 
-			return solutionEntryItem;
+				SolutionEntityItem solutionEntryItem = solutionItemDesc.CreateItem (entryProjectCI, this.languagename);
+				if (solutionEntryItem != null) {
+					solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
+
+					SavePackageReferences (solutionEntryItem, solutionItemDesc);
+
+					this.createdProjectInformation = cInfo;
+
+					solutionEntryItems.Add (solutionEntryItem);
+				}
+			}
+
+			return solutionEntryItems;
 		}
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
 		{
-			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
 				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);

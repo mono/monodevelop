@@ -300,20 +300,15 @@ namespace MonoDevelop.Ide.Commands
                             IdeApp.Workbench.ActiveDocument.Run (executionHandler);
                     };
                 }
+				return;
             }
-            else {
-				var target = GetRunTarget ();
-                if (!IdeApp.Preferences.BuildBeforeExecuting)
-					IdeApp.ProjectOperations.Execute (target, executionHandler);
-                else {
-                    IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
-                    asyncOperation.Completed += delegate {
-                        if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                            IdeApp.ProjectOperations.Execute (target, executionHandler);
-                    };
-                }
 
-            }
+			var target = GetRunTarget ();
+			var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (target);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			};
         }
 
 		protected override void Run ()
@@ -354,16 +349,12 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			if (!IdeApp.Preferences.BuildBeforeExecuting)
-				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-			else {
-				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-				asyncOperation.Completed += delegate
-				{
-					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-                        IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
-				};
-			}
+			var target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (target);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			};
 		}
 	}
 
@@ -388,17 +379,12 @@ namespace MonoDevelop.Ide.Commands
 			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			if (h == null || !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
 				return;
-			
-			if (!IdeApp.Preferences.BuildBeforeExecuting)
-				IdeApp.ProjectOperations.Execute (target, h);
-			else {
-				IAsyncOperation asyncOperation = IdeApp.ProjectOperations.Build (target);
-				asyncOperation.Completed += delegate
-				{
-					if ((asyncOperation.Success) || (IdeApp.Preferences.RunWithWarnings && asyncOperation.SuccessWithWarnings))
-						IdeApp.ProjectOperations.Execute (target, h);
-				};
-			}
+
+			var op = IdeApp.ProjectOperations.CheckAndBuildForExecute (target);
+			op.Completed += delegate {
+				if (op.Success)
+					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+			};
 		}
 	}
 

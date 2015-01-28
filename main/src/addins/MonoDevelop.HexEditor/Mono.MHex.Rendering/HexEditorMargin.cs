@@ -94,7 +94,7 @@ namespace Mono.MHex.Rendering
 			byte[] lineBytes = Data.GetBytes (startOffset, (int)(endOffset - startOffset));
 			for (int i = 0; i < lineBytes.Length; i++) {
 				sb.Append (string.Format ("{0:X2}", lineBytes[i]));
-				if (i % Editor.Options.GroupBytes == 0)
+				if ((i + 1) % Editor.Options.GroupBytes == 0)
 					sb.Append (" "); // \t
 			}
 			

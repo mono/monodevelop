@@ -767,6 +767,7 @@ namespace MonoDevelop.Projects
 			foreach (FileEventInfo fi in e) {
 				ProjectFile file = GetProjectFile (fi.FileName);
 				if (file != null) {
+					SetFastBuildCheckDirty ();
 					try {
 						NotifyFileChangedInProject (file);
 					} catch {
@@ -834,7 +835,7 @@ namespace MonoDevelop.Projects
 						if (!string.IsNullOrEmpty (f.DependsOn))
 							unresolvedDeps.Add (f);
 					}
-					file.DependsOnFile = null;
+					file.DependsOn = null;
 				}
 			}
 			NotifyModified ("Files");

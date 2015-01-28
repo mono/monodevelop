@@ -53,6 +53,7 @@
     <Compile Include="MonoDevelopTemplatingHost.cs" />
     <Compile Include="ProjectFileTemplatingHost.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="GenerateCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
