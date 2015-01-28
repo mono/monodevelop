@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static List<ProjectTemplate> ProjectTemplates = new List<ProjectTemplate> ();
 
+		static MonoDevelop.Core.Instrumentation.Counter TemplateCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Template Instantiated", "Project Model", id:"Core.Template.Instantiated");
+
 		private List<string> actions = new List<string> ();
 
 		private string createdSolutionName;
@@ -238,6 +240,15 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().ToList ();
+
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.Name;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc.Count == 1 ? pDesc[0].ProjectType : "Multiple";
+			TemplateCounter.Inc (1, null, metadata);
+
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
@@ -270,6 +281,14 @@ namespace MonoDevelop.Ide.Templates
 					solutionEntryItems.Add (solutionEntryItem);
 				}
 			}
+
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().FirstOrDefault ();
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.Name;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc != null ? pDesc.ProjectType : "Unknown";
+			TemplateCounter.Inc (1, null, metadata);
 
 			return solutionEntryItems;
 		}

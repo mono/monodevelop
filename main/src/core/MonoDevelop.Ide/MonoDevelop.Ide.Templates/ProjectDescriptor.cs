@@ -235,5 +235,11 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return packageReferences;
 		}
+
+		internal string ProjectType {
+			get {
+				return type;
+			}
+		}
 	}
 }
