@@ -124,12 +124,14 @@ namespace MonoDevelop.Ide.CustomTools
 		{
 			ProjectFile file = fileEnumerator.Current;
 			ProjectFile genFile = null;
-			ISingleFileCustomTool tool;
+			ISingleFileCustomTool tool = null;
 
 			//Find the first file in the collection, which has got generator tool
-			while (((tool = GetGenerator (file.Generator)) == null
-			       || (genFile = GetGeneratedFile (file, force)) == null)
-			       && fileEnumerator.MoveNext ());
+			//and isn't cloned from a shared project
+			while (((file.Flags & ProjectItemFlags.DontPersist) != 0
+			       || (tool = GetGenerator (file.Generator)) == null
+			       || (genFile = GetGeneratedFile (file, force)) == null
+			       ) && fileEnumerator.MoveNext ());
 
 			//no files which can be generated in remaining elements of the collection, nothing to do
 			if (tool == null || genFile == null) {
@@ -213,6 +215,10 @@ namespace MonoDevelop.Ide.CustomTools
 
 		public static void Update (ProjectFile file, bool force)
 		{
+			//if file's cloned from a shared project, ignore it
+			if ((file.Flags & ProjectItemFlags.DontPersist) != 0)
+				return;
+
 			var tool = GetGenerator (file.Generator);
 			if (tool == null)
 				return;
