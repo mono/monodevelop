@@ -65,7 +65,6 @@ namespace MonoDevelop.TextTemplating
 					string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
 					
 					string classNamespace = CustomToolService.GetFileNamespace (file, outputFile);
-					LogicalSetData ("NamespaceHint", classNamespace, result.Errors);
 
 					host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out language, out references);
 					
@@ -75,23 +74,6 @@ namespace MonoDevelop.TextTemplating
 						monitor.Log.WriteLine (err);
 				}
 			}, result);
-		}
-		
-		static bool warningLogged;
-		
-		internal static void LogicalSetData (string name, object value,
-			System.CodeDom.Compiler.CompilerErrorCollection errors)
-		{
-			if (warningLogged)
-				return;
-			
-			//FIXME: CallContext.LogicalSetData not implemented in Mono
-			try {
-				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
-			} catch (NotImplementedException) {
-				LoggingService.LogWarning ("T4: CallContext.LogicalSetData not implemented in this Mono version");
-				warningLogged = true;
-			}
 		}
 	}
 }

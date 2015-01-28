@@ -42,7 +42,7 @@ namespace MonoDevelop.TextTemplating
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
 					string ns = CustomToolService.GetFileNamespace (file, defaultOutputName);
-					TextTemplatingFilePreprocessor.LogicalSetData ("NamespaceHint", ns, result.Errors);
+					LogicalSetData ("NamespaceHint", ns);
 					
 					host.ProcessTemplate (file.FilePath, defaultOutputName);
 					result.GeneratedFilePath = host.OutputFile;
@@ -52,6 +52,22 @@ namespace MonoDevelop.TextTemplating
 						monitor.Log.WriteLine (err);
 				}
 			}, result);
+		}
+
+		static bool warningLogged;
+
+		internal static void LogicalSetData (string name, object value)
+		{
+			if (warningLogged)
+				return;
+
+			//FIXME: CallContext.LogicalSetData not implemented in Mono
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
+			} catch (NotImplementedException) {
+				LoggingService.LogWarning ("T4: CallContext.LogicalSetData not implemented in this Mono version");
+				warningLogged = true;
+			}
 		}
 	}
 }
