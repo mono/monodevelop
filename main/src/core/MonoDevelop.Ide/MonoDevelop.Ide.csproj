@@ -2687,8 +2687,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\ParsedDocument.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Comment.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Tag.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\PreProcessorDefine.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ConditionalRegion.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MarkupUtilities.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\CodeGenerator.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParserNode.cs" />

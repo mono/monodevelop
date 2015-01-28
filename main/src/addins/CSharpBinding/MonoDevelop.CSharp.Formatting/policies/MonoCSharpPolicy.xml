@@ -57,7 +57,7 @@ THE SOFTWARE.
 	<SpaceWithinOtherParentheses>False</SpaceWithinOtherParentheses>
 	<SpaceAfterCast>False</SpaceAfterCast>
 	<SpacesIgnoreAroundVariableDeclaration>False</SpacesIgnoreAroundVariableDeclaration>
-	<SpaceBeforeOpenSquareBracket>False</SpaceBeforeOpenSquareBracket>
+	<SpaceBeforeOpenSquareBracket>True</SpaceBeforeOpenSquareBracket>
 	<SpaceBetweenEmptySquareBrackets>False</SpaceBetweenEmptySquareBrackets>
 	<SpaceWithinSquareBrackets>False</SpaceWithinSquareBrackets>
 	<SpaceAfterColonInBaseTypeDeclaration>True</SpaceAfterColonInBaseTypeDeclaration>

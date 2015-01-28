@@ -89,8 +89,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return foldings.Where (f => f.Type == FoldType.UserRegion);
 		}
 
-		public abstract Task<IReadOnlyList<PreProcessorDefine>> GetDefinesAsync (CancellationToken cancellationToken = default(CancellationToken));
-		public abstract Task<IReadOnlyList<ConditionalRegion>> GetConditionalRegionsAsync (CancellationToken cancellationToken = default(CancellationToken));
 		public abstract Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken));
 
 		public bool HasErrors {
@@ -178,40 +176,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return Task.FromResult<IReadOnlyList<FoldingRegion>> (foldingRegions);
-		}
-
-		List<PreProcessorDefine> preProcessorDefines = new List<PreProcessorDefine> ();
-
-		public void Add (PreProcessorDefine preProcessorDefine)
-		{
-			preProcessorDefines.Add (preProcessorDefine);
-		}
-
-		public void AddRange (IEnumerable<PreProcessorDefine> preProcessorDefines)
-		{
-			this.preProcessorDefines.AddRange (preProcessorDefines);
-		}
-
-		public override Task<IReadOnlyList<PreProcessorDefine>> GetDefinesAsync (CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return Task.FromResult<IReadOnlyList<PreProcessorDefine>> (preProcessorDefines);
-		}
-
-		List<ConditionalRegion> conditionalRegions = new List<ConditionalRegion> ();
-
-		public void Add (ConditionalRegion region)
-		{
-			conditionalRegions.Add (region);
-		}
-
-		public void AddRange (IEnumerable<ConditionalRegion> conditionalRegions)
-		{
-			this.conditionalRegions.AddRange (conditionalRegions);
-		}
-
-		public override Task<IReadOnlyList<ConditionalRegion>> GetConditionalRegionsAsync (CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return Task.FromResult<IReadOnlyList<ConditionalRegion>> (conditionalRegions);
 		}
 
 		List<Error> errors = new List<Error> ();

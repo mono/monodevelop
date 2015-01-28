@@ -206,7 +206,6 @@ namespace MonoDevelop.Ide.Editor
 			});
 		}
 		#endregion
-		HashSet<string> symbols = new HashSet<string> ();
 		CancellationTokenSource src = new CancellationTokenSource ();
 		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false)
 		{
@@ -222,26 +221,7 @@ namespace MonoDevelop.Ide.Editor
 			System.Action action = delegate {
 				try {
 					var foldSegments = new List<IFoldSegment> ();
-					var defines = parsedDocument.GetDefinesAsync(token).Result;
-					if (defines == null)
-						return;
-					bool updateSymbols = defines.Count != symbols.Count;
-					if (!updateSymbols) {
-						foreach (PreProcessorDefine define in defines) {
-							if (token.IsCancellationRequested)
-								return;
-							if (!symbols.Contains (define.Define)) {
-								updateSymbols = true;
-								break;
-							}
-						}
-					}
-					if (updateSymbols) {
-						symbols.Clear ();
-						foreach (PreProcessorDefine define in defines) {
-							symbols.Add (define.Define);
-						}
-					}
+
 					foreach (FoldingRegion region in parsedDocument.GetFoldingsAsync(token).Result) {
 						if (token.IsCancellationRequested)
 							return;
@@ -815,16 +795,16 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		void UpdateQuickTasks (ParsedDocument doc)
+		async void UpdateQuickTasks (ParsedDocument doc)
 		{
 			tasks.Clear ();
 			if (doc != null) {
-				foreach (var cmt in doc.GetTagCommentsAsync().Result) {
+				foreach (var cmt in await doc.GetTagCommentsAsync()) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
 					tasks.Add (newTask);
 				}
 
-				foreach (var error in doc.GetErrorsAsync().Result) {
+				foreach (var error in await doc.GetErrorsAsync()) {
 					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					tasks.Add (newTask);
 				}

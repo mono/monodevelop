@@ -116,9 +116,6 @@ namespace MonoDevelop.CSharp.Parser
 
 		IEnumerable<FoldingRegion> GenerateFoldings (CancellationToken cancellationToken)
 		{
-			foreach (var fold in GetConditionalRegionsAsync().Result.ToFolds ())
-				yield return fold;
-
 			foreach (var fold in GetCommentsAsync().Result.ToFolds ())
 				yield return fold;
 
@@ -210,16 +207,6 @@ namespace MonoDevelop.CSharp.Parser
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
 				base.VisitBlock (node);
 			}
-		}
-
-		public override Task<IReadOnlyList<PreProcessorDefine>> GetDefinesAsync (CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return Task.FromResult<IReadOnlyList<PreProcessorDefine>> (new PreProcessorDefine[0]);
-		}
-
-		public override Task<IReadOnlyList<ConditionalRegion>> GetConditionalRegionsAsync (CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return Task.FromResult<IReadOnlyList<ConditionalRegion>> (new ConditionalRegion[0]);
 		}
 
 		static readonly IReadOnlyList<Error> emptyErrors = new Error[0];

@@ -381,21 +381,5 @@ namespace MonoDevelop.CSharp.Parser
 			return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 		}
 	}
-	
-	static class FoldingUtils
-	{
-		public static IEnumerable<FoldingRegion> ToFolds (this IEnumerable<ConditionalRegion> conditionalRegions)
-		{
-			foreach (ConditionalRegion region in conditionalRegions) {
-				yield return new FoldingRegion ("#if " + region.Flag, region.Region, FoldType.ConditionalDefine);
-				foreach (ConditionBlock block in region.ConditionBlocks) {
-					yield return new FoldingRegion ("#elif " + block.Flag, block.Region,
-					                                FoldType.ConditionalDefine);
-				}
-				if (!region.ElseBlock.IsEmpty)
-					yield return new FoldingRegion ("#else", region.ElseBlock, FoldType.ConditionalDefine);
-			}
-		}		
-	}
 }
 
