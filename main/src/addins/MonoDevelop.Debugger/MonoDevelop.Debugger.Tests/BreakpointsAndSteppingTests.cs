@@ -103,9 +103,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void StaticConstructorStepping ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("Sdb can't step in static constructor.");
-			}
 			InitializeTest ();
 			AddBreakpoint ("6c42f31b-ca4f-4963-bca1-7d7c163087f1");
 			StartTest ("StaticConstructorStepping");
@@ -388,54 +385,41 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("DebuggerNonUserCodeMethod");
 			CheckPosition ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78");
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (5).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (4).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (3).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", -1);
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
-				Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
-				Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
-			}
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (2).IsExternalCode);
 			StepIn ("49326780-f51b-4510-a52c-03e7af442dda", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 1);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 2);
 			StepIn ("02757896-0e76-40b8-8235-d09d2110da78", 3);
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: SoftDebugger is not marking frames with [DebuggerNonUserCode] as IsExternalCode when ProjectAssembliesOnly == true.");
-			}
 		}
 
 		/// <summary>
@@ -452,6 +436,38 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("806c13f8-8a59-4ae0-83a2-33191368af47");//This actually means it hit 2nd breakpoint
 			//because [DebuggerStepperBoundary] actually means if you step into this method
 			//its looks like pressing F5
+		}
+
+		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2ProjectAssembliesOnly ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = true;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
+		}
+
+		/// <summary>
+		/// Bug 21510
+		/// </summary>
+		[Test]
+		public void DebuggerStepperBoundaryMethod2 ()
+		{
+			InitializeTest ();
+			Session.Options.ProjectAssembliesOnly = false;
+			AddBreakpoint ("f3a22b38-596a-4463-a562-20b342fdec12");
+			AddBreakpoint ("4721f27a-a268-4529-b327-c39f208c08c5");
+			StartTest ("DebuggerStepperBoundaryMethod2");
+			CheckPosition ("f3a22b38-596a-4463-a562-20b342fdec12");
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9", -1);
+			StepIn ("d110546f-a622-4ec3-9564-1c51bfec28f9");
+			StepIn ("4721f27a-a268-4529-b327-c39f208c08c5");
 		}
 
 		/// <summary>
@@ -505,19 +521,46 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
+		public void BreakpointInsideOneLineDelegateNoDisplayClass ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+			AddBreakpoint ("e72a2fa6-2d95-4f96-b3d0-ba321da3cb55", statement: "Console.WriteLine");
+			StartTest ("BreakpointInsideOneLineDelegateNoDisplayClass");
+			CheckPosition ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+			StepOver ("e72a2fa6-2d95-4f96-b3d0-ba321da3cb55", "Console.WriteLine");
+			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			StepOut ("e0a96c37-577f-43e3-9a20-2cdd8bf7824e");
+		}
+
+		[Test]
 		public void BreakpointInsideOneLineDelegate ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Atm debugger-libs is in charge of placing breakpoints. It either needs more information about Instructions or Runtime has to place breakpoints based on filename+line+column.");
-			}
 			InitializeTest ();
 			AddBreakpoint ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
-			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd");
+			AddBreakpoint ("22af08d6-dafc-47f1-b8d1-bee1526840fd", statement: "button.SetTitle");
 			StartTest ("BreakpointInsideOneLineDelegate");
 			CheckPosition ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
 			StepOver ("22af08d6-dafc-47f1-b8d1-bee1526840fd", "button.SetTitle");
 			StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
 			StepOut ("67ae4cce-22b3-49d8-8221-7e5b26a5e79b");
+		}
+
+		[Test]
+		public void BreakpointInsideOneLineDelegateAsync ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b6a65e9e-5db2-4850-969a-b3747b2459af", statement: "button.SetTitle");
+			AddBreakpoint ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
+			StartTest ("BreakpointInsideOneLineDelegateAsync");
+			CheckPosition ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
+			StepOver ("b6a65e9e-5db2-4850-969a-b3747b2459af", "button.SetTitle");
+			if (Session is SoftDebuggerSession) {
+				StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb");
+			} else {
+				StepOut ("3be64647-76c1-455b-a4a7-a21b37383dcb", 1);//Feels like CorDebugger bug
+			}
+			StepOut ("b6a65e9e-5db2-4850-969a-b3747b2459af", 1);
 		}
 
 		/// <summary>
@@ -768,9 +811,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
-			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -783,9 +823,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest2 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
-			}
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			StartTest ("ForLoop10");
@@ -797,9 +834,6 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void SetNextStatementTest3 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("TODO: Sdb SetNextStatment");
-			}
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
 			StartTest ("SimpleMethod");
@@ -1069,6 +1103,31 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Fail ("Unexcpected Error list has following items:" + string.Join (",", unexpectedError));
 			if (unexpectedDebug.Count > 0)
 				Assert.Fail ("Unexcpected Debug list has following items:" + string.Join (",", unexpectedDebug));
+		}
+
+		[Test]
+		public void Bug25358 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("4b30f826-2ba0-4b53-ab36-85b2cdde1069");
+			StartTest ("TestBug25358");
+			CheckPosition ("4b30f826-2ba0-4b53-ab36-85b2cdde1069");
+			var val = Eval ("e");
+			val = val.GetChildSync ("Message", EvaluationOptions.DefaultOptions);
+			Assert.AreEqual ("\"2b2c4423-accf-4c2c-af31-7d8dcee31c32\"", val.Value);
+		}
+
+		[Test]
+		public void Bug21410 ()
+		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore ("Runtime bug.");
+			}
+			InitializeTest ();
+			AddBreakpoint ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5");
+			StartTest ("TestBug21410");
+			CheckPosition ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5");
+			StepOver ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5", 1);
 		}
 	}
 }

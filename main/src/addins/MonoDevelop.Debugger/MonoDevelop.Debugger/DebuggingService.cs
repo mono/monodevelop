@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger
 			set {
 			}
 		}
-		
+
 		internal static IEnumerable<ValueVisualizer> GetValueVisualizers (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false)) {
@@ -178,10 +178,74 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-		
+
 		internal static bool HasValueVisualizers (ObjectValue val)
 		{
 			return GetValueVisualizers (val).Any ();
+		}
+
+		internal static InlineVisualizer GetInlineVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/InlineVisualizers", true)) {
+				var cv = v as InlineVisualizer;
+				if (cv != null && cv.CanInlineVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasInlineVisualizer (ObjectValue val)
+		{
+			return GetInlineVisualizer (val) != null;
+		}
+
+		internal static PreviewVisualizer GetPreviewVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/PreviewVisualizers", true)) {
+				var cv = v as PreviewVisualizer;
+				if (cv != null && cv.CanVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasPreviewVisualizer (ObjectValue val)
+		{
+			return GetPreviewVisualizer (val) != null;
+		}
+
+		public static DebugValueConverter<T> GetGetConverter<T> (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanGetValue (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		public static bool HasGetConverter<T> (ObjectValue val)
+		{
+			return GetGetConverter<T> (val) != null;
+		}
+
+		public static DebugValueConverter<T> GetSetConverter<T> (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanSetValue (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		public static bool HasSetConverter<T> (ObjectValue val)
+		{
+			return GetSetConverter<T> (val) != null;
 		}
 		
 		public static void ShowValueVisualizer (ObjectValue val)
@@ -189,6 +253,11 @@ namespace MonoDevelop.Debugger
 			var dlg = new ValueVisualizerDialog ();
 			dlg.Show (val);
 			MessageService.ShowCustomDialog (dlg);
+		}
+
+		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
+		{
+			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
 		
 		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)

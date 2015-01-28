@@ -25,11 +25,10 @@
 //
 //
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using System;
 
 namespace MonoDevelop.Projects
 {
@@ -39,7 +38,14 @@ namespace MonoDevelop.Projects
 		Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration);
 		Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
 		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
+		[Obsolete ("This method will be removed in future releases")]
 		bool NeedsBuilding (ConfigurationSelector configuration);
 		string Name { get; }
+
+		/// <summary>
+		/// Gets the build targets that should be built before the project is executed.
+		/// If the project itself is not executed, it will not be built.
+		/// </summary>
+		IEnumerable<IBuildTarget> GetExecutionDependencies ();
 	}
 }

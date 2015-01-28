@@ -482,6 +482,8 @@
     <Compile Include="MonoDevelop.Projects\ExportProjectFlavorAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ExportProjectTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ExportDotNetProjectTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\BuildError.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -85,26 +85,11 @@ namespace MonoDevelop.Debugger
 				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
 			}
 
-			if (!IdeApp.Preferences.BuildBeforeExecuting) {
-				if (IdeApp.Workspace.IsOpen) {
-					var it = GetRunTarget ();
-					CheckResult cr = CheckBeforeDebugging (it);
-					if (cr == DebugHandler.CheckResult.Cancel)
-						return;
-					if (cr == DebugHandler.CheckResult.Run) {
-						ExecuteSolution (it);
-						return;
-					}
-					// Else continue building
-				}
-			}
-
 			if (IdeApp.Workspace.IsOpen) {
 				var it = GetRunTarget ();
-				var res = await IdeApp.ProjectOperations.Build (it).Task;
-				if (res.HasErrors || (res.HasWarnings && !IdeApp.Preferences.RunWithWarnings))
-					return;
-				ExecuteSolution (it);
+				if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (it))
+					ExecuteSolution (it);
+				return;
 			}
 		}
 
@@ -159,44 +144,6 @@ namespace MonoDevelop.Debugger
 				info.Enabled = false;
 			}
 		}
-		
-		internal static CheckResult CheckBeforeDebugging (IBuildTarget target)
-		{
-			if (IdeApp.Preferences.BuildBeforeExecuting)
-				return CheckResult.BuildBeforeRun;
-			
-			if (!target.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration))
-				return CheckResult.Run;
-			
-			AlertButton bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
-			AlertButton bRun = new AlertButton (Gtk.Stock.Execute, true);
-			AlertButton res = MessageService.AskQuestion (
-			                                 GettextCatalog.GetString ("Outdated Debug Information"), 
-			                                 GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. The debug information may be outdated. Do you want to continue?"),
-			                                 2,
-			                                 AlertButton.Cancel,
-			                                 bBuild,
-			                                 bRun);
-
-			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
-			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
-			DispatchService.RunPendingEvents ();
-
-			if (res == AlertButton.Cancel)
-				return CheckResult.Cancel;
-
-			if (res == bRun)
-				return CheckResult.Run;
-
-			return CheckResult.BuildBeforeRun;
-		}
-			
-		internal enum CheckResult
-		{
-			Cancel,
-			BuildBeforeRun,
-			Run
-		}
 	}
 	
 	class DebugEntryHandler: CommandHandler
@@ -204,14 +151,8 @@ namespace MonoDevelop.Debugger
 		protected async override void Run ()
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			DebugHandler.CheckResult cr = DebugHandler.CheckBeforeDebugging (entry);
-			
-			if (cr == DebugHandler.CheckResult.BuildBeforeRun) {
-				var res = await IdeApp.ProjectOperations.Build (entry).Task;
-				if (res.HasErrors || (res.HasWarnings && !IdeApp.Preferences.RunWithWarnings))
-					return;
-				IdeApp.ProjectOperations.Debug (entry);
-			} else if (cr == DebugHandler.CheckResult.Run)
+
+			if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (entry))
 				IdeApp.ProjectOperations.Debug (entry);
 		}
 		

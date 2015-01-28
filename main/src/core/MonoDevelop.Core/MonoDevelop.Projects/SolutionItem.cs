@@ -506,6 +506,7 @@ namespace MonoDevelop.Projects
 		}
 		string loadError;
 
+		[Obsolete ("This method will be removed in future releases")]
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return ItemExtension.OnNeedsBuilding (configuration);
@@ -516,6 +517,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
+		[Obsolete ("This method will be removed in future releases")]
 		public void SetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			OnSetNeedsBuilding (configuration);

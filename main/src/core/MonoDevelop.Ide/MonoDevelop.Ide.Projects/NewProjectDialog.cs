@@ -63,10 +63,10 @@ namespace MonoDevelop.Ide.Projects {
 		bool newSolution;
 		string lastName = "";
 		ProjectTemplate selectedItem;
-		SolutionFolderItem currentEntry;
+		List <SolutionFolderItem> currentEntries;
 		SolutionFolder parentFolder;
 		CombineEntryFeatureSelector featureList;
-		WorkspaceObject newItem;
+		List <IWorkspaceFileObject> newItems;
 		Category recentCategory;
 		List<string> recentTemplates = new List<string> ();
 		bool disposeNewItem = true;
@@ -215,8 +215,10 @@ namespace MonoDevelop.Ide.Projects {
 				cat_text_render = null;
 			}
 
-			if (disposeNewItem && newItem != null)
-				newItem.Dispose ();
+			if (disposeNewItem && newItems != null) {
+				foreach (var newItem in newItems)
+					newItem.Dispose ();
+			}
 
 			base.OnDestroyed ();
 		}
@@ -288,9 +290,10 @@ namespace MonoDevelop.Ide.Projects {
 			}
 		}
 
-		public WorkspaceObject NewItem {
+		//TODO: this should return multiple items
+		public IWorkspaceFileObject NewItem {
 			get {
-				return newItem;
+				return newItems == null ? null : newItems [0];
 			}
 		}
 		
@@ -327,27 +330,27 @@ namespace MonoDevelop.Ide.Projects {
 				if (!CreateProject ())
 					return;
 				
-				Solution parentSolution = null;
-				
 				if (parentFolder == null) {
-					WorkspaceItem item = (WorkspaceItem) newItem;
-					parentSolution = item as Solution;
+					//NOTE: we can only create one solution, so if the first item is a solution, it's the only item
+					var parentSolution = newItems [0] as Solution;
 					if (parentSolution != null) {
 						if (parentSolution.RootFolder.Items.Count > 0)
-							currentEntry = parentSolution.RootFolder.Items [0] as SolutionFolderItem;
+							currentEntries = new List<SolutionFolderItem> (parentSolution.GetAllSolutionItems ());
 						parentFolder = parentSolution.RootFolder;
 					}
 				} else {
-					SolutionFolderItem item = (SolutionFolderItem) newItem;
-					parentSolution = parentFolder.ParentSolution;
-					currentEntry = item;
+					currentEntries = new List<SolutionFolderItem> ();
+					foreach (SolutionItem item in newItems) {
+						currentEntries.Add (item);
+					}
 				}
 				
 				if (btn_new.Label == Gtk.Stock.GoForward) {
 					// There are features to show. Go to the next page
-					if (currentEntry != null) {
+					// NOTE: we only show features for the first project
+					if (currentEntries != null && currentEntries.Count > 0) {
 						try {
-							featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
+							featureList.Fill (parentFolder, currentEntries [0], SolutionItemFeatures.GetFeatures (parentFolder, currentEntries [0]));
 						}
 						catch (Exception ex) {
 							LoggingService.LogError (ex.ToString ());
@@ -369,22 +372,34 @@ namespace MonoDevelop.Ide.Projects {
 			if (!newSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
-				if (currentEntry is SolutionItem) {
+				foreach (var eitem in currentEntries.OfType<SolutionItem>()) {
 					// Inherit the file format from the solution
-					SolutionItem eitem = (SolutionItem) currentEntry;
 					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
+
+					// Remove any references to other projects and add them back after the
+					// project is saved because a project reference cannot be resolved until
+					// the project has a parent solution.
+					List<ProjectReference> projectReferences = GetProjectReferences (eitem);
+					if (projectReferences.Any ())
+						eitem.Items.RemoveRange (projectReferences);
+
 					await IdeApp.ProjectOperations.SaveAsync (eitem);
+
+					if (projectReferences.Any ())
+						eitem.Items.AddRange (projectReferences);
+
+					parentFolder.AddItem (eitem, true);
 				}
-				parentFolder.AddItem (currentEntry, true);
 			}
 
 			if (notebook.Page == 1)
 				featureList.ApplyFeatures ();
 			
-			if (parentFolder != null)
+			if (parentFolder != null) {
 				await IdeApp.ProjectOperations.SaveAsync (parentFolder.ParentSolution);
-			else
-				await IdeApp.ProjectOperations.SaveAsync (newItem);
+			} else {
+				await IdeApp.ProjectOperations.SaveAsync (newItems);
+			}
 
 			if (openSolution) {
 				if (await selectedItem.OpenCreatedSolution ()) {
@@ -403,7 +418,14 @@ namespace MonoDevelop.Ide.Projects {
 
 			Respond (ResponseType.Ok);
 		}
-		
+
+		List<ProjectReference> GetProjectReferences (SolutionEntityItem solutionItem)
+		{
+			return solutionItem.Items.OfType<ProjectReference> ()
+				.Where (item => item.ReferenceType == ReferenceType.Project)
+				.ToList ();
+		}
+
 		bool CreateProject ()
 		{
 			if (templateView.CurrentlySelected != null) {
@@ -473,18 +495,19 @@ namespace MonoDevelop.Ide.Projects {
 				return false;
 			}
 
-			if (newItem != null) {
-				newItem.Dispose ();
-				newItem = null;
+			if (newItems != null) {
+				foreach (var newItem in newItems)
+					newItem.Dispose ();
+				newItems = null;
 			}
 			
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
 				if (newSolution)
-					newItem = item.CreateWorkspaceItem (cinfo);
+					newItems = CreateWorkspaceItems (item, cinfo);
 				else
-					newItem = item.CreateProject (parentFolder, cinfo);
-				if (newItem == null)
+					newItems = CreateProjects (item, parentFolder, cinfo);
+				if (!newItems.Any ())
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
@@ -507,6 +530,23 @@ namespace MonoDevelop.Ide.Projects {
 			cinfo.ParentFolder = parentFolder;
 			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
 			return cinfo;
+		}
+
+		static List<IWorkspaceFileObject> CreateWorkspaceItems (ProjectTemplate item, ProjectCreateInformation cinfo)
+		{
+			var items = new List<IWorkspaceFileObject> ();
+			WorkspaceItem newItem = item.CreateWorkspaceItem (cinfo);
+			if (newItem != null) {
+				items.Add (newItem);
+			}
+			return items;
+		}
+
+		static List<IWorkspaceFileObject> CreateProjects (ProjectTemplate item, SolutionFolder parent, ProjectCreateInformation cinfo)
+		{
+			return item.CreateProjects (parent, cinfo)
+				.Select (project => (IWorkspaceFileObject)project)
+				.ToList ();
 		}
 
 		void InstallProjectTemplatePackages (Solution sol)

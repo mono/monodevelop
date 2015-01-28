@@ -77,8 +77,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		CancellationTokenSource src;
 
 		public bool SemanticHighlightingEnabled {
-			get;
-			set;
+			get {
+				return true;
+			}
 		}
 
 		internal class StyledTreeSegment : TreeSegment
@@ -490,8 +491,6 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			this.guiDocument = document;
 			guiDocument.DocumentParsed += HandleDocumentParsed;
-			SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
-			PropertyService.PropertyChanged += HandlePropertyChanged;
 			if (guiDocument.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
@@ -561,16 +560,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			guiDocument.DocumentParsed -= HandleDocumentParsed;
-			PropertyService.PropertyChanged -= HandlePropertyChanged;
 		}
 
 		#endregion
 
-		void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
-		{
-			if (e.Key == "EnableSemanticHighlighting")
-				SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
-		}
 
 //		public override SpanParser CreateSpanParser (DocumentLine line, CloneableStack<Span> spanStack)
 //		{

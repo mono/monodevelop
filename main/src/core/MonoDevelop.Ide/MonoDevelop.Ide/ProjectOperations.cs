@@ -1094,7 +1094,116 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget)
+		{
+			//saves open documents since it may dirty the "needs building" check
+			var r = DoBeforeCompileAction ();
+			if (r.Failed)
+				return false;
+
+			var configuration = IdeApp.Workspace.ActiveConfiguration;
+
+			var buildTarget = executionTarget;
+			var ewo = buildTarget as IExecutableWorkspaceObject;
+			if (ewo != null) {
+				var buildDeps = ewo.GetExecutionDependencies ().ToList ();
+				if (buildDeps.Count > 1)
+					throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+				buildTarget = buildDeps [0];
+			}
+
+			bool needsBuild = FastCheckNeedsBuild (buildTarget, configuration);
+			if (!needsBuild) {
+				return true;
+			}
+
+			if (IdeApp.Preferences.BuildBeforeExecuting) {
+				var result = await Build (buildTarget, true).Task;
+				if (IdeApp.Preferences.RunWithWarnings)
+					return !result.HasErrors;
+				else
+					return !result.HasErrors && !result.HasWarnings;
+			}
+
+			var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
+			var bRun = new AlertButton (Gtk.Stock.Execute, true);
+			var res = MessageService.AskQuestion (
+				GettextCatalog.GetString ("Outdated Build"),
+				GettextCatalog.GetString ("The project you are executing has changes done after the last time it was compiled. Do you want to continue?"),
+				2,
+				AlertButton.Cancel,
+				bBuild,
+				bRun);
+
+			// This call is a workaround for bug #6907. Without it, the main monodevelop window is left it a weird
+			// drawing state after the message dialog is shown. This may be a gtk/mac issue. Still under research.
+			DispatchService.RunPendingEvents ();
+
+			if (res == bRun) {
+				return true;
+			}
+
+			if (res == bBuild) {
+				var result = await Build (buildTarget, true).Task;
+				if (IdeApp.Preferences.RunWithWarnings)
+					return !result.HasErrors;
+				else
+					return !result.HasErrors && !result.HasWarnings;
+			}
+
+			return false;
+		}
+
+		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
+		{
+			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
+			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
+				return true;
+
+			var sei = target as SolutionEntityItem;
+			if (sei != null) {
+				if (sei.FastCheckNeedsBuild (configuration))
+					return true;
+				//TODO: respect solution level dependencies
+				var deps = new HashSet<SolutionItem> ();
+				CollectReferencedItems (sei, deps, configuration);
+				foreach (var dep in deps.OfType<SolutionEntityItem> ()) {
+					if (dep.FastCheckNeedsBuild (configuration))
+						return true;
+				}
+				return false;
+			}
+
+			var sln = target as Solution;
+			if (sln != null) {
+				foreach (var item in sln.GetAllSolutionItems<SolutionEntityItem> ()) {
+					if (item.FastCheckNeedsBuild (configuration))
+						return true;
+				}
+				return false;
+			}
+
+			//TODO: handle other IBuildTargets
+			return true;
+		}
+
+		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
+		{
+			foreach (var refItem in item.GetReferencedItems (configuration)) {
+				if (collected.Add (item)) {
+					CollectReferencedItems (refItem, collected, configuration);
+				}
+			}
+		}
+		
+//		bool errorPadInitialized = false;
+
 		public AsyncOperation<BuildResult> Build (IBuildTarget entry, CancellationToken? cancellationToken = null)
+		{
+			return Build (entry, false);
+		}
+
+		AsyncOperation<BuildResult> Build (IBuildTarget entry, bool skipPrebuildCheck)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
@@ -1105,7 +1214,7 @@ namespace MonoDevelop.Ide
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
 				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
-				var t = BuildSolutionItemAsync (entry, monitor, tt);
+				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck);
 				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperationOwner = entry;
 				t.ContinueWith ((ta) => currentBuildOperationOwner = null);
@@ -1116,22 +1225,26 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt)
+		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false)
 		{
 			BuildResult result = null;
 			try {
-				tt.Trace ("Pre-build operations");
-				result = DoBeforeCompileAction ();
+				if (!skipPrebuildCheck) {
+					tt.Trace ("Pre-build operations");
+					result = DoBeforeCompileAction ();
+				}
 
 				//wait for any custom tools that were triggered by the save, since the build may depend on them
 				MonoDevelop.Ide.CustomTools.CustomToolService.WaitForRunningTools (monitor);
 
-				if (result.ErrorCount == 0) {
+				if (skipPrebuildCheck || result.ErrorCount == 0) {
 					tt.Trace ("Building item");
 					result = await entry.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
+				if (result == null)
+					result = new BuildResult ();
 				result.AddError ("Build failed. See the build log for details.");
 				if (result.SourceTarget == null)
 					result.SourceTarget = entry;

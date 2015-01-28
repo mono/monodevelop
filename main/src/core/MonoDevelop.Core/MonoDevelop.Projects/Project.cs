@@ -260,6 +260,7 @@ namespace MonoDevelop.Projects
 
 		internal protected override Task OnSave (ProgressMonitor monitor)
 		{
+			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
 			return Task.Factory.StartNew (delegate {
@@ -680,10 +681,12 @@ namespace MonoDevelop.Projects
 					if (err.File != null)
 						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
-					if (err.IsWarning)
-						br.AddWarning (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
-					else
-						br.AddError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
+					br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
+								Subcategory = err.Subcategory,
+								EndLine = err.EndLineNumber,
+								EndColumn = err.EndColumnNumber,
+								IsWarning = err.IsWarning
+								});
 				}
 				return br;
 			}
@@ -946,7 +949,10 @@ namespace MonoDevelop.Projects
 			StringParserService.Properties["Project"] = Name;
 			
 			if (UsingMSBuildEngine (configuration)) {
-				return await DoBuild (monitor, configuration);
+				var result = await DoBuild (monitor, configuration);
+				if (!result.Failed)
+					SetFastBuildCheckClean (configuration);
+				return result;			
 			}
 			
 			string outputDir = conf.OutputDirectory;
@@ -975,7 +981,33 @@ namespace MonoDevelop.Projects
 
 			return res;
 		}
+
+		bool disableFastUpToDateCheck;
+
+		//the configuration of the last build that completed successfully
+		//null if any file in the project has since changed
+		string fastUpToDateCheckGoodConfig;
+
+		// TODO NPM: add to extension chain
+		public virtual bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
+					return true;
+			var cfg = GetConfiguration (configuration);
+			return cfg == null || cfg.Id != fastUpToDateCheckGoodConfig;
+		}
 		
+		protected void SetFastBuildCheckDirty ()
+		{
+			fastUpToDateCheckGoodConfig = null;
+		}
+		
+		void SetFastBuildCheckClean (ConfigurationSelector configuration)
+		{
+			var cfg = GetConfiguration (configuration);
+			fastUpToDateCheckGoodConfig = cfg != null ? cfg.Id : null;
+		}
+
 		/// <summary>
 		/// Copies the support files to the output directory
 		/// </summary>
@@ -1327,6 +1359,7 @@ namespace MonoDevelop.Projects
 			foreach (FileEventInfo fi in e) {
 				ProjectFile file = GetProjectFile (fi.FileName);
 				if (file != null) {
+					SetFastBuildCheckDirty ();
 					try {
 						NotifyFileChangedInProject (file);
 					} catch {
@@ -1576,6 +1609,7 @@ namespace MonoDevelop.Projects
 
 			Description = msproject.EvaluatedProperties.GetValue ("Description", "");
 			baseIntermediateOutputPath = msproject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
+			disableFastUpToDateCheck = msproject.EvaluatedProperties.GetValue ("DisableFastUpToDateCheck", false);
 
 			RemoveDuplicateItems (msproject);
 		}
@@ -1990,6 +2024,7 @@ namespace MonoDevelop.Projects
 
 			msproject.GetGlobalPropertyGroup ().SetValue ("Description", Description, "");
 			msproject.GetGlobalPropertyGroup ().SetValue ("BaseIntermediateOutputPath", BaseIntermediateOutputPath, defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
+			msproject.GetGlobalPropertyGroup ().SetValue ("DisableFastUpToDateCheck", disableFastUpToDateCheck, false);
 		}
 
 		protected virtual void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)

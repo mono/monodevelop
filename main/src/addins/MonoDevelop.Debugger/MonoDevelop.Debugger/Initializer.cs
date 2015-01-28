@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 		
 		void OnFrameChanged (object s, EventArgs a)
 		{
-			if (disassemblyDoc != null && IdeApp.Workbench.ActiveDocument == disassemblyDoc && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
+			if (disassemblyDoc != null && DebuggingService.IsFeatureSupported (DebuggerFeatures.Disassembly))
 				disassemblyView.Update ();
 			
 			var frame = DebuggingService.CurrentFrame;
@@ -121,9 +121,13 @@ namespace MonoDevelop.Debugger
 			Backtrace bt = DebuggingService.CurrentCallStack;
 			
 			if (bt != null) {
-				for (int n=0; n<bt.FrameCount; n++) {
+				for (int n = 0; n < bt.FrameCount; n++) {
 					StackFrame sf = bt.GetFrame (n);
-					if (sf.SourceLocation.Line != -1) {
+					if (!sf.IsExternalCode &&
+					    sf.SourceLocation.Line != -1 &&
+					    !string.IsNullOrEmpty (sf.SourceLocation.FileName) &&
+						//Uncomment condition below once logic for ProjectOnlyCode in runtime is fixed
+						(/*DebuggingService.CurrentSessionSupportsFeature (DebuggerFeatures.Disassembly) ||*/ System.IO.File.Exists (sf.SourceLocation.FileName))) {
 						if (n != DebuggingService.CurrentFrameIndex)
 							DebuggingService.CurrentFrameIndex = n;
 						break;

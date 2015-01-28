@@ -61,6 +61,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -146,6 +147,12 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
+    <Compile Include="MonoDevelop.Debugger.InlineVisualizers\InlineVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizerWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\DebugValueConverter.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewWindowManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\GenericPreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
     <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
@@ -317,5 +324,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Debugger.Visualizer\" />
+    <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
+    <Folder Include="MonoDevelop.Debugger.Converters\" />
   </ItemGroup>
 </Project>

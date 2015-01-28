@@ -40,6 +40,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			Spacing = Styles.WelcomeScreen.Links.LinkSeparation;
 
 			foreach (var button in buttons) {
+				if (!button.IsVisible)
+					continue;
 				PackStart (button, false, false, 0);
 			}
 			ShowAll ();

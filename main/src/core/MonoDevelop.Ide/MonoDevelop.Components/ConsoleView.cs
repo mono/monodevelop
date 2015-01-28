@@ -211,7 +211,11 @@ namespace MonoDevelop.Components
 				Buffer.MoveMark (Buffer.SelectionBound, InputLineEnd);
 				Buffer.MoveMark (Buffer.InsertMark, InputLineEnd);
 			}
-			
+
+			if (!TextView.Editable) {
+				return false;
+			}
+
 //			if (ev.State == Gdk.ModifierType.ControlMask && ev.Key == Gdk.Key.space)
 //				TriggerCodeCompletion ();
 

@@ -132,6 +132,9 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 			var objWithMethodA = new ClassWithMethodA ();
 
+			bool? nullableBool = null;
+			nullableBool = true;
+
 			var richObject = new RichClass ();
 			byte[] nulledByteArray = null;
 

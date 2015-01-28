@@ -894,7 +894,7 @@ namespace Mono.TextTemplating
 			var formatProviderFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), formatProviderField.Name);
 			
 			var formatProviderProp = GenerateGetterSetterProperty ("FormatProvider", formatProviderField);
-			AddSetterNullCheck (formatProviderProp, formatProviderFieldRef);
+			MakeSimpleSetterIgnoreNull (formatProviderProp);
 			
 			helperCls.Members.Add (formatProviderField);
 			helperCls.Members.Add (formatProviderProp);
@@ -1000,10 +1000,12 @@ namespace Mono.TextTemplating
 				new CodeAssignStatement (fieldRef, initExpression))
 			);
 		}
-		
-		static void AddSetterNullCheck (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef)
+
+		static void MakeSimpleSetterIgnoreNull (CodeMemberProperty property)
 		{
-			property.SetStatements.Insert (0, NullCheck (fieldRef, fieldRef.FieldName));
+			property.SetStatements [0] = new CodeConditionStatement (
+				NotNull (new CodePropertySetValueReferenceExpression ()),
+				property.SetStatements [0]);
 		}
 		
 		static CodeStatement NullCheck (CodeExpression expr, string exceptionMessage)

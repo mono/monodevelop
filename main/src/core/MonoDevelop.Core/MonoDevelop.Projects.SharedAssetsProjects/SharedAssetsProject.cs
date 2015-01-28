@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public override string[] SupportedLanguages {
 			get {
-				return new [] {languageName};
+				return new [] { "", languageName };
 			}
 		}
 
