@@ -42,6 +42,7 @@ namespace MonoDevelop.Projects
 		bool NeedsBuilding (ConfigurationSelector configuration);
 		string Name { get; }
 
+		// TODO NPM: redesign
 		/// <summary>
 		/// Gets the build targets that should be built before the project is executed.
 		/// If the project itself is not executed, it will not be built.

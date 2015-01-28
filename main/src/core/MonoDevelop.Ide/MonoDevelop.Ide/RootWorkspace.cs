@@ -193,6 +193,13 @@ namespace MonoDevelop.Ide
 			return Items;
 		}
 
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			// TODO NPM
+			yield break;
+		}
+
+
 #region Model queries
 		
 		public IEnumerable<SolutionItem> GetAllSolutionItems ()

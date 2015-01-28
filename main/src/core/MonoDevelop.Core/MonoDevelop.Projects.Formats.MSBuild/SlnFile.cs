@@ -48,6 +48,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return sections.GetOrCreateSection ("ProjectConfigurationPlatforms", "postSolution").NestedPropertySets; }
 		}
 
+		public SlnPropertySet CustomMonoDevelopProperties {
+			get {
+				var s = sections.GetOrCreateSection ("MonoDevelopProperties", "preSolution"); 
+				s.SkipIfEmpty = true;
+				return s.Properties;
+			}
+		}
+
 		public SlnSectionCollection Sections {
 			get { return sections; }
 		}
@@ -242,6 +250,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public int Line { get; private set; }
 		internal bool Processed { get; set; }
 
+		public bool IsEmpty {
+			get {
+				return (properties == null || properties.Count == 0) && (nestedPropertySets == null || nestedPropertySets.All (t => t.IsEmpty));
+			}
+		}
+
+		/// <summary>
+		/// If true, this section won't be written to the file if it is empty
+		/// </summary>
+		/// <value><c>true</c> if skip if empty; otherwise, <c>false</c>.</value>
+		public bool SkipIfEmpty { get; set; }
+
+		public void Clear ()
+		{
+			properties = null;
+			nestedPropertySets = null;
+			sectionLines = null;
+		}
+
 		public SlnPropertySet Properties {
 			get {
 				if (properties == null) {
@@ -321,6 +348,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void Write (TextWriter writer, string sectionTag)
 		{
+			if (SkipIfEmpty && IsEmpty)
+				return;
+
 			writer.Write ("\t");
 			writer.Write (sectionTag);
 			writer.Write ('(');
@@ -360,6 +390,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal SlnPropertySet (bool isMetadata)
 		{
 			this.isMetadata = isMetadata;
+		}
+
+		public bool IsEmpty {
+			get {
+				return values.Count == 0;
+			}
 		}
 
 		internal void ReadLine (string line, int currentLine)
@@ -531,6 +567,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public SlnSection GetOrCreateSection (string id, string sectionType)
 		{
+			if (id == null)
+				throw new ArgumentNullException ("id");
 			var sec = this.FirstOrDefault (s => s.Id == id);
 			if (sec == null) {
 				sec = new SlnSection { Id = id };
@@ -542,6 +580,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveSection (string id)
 		{
+			if (id == null)
+				throw new ArgumentNullException ("id");
 			var s = GetSection (id);
 			if (s != null)
 				Remove (s);

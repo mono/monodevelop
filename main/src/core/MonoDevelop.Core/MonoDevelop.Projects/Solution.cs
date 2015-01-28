@@ -871,6 +871,26 @@ namespace MonoDevelop.Projects
 			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor);
 		}
 
+		internal void ReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			SolutionExtension.OnReadConfigurationData (monitor, properties, configuration);
+		}
+
+		protected virtual void OnReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			// Do nothing by default
+		}
+
+		internal void ReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			SolutionExtension.OnReadSolutionFolderItemData (monitor, properties, item);
+		}
+
+		protected virtual void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			// Do nothing by default
+		}
+			
 		internal void WriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			SolutionExtension.OnWriteSolution (monitor, file);
@@ -879,6 +899,26 @@ namespace MonoDevelop.Projects
 		protected virtual void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.WriteFileInternal (file, this, monitor);
+		}
+
+		internal void WriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			SolutionExtension.OnWriteConfigurationData (monitor, properties, configuration);
+		}
+
+		protected virtual void OnWriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			// Do nothing by default
+		}
+
+		internal void WriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			SolutionExtension.OnWriteSolutionFolderItemData (monitor, properties, item);
+		}
+
+		protected virtual void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			// Do nothing by default
 		}
 
 		internal void NotifyConfigurationsChanged ()
@@ -1009,6 +1049,16 @@ namespace MonoDevelop.Projects
 			internal protected override void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 			{
 				Solution.OnWriteSolution (monitor, file);
+			}
+
+			internal protected override void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+			{
+				Solution.OnWriteSolutionFolderItemData (monitor, properties, item);
+			}
+
+			internal protected override void OnWriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+			{
+				Solution.OnWriteConfigurationData (monitor, properties, configuration);
 			}
 		}
 	}

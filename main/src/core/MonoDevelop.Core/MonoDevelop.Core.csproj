@@ -465,7 +465,6 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyGroupEvaluated.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFile.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\UnknownSolutionItemTypeException.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetCompilerParameters.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProjectFlavor.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemFactory.cs" />

@@ -419,7 +419,7 @@ namespace MonoDevelop.Ide.Projects {
 			Respond (ResponseType.Ok);
 		}
 
-		List<ProjectReference> GetProjectReferences (SolutionEntityItem solutionItem)
+		List<ProjectReference> GetProjectReferences (SolutionItem solutionItem)
 		{
 			return solutionItem.Items.OfType<ProjectReference> ()
 				.Where (item => item.ReferenceType == ReferenceType.Project)

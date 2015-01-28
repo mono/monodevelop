@@ -1104,13 +1104,11 @@ namespace MonoDevelop.Ide
 			var configuration = IdeApp.Workspace.ActiveConfiguration;
 
 			var buildTarget = executionTarget;
-			var ewo = buildTarget as IExecutableWorkspaceObject;
-			if (ewo != null) {
-				var buildDeps = ewo.GetExecutionDependencies ().ToList ();
-				if (buildDeps.Count > 1)
-					throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+			var buildDeps = buildTarget.GetExecutionDependencies ().ToList ();
+			if (buildDeps.Count > 1)
+				throw new NotImplementedException ("Multiple execution dependencies not yet supported");
+			if (buildDeps.Count != 0)
 				buildTarget = buildDeps [0];
-			}
 
 			bool needsBuild = FastCheckNeedsBuild (buildTarget, configuration);
 			if (!needsBuild) {
@@ -1160,14 +1158,14 @@ namespace MonoDevelop.Ide
 			if (!string.IsNullOrEmpty (env) && env != "0" && !env.Equals ("false", StringComparison.OrdinalIgnoreCase))
 				return true;
 
-			var sei = target as SolutionEntityItem;
+			var sei = target as Project;
 			if (sei != null) {
 				if (sei.FastCheckNeedsBuild (configuration))
 					return true;
 				//TODO: respect solution level dependencies
 				var deps = new HashSet<SolutionItem> ();
 				CollectReferencedItems (sei, deps, configuration);
-				foreach (var dep in deps.OfType<SolutionEntityItem> ()) {
+				foreach (var dep in deps.OfType<Project> ()) {
 					if (dep.FastCheckNeedsBuild (configuration))
 						return true;
 				}
@@ -1176,7 +1174,7 @@ namespace MonoDevelop.Ide
 
 			var sln = target as Solution;
 			if (sln != null) {
-				foreach (var item in sln.GetAllSolutionItems<SolutionEntityItem> ()) {
+				foreach (var item in sln.GetAllProjects ()) {
 					if (item.FastCheckNeedsBuild (configuration))
 						return true;
 				}
@@ -1200,10 +1198,10 @@ namespace MonoDevelop.Ide
 
 		public AsyncOperation<BuildResult> Build (IBuildTarget entry, CancellationToken? cancellationToken = null)
 		{
-			return Build (entry, false);
+			return Build (entry, false, cancellationToken);
 		}
 
-		AsyncOperation<BuildResult> Build (IBuildTarget entry, bool skipPrebuildCheck)
+		AsyncOperation<BuildResult> Build (IBuildTarget entry, bool skipPrebuildCheck, CancellationToken? cancellationToken = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 

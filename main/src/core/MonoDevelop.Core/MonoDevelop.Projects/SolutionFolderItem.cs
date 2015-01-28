@@ -449,6 +449,7 @@ namespace MonoDevelop.Projects
 
 		DataItem customSlnData;
 
+		// TODO NPM: Remove, use solution extension
 		public virtual DataItem WriteSlnData ()
 		{
 			return customSlnData;

@@ -25,22 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.CodeDom.Compiler;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
-using System.Linq;
-using System.Threading;
 using Task = System.Threading.Tasks.Task;
 using IdeTask = MonoDevelop.Ide.Tasks.UserTask;
-using MonoDevelop.Ide.Tasks;
 using System.Linq;
 using System.Threading;
 using Mono.Addins;
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects;
@@ -172,17 +165,17 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 
 				//check that we can process further. If UpdateCompleted returns `true` this means no errors or non-fatal errors occured
-				if (UpdateCompleted (monitor, null, file, genFile, result, true) && fileEnumerator.MoveNext ())
+				if (UpdateCompleted (monitor, file, genFile, result, true) && fileEnumerator.MoveNext ())
 					await Update (monitor, fileEnumerator, force, succeeded, warnings, errors);
 				else
 					WriteSummaryResults (monitor, succeeded, warnings, errors);
 			} catch (Exception ex) {
 				result.UnhandledException = ex;
-				UpdateCompleted (monitor, null, file, genFile, result, true);
+				UpdateCompleted (monitor, file, genFile, result, true);
 			}
 		}
 
-		static void WriteSummaryResults (IProgressMonitor monitor, int succeeded, int warnings, int errors)
+		static void WriteSummaryResults (ProgressMonitor monitor, int succeeded, int warnings, int errors)
 		{
 			monitor.Log.WriteLine ();
 
@@ -251,17 +244,16 @@ namespace MonoDevelop.Ide.CustomTools
 			CancellationTokenSource cs = new CancellationTokenSource ();
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetToolOutputProgressMonitor (false).WithCancellationSource (cs);
 			var result = new SingleFileCustomToolResult ();
-			Task op;
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Running generator '{0}' on file '{1}'...", file.Generator, file.Name), 1);
 				var op = tool.Generate (monitor, file, result);
 				lock (runningTasks) {
-					runningTasks.Add (file.FilePath, op);
+					runningTasks.Add (file.FilePath, new TaskInfo { Task = op, CancellationTokenSource = cs, Result = result });
 				}
 				await op;
 				lock (runningTasks) {
-					Task runningTask;
-					if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask == op) {
+					TaskInfo runningTask;
+					if (runningTasks.TryGetValue (file.FilePath, out runningTask) && runningTask.Task == op) {
 						runningTasks.Remove (file.FilePath);
 						UpdateCompleted (monitor, file, genFile, result, false);
 					} else {
@@ -350,7 +342,7 @@ namespace MonoDevelop.Ide.CustomTools
 			FileService.NotifyFileChanged (result.GeneratedFilePath);
 
 			// add file to project, update file properties, etc
-			Gtk.Application.Invoke (delegate {
+			Gtk.Application.Invoke (async delegate {
 				bool projectChanged = false;
 				if (genFile == null) {
 					genFile = file.Project.AddFile (result.GeneratedFilePath, result.OverrideBuildAction);
@@ -371,7 +363,7 @@ namespace MonoDevelop.Ide.CustomTools
 				}
 
 				if (projectChanged)
-					IdeApp.ProjectOperations.SaveAsync (file.Project);
+					await IdeApp.ProjectOperations.SaveAsync (file.Project);
 			});
 
 			return true;

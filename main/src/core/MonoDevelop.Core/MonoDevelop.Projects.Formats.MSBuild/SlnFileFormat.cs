@@ -210,26 +210,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				foreach (var it in toRemove)
 					sec.Properties.Remove (it.ItemId);
 			}
-			
-			//Write custom properties
-			MSBuildSerializer ser = new MSBuildSerializer (solution.FileName);
-			DataItem data = (DataItem) ser.Serialize (solution, typeof(Solution));
-			if (data.HasItemData) {
-				var sec = sln.Sections.GetOrCreateSection ("MonoDevelopProperties", "preSolution");
-				WriteDataItem (sec.Properties, data);
-			} else
-				sln.Sections.RemoveSection ("MonoDevelopProperties");
-			
+
 			// Write custom properties for configurations
 			foreach (SolutionConfiguration conf in solution.Configurations) {
-				data = (DataItem) ser.Serialize (conf);
 				string secId = "MonoDevelopProperties." + conf.Id;
-				if (data.HasItemData) {
-					var sec = sln.Sections.GetOrCreateSection (secId, "preSolution");
-					WriteDataItem (sec.Properties, data);
-				} else {
-					sln.Sections.RemoveSection (secId);
-				}
+				var sec = sln.Sections.GetOrCreateSection (secId, "preSolution");
+				solution.WriteConfigurationData (monitor, sec.Properties, conf);
+				if (sec.IsEmpty)
+					sln.Sections.Remove (sec);
 			}
 		}
 
@@ -248,15 +236,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					proj.Name = item.Name;
 					proj.FilePath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (sln.BaseDirectory, item.FileName)).Replace ('/', '\\');
 
-					DataItem data = item.WriteSlnData ();
-					if (data != null && data.HasItemData) {
-						var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
-						WriteDataItem (sec.Properties, data);
-					} else
-						proj.Sections.RemoveSection ("MonoDevelopProperties");
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
+					sec.SkipIfEmpty = true;
+					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
 
 					if (item.ItemDependencies.Count > 0) {
-						var sec = proj.Sections.GetOrCreateSection ("ProjectDependencies", "postProject");
+						sec = proj.Sections.GetOrCreateSection ("ProjectDependencies", "postProject");
 						sec.Properties.ClearExcept (unknownProjects);
 						foreach (var dep in item.ItemDependencies)
 							sec.Properties.SetValue (dep.ItemId, dep.ItemId);
@@ -272,12 +257,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					WriteFolderFiles (proj, (SolutionFolder) ce);
 					
 					//Write custom properties
-					MSBuildSerializer ser = new MSBuildSerializer (folder.ParentSolution.FileName);
-					DataItem data = (DataItem) ser.Serialize (ce, typeof(SolutionFolder));
-					if (data.HasItemData) {
-						var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
-						WriteDataItem (sec.Properties, data);
-					}
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
+					sec.SkipIfEmpty = true;
+					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
 				}
 				if (ce is SolutionFolder)
 					WriteProjects (ce as SolutionFolder, sln, monitor, unknownProjects);
@@ -361,20 +343,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return sec.Properties.Keys.ToList ();
 		}
 
-		void DeserializeSolutionItem (Solution sln, SolutionFolderItem item, SlnProject proj)
+		void DeserializeSolutionItem (ProgressMonitor monitor, Solution sln, SolutionFolderItem item, SlnProject proj)
 		{
 			// Deserialize the object
 			var sec = proj.Sections.GetSection ("MonoDevelopProperties");
 			if (sec == null)
 				return;
 
-			DataItem it = ReadDataItem (sec);
-			if (it == null)
-				return;
-			
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.SerializationContext.BaseFile = sln.FileName;
-			ser.Deserialize (item, it);
+			sln.ReadSolutionFolderItemData (monitor, sec.Properties, item);
 		}
 		
 		void WriteDataItem (SlnPropertySet pset, DataItem item)
@@ -624,7 +600,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					sfolder.Name = projectName;
 					sfolder.ItemId = projectGuid;
 
-					DeserializeSolutionItem (sol, sfolder, sec);
+					DeserializeSolutionItem (monitor, sol, sfolder, sec);
 					
 					foreach (string f in ReadFolderFiles (sec))
 						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), f));
@@ -775,8 +751,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			LoadProjectConfigurationMappings (sln.ProjectConfigurationsSection, sol, items, monitor);
 
-			LoadMonoDevelopProperties (sln.Sections.GetSection ("MonoDevelopProperties"), sol, monitor);
-
 			foreach (var e in sln.Sections) {
 				string name = e.Id;
 				if (name.StartsWith ("MonoDevelopProperties.")) {
@@ -918,24 +892,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new SolutionConfiguration (fullId);
 		}
 
-		void LoadMonoDevelopProperties (SlnSection sec, Solution sln, ProgressMonitor monitor)
-		{
-			if (sec == null)
-				return;
-			DataItem it = ReadDataItem (sec);
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.SerializationContext.BaseFile = sln.FileName;
-			ser.Deserialize (sln, it);
-		}
-		
 		void LoadMonoDevelopConfigurationProperties (string configName, SlnSection sec, Solution sln, ProgressMonitor monitor)
 		{
 			SolutionConfiguration config = sln.Configurations [configName];
 			if (config == null)
 				return;
-			DataItem it = ReadDataItem (sec);
-			MSBuildSerializer ser = new MSBuildSerializer (sln.FileName);
-			ser.Deserialize (config, it);
+			sln.ReadConfigurationData (monitor, sec.Properties, config);
 		}
 		
 		void LoadNestedProjects (SlnSection sec, IDictionary<string, SolutionFolderItem> entries, ProgressMonitor monitor)

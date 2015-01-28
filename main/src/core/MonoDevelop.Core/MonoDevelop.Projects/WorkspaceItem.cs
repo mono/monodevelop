@@ -306,6 +306,11 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			yield break;
+		}
+
 		void ILoadController.BeginLoad ()
 		{
 			loading++;

@@ -86,9 +86,29 @@ namespace MonoDevelop.Projects
 			next.OnReadSolution (monitor, file);
 		}
 
+		internal protected virtual void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			next.OnReadSolutionFolderItemData (monitor, properties, item);
+		}
+
+		internal protected virtual void OnReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			next.OnReadConfigurationData (monitor, properties, configuration);
+		}
+
 		internal protected virtual void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			next.OnWriteSolution (monitor, file);
+		}
+
+		internal protected virtual void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		{
+			next.OnWriteSolutionFolderItemData (monitor, properties, item);
+		}
+
+		internal protected virtual void OnWriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		{
+			next.OnWriteConfigurationData (monitor, properties, configuration);
 		}
 	}
 }

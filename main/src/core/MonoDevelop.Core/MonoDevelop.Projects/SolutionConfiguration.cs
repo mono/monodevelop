@@ -42,7 +42,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionConfiguration : ItemConfiguration
+	public sealed class SolutionConfiguration : ItemConfiguration
 	{
 		Solution parentSolution;
 		

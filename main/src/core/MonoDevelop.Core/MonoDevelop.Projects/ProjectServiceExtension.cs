@@ -121,6 +121,11 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			yield break;
+		}
+
 		protected override string OnGetName ()
 		{
 			return "Unknown";

@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Templates
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
-		public IEnumerable<SolutionItem> CreateProjects (SolutionItem policyParent, ProjectCreateInformation cInfo)
+		public IEnumerable<SolutionItem> CreateProjects (SolutionFolderItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");

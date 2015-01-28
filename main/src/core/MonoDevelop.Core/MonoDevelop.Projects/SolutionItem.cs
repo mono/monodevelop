@@ -321,6 +321,12 @@ namespace MonoDevelop.Projects
 			get { return loading > 0; }
 		}
 
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			// TODO NPM
+			yield break;
+		}
+
 		/// <summary>
 		/// Gets solution items referenced by this instance (items on which this item depends)
 		/// </summary>
