@@ -61,8 +61,8 @@ namespace MonoDevelop.Ide.Gui
 		static string configFile = UserProfile.Current.ConfigDir.Combine ("EditingLayout.xml");
 		const string fullViewModeTag = "[FullViewMode]";
 		const int MAX_LASTACTIVEWINDOWS = 10;
-		const int MinimumWidth = 1000;
-		const int MinimumHeight = 600;
+		const int MinimumWidth = 800;
+		const int MinimumHeight = 540;
 		
 		// list of layout names for the current context, without the context prefix
 		List<string> layouts = new List<string> ();

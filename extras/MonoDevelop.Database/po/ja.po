@@ -2,20 +2,21 @@
 # Copyright (C) 2004 Atsushi Enomoto
 # This file is distributed under the same license as the PACKAGE package.
 # Atsushi Enomoto <atsushi@ximian.com>, 2004.
+# Akira Nakagawa <matyapiro31@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-02-25 19:34:25+0900\n"
-"PO-Revision-Date: 2008-01-24 02:21:06+0900\n"
-"Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
-"Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
+"PO-Revision-Date: 2015-01-10 21:13+0900\n"
+"Last-Translator: Akira Nakagawa <matyapiro31@gmail.com>\n"
+"Language-Team: 日本語 <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: MonoDevelop.Gettext \n"
+"X-Generator: Poedit 1.5.7\n"
 
 #: ../MonoDevelop.Database.Sql/ConnectionContextService.cs:112
 msgid "Unable to load stored SQL connection information."
@@ -56,7 +57,7 @@ msgstr "データベース'{0}'に接続できません"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:192
 msgid "Query duration: {0}"
-msgstr ""
+msgstr "クエリの実行時間: {0}"
 
 #: ../MonoDevelop.Database.Query/SqlQueryView.cs:209
 #: ../MonoDevelop.Database.Components/Widgets/SelectTableWidget.cs:71
@@ -86,38 +87,33 @@ msgstr[0] "クエリを実行しました（{0}の結果テーブル）"
 msgstr[1] "クエリを実行しました（{0}の結果テーブル）"
 
 #: ../MonoDevelop.Database.Sql.MySql/MySqlDbFactory.cs:45
-#, fuzzy
 msgid "MySql database"
-msgstr "データベースを保存"
+msgstr "MySqlデータベース"
 
 #: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:60
-#, fuzzy
 msgid "Character Set:"
-msgstr "setterの作成"
+msgstr "文字集合:"
 
 #: ../MonoDevelop.Database.Sql.MySql/gtk-gui/MonoDevelop.Database.Sql.MySql.MySqlCreateDatabaseWidget.cs:69
 #: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:71
 msgid "Collation:"
-msgstr ""
+msgstr "照合:"
 
 #: ../MonoDevelop.Database.Sql.SqlServer/SqlServerDbFactory.cs:44
-#, fuzzy
 msgid "SQL Server database"
-msgstr "SQLiteデータベース"
+msgstr "SQL Serverデータベース"
 
 #: ../MonoDevelop.Database.Sql.SqlServer/gtk-gui/MonoDevelop.Database.Sql.SqlServer.SqlServerCreateDatabaseWidget.cs:62
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:337
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:74
-#, fuzzy
 msgid "Database:"
-msgstr "データベース"
+msgstr "データベース:"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteSchemaProvider.cs:235
 msgid "Database '{0}' already exists."
-msgstr ""
+msgstr "データベース '{0}' は既に存在します。"
 
 #: ../MonoDevelop.Database.Sql.Sqlite/SqliteDbFactory.cs:45
-#, fuzzy
 msgid "SQLite database"
 msgstr "SQLiteデータベース"
 
@@ -135,14 +131,12 @@ msgid "All files"
 msgstr "全てのファイル"
 
 #: ../MonoDevelop.Database.Sql.Oracle/OracleDbFactory.cs:41
-#, fuzzy
 msgid "Oracle database"
-msgstr "データベースの作成"
+msgstr "Oracleデータベース"
 
 #: ../MonoDevelop.Database.Sql.Npgsql/NpgsqlDbFactory.cs:44
-#, fuzzy
 msgid "PostgreSQL database"
-msgstr "SQLiteデータベース"
+msgstr "PostgreSQLデータベース"
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:67
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextCollectionNodeBuilder.cs:72
@@ -162,9 +156,8 @@ msgstr "本当に接続 '{0})' を削除しますか?"
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/UserNodeBuilder.cs:169
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ProcedureNodeBuilder.cs:187
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ViewNodeBuilder.cs:188
-#, fuzzy
 msgid "Drop"
-msgstr "ビューの削除"
+msgstr ""
 
 #: ../MonoDevelop.Database.ConnectionManager/NodeBuilders/ConnectionContextNodeBuilder.cs:248
 msgid "Are you sure you want to drop database '{0}'"
@@ -313,9 +306,8 @@ msgstr "データベース"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:176
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:212
-#, fuzzy
 msgid "Database Provider List"
-msgstr "データベースブラウザ"
+msgstr "データベースのプロバイダの一覧"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:178
 msgid "Edit Connection"
@@ -438,9 +430,8 @@ msgid "Drop User"
 msgstr "ユーザの削除"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:278
-#, fuzzy
 msgid "Toggle System Objects"
-msgstr "システム オブジェクトを表示"
+msgstr "システム オブジェクトを切り替える"
 
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:284
 #: ../MonoDevelop.Database.ConnectionManager/MonoDevelop.Database.ConnectionManager.addin.xml:396
@@ -456,7 +447,7 @@ msgstr "データベースの作成"
 
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:46
 msgid "Visualize Data As"
-msgstr ""
+msgstr "次の形式でデータを可視化します "
 
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:49
 #: ../MonoDevelop.Database.Components/Widgets/SqlEditorWidget.cs:95
@@ -470,7 +461,7 @@ msgstr "ファイルにエクスポート"
 
 #: ../MonoDevelop.Database.Components/MonoDevelop.Database.Components.addin.xml:59
 msgid "Visualize Data"
-msgstr ""
+msgstr "データの可視化"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.SelectColumnDialog.cs:31
 msgid "Select Column"
@@ -500,9 +491,8 @@ msgid "Name"
 msgstr "名前"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:65
-#, fuzzy
 msgid "Db Type"
-msgstr "型"
+msgstr "データベースの種別"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:70
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:96
@@ -512,28 +502,27 @@ msgstr "型"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:75
 msgid "Field Name"
-msgstr ""
+msgstr "フィールド名"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:82
 msgid "Property Name"
 msgstr "プロパティ名"
 
 #: ../MonoDevelop.Database.Components/Widgets/ColumnMappingWidget.cs:89
-#, fuzzy
 msgid "Setter"
-msgstr "サーバ"
+msgstr "セッター"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.DataGrid.cs:103
 msgid "of"
-msgstr "of"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "Y"
-msgstr "Y"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Renderers/BooleanContentRenderer.cs:43
 msgid "N"
-msgstr "N"
+msgstr ""
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ShowImageDialog.cs:31
 #: ../MonoDevelop.Database.Components/Widgets/DataGrid/Views/TextVisualizerView.cs:61
@@ -582,7 +571,7 @@ msgstr "本当にファイル '{0})' を上書きしますか?"
 
 #: ../MonoDevelop.Database.Components/Widgets/TableMappingWidget.cs:64
 msgid "Class Name"
-msgstr ""
+msgstr "クラス名"
 
 #: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:241
 #: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:316
@@ -590,36 +579,32 @@ msgid "No databases found!"
 msgstr "データベースが見つかりません!"
 
 #: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:337
-#, fuzzy
 msgid "Trying to connect to database ..."
-msgstr "データベース'{0}'に接続できません"
+msgstr "データベースに接続を試みています"
 
 #: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:372
 msgid "Test Succeeded."
-msgstr ""
+msgstr "テスト成功。"
 
 #: ../MonoDevelop.Database.Components/Widgets/ConnectionSettingsWidget.cs:374
 msgid "Test Failed: {0}."
-msgstr ""
+msgstr "テスト失敗:  {0}。"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:102
-#, fuzzy
 msgid "Test"
-msgstr "テキスト"
+msgstr "テスト"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:169
 msgid "Use custom connection string"
 msgstr "カスタム接続文字列を使用"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:182
-#, fuzzy
 msgid "Min Pool Size:"
-msgstr "最小プールサイズ"
+msgstr "最小プールサイズ:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:191
-#, fuzzy
 msgid "Max Pool Size:"
-msgstr "最大プールサイズ"
+msgstr "最大プールサイズ:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:248
 msgid "Advanced"
@@ -630,33 +615,28 @@ msgid "Save Password"
 msgstr "パスワードを保存"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:348
-#, fuzzy
 msgid "Name:"
-msgstr "名前"
+msgstr "名前:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:357
-#, fuzzy
 msgid "Password:"
-msgstr "パスワード"
+msgstr "パスワード:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:368
-#, fuzzy
 msgid "Port:"
-msgstr "ポート"
+msgstr "ポート:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:379
-#, fuzzy
 msgid "Server:"
-msgstr "サーバ"
+msgstr "サーバ:"
 
 #: ../MonoDevelop.Database.Components/gtk-gui/MonoDevelop.Database.Components.ConnectionSettingsWidget.cs:403
-#, fuzzy
 msgid "Username:"
-msgstr "ユーザ名"
+msgstr "ユーザ名:"
 
 #: ../MonoDevelop.Database.Components/Commands/AbstractDatabaseProviderList.cs:48
 msgid "No database providers detected."
-msgstr ""
+msgstr "データベースのプロバイダが見つかりませんでした。"
 
 #: ../MonoDevelop.Database.Designer/Widgets/TriggersEditorWidget.cs:97
 msgid "Event"
@@ -751,9 +731,8 @@ msgid "Preview SQL"
 msgstr "SQLプレビュー"
 
 #: ../MonoDevelop.Database.Designer/gtk-gui/MonoDevelop.Database.Designer.CreateDatabaseDialog.cs:53
-#, fuzzy
 msgid "Connection"
-msgstr "接続を追加"
+msgstr "接続"
 
 #: ../MonoDevelop.Database.Designer/Dialogs/ViewEditorDialog.cs:69
 #: ../MonoDevelop.Database.Designer/Dialogs/ProcedureEditorDialog.cs:71
@@ -820,13 +799,12 @@ msgstr "主キー制約 '{0}' は1つ以上の列に適用されなければな�
 
 #: ../MonoDevelop.Database.CodeGenerator/MonoDevelop.Database.CodeGenerator.addin.xml:28
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:41
-#, fuzzy
 msgid "Generate Data Classes"
-msgstr "データベースの作成"
+msgstr "データクラスの作成"
 
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:65
 msgid "Location:"
-msgstr ""
+msgstr "位置:"
 
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:85
 msgid "General"
@@ -834,11 +812,11 @@ msgstr "一般"
 
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:96
 msgid "Fields & Properties"
-msgstr ""
+msgstr "フィールドとプロパティ"
 
 #: ../MonoDevelop.Database.CodeGenerator/gtk-gui/MonoDevelop.Database.CodeGenerator.GenerateDataClassesDialog.cs:106
 msgid "Classes"
-msgstr ""
+msgstr "クラス"
 
 #~ msgid "Re_name"
 #~ msgstr "名前の変更 (_N)"

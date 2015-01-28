@@ -165,7 +165,7 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "quartz" {
+    engine "xamarin" {
     }
 }
 
@@ -417,3 +417,4 @@ binding "gtk-mac-expand-collapse-cursor-row"
   bind "Left"  { "expand-collapse-cursor-row" (0, 0, 0) }
   bind "Right" { "expand-collapse-cursor-row" (0, 1, 0) }
 }
+class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"

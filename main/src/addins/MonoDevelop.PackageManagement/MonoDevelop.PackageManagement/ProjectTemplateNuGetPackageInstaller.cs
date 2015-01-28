@@ -114,7 +114,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProject CreatePackageManagementProject (DotNetProject project)
 		{
 			var dotNetProject = new DotNetProjectProxy (project);
-			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateRepository (), dotNetProject);
+			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateWithPriorityMachineCacheRepository (), dotNetProject);
 		}
 	}
 }

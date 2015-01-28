@@ -769,6 +769,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			find = new FindReplace ();
 
 			string pattern = findPattern;
+			if (String.IsNullOrEmpty (pattern))
+				return;
 			if (!find.ValidatePattern (options, pattern)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Search pattern is invalid"));
 				return;

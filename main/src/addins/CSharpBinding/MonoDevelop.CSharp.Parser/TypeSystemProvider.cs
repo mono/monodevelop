@@ -425,8 +425,6 @@ namespace MonoDevelop.CSharp.Parser
 		internal static Version ConvertLanguageVersion (LangVersion ver)
 		{
 			switch (ver) {
-			case LangVersion.Default:
-				return new Version (5, 0, 0, 0);
 			case LangVersion.ISO_1:
 				return new Version (1, 0, 0, 0);
 			case LangVersion.ISO_2:
@@ -437,8 +435,12 @@ namespace MonoDevelop.CSharp.Parser
 				return new Version (4, 0, 0, 0);
 			case LangVersion.Version5:
 				return new Version (5, 0, 0, 0);
+			case LangVersion.Version6:
+				return new Version (6, 0, 0, 0);
+			case LangVersion.Default:
+				break;
 			}
-			return new Version (5, 0, 0, 0);;
+			return new Version (6, 0, 0, 0);;
 		}
 	}
 	

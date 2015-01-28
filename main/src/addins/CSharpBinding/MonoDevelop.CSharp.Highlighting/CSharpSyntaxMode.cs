@@ -133,6 +133,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			regionStart = new TextLocation (lineNumber, 1);
 			regionEnd = new TextLocation (lineNumber, lineLength);
 
+
 			Setup ();
 		}
 

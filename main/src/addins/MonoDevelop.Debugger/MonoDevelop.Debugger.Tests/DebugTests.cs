@@ -99,8 +99,21 @@ namespace MonoDevelop.Debugger.Tests
 			case "Mono.Debugger.Soft":
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
 					.OfType<MonoTargetRuntime> ()
-					.OrderByDescending (o => o.Version == "Unknown" ? null : o.Version)//Prefer known version over Unknown
-					.FirstOrDefault ();
+					.OrderByDescending ((o) => {
+					//Attempt to find latest version of Mono registred in IDE and use that for unit tests
+					if (string.IsNullOrWhiteSpace (o.Version) || o.Version == "Unknown")
+						return new Version (0, 0, 0, 0);
+					int indexOfBeforeDetails = o.Version.IndexOf (" (", StringComparison.Ordinal);
+					if (indexOfBeforeDetails == -1)
+						return new Version (0, 0, 0, 0);
+					string hopefullyVersion = o.Version.Remove (indexOfBeforeDetails);
+					Version version;
+					if (Version.TryParse (hopefullyVersion, out version)) {
+						return version;
+					} else {
+						return new Version (0, 0, 0, 0);
+					}
+				}).FirstOrDefault ();
 				break;
 			default:
 				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -145,6 +158,7 @@ namespace MonoDevelop.Debugger.Tests
 
 			Session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
+			ops.ProjectAssembliesOnly = true;
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			ops.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
@@ -301,7 +315,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepIn (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.StepLine ();
+			Session.StepInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 
@@ -313,7 +327,7 @@ namespace MonoDevelop.Debugger.Tests
 		public void StepOver (string guid, int offset = 0, string statement = null)
 		{
 			targetStoppedEvent.Reset ();
-			Session.NextLine ();
+			Session.NextInstruction ();
 			CheckPosition (guid, offset, statement);
 		}
 

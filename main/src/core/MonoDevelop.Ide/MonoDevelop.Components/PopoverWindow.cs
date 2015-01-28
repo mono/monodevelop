@@ -198,12 +198,15 @@ namespace MonoDevelop.Components
 			set;
 		}
 
-		public void RepositionWindow ()
+		public void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (parent == null)
 				return;
 
 			int x, y;
+			if (newCaret.HasValue) {//Update caret if parameter is given
+				currentCaret = newCaret.Value;
+			}
 			Gdk.Rectangle caret = currentCaret;
 			Gdk.Window window = targetWindow;
 			if (targetWindow == null)

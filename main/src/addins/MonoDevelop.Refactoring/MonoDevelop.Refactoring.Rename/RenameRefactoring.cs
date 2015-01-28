@@ -223,18 +223,13 @@ namespace MonoDevelop.Refactoring.Rename
 				
 				links.Add (link);
 				data.StartTextLinkMode (new TextLinkModeOptions (links));
+
 //				if (editor.CurrentMode is TextLinkEditMode)
 //					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
 //				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
 //				tle.SetCaretPosition = false;
 //				tle.SelectPrimaryLink = true;
 //				if (tle.ShouldStartTextLinkMode) {
-//					var helpWindow = new TableLayoutModeHelpWindow ();
-//					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
-//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
-//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
-//					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
-//					tle.HelpWindow = helpWindow;
 //					tle.Cancel += delegate {
 //						if (tle.HasChangedText)
 //							editor.Document.Undo ();

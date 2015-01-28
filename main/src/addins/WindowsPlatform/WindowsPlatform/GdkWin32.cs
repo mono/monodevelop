@@ -28,7 +28,6 @@
 //
 
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -184,9 +183,7 @@ namespace MonoDevelop.Platform
 
 		static IntPtr GetDialogHandle (CommonFileDialog dialog)
 		{
-			var f = typeof (CommonFileDialog).GetField ("nativeDialog", BindingFlags.NonPublic | BindingFlags.Instance);
-			var obj = f.GetValue (dialog);
-			var ow = (IOleWindow) obj;
+			var ow = (IOleWindow)dialog.nativeDialog;
 			IntPtr handle;
 			var hr = ow.GetWindow (out handle);
 			if (hr != 0)

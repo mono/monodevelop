@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Dialog
 	{
-		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-light-48.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 		protected TreeView StackTraceTreeView { get; private set; }
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
@@ -587,6 +587,7 @@ namespace MonoDevelop.Debugger
 			if (button == null) {
 				button = new ExceptionCaughtButton (ex, this, File, Line);
 				TextEditorService.RegisterExtension (button);
+				button.ScrollToView ();
 			}
 			if (miniButton != null) {
 				miniButton.Dispose ();
@@ -607,6 +608,7 @@ namespace MonoDevelop.Debugger
 			if (miniButton == null) {
 				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
 				TextEditorService.RegisterExtension (miniButton);
+				miniButton.ScrollToView ();
 			}
 		}
 
@@ -669,7 +671,7 @@ namespace MonoDevelop.Debugger
 
 		public override Widget CreateWidget ()
 		{
-			var icon = Xwt.Drawing.Image.FromResource ("lightning-light-16.png");
+			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
 
 			var box = new HBox (false, 6);
@@ -765,7 +767,7 @@ namespace MonoDevelop.Debugger
 		{
 			var box = new EventBox ();
 			box.VisibleWindow = false;
-			var icon = Xwt.Drawing.Image.FromResource ("lightning-light-16.png");
+			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			box.Add (new Xwt.ImageView (icon).ToGtkWidget ());
 			box.ButtonPressEvent += (o,e) => dlg.ShowButton ();
 			var eb = new PopoverWidget ();

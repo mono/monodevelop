@@ -184,7 +184,7 @@ namespace Templating {
             return this.GenerationEnvironment.ToString();
         }
         
-        protected virtual void Initialize() {
+        public virtual void Initialize() {
         }
     }
     
@@ -450,7 +450,7 @@ namespace Templating {
             return this.GenerationEnvironment.ToString();
         }
         
-        protected virtual void Initialize() {
+        public virtual void Initialize() {
         }
     }
     
@@ -624,7 +624,7 @@ namespace Templating {
             return this.GenerationEnvironment.ToString();
         }
         
-        protected override void Initialize() {
+        public override void Initialize() {
             if ((this.Host != null)) {
                 this.Host.SetFileExtension("".cs"");
                 this.Host.SetOutputEncoding(System.Text.Encoding.GetEncoding(65001, true));

@@ -257,12 +257,12 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			var m = methodInfo.GetCustomAttributes (true);
 			if (Options.ProjectAssembliesOnly) {
-				return methodInfo.GetCustomAttributes (true).Any (v => 
+				return methodInfo.GetCustomAttributes (true).Union (methodInfo.DeclaringType.GetCustomAttributes (true)).Any (v =>
 					v is System.Diagnostics.DebuggerHiddenAttribute ||
 					v is System.Diagnostics.DebuggerStepThroughAttribute ||
 					v is System.Diagnostics.DebuggerNonUserCodeAttribute);
 			} else {
-				return methodInfo.GetCustomAttributes (true).Any (v => 
+				return methodInfo.GetCustomAttributes (true).Union (methodInfo.DeclaringType.GetCustomAttributes (true)).Any (v =>
 					v is System.Diagnostics.DebuggerHiddenAttribute ||
 					v is System.Diagnostics.DebuggerStepThroughAttribute);
 			}
@@ -886,6 +886,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnNextInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (false);
+			});
 		}
 
 		protected override void OnNextLine ( )
@@ -1002,6 +1005,9 @@ namespace MonoDevelop.Debugger.Win32
 
 		protected override void OnStepInstruction ( )
 		{
+			MtaThread.Run (delegate {
+				Step (true);
+			});
 		}
 
 		protected override void OnStepLine ( )

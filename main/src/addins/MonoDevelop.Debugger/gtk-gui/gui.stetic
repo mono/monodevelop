@@ -652,16 +652,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.ComboBox" id="comboVisualizers">
-                    <property name="MemberName" />
-                    <property name="IsTextCombo">True</property>
-                    <property name="Items" translatable="yes" />
-                    <signal name="Changed" handler="OnComboVisualizersChanged" />
-                  </widget>
-                  <packing>
-                    <property name="Position">1</property>
-                    <property name="AutoSize">False</property>
-                  </packing>
+                  <placeholder />
                 </child>
               </widget>
               <packing>

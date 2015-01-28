@@ -304,11 +304,19 @@
 			<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
 			<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
 			<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{FEACFBD2-3405-455C-9665-78FE426C6842}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{EE2C853D-36AF-4FDB-B1AD-8E90477E2198}" name = "Xamarin.iOS" platforms="mac" product = "Xamarin.iOS" />
+			<ProjectType guid = "{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1}" name = "Xamarin.Mac" platforms="mac" product = "Xamarin.Mac" />
 		</Condition>
 		<Condition id="Platform" value="windows">
 			<ProjectType guid = "{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
 			<ProjectType guid = "{6BC8ED88-2882-458C-8E55-DFD12B67127B}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
-			<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS"  _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
+			<ProjectType guid = "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
+			<ProjectType guid = "{FEACFBD2-3405-455C-9665-78FE426C6842}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
+			<ProjectType guid = "{8FFB629D-F513-41CE-95D2-7ECE97B6EEEC}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
+			<ProjectType guid = "{EE2C853D-36AF-4FDB-B1AD-8E90477E2198}" name = "Xamarin.iOS" _instructions = "Xamarin.iOS projects are not supported in MonoDevelop on Windows. You need to use Visual Studio, or Xamarin Studio on Mac." />
+			<ProjectType guid = "{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1}" name = "Xamarin.Mac" _instructions = "Xamarin.Mac projects are not supported in MonoDevelop on Windows. You need to use Xamarin Studio on Mac." />
 		</Condition>
 		<ProjectType guid = "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />
 		<ProjectType guid = "{10368E6C-D01B-4462-8E8B-01FC667A7035}" name = "Xamarin.Android" platforms="win;mac" product = "Xamarin.Android" />

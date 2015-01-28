@@ -469,9 +469,9 @@ namespace MonoDevelop.Ide.Tasks
 			Task task = SelectedTask;
 			if (task != null) {
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = task.ToString ();
+				clipboard.Text = task.Description;
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = task.ToString ();
+				clipboard.Text = task.Description;
 			}
 		}
 

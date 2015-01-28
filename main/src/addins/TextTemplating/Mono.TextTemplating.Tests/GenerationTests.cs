@@ -38,6 +38,15 @@ namespace Mono.TextTemplating.Tests
 	public class GenerationTests
 	{	
 		[Test]
+		public void TemplateGeneratorTest ()
+		{
+			var gen = new TemplateGenerator ();
+			string tmp = null;
+			gen.ProcessTemplate (null, "<#@ template language=\"C#\" #>", ref tmp, out tmp);
+			Assert.AreEqual (0, gen.Errors.Count, "ProcessTemplate");
+		}
+
+		[Test]
 		public void Generate ()
 		{
 			string Input = ParsingTests.ParseSample1;
@@ -59,6 +68,17 @@ namespace Mono.TextTemplating.Tests
 			string WinInput = ParsingTests.ParseSample1.Replace ("\n", "\r\n");
 			string WinOutput = OutputSample1.Replace ("\\n", "\\r\\n").Replace ("\n", "\r\n");
 			Generate (WinInput, WinOutput, "\r\n");
+		}
+
+		[Test]
+		public void DefaultLanguage ()
+		{
+			DummyHost host = new DummyHost ();
+			string template = @"<#= DateTime.Now #>";
+			ParsedTemplate pt = ParsedTemplate.FromText (template, host);
+			Assert.AreEqual (0, host.Errors.Count);
+			TemplateSettings settings = TemplatingEngine.GetSettings (host, pt);
+			Assert.AreEqual (settings.Language, "C#");
 		}
 		
 		//NOTE: we set the newline property on the code generator so that the whole files has matching newlines,
@@ -163,7 +183,7 @@ foo
             return this.GenerationEnvironment.ToString();
         }
         
-        protected override void Initialize() {
+        public override void Initialize() {
             base.Initialize();
         }
     }

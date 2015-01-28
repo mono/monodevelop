@@ -46,15 +46,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public override bool IsVisible ()
 		{
-			return IsMaintenanceMode;
-		}
-		
-		static bool IsMaintenanceMode {
-			get {
-				return IdeApp.Preferences.EnableInstrumentation ||
-					IdeApp.Preferences.EnableAutomatedTesting ||
-					!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_MAINTENANCE"));
-			}
+			return true;
 		}
 	}
 	

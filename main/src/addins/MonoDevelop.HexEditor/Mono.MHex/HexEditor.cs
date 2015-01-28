@@ -588,6 +588,13 @@ namespace Mono.MHex
 					break;
 				}
 			}
+			if (Options.StringRepresentationType == StringRepresentationTypes.UTF16 && BytesInRow % 2 == 1) {
+				if (BytesInRow == 1) {
+					BytesInRow = 2;
+				} else {
+					BytesInRow--;
+				}
+			}
 			if (oldBytes != BytesInRow) {
 				margins.ForEach (margin => margin.PurgeLayoutCache ());
 			}

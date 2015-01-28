@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -36,12 +37,12 @@ namespace MonoDevelop.TextTemplating
 		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			return new ThreadAsyncOperation (delegate {
-				using (var host = new ProjectFileTemplatingHost (file)) {
+				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
 					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
 					
 					string ns = CustomToolService.GetFileNamespace (file, defaultOutputName);
-					TextTemplatingFilePreprocessor.LogicalSetData ("NamespaceHint", ns, result.Errors);
+					LogicalSetData ("NamespaceHint", ns);
 					
 					host.ProcessTemplate (file.FilePath, defaultOutputName);
 					result.GeneratedFilePath = host.OutputFile;
@@ -51,6 +52,22 @@ namespace MonoDevelop.TextTemplating
 						monitor.Log.WriteLine (err);
 				}
 			}, result);
+		}
+
+		static bool warningLogged;
+
+		internal static void LogicalSetData (string name, object value)
+		{
+			if (warningLogged)
+				return;
+
+			//FIXME: CallContext.LogicalSetData not implemented in Mono
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
+			} catch (NotImplementedException) {
+				LoggingService.LogWarning ("T4: CallContext.LogicalSetData not implemented in this Mono version");
+				warningLogged = true;
+			}
 		}
 	}
 }

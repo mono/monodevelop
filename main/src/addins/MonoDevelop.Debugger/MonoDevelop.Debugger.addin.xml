@@ -15,6 +15,19 @@
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/Debugging/DebugValueConverters">
+		<Description>Debug value converters. Specified classes must extend MonoDevelop.Debugger.DebugValueConverter&lt;T&gt;</Description>
+		<ExtensionNode name="Type"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/Debugging/InlineVisualizers">
+		<Description>Inline visualizers. Specified classes must extend MonoDevelop.Debugger.InlineVisualizer</Description>
+		<ExtensionNode name="Type"/>
+	</ExtensionPoint>
+	<ExtensionPoint path="/MonoDevelop/Debugging/PreviewVisualizers">
+		<Description>Preview visualizers. Specified classes must extend MonoDevelop.Debugger.PreviewVisualizer</Description>
+		<ExtensionNode name="Type" />
+	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
@@ -217,22 +230,22 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-light-22.png" size = "SmallToolbar"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-light-24.png" size = "LargeToolbar"/>
-		<StockIcon stockid = "md-continue-debug" resource = "continue-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-pause-debug" resource = "pause-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-into-debug" resource = "step-in-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-out-debug" resource = "step-out-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-over-debug" resource = "step-over-light-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-watch" resource = "pad-watch-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-prefs-debugger" resource = "prefs-debugger-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-stack-pointer" resource = "stack-pointer-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/>
+		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-24.png" size = "LargeToolbar"/>
+		<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
+		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-watch" resource = "pad-watch-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-16.png" size="Menu" />
+		<StockIcon stockid = "md-prefs-debugger" resource = "prefs-debugger-16.png" size="Menu" />
+		<StockIcon stockid = "md-stack-pointer" resource = "stack-pointer-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CommandBar">

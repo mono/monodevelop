@@ -21,9 +21,9 @@ namespace MonoDevelop.Components
 		static TabLabel ()
 		{
 			try {
-				closeImage = Xwt.Drawing.Image.FromResource ("popup-close-light-16.png");
+				closeImage = Xwt.Drawing.Image.FromResource ("popup-close-16.png");
 			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: popup-close-light-16.png", e);
+				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: popup-close-16.png", e);
 			}
 		}
 

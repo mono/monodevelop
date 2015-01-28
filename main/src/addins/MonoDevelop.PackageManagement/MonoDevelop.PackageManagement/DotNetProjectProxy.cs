@@ -117,6 +117,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			DotNetProject.RefreshProjectBuilder ();
 		}
+
+		public void DisposeProjectBuilder ()
+		{
+			DotNetProject.DisposeProjectBuilder ();
+		}
 	}
 }
 

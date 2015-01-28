@@ -1158,7 +1158,7 @@ namespace MonoDevelop.SourceEditor
 //			if (w.Value != null)
 //				wi.Marker.AddValue (w.Value);
 
-			widget.TextEditor.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
+			widget.TextEditor.TextArea.AddTopLevelWidget (wi.Widget, w.OffsetX, w.OffsetY);
 			
 //			widget.TextEditor.QueueDraw ();
 		}

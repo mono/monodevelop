@@ -50,6 +50,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using Mono.CSharp.Nullable;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -198,13 +199,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/OutputTracking", delegate (object sender, ExtensionNodeEventArgs args) {
-				var projectType = ((TypeSystemOutputTrackingNode)args.ExtensionNode).ProjectType;
+				var node = (TypeSystemOutputTrackingNode)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					outputTrackedProjects.Add (projectType);
+					outputTrackedProjects.Add (node);
 					break;
 				case ExtensionChange.Remove:
-					outputTrackedProjects.Remove (projectType);
+					outputTrackedProjects.Remove (node);
 					break;
 				}
 			});
@@ -261,13 +262,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static readonly List<string> outputTrackedProjects = new List<string> ();
+		static readonly List<TypeSystemOutputTrackingNode> outputTrackedProjects = new List<TypeSystemOutputTrackingNode> ();
+
+		static bool IsOutputTracked (DotNetProject project)
+		{
+			foreach (var projectType in project.GetProjectTypes ()) {
+				if (outputTrackedProjects.Any (otp => otp.ProjectType != null && string.Equals (otp.ProjectType, projectType, StringComparison.OrdinalIgnoreCase))) {
+					return true;
+				}
+			}
+			return outputTrackedProjects.Any (otp => otp.LanguageName != null && string.Equals (otp.LanguageName, project.LanguageName, StringComparison.OrdinalIgnoreCase));
+		}
 
 		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
+			if (IsOutputTracked (project)) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 
 				var wrapper = GetProjectContentWrapper (project);
