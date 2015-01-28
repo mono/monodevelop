@@ -193,6 +193,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			return data.GetDocumentId (name);
 		}
 
+		public override bool CanApplyChange (ApplyChangesKind feature)
+		{
+			return true;
+		}
+
 		ProjectInfo LoadProject (MonoDevelop.Projects.Project p)
 		{
 			if (!projectIdMap.ContainsKey (p)) {

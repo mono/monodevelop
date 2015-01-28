@@ -81,7 +81,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		static Timer timer;
-		static MetadataReferenceCache()
+
+		static MetadataReferenceCache ()
 		{
 			timer = new Timer ((o) => CheckForChanges (), null, 10000, 10000);
 		}
@@ -124,20 +125,28 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 					}
 					CreateNewReference ();
-					foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
-						var workspace = TypeSystemService.GetWorkspace (solution);
-						foreach (var projId in InUseBy) {
-							while (!workspace.TryApplyChanges (workspace.CurrentSolution.GetProject (projId).AddMetadataReference (Reference).Solution)) {
+					if (Reference != null) {
+						foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
+							var workspace = TypeSystemService.GetWorkspace (solution);
+							foreach (var projId in InUseBy) {
+								while (!workspace.TryApplyChanges (workspace.CurrentSolution.GetProject (projId).AddMetadataReference (Reference).Solution)) {
+								}
 							}
 						}
 					}
 				}
 			}
 
+			readonly static DateTime NonExistentFile = new DateTime (1601, 1, 1);
+
 			void CreateNewReference ()
 			{
 				timeStamp = File.GetLastWriteTimeUtc (path);
-				Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);
+				if (timeStamp == NonExistentFile) {
+					Reference = null;
+				} else {
+					Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);
+				}
 			}
 		}
 	}
