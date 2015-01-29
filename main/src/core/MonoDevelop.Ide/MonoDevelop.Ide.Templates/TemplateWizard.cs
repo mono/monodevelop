@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Templates
 
 		List<string> supportedParameters;
 
-		public void UpdateSupportedParameters (string parameters)
+		internal void UpdateSupportedParameters (string parameters)
 		{
 			if (String.IsNullOrEmpty (parameters)) {
 				supportedParameters = null;
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Templates
 			return supportedParameters.Contains (name);
 		}
 
-		public void UpdateDefaultParameters (string parameters)
+		internal void UpdateDefaultParameters (string parameters)
 		{
 			if (String.IsNullOrEmpty (parameters)) {
 				return;

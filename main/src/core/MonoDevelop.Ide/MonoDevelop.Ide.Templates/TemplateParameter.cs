@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateParameter
+	class TemplateParameter
 	{
 		public TemplateParameter (string parameter)
 		{
