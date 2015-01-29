@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Custom Keyboard Extension</_Name>
-		<Category>ios/app/extensions</Category>
+		<Category>ios/extension/general</Category>
 		<Icon>md-project-iphone</Icon>
 		<Image id="md-ios-custom-keyboard-extension" />
 		<LanguageName>F#</LanguageName>
