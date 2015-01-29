@@ -25,7 +25,7 @@ open FSharp.CompilerBinding
 module CompilerArguments = 
 
   /// Wraps the given string between double quotes
-  let wrapFile (s:string) = if s.StartsWith "\"" then s else "\"" + s + "\""  
+  let wrapFile (s:string) = if s.StartsWith "\"" then s else "\"" + s + "\"" 
   
   // Translate the target framework to an enum used by FSharp.CompilerBinding
   let getTargetFramework (targetFramework:TargetFrameworkMoniker) = 
@@ -295,17 +295,19 @@ module CompilerArguments =
         generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 
   let getDefineSymbols (fileName:string) (project: MonoDevelop.Projects.Project option) =
-    [ let workspace = IdeApp.Workspace
-      if workspace = null then
-          if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
-              yield "INTERACTIVE"
-          else
-              yield "COMPILED"
-      match project with
-      | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
-                  | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
-                      for s in configuration.GetDefineSymbols() do
-                          yield s
-                  | _ -> ()
-      | None -> ()]
+    [
+        if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
+            yield "INTERACTIVE"
+        else
+            yield "COMPILED"
+
+        let workspace = IdeApp.Workspace
+        if workspace <> null then
+            match project with
+            | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
+                        | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
+                            yield! configuration.GetDefineSymbols()
+                        | _ -> ()
+            | None -> ()
+        else () ]
 
