@@ -235,15 +235,23 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
+		static DocumentId GetDocumentId (ProjectData id, MonoDevelop.Projects.ProjectFile f)
+		{
+			return id.GetOrCreateDocumentId (f.Name);
+		}
+
 		static DocumentInfo CreateDocumentInfo (ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
-			return DocumentInfo.Create (id.GetOrCreateDocumentId (f.Name), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, System.Text.Encoding.Default, false);
+			return DocumentInfo.Create (GetDocumentId (id, f), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, System.Text.Encoding.Default, false);
 		}
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
 		{
+			var duplicates = new HashSet<DocumentId> ();
 			foreach (var f in p.Files) {
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
+					if (!duplicates.Add (GetDocumentId (id, f)))
+						continue;
 					yield return CreateDocumentInfo (id, f);
 					continue;
 				}
@@ -251,6 +259,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateCodeBehind (mimeType, f.BuildAction, p.SupportedLanguages))
 					continue;
+				if (!duplicates.Add (GetDocumentId (id, f)))
+					continue;
+
 				var textAndVersion = node.Parser.GenerateTextAndVersion (mimeType, f.BuildAction, p.SupportedLanguages, f.FilePath);
 
 				yield return DocumentInfo.Create (
