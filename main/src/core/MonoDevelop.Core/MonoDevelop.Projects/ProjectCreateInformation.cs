@@ -87,7 +87,7 @@ namespace MonoDevelop.Projects
 			if (string.IsNullOrEmpty (createCondition))
 				return true;
 
-			return Parameters.GetBoolean (createCondition, true);
+			return Parameters.GetBoolean (createCondition);
 		}
 	}
 }
