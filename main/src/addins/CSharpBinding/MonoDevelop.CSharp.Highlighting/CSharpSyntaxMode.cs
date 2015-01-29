@@ -172,7 +172,6 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			parameterModifierColor = ColorScheme.KeywordParameterKey;
 			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
-			syntaxErrorColor = ColorScheme.SyntaxErrorKey;
 
 			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
 		}
