@@ -639,7 +639,7 @@ namespace MonoDevelop.Debugger
 				if (ex is DebuggerException)
 					MessageService.ShowError (ex.Message);
 				else
-					MessageService.ShowError (string.Format ("Debugger operation failed: {0}", ex.Message), ex);
+					MessageService.ShowError ("Debugger operation failed", ex);
 			});
 			return true;
 		}
