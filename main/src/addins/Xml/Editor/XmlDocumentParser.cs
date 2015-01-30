@@ -37,13 +37,13 @@ namespace MonoDevelop.Xml.Editor
 {
 	class XmlDocumentParser : TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			var doc = new XmlParsedDocument (fileName);
+			var doc = new XmlParsedDocument (parseOptions.FileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			try {
 				var xmlParser = new XmlParser (new XmlRootState (), true);
-				xmlParser.Parse (content.CreateReader ());
+				xmlParser.Parse (parseOptions.Content.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				// TODO error conversion!
 				//doc.Add (xmlParser.Errors);

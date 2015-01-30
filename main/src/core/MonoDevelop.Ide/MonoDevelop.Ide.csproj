@@ -2157,7 +2157,9 @@
     <Compile Include="MonoDevelop.Ide.ExternalTools\ExternalToolPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\MonoDevelopStatusBar.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DocumentSwitcher.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DocumentSwitcher.cs">
+      <DependentUpon>GuiSyncContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\IDEStyleOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IZoomable.cs" />
@@ -2909,6 +2911,9 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MetadataReferenceCache.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\IFoldingParser.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService_WorkspaceHandling.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedSegment.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Projection\Projection.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedSemanticHighlighting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2955,6 +2960,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.Util\" />
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
     <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

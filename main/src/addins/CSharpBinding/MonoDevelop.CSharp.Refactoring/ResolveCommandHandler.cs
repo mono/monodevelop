@@ -533,7 +533,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			GetTypeParameterCount (node, out identifier);
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
-			compilations.Add (Tuple.Create (doc.GetCompilationAsync (cancellationToken).Result, (MonoDevelop.Projects.ProjectReference)null));
+			compilations.Add (Tuple.Create (semanticModel.Compilation, (MonoDevelop.Projects.ProjectReference)null));
 			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
 			var solution = netProject != null ? netProject.ParentSolution : null;
 			if (solution != null) {

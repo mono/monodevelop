@@ -236,8 +236,10 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
-			if (document != null)
+			if (document != null) {
 				Document.MimeType = document.MimeType;
+				Document.FileName = document.FileName;
+			}
 			FileRegistry.Add (this);
 		}
 

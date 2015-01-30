@@ -127,10 +127,12 @@ namespace MonoDevelop.Refactoring
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
+				return;
+			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
+			if (semanticModel == null)
 				return;
 			var info = GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
-
 			bool added = false;
 
 			var ciset = new CommandInfoSet ();
@@ -228,8 +230,8 @@ namespace MonoDevelop.Refactoring
 				var sym = info.Symbol ?? info.DeclaredSymbol;
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (sym)));
 				if (doc.HasProject) {
-					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, doc.GetCompilationAsync ().Result).Count () > 1)
-						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, doc.GetCompilationAsync ())));
+					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, semanticModel.Compilation)));
 				}
 				added = true;
 			}

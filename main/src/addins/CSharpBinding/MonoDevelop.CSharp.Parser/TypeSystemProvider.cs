@@ -44,8 +44,10 @@ namespace MonoDevelop.CSharp.Parser
 	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
 		static readonly List<Error> emptyList = new List<Error> ();
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
+			var fileName = parseOptions.FileName;
+			var project = parseOptions.Project;
 			var result = new CSharpParsedDocument (fileName);
 
 			if (project != null) {
@@ -72,7 +74,7 @@ namespace MonoDevelop.CSharp.Parser
 //				}
 //			};
 			
-			CSharpParseOptions options = GetCompilerArguments (project);
+			var options = GetCompilerArguments (project);
 			SyntaxTree unit = null;
 
 			if (project != null) {
@@ -90,7 +92,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 
 			if (unit == null) {
-				unit = CSharpSyntaxTree.ParseText (SourceText.From (content.Text), options, fileName);
+				unit = CSharpSyntaxTree.ParseText (SourceText.From (parseOptions.Content.Text), options, fileName);
 			} 
 
 			result.Unit = unit;

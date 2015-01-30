@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsParser : TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource tr, Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
 			var info = new WebFormsPageInfo ();
 			var errors = new List<Error> ();
@@ -55,9 +55,9 @@ namespace MonoDevelop.AspNet.WebForms
 			);
 			
 			try {
-				parser.Parse (tr.CreateReader ());
+				parser.Parse (parseOptions.Content.CreateReader ());
 			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
+				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (parseOptions.FileName ?? "") + "'", ex);
 				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
 
@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.WebForms
 			XDocument xDoc = parser.Nodes.GetRoot ();
 			info.Populate (xDoc, errors);
 			
-			var type = AspNetAppProject.DetermineWebSubtype (fileName);
+			var type = AspNetAppProject.DetermineWebSubtype (parseOptions.FileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
 					errors.Add (new Error (ErrorType.Error, "File directive is missing", new DocumentLocation (1, 1)));
@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 			}
 			
-			var result = new WebFormsParsedDocument (fileName, type, info, xDoc);
+			var result = new WebFormsParsedDocument (parseOptions.FileName, type, info, xDoc);
 			result.AddRange (errors);
 			
 			return System.Threading.Tasks.Task.FromResult((ParsedDocument)result);

@@ -71,7 +71,7 @@ namespace MonoDevelop.Components.MainToolbar
 					if (doc.Project == null && doc.IsFile) {
 						var info = doc.ParsedDocument;
 						if (info != null) {
-							var ctx = doc.GetCompilationAsync (token).Result;
+							var ctx = info.GetAst<SemanticModel> ().Compilation;
 							result.AddRange (ctx.GetAllTypes ());
 						}
 					}

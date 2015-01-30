@@ -34,6 +34,17 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	public sealed class ParseOptions
+	{
+		public string FileName { get; set; } 
+
+		public ITextSource Content { get; set; }
+
+		public MonoDevelop.Projects.Project Project { get; set; }
+
+		public Document RoslynDocument { get; set; }
+	}
+
 	/// <summary>
 	/// A type system parser provides a ParsedDocument (which just adds some more information to a IUnresolvedFile) for
 	/// a given file. This is required for adding information to the type system service to make the file contents available
@@ -56,26 +67,26 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <param name='project'>
 		/// The project the file belongs to.
 		/// </param>
-		public abstract Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken));
 
-		/// <summary>
-		/// Parse the specified file. The file content should be read by the type system parser.
-		/// </summary>
-		/// <param name='storeAst'>
-		/// If set to <c>true</c> the ast should be stored in the parsed document.
-		/// </param>
-		/// <param name='fileName'>
-		/// The name of the file.
-		/// </param>
-		/// <param name='project'>
-		/// The project the file belongs to.
-		/// </param>
-		public virtual Task<ParsedDocument> Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var src = StringTextSource.ReadFrom (fileName);
-			return Parse (storeAst, fileName, src, project, cancellationToken);
-		}
-
+//		/// <summary>
+//		/// Parse the specified file. The file content should be read by the type system parser.
+//		/// </summary>
+//		/// <param name='storeAst'>
+//		/// If set to <c>true</c> the ast should be stored in the parsed document.
+//		/// </param>
+//		/// <param name='fileName'>
+//		/// The name of the file.
+//		/// </param>
+//		/// <param name='project'>
+//		/// The project the file belongs to.
+//		/// </param>
+//		public virtual Task<ParsedDocument> Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken))
+//		{
+//			var src = StringTextSource.ReadFrom (fileName);
+//			return Parse (storeAst, fileName, src, project, cancellationToken);
+//		}
+//
 		public virtual bool CanGenerateCodeBehind (string mimeType, string buildAction, string[] supportedLanguages)
 		{
 			return false;

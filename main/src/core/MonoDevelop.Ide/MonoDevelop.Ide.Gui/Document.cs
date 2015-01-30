@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public override Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
+		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var project = TypeSystemService.GetProject (Project); 
 			if (project == null)

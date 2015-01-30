@@ -52,15 +52,15 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region AbstractParser overrides
 
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource textReader, Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			ParsedDocument doc = new DefaultParsedDocument (fileName);
+			ParsedDocument doc = new DefaultParsedDocument (parseOptions.FileName);
 			
 			DefaultUnresolvedTypeDefinition currentFile = null;
 			DefaultUnresolvedProperty currentRegion = null;
 			
 			string eol = Environment.NewLine;
-			string content = textReader.Text;
+			string content = parseOptions.Content.Text;
 			Match eolMatch = eolExpression.Match (content);
 			if (eolMatch != null && eolMatch.Success)
 				eol = eolMatch.Groups ["eol"].Value;

@@ -323,6 +323,7 @@
     <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
+    <Compile Include="WebForms\CSharp\CSharpProjector.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -548,6 +549,7 @@
     <Folder Include="Commands\" />
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
+    <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <PropertyGroup>

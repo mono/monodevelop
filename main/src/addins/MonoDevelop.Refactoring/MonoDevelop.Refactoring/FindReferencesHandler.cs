@@ -84,13 +84,13 @@ namespace MonoDevelop.Refactoring
 
 	public class FindAllReferencesHandler : CommandHandler
 	{
-		public static void FindRefs (ISymbol obj, Task<Compilation> compilation)
+		public static void FindRefs (ISymbol obj, Compilation compilation)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var solution = TypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation.Result)) {
+					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation)) {
 						foreach (var loc in simSym.Locations) {
 							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 							monitor.ReportResult (sr);
@@ -123,8 +123,9 @@ namespace MonoDevelop.Refactoring
 			
 			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
+			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (sym != null)
-				FindRefs (sym, doc.GetCompilationAsync ());
+				FindRefs (sym, semanticModel.Compilation);
 		}
 	}
 }

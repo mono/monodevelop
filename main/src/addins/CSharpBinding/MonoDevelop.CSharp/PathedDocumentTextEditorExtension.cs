@@ -72,6 +72,11 @@ namespace MonoDevelop.CSharp
 
 		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 
+		public override bool IsValidInContext (DocumentContext context)
+		{
+			return context.GetContent<CSharpCompletionTextEditorExtension> () != null;
+		}
+
 		protected override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };

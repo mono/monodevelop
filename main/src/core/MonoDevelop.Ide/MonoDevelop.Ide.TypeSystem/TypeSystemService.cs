@@ -184,38 +184,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, content, project, cancellationToken);
-//				lock (projectWrapperUpdateLock) {
-//					ProjectContentWrapper wrapper;
-//					if (project != null) {
-//						projectContents.TryGetValue (project, out wrapper);
-//					} else {
-//						wrapper = null;
-//					}
-//					if (wrapper != null && (result.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-//						var oldFile = wrapper._content.GetFile (fileName);
-//						//wrapper.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-//						UpdateProjectCommentTasks (wrapper, result);
-//						// wrapper.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
-//					}
-//
-//					// The parsed file could be included in other projects as well, therefore
-//					// they need to be updated.
-//					foreach (var cnt in projectContents.ToArray ()) {
-//						if (cnt.Key == project)
-//							continue;
-//						// Use the project context because file lookup is faster there than in the project class.
-//						var pcnt = cnt.Value;
-//						var file = pcnt._content.GetFile (fileName);
-//						if (file != null) {
-//							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
-//							if ((newResult.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
-//								// pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
-//								// pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
-//							}
-//						}
-//					}
-//				}
+				var result = parser.Parse (new ParseOptions { FileName = fileName, Project = project, Content = content }, cancellationToken);
 				return result;
 			} catch (OperationCanceledException) {
 				return Task.FromResult ((ParsedDocument)null);

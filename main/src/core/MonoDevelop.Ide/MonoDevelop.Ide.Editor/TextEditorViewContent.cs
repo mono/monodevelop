@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
 				if (normalParser != null) {
-					parsedDocument = normalParser.Parse (true, textEditor.FileName, new StringTextSource (text), null).Result;
+					parsedDocument = normalParser.Parse (new MonoDevelop.Ide.TypeSystem.ParseOptions { FileName = textEditor.FileName, Content = new StringTextSource (text) }).Result;
 				}
 			}
 			if (parsedDocument != null) {

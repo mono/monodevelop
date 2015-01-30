@@ -135,8 +135,6 @@ namespace MonoDevelop.Ide.Editor
 		/// The next call to ParsedDocument will give always the current parsed document but may block the UI thread.
 		/// </summary>
 		public abstract void ReparseDocument ();
-		
-		public abstract Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		public abstract OptionSet GetOptionSet ();
 

@@ -49,6 +49,7 @@ using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -61,12 +62,13 @@ namespace MonoDevelop.AspNet.WebForms
 		WebFormsTypeContext refman = new WebFormsTypeContext ();
 
 		ILanguageCompletionBuilder documentBuilder;
-		LocalDocumentInfo localDocumentInfo;
+		Projection localDocumentProjection;
 		DocumentInfo documentInfo;
 
 		ICompletionWidget defaultCompletionWidget;
 		DocumentContext defaultDocumentContext;
 		TextEditor defaultEditor;
+		TextEditor projectedEditor;
 		
 		bool HasDoc { get { return aspDoc != null; } }
 
@@ -97,13 +99,13 @@ namespace MonoDevelop.AspNet.WebForms
 				project = newProj;
 				refman.Project = newProj;
 			}
-			
-			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
-			
-			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (refman.Compilation, aspDoc, refman.GetUsings ());
-				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
-				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
+
+			if (HasDoc) {
+				documentInfo = new DocumentInfo (aspDoc, refman.GetUsings ());
+				localDocumentProjection = new MonoDevelop.AspNet.WebForms.CSharp.CSharpProjector ().CreateProjection (documentInfo, Editor, true).Result;
+				projectedEditor = localDocumentProjection.CreateProjectedEditor (DocumentContext);
+				Console.WriteLine (projectedEditor.FileName);
+				Editor.SemanticHighlighting = new ProjectedSemanticHighlighting (Editor, DocumentContext, new [] { localDocumentProjection  });
 			}
 		}
 		
@@ -217,34 +219,33 @@ namespace MonoDevelop.AspNet.WebForms
 			string textAfterCaret = Editor.GetTextBetween (caretOffset, Math.Min (Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
 			if (documentBuilder == null){
-				localDocumentInfo = null;
+				localDocumentProjection = null;
 				return;
 			}
-			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, Editor, sourceText, textAfterCaret, true);
-			
-			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
-			viewContent.Project = DocumentContext.Project;
-			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
-			
-			viewContent.Text = localDocumentInfo.LocalDocument;
-			viewContent.Editor.CaretOffset = localDocumentInfo.CaretPosition;
 
-			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
-			workbenchWindow.ViewContent = viewContent;
-			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
-				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument
-			};
+//			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
+//			viewContent.Project = DocumentContext.Project;
+//			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
+//			
+//			viewContent.Text = localDocumentInfo.LocalDocument;
+//			viewContent.Editor.CaretOffset = localDocumentInfo.CaretPosition;
+//
+//			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
+//			workbenchWindow.ViewContent = viewContent;
+//			localDocumentInfo.HiddenDocument = new HiddenDocument (workbenchWindow) {
+//				HiddenParsedDocument = localDocumentInfo.ParsedLocalDocument
+//			};
 		}
 		
 		
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
-			//completion for ASP.NET expressions
+/*			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is WebFormsExpressionState) {
 				InitializeCodeCompletion ('\0');
 				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, documentInfo, localDocumentInfo);
-			}
+			}*/
 			return base.CodeCompletionCommand (completionContext);
 		}
 
@@ -306,9 +307,9 @@ namespace MonoDevelop.AspNet.WebForms
 			if (documentBuilder == null || !isAspExprState)
 				return base.KeyPress (descriptor);
 			InitializeCodeCompletion ('\0');
-			DocumentContext = localDocumentInfo.HiddenDocument;
-			Editor = localDocumentInfo.HiddenDocument.Editor;
-			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
+//			DocumentContext = localDocumentInfo.HiddenDocument;
+//			Editor = localDocumentInfo.HiddenDocument.Editor;
+//			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
 				result = base.KeyPress (descriptor);

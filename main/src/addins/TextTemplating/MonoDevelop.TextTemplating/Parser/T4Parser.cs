@@ -37,10 +37,11 @@ namespace MonoDevelop.TextTemplating.Parser
 {
 	public class T4Parser : TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
+			var fileName = parseOptions.FileName;
 			ParsedTemplate template = new ParsedTemplate (fileName);
-			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (content, fileName);
+			var readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName);
 
 			try {
 				var tk = new Tokeniser (fileName, readOnlyDoc.Text);

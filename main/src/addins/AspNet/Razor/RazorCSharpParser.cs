@@ -81,21 +81,21 @@ namespace MonoDevelop.AspNet.Razor
 			};
 		}
 
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource content, MonoDevelop.Projects.Project project, CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, CancellationToken cancellationToken)
 		{
-			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
+			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == parseOptions.FileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
 			this.project = project as DotNetProject;
-			if (currentDocument == null && !TryAddDocument (fileName))
-				return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ()));
+			if (currentDocument == null && !TryAddDocument (parseOptions.FileName))
+				return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (parseOptions.FileName, new RazorCSharpPageInfo ()));
 
 			this.aspProject = project as AspNetAppProject;
 
-			EnsureParserInitializedFor (fileName);
+			EnsureParserInitializedFor (parseOptions.FileName);
 
 			var errors = new List<Error> ();
 
-			using (var source = new SeekableTextReader (content.CreateReader ())) {
+			using (var source = new SeekableTextReader (parseOptions.Content.CreateReader ())) {
 				var textChange = CreateTextChange (source);
 				var parseResult = editorParser.CheckForStructureChanges (textChange);
 				if (parseResult == PartialParseResult.Rejected) {
@@ -130,7 +130,7 @@ namespace MonoDevelop.AspNet.Razor
 				HostKind = kind,
 			};
 
-			return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (fileName, pageInfo));
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (parseOptions.FileName, pageInfo));
 		}
 
 		bool TryAddDocument (string fileName)

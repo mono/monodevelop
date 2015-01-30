@@ -41,9 +41,9 @@ namespace MonoDevelop.AspNet.Html
 {
 	public class HtmlParser : TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource tr, Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (fileName);
+			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (parseOptions.FileName);
 			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
 			try {
@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Html
 					new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true)),
 					true);
 				
-				xmlParser.Parse (tr.CreateReader ());
+				xmlParser.Parse (parseOptions.Content.CreateReader ());
 				doc.XDocument = xmlParser.Nodes.GetRoot ();
 				doc.AddRange (xmlParser.Errors);
 				if (doc.XDocument != null)

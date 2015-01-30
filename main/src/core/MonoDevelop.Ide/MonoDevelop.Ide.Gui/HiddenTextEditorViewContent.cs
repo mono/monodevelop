@@ -53,7 +53,13 @@ namespace MonoDevelop.Ide.Gui
 			editor = TextEditorFactory.CreateNewEditor ();
 			Name = "";
 		}
-		
+
+		public HiddenTextEditorViewContent (TextEditor editor)
+		{
+			this.editor = editor;
+			Name = editor.FileName;
+		}
+
 		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 		}

@@ -51,12 +51,10 @@ namespace MonoDevelop.CodeIssues
 				return Enumerable.Empty<Result> ();
 
 			try {
-				var task = input.GetCompilationAsync (cancellationToken);
-				if (!task.IsCompleted)
-					task.Wait (cancellationToken);
-				if (task.IsCanceled)
+				var model = input.ParsedDocument.GetAst<SemanticModel> ();
+				if (model == null)
 					return Enumerable.Empty<Result> ();
-				var compilation = task.Result;
+				var compilation = model.Compilation;
 				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 
 				var options = new AnalyzerOptions(System.Collections.Immutable.ImmutableArray<AdditionalStream>.Empty, System.Collections.Immutable.ImmutableDictionary<string, string>.Empty);
@@ -78,9 +76,6 @@ namespace MonoDevelop.CodeIssues
 					CancellationToken.None
 				);
 				if (input.ParsedDocument == null)
-					return Enumerable.Empty<Result> ();
-				var model = input.ParsedDocument.GetAst<SemanticModel> ();
-				if (model == null)
 					return Enumerable.Empty<Result> ();
 
 				var tree = model.SyntaxTree;
