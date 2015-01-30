@@ -42,37 +42,37 @@ module CorePatterns =
 
     let (|Entity|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
-        | :? FSharpEntity as ent -> Entity(ent) |> Some
+        | :? FSharpEntity as ent -> Some ent
         | _ -> None
 
     let (|Field|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
-        | :? FSharpField as field-> Field (field) |> Some
+        | :? FSharpField as field-> Some field
         |  _ -> None
 
     let (|GenericParameter|_|) (symbol: FSharpSymbolUse) = 
         match symbol.Symbol with
-        | :? FSharpGenericParameter as gp -> GenericParameter(gp) |> Some
+        | :? FSharpGenericParameter as gp -> Some gp
         | _ -> None
 
     let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as func -> MemberFunctionOrValue(func) |> Some
+        | :? FSharpMemberOrFunctionOrValue as func -> Some func
         | _ -> None
 
     let (|Parameter|_|) (symbol : FSharpSymbolUse) = 
         match symbol.Symbol with
-        | :? FSharpParameter as param -> Parameter(param) |> Some
+        | :? FSharpParameter as param -> Some param
         | _ -> None
 
     let (|StaticParameter|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
-        | :? FSharpStaticParameter as sp -> StaticParameter(sp) |> Some
+        | :? FSharpStaticParameter as sp -> Some sp
         | _ -> None
 
     let (|UnionCase|_|) (symbol : FSharpSymbolUse) =
         match symbol.Symbol with
-        | :? FSharpUnionCase as uc-> UnionCase(uc) |> Some
+        | :? FSharpUnionCase as uc-> Some uc
         | _ -> None
 
 [<AutoOpen>]
@@ -86,28 +86,28 @@ module ExtendedPatterns =
 
     let (|TypeAbbreviation|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpAbbreviation -> Some TypeAbbreviation
+        | CorePatterns.Entity symbol when symbol.IsFSharpAbbreviation -> Some symbol
         | _ -> None
 
     let (|Class|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsClass -> Some(Class)
+        | CorePatterns.Entity symbol when symbol.IsClass -> Some symbol
         | _ -> None
 
     let (|Delegate|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsDelegate -> Some(Delegate)
+        | CorePatterns.Entity symbol when symbol.IsDelegate -> Some symbol
         | _ -> None
 
     let (|Event|_|) symbol =
         match symbol with
-        | CorePatterns.MemberFunctionOrValue symbol when symbol.IsEvent -> Some(Event)
+        | CorePatterns.MemberFunctionOrValue symbol when symbol.IsEvent -> Some symbol
         | _ -> None
 
     let (|Property|_|) symbol =
         match symbol with
         | CorePatterns.MemberFunctionOrValue symbol when
-            symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some(Property)
+            symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some symbol
         | _ -> None
 
     let (|Function|Operator|Pattern|ClosureOrNestedFunction|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
@@ -130,37 +130,37 @@ module ExtendedPatterns =
 
     let (|Enum|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsEnum -> Some(Enum)
+        | CorePatterns.Entity symbol when symbol.IsEnum -> Some symbol
         | _ -> None
 
     let (|Interface|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsInterface -> Some(Interface)
+        | CorePatterns.Entity symbol when symbol.IsInterface -> Some symbol
         | _ -> None
 
     let (|Module|_|) symbol = 
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpModule -> Some(Module)
+        | CorePatterns.Entity symbol when symbol.IsFSharpModule -> Some symbol
         | _ -> None
 
     let (|Namespace|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsNamespace -> Some (Namespace)
+        | CorePatterns.Entity symbol when symbol.IsNamespace -> Some symbol
         | _ -> None
 
     let (|Record|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpRecord -> Some(Record)
+        | CorePatterns.Entity symbol when symbol.IsFSharpRecord -> Some symbol
         | _ -> None
 
     let (|Union|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsFSharpUnion -> Some(Union)
+        | CorePatterns.Entity symbol when symbol.IsFSharpUnion -> Some symbol
         | _ -> None
 
     let (|ValueType|_|) symbol =
         match symbol with
-        | CorePatterns.Entity symbol when symbol.IsValueType -> Some(ValueType)
+        | CorePatterns.Entity symbol when symbol.IsValueType -> Some symbol
         | _ -> None
 
 type XmlDoc =
@@ -351,7 +351,10 @@ module SymbolTooltips =
             "   " + asType Keyword "delegate" + " of\n" + invokerSig
                                  
         let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
-        let fullName = "\n\nFull name: " + fse.FullName
+        let fullName =
+            match fse.TryGetFullName () with
+            | Some fullname -> "\n\nFull name: " + fullname
+            | None -> "\n\nFull name: " + fse.QualifiedName
         match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
         | true, false, false -> typeDisplay + uniontip () + fullName
         | false, true, false -> typeDisplay + enumtip () + fullName
@@ -381,7 +384,8 @@ module SymbolTooltips =
             try
                 let signature = getEntitySignature symbol.DisplayContext fse
                 ToolTip(signature, getSummaryFromSymbol fse backUpSig)
-            with exn -> ToolTips.EmptyTip
+            with exn ->
+                ToolTips.EmptyTip
 
         | Constructor func ->
             if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
