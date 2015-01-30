@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.Commands
 				if (!MessageService.Confirm (GettextCatalog.GetString ("An application is already running. Do you want to stop it?"), AlertButton.Stop))
 					return;
                 StopHandler.StopBuildOperations ();
-                IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+                await IdeApp.ProjectOperations.CurrentRunOperation.Task;
             }
 
 			if (IdeApp.Workspace.IsOpen) {

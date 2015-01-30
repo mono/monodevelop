@@ -70,11 +70,6 @@ namespace MonoDevelop.Core
 			if (CancellationTokenSource != null)
 				CancellationTokenSource.Cancel ();
 		}
-
-		public void WaitForCompleted ()
-		{
-			Task.Wait ();
-		}
 	}
 
 	public class AsyncOperation<T>: AsyncOperation
