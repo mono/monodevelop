@@ -240,7 +240,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Namespace -> Some Namespace
+            | ExtendedPatterns.Namespace ns -> Some ns
             | _ -> None
         | _ -> None
 
@@ -248,7 +248,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Class -> Some Class
+            | ExtendedPatterns.Class cl -> Some cl
             | _ -> None
         | _ -> None
 
@@ -256,7 +256,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Property -> Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Property pr -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -289,7 +289,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Delegate -> Some Delegate
+            | ExtendedPatterns.Delegate dl -> Some dl
             | _ -> None
         | _ -> None
 
@@ -297,7 +297,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | ExtendedPatterns.Event -> Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Event ev -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -305,7 +305,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Enum -> Some Enum
+            | ExtendedPatterns.Enum en -> Some en
             | _ -> None
         | _ -> None
 
@@ -313,7 +313,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Record -> Some Record
+            | ExtendedPatterns.Record r -> Some r
             | _ -> None
         | _ -> None
 
@@ -321,7 +321,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.ValueType -> Some ValueType
+            | ExtendedPatterns.ValueType v -> Some v
             | _ -> None
         | _ -> None
 
@@ -329,7 +329,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Module -> Some Module
+            | ExtendedPatterns.Module m -> Some m
             | _ -> None
         | _ -> None
 
@@ -337,7 +337,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Union -> Some Union
+            | ExtendedPatterns.Union u -> Some u
             | _ -> None
         | _ -> None
 
@@ -563,17 +563,17 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | NumberLiteral -> style.Number
             | PunctuationBrackets -> style.PunctuationForBrackets
             | Punctuation -> style.Punctuation
-            | Module|ActivePatternCase|Record|Union|TypeAbbreviation|Class -> style.UserTypes
-            | Namespace -> style.KeywordNamespace
+            | Module _|ActivePatternCase|Record _|Union _|TypeAbbreviation|Class _ -> style.UserTypes
+            | Namespace _ -> style.KeywordNamespace
             | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
             | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
             | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
             | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
-            | UnionCase | Enum -> style.UserTypesEnums
-            | Delegate -> style.UserTypesDelegatess
+            | UnionCase | Enum _ -> style.UserTypesEnums
+            | Delegate _-> style.UserTypesDelegatess
             | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
             | Interface -> style.UserTypesInterfaces
-            | ValueType -> style.UserTypesValueTypes
+            | ValueType _ -> style.UserTypesValueTypes
             | PreprocessorKeyword -> style.Preprocessor
             | _ -> style.PlainText
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
