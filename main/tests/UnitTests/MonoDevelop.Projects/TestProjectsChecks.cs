@@ -34,6 +34,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Projects.Formats.MSBuild;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -245,10 +246,10 @@ namespace Foo {
 			project.FileName = pfile;
 		}
 		
-		public static void CheckGenericItemProject (string fileFormat)
+		public static async Task CheckGenericItemProject (string fileFormat)
 		{
 			Solution sol = new Solution ();
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			string dir = Util.CreateTmpDir ("generic-item-" + fileFormat);
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
@@ -262,9 +263,9 @@ namespace Foo {
 			it.FileName = Path.Combine (dir, "TheItem");
 			it.Name = "TheItem";
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
+			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			Assert.AreEqual (1, sol2.Items.Count);
 			Assert.IsInstanceOf<GenericItem> (sol2.Items [0]);
 			
@@ -272,7 +273,7 @@ namespace Foo {
 			Assert.AreEqual ("hi", it.SomeValue);
 		}
 		
-		public static void TestLoadSaveSolutionFolders (string fileFormat)
+		public static async Task TestLoadSaveSolutionFolders (string fileFormat)
 		{
 			List<string> ids = new List<string> ();
 			
@@ -330,9 +331,9 @@ namespace Foo {
 			Assert.IsFalse (ids.Contains (idp4));
 			ids.Add (idp4);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
+			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			Assert.AreEqual (4, sol2.Items.Count);
 			Assert.AreEqual (2, sol2.RootFolder.Items.Count);
 			Assert.AreEqual (typeof(CSharpProject), sol2.RootFolder.Items [0].GetType ());
@@ -361,43 +362,43 @@ namespace Foo {
 			Assert.AreEqual (idp4, f2.Items [1].ItemId, "idp4");
 		}
 		
-		public static void TestCreateLoadSaveConsoleProject (string fileFormat)
+		public static async Task TestCreateLoadSaveConsoleProject (string fileFormat)
 		{
 			Solution sol = CreateConsoleSolution ("TestCreateLoadSaveConsoleProject");
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			string solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckConsoleProject (sol);
 
 			// Save over existing file
-			sol.Save (Util.GetMonitor ());
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			await sol.SaveAsync (Util.GetMonitor ());
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			CheckConsoleProject (sol);
 		}
 		
-		public static void TestLoadSaveResources (string fileFormat)
+		public static async Task TestLoadSaveResources (string fileFormat)
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
 			ProjectTests.CheckResourcesSolution (sol);
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			solFile = sol.FileName;
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			string f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			ProjectFile pf = p.Files.GetFile (f);
 			pf.ResourceId = "SomeBitmap.bmp";
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
-			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			p = (DotNetProject) sol.Items [0];
 			f = Path.Combine (p.BaseDirectory, "Bitmap1.bmp");
 			pf = p.Files.GetFile (f);

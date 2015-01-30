@@ -34,6 +34,7 @@ using UnitTests;
 using MonoDevelop.Core;
 using NUnit.Framework;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -62,13 +63,13 @@ namespace MonoDevelop.Projects
 
 		[Test()]
 		[Platform (Exclude = "Win")]
-		public void MakefileSynchronization ()
+		public async Task MakefileSynchronization ()
 		{
 			if (Platform.IsWindows)
 				Assert.Ignore ();
 
 			string solFile = Util.GetSampleProject ("console-project-with-makefile", "ConsoleProject.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			
 			DotNetProject p = (DotNetProject) sol.Items [0];
 			
@@ -101,7 +102,7 @@ namespace MonoDevelop.Projects
 			p.Files.Remove (f);
 			p.Files.Add (new ProjectFile (Path.Combine (p.BaseDirectory, "Class1.cs"), BuildAction.Compile));
 			
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 			
 			string makefile = File.ReadAllText (Path.Combine (p.BaseDirectory, "Makefile"));
 			string[] values = GetVariable (makefile, "FILES").Split (' ');

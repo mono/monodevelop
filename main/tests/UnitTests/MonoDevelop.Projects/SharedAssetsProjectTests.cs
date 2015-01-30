@@ -28,6 +28,7 @@ using System.Linq;
 using UnitTests;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -35,10 +36,10 @@ namespace MonoDevelop.Projects
 	public class SharedAssetsProjectTests: TestBase
 	{
 		[Test]
-		public void LoadSharedProject ()
+		public async Task LoadSharedProject ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var pc1 = sol.FindProjectByName ("Console1");
 			Assert.IsNotNull (pc1);
@@ -65,10 +66,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void PropagateFileChanges ()
+		public async Task PropagateFileChanges ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var pc1 = sol.FindProjectByName ("Console1");
 			var pc2 = sol.FindProjectByName ("Console2");
 			var pc3 = sol.FindProjectByName ("Console3");
@@ -110,10 +111,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void AddReference ()
+		public async Task AddReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var pcs = sol.FindProjectByName ("Shared");
 			var pc3 = (DotNetProject) sol.FindProjectByName ("Console3");
@@ -133,10 +134,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void RemoveReference ()
+		public async Task RemoveReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
 			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
@@ -157,11 +158,11 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void SaveSharedProject ()
+		public async Task SaveSharedProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("shared-project");
-			sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
-			sol.Save (Util.GetMonitor ());
+			await sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			var pc = (DotNetProject) sol.Items [0];
 
@@ -173,10 +174,10 @@ namespace MonoDevelop.Projects
 			};
 
 			sp.AddFile (sol.ItemDirectory.Combine ("Test.cs"));
-			sp.Save (Util.GetMonitor (), sol.ItemDirectory.Combine ("Shared"));
+			await sp.SaveAsync (Util.GetMonitor (), sol.ItemDirectory.Combine ("Shared"));
 
 			sol.RootFolder.AddItem (sp);
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			// Make sure we compare using the same guid
 
@@ -199,7 +200,7 @@ namespace MonoDevelop.Projects
 
 			var r = new ProjectReference (sp);
 			pc.References.Add (r);
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			solXml = File.ReadAllText (sol.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}").Replace (sp.ItemId, "{8DD793BE-42C3-4D66-8359-460CEE75980D}");
 			projectXml = Util.GetXmlFileInfoset (pc.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}");
@@ -217,7 +218,7 @@ namespace MonoDevelop.Projects
 
 			sp.DefaultNamespace = "TestNamespace2";
 			var file = sp.AddFile (sol.ItemDirectory.Combine ("Test2.cs"));
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			solXml = File.ReadAllText (sol.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}").Replace (sp.ItemId, "{8DD793BE-42C3-4D66-8359-460CEE75980D}");
 			projectXml = Util.GetXmlFileInfoset (pc.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}");
@@ -235,7 +236,7 @@ namespace MonoDevelop.Projects
 
 			sp.DefaultNamespace = "TestNamespace";
 			sp.Files.Remove (file);
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			solXml = File.ReadAllText (sol.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}").Replace (sp.ItemId, "{8DD793BE-42C3-4D66-8359-460CEE75980D}");
 			projectXml = Util.GetXmlFileInfoset (pc.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}");
@@ -252,7 +253,7 @@ namespace MonoDevelop.Projects
 			// Remove reference
 
 			pc.References.Remove (r);
-			sol.Save (Util.GetMonitor ());
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			solXml = File.ReadAllText (sol.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}").Replace (sp.ItemId, "{8DD793BE-42C3-4D66-8359-460CEE75980D}");
 			projectXml = Util.GetXmlFileInfoset (pc.FileName).Replace (pc.ItemId, "{7DE4B613-BAB6-49DE-83FA-707D4E120306}");
@@ -348,10 +349,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public void ProjItemsFileNameNotMatchingShproj_Bug20571 ()
+		public async Task ProjItemsFileNameNotMatchingShproj_Bug20571 ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTestBug20571", "SharedProjectTest.sln");
-			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile).Result;
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			Assert.AreEqual (3, sol.GetAllProjects ().Count());
 
@@ -375,9 +376,9 @@ namespace MonoDevelop.Projects
 			pc2.References.Add (new ProjectReference (pcs));
 			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
 
-			pc2.Save (Util.GetMonitor ());
+			await pc2.SaveAsync (Util.GetMonitor ());
 
-			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName).Result;
+			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			sol.Dispose ();
 
 			pc2 = (DotNetProject) sol2.FindProjectByName ("Console2");
