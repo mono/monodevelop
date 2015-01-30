@@ -181,25 +181,23 @@ namespace MonoDevelop.Projects
 			return formats [0];
 		}
 		
-		public async Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file)
+		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file)
+		{
+			using (var ctx = new SolutionLoadContext (null))
+				return ReadSolutionItem (monitor, file, null, null, null, ctx);
+		}
+		
+		public async Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
 		{
 			file = Path.GetFullPath (file);
 			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 				file = GetTargetFile (file);
-				SolutionItem loadedItem = await GetExtensionChain (null).LoadSolutionItem (monitor, file, async delegate {
-					var res = await ReadFile (monitor, file, typeof(SolutionItem));
-					SolutionItem item = res.Item1 as SolutionItem;
-					if (item != null)
-						item.FileFormat = res.Item2;
-					else
-						throw new InvalidOperationException ("Invalid file format: " + file);
-					return item;
-				});
+				SolutionItem loadedItem = await GetExtensionChain (null).LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
 				loadedItem.NeedsReload = false;
 				return loadedItem;
 			}
 		}
-		
+
 		public async Task<SolutionFolderItem> ReadSolutionItem (ProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
 		{
 			if (reference.Id == null) {
@@ -601,9 +599,9 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.IsWorkspaceItemFileInternal (filename);
 		}
 		
-		internal override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName, ItemLoadCallback callback)
+		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			return callback (monitor, fileName);
+			return MSBuildProjectService.LoadItem (monitor, fileName, expectedFormat, typeGuid, itemGuid, ctx);
 		}
 		
 		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)

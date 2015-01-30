@@ -51,7 +51,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionItem : SolutionFolderItem, IWorkspaceFileObject, IConfigurationTarget, ILoadController, IBuildTarget
+	public abstract class SolutionItem : SolutionFolderItem, IWorkspaceFileObject, IConfigurationTarget, IBuildTarget
 	{
 		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
 
@@ -88,7 +88,6 @@ namespace MonoDevelop.Projects
 			TypeGuid = MSBuildProjectService.GetTypeGuidForItem (this);
 
 			SetSolutionFormat ((MSBuildFileFormat)fmt.Format, true);
-			ProjectExtensionUtil.LoadControl (this);
 			items = new ProjectItemCollection (this);
 			wildcardItems = new ProjectItemCollection (this);
 			thisItemArgs = new SolutionItemEventArgs (this);
@@ -156,13 +155,13 @@ namespace MonoDevelop.Projects
 				dependencies.Remove ((SolutionItem)e.SolutionItem);
 		}
 
-		void ILoadController.BeginLoad ()
+		internal void BeginLoad ()
 		{
 			loading++;
 			OnBeginLoad ();
 		}
 
-		void ILoadController.EndLoad ()
+		internal void EndLoad ()
 		{
 			loading--;
 			OnEndLoad ();
@@ -399,11 +398,6 @@ namespace MonoDevelop.Projects
 			Name = Path.GetFileNameWithoutExtension (fileName);
 			SetSolutionFormat (format ?? new MSBuildFileFormatVS12 (), false);
 			return ItemExtension.OnLoad (monitor);
-		}
-
-		public void Save (ProgressMonitor monitor, FilePath fileName)
-		{
-			SaveAsync (monitor, fileName).Wait ();
 		}
 
 		public Task SaveAsync (ProgressMonitor monitor, FilePath fileName)

@@ -155,7 +155,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (slnFileFormat.CanReadFile (file, this))
 				return await slnFileFormat.ReadFile (file, monitor);
 			else
-				return await MSBuildProjectService.LoadItem (monitor, file, null, null, null);
+				return await MSBuildProjectService.LoadItem (monitor, file, null, null, null, null);
 		}
 
 		public List<FilePath> GetItemFiles (object obj)

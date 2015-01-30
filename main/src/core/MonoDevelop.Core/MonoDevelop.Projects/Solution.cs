@@ -249,7 +249,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override void OnEndLoad ()
+		internal protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
@@ -868,7 +868,8 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
-			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor);
+			using (var ctx = new SolutionLoadContext (this))
+				((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor, ctx);
 		}
 
 		internal void ReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
@@ -1082,6 +1083,24 @@ namespace MonoDevelop.Projects
 				case "SOLUTIONDIR": return sol.BaseDirectory;
 			}
 			throw new NotSupportedException ();
+		}
+	}
+
+	public class SolutionLoadContext: IDisposable
+	{
+		public SolutionLoadContext (Solution solution)
+		{
+			Solution = solution;
+		}
+
+		public event EventHandler LoadCompleted;
+
+		public Solution Solution { get; private set; }
+
+		void IDisposable.Dispose ()
+		{
+			if (LoadCompleted != null)
+				LoadCompleted (this, EventArgs.Empty);
 		}
 	}
 }

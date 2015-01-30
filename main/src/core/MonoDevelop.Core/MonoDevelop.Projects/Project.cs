@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects
 		protected override void OnExtensionChainInitialized ()
 		{
 			base.OnExtensionChainInitialized ();
-			if (CreationContext.Current != null)
+			if (CreationContext.Current != null && CreationContext.Current.Project != null)
 				FileName = CreationContext.Current.Project.FileName;
 		}
 
@@ -235,13 +235,8 @@ namespace MonoDevelop.Projects
 
 				ProjectExtension.OnPrepareForEvaluation (p);
 
-				try {
-					ProjectExtensionUtil.BeginLoadOperation ();
-					p.Evaluate ();
-					ReadProject (monitor, p);
-				} finally {
-					ProjectExtensionUtil.EndLoadOperation ();
-				}
+				p.Evaluate ();
+				ReadProject (monitor, p);
 			});
 		}
 

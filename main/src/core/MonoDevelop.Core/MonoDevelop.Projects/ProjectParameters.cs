@@ -32,13 +32,12 @@ using MonoDevelop.Projects.Formats.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[DataItem (FallbackType=typeof(UnknownProjectParameters))]
-	public class ProjectParameters: ILoadController, IMSBuildDataObject
+	public class ProjectParameters: IMSBuildDataObject
 	{
 		DotNetProject parentProject;
 		
 		public ProjectParameters ()
 		{
-			ProjectExtensionUtil.LoadControl (this);
 		}
 		
 		public virtual ProjectParameters Clone ()
@@ -46,31 +45,11 @@ namespace MonoDevelop.Projects
 			return (ProjectParameters) MemberwiseClone ();
 		}
 	
-		#region ILoadController implementation
-		void ILoadController.BeginLoad ()
-		{
-			OnBeginLoad ();
-		}
-		
-		void ILoadController.EndLoad ()
-		{
-			OnEndLoad ();
-		}
-		#endregion
-	
 		public DotNetProject ParentProject {
 			get { return parentProject; }
 			internal set { parentProject = value; }
 		}
 		
-		protected virtual void OnBeginLoad ()
-		{
-		}
-		
-		protected virtual void OnEndLoad ()
-		{
-		}
-
 		void IMSBuildDataObject.Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
 		{
 			Read (pset, format);

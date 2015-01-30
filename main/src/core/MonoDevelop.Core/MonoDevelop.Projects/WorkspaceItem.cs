@@ -47,13 +47,12 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class WorkspaceItem : WorkspaceObject, IWorkspaceFileObject, ILoadController
+	public abstract class WorkspaceItem : WorkspaceObject, IWorkspaceFileObject
 	{
 		Workspace parentWorkspace;
 		FileFormat format;
 		internal bool FormatSet;
 		FilePath fileName;
-		int loading;
 		PropertyBag userProperties;
 		FileStatusTracker<WorkspaceItemEventArgs> fileStatusTracker;
 		
@@ -112,10 +111,6 @@ namespace MonoDevelop.Projects
 				if (oldName != Name)
 					OnNameChanged (new WorkspaceItemRenamedEventArgs (this, oldName, Name));
 				NotifyModified ();
-
-				// Load the user properties after the file name has been set.
-				if (Loading)
-					LoadUserProperties ();
 			}
 		}
 
@@ -154,13 +149,8 @@ namespace MonoDevelop.Projects
 			return FileName.ParentDirectory.FullPath;
 		}
 		
-		protected bool Loading {
-			get { return loading > 0; }
-		}
-		
 		protected WorkspaceItem ()
 		{
-			ProjectExtensionUtil.LoadControl (this);
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
 			Initialize (this);
 		}
@@ -250,20 +240,10 @@ namespace MonoDevelop.Projects
 				ParentWorkspace.OnConfigurationsChanged ();
 		}
 
-		public void Save (FilePath fileName, ProgressMonitor monitor)
-		{
-			SaveAsync (fileName, monitor).Wait ();
-		}
-		
 		public Task SaveAsync (FilePath fileName, ProgressMonitor monitor)
 		{
 			FileName = fileName;
 			return SaveAsync (monitor);
-		}
-
-		public void Save (ProgressMonitor monitor)
-		{
-			SaveAsync (monitor).Wait ();
 		}
 
 		public async Task SaveAsync (ProgressMonitor monitor)
@@ -311,25 +291,24 @@ namespace MonoDevelop.Projects
 			yield break;
 		}
 
-		void ILoadController.BeginLoad ()
+		protected bool Loading { get; private set; }
+
+		/// <summary>
+		/// Called when a load operation for this item has started
+		/// </summary>
+		internal protected virtual void OnBeginLoad ()
 		{
-			loading++;
-			OnBeginLoad ();
+			Loading = true;
 		}
 		
-		void ILoadController.EndLoad ()
+		/// <summary>
+		/// Called when a load operation for this item has finished
+		/// </summary>
+		internal protected virtual void OnEndLoad ()
 		{
-			loading--;
+			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			OnEndLoad ();
-		}
-		
-		protected virtual void OnBeginLoad ()
-		{
-		}
-		
-		protected virtual void OnEndLoad ()
-		{
+			LoadUserProperties ();
 		}
 		
 		public virtual void LoadUserProperties ()

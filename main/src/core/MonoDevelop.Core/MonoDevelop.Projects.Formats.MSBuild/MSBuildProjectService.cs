@@ -110,11 +110,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static MSBuildVerbosity DefaultMSBuildVerbosity { get; private set; }
 		
-		public async static Task<SolutionItem> LoadItem (ProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
+		public async static Task<SolutionItem> LoadItem (ProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid, SolutionLoadContext ctx)
 		{
 			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
-					return await LoadProjectAsync (monitor, fileName, expectedFormat, typeGuid, null, node);
+					return await LoadProjectAsync (monitor, fileName, expectedFormat, typeGuid, null, node, ctx);
 			}
 			
 			// If it is a known unsupported project, load it as UnknownProject
@@ -122,24 +122,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectInfo != null && projectInfo.LoadFiles) {
 				if (typeGuid == null)
 					typeGuid = projectInfo.Guid;
-				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, "", typeof(UnknownProject), null);
+				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, "", typeof(UnknownProject), null, ctx);
 				p.UnsupportedProjectMessage = projectInfo.GetInstructions ();
 				return p;
 			}
 			return null;
 		}
 
-		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, string typeGuid, Type itemType, SolutionItemTypeNode node)
+		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, string typeGuid, Type itemType, SolutionItemTypeNode node, SolutionLoadContext ctx)
 		{
-			try {
-				ProjectExtensionUtil.BeginLoadOperation ();
-				var item = await CreateSolutionItem (monitor, fileName, typeGuid, itemType, node);
-				item.TypeGuid = typeGuid ?? node.Guid;
-				await item.LoadAsync (monitor, fileName, format);
-				return item;
-			} finally {
-				ProjectExtensionUtil.EndLoadOperation ();
-			}
+			var item = await CreateSolutionItem (monitor, fileName, typeGuid, itemType, node);
+
+			item.BeginLoad ();
+			ctx.LoadCompleted += delegate {
+				item.EndLoad ();
+			};
+
+			item.TypeGuid = typeGuid ?? node.Guid;
+			await item.LoadAsync (monitor, fileName, format);
+			return item;
 		}
 
 		// All of the last 4 parameters are optional, but at least one must be provided.
@@ -297,22 +298,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node.Guid == typeGuid && !string.IsNullOrEmpty (node.Import))
 					yield return node.Import;
 			}
-		}
-
-		public static bool SupportsProjectType (string projectFile)
-		{
-			if (!string.IsNullOrWhiteSpace (projectFile)) {
-				// If we have a project file, try to load it.
-				try {
-					using (var monitor = new ConsoleProgressMonitor ()) {
-						return MSBuildProjectService.LoadItem (monitor, projectFile, null, null, null) != null;
-					}
-				} catch {
-					return false;
-				}
-			}
-
-			return false;
 		}
 
 		public static void CheckHandlerUsesMSBuildEngine (SolutionFolderItem item, out bool useByDefault, out bool require)

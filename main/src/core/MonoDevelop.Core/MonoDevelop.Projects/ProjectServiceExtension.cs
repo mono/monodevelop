@@ -32,14 +32,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Execution;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
 	public class ProjectServiceExtension
 	{
 		internal ProjectServiceExtension Next;
-		
-		Stack<ItemLoadCallback> loadCallbackStack = new Stack<ItemLoadCallback> ();
 
 		internal ProjectServiceExtension GetNext (WorkspaceObject item)
 		{
@@ -64,19 +63,9 @@ namespace MonoDevelop.Projects
 			return GetNext (UnknownItem.Instance).IsWorkspaceItemFile (fileName);
 		}
 		
-		internal async virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName, ItemLoadCallback callback)
+		public virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			loadCallbackStack.Push (callback);
-			try {
-				return await LoadSolutionItem (monitor, fileName);
-			} finally {
-				loadCallbackStack.Pop ();
-			}
-		}
-		
-		protected virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName)
-		{
-			return GetNext (UnknownItem.Instance).LoadSolutionItem (monitor, fileName, loadCallbackStack.Peek ());
+			return GetNext (UnknownItem.Instance).LoadSolutionItem (monitor, ctx, fileName, expectedFormat, typeGuid, itemGuid);
 		}
 		
 		public virtual Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)

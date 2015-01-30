@@ -236,8 +236,8 @@ namespace MonoDevelop.Projects
 				return true;
 			return base.IsSolutionItemFile (fileName);
 		}
-		
-		protected override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, string fileName)
+
+		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
 			if (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll")) {
 				return Task<SolutionItem>.Factory.StartNew (delegate {
@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects
 					return p;
 				});
 			}
-			return base.LoadSolutionItem (monitor, fileName);
+			return base.LoadSolutionItem (monitor, ctx, fileName, expectedFormat, typeGuid, itemGuid);
 		}
 	}
 }

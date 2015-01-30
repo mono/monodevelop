@@ -136,15 +136,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (ext != ".mdw")
 				throw new ArgumentException ();
 
-			object readObject = null;
+			object readObject = await ReadWorkspaceItemFile (fileName, monitor);
 
-			ProjectExtensionUtil.BeginLoadOperation ();
-			try {
-				readObject = await ReadWorkspaceItemFile (fileName, monitor);
-			} finally {
-				ProjectExtensionUtil.EndLoadOperation ();
-			}
-			
 			IWorkspaceFileObject fo = readObject as IWorkspaceFileObject;
 			if (fo != null)
 				await fo.ConvertToFormat (MD1ProjectService.FileFormat, false);

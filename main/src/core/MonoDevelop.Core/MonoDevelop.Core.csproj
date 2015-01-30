@@ -157,7 +157,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\ICollectionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ICustomDataItemHandler.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IExtendedDataItem.cs" />
-    <Compile Include="MonoDevelop.Core.Serialization\ILoadController.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\IPropertyFilter.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ISerializationAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\ItemProperty.cs" />
@@ -296,7 +295,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ProjectExtensionUtil.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ISolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicySetNode.cs" />

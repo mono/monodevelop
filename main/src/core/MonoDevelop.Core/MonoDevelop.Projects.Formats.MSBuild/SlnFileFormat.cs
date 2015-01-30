@@ -529,10 +529,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (fileName == null || monitor == null)
 				return null;
 
-			Solution sol;
+			var sol = new Solution ();
+			sol.OnBeginLoad ();
 			try {
-				ProjectExtensionUtil.BeginLoadOperation ();
-				sol = new Solution ();
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
@@ -542,8 +541,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
 				throw;
 			} finally {
-				ProjectExtensionUtil.EndLoadOperation ();
 				monitor.EndTask ();
+				sol.OnEndLoad ();
 			}
 			return sol;
 		}
@@ -564,7 +563,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return sol.RootFolder;
 		}
 
-		internal void LoadSolution (Solution sol, SlnFile sln, ProgressMonitor monitor)
+		internal void LoadSolution (Solution sol, SlnFile sln, ProgressMonitor monitor, SolutionLoadContext ctx)
 		{
 			var version = sln.FormatVersion;
 
@@ -575,6 +574,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			monitor.BeginTask("Loading projects ..", sln.Projects.Count + 1);
 			Dictionary<string, SolutionFolderItem> items = new Dictionary<string, SolutionFolderItem> ();
 			List<SolutionFolderItem> sortedList = new List<SolutionFolderItem> ();
+
 			foreach (SlnProject sec in sln.Projects) {
 				monitor.Step (1);
 				try {
@@ -633,10 +633,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				try {
 					if (sol.IsSolutionItemEnabled (projectPath)) {
-						var t = ProjectExtensionUtil.LoadSolutionItem (monitor, projectPath, delegate {
-							return MSBuildProjectService.LoadItem (monitor, projectPath, format, projTypeGuid, projectGuid);
-						});
-						t.Wait ();
+						var t = Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
 						item = t.Result;
 						
 						if (item == null) {

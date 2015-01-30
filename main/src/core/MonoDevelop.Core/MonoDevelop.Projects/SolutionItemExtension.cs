@@ -36,7 +36,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionItemExtension: WorkspaceObjectExtension, ILoadController
+	public class SolutionItemExtension: WorkspaceObjectExtension
 	{
 		SolutionItemExtension next;
 
@@ -57,28 +57,8 @@ namespace MonoDevelop.Projects
 			return FlavorGuid == null || p.GetItemTypeGuids ().Any (id => id.Equals (FlavorGuid, StringComparison.OrdinalIgnoreCase));
 		}
 
-		#region ILoadController implementation
-
-		void ILoadController.BeginLoad ()
-		{
-			OnBeginLoad ();
-		}
-
-		void ILoadController.EndLoad ()
-		{
-			OnEndLoad ();
-		}
-
-		#endregion
-
 		public SolutionItem Item {
 			get { return (SolutionItem) Owner; }
-		}
-
-		internal protected override void Initialize ()
-		{
-			base.Initialize ();
-			ProjectExtensionUtil.LoadControl (this);
 		}
 
 		internal protected virtual void OnInitializeNew (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
