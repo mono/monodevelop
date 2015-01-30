@@ -3,11 +3,13 @@
 
   <!-- Template Header -->
   <TemplateConfiguration>
-    <_Name>F# Library</_Name>
+    <_Name>Library</_Name>
     <Icon>md-project-library</Icon>
+    <Image id="md-library-project" />
     <_Description>An F# project for creating an F# library</_Description>
-    <_Category>F#</_Category>
+    <Category>other/net/general</Category>
     <LanguageName>F#</LanguageName>
+    <GroupId>md-project-library</GroupId>
   </TemplateConfiguration>
 
   <!-- Actions -->

@@ -1,11 +1,14 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Android Application</_Name>
-		<_Category>F#/Android</_Category>
+		<_Name>Android App</_Name>
+		<Category>android/app/general</Category>
 		<Icon>monodroid-project</Icon>
+		<Image id="md-android-app" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates an Android Application with an Activity.</_Description>
+		<Wizard>MonoDevelop.MonoDroid.ProjectTemplateWizard</Wizard>
+		<_Description>Creates an Android App with an Activity.</_Description>
+		<GroupId>monodroid-project</GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>
@@ -51,6 +54,7 @@
 				</Directory>
 				<Directory name="Properties">
 					<UnformattedFile name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
+					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 				</Directory>
 				<Directory name="Assets">
 					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />

@@ -2,10 +2,16 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>iOS Library Project</_Name>
-		<_Category>F#/iOS/Unified API</_Category>
+		<Category>ios/library/unified</Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-library-project" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates a iOS library project.</_Description>
+		<GroupId>md-library-project-ios-unified</GroupId>
+		<_Description><![CDATA[A Unified iOS library project.
+
+The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
+
+Currently the Unified API is available as a preview, is subject to change, and stability is not yet guaranteed.]]></_Description>
 	</TemplateConfiguration>
 	
 	<Actions>

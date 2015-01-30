@@ -3,10 +3,13 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Xamarin.Mac Project</_Name>
-		<_Category>F#/Mac/Classic API</_Category>
+		<_Name>Cocoa App</_Name>
+		<Category>mac/app/classic</Category>
+		<Icon>md-project-mac</Icon>
+		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates a Xamarin.Mac project.</_Description>
+		<_Description>A basic Cocoa Mac App.</_Description>
+		<GroupId>md-xamarin-mac-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

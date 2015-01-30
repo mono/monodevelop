@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDisplayName</key>
+	<string>${AppName}</string>
+	<key>CFBundleIdentifier</key>
+	<string>${AppIdentifier}</string>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
@@ -25,6 +29,6 @@
 	<key>UIMainStoryboardFile~ipad</key>
 	<string>MainStoryboard_iPad</string>
 	<key>MinimumOSVersion</key>
-	<string>5.0</string>
+	<string>${MinimumOSVersion}</string>
 </dict>
 </plist>

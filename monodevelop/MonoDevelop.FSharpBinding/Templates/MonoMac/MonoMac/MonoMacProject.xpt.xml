@@ -3,10 +3,12 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>MonoMac Project</_Name>
-		<_Category>F#/Mac/Open source</_Category>
+		<_Name>Cocoa App</_Name>
+		<Category>other/unsupported/monomac</Category>
+		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates a MonoMac project.</_Description>
+		<_Description>A basic Cocoa Mac App.</_Description>
+		<GroupId>md-monomac-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
