@@ -6,11 +6,12 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<_Category>C#</_Category>
+		<Category>other/net/general</Category>
 		<Icon>md-project</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# project.</_Description>
 		<DefaultFilename>EmptyProject</DefaultFilename>
+		<GroupId>md-empty-project</GroupId>
 	</TemplateConfiguration>
 	
 	<Combine name = "${ProjectName}" directory = ".">

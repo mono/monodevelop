@@ -85,8 +85,8 @@ namespace MonoDevelop.Components
 		{
 			if (image != null) {
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
-					var x = Allocation.X + (Allocation.Width - image.Width * IconScale) * Xalign;
-					var y = Allocation.Y + (Allocation.Height - image.Height * IconScale) * Yalign;
+					var x = Math.Round (Allocation.X + (Allocation.Width - image.Width * IconScale) * Xalign);
+					var y = Math.Round (Allocation.Y + (Allocation.Height - image.Height * IconScale) * Yalign);
 					ctx.Save ();
 					ctx.Scale (IconScale, IconScale);
 					ctx.DrawImage (this, image, x / IconScale, y / IconScale);

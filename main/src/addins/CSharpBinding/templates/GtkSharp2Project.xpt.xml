@@ -6,11 +6,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Gtk# 2.0 Project</_Name>
-		<_Category>C#</_Category>
+		<Category>other/net/general</Category>
 		<Icon>md-project-gui</Icon>
+		<Image id="md-gtk2-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gtk# 2.0 project.</_Description>
 		<DefaultFilename>GtkSharpProject</DefaultFilename>
+		<GroupId>md-gtk-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

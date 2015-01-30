@@ -6,10 +6,11 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET MVC Razor Project</_Name>
-		<_Category>C#/ASP.NET</_Category>
+		<Category>other/aspnet/general</Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an ASP.NET MVC Project with Razor Views.</_Description>
+		<GroupId>md-mvc-razor-project</GroupId>
 	</TemplateConfiguration>
 
 

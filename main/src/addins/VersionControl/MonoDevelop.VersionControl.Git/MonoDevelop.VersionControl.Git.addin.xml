@@ -2,6 +2,7 @@
  
 	<Runtime>
 		<Import assembly="NGit.dll"/>
+		<Import file="GitIgnore.txt" />
 	</Runtime>
 
 	<Extension path="/MonoDevelop/VersionControl/VersionControlSystems">
@@ -80,6 +81,10 @@
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
 		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" icon="md-prefs-git" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/VersionControlProjectTemplateHandler">
+		<Class class="MonoDevelop.VersionControl.Git.ProjectTemplateHandler" />
 	</Extension>
 
 <!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">

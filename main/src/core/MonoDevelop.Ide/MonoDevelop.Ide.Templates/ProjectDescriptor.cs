@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Templates
 		private string name;
 		private string type;
 		private string directory;
+		private string createCondition;
 
 		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
@@ -61,6 +62,7 @@ namespace MonoDevelop.Ide.Templates
 
 			projectDescriptor.name = xmlElement.GetAttribute ("name");
 			projectDescriptor.directory = xmlElement.GetAttribute ("directory");
+			projectDescriptor.createCondition = xmlElement.GetAttribute ("if");
 
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
 			if (String.IsNullOrEmpty (projectDescriptor.type))
@@ -126,6 +128,10 @@ namespace MonoDevelop.Ide.Templates
 				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
 				return null;
 			}
+
+			if (!ShouldCreateProject (projectCreateInformation))
+				return null;
+
 			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
 			return project;
 		}
@@ -148,7 +154,7 @@ namespace MonoDevelop.Ide.Templates
 				if (policyParent.ParentSolution != null && !policyParent.ParentSolution.FileFormat.SupportsFramework (dnp.TargetFramework)) {
 					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
 				}
-				var substitution = new string[,] { { "ProjectName", projectCreateInformation.SolutionName } };
+				var substitution = new string[,] { { "ProjectName", GetProjectNameForSubstitution (projectCreateInformation) } };
 				foreach (ProjectReference projectReference in references) {
 					if (projectReference.ReferenceType == ReferenceType.Project) {
 						string referencedProjectName = StringParserService.Parse (projectReference.Reference, substitution);
@@ -173,13 +179,24 @@ namespace MonoDevelop.Ide.Templates
 
 			foreach (FileDescriptionTemplate fileTemplate in files) {
 				try {
+					projectCreateInformation.Parameters.MergeTo (fileTemplate.Tags);
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
+					fileTemplate.Tags.Clear ();
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;
 					MessageService.ShowError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
 				}
 			}
+		}
+
+		static string GetProjectNameForSubstitution (ProjectCreateInformation projectCreateInformation)
+		{
+			var templateInformation = projectCreateInformation as ProjectTemplateCreateInformation;
+			if (templateInformation != null) {
+				return templateInformation.UserDefinedProjectName;
+			}
+			return projectCreateInformation.SolutionName;
 		}
 		
 		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
@@ -220,7 +237,7 @@ namespace MonoDevelop.Ide.Templates
 			string dir = StringParserService.Parse (directory, substitution);
 			projectCreateInformation.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
 
-			if (!Directory.Exists (projectCreateInformation.ProjectBasePath))
+			if (ShouldCreateProject (projectCreateInformation) && !Directory.Exists (projectCreateInformation.ProjectBasePath))
 				Directory.CreateDirectory (projectCreateInformation.ProjectBasePath);
 
 			return projectCreateInformation;
@@ -231,6 +248,7 @@ namespace MonoDevelop.Ide.Templates
 			return packageReferences.Any ();
 		}
 
+		[Obsolete]
 		public IList<ProjectTemplatePackageReference> GetPackageReferences ()
 		{
 			return packageReferences;
@@ -240,6 +258,18 @@ namespace MonoDevelop.Ide.Templates
 			get {
 				return type;
 			}
+		}
+
+		public IList<ProjectTemplatePackageReference> GetPackageReferences (ProjectCreateInformation projectCreateInformation)
+		{
+			return packageReferences
+				.Where (packageReference => projectCreateInformation.ShouldCreate (packageReference.CreateCondition))
+				.ToList ();
+		}
+
+		public bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
+		{
+			return projectCreateInformation.ShouldCreate (createCondition);
 		}
 	}
 }

@@ -7,11 +7,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<_Category>C</_Category>
+		<Category>other/misc/c</Category>
 		<Icon>md-project-console</Icon>
+		<Image id="md-console-project" />
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple hello world C project.</_Description>
 		<DefaultFilename>ConsoleCProject</DefaultFilename>
+		<GroupId>md-project-console</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

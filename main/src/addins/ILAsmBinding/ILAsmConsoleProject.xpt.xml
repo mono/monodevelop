@@ -6,11 +6,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<_Category>IL</_Category>
-		<Icon>md-project</Icon>
+		<Category>other/net/general</Category>
+		<Icon>md-project-console</Icon>
+		<Image id="md-console-project" />
 		<LanguageName>IL</LanguageName>
 		<_Description>IL Console Project</_Description>
 		<DefaultFilename>ILConsoleProject</DefaultFilename>
+		<GroupId>md-project-console</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
