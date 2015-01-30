@@ -36,11 +36,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public static class SolutionExtensions
 	{
-		public static void Save(this Solution solution)
-		{
-			solution.Save(new ProgressMonitor());
-		}
-
 		public static IEnumerable<DotNetProject> GetAllDotNetProjects (this Solution solution)
 		{
 			return solution.GetAllProjects ().OfType<DotNetProject> ();

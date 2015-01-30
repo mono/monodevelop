@@ -104,7 +104,7 @@ namespace MonoDevelop.Deployment.Targets
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
 			ProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
 			
-			process.WaitForCompleted ();
+			process.Task.Wait ();
 			
 			if (cons is MonitorConsole) {
 				((MonitorConsole)cons).Dispose ();

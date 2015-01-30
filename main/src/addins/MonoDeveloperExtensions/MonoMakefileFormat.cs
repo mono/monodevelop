@@ -107,7 +107,6 @@ namespace MonoDeveloper
 					aname = mkfile.GetVariable ("PROGRAM");
 			
 				try {
-					ProjectExtensionUtil.BeginLoadOperation ();
 					if (aname != null) {
 						// It is a project
 						monitor.BeginTask ("Loading '" + fileName + "'", 0);
@@ -174,7 +173,6 @@ namespace MonoDeveloper
 						}
 					}
 				} finally {
-					ProjectExtensionUtil.EndLoadOperation ();
 				}
 				return null;
 			});

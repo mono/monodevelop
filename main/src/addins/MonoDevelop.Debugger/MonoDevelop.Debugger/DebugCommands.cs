@@ -82,7 +82,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!DebuggingService.IsDebuggingSupported && !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 				MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
-				IdeApp.ProjectOperations.CurrentRunOperation.WaitForCompleted ();
+				await IdeApp.ProjectOperations.CurrentRunOperation.Task;
 			}
 
 			if (IdeApp.Workspace.IsOpen) {

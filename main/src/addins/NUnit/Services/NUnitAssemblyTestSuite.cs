@@ -487,7 +487,7 @@ namespace MonoDevelop.NUnit
 					testContext.Monitor.CancelRequested += p.Cancel;
 					if (testContext.Monitor.IsCancelRequested)
 						p.Cancel ();
-					p.WaitForCompleted ();
+					p.Task.Wait ();
 					
 					if (new FileInfo (outFile).Length == 0)
 						throw new Exception ("Command failed");
