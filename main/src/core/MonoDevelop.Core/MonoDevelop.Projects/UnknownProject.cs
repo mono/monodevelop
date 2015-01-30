@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects
 
 		public UnknownProject ()
 		{
+			Initialize (this);
 			IsUnsupportedProject = true;
 			NeedsReload = false;
 		}
