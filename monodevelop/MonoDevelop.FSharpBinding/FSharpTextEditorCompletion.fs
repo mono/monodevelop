@@ -55,7 +55,7 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
                 summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
                 toolTipInfo
             | EmptyDoc -> toolTipInfo
-      | _ -> TooltipInformation()//
+      | _ -> TooltipInformation()
 
 /// Completion data representing a delayed fetch of completion data
 type internal FSharpTryAgainMemberCompletionData() =
@@ -227,7 +227,7 @@ type FSharpTextEditorCompletion() =
           | _ -> MonoDevelop.Ide.Gui.Stock.Event
 
       let tryGetCategory (symbolUse : FSharpSymbolUse) =
-          let cat =
+          let category =
             try
                 match symbolUse with
                 | Constructor c ->
@@ -264,9 +264,7 @@ type FSharpTextEditorCompletion() =
                     None
             with exn ->
                 None
-
-          cat
-
+          category
 
       let symbolToCompletionData (symbols : FSharpSymbolUse list) =
           match symbols with
@@ -280,8 +278,6 @@ type FSharpTextEditorCompletion() =
           | _ -> FSharpTryAgainMemberCompletionData() :> ICompletionData
 
       symbols |> List.map symbolToCompletionData
-
-
 
   override x.Initialize() = 
       do base.Document.Editor.IndentationTracker <- FSharpIndentationTracker(base.Document) :> Mono.TextEditor.IIndentationTracker 
