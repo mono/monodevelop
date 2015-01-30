@@ -274,14 +274,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddProject)]
-		public void AddProjectToCombine()
+		public async void AddProjectToCombine()
 		{
 			Solution solution = (Solution) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.AddSolutionItem (solution.RootFolder).ContinueWith (t => {
-				if (t.Result == null) return;
-				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
-				CurrentNode.Expanded = true;
-			}).RunSynchronously ();
+			var res = await IdeApp.ProjectOperations.AddSolutionItem (solution.RootFolder);
+			if (res == null) return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (solution);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddSolutionFolder)]

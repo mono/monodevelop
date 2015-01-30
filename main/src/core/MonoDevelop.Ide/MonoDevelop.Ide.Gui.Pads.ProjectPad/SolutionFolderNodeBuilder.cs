@@ -276,14 +276,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddProject)]
-		public void AddProjectToSolutionFolder()
+		public async void AddProjectToSolutionFolder()
 		{
 			SolutionFolder folder = (SolutionFolder) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.AddSolutionItem (folder).ContinueWith (t => {
-				if (t.Result == null) return;
-				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
-				CurrentNode.Expanded = true;
-			});
+			var item = await IdeApp.ProjectOperations.AddSolutionItem (folder);
+			if (item != null) {
+				Tree.AddNodeInsertCallback (item, new TreeNodeCallback (OnEntryInserted));
+				var node = Tree.GetNodeAtObject (folder);
+				if (node != null)
+					node.Expanded = true;
+			}
 		}
 		
 		[CommandHandler (ProjectCommands.AddSolutionFolder)]
@@ -294,7 +296,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ce.Name = GettextCatalog.GetString ("New Folder");
 			folder.Items.Add (ce);
 			Tree.AddNodeInsertCallback (ce, OnFolderInserted);
-			CurrentNode.Expanded = true;
+			var node = Tree.GetNodeAtObject (folder);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]

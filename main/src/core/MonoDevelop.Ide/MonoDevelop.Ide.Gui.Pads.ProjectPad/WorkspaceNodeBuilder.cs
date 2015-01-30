@@ -222,38 +222,41 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewSolution)]
-		public void AddNewSolutionToWorkspace ()
+		public async void AddNewSolutionToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.AddNewWorkspaceItem (ws).ContinueWith (t => {
-				if (t.Result == null)
-					return;
-				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
-				CurrentNode.Expanded = true;
-			});
+			var res = await IdeApp.ProjectOperations.AddNewWorkspaceItem (ws);
+			if (res == null)
+				return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddNewWorkspace)]
-		public void AddNewWorkspaceToWorkspace ()
+		public async void AddNewWorkspaceToWorkspace ()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace").ContinueWith (t => {
-				if (t.Result == null) return;
-				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
-				CurrentNode.Expanded = true;
-			});
+			var res = await IdeApp.ProjectOperations.AddNewWorkspaceItem (ws, "MonoDevelop.Workspace");
+			if (res == null) return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.AddItem)]
-		public void AddProjectToCombine()
+		public async void AddProjectToCombine()
 		{
 			Workspace ws = (Workspace) CurrentNode.DataItem;
-			IdeApp.ProjectOperations.AddWorkspaceItem (ws).ContinueWith (t => {
-				if (t.Result == null)
-					return;
-				Tree.AddNodeInsertCallback (t.Result, new TreeNodeCallback (OnEntryInserted));
-				CurrentNode.Expanded = true;
-			});
+			var res = await IdeApp.ProjectOperations.AddWorkspaceItem (ws);
+			if (res == null)
+				return;
+			Tree.AddNodeInsertCallback (res, new TreeNodeCallback (OnEntryInserted));
+			var node = Tree.GetNodeAtObject (ws);
+			if (node != null)
+				node.Expanded = true;
 		}
 		
 		[CommandHandler (ProjectCommands.Reload)]
