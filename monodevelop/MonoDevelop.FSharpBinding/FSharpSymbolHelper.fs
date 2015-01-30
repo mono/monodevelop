@@ -351,7 +351,10 @@ module SymbolTooltips =
             "   " + asType Keyword "delegate" + " of\n" + invokerSig
                                  
         let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
-        let fullName = "\n\nFull name: " + fse.FullName
+        let fullName =
+            match fse.TryGetFullName () with
+            | Some fullname -> "\n\nFull name: " + fullname
+            | None -> "\n\nFull name: " + fse.QualifiedName
         match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
         | true, false, false -> typeDisplay + uniontip () + fullName
         | false, true, false -> typeDisplay + enumtip () + fullName
@@ -381,7 +384,8 @@ module SymbolTooltips =
             try
                 let signature = getEntitySignature symbol.DisplayContext fse
                 ToolTip(signature, getSummaryFromSymbol fse backUpSig)
-            with exn -> ToolTips.EmptyTip
+            with exn ->
+                ToolTips.EmptyTip
 
         | Constructor func ->
             if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
