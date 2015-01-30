@@ -62,7 +62,7 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			Build ();
 
-			var ext = project.GetService<AspNetFlavor> ();
+			var ext = project.GetService<AspNetAppProjectFlavor> ();
 			provider = project.LanguageBinding.GetCodeDomProvider ();
 
 			loadedTemplateList = ext.GetCodeTemplates ("AddController");

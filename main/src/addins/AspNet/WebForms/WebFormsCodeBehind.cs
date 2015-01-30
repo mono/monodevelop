@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.WebForms
 	{
 		public static string GetCodeBehindClassName (ProjectFile file)
 		{
-			var proj = file.Project.GetService<AspNetFlavor> ();
+			var proj = file.Project.GetService<AspNetAppProjectFlavor> ();
 			if (proj == null)
 				return null;
 			return proj.GetCodebehindTypeName (file.Name);
@@ -55,9 +55,9 @@ namespace MonoDevelop.AspNet.WebForms
 
 		public static ProjectFile GetDesignerFile (ProjectFile file)
 		{
-			var ext = file.Project.GetService<AspNetFlavor> ();
+			var ext = file.Project.GetService<AspNetAppProjectFlavor> ();
 
-			var type = AspNetFlavor.DetermineWebSubtype (file.FilePath);
+			var type = AspNetAppProjectFlavor.DetermineWebSubtype (file.FilePath);
 			if (type != WebSubtype.WebForm && type != WebSubtype.WebControl && type != WebSubtype.MasterPage)
 				return null;
 
@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNet.WebForms
 				masterTypeName = document.Info.MasterPageTypeName;
 			} else if (!String.IsNullOrEmpty (document.Info.MasterPageTypeVPath)) {
 				try {
-					var ext = project.GetService<AspNetFlavor> ();
+					var ext = project.GetService<AspNetAppProjectFlavor> ();
 					ProjectFile resolvedMaster = ext.ResolveVirtualPath (document.Info.MasterPageTypeVPath, document.FileName);
 					WebFormsParsedDocument masterParsedDocument = null;
 					if (resolvedMaster != null)

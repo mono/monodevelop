@@ -53,7 +53,7 @@ namespace MonoDevelop.AspNet.WebForms
 		ICompilation compilation;
 		DotNetProject project;
 		WebFormsParsedDocument doc;
-		AspNetFlavor aspFlavor;
+		AspNetAppProjectFlavor aspFlavor;
 
 		public WebFormsParsedDocument Doc {
 			get {
@@ -76,7 +76,7 @@ namespace MonoDevelop.AspNet.WebForms
 					return;
 				project = value;
 				compilation = null;
-				aspFlavor = project.GetFlavor<AspNetFlavor> ();
+				aspFlavor = project.GetFlavor<AspNetAppProjectFlavor> ();
 			}
 		}
 

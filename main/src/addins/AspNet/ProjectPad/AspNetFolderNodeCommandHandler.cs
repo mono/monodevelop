@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 		public void AddControllerUpdate (CommandInfo info)
 		{
 			var project = CurrentNode.GetParentDataItem (typeof (DotNetProject), true) as DotNetProject;
-			var aspFlavor = project != null ? project.GetService<AspNetFlavor> () : null;
+			var aspFlavor = project != null ? project.GetService<AspNetAppProjectFlavor> () : null;
 			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
@@ -129,7 +129,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 		public void AddViewUpdate (CommandInfo info)
 		{
 			var project = CurrentNode.GetParentDataItem<DotNetProject> (true);
-			if (project == null || !project.HasFlavor<AspNetFlavor>() || !project.GetFlavor<AspNetFlavor>().IsAspMvcProject) {
+			if (project == null || !project.HasFlavor<AspNetAppProjectFlavor>() || !project.GetFlavor<AspNetAppProjectFlavor>().IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}

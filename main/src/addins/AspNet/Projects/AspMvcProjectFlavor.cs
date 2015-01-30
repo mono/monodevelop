@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNet.Projects
 {
-	abstract class AspMvcProject : AspNetFlavor
+	abstract class AspMvcProjectFlavor : AspNetAppProjectFlavor
 	{
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
@@ -57,7 +57,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 	}
 
-	class AspMvc1Project : AspMvcProject
+	class AspMvc1ProjectFlavor : AspMvcProjectFlavor
 	{
 		protected override string GetDefaultAspNetMvcVersion ()
 		{
@@ -65,7 +65,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 	}
 
-	class AspMvc2Project : AspMvcProject
+	class AspMvc2ProjectFlavor : AspMvcProjectFlavor
 	{
 		protected override string GetDefaultAspNetMvcVersion ()
 		{
@@ -73,7 +73,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 	}
 
-	class AspMvc3Project : AspMvcProject
+	class AspMvc3ProjectFlavor : AspMvcProjectFlavor
 	{
 		protected override bool OnGetSupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
@@ -86,7 +86,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 	}
 
-	class AspMvc4Project : AspMvcProject
+	class AspMvc4ProjectFlavor : AspMvcProjectFlavor
 	{
 		protected override bool OnGetSupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{

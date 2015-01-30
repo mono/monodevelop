@@ -47,7 +47,7 @@ namespace MonoDevelop.AspNet.WebForms
 			tags ["AspNetMaster"] = "";
 			tags ["AspNetMasterContent"] = "";
 			
-			var aspProj = project.GetService<AspNetFlavor> ();
+			var aspProj = project.GetService<AspNetAppProjectFlavor> ();
 			if (aspProj == null)
 				throw new InvalidOperationException ("MasterContentFileDescriptionTemplate is only valid for ASP.NET projects");
 			

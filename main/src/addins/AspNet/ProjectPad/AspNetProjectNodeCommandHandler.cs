@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNet.ProjectPad
 			if (proj == null)
 				return;
 
-			var asp = proj.GetFlavor<AspNetFlavor> ();
+			var asp = proj.GetFlavor<AspNetAppProjectFlavor> ();
 			if (asp == null)
 				return;
 

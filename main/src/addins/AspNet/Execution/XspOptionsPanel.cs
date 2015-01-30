@@ -41,12 +41,12 @@ namespace MonoDevelop.AspNet.Execution
 		
 		public override Widget CreatePanelWidget ()
 		{
-			return panel = new XspOptionsPanelWidget (ConfiguredProject.GetService<AspNetFlavor> ());
+			return panel = new XspOptionsPanelWidget (ConfiguredProject.GetService<AspNetAppProjectFlavor> ());
 		}
 		
 		public override void ApplyChanges ()
 		{
-			panel.Store (ConfiguredProject.GetService<AspNetFlavor> ());
+			panel.Store (ConfiguredProject.GetService<AspNetAppProjectFlavor> ());
 		}
 	}
 }

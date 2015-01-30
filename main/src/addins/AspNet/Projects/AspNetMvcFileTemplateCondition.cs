@@ -50,7 +50,7 @@ namespace MonoDevelop.AspNet.Projects
 			if (proj == null)
 				return true;
 
-			var aspProj = proj.GetFlavor<AspNetFlavor> ();
+			var aspProj = proj.GetFlavor<AspNetAppProjectFlavor> ();
 			if (aspProj == null)
 				return false;
 

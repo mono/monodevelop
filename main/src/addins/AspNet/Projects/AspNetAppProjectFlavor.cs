@@ -54,7 +54,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.AspNet.Projects
 {
 	[DataInclude (typeof(AspNetAppProjectConfiguration))]
-	public class AspNetFlavor : DotNetProjectExtension
+	public class AspNetAppProjectFlavor : DotNetProjectExtension
 	{
 		[ItemProperty("XspParameters", IsExternal=true)]
 		XspParameters xspParameters = new XspParameters ();

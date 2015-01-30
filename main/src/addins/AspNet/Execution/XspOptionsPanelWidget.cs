@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Execution
 		readonly FileEntry certLocation = new FileEntry ();
 		readonly Entry passwordEntry = new Entry { InvisibleChar = '●' };
 		
-		public XspOptionsPanelWidget (AspNetFlavor project)
+		public XspOptionsPanelWidget (AspNetAppProjectFlavor project)
 		{
 			Build ();
 
@@ -165,7 +165,7 @@ namespace MonoDevelop.AspNet.Execution
 			ShowAll ();
 		}
 		
-		public void Store (AspNetFlavor project)
+		public void Store (AspNetAppProjectFlavor project)
 		{
 			XspParameters xPar = project.XspParameters;
 			

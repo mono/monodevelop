@@ -189,7 +189,6 @@
     <Compile Include="Razor\EditorParserFixed\RazorEditorParser.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorEditorTrace.cs" />
     <Compile Include="Razor\EditorParserFixed\RazorResources.Designer.cs" />
-    <Compile Include="Projects\AspMvcProject.cs" />
     <Compile Include="Projects\AspMvcProjectConfiguration.cs" />
     <Compile Include="Projects\AspNetAppProjectConfiguration.cs" />
     <Compile Include="Projects\AspNetMSBuildImportProvider.cs" />
@@ -292,7 +291,8 @@
     <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
-    <Compile Include="Projects\AspNetFlavor.cs" />
+    <Compile Include="Projects\AspMvcProjectFlavor.cs" />
+    <Compile Include="Projects\AspNetAppProjectFlavor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

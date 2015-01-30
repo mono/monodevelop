@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.Commands
 	class AddViewDialog : Dialog
 	{
 		readonly DotNetProject project;
-		readonly AspNetFlavor aspFlavor;
+		readonly AspNetAppProjectFlavor aspFlavor;
 		IDictionary<string, IList<string>> loadedTemplateList;
 		IDictionary<string, ListStore> templateStore;
 		ListStore dataClassStore;
@@ -66,7 +66,7 @@ namespace MonoDevelop.AspNet.Commands
 		public AddViewDialog (DotNetProject project)
 		{
 			this.project = project;
-			aspFlavor = project.GetService<AspNetFlavor> ();
+			aspFlavor = project.GetService<AspNetAppProjectFlavor> ();
 
 			Build ();
 			

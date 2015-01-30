@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNet.Razor
 		ChangeInfo lastChange;
 		string lastParsedFile;
 		TextDocument currentDocument;
-		AspNetFlavor aspProject;
+		AspNetAppProjectFlavor aspProject;
 		DotNetProject project;
 		IList<TextDocument> openDocuments;
 
@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet.Razor
 			if (currentDocument == null && !TryAddDocument (fileName))
 				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
 
-			this.aspProject = project.GetService<AspNetFlavor> ();
+			this.aspProject = project.GetService<AspNetAppProjectFlavor> ();
 
 			EnsureParserInitializedFor (fileName);
 

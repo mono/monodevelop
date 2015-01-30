@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.Commands
 				info.Enabled = info.Visible = false;
 				return;
 			}
-			var aspFlavor = doc.Project.GetService<AspNetFlavor> ();
+			var aspFlavor = doc.Project.GetService<AspNetAppProjectFlavor> ();
 			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
