@@ -5,83 +5,57 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.Linq
+open System.Collections.Generic
 open System.Diagnostics
 open MonoDevelop.Core
-open MonoDevelop.Components
 open MonoDevelop.Debugger
-open MonoDevelop.Ide
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.CodeTemplates
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
-open ICSharpCode.NRefactory.Editor
 open ICSharpCode.NRefactory.Completion
 open MonoDevelop.FSharp.NRefactory
-
-open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
-open ICSharpCode.NRefactory.TypeSystem.Implementation
+open ExtCore.Control
 
-/// A list of completions is returned.  Contains title and can generate description (tool-tip shown on the right) of the item.
-/// Description is generated lazily because it is quite slow and there can be numerous.
-type internal FSharpMemberCompletionData(name, getTip, glyph) =
+type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 
                            DisplayText = name, 
-                           DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-
-    let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
-
-    new (name, datatip:FSharpToolTipText, glyph) = new FSharpMemberCompletionData(name, (fun () -> datatip), glyph)
-    new (mi:FSharpDeclarationListItem) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
-
-    override x.Description = name //description.Value   // this is not used
-    override x.Icon = icon.Value
+                           DisplayFlags = DisplayFlags.DescriptionHasMarkup,
+                           Icon = icon)
 
     /// Check if the datatip has multiple overloads
-    override x.HasOverloads = 
-        match getTip() with 
-        | FSharpToolTipText [xs] ->
-            match xs with 
-            | FSharpToolTipElement.Group _ -> true 
-            | _ -> false
-        | FSharpToolTipText _list -> true
+    override x.HasOverloads = not (List.isEmpty overloads)
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
-        match getTip() with 
-        | FSharpToolTipText xs -> 
-            seq{for tooltipElement in xs do
-                match tooltipElement with
-                | FSharpToolTipElement.Single _ -> yield FSharpMemberCompletionData(name, FSharpToolTipText[tooltipElement], glyph) :> _
-                | FSharpToolTipElement.Group(items) ->
-                  let overloads =
-                      items 
-                      |> Seq.map (fun args -> FSharpMemberCompletionData(name, FSharpToolTipText[FSharpToolTipElement.Single(args)], glyph)) 
-                      |> Seq.cast
-                  yield! overloads
-                | FSharpToolTipElement.CompositionError error ->
-                    //show the composition error in the tip, hiding it makes it more difficult to diagnose
-                    yield FSharpMemberCompletionData(name, FSharpToolTipText[FSharpToolTipElement.Single(error,FSharpXmlDoc.None)], 0) :> _
-                | FSharpToolTipElement.None -> () }
+        overloads
+        |> Seq.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, List.empty) :> _ )
 
-
-    override x.AddOverload (_data: ICompletionData) = ()//not currently called
+    override x.AddOverload (data: ICompletionData) = () //not currently called
 
     // TODO: what does 'smartWrap' indicate?
-    override x.CreateTooltipInformation (_smartWrap: bool) = 
-      
+    override x.CreateTooltipInformation (smartWrap: bool) = 
       Debug.WriteLine("computing tooltip for {0}", name)
-      let description = TooltipFormatting.formatTip (getTip())
-      match description with
-      | [signature,comment] -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature)
-      //With multiple tips just take the head.  
-      //This shouldnt happen anyway as we split them in the resolver provider
-      | multiple -> multiple |> List.head |> (fun (signature,comment) -> TooltipInformation(SummaryMarkup = comment, SignatureMarkup = signature))
-
+      let tip = SymbolTooltips.getTooltipFromSymbolUse symbol (lazy None)
+      match tip  with
+      | ToolTips.ToolTip (signature, xmldoc) ->
+            let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
+            match xmldoc with
+            | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
+                               toolTipInfo
+            | Lookup(key, potentialFilename) ->
+                let summary = 
+                    maybe {let! filename = potentialFilename
+                           let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                           let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                           return summary }
+                summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
+                toolTipInfo
+            | EmptyDoc -> toolTipInfo
+      | _ -> TooltipInformation()//
 
 /// Completion data representing a delayed fetch of completion data
 type internal FSharpTryAgainMemberCompletionData() =
@@ -176,19 +150,21 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
         let prm = meth.Parameters.[paramIndex]
         prm.ParameterName
 
+type Category(category) =
+    inherit CompletionCategory(category, null)
+    override x.CompareTo other =
+        if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
+
 /// Implements text editor extension for MonoDevelop that shows F# completion    
 type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
   let mutable suppressParameterCompletion = false
   let mutable lastCharDottedInto = false
-
-  let compilerIdentifierCategory =
-      {new CompletionCategory("Compiler Identifiers", "") with
-            member x.CompareTo _ = 0 }
-        
+         
   let compilerIdentifiers =
-      let icon = IconId("md-field")
+      let icon = MonoDevelop.Ide.Gui.Stock.Literal
+      let compilerIdentifierCategory = Category "Compiler Identifiers"
       [CompletionData("__LINE__",
                       icon,
                       "Evaluates to the current line number, considering <tt>#line</tt> directives.",
@@ -216,6 +192,96 @@ type FSharpTextEditorCompletion() =
     let prevEnd = editor.FindCurrentWordEnd(prevStart)
     let previousWord = editor.GetTextBetween(prevStart, prevEnd)
     lastWord = "get" && previousWord = "with"
+
+  let getCompletionData (symbols:FSharpSymbolUse list list) =
+      let categories = Dictionary<string, Category>()
+      let getOrAddCategory id =
+          let found, item = categories.TryGetValue id
+          if found then item
+          else let cat = Category id 
+               categories.Add (id,cat)
+               cat
+
+      let symbolToIcon (symbolUse:FSharpSymbolUse) = 
+          match symbolUse with
+          | ActivePatternCase _ -> MonoDevelop.Ide.Gui.Stock.Enum
+          | Field _ -> MonoDevelop.Ide.Gui.Stock.Field
+          | UnionCase _ -> IconId("md-type")
+          | Class _ -> MonoDevelop.Ide.Gui.Stock.Class
+          | Delegate _ -> MonoDevelop.Ide.Gui.Stock.Delegate
+          | Constructor _  -> MonoDevelop.Ide.Gui.Stock.Method
+          | Event _ -> MonoDevelop.Ide.Gui.Stock.Event
+          | Property _ -> MonoDevelop.Ide.Gui.Stock.Property
+          | Function _ -> IconId("md-fs-field")
+          | Operator _ -> IconId("md-fs-field")
+          | ClosureOrNestedFunction _ -> IconId("md-fs-field")
+          | Val _ -> MonoDevelop.Ide.Gui.Stock.Field
+          | Enum _ -> MonoDevelop.Ide.Gui.Stock.Enum
+          | Interface _ -> MonoDevelop.Ide.Gui.Stock.Interface
+          | Module _ -> IconId("md-module")
+          | Namespace _ -> MonoDevelop.Ide.Gui.Stock.NameSpace
+          | Record _ -> MonoDevelop.Ide.Gui.Stock.Class
+          | Union _ -> IconId("md-type")
+          | ValueType _ -> MonoDevelop.Ide.Gui.Stock.Struct
+          | CorePatterns.Entity _ -> IconId("md-type")
+          | _ -> MonoDevelop.Ide.Gui.Stock.Event
+
+      let tryGetCategory (symbolUse : FSharpSymbolUse) =
+          let cat =
+            try
+                match symbolUse with
+                | Constructor c ->
+                    Some c.EnclosingEntity.DisplayName
+                | TypeAbbreviation ta -> None
+                | Class cl -> None
+                | Delegate dl -> None
+                | Event ev ->
+                    Some ev.EnclosingEntity.DisplayName
+                | Property pr ->
+                    Some pr.EnclosingEntity.DisplayName
+                | ActivePatternCase ap ->
+                    ap.Name
+                    |> SymbolTooltips.escapeText
+                    |> Some
+
+                | UnionCase uc ->
+                     uc.ReturnType.AbbreviatedType.Format symbolUse.DisplayContext
+                     |> SymbolTooltips.escapeText
+                     |> Some
+
+                | Function f ->
+                    Some f.EnclosingEntity.DisplayName
+                | Operator o ->
+                    Some o.EnclosingEntity.DisplayName
+                | Pattern p ->
+                    Some p.EnclosingEntity.DisplayName
+                | ClosureOrNestedFunction cl ->
+                    //Theres no link to a parent type for a closure (FCS limitation)
+                    None
+                | Val _ |  Enum _ | Interface _ | Module _ | Namespace _
+                | Record _ | Union _ | ValueType _ | CorePatterns.Entity _ -> None
+                | _ ->
+                    None
+            with exn ->
+                None
+
+          cat
+
+
+      let symbolToCompletionData (symbols : FSharpSymbolUse list) =
+          match symbols with
+          | head :: tail ->
+              let cd = FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> ICompletionData
+              match tryGetCategory head with
+              | Some c -> let category = getOrAddCategory c
+                          cd.CompletionCategory <- category
+              | None -> ()
+              cd
+          | _ -> FSharpTryAgainMemberCompletionData() :> ICompletionData
+
+      symbols |> List.map symbolToCompletionData
+
+
 
   override x.Initialize() = 
       do base.Document.Editor.IndentationTracker <- FSharpIndentationTracker(base.Document) :> Mono.TextEditor.IIndentationTracker 
@@ -347,12 +413,12 @@ type FSharpTextEditorCompletion() =
       | Some tyRes ->
         // Get declarations and generate list for MonoDevelop
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, doc.Editor.Document)
-        match tyRes.GetDeclarations(line, col, lineStr) with
-        | Some(decls, _residue) when decls.Items.Any() ->
-              let items = decls.Items
-                          |> Array.map (fun mi -> FSharpMemberCompletionData(mi) :> ICompletionData)
-              result.AddRange(items)
-        | _ -> ()
+        match tyRes.GetDeclarationSymbols(line, col, lineStr) with
+        | Some (symbols, residue) ->
+            let data = getCompletionData symbols
+            let debug = data |> Array.ofList
+            result.AddRange data
+        | None -> ()
     with
     | e ->
         LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
