@@ -115,6 +115,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 
+		public static Task<bool> InsertMemberWithCursor (string operation, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
+		{
+			//TODO: Add dialog for inserting position
+			AddNewMember (type, part, newMember, implementExplicit);
+			return Task.FromResult (true);
+		}
+
 		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 		{
 			if (declaringType == null)
