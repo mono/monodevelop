@@ -256,6 +256,11 @@ namespace MonoDevelop.Ide.Templates
 
 			return fileName;
 		}
+
+		protected virtual string ProcessContent (string content)
+		{
+			return StringParserService.Parse (content, Tags);
+		}
 		
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
@@ -264,7 +269,7 @@ namespace MonoDevelop.Ide.Templates
 			ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			
 			string content = CreateContent (project, Tags, language);
-			content = StringParserService.Parse (content, Tags);
+			content = ProcessContent (content);
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			
