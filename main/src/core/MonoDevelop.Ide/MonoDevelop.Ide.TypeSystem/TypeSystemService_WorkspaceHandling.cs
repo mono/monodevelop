@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var w = Workspace;
 			var projectId = w.GetProjectId (project); 
 			var roslynProject = w.CurrentSolution.GetProject (projectId);
-			return await roslynProject.GetCompilationAsync (cancellationToken);
+			return await roslynProject.GetCompilationAsync (cancellationToken).ConfigureAwait (false);
 		}
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)

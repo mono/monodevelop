@@ -159,7 +159,7 @@ namespace MonoDevelop.CodeGeneration
 
 			var backgroundDocument = DocumentContext.AnalysisDocument.WithText (SourceText.From (text));
 
-			var currentRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken);
+			var currentRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
 			node = currentRoot.FindNode (TextSpan.FromBounds(offset, offset + nodeText.Length));
 
@@ -168,7 +168,7 @@ namespace MonoDevelop.CodeGeneration
 			backgroundDocument = await Simplifier.ReduceAsync (backgroundDocument, TextSpan.FromBounds (offset, offset + nodeText.Length), FormattingOptions, cancellationToken).ConfigureAwait(false);
 			backgroundDocument = await Formatter.FormatAsync (backgroundDocument, Formatter.Annotation, FormattingOptions, cancellationToken).ConfigureAwait(false);
 
-			var newRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken);
+			var newRoot = await backgroundDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
 			var formattedNode = newRoot.GetCurrentNode (node);
 			if (formattedNode == null) {

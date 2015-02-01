@@ -109,7 +109,7 @@ namespace MonoDevelop.Refactoring
 				return RefactoringSymbolInfo.Empty;
 			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
 			if (unit != null) {
-				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
+				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 				try {
 					var token = root.FindToken (offset);
 					var symbol = unit.GetSymbolInfo (token.Parent);
