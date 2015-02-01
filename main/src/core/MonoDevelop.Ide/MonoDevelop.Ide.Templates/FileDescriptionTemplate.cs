@@ -56,8 +56,9 @@ namespace MonoDevelop.Ide.Templates
 			
 			foreach (FileTemplateTypeCodon template in templates) {
 				if (template.ElementName == element.Name) {
-					FileDescriptionTemplate t = (FileDescriptionTemplate) template.CreateInstance (typeof(FileDescriptionTemplate));
+					var t = (FileDescriptionTemplate) template.CreateInstance (typeof(FileDescriptionTemplate));
 					t.Load (element, baseDirectory);
+					t.CreateCondition = element.GetAttribute ("if");
 					return t;
 				}
 			}
@@ -77,6 +78,8 @@ namespace MonoDevelop.Ide.Templates
 		public abstract void Load (XmlElement filenode, FilePath baseDirectory);
 		public abstract bool AddToProject (SolutionItem policyParent, Project project, string language, string directory, string name);
 		public abstract void Show ();
+
+		internal string CreateCondition { get; private set; }
 		
 		public virtual bool IsValidName (string name, string language)
 		{

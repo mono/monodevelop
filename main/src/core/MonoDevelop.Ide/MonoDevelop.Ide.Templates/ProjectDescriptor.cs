@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Templates
 
 		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
-		private List<ProjectReference> references = new List<ProjectReference> ();
+		private List<ProjectReferenceDescription> references = new List<ProjectReferenceDescription> ();
 
 		private XmlElement projectOptions = null;
 		private List<ProjectTemplatePackageReference> packageReferences = new List<ProjectTemplatePackageReference> ();
@@ -90,16 +90,7 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlElement ["References"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["References"].ChildNodes) {
-					XmlElement elem = (XmlElement)xmlNode;
-					var refType = elem.GetAttribute ("type");
-					ProjectReference projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
-					string specificVersion = elem.GetAttribute ("SpecificVersion");
-					if (!string.IsNullOrEmpty (specificVersion))
-						projectReference.SpecificVersion = bool.Parse (specificVersion);
-					string localCopy = elem.GetAttribute ("LocalCopy");
-					if (!string.IsNullOrEmpty (localCopy) && projectReference.CanSetLocalCopy)
-						projectReference.LocalCopy = bool.Parse (localCopy);
-					projectDescriptor.references.Add (projectReference);
+					projectDescriptor.references.Add (new ProjectReferenceDescription ((XmlElement) xmlNode));
 				}
 			}
 
@@ -155,19 +146,23 @@ namespace MonoDevelop.Ide.Templates
 					SetClosestSupportedTargetFramework (policyParent.ParentSolution.FileFormat, dnp);
 				}
 				var substitution = new string[,] { { "ProjectName", GetProjectNameForSubstitution (projectCreateInformation) } };
-				foreach (ProjectReference projectReference in references) {
-					if (projectReference.ReferenceType == ReferenceType.Project) {
-						string referencedProjectName = StringParserService.Parse (projectReference.Reference, substitution);
-						var parsedReference = ProjectReference.RenameReference (projectReference, referencedProjectName);
+				foreach (var desc in references) {
+					if (!projectCreateInformation.ShouldCreate (desc.CreateCondition))
+						continue;
+					if (desc.ProjectReference.ReferenceType == ReferenceType.Project) {
+						string referencedProjectName = StringParserService.Parse (desc.ProjectReference.Reference, substitution);
+						var parsedReference = ProjectReference.RenameReference (desc.ProjectReference, referencedProjectName);
 						dnp.References.Add (parsedReference);
 					} else
-						dnp.References.Add (projectReference);
+						dnp.References.Add (desc.ProjectReference);
 				}
 			}
 
 			foreach (SingleFileDescriptionTemplate resourceTemplate in resources) {
 				try {
-					ProjectFile projectFile = new ProjectFile (resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
+					if (!projectCreateInformation.ShouldCreate (resourceTemplate.CreateCondition))
+						continue;
+					var projectFile = new ProjectFile (resourceTemplate.SaveFile (policyParent, project, defaultLanguage, project.BaseDirectory, null));
 					projectFile.BuildAction = BuildAction.EmbeddedResource;
 					project.Files.Add (projectFile);
 				} catch (Exception ex) {
@@ -179,6 +174,8 @@ namespace MonoDevelop.Ide.Templates
 
 			foreach (FileDescriptionTemplate fileTemplate in files) {
 				try {
+					if (!projectCreateInformation.ShouldCreate (fileTemplate.CreateCondition))
+						continue;
 					projectCreateInformation.Parameters.MergeTo (fileTemplate.Tags);
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
 					fileTemplate.Tags.Clear ();
@@ -270,6 +267,25 @@ namespace MonoDevelop.Ide.Templates
 		public bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
 		{
 			return projectCreateInformation.ShouldCreate (createCondition);
+		}
+
+		class ProjectReferenceDescription
+		{
+			public ProjectReferenceDescription (XmlElement elem)
+			{
+				CreateCondition = elem.GetAttribute ("if");
+				var refType = elem.GetAttribute ("type");
+				ProjectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
+				string specificVersion = elem.GetAttribute ("SpecificVersion");
+				if (!string.IsNullOrEmpty (specificVersion))
+					ProjectReference.SpecificVersion = bool.Parse (specificVersion);
+				string localCopy = elem.GetAttribute ("LocalCopy");
+				if (!string.IsNullOrEmpty (localCopy) && ProjectReference.CanSetLocalCopy)
+					ProjectReference.LocalCopy = bool.Parse (localCopy);
+			}
+
+			public ProjectReference ProjectReference { get; private set; }
+			public string CreateCondition { get; private set; }
 		}
 	}
 }
