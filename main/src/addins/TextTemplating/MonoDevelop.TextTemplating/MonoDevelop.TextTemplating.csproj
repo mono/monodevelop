@@ -54,6 +54,7 @@
     <Compile Include="ProjectFileTemplatingHost.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="GenerateCommandHandler.cs" />
+    <Compile Include="T4FileTemplate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -73,6 +74,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
