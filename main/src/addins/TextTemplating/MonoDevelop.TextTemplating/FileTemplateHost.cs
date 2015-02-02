@@ -1,5 +1,5 @@
-﻿//
-// T4FileTemplate.cs
+//
+// FileTemplateHost.cs
 //
 // Author:
 //       Michael Hutchinson <mhutch@xamarin.com>
@@ -26,51 +26,51 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core.StringParsing;
 using Microsoft.VisualStudio.TextTemplating;
+using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.TextTemplating
 {
-	public class T4FileTemplate : SingleFileDescriptionTemplate
+	public class FileTemplateHost : MonoDevelopTemplatingHost
 	{
-		FilePath srcFile;
+		readonly IStringTagModel tags;
 
-		public override void Load (XmlElement filenode, FilePath baseDirectory)
+		internal FileTemplateHost (IStringTagModel tags)
 		{
-			base.Load (filenode, baseDirectory);
-			var srcAtt = filenode.Attributes["src"];
-			if (srcAtt == null) {
-				throw new Exception ("T4FileTemplate is missing src attribute");
-			}
-			srcFile = FileService.MakePathSeparatorsNative (srcAtt.Value);
-			if (srcFile.IsNullOrEmpty)
-				throw new InvalidOperationException ("Template's Src attribute is empty");
-			srcFile = srcFile.ToAbsolute (baseDirectory);
+			this.tags = tags;
+
+			Refs.Add (typeof (FileTemplateHost).Assembly.Location);
 		}
 
-		public override string CreateContent (string language)
-		{
-			return File.ReadAllText (srcFile);
+		//TODO should we move this to a tags property?
+		public string this[string key] {
+			get {
+				var val = tags.GetValue (key);
+				return val != null ? val.ToString () : null;
+			}
 		}
 
-		protected override string ProcessContent (string content, IStringTagModel tags)
+		public bool IsTrue (string key)
 		{
-			using (var host = new FileTemplateHost (tags)) {
-				string s = srcFile;
-				string output;
-				host.ProcessTemplate (s, content, ref s, out output);
-				if (host.Errors.HasErrors) {
-					foreach (var err in host.Errors)
-						LoggingService.LogError ("Error in template generator: {0}", err.ToString());
-					throw new Exception ("Failed to generate file");
-				}
-				return output;
-			}
+			if (string.Equals (this [key], "true", StringComparison.OrdinalIgnoreCase))
+				return true;
+			return false;
+		}
+
+		protected override string SubstitutePlaceholders (string s)
+		{
+			return StringParserService.Parse (s, tags);
+		}
+
+		public override bool UseSpecificHostType {
+			get { return true; }
+		}
+
+		public override IEnumerable<IDirectiveProcessor> GetAdditionalDirectiveProcessors ()
+		{
+			yield return new FileTemplateDirectiveProcessor ();
 		}
 	}
-}
 
+}
