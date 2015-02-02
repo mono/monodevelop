@@ -81,7 +81,7 @@ namespace MonoDevelop.SourceEditor
 				return lastResult;
 			lastNode = token;
 			var symbolInfo = unit.GetSymbolInfo (token.Parent); 
-			return lastResult = new TooltipItem (new ToolTipData (symbolInfo, token), token.FullSpan.Start, token.FullSpan.Length);
+			return lastResult = new TooltipItem (new ToolTipData (symbolInfo, token), token.Span.Start, token.Span.Length);
 		}
 		
 		SyntaxToken lastNode;
@@ -137,15 +137,39 @@ namespace MonoDevelop.SourceEditor
 
 			if (tipWindow == null)
 				return;
-
+			Gtk.Widget editorWidget = editor;
+		
 			var startLoc = editor.OffsetToLocation (item.Offset);
 			var endLoc = editor.OffsetToLocation (item.EndOffset);
 			var p1 = editor.LocationToPoint (startLoc);
 			var p2 = editor.LocationToPoint (endLoc);
-			Gtk.Widget positionWidget = editor;
-			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
-			((TooltipInformationWindow)tipWindow).ShowPopup (positionWidget, caret, PopupPosition.Top);
+			int w = (int)(p2.X - p1.X);
+
+			int x = (int)(p1.X + w / 2);
+			int y = (int)p1.Y;
+			var geometry = editorWidget.Screen.GetUsableMonitorGeometry (editorWidget.Screen.GetMonitorAtPoint (x, y));
+
+			if (x + w >= geometry.X + geometry.Width)
+				x = geometry.X + geometry.Width - w;
+			if (x < geometry.Left)
+				x = geometry.Left;
+
+			var gtkWindow = (Gtk.Window)tipWindow;
+			int h = gtkWindow.SizeRequest ().Height;
+			if (y + h >= geometry.Y + geometry.Height)
+				y = geometry.Y + geometry.Height - h;
+			if (y < geometry.Top)
+				y = geometry.Top;
+			
+			var caret = new Gdk.Rectangle (
+				(int)x - w / 2,
+				(int)y,
+				(int)w,
+				(int)editor.LineHeight
+			);
+
+			((TooltipInformationWindow)tipWindow).ShowPopup (editorWidget, caret, PopupPosition.Top);
 			((Gtk.Window)tipWindow).EnterNotifyEvent += delegate {
 //				editor.HideTooltip (false);
 			};
