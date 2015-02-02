@@ -89,9 +89,13 @@ namespace MonoDevelop.TextTemplating
 
 		static CodeTypeMember CreateTagsProperty (CodePropertyReferenceExpression hostProp)
 		{
-			var hostTypeRef = new CodeTypeReference (typeof (FileTemplateHost));
+			var hostTypeRef = new CodeTypeReference (typeof (IFileTagProvider));
 			var prop = new CodeMemberProperty { Name = "Tags", Type = hostTypeRef };
-			prop.GetStatements.Add (new CodeMethodReturnStatement (hostProp));
+			prop.GetStatements.Add (
+				new CodeMethodReturnStatement (
+					new CodePropertyReferenceExpression (hostProp, "Tags")
+				)
+			);
 			return prop;
 		}
 

@@ -32,18 +32,49 @@ using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.TextTemplating
 {
-	public class FileTemplateHost : MonoDevelopTemplatingHost
+	//this is the public interface we expose for templates
+	public interface IFileTemplateHost
+	{
+		bool IsTrue (string key);
+		IFileTagProvider Tags { get; }
+	}
+
+	public interface IFileTagProvider
+	{
+		string this [string key] { get; }
+	}
+
+	class FileTemplateHost : MonoDevelopTemplatingHost, IFileTemplateHost, IFileTagProvider
 	{
 		readonly IStringTagModel tags;
 
-		internal FileTemplateHost (IStringTagModel tags)
+		public FileTemplateHost (IStringTagModel tags)
 		{
 			this.tags = tags;
 
 			Refs.Add (typeof (FileTemplateHost).Assembly.Location);
 		}
 
-		//TODO should we move this to a tags property?
+		protected override string SubstitutePlaceholders (string s)
+		{
+			return StringParserService.Parse (s, tags);
+		}
+
+		public override IEnumerable<IDirectiveProcessor> GetAdditionalDirectiveProcessors ()
+		{
+			yield return new FileTemplateDirectiveProcessor ();
+		}
+
+		public override Type SpecificHostType {
+			get { return typeof (IFileTemplateHost); }
+		}
+
+		// implementation of public interfaces
+
+		public IFileTagProvider Tags {
+			get { return this; }
+		}
+
 		public string this[string key] {
 			get {
 				var val = tags.GetValue (key);
@@ -57,20 +88,5 @@ namespace MonoDevelop.TextTemplating
 				return true;
 			return false;
 		}
-
-		protected override string SubstitutePlaceholders (string s)
-		{
-			return StringParserService.Parse (s, tags);
-		}
-
-		public override bool UseSpecificHostType {
-			get { return true; }
-		}
-
-		public override IEnumerable<IDirectiveProcessor> GetAdditionalDirectiveProcessors ()
-		{
-			yield return new FileTemplateDirectiveProcessor ();
-		}
 	}
-
 }
