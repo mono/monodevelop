@@ -377,5 +377,10 @@ namespace Mono.TextTemplating
 				return hashCode;
 			}
 		}
+
+		/// <summary>
+		/// If true, the template's Host property will be the full type of this host.
+		/// </summary>
+		public virtual bool UseSpecificHostType { get { return false; } }
 	}
 }

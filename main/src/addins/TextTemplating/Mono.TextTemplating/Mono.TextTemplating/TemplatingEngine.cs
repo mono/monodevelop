@@ -283,6 +283,15 @@ namespace Mono.TextTemplating
 				}
 				ComplainExcessAttributes (dt, pt);
 			}
+
+			var gen = host as TemplateGenerator;
+			if (gen != null) {
+				if (gen.UseSpecificHostType) {
+					var genType = gen.GetType ();
+					settings.HostType = genType.FullName;
+					settings.Assemblies.Add (genType.Assembly.Location);
+				}
+			}
 			
 			//initialize the custom processors
 			foreach (var kv in settings.DirectiveProcessors) {
@@ -567,7 +576,7 @@ namespace Mono.TextTemplating
 			
 			//generate the Host property if needed
 			if (settings.HostSpecific && !settings.HostPropertyOnBase) {
-				GenerateHostProperty (type);
+				GenerateHostProperty (type, settings.HostType);
 			}
 			
 			GenerateInitializationMethod (type, settings);
@@ -593,9 +602,15 @@ namespace Mono.TextTemplating
 			};
 		}
 		
-		static void GenerateHostProperty (CodeTypeDeclaration type)
+		static void GenerateHostProperty (CodeTypeDeclaration type, string hostType)
 		{
-			var hostField = new CodeMemberField (TypeRef<ITextTemplatingEngineHost> (), "hostValue");
+			CodeTypeReference hostTypeRef;
+			if (string.IsNullOrEmpty (hostType)) {
+				hostTypeRef = TypeRef<ITextTemplatingEngineHost> ();
+			} else {
+				hostTypeRef = new CodeTypeReference (hostType);
+			}
+			var hostField = new CodeMemberField (hostTypeRef, "hostValue");
 			hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
 			type.Members.Add (hostField);
 			
