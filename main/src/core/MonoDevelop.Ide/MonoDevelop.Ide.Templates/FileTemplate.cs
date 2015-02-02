@@ -364,10 +364,16 @@ namespace MonoDevelop.Ide.Templates
 		protected virtual bool CreateFile (FileDescriptionTemplate newfile, SolutionItem policyParent, Project project, string directory, string language, string name)
         {
             if (project != null) {
-                if (newfile.AddToProject (policyParent, project, language, directory, name)) {
-                    newfile.Show ();
-                    return true;
-                }
+				var model = project.GetStringTagModel (new DefaultConfigurationSelector ());
+				newfile.SetProjectTagModel (model);
+				try {
+	                if (newfile.AddToProject (policyParent, project, language, directory, name)) {
+	                    newfile.Show ();
+	                    return true;
+					}
+				} finally {
+					newfile.SetProjectTagModel (null);
+				}
 			} else {
                 SingleFileDescriptionTemplate singleFile = newfile as SingleFileDescriptionTemplate;
                 if (singleFile == null)

@@ -26,11 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectCreateParameters
+	public class ProjectCreateParameters : IStringTagModel
 	{
 		Dictionary<string, string> parameters;
 
@@ -74,6 +74,14 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return defaultValue;
+		}
+
+		object IStringTagModel.GetValue (string name)
+		{
+			string result;
+			if (parameters.TryGetValue (name, out result))
+				return result;
+			return null;
 		}
 	}
 }

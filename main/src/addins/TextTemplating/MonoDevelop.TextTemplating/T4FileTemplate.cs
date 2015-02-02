@@ -30,6 +30,7 @@ using System.IO;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -55,9 +56,9 @@ namespace MonoDevelop.TextTemplating
 			return File.ReadAllText (srcFile);
 		}
 
-		protected override string ProcessContent (string content)
+		protected override string ProcessContent (string content, IStringTagModel tags)
 		{
-			using (var host = new FileTemplateHost (Tags)) {
+			using (var host = new FileTemplateHost (tags)) {
 				string s = srcFile;
 				string output;
 				host.ProcessTemplate (s, content, ref s, out output);
@@ -73,27 +74,22 @@ namespace MonoDevelop.TextTemplating
 
 	public class FileTemplateHost : MonoDevelopTemplatingHost
 	{
-		readonly Dictionary<string,string> tags;
+		readonly IStringTagModel tags;
 
-		public FileTemplateHost ()
+		public FileTemplateHost (IStringTagModel tags)
 		{
+			this.tags = tags;
+
 			AddMonoDevelopHostImport ();
 			Imports.Add (typeof (FileTemplateHost).Namespace);
 			Refs.Add (typeof (FileTemplateHost).Assembly.Location);
 		}
 
-		public FileTemplateHost (Dictionary<string,string> tags)
-		{
-			this.tags = tags;
-		}
-
 		//TODO could we expose the tags better e.g. via a directive processor?
 		public string this[string key] {
 			get {
-				string val;
-				if (tags.TryGetValue (key, out val))
-					return val;
-				return null;
+				var val = tags.GetValue (key);
+				return val != null? val.ToString () : null;
 			}
 		}
 

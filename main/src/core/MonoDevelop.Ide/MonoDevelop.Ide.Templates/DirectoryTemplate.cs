@@ -33,11 +33,9 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	
-	
 	public class DirectoryTemplate : FileDescriptionTemplate
 	{
-		List<FileDescriptionTemplate> templates = new List<FileDescriptionTemplate> ();
+		readonly List<FileDescriptionTemplate> templates = new List<FileDescriptionTemplate> ();
 		string dirName;
 		
 		public override string Name {
@@ -99,10 +97,17 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			foreach (FileDescriptionTemplate t in templates) {
-				t.Tags = Tags;
 				addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
 			}
 			return addedSomething;
+		}
+
+		internal override void SetProjectTagModel (MonoDevelop.Core.StringParsing.IStringTagModel tagModel)
+		{
+			base.SetProjectTagModel (tagModel);
+			foreach (FileDescriptionTemplate t in templates) {
+				t.SetProjectTagModel (tagModel);
+			}
 		}
 	}
 }

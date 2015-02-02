@@ -176,13 +176,14 @@ namespace MonoDevelop.Ide.Templates
 				try {
 					if (!projectCreateInformation.ShouldCreate (fileTemplate.CreateCondition))
 						continue;
-					projectCreateInformation.Parameters.MergeTo (fileTemplate.Tags);
+					fileTemplate.SetProjectTagModel (projectCreateInformation.Parameters);
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
-					fileTemplate.Tags.Clear ();
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;
 					MessageService.ShowError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
+				} finally {
+					fileTemplate.SetProjectTagModel (null);
 				}
 			}
 		}

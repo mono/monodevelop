@@ -29,17 +29,13 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.CodeDom;
-using System.CodeDom.Compiler;
 
 using MonoDevelop.Core;
 using Mono.Addins;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -104,11 +100,16 @@ namespace MonoDevelop.Ide.Templates
 			return true;
 		}
 
-		protected Dictionary<string, string> tags = new Dictionary<string, string> ();
+		protected IStringTagModel ProjectTagModel {
+			get;
+			private set;
+		}
 
-		public Dictionary<string, string> Tags {
-			get { return tags; }
-			set { tags = value; }
+		// FIXME: maybe these should be public/protected, not 100% happy committing to this API right now though
+		// AddProjectTags is called before AddToProject, then called with null afterwards
+		internal virtual void SetProjectTagModel (IStringTagModel tagModel)
+		{
+			ProjectTagModel = tagModel;
 		}
 	}
 }
