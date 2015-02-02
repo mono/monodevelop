@@ -291,6 +291,9 @@ namespace Mono.TextTemplating
 					settings.HostType = genType.FullName;
 					settings.Assemblies.Add (genType.Assembly.Location);
 				}
+				foreach (var processor in gen.GetAdditionalDirectiveProcessors ()) {
+					settings.DirectiveProcessors [processor.GetType ().FullName] = processor;
+				}
 			}
 			
 			//initialize the custom processors

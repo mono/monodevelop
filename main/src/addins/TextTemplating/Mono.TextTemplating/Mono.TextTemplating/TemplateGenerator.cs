@@ -382,5 +382,13 @@ namespace Mono.TextTemplating
 		/// If true, the template's Host property will be the full type of this host.
 		/// </summary>
 		public virtual bool UseSpecificHostType { get { return false; } }
+
+		/// <summary>
+		/// Gets any additional directive processors to be included in the processing run.
+		/// </summary>
+		public virtual IEnumerable<IDirectiveProcessor> GetAdditionalDirectiveProcessors ()
+		{
+			yield break;
+		}
 	}
 }
