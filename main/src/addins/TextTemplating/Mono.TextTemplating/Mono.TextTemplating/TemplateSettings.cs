@@ -62,7 +62,7 @@ namespace Mono.TextTemplating
 		public bool RelativeLinePragmas { get; set; }
 		public bool NoLinePragmas { get; set; }
 		public bool InternalVisibility { get; set; }
-		public string HostType { get; set; }
+		public Type HostType { get; set; }
 	}
 	
 	public class CustomDirective

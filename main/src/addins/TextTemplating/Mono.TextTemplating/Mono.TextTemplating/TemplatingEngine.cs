@@ -286,10 +286,11 @@ namespace Mono.TextTemplating
 
 			var gen = host as TemplateGenerator;
 			if (gen != null) {
-				if (gen.UseSpecificHostType) {
-					var genType = gen.GetType ();
-					settings.HostType = genType.FullName;
-					settings.Assemblies.Add (genType.Assembly.Location);
+				settings.HostType = gen.SpecificHostType;
+				if (settings.HostType != null) {
+					settings.Assemblies.Add (settings.HostType.Assembly.Location);
+				} else {
+					settings.HostType = typeof(ITextTemplatingEngineHost);
 				}
 				foreach (var processor in gen.GetAdditionalDirectiveProcessors ()) {
 					settings.DirectiveProcessors [processor.GetType ().FullName] = processor;
@@ -605,14 +606,9 @@ namespace Mono.TextTemplating
 			};
 		}
 		
-		static void GenerateHostProperty (CodeTypeDeclaration type, string hostType)
+		static void GenerateHostProperty (CodeTypeDeclaration type, Type hostType)
 		{
-			CodeTypeReference hostTypeRef;
-			if (string.IsNullOrEmpty (hostType)) {
-				hostTypeRef = TypeRef<ITextTemplatingEngineHost> ();
-			} else {
-				hostTypeRef = new CodeTypeReference (hostType);
-			}
+			var hostTypeRef = new CodeTypeReference (hostType, CodeTypeReferenceOptions.GlobalReference);
 			var hostField = new CodeMemberField (hostTypeRef, "hostValue");
 			hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
 			type.Members.Add (hostField);

@@ -379,9 +379,9 @@ namespace Mono.TextTemplating
 		}
 
 		/// <summary>
-		/// If true, the template's Host property will be the full type of this host.
+		/// If non-null, the template's Host property will be the full type of this host.
 		/// </summary>
-		public virtual bool UseSpecificHostType { get { return false; } }
+		public virtual Type SpecificHostType { get { return null; } }
 
 		/// <summary>
 		/// Gets any additional directive processors to be included in the processing run.
