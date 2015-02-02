@@ -53,4 +53,8 @@
 			<CommandItem id = "MonoDevelop.TextTemplating.Commands.Generate" />
 		</Condition>
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+		<FileTemplateType name = "T4File" class = "MonoDevelop.TextTemplating.T4FileTemplate" />
+	</Extension>
 </ExtensionModel>

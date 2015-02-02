@@ -41,6 +41,7 @@ using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -119,9 +120,8 @@ namespace MonoDevelop.Ide.Templates
 				ProjectFile projectFile = project.AddFile (generatedFile, buildAction);
 				
 				if (!string.IsNullOrEmpty (dependsOn)) {
-					Dictionary<string,string> tags = new Dictionary<string,string> ();
-					ModifyTags (policyParent, project, language, name, generatedFile, ref tags);
-					string parsedDepName = StringParserService.Parse (dependsOn, tags);
+					var model = GetTagModel (policyParent, project, language, name, generatedFile);
+					string parsedDepName = StringParserService.Parse (dependsOn, model);
 					if (projectFile.DependsOn != parsedDepName)
 						projectFile.DependsOn = parsedDepName;
 				}
@@ -220,6 +220,29 @@ namespace MonoDevelop.Ide.Templates
 			}
 			return file;
 		}
+
+		class CombinedTagModel : IStringTagModel
+		{
+			public IStringTagModel BaseModel;
+			public Dictionary<string, string> OverrideTags = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
+
+			public object GetValue (string name)
+			{
+				string val;
+				if (OverrideTags.TryGetValue (name, out val))
+					return val;
+				if (BaseModel != null)
+					return BaseModel.GetValue (name);
+				return null;
+			}
+		}
+
+		CombinedTagModel GetTagModel (SolutionItem policyParent, Project project, string language, string identifier, string fileName)
+		{
+			var model = new CombinedTagModel { BaseModel = ProjectTagModel };
+			ModifyTags (policyParent, project, language, identifier, fileName, ref model.OverrideTags);
+			return model;
+		}
 		
 		// Returns the name of the file that this template generates.
 		// All parameters are optional (can be null)
@@ -232,9 +255,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			//substitute tags
 			if ((name != null) && (name.Length > 0)) {
-				Dictionary<string,string> tags = new Dictionary<string,string> ();
-				ModifyTags (policyParent, project, language, entryName ?? name, null, ref tags);
-				fileName = StringParserService.Parse (name, tags);
+				var model = GetTagModel (policyParent, project, language, entryName ?? name, null);
+				fileName = StringParserService.Parse (name, model);
 			}
 			
 			if (fileName == null)
@@ -256,16 +278,24 @@ namespace MonoDevelop.Ide.Templates
 
 			return fileName;
 		}
-		
+
+		protected virtual string ProcessContent (string content, IStringTagModel tags)
+		{
+			return StringParserService.Parse (content, tags);
+		}
+
 		// Returns a stream with the content of the file.
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName, string identifier)
 		{
-			Dictionary<string, string> tags = new Dictionary<string, string> ();
-			ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
-			
-			string content = CreateContent (project, tags, language);
-			content = StringParserService.Parse (content, tags);
+			var model = GetTagModel (policyParent, project, language, identifier, fileName);
+
+			//HACK: for API compat, CreateContent just gets the override, not the base model
+			// but ProcessContent gets the entire model
+			string content = CreateContent (project, model.OverrideTags, language);
+
+			content = ProcessContent (content, model);
+
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			

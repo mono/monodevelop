@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 1.5.7\n"
 
 #: ../templates/BooGtkSharpProject.xpt.xml:7
@@ -170,7 +170,7 @@ msgstr "フォント"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:57
 msgid "Use default monospace font"
-msgstr "既定のの等幅フォントを使用"
+msgstr "既定の等幅フォントを使用"
 
 #: ../Gui/OptionPanels/GeneralShellPanel.boo:58
 msgid "Use custom font:"

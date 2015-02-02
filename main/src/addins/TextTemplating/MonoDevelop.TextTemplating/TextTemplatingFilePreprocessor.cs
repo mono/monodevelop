@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -42,55 +41,67 @@ namespace MonoDevelop.TextTemplating
 		{
 			return new ThreadAsyncOperation (delegate {
 				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
-					var dnp = file.Project as DotNetProject;
-					if (dnp == null) {
-						var msg = "Precompiled T4 templates are only supported in .NET projects";
-						result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
-						monitor.Log.WriteLine (msg);
-						return;
-					}
-					
-					var provider = dnp.LanguageBinding.GetCodeDomProvider ();
-					if (provider == null) {
-						var msg = "Precompiled T4 templates are only supported for .NET languages with CodeDOM providers";
-						result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
-						monitor.Log.WriteLine (msg);
-						return;
-					};
-					
-					var outputFile = file.FilePath.ChangeExtension (provider.FileExtension);
-					var encoding = System.Text.Encoding.UTF8;
-					string language;
-					string[] references;
-					string className = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
-					
-					string classNamespace = CustomToolService.GetFileNamespace (file, outputFile);
-					LogicalSetData ("NamespaceHint", classNamespace, result.Errors);
 
-					host.PreprocessTemplate (file.FilePath, className, classNamespace, outputFile, encoding, out language, out references);
-					
+					string outputFile;
+					Generate (host, file, out outputFile);
+
 					result.GeneratedFilePath = outputFile;
 					result.Errors.AddRange (host.Errors);
+
 					foreach (var err in host.Errors)
 						monitor.Log.WriteLine (err);
 				}
 			}, result);
 		}
-		
-		static bool warningLogged;
-		
-		internal static void LogicalSetData (string name, object value,
-			System.CodeDom.Compiler.CompilerErrorCollection errors)
+
+		static void Generate (TemplateGenerator host, ProjectFile file, out string outputFile)
 		{
-			if (warningLogged)
-				return;
-			
-			//FIXME: CallContext.LogicalSetData not implemented in Mono
+			outputFile = null;
+
+			string content;
 			try {
-				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData (name, value);
-			} catch (NotImplementedException) {
-				LoggingService.LogWarning ("T4: CallContext.LogicalSetData not implemented in this Mono version");
-				warningLogged = true;
+				content = File.ReadAllText (file.FilePath);
+			}
+			catch (IOException ex) {
+				host.Errors.Add (new CompilerError {
+					ErrorText = "Could not read input file '" + file.FilePath + "':\n" + ex
+				});
+				return;
+			}
+
+			var pt = ParsedTemplate.FromText (content, host);
+			if (pt.Errors.HasErrors) {
+				host.Errors.AddRange (pt.Errors);
+				return;
+			}
+
+			var settings = TemplatingEngine.GetSettings (host, pt);
+			if (pt.Errors.HasErrors) {
+				host.Errors.AddRange (pt.Errors);
+				return;
+			}
+
+			outputFile = file.FilePath.ChangeExtension (settings.Provider.FileExtension);
+			settings.Name = settings.Provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+			settings.Namespace = CustomToolService.GetFileNamespace (file, outputFile);
+			settings.IncludePreprocessingHelpers = string.IsNullOrEmpty (settings.Inherits);
+			settings.IsPreprocessed = true;
+
+			var ccu = TemplatingEngine.GenerateCompileUnit (host, content, pt, settings);
+			host.Errors.AddRange (pt.Errors);
+			if (pt.Errors.HasErrors) {
+				return;
+			}
+
+			try {
+				using (var writer = new StreamWriter (outputFile, false, System.Text.Encoding.UTF8)) {
+					settings.Provider.GenerateCodeFromCompileUnit (ccu, writer, new CodeGeneratorOptions ());
+				}
+			}
+			catch (IOException ex) {
+				host.Errors.Add (new CompilerError {
+					ErrorText = "Could not write output file '" + outputFile + "':\n" + ex
+				});
 			}
 		}
 	}

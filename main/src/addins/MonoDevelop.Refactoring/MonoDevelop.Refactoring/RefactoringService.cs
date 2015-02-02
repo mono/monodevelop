@@ -202,51 +202,49 @@ namespace MonoDevelop.Refactoring
 		static Stopwatch validActionsWatch = new Stopwatch ();
 		static Stopwatch actionWatch = new Stopwatch ();
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static IEnumerable<CodeAction> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var editor = doc.Editor;
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
-			return Task.Factory.StartNew (delegate {
-				var result = new List<CodeAction> ();
-				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
-				timer.BeginTiming ();
-				validActionsWatch.Restart ();
-				var timeTable = new Dictionary<CodeActionProvider, long> ();
-				try {
-					var parsedDocument = doc.ParsedDocument;
-					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
-						if (ctx != null) {
-							foreach (var provider in contextActions.Where (fix =>
-								fix.MimeType == editor.MimeType &&
-								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
-							{
-								try {
-									actionWatch.Restart ();
-									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
-									actionWatch.Stop ();
-									timeTable[provider] = actionWatch.ElapsedMilliseconds;
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
-								}
+			var result = new List<CodeAction> ();
+			var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
+			timer.BeginTiming ();
+			validActionsWatch.Restart ();
+			var timeTable = new Dictionary<CodeActionProvider, long> ();
+			try {
+				var parsedDocument = doc.ParsedDocument;
+				if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
+					var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
+					if (ctx != null) {
+						foreach (var provider in contextActions.Where (fix =>
+							fix.MimeType == editor.MimeType &&
+							disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
+						{
+							try {
+								actionWatch.Restart ();
+								result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
+								actionWatch.Stop ();
+								timeTable[provider] = actionWatch.ElapsedMilliseconds;
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 							}
 						}
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error in analysis service", ex);
-				} finally {
-					timer.EndTiming ();
-					validActionsWatch.Stop ();
-					if (validActionsWatch.ElapsedMilliseconds > 1000) {
-						LoggingService.LogWarning ("Warning slow edit action update."); 
-						foreach (var pair in timeTable) {
-							if (pair.Value > 50)
-								LoggingService.LogInfo ("ACTION '" + pair.Key.Title + "' took " + pair.Value +"ms"); 
-						}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error in analysis service", ex);
+			} finally {
+				timer.EndTiming ();
+				validActionsWatch.Stop ();
+				if (validActionsWatch.ElapsedMilliseconds > 1000) {
+					LoggingService.LogWarning ("Warning slow edit action update."); 
+					foreach (var pair in timeTable) {
+						if (pair.Value > 50)
+							LoggingService.LogInfo ("ACTION '" + pair.Key.Title + "' took " + pair.Value +"ms"); 
 					}
 				}
-				return (IEnumerable<CodeAction>)result;
-			}, cancellationToken);
+			}
+			return (IEnumerable<CodeAction>)result;
 		}
 
 		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
@@ -269,7 +267,7 @@ namespace MonoDevelop.Refactoring
 							});
 						}
 					}
-					result.AddRange (GetValidActions (doc, loc).Result);
+					result.AddRange (GetValidActions (doc, loc));
 					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);

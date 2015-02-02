@@ -283,6 +283,19 @@ namespace Mono.TextTemplating
 				}
 				ComplainExcessAttributes (dt, pt);
 			}
+
+			var gen = host as TemplateGenerator;
+			if (gen != null) {
+				settings.HostType = gen.SpecificHostType;
+				if (settings.HostType != null) {
+					settings.Assemblies.Add (settings.HostType.Assembly.Location);
+				} else {
+					settings.HostType = typeof(ITextTemplatingEngineHost);
+				}
+				foreach (var processor in gen.GetAdditionalDirectiveProcessors ()) {
+					settings.DirectiveProcessors [processor.GetType ().FullName] = processor;
+				}
+			}
 			
 			//initialize the custom processors
 			foreach (var kv in settings.DirectiveProcessors) {
@@ -333,7 +346,14 @@ namespace Mono.TextTemplating
 			
 			return settings;
 		}
-		
+
+		public static string IndentSnippetText (CodeDomProvider provider, string text, string indent)
+		{
+			if (provider is CSharpCodeProvider)
+				return IndentSnippetText (text, indent);
+			return text;
+		}
+
 		public static string IndentSnippetText (string text, string indent)
 		{
 			var builder = new StringBuilder (text.Length);
@@ -367,7 +387,7 @@ namespace Mono.TextTemplating
 		
 		static void AddDirective (TemplateSettings settings, ITextTemplatingEngineHost host, string processorName, Directive directive)
 		{
-			DirectiveProcessor processor;
+			IDirectiveProcessor processor;
 			if (!settings.DirectiveProcessors.TryGetValue (processorName, out processor)) {
 				switch (processorName) {
 				case "ParameterDirectiveProcessor":
@@ -375,7 +395,7 @@ namespace Mono.TextTemplating
 					break;
 				default:
 					Type processorType = host.ResolveDirectiveProcessor (processorName);
-					processor = (DirectiveProcessor) Activator.CreateInstance (processorType);
+					processor = (IDirectiveProcessor) Activator.CreateInstance (processorType);
 					break;
 				}
 				if (!processor.IsDirectiveSupported (directive.Name))
@@ -560,7 +580,7 @@ namespace Mono.TextTemplating
 			
 			//generate the Host property if needed
 			if (settings.HostSpecific && !settings.HostPropertyOnBase) {
-				GenerateHostProperty (type);
+				GenerateHostProperty (type, settings.HostType);
 			}
 			
 			GenerateInitializationMethod (type, settings);
@@ -586,9 +606,10 @@ namespace Mono.TextTemplating
 			};
 		}
 		
-		static void GenerateHostProperty (CodeTypeDeclaration type)
+		static void GenerateHostProperty (CodeTypeDeclaration type, Type hostType)
 		{
-			var hostField = new CodeMemberField (TypeRef<ITextTemplatingEngineHost> (), "hostValue");
+			var hostTypeRef = new CodeTypeReference (hostType, CodeTypeReferenceOptions.GlobalReference);
+			var hostField = new CodeMemberField (hostTypeRef, "hostValue");
 			hostField.Attributes = (hostField.Attributes & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
 			type.Members.Add (hostField);
 			
@@ -894,7 +915,7 @@ namespace Mono.TextTemplating
 			var formatProviderFieldRef = new CodeFieldReferenceExpression (new CodeThisReferenceExpression (), formatProviderField.Name);
 			
 			var formatProviderProp = GenerateGetterSetterProperty ("FormatProvider", formatProviderField);
-			AddSetterNullCheck (formatProviderProp, formatProviderFieldRef);
+			MakeSimpleSetterIgnoreNull (formatProviderProp);
 			
 			helperCls.Members.Add (formatProviderField);
 			helperCls.Members.Add (formatProviderProp);
@@ -1000,10 +1021,12 @@ namespace Mono.TextTemplating
 				new CodeAssignStatement (fieldRef, initExpression))
 			);
 		}
-		
-		static void AddSetterNullCheck (CodeMemberProperty property, CodeFieldReferenceExpression fieldRef)
+
+		static void MakeSimpleSetterIgnoreNull (CodeMemberProperty property)
 		{
-			property.SetStatements.Insert (0, NullCheck (fieldRef, fieldRef.FieldName));
+			property.SetStatements [0] = new CodeConditionStatement (
+				NotNull (new CodePropertySetValueReferenceExpression ()),
+				property.SetStatements [0]);
 		}
 		
 		static CodeStatement NullCheck (CodeExpression expr, string exceptionMessage)
@@ -1052,5 +1075,59 @@ namespace Mono.TextTemplating
 		}
 		
 		#endregion
+
+		//HACK: Mono as of 2.10.2 doesn't implement GenerateCodeFromMember
+		static readonly bool useMonoHack = Type.GetType ("Mono.Runtime") != null;
+
+		/// <summary>
+		/// An implementation of CodeDomProvider.GenerateCodeFromMember that works on Mono.
+		/// </summary>
+		public static void GenerateCodeFromMembers (CodeDomProvider provider, CodeGeneratorOptions options, StringWriter sw, IEnumerable<CodeTypeMember> members)
+		{
+			if (!useMonoHack) {
+				foreach (CodeTypeMember member in members)
+					provider.GenerateCodeFromMember (member, sw, options);
+				return;
+			}
+
+			var cgType = typeof (CodeGenerator);
+			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			#pragma warning disable 0618
+			var generator = (CodeGenerator) provider.CreateGenerator ();
+			#pragma warning restore 0618
+			var dummy = new CodeTypeDeclaration ("Foo");
+
+			foreach (CodeTypeMember member in members) {
+				var f = member as CodeMemberField;
+				if (f != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgFieldGen.Invoke (generator, new object[] { f });
+					continue;
+				}
+				var p = member as CodeMemberProperty;
+				if (p != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgPropGen.Invoke (generator, new object[] { p, dummy });
+					continue;
+				}
+			}
+		}
+
+		public static string GenerateIndentedClassCode (CodeDomProvider provider, params CodeTypeMember[] members)
+		{
+			return GenerateIndentedClassCode (provider, (IEnumerable<CodeTypeMember>)members);
+		}
+
+		public static string GenerateIndentedClassCode (CodeDomProvider provider, IEnumerable<CodeTypeMember> members)
+		{
+			var options = new CodeGeneratorOptions ();
+			using (var sw = new StringWriter ()) {
+				TemplatingEngine.GenerateCodeFromMembers (provider, options, sw, members);
+				return TemplatingEngine.IndentSnippetText (provider, sw.ToString (), "        ");
+			}
+		}
 	}
 }

@@ -93,34 +93,49 @@ namespace MonoDevelop.Ide.FindInFiles
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
-				string content;
-				var results = new System.Collections.Concurrent.ConcurrentBag<SearchResult>();
 
-				Parallel.ForEach (scope.GetFiles (monitor, filter), provider => { 
+
+				var contents = new List<Tuple<FileProvider, string, List<SearchResult>>>();
+				foreach (var provider in scope.GetFiles (monitor, filter)) {
+					try {
+						contents.Add(Tuple.Create (provider, provider.ReadString (), new List<SearchResult> ()));
+					} catch (FileNotFoundException) {
+						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
+					}
+				}
+
+				var results = new List<SearchResult>();
+				Parallel.ForEach (contents, content => { 
 					if (monitor.IsCancelRequested)
 						return;
-					Interlocked.Increment (ref searchedFilesCount);
 					try {
-						content = provider.ReadString ();
-						if (replacePattern != null)
-							provider.BeginReplace (content);
-					} catch (System.IO.FileNotFoundException) {
-						Application.Invoke (delegate {
-							MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
-						});
-						return;
+						Interlocked.Increment (ref searchedFilesCount);
+						content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
+						lock (results) {
+							results.AddRange (content.Item3);
+						}
+						FoundMatchesCount += content.Item3.Count;
+						if (searchedFilesCount % step == 0)
+							monitor.Step (1); 
+					} catch (Exception e) {
+						LoggingService.LogError("Exception during search.", e);
 					}
-					foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
-						if (monitor.IsCancelRequested)
-							return;
-						FoundMatchesCount++;
-						results.Add (result); 
-					}
-					if (replacePattern != null)
-						provider.EndReplace ();
-					if (searchedFilesCount % step == 0)
-						monitor.Step (1); 
 				});
+
+				if (replacePattern != null) {
+					foreach (var content in contents) {
+						if (content.Item3.Count == 0)
+							continue;
+						try {
+							content.Item1.BeginReplace (content.Item2);
+							Replace (content.Item1, content.Item3, replacePattern);
+							content.Item1.EndReplace ();
+						} catch (Exception e) {
+							LoggingService.LogError("Exception during replace.", e);
+						}
+					}
+				}
+
 				return results;
 			} finally {
 				monitor.EndTask ();
@@ -136,7 +151,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (filter.RegexSearch)
 				return RegexSearch (monitor, provider, content, replacePattern, filter);
 			
-			return Search (provider, content, pattern, replacePattern, filter);
+			return Search (provider, content, pattern, filter);
 		}
 		
 		IEnumerable<SearchResult> RegexSearch (IProgressMonitor monitor, FileProvider provider, string content, string replacePattern, FilterOptions filter)
@@ -179,7 +194,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 		
-		public IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		public IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (content))
 				yield break;
@@ -189,15 +204,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			int end = provider.SelectionEndPosition < 0 ? content.Length : Math.Min (content.Length, provider.SelectionEndPosition);
 			while ((idx = content.IndexOf (pattern, idx, end - idx, comparison)) >= 0) {
 				if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
-					if (replacePattern != null) {
-						provider.Replace (idx + delta, pattern.Length, replacePattern);
-						yield return new SearchResult (provider, idx + delta, replacePattern.Length);
-						delta += replacePattern.Length - pattern.Length;
-					} else {
-						yield return new SearchResult (provider, idx, pattern.Length);
-					}
+					yield return new SearchResult (provider, idx, pattern.Length);
 				}
 				idx += pattern.Length;
+			}
+		}
+
+		public void Replace (FileProvider provider, IEnumerable<SearchResult> searchResult, string replacePattern)
+		{
+			int delta = 0;
+			foreach (var sr in searchResult) {
+				provider.Replace (sr.Offset + delta, sr.Length, replacePattern);
+				delta += replacePattern.Length - sr.Length;
 			}
 		}
 	}

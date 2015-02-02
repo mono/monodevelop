@@ -9,14 +9,15 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-12 11:17:35-0500\n"
-"PO-Revision-Date: 2015-01-10 20:58+0900\n"
+"PO-Revision-Date: 2015-01-15 10:12+0900\n"
 "Last-Translator: Akira Nakagawa <matyapiro31@gmail.com>\n"
-"Language-Team: Akira Nakagawa <matyapiro31@gmail.com>\n"
+"Language-Team: 日本語 <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: Japanese\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=2; plural= n!=1;\n"
+"X-Generator: Gtranslator 2.91.6\n"
 
 # In this sentence,non-{0}'s console.
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:12
@@ -591,7 +592,7 @@ msgstr "ギリシャ語"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:2
 msgid "Hebrew Visual"
-msgstr "ヘブライ Visual"
+msgstr "ヘブライ語 Visual"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:2
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:8
@@ -1235,7 +1236,7 @@ msgstr "'unsafe'ブロックのテンプレート"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:11
 msgid "Html"
-msgstr "Html"
+msgstr "HTML"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:11
 msgid "bold block"
@@ -1446,7 +1447,7 @@ msgstr "選択されたコード行をコメントまたはコメント解除す
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "_Toggle Line Comment(s)"
-msgstr "行コメントをトグル (_T)"
+msgstr "行コメントを切り替え (_T)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "Indent selected lines of code"
@@ -1551,11 +1552,11 @@ msgstr "文書中の全ての折り畳みを切り替える"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "Toggle _Definitions"
-msgstr "定義をトグル"
+msgstr "定義を切り替える (_D)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "Toggles foldings of all method and property bodies."
-msgstr "全てのメソッドとプロパティの本体の端をトグル"
+msgstr "全てのメソッドとプロパティの本体の折り畳みを切り替えます。"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
 msgid "_Format Document"
@@ -2374,7 +2375,7 @@ msgstr "アップデートをチェック (_C)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:10
 msgid "Check for updates to MonoDevelop and packages it requires"
-msgstr "MonoDevelopとその依存パッケージのアップデートをチェックします"
+msgstr "MonoDevelopとその依存パッケージの更新をチェックします"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:10
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:2
@@ -2663,7 +2664,7 @@ msgstr "行または選択範囲を下へ"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Show Parameter List"
-msgstr "パラメータリストの表示"
+msgstr "パラメータの一覧の表示"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Go to Matching _Brace"
@@ -2695,19 +2696,19 @@ msgstr "選択範囲を次の単語まで広げる"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Go to previous subword"
-msgstr "前のsubwordまで移動"
+msgstr "前の部分語まで移動"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Go to next subword"
-msgstr "次のsubwordまで移動"
+msgstr "次の部分語まで移動"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Expand selection to previous subword"
-msgstr "選択範囲を前のsubwordまで広げる"
+msgstr "選択範囲を前の部分語まで広げる"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Expand selection to next subword"
-msgstr "選択範囲を次のsubwordまで広げる"
+msgstr "選択範囲を次の部分語まで広げる"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Expand selection to previous line"
@@ -2739,11 +2740,11 @@ msgstr "選択範囲を行末まで広げます"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Switch caret mode"
-msgstr "キャレットモードを切り替えます"
+msgstr "誤字位置の表示方を切り替えます"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Insert tab"
-msgstr "タブを入力"
+msgstr "タブを挿入"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Remove tab"
@@ -2775,11 +2776,11 @@ msgstr "次の単語を削除"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Delete previous subword"
-msgstr "前のsubwordを削除"
+msgstr "前の部分語を削除"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Delete next subword"
-msgstr "次のsubwordを削除"
+msgstr "次の部分語を削除"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Expand selection to page down"
@@ -3031,7 +3032,7 @@ msgstr "折り畳み (_O)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:6
 msgid "_View"
-msgstr "ビュー (_V)"
+msgstr "表示 (_V)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:6
 msgid "_Search"
@@ -3604,7 +3605,7 @@ msgstr "名前はレターまたは数字で始まらなければなりません
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:5
 msgid "Name must contain only letters, numbers and spaces"
-msgstr "名前にはレター、数字または空白のみ利用できます"
+msgstr "名前には文字、数字または空白のみ利用できます"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewLayoutDialog.cs:5
 msgid "There is already a layout with that name"
@@ -3640,7 +3641,7 @@ msgstr "Copyright"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:41
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:75
 msgid "Loading..."
-msgstr "読み込みしています"
+msgstr "読み込んでいます"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/VersionInformationTabPage.cs:3
 msgid "Failed to load version information."
@@ -7630,7 +7631,7 @@ msgstr "バックアップしてミグレイト"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:4
 msgid "Migrate"
-msgstr "ミグレイト"
+msgstr "移行"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:4
 msgid "Ignore"
@@ -7638,7 +7639,7 @@ msgstr "無視"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:4
 msgid "Migrate Project?"
-msgstr "プロジェクトのミグレイトをしますか?"
+msgstr "プロジェクトを移行しますか?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ProjectLoadProgressMonitor.cs:4
 msgid ""
@@ -10168,7 +10169,7 @@ msgstr "ラジオ アクション"
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenuItem.cs:7
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionToolItem.cs:5
 msgid "Toggle Action"
-msgstr "トグル アクション"
+msgstr "アクションの切り替え"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenuItem.cs:7
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionToolItem.cs:5
@@ -10818,7 +10819,7 @@ msgstr "この文書に追加されるテキスト"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/TextToolboxNode.cs:36
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/CodeTemplateToolboxProvider.cs:2
 msgid "Text Snippets"
-msgstr "テキスト コード片"
+msgstr "テキストの一部分"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/Toolbox.cs:3
 msgid "Show categories"
@@ -12361,7 +12362,7 @@ msgstr "折り返さない"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:0
 msgid "Wrap always"
-msgstr "常に折り返す「"
+msgstr "常に折り返す"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:0
 msgid "Wrap if too long"
@@ -12552,19 +12553,19 @@ msgstr "イベント宣言"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:11
 msgid "Add declaration"
-msgstr "Add宣言"
+msgstr "宣言を追加"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:11
 msgid "Allow one line add"
-msgstr "1行addを許容する"
+msgstr "1行の追加を許容する"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:11
 msgid "Remove declaration"
-msgstr "Remove宣言"
+msgstr "宣言を削除"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:11
 msgid "Allow one line remove"
-msgstr "1行removeを許容する"
+msgstr "1行の削除を許容する"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:19
 msgid "Place 'else' on new line"
@@ -12592,7 +12593,7 @@ msgstr "新しい行に配列の初期化子を配置"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:19
 msgid "Place embedded statements on new line"
-msgstr "新しい行にembedded文を挿入"
+msgstr "新しい行に組み込み文を挿入"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:28
 msgid "Method declarations"
@@ -13867,7 +13868,7 @@ msgstr "\\a"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Matches a bell (alarm) \\u0007."
-msgstr "ベル（アラーム） \\u0007 にマッチします"
+msgstr "ベル（警告） \\u0007 にマッチします"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\b"
@@ -13891,7 +13892,7 @@ msgstr "\\r"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Matches a carriage return \\u000D."
-msgstr "復改 \\u000D にマッチします"
+msgstr "復帰改行 \\u000D にマッチします"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\v"
@@ -13938,7 +13939,7 @@ msgid ""
 "For example, the character \\040 represents a space."
 msgstr ""
 "ASCII文字を8進数（3桁まで）でマッチします;\n"
-" 0が先頭にない数字は、もし1桁しかない場合やキャプチャグループ番号に合致する場"
+" 0が先頭にない数字は、もし1桁しかない場合やキャプチャグループ番号に一致する場"
 "合は、後方参照になります。\n"
 "（詳細は 後方参照 を参照）。\n"
 " 例えば、 \\040 は空白文字を表します。"
@@ -13952,7 +13953,7 @@ msgid ""
 "Matches an ASCII character using hexadecimal representation\n"
 "(exactly two digits)."
 msgstr ""
-"16進数表記でASCII文字にマッチします\n"
+"16進数表記でASCII文字に一致します\n"
 "（明示的に2桁）"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
@@ -14891,7 +14892,7 @@ msgstr "通常"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:2
 msgid "all"
-msgstr "all"
+msgstr "全て"
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.CodeGenerationPanel.cs:2
 msgid "Treat warnings as errors"
@@ -14952,7 +14953,7 @@ msgstr "プロジェクト パッケージ"
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:2
 #: ../src/addins/AspNet/MonoDevelop.AspNet.Mvc/gtk-gui/MonoDevelop.AspNet.Mvc.Gui.AddViewDialog.cs:254
 msgid "..."
-msgstr " "
+msgstr "   "
 
 #: ../src/addins/CBinding/gtk-gui/CBinding.EditPackagesDialog.cs:2
 msgid "Selected packages:"
@@ -15204,7 +15205,7 @@ msgstr "前の {0} を検索"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:5
 msgid "Toggle between search and replace mode"
-msgstr "検索と置換モードの間でトグル"
+msgstr "検索と置換モードの間で切り替える"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:13
 msgid "_Search In Selection"
@@ -15391,7 +15392,7 @@ msgstr "<b>ナビゲーション</b>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:2
 msgid "Use _Vi modes"
-msgstr "_Viモードを使用"
+msgstr "Viモードを使用 (_V)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs:2
 msgid "Word _break mode:"
@@ -15611,11 +15612,11 @@ msgstr "テキストエディタのキャレットに表示効果を適用して
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:13
 msgid "Toggle message bubble"
-msgstr "メッセージバブルをトグル"
+msgstr "メッセージバブルを切り替える"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:13
 msgid "Toggles message bubble on/off"
-msgstr "メッセージバブルのトグルのオン/オフ"
+msgstr "メッセージバブルのオン/オフの切り替え"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:13
 msgid "_Hide Issues"
@@ -15623,7 +15624,7 @@ msgstr "問題を隠す (_H)"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:14
 msgid "Toggle Issues"
-msgstr "問題をトグル"
+msgstr "問題を切り替え"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:15
 msgid "_Top"
@@ -16474,7 +16475,7 @@ msgstr "IRCクライアント"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Tools like FTP or P2P programs"
-msgstr "FTPツールやP2Pプログラムなど"
+msgstr "FTPやP2Pのプログラムなどのツール"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "HAM radio software"
@@ -17114,7 +17115,7 @@ msgstr "<b>登録済みスキーマ</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/gtk-gui/MonoDevelop.XmlEditor.Gui.XmlSchemasPanelWidget.cs:1
 msgid "<b>Default File Associations</b>"
-msgstr "<b>既定ののファイル関連付け</b>"
+msgstr "<b>既定のファイル関連付け</b>"
 
 #: ../src/addins/MonoDevelop.XmlEditor/MonoDevelop.XmlEditor.Gui/XmlSchemasPanel.cs:51
 msgid "Unhandled error saving schema changes."
@@ -18630,7 +18631,7 @@ msgstr ""
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:19
 msgid "Unique identifier.\n"
-msgstr "一位識別子\n"
+msgstr "一意識別子\n"
 
 #: ../src/addins/AspNet/MonoDevelop.AspNet/MonoDevelop.AspNet.Gui/AspNetEditorExtension.cs:19
 msgid ""
@@ -19795,7 +19796,7 @@ msgstr "<b>ヒット数</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:1
 msgid "When the condition is hit:"
-msgstr "条件に合致したとき:"
+msgstr "条件に一致したとき:"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.BreakpointPropertiesDialog.cs:1
 msgid "Break when the hit count is less than"
@@ -20574,7 +20575,7 @@ msgstr "'=='から'Equals'メソッドに変換"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualityOperatorToEqualsAction.cs:2
 msgid "Use 'Equals'"
-msgstr "'Equals'メソッドを使用してください"
+msgstr "'Equals'メソッドを使用する"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 msgid "Convert 'Equals' to '=='"
@@ -20582,11 +20583,11 @@ msgstr "'Equals'メソッドから'=='に変換"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 msgid "Use '=='"
-msgstr "'=='を使用してください。"
+msgstr "'=='を使用する"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 msgid "Use '!='"
-msgstr "'!='を使用してください。"
+msgstr "'!='を使用する"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertExplicitToImplicitImplementationAction.cs:2
 msgid "Convert explicit to implict implementation"
@@ -22549,7 +22550,7 @@ msgstr "呼び出しは参照を基にしたObject.GetHashCodeメソッドに解
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/OptionalParameterCouldBeSkippedIssue.cs:1
 msgid "Optional argument has default value and can be skipped"
-msgstr "任意の引数は既定の値を持ちスキップが可能です"
+msgstr "オプショナル引数は既定の値を持ちスキップが可能です"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/OptionalParameterCouldBeSkippedIssue.cs:6
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantArgumentDefaultValueIssue.cs:10
@@ -23152,7 +23153,7 @@ msgstr "任意のパラメータ \"{0}\"を追加"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddOptionalParameterToInvocationAction.cs:11
 msgid "Add all optional parameters"
-msgstr "すべての任意の引数を追加"
+msgstr "すべてのオプショナル引数を追加"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ComputeConstantValueAction.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ComputeConstantValueAction.cs:2
@@ -23786,7 +23787,7 @@ msgstr "終了"
 
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Flush Memory"
-msgstr "メモリをフラッシュ"
+msgstr "メモリを消去"
 
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Save"

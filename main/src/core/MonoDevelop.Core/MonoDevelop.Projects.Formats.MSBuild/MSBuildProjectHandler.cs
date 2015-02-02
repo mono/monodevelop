@@ -245,7 +245,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			configs.Add (new ProjectConfigurationInfo () {
 				ProjectFile = item.FileName,
 				Configuration = c.Name,
-				Platform = GetExplicitPlatform (c)
+				Platform = GetExplicitPlatform (c),
+				ProjectGuid = ((MSBuildProjectHandler)item.ItemHandler).ItemId
 			});
 			foreach (var refProject in item.GetReferencedItems (configuration).OfType<Project> ()) {
 				var refConfig = refProject.GetConfiguration (configuration);
@@ -253,7 +254,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					configs.Add (new ProjectConfigurationInfo () {
 						ProjectFile = refProject.FileName,
 						Configuration = refConfig.Name,
-						Platform = GetExplicitPlatform (refConfig)
+						Platform = GetExplicitPlatform (refConfig),
+						ProjectGuid = ((MSBuildProjectHandler)refProject.ItemHandler).ItemId
 					});
 				}
 			}

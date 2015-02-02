@@ -1547,7 +1547,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return newReferencedAssemblies;
 			}
 
-			object assemblyReconnectLock = new object();
+			static readonly object assemblyReconnectLock = new object();
 
 			public void EnsureReferencesAreLoaded ()
 			{
@@ -1623,7 +1623,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			object reconnectLock = new object();
+			static readonly object reconnectLock = new object();
 			public void ReconnectAssemblyReferences ()
 			{
 				var netProject = Project as DotNetProject;
