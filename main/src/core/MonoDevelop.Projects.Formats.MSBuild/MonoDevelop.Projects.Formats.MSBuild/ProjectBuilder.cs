@@ -124,6 +124,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			Project project = null;
 
+			var slnConfigContents = GenerateSolutionConfigurationContents (configurations);
+
 			foreach (var pc in configurations) {
 				var p = buildEngine.Engine.GetLoadedProject (pc.ProjectFile);
 
@@ -155,6 +157,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 				}
 
+				p.GlobalProperties.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);

@@ -3,7 +3,6 @@
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
 //       Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
 // Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
@@ -45,6 +44,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class ProjectConfigurationInfo
 	{
 		public string ProjectFile;
+		public string ProjectGuid;
 		public string Configuration;
 		public string Platform;
 	}

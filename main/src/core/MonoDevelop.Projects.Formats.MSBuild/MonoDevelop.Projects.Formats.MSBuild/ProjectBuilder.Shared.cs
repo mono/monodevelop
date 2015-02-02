@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using Microsoft.Build.Framework;
+using System.Xml;
 using System.IO;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -87,6 +88,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				i = str.IndexOf ('%', i + 1);
 			}
 			return str;
+		}
+
+		string GenerateSolutionConfigurationContents (ProjectConfigurationInfo[] configurations)
+		{
+			// can't use XDocument because of the 2.0 builder
+			// and don't just build a string because things may need escaping
+
+			var doc = new XmlDocument ();
+			var root = doc.CreateElement ("SolutionConfiguration");
+			doc.AppendChild (root);
+			foreach (var config in configurations) {
+				var el = doc.CreateElement ("ProjectConfiguration");
+				root.AppendChild (el);
+				el.SetAttribute ("Project", config.ProjectGuid);
+				el.SetAttribute ("AbsolutePath", config.ProjectFile);
+				el.InnerText = string.Format (config.Configuration + "|" + config.Platform);
+			}
+
+			//match MSBuild formatting
+			var options = new XmlWriterSettings {
+				Indent = true,
+				IndentChars = "",
+				OmitXmlDeclaration = true,
+			};
+			using (var sw = new StringWriter ())
+			using (var xw = XmlWriter.Create (sw, options)) {
+				doc.WriteTo (xw);
+				xw.Flush ();
+				return sw.ToString ();
+			}
 		}
 	}
 }

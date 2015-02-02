@@ -124,8 +124,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			Project project = null;
 
+			var slnConfigContents = GenerateSolutionConfigurationContents (configurations);
+
 			foreach (var pc in configurations) {
-				var p = ConfigureProject (pc.ProjectFile, pc.Configuration, pc.Platform);
+				var p = ConfigureProject (pc.ProjectFile, pc.Configuration, pc.Platform, slnConfigContents);
 				if (pc.ProjectFile == file)
 					project = p;
 			}
@@ -134,7 +136,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return project;
 		}
 
-		Project ConfigureProject (string file, string configuration, string platform)
+		Project ConfigureProject (string file, string configuration, string platform, string slnConfigContents)
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
@@ -147,6 +149,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p.FullPath = file;
 				}
 			}
+			p.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
 			p.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
 				p.SetProperty ("Platform", platform);
