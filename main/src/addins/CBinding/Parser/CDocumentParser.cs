@@ -44,13 +44,15 @@ namespace CBinding.Parser
 	/// </summary>
 	public class CDocumentParser:  TypeSystemParser
 	{
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (bool storeAst, string fileName, ITextSource reader, Project project, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions options, System.Threading.CancellationToken cancellationToken)
 		{
+			var fileName = options.FileName;
+			var project = options.Project;
 			var doc = new DefaultParsedDocument (fileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
 			ProjectInformation pi = ProjectInformationManager.Instance.Get (project);
 			
-			string content = reader.Text;
+			string content = options.Content.Text;
 			string[] contentLines = content.Split (new string[]{Environment.NewLine}, StringSplitOptions.None);
 			
 			var globals = new DefaultUnresolvedTypeDefinition ("", GettextCatalog.GetString ("(Global Scope)"));
