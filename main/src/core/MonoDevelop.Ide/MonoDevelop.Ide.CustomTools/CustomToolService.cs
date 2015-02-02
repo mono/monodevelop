@@ -382,12 +382,9 @@ namespace MonoDevelop.Ide.CustomTools
 			string ns = file.CustomToolNamespace;
 			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
 				return ns;
-			var dnp = file.Project as DotNetProject;
-			if (dnp != null)
-				return dnp.GetDefaultNamespace (outputFile);
-			var sap = file.Project as MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject;
-			if (sap != null)
-				return sap.GetDefaultNamespace (outputFile);
+			var dnfc = file.Project as IDotNetFileContainer;
+			if (dnfc != null)
+				return dnfc.GetDefaultNamespace (outputFile);
 			return ns;
 		}
 
