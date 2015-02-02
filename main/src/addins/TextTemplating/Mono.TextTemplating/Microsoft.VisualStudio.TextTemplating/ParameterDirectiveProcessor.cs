@@ -24,35 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.CodeDom.Compiler;
 using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
+using Mono.TextTemplating;
 
 namespace Microsoft.VisualStudio.TextTemplating
 {
 	public sealed class ParameterDirectiveProcessor : DirectiveProcessor, IRecognizeHostSpecific
 	{
 		CodeDomProvider provider;
-		bool isCSharp;
-		bool useMonoHack;
 		
 		bool hostSpecific;
 		readonly List<CodeStatement> postStatements = new List<CodeStatement> ();
-		readonly CodeTypeMemberCollection members = new CodeTypeMemberCollection ();
+		readonly List<CodeTypeMember> members = new List<CodeTypeMember> ();
 		
 		public override void StartProcessingRun (CodeDomProvider languageProvider, string templateContents, CompilerErrorCollection errors)
 		{
 			base.StartProcessingRun (languageProvider, templateContents, errors);
-			this.provider = languageProvider;
-			//HACK: Mono as of 2.10.2 doesn't implement GenerateCodeFromMember
-			if (Type.GetType ("Mono.Runtime") != null)
-				useMonoHack = true;
-			if (languageProvider is Microsoft.CSharp.CSharpCodeProvider)
-				isCSharp = true;
+			provider = languageProvider;
 			postStatements.Clear ();
 			members.Clear ();
 		}
@@ -73,18 +64,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public override string GetClassCodeForProcessingRun ()
 		{
-			var options = new CodeGeneratorOptions ();
-			using (var sw = new StringWriter ()) {
-				GenerateCodeFromMembers (sw, options);
-				return Indent (sw.ToString (), "        ");
-			}
-		}
-		
-		string Indent (string s, string indent)
-		{
-			if (isCSharp)
-				return Mono.TextTemplating.TemplatingEngine.IndentSnippetText (s, indent);
-			return s;
+			return TemplatingEngine.GenerateIndentedClassCode (provider, members);
 		}
 		
 		public override string[] GetImportsForProcessingRun ()
@@ -94,7 +74,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public override string GetPostInitializationCodeForProcessingRun ()
 		{
-			return Indent (StatementsToCode (postStatements), "            ");
+			return TemplatingEngine.IndentSnippetText (provider, StatementsToCode (postStatements), "            ");
 		}
 		
 		public override string GetPreInitializationCodeForProcessingRun ()
@@ -225,39 +205,6 @@ namespace Microsoft.VisualStudio.TextTemplating
 
 		public bool RequiresProcessingRunIsHostSpecific {
 			get { return false; }
-		}
-		
-		void GenerateCodeFromMembers (StringWriter sw, CodeGeneratorOptions options)
-		{
-			if (!useMonoHack) {
-				foreach (CodeTypeMember member in members)
-					provider.GenerateCodeFromMember (member, sw, options);
-			}
-			
-			var cgType = typeof (CodeGenerator);
-			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
-			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
-			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
-			
-#pragma warning disable 0618
-			var generator = (CodeGenerator) provider.CreateGenerator ();
-#pragma warning restore 0618
-			var dummy = new CodeTypeDeclaration ("Foo");
-			
-			foreach (CodeTypeMember member in members) {
-				var f = member as CodeMemberField;
-				if (f != null) {
-					cgInit.Invoke (generator, new object[] { sw, options });
-					cgFieldGen.Invoke (generator, new object[] { f });
-					continue;
-				}
-				var p = member as CodeMemberProperty;
-				if (p != null) {
-					cgInit.Invoke (generator, new object[] { sw, options });
-					cgPropGen.Invoke (generator, new object[] { p, dummy });
-					continue;
-				}
-			}
 		}
 	}
 }

@@ -333,7 +333,14 @@ namespace Mono.TextTemplating
 			
 			return settings;
 		}
-		
+
+		public static string IndentSnippetText (CodeDomProvider provider, string text, string indent)
+		{
+			if (provider is CSharpCodeProvider)
+				return IndentSnippetText (text, indent);
+			return text;
+		}
+
 		public static string IndentSnippetText (string text, string indent)
 		{
 			var builder = new StringBuilder (text.Length);
@@ -1054,5 +1061,59 @@ namespace Mono.TextTemplating
 		}
 		
 		#endregion
+
+		//HACK: Mono as of 2.10.2 doesn't implement GenerateCodeFromMember
+		static readonly bool useMonoHack = Type.GetType ("Mono.Runtime") != null;
+
+		/// <summary>
+		/// An implementation of CodeDomProvider.GenerateCodeFromMember that works on Mono.
+		/// </summary>
+		public static void GenerateCodeFromMembers (CodeDomProvider provider, CodeGeneratorOptions options, StringWriter sw, IEnumerable<CodeTypeMember> members)
+		{
+			if (!useMonoHack) {
+				foreach (CodeTypeMember member in members)
+					provider.GenerateCodeFromMember (member, sw, options);
+				return;
+			}
+
+			var cgType = typeof (CodeGenerator);
+			var cgInit = cgType.GetMethod ("InitOutput", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			#pragma warning disable 0618
+			var generator = (CodeGenerator) provider.CreateGenerator ();
+			#pragma warning restore 0618
+			var dummy = new CodeTypeDeclaration ("Foo");
+
+			foreach (CodeTypeMember member in members) {
+				var f = member as CodeMemberField;
+				if (f != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgFieldGen.Invoke (generator, new object[] { f });
+					continue;
+				}
+				var p = member as CodeMemberProperty;
+				if (p != null) {
+					cgInit.Invoke (generator, new object[] { sw, options });
+					cgPropGen.Invoke (generator, new object[] { p, dummy });
+					continue;
+				}
+			}
+		}
+
+		public static string GenerateIndentedClassCode (CodeDomProvider provider, params CodeTypeMember[] members)
+		{
+			return GenerateIndentedClassCode (provider, (IEnumerable<CodeTypeMember>)members);
+		}
+
+		public static string GenerateIndentedClassCode (CodeDomProvider provider, IEnumerable<CodeTypeMember> members)
+		{
+			var options = new CodeGeneratorOptions ();
+			using (var sw = new StringWriter ()) {
+				TemplatingEngine.GenerateCodeFromMembers (provider, options, sw, members);
+				return TemplatingEngine.IndentSnippetText (provider, sw.ToString (), "        ");
+			}
+		}
 	}
 }
