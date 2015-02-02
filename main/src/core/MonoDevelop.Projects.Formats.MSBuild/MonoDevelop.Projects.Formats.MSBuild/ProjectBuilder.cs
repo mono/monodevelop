@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011-2015 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +42,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
+	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
 		readonly string file;
 		ILogWriter currentLogWriter;
@@ -52,28 +54,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.file = file;
 			this.buildEngine = buildEngine;
 			consoleLogger = new MDConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
-		}
-
-		public void Dispose ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-		
-		public void Refresh ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-		
-		public void RefreshWithContent (string projectContent)
-		{
-			buildEngine.UnloadProject (file);
-			buildEngine.SetUnsavedProjectContent (file, projectContent);
-		}
-
-		void LogWriteLine (string txt)
-		{
-			if (currentLogWriter != null)
-				currentLogWriter.WriteLine (txt);
 		}
 
 		//HACK: Mono does not implement 3.5 CustomMetadataNames API
@@ -139,23 +119,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			});
 			return result;
 		}
-		
-		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
-		{
-			switch (verbosity) {
-			case MSBuildVerbosity.Quiet:
-				return LoggerVerbosity.Quiet;
-			case MSBuildVerbosity.Minimal:
-				return LoggerVerbosity.Minimal;
-			default:
-				return LoggerVerbosity.Normal;
-			case MSBuildVerbosity.Detailed:
-				return LoggerVerbosity.Detailed;
-			case MSBuildVerbosity.Diagnostic:
-				return LoggerVerbosity.Diagnostic;
-			}
-		}
-		
+
 		Project SetupProject (ProjectConfigurationInfo[] configurations)
 		{
 			Project project = null;
@@ -215,24 +179,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				hasXbuildFileBug = p.FullFileName.Length == 0;
 			}
 			return hasXbuildFileBug.Value;
-		}
-		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
-
-		//from MSBuildProjectService
-		static string UnescapeString (string str)
-		{
-			int i = str.IndexOf ('%');
-			while (i != -1 && i < str.Length - 2) {
-				int c;
-				if (int.TryParse (str.Substring (i+1, 2), System.Globalization.NumberStyles.HexNumber, null, out c))
-					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
-				i = str.IndexOf ('%', i + 1);
-			}
-			return str;
 		}
 	}
 }
