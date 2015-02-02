@@ -78,10 +78,14 @@ namespace MonoDevelop.CSharp.Parser
 			SyntaxTree unit = null;
 
 			if (project != null) {
-				var projectId = TypeSystemService.Workspace.GetProjectId (project);
-				var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
-				var documentId = TypeSystemService.GetDocument (project, fileName);
-				var curDoc = curProject.GetDocument (documentId);
+				var curDoc = parseOptions.RoslynDocument;
+				if (curDoc == null) {
+					var projectId = TypeSystemService.Workspace.GetProjectId (project);
+					var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
+					var documentId = TypeSystemService.GetDocument (project, fileName);
+					curDoc = curProject.GetDocument (documentId);
+				}
+
 				try {
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;

@@ -32,31 +32,66 @@ namespace MonoDevelop.Ide.Editor.Projection
 {
 	public sealed class ProjectedSemanticHighlighting : SemanticHighlighting
 	{
-		readonly List<Projection> projections;
+		List<Projection> projections;
 
 		public ProjectedSemanticHighlighting (TextEditor editor, DocumentContext documentContext, IEnumerable<Projection> projections) : base (editor, documentContext)
 		{
 			this.projections = new List<Projection> (projections);
+			foreach (var p in this.projections) {
+				if (p.ProjectedEditor.SemanticHighlighting == null)
+					continue;
+				p.ProjectedEditor.SemanticHighlighting.SemanticHighlightingUpdated += HandleSemanticHighlightingUpdated;
+			}
+		}
+
+		public void UpdateProjection (IEnumerable<Projection>  projections)
+		{
+			foreach (var p in this.projections) {
+				if (p.ProjectedEditor.SemanticHighlighting == null)
+					continue;
+				p.ProjectedEditor.SemanticHighlighting.SemanticHighlightingUpdated -= HandleSemanticHighlightingUpdated;
+			}
+			this.projections = new List<Projection> (projections);
+			foreach (var p in this.projections) {
+				if (p.ProjectedEditor.SemanticHighlighting == null)
+					continue;
+				p.ProjectedEditor.SemanticHighlighting.SemanticHighlightingUpdated += HandleSemanticHighlightingUpdated;
+			}
+		}
+
+		void HandleSemanticHighlightingUpdated (object sender, EventArgs e)
+		{
+			UpdateSemanticHighlighting ();
 		}
 
 		protected override void DocumentParsed ()
 		{
+			UpdateSemanticHighlighting ();
 		}
 
 		public override IEnumerable<ColoredSegment> GetColoredSegments (MonoDevelop.Core.Text.ISegment segment)
 		{
 			foreach (Projection p in projections) {
 				foreach (var seg in p.ProjectedSegments) {
-					if (seg.ContainsOriginal (segment)) {
+					if (seg.IsInOriginal (segment)) {
 						if (p.ProjectedEditor.SemanticHighlighting == null)
-							return Enumerable.Empty<ColoredSegment> ();
-						
-						return p.ProjectedEditor.SemanticHighlighting.GetColoredSegments (seg.Project (segment));
+							continue;
+
+						int delta = segment.EndOffset - (seg.Offset + seg.Length);
+						int len = seg.Length;
+						if (delta < 0) {
+							len += delta;
+						}
+						foreach (var cs in p.ProjectedEditor.SemanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (seg.ProjectedOffset, len))) {
+							yield return new ColoredSegment (cs.Offset - seg.ProjectedOffset + seg.Offset, cs.Length, cs.ColorStyleKey);
+
+						}
+						foreach (var cs in GetColoredSegments (MonoDevelop.Core.Text.TextSegment.FromBounds (seg.Offset + len, segment.EndOffset)))
+							yield return cs;
+						yield break;
 					}
 				}
 			}
-
-			return Enumerable.Empty<ColoredSegment> ();
 		}
 	}
 }

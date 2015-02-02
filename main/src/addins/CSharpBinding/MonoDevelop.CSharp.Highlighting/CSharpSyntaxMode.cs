@@ -61,13 +61,17 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public CSharpSyntaxMode (TextEditor editor, DocumentContext documentContext) : base (editor, documentContext)
 		{
+			DocumentParsed ();
 		}
 
 		#region implemented abstract members of SemanticHighlighting
 
 		protected override void DocumentParsed ()
 		{
-			var resolver = documentContext.ParsedDocument.GetAst<SemanticModel> ();
+			var parsedDocument = documentContext.ParsedDocument;
+			if (parsedDocument == null)
+				return;
+			var resolver = parsedDocument.GetAst<SemanticModel> ();
 			if (resolver == null)
 				return;
 			src.Cancel ();

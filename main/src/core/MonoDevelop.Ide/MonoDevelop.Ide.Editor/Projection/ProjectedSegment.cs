@@ -52,17 +52,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.Length = length;
 		}
 
-		public bool ContainsOriginal (int offset)
-		{
-			return Offset <= offset && offset < Offset + Length;
-		}
-
-		public bool ContainsOriginal (ISegment segment)
+		public bool IsInOriginal (ISegment segment)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			
-			return ContainsOriginal (segment.Offset) && ContainsOriginal (segment.EndOffset); 
+
+			return segment.Contains(Offset) && segment.Contains (Offset + Length); 
 		}
 
 		public ISegment Project (ISegment segment)

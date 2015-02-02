@@ -174,17 +174,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
 		}
 
-		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<ParsedDocument> ParseFile (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (fileName == null)
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			if (options.FileName == null)
 				throw new ArgumentNullException ("fileName");
+			
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return Task.FromResult ((ParsedDocument)null);
 
-			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
+			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
-				var result = parser.Parse (new ParseOptions { FileName = fileName, Project = project, Content = content }, cancellationToken);
+				var result = parser.Parse (options, cancellationToken);
 				return result;
 			} catch (OperationCanceledException) {
 				return Task.FromResult ((ParsedDocument)null);
@@ -194,6 +197,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				t.Dispose ();
 			}
+		}
+
+		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseFile (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
 		}
 
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))

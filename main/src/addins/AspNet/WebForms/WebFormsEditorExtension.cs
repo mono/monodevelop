@@ -104,8 +104,12 @@ namespace MonoDevelop.AspNet.WebForms
 				documentInfo = new DocumentInfo (aspDoc, refman.GetUsings ());
 				localDocumentProjection = new MonoDevelop.AspNet.WebForms.CSharp.CSharpProjector ().CreateProjection (documentInfo, Editor, true).Result;
 				projectedEditor = localDocumentProjection.CreateProjectedEditor (DocumentContext);
-				Console.WriteLine (projectedEditor.FileName);
-				Editor.SemanticHighlighting = new ProjectedSemanticHighlighting (Editor, DocumentContext, new [] { localDocumentProjection  });
+
+				if (Editor.SemanticHighlighting is ProjectedSemanticHighlighting) {
+					((ProjectedSemanticHighlighting)Editor.SemanticHighlighting).UpdateProjection (new [] { localDocumentProjection  });
+				} else {
+					Editor.SemanticHighlighting = new ProjectedSemanticHighlighting (Editor, DocumentContext, new [] { localDocumentProjection  });
+				}
 			}
 		}
 		

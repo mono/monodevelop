@@ -90,7 +90,14 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			public override void ReparseDocument ()
 			{
-				parsedDocument = TypeSystemService.ParseFile (originalContext.Project, projectedEditor.FileName, projectedEditor.MimeType, projectedEditor).Result;
+				var options = new ParseOptions {
+					FileName = projectedEditor.FileName,
+					Content = projectedEditor,
+					Project = Project,
+					RoslynDocument = projectedDocument
+				}; 
+				parsedDocument = TypeSystemService.ParseFile (options, projectedEditor.MimeType).Result;
+
 				base.OnDocumentParsed (EventArgs.Empty);
 			}
 
@@ -101,7 +108,8 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			public override MonoDevelop.Ide.TypeSystem.ParsedDocument UpdateParseDocument ()
 			{
-				return originalContext.UpdateParseDocument ();
+				ReparseDocument ();
+				return parsedDocument;
 			}
 
 			public override string Name {
@@ -131,7 +139,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 			#endregion
 		}
 
-
 		public Projection (ITextDocument document, ImmutableList<ProjectedSegment> projectedSegments)
 		{
 			if (document == null)
@@ -141,8 +148,5 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.Document = document;
 			this.ProjectedSegments = projectedSegments;
 		}
-
-
 	}
 }
-
