@@ -719,7 +719,7 @@ namespace MonoDevelop.CodeActions
 		void OnQuickFixCommand ()
 		{
 			if (!QuickTaskStrip.EnableFancyFeatures) {
-				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result;
+				Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location);
 				currentSmartTagBegin = Document.Editor.Caret.Location;
 				PopupQuickFixMenu (null, null); 
 
