@@ -127,56 +127,6 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
-		{
-			var titem = (ToolTipData)item.Item;
-			if (lastWindow != null && lastWindow.IsRealized && lastNode == titem.Token)
-				return;
-			
-			DestroyLastTooltipWindow ();
-
-			if (tipWindow == null)
-				return;
-			Gtk.Widget editorWidget = editor;
-		
-			var startLoc = editor.OffsetToLocation (item.Offset);
-			var endLoc = editor.OffsetToLocation (item.EndOffset);
-			var p1 = editor.LocationToPoint (startLoc);
-			var p2 = editor.LocationToPoint (endLoc);
-
-			int w = (int)(p2.X - p1.X);
-
-			int x = (int)(p1.X + w / 2);
-			int y = (int)p1.Y;
-			var geometry = editorWidget.Screen.GetUsableMonitorGeometry (editorWidget.Screen.GetMonitorAtPoint (x, y));
-
-			if (x + w >= geometry.X + geometry.Width)
-				x = geometry.X + geometry.Width - w;
-			if (x < geometry.Left)
-				x = geometry.Left;
-
-			var gtkWindow = (Gtk.Window)tipWindow;
-			int h = gtkWindow.SizeRequest ().Height;
-			if (y + h >= geometry.Y + geometry.Height)
-				y = geometry.Y + geometry.Height - h;
-			if (y < geometry.Top)
-				y = geometry.Top;
-			
-			var caret = new Gdk.Rectangle (
-				(int)x - w / 2,
-				(int)y,
-				(int)w,
-				(int)editor.LineHeight
-			);
-
-			((TooltipInformationWindow)tipWindow).ShowPopup (editorWidget, caret, PopupPosition.Top);
-			((Gtk.Window)tipWindow).EnterNotifyEvent += delegate {
-//				editor.HideTooltip (false);
-			};
-			lastWindow = (TooltipInformationWindow)tipWindow;
-			lastNode = titem.Token;
-		}
-
 		TooltipInformation CreateTooltip (ToolTipData data, TextEditor editor, DocumentContext doc, int offset, Gdk.ModifierType modifierState)
 		{
 			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;

@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -107,10 +108,37 @@ namespace MonoDevelop.Ide.Editor
 			return editor.GetContent<ITextEditorImpl> ().GetEditorAllocation ();
 		}
 
+		void ShowTipInfoWindow (TextEditor editor, TooltipInformationWindow tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
+		{
+			Gtk.Widget editorWidget = editor;
+
+			var startLoc = editor.OffsetToLocation (item.Offset);
+			var endLoc = editor.OffsetToLocation (item.EndOffset);
+			var p1 = editor.LocationToPoint (startLoc);
+			var p2 = editor.LocationToPoint (endLoc);
+
+			int w = (int)(p2.X - p1.X);
+
+			var caret = new Gdk.Rectangle (
+				(int)p1.X,
+				(int)p1.Y,
+				(int)w,
+				(int)editor.LineHeight
+			);
+
+			tipWindow.ShowPopup (editorWidget, caret, PopupPosition.Top);
+		}
+
 		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
 		{
 			if (tipWindow == null)
 				return;
+
+			var tipInfoWindow = ((Gtk.Widget)tipWindow) as TooltipInformationWindow;
+			if (tipInfoWindow != null) {
+				ShowTipInfoWindow (editor, tipInfoWindow, item, modifierState, mouseX, mouseY);
+				return;
+			}
 
 			var origin = editor.GetContent<ITextEditorImpl> ().GetEditorWindowOrigin ();
 
