@@ -59,7 +59,8 @@ namespace Mono.TextTemplating
 			textTransformation = Activator.CreateInstance (transformType);
 			
 			//set the host property if it exists
-			var hostProp = transformType.GetProperty ("Host", typeof (ITextTemplatingEngineHost));
+			var hostProp = transformType.GetProperty ("Host", host.GetType ())
+				?? transformType.GetProperty ("Host", typeof(ITextTemplatingEngineHost));
 			if (hostProp != null && hostProp.CanWrite)
 				hostProp.SetValue (textTransformation, host, null);
 			
