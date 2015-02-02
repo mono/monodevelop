@@ -38,7 +38,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 		}
 
-		public override TooltipItem GetItem (TextEditor editor, int offset)
+		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
 		{
 //			//get the ResultsEditorExtension from the editor
 //			var ed =  editor as ExtensibleTextEditor;
@@ -60,8 +60,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return null;
 		}
 
-
-		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override MonoDevelop.Components.Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
 		{
 //			//create a message string from all the results
 //			var results = (IList<Result>)item.Item;

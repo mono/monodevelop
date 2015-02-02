@@ -1164,7 +1164,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IDebuggerExpressionResolver implementation
 
-		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, MonoDevelop.Ide.Gui.Document doc, int offset, out int startOffset)
+		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, DocumentContext doc, int offset, out int startOffset)
 		{
 			return Resolver.DebuggerExpressionResolver.Resolve (doc.ParsedDocument.GetAst<SemanticModel> (), offset, out startOffset);
 		}

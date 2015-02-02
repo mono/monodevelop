@@ -40,9 +40,17 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		TextEditor projectedEditor;
 
-		public TextEditor ProjectedEditor {
+		internal TextEditor ProjectedEditor {
 			get {
 				return projectedEditor;
+			}
+		}
+
+		ProjectedDocumentContext projectedDocumentContext;
+
+		internal DocumentContext ProjectedContext {
+			get {
+				return projectedDocumentContext;
 			}
 		}
 
@@ -50,8 +58,8 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{ 
 			if (projectedEditor == null) {
 				projectedEditor = TextEditorFactory.CreateNewEditor (Document);
-				var doc = new ProjectedDocumentContext (projectedEditor, originalContext);
-				projectedEditor.InitializeExtensionChain (doc);
+				projectedDocumentContext = new ProjectedDocumentContext (projectedEditor, originalContext);
+				projectedEditor.InitializeExtensionChain (projectedDocumentContext);
 			}
 			return projectedEditor;
 		}

@@ -64,12 +64,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor editor, int offset)
+		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
+			if (ctx == null)
 				return null;
-			var analysisDocument = doc.ParsedDocument;
+			var analysisDocument = ctx.ParsedDocument;
 			if (analysisDocument == null)
 				return null;
 			var unit = analysisDocument.GetAst<SemanticModel> ();;
@@ -77,7 +76,6 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			
 			var root = unit.SyntaxTree.GetRoot ();
-			
 			var token = root.FindToken (offset);
 			if (token == lastNode)
 				return lastResult;
@@ -108,15 +106,17 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
-		public override Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+
+
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
+			var doc = ctx;
 			if (doc == null)
 				return null;
 
 			var titem = (ToolTipData)item.Item;
 
-			var tooltipInformation = CreateTooltip (titem, offset, modifierState);
+			var tooltipInformation = CreateTooltip (titem, editor, ctx, offset, modifierState);
 			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
 				return null;
 
@@ -127,44 +127,38 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 
-		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
 		{
 			var titem = (ToolTipData)item.Item;
 			if (lastWindow != null && lastWindow.IsRealized && lastNode == titem.Token)
-				return lastWindow;
+				return;
 			
 			DestroyLastTooltipWindow ();
 
-			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item) as TooltipInformationWindow;
 			if (tipWindow == null)
-				return null;
+				return;
 
-			var hoverNode = titem.Token;
-			var startLoc = editor.OffsetToLocation (hoverNode.Span.Start);
-			var endLoc = editor.OffsetToLocation (hoverNode.Span.End);
+			var startLoc = editor.OffsetToLocation (item.Offset);
+			var endLoc = editor.OffsetToLocation (item.EndOffset);
 			var p1 = editor.LocationToPoint (startLoc);
 			var p2 = editor.LocationToPoint (endLoc);
 			Gtk.Widget positionWidget = editor;
 			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
-			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
-			tipWindow.EnterNotifyEvent += delegate {
+			((TooltipInformationWindow)tipWindow).ShowPopup (positionWidget, caret, PopupPosition.Top);
+			((Gtk.Window)tipWindow).EnterNotifyEvent += delegate {
 //				editor.HideTooltip (false);
 			};
-			lastWindow = tipWindow;
+			lastWindow = (TooltipInformationWindow)tipWindow;
 			lastNode = titem.Token;
-			return tipWindow;
 		}
 
-		TooltipInformation CreateTooltip (ToolTipData data, int offset, Gdk.ModifierType modifierState)
+		TooltipInformation CreateTooltip (ToolTipData data, TextEditor editor, DocumentContext doc, int offset, Gdk.ModifierType modifierState)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null)
-				return null;
 			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
 				TooltipInformation result;
-				var sig = new SignatureMarkupCreator (doc.Editor, doc, offset);
+				var sig = new SignatureMarkupCreator (editor, doc, offset);
 				sig.BreakLineAfterReturnType = false;
 				
 				var typeOfExpression = data.Token.Parent as TypeOfExpressionSyntax;
@@ -208,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 					return result;
 				
 				if (data.Symbol != null) {
-					result = RoslynSymbolCompletionData.CreateTooltipInformation (doc.Editor, doc, data.Symbol, false, createFooter);
+					result = RoslynSymbolCompletionData.CreateTooltipInformation (editor, doc, data.Symbol, false, createFooter);
 				}
 				
 //				if (result == null && parentKind == SyntaxKind.IdentifierName) {
@@ -344,8 +338,7 @@ namespace MonoDevelop.SourceEditor
 //				base.VisitChildren (node);
 //			}
 //		}
-
-		public override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
 			requiredWidth = win.Allocation.Width;

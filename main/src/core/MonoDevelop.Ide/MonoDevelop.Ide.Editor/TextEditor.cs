@@ -39,6 +39,7 @@ using MonoDevelop.Components;
 using System.ComponentModel;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -803,7 +804,7 @@ namespace MonoDevelop.Ide.Editor
 			set {
 				if (extensionContext != null) {
 					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					textEditorImpl.ClearTooltipProviders ();
+//					textEditorImpl.ClearTooltipProviders ();
 				}
 				extensionContext = value;
 				if (extensionContext != null)
@@ -1112,5 +1113,26 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 
+		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
+
+		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections)
+		{
+			if (ctx == null)
+				throw new ArgumentNullException ("ctx");
+			if (SemanticHighlighting is ProjectedSemanticHighlighting) {
+				((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
+			} else {
+				SemanticHighlighting = new ProjectedSemanticHighlighting (this, ctx, projections);
+			}
+			projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
+			projectedProviders = new List<ProjectedTooltipProvider> ();
+			foreach (var projection in projections) {
+				foreach (var tp in projection.ProjectedEditor.textEditorImpl.TooltipProvider) {
+					var newProvider = new ProjectedTooltipProvider (this, ctx, projection, tp);
+					projectedProviders.Add (newProvider);
+					textEditorImpl.AddTooltipProvider (newProvider);
+				}
+			}
+		}
 	}
 }

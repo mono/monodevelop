@@ -52,6 +52,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.Length = length;
 		}
 
+		public bool ContainsOriginal (int offset)
+		{
+			return Offset <= offset && offset < Offset + Length;
+		}
+
 		public bool IsInOriginal (ISegment segment)
 		{
 			if (segment == null)
@@ -60,9 +65,19 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return segment.Contains(Offset) && segment.Contains (Offset + Length); 
 		}
 
-		public ISegment Project (ISegment segment)
+		public ISegment FromOriginalToProjected (ISegment segment)
 		{
 			return new TextSegment (segment.Offset - Offset + ProjectedOffset, segment.Length);
+		}
+
+		public int FromOriginalToProjected (int offset)
+		{
+			return offset - Offset + ProjectedOffset;
+		}
+
+		public int FromProjectedToOriginal (int offset)
+		{
+			return offset + Offset - ProjectedOffset;
 		}
 	}
 }

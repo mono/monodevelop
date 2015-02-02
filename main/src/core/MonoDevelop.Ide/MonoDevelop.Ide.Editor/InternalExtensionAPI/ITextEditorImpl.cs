@@ -206,6 +206,10 @@ namespace MonoDevelop.Ide.Editor
 			set;
 		}
 
+		IEnumerable<TooltipProvider> TooltipProvider {
+			get;
+		}
+
 		void ClearTooltipProviders ();
 
 		void AddTooltipProvider (TooltipProvider provider);

@@ -2817,6 +2817,17 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.ClearTooltipProviders ();
 		}
 
+		IEnumerable<MonoDevelop.Ide.Editor.TooltipProvider> ITextEditorImpl.TooltipProvider {
+			get {
+				foreach (var p in GetTextEditorData ().TooltipProviders) {
+					var wrapper = p as TooltipProviderWrapper;
+					if (wrapper == null)
+						continue;
+					yield return wrapper.OriginalProvider;
+				}
+			}
+		}
+
 		void ITextEditorImpl.AddTooltipProvider (MonoDevelop.Ide.Editor.TooltipProvider provider)
 		{
 			TextEditor.AddTooltipProvider (new TooltipProviderWrapper (provider));

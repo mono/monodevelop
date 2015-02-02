@@ -27,6 +27,7 @@
 
 using System;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor editor, int offset)
+		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
 		{
 			var ed = GetExtensibleTextEditor (editor);
 			if (ed == null)
@@ -53,8 +54,8 @@ namespace MonoDevelop.SourceEditor
 
 			return new TooltipItem (errorInformation, editor.GetLineByOffset (offset));
 		}
-		
-		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
 		{
 			var result = new LanguageItemWindow (GetExtensibleTextEditor (editor), modifierState, null, (string)item.Item, null);
 			if (result.IsEmpty)
@@ -62,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		public override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (LanguageItemWindow) tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);

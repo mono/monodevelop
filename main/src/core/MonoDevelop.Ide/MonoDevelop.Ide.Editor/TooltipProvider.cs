@@ -29,38 +29,75 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public sealed class TooltipItem : AbstractSegment
+	public sealed class TooltipItem : ISegment
 	{
-		public object Item { get; set; }
+		int offset;
+		int length;
 
-		public TooltipItem (object item, ISegment itemSegment) : base (itemSegment)
-		{
-			Item = item;
+		#region ISegment implementation
+
+		public int Offset {
+			get {
+				return offset;
+			}
+			internal set {
+				offset = value;
+			}
 		}
 
-		public TooltipItem (object item, int offset, int length) : base (offset, length)
+		public int Length {
+			get {
+				return length;
+			}
+			internal set {
+				length = value;
+			}
+		}
+
+		public int EndOffset {
+			get {
+				return offset + length;
+			}
+		}
+
+		#endregion
+
+		public object Item { get; set; }
+
+		public TooltipItem (object item, ISegment itemSegment) 
+		{
+			if (itemSegment == null)
+				throw new ArgumentNullException ("itemSegment");
+			Item = item;
+			this.offset = itemSegment.Offset;
+			this.length = itemSegment.Length;
+		}
+
+		public TooltipItem (object item, int offset, int length)
 		{
 			Item = item;
+			this.offset = offset;
+			this.length = length;
 		}
 	}
 
 	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider
 	{
-		public abstract TooltipItem GetItem (TextEditor editor, int offset);
+		public abstract TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset);
 
-		public virtual bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public virtual bool IsInteractive (TextEditor editor, Control tipWindow)
 		{
 			return false;
 		}
 
-		public virtual void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public virtual void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
 		{
-			requiredWidth = tipWindow.SizeRequest ().Width;
+			requiredWidth = ((Gtk.Widget)tipWindow).SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		public virtual Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
 		{
 			return null;
 		}
@@ -70,12 +107,10 @@ namespace MonoDevelop.Ide.Editor
 			return editor.GetContent<ITextEditorImpl> ().GetEditorAllocation ();
 		}
 
-		public virtual Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public virtual void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
 		{
-			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item);
 			if (tipWindow == null)
-				return null;
-
+				return;
 
 			var origin = editor.GetContent<ITextEditorImpl> ().GetEditorWindowOrigin ();
 
@@ -98,17 +133,16 @@ namespace MonoDevelop.Ide.Editor
 			if (x < geometry.Left)
 				x = geometry.Left;
 			
-			int h = tipWindow.SizeRequest ().Height;
+			var gtkWindow = (Gtk.Window)tipWindow;
+			int h = gtkWindow.SizeRequest ().Height;
 			if (y + h >= geometry.Y + geometry.Height)
 				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
 			
-			tipWindow.Move (x, y);
+			gtkWindow.Move (x, y);
 			
-			tipWindow.ShowAll ();
-
-			return tipWindow;
+			gtkWindow.ShowAll ();
 		}
 	}
 }

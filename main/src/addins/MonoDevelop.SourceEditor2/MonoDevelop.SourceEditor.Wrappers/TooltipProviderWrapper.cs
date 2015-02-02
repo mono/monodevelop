@@ -59,7 +59,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
-			var item = provider.GetItem (WrapEditor (editor), offset);
+			var item = provider.GetItem (WrapEditor (editor), IdeApp.Workbench.ActiveDocument, offset);
 			if (item == null)
 				return null;
 			return new TooltipItem (item.Item, item.Offset, item.Length);
@@ -73,12 +73,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return provider.IsInteractive (wrappedEditor, tipWindow);
 		}
 
-		protected override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			return provider.CreateTooltipWindow (wrappedEditor, offset, modifierState, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length));
+			return (Gtk.Window)provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState);
 		}
 
 		protected override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
@@ -92,13 +92,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			provider.GetRequiredPosition (wrappedEditor, tipWindow, out requiredWidth, out xalign);
 		}
 
-		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public override Gtk.Window ShowTooltipWindow (TextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null) {
-				return null;
+				return tipWindow;
 			}
-			return provider.ShowTooltipWindow (wrappedEditor, offset, modifierState, mouseX, mouseY, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length));
+			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState, mouseX, mouseY);
+			return tipWindow;
 		}
 		#endregion
 	}

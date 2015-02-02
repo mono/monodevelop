@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
-	public sealed class ProjectedSemanticHighlighting : SemanticHighlighting
+	sealed class ProjectedSemanticHighlighting : SemanticHighlighting
 	{
 		List<Projection> projections;
 

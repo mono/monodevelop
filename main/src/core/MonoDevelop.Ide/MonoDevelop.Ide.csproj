@@ -2914,6 +2914,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedSegment.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\Projection.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedSemanticHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedTooltipProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

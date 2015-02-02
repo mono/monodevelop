@@ -79,7 +79,8 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation
 
-		public override TooltipItem GetItem (TextEditor editor, int offset)
+
+		public override TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset)
 		{
 			if (offset >= editor.Length)
 				return null;
@@ -101,7 +102,7 @@ namespace MonoDevelop.SourceEditor
 				startOffset = ed.SelectionRange.Offset;
 				expression = ed.SelectedText;
 			} else {
-				var doc = IdeApp.Workbench.ActiveDocument;
+				var doc = ctx;
 				if (doc == null || doc.ParsedDocument == null)
 					return null;
 
@@ -109,12 +110,12 @@ namespace MonoDevelop.SourceEditor
 				var data = doc.GetContent<SourceEditorView> ();
 
 				if (resolver != null) {
-					expression = resolver.ResolveExpression (doc.Editor, doc, offset, out startOffset);
+					expression = resolver.ResolveExpression (editor, doc, offset, out startOffset);
 				} else {
 					int endOffset = data.GetTextEditorData ().FindCurrentWordEnd (offset);
 					startOffset = data.GetTextEditorData ().FindCurrentWordStart (offset);
 
-					expression = doc.Editor.GetTextAt (startOffset, endOffset - startOffset);
+					expression = editor.GetTextAt (startOffset, endOffset - startOffset);
 				}
 			}
 			
@@ -138,8 +139,13 @@ namespace MonoDevelop.SourceEditor
 			
 			return new TooltipItem (val, startOffset, expression.Length);
 		}
-			
-		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		{
+			return new DebugValueWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+		}
+
+		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)
 		{
 			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);
@@ -151,13 +157,11 @@ namespace MonoDevelop.SourceEditor
 				y += lineHeight;
 
 			var caret = new Gdk.Rectangle (mouseX, y, 1, lineHeight);
-			tooltip = new DebugValueWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+			tooltip = (DebugValueWindow)tipWindow;
 			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
-
-			return tooltip;
 		}
 
-		public override bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public override bool IsInteractive (TextEditor editor, Control tipWindow)
 		{
 			return DebuggingService.IsDebugging;
 		}

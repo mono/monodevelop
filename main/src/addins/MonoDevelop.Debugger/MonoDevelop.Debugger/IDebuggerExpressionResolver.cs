@@ -33,6 +33,6 @@ namespace MonoDevelop.Debugger
 {
 	public interface IDebuggerExpressionResolver
 	{
-		string ResolveExpression (IReadonlyTextDocument editor, Document doc, int offset, out int startOffset);
+		string ResolveExpression (IReadonlyTextDocument editor, DocumentContext doc, int offset, out int startOffset);
 	}
 }
