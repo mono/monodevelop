@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects
 	{
 		/// <summary>
 		/// Gets the build targets that should be built before the project is executed.
-		/// If the project itself is not executed, it will not be built.
+		/// If the project itself is not included, it will not be built.
 		/// </summary>
 		IEnumerable<IBuildTarget> GetExecutionDependencies ();
 	}
