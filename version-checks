@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=fd4032a1ded8c3af1f450e37f7884c8d65b384a7
+DEP_NEEDED_VERSION[0]=cb8f301d18fbe7bada481fb5eefe1f6b32882ae6
 DEP_BRANCH_AND_REMOTE[0]="watchkit origin/watchkit"
 
 # heap-shot
