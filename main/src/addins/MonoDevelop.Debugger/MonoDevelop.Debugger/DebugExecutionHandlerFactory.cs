@@ -55,26 +55,32 @@ namespace MonoDevelop.Debugger
 
 	class DebugAsyncOperation: ProcessAsyncOperation
 	{
-		ManualResetEvent stopEvent;
+		TaskCompletionSource<int> taskSource;
 
 		public DebugAsyncOperation ()
 		{
-			stopEvent = new ManualResetEvent (false);
+			taskSource = new TaskCompletionSource<int> ();
 			DebuggingService.StoppedEvent += OnStopDebug;
 			CancellationTokenSource = new CancellationTokenSource ();
 			CancellationTokenSource.Token.Register (DebuggingService.Stop);
-			Task = Task.Factory.StartNew (() => stopEvent.WaitOne ());
+			Task = taskSource.Task;
 		}
 
 		public void Cleanup ()
 		{
-			stopEvent.Set (); // Just in case there was something running
+			if (taskSource != null) {
+				taskSource.SetResult (0);
+				taskSource = null;
+			}
 			DebuggingService.StoppedEvent -= OnStopDebug;
 		}
 
 		void OnStopDebug (object sender, EventArgs args)
 		{
-			stopEvent.Set ();
+			if (taskSource != null) {
+				taskSource.SetResult (0);
+				taskSource = null;
+			}
 		}
 	}
 }
