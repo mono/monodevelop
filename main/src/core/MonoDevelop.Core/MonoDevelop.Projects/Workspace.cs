@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public class Workspace: WorkspaceItem, ICustomDataItem, IBuildTarget
+	public sealed class Workspace: WorkspaceItem, ICustomDataItem, IBuildTarget
 	{
 		WorkspaceItemCollection items;
 
@@ -204,21 +204,21 @@ namespace MonoDevelop.Projects
 			OnConfigurationsChanged ();
 		}
 		
-		protected virtual void OnItemAdded (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnItemAdded (WorkspaceItemChangeEventArgs args)
 		{
 			if (ItemAdded != null)
 				ItemAdded (this, args);
 			OnDescendantItemAdded (args);
 		}
 		
-		protected virtual void OnItemRemoved (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
 			if (ItemRemoved != null)
 				ItemRemoved (this, args);
 			OnDescendantItemRemoved (args);
 		}
 		
-		protected virtual void OnDescendantItemAdded (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnDescendantItemAdded (WorkspaceItemChangeEventArgs args)
 		{
 			if (DescendantItemAdded != null)
 				DescendantItemAdded (this, args);
@@ -226,7 +226,7 @@ namespace MonoDevelop.Projects
 				ParentWorkspace.OnDescendantItemAdded (args);
 		}
 		
-		protected virtual void OnDescendantItemRemoved (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnDescendantItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
 			if (DescendantItemRemoved != null)
 				DescendantItemRemoved (this, args);

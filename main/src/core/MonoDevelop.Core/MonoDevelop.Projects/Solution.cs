@@ -43,7 +43,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget
+	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
@@ -361,7 +361,7 @@ namespace MonoDevelop.Projects
 			return configs.AsReadOnly ();
 		}
 		
-		public virtual SolutionConfiguration GetConfiguration (ConfigurationSelector configuration)
+		public SolutionConfiguration GetConfiguration (ConfigurationSelector configuration)
 		{
 			return (SolutionConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
@@ -592,14 +592,14 @@ namespace MonoDevelop.Projects
 			return Clean (monitor, (SolutionConfigurationSelector) configuration);
 		}
 
-		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return SolutionExtension.Clean (monitor, configuration);
+			return await SolutionExtension.Clean (monitor, configuration);
 		}
 
-		public Task<BuildResult> Build (ProgressMonitor monitor, string configuration)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, string configuration)
 		{
-			return SolutionExtension.Build (monitor, (SolutionConfigurationSelector) configuration);
+			return await SolutionExtension.Build (monitor, (SolutionConfigurationSelector) configuration);
 		}
 
 		Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets)
@@ -607,9 +607,9 @@ namespace MonoDevelop.Projects
 			return Build (monitor, configuration);
 		}
 
-		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return SolutionExtension.Build (monitor, configuration);
+			return await SolutionExtension.Build (monitor, configuration);
 		}
 
 		public bool NeedsBuilding (ConfigurationSelector configuration)
@@ -647,22 +647,22 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.GetExecutionTargets (this, configuration);
 		}
 
-		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		/*protected virtual*/ Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			return RootFolder.Build (monitor, configuration);
 		}
 
-		protected virtual bool OnGetNeedsBuilding (ConfigurationSelector configuration)
+		/*protected virtual*/ bool OnGetNeedsBuilding (ConfigurationSelector configuration)
 		{
 			return RootFolder.NeedsBuilding (configuration);
 		}
 
-		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		/*protected virtual*/ Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{	
 			return RootFolder.Clean (monitor, configuration);
 		}
 
-		protected virtual bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null)
@@ -677,7 +677,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected async virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ async Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (SingleStartup) {
 				if (StartupItem == null) {
@@ -711,7 +711,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected virtual void OnStartupItemChanged(EventArgs e)
+		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)
 		{
 			if (StartupItemChanged != null)
 				StartupItemChanged (this, e);
@@ -743,7 +743,7 @@ namespace MonoDevelop.Projects
 		
 #region Notifications from children
 		
-		internal protected virtual void OnSolutionItemAdded (SolutionItemChangeEventArgs args)
+		internal /*protected virtual*/ void OnSolutionItemAdded (SolutionItemChangeEventArgs args)
 		{
 			solutionItems = null;
 
@@ -801,7 +801,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		internal protected virtual void OnSolutionItemRemoved (SolutionItemChangeEventArgs args)
+		internal /*protected virtual*/ void OnSolutionItemRemoved (SolutionItemChangeEventArgs args)
 		{
 			solutionItems = null;
 			
@@ -866,7 +866,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnReadSolution (monitor, file);
 		}
 
-		protected virtual void OnReadSolution (ProgressMonitor monitor, SlnFile file)
+		/*protected virtual*/ void OnReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			using (var ctx = new SolutionLoadContext (this))
 				((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor, ctx);
@@ -877,7 +877,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnReadConfigurationData (monitor, properties, configuration);
 		}
 
-		protected virtual void OnReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		/*protected virtual*/ void OnReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
 		{
 			// Do nothing by default
 		}
@@ -887,7 +887,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnReadSolutionFolderItemData (monitor, properties, item);
 		}
 
-		protected virtual void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		/*protected virtual*/ void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
 		{
 			// Do nothing by default
 		}
@@ -897,7 +897,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnWriteSolution (monitor, file);
 		}
 		
-		protected virtual void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
+		/*protected virtual*/ void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.WriteFileInternal (file, this, monitor);
 		}
@@ -907,7 +907,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnWriteConfigurationData (monitor, properties, configuration);
 		}
 
-		protected virtual void OnWriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+		/*protected virtual*/ void OnWriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
 		{
 			// Do nothing by default
 		}
@@ -917,7 +917,7 @@ namespace MonoDevelop.Projects
 			SolutionExtension.OnWriteSolutionFolderItemData (monitor, properties, item);
 		}
 
-		protected virtual void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+		/*protected virtual*/ void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
 		{
 			// Do nothing by default
 		}
@@ -927,61 +927,61 @@ namespace MonoDevelop.Projects
 			OnConfigurationsChanged ();
 		}
 		
-		internal protected virtual void OnFileAddedToProject (ProjectFileEventArgs args)
+		internal /*protected virtual*/ void OnFileAddedToProject (ProjectFileEventArgs args)
 		{
 			if (FileAddedToProject != null)
 				FileAddedToProject (this, args);
 		}
 		
-		internal protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs args)
+		internal /*protected virtual*/ void OnFileRemovedFromProject (ProjectFileEventArgs args)
 		{
 			if (FileRemovedFromProject != null)
 				FileRemovedFromProject (this, args);
 		}
 		
-		internal protected virtual void OnFileChangedInProject (ProjectFileEventArgs args)
+		internal /*protected virtual*/ void OnFileChangedInProject (ProjectFileEventArgs args)
 		{
 			if (FileChangedInProject != null)
 				FileChangedInProject (this, args);
 		}
 		
-		internal protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs args)
+		internal /*protected virtual*/ void OnFilePropertyChangedInProject (ProjectFileEventArgs args)
 		{
 			if (FilePropertyChangedInProject != null)
 				FilePropertyChangedInProject (this, args);
 		}
 		
-		internal protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs args)
+		internal /*protected virtual*/ void OnFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			if (FileRenamedInProject != null)
 				FileRenamedInProject (this, args);
 		}
 		
-		internal protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs args)
+		internal /*protected virtual*/ void OnReferenceAddedToProject (ProjectReferenceEventArgs args)
 		{
 			if (ReferenceAddedToProject != null)
 				ReferenceAddedToProject (this, args);
 		}
 		
-		internal protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs args)
+		internal /*protected virtual*/ void OnReferenceRemovedFromProject (ProjectReferenceEventArgs args)
 		{
 			if (ReferenceRemovedFromProject != null)
 				ReferenceRemovedFromProject (this, args);
 		}
 		
-		internal protected virtual void OnEntryModified (SolutionItemModifiedEventArgs args)
+		internal /*protected virtual*/ void OnEntryModified (SolutionItemModifiedEventArgs args)
 		{
 			if (EntryModified != null)
 				EntryModified (this, args);
 		}
 		
-		internal protected virtual void OnEntrySaved (SolutionItemEventArgs args)
+		internal /*protected virtual*/ void OnEntrySaved (SolutionItemEventArgs args)
 		{
 			if (EntrySaved != null)
 				EntrySaved (this, args);
 		}
 		
-		internal protected virtual void OnItemReloadRequired (SolutionItemEventArgs args)
+		/*protected virtual*/ void OnItemReloadRequired (SolutionItemEventArgs args)
 		{
 			if (ItemReloadRequired != null)
 				ItemReloadRequired (this, args);
