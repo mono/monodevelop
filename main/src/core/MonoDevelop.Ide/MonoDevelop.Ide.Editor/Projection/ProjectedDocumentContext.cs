@@ -69,6 +69,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 				projectedEditor.FileName,
 				projectedEditor
 			);
+
+			projectedEditor.TextChanged += delegate(object sender, TextChangeEventArgs e) {
+				projectedDocument = projectedDocument.WithText (projectedEditor);
+				ReparseDocument ();
+			};
+
 			ReparseDocument ();
 		}
 

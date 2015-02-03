@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Generic;
+using MonoDevelop.Ide.CodeCompletion;
 
 
 namespace MonoDevelop.Ide.Editor.Projection
@@ -51,10 +52,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return pctx.ProjectedEditor.GetContent<CompletionTextEditorExtension> () != null;
 		}
 
-		protected override void Initialize ()
-		{
-		}
-
 		Projection GetProjectionAt (int offset)
 		{
 			foreach (var projection in projections) {
@@ -71,9 +68,148 @@ namespace MonoDevelop.Ide.Editor.Projection
 		CompletionTextEditorExtension GetExtensionAt (int offset)
 		{
 			var projection = GetProjectionAt (offset);
-			if (projection != null)			
-				return projection.ProjectedEditor.GetContent<CompletionTextEditorExtension> ();
+			if (projection != null) {
+				var result = projection.ProjectedEditor.GetContent<CompletionTextEditorExtension> ();
+				if (result != null) {
+					result.CompletionWidget = new ProjectedCompletionWidget (CompletionWidget, projection);
+				}
+				return result;
+			}
 			return null;
+		}
+
+		class ProjectedCompletionWidget : ICompletionWidget
+		{
+			readonly ICompletionWidget completionWidget;
+			readonly Projection projection;
+
+			public ProjectedCompletionWidget (ICompletionWidget completionWidget, Projection projection)
+			{
+				if (completionWidget == null)
+					throw new ArgumentNullException ("completionWidget");
+				if (projection == null)
+					throw new ArgumentNullException ("projection");
+				this.projection = projection;
+				this.completionWidget = completionWidget;
+			}
+
+			#region ICompletionWidget implementation
+			event EventHandler ICompletionWidget.CompletionContextChanged {
+				add {
+					completionWidget.CompletionContextChanged += value;
+				}
+				remove {
+					completionWidget.CompletionContextChanged -= value;
+				}
+			}
+
+			string ICompletionWidget.GetText (int startOffset, int endOffset)
+			{
+				return projection.ProjectedEditor.GetTextBetween (startOffset, endOffset);
+			}
+
+			char ICompletionWidget.GetChar (int offset)
+			{
+				return projection.ProjectedEditor.GetCharAt (offset);
+			}
+
+			void ICompletionWidget.Replace (int offset, int count, string text)
+			{
+				foreach (var seg in projection.ProjectedSegments) {
+					if (seg.ContainsProjected (offset)) {
+						offset = seg.FromProjectedToOriginal (offset);
+						break;
+					}
+				}
+
+				completionWidget.Replace (offset, count, text);
+			}
+
+			int ConvertOffset (int triggerOffset)
+			{
+				int result = triggerOffset;
+				foreach (var seg in projection.ProjectedSegments) {
+					if (seg.ContainsProjected (result)) {
+						result = seg.FromProjectedToOriginal (result);
+						break;
+					}
+				}
+				return result;
+			}
+
+			int ProjectOffset (int offset)
+			{
+				int result = offset;
+				foreach (var seg in projection.ProjectedSegments) {
+					if (seg.ContainsOriginal (result)) {
+						result = seg.FromOriginalToProjected (result);
+						break;
+					}
+				}
+				return result;
+
+			}
+
+			CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+			{
+				var originalTriggerOffset = ConvertOffset (triggerOffset);
+				var completionContext = completionWidget.CreateCodeCompletionContext (originalTriggerOffset);
+				return ConvertContext (completionContext, projection);
+			}
+
+			string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
+			{
+				return completionWidget.GetCompletionText (ImportContext (ctx, projection));
+			}
+
+			void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
+			{
+				completionWidget.SetCompletionText (ImportContext (ctx, projection), partial_word, complete_word);
+			}
+
+			void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset)
+			{
+				completionWidget.SetCompletionText (ImportContext (ctx, projection), partial_word, complete_word, completeWordOffset);
+			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				completionWidget.AddSkipChar (ProjectOffset (cursorPosition), c);
+			}
+
+			CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
+				get {
+					return ConvertContext (completionWidget.CurrentCodeCompletionContext, projection);
+				}
+			}
+
+			int ICompletionWidget.CaretOffset {
+				get {
+					return ConvertOffset (completionWidget.CaretOffset);
+				}
+				set {
+					completionWidget.CaretOffset = ProjectOffset (value);
+				}
+			}
+
+			int ICompletionWidget.TextLength {
+				get {
+					return projection.ProjectedEditor.Length;
+				}
+			}
+
+			int ICompletionWidget.SelectedLength {
+				get {
+					return completionWidget.SelectedLength;
+				}
+			}
+
+			Gtk.Style ICompletionWidget.GtkStyle {
+				get {
+					return completionWidget.GtkStyle;
+				}
+			}
+			#endregion
 		}
 
 		CompletionTextEditorExtension GetCurrentExtension ()
@@ -176,11 +312,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override void RunCompletionCommand ()
 		{
-			Console.WriteLine ("run completion command !!!!");
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension == null)
 				return;
-			Console.WriteLine ("found ext : "+ projectedExtension);
 			projectedExtension.RunCompletionCommand ();
 		}
 
@@ -217,10 +351,14 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.ShowCodeTemplatesCommand (ConvertContext (completionContext));
 		}
 
-		MonoDevelop.Ide.CodeCompletion.CodeCompletionContext ConvertContext (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		CodeCompletionContext ConvertContext (CodeCompletionContext completionContext)
 		{
 			var projection = GetProjectionAt (completionContext.TriggerOffset);
-
+			return ConvertContext (completionContext, projection);
+		}
+			
+		static CodeCompletionContext ConvertContext (CodeCompletionContext completionContext, Projection projection)
+		{
 			int offset = completionContext.TriggerOffset;
 			int line = completionContext.TriggerLine;
 			int lineOffset = completionContext.TriggerLineOffset;
@@ -229,6 +367,34 @@ namespace MonoDevelop.Ide.Editor.Projection
 				foreach (var seg in projection.ProjectedSegments) {
 					if (seg.ContainsOriginal (offset)) {
 						offset = seg.FromOriginalToProjected (offset);
+						var loc = projection.ProjectedEditor.OffsetToLocation (offset);
+						line = loc.Line;
+						lineOffset = loc.Column - 1;
+					}
+				}
+			}
+
+			return new MonoDevelop.Ide.CodeCompletion.CodeCompletionContext {
+				TriggerOffset = offset,
+				TriggerLine = line,
+				TriggerLineOffset  = lineOffset,
+				TriggerXCoord  = completionContext.TriggerXCoord,
+				TriggerYCoord  = completionContext.TriggerYCoord,
+				TriggerTextHeight  = completionContext.TriggerTextHeight,
+				TriggerWordLength  = completionContext.TriggerWordLength
+			};
+		}
+
+		static CodeCompletionContext ImportContext (CodeCompletionContext completionContext, Projection projection)
+		{
+			int offset = completionContext.TriggerOffset;
+			int line = completionContext.TriggerLine;
+			int lineOffset = completionContext.TriggerLineOffset;
+
+			if (projection != null) {
+				foreach (var seg in projection.ProjectedSegments) {
+					if (seg.ContainsProjected (offset)) {
+						offset = seg.FromProjectedToOriginal (offset);
 						var loc = projection.ProjectedEditor.OffsetToLocation (offset);
 						line = loc.Line;
 						lineOffset = loc.Column - 1;
