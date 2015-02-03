@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
+		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			var mimeimage = PrepareShowView (content);
 			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
@@ -375,6 +375,8 @@ namespace MonoDevelop.Ide.Gui
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
+			if (binding != null)
+				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
 
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)

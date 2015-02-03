@@ -597,9 +597,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			newContent.UntitledName = defaultName;
 			newContent.IsDirty = true;
-			workbench.ShowView (newContent, true);
-			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
-			
+			workbench.ShowView (newContent, true, binding);
+
 			var document = WrapDocument (newContent.WorkbenchWindow);
 			document.StartReparseThread ();
 			return document;
@@ -1448,9 +1447,8 @@ namespace MonoDevelop.Ide.Gui
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
 
-			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), fileInfo.DockNotebook);
+			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
 
-			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
 
