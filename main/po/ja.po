@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-12 11:17:35-0500\n"
-"PO-Revision-Date: 2015-01-15 10:12+0900\n"
+"PO-Revision-Date: 2015-02-04 05:22+0900\n"
 "Last-Translator: Akira Nakagawa <matyapiro31@gmail.com>\n"
 "Language-Team: 日本語 <>\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 # In this sentence,non-{0}'s console.
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:12
 msgid "{0} External Console"
-msgstr "{0]外部のコンソール"
+msgstr "{0}外部コンソール"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:19
 msgid "The application was terminated by a signal: {0}"
@@ -5245,7 +5245,7 @@ msgstr "パスの大文字小文字を区別しない"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Managed Watcher"
-msgstr "managed file watcher"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "No SMP"
