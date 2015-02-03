@@ -152,7 +152,6 @@ namespace MonoDevelop.Projects
 		protected WorkspaceItem ()
 		{
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
-			Initialize (this);
 		}
 
 		WorkspaceItemExtension itemExtension;
@@ -248,15 +247,17 @@ namespace MonoDevelop.Projects
 
 		public async Task SaveAsync (ProgressMonitor monitor)
 		{
-			try {
-				fileStatusTracker.BeginSave ();
-				await ItemExtension.Save (monitor);
-				SaveUserProperties ();
-				OnSaved (new WorkspaceItemEventArgs (this));
+			using (await WriteLock ()) {
+				try {
+					fileStatusTracker.BeginSave ();
+					await ItemExtension.Save (monitor);
+					SaveUserProperties ();
+					OnSaved (new WorkspaceItemEventArgs (this));
 				
-				// Update save times
-			} finally {
-				fileStatusTracker.EndSave ();
+					// Update save times
+				} finally {
+					fileStatusTracker.EndSave ();
+				}
 			}
 			FileService.NotifyFileChanged (FileName);
 		}

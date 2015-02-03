@@ -184,7 +184,7 @@ namespace MonoDevelop.Gettext
 				
 				monitor.ReportSuccess (String.Format (GettextCatalog.GetString ("Language '{0}' successfully added."), isoCode));
 				monitor.Step (1);
-				this.Save (monitor);
+				SaveAsync (monitor);
 				return tr;
 			} catch (Exception e) {
 				monitor.ReportError (String.Format ( GettextCatalog.GetString ("Language '{0}' could not be added: "), isoCode), e);

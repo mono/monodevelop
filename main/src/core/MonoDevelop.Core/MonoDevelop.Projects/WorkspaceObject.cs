@@ -34,6 +34,7 @@ using MonoDevelop.Projects.Extensions;
 using Mono.Addins;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Messaging;
 
 
 namespace MonoDevelop.Projects
@@ -43,14 +44,24 @@ namespace MonoDevelop.Projects
 		Hashtable extendedProperties;
 		bool initializeCalled;
 
-		protected void Initialize<T> (T instance)
+		internal protected void Initialize<T> (T instance)
 		{
 			if (instance.GetType () != typeof(T))
 				return;
-			initializeCalled = true;
-			OnInitialize ();
-			InitializeExtensionChain ();
-			OnExtensionChainInitialized ();
+			var delayedInitialize = CallContext.LogicalGetData ("MonoDevelop.DelayItemInitialization");
+			if (delayedInitialize != null && (bool)delayedInitialize)
+				return;
+			EnsureInitialized ();
+		}
+
+		internal void EnsureInitialized ()
+		{
+			if (!initializeCalled) {
+				initializeCalled = true;
+				OnInitialize ();
+				InitializeExtensionChain ();
+				OnExtensionChainInitialized ();
+			}
 		}
 
 		public string Name {
@@ -278,6 +289,88 @@ namespace MonoDevelop.Projects
 				return Owner.OnGetService (t);
 			}
 		}
+
+		protected Task<IDisposable> ReadLock ()
+		{
+			lock (lockLock) {
+				var ts = new TaskCompletionSource<IDisposable> ();
+				var ol = new ObjectLock { Object = this, IsWriteLock = false, TaskSource = ts };
+				if (writeLockTaken) {
+					if (lockRequests == null)
+						lockRequests = new Queue<ObjectLock> ();
+					lockRequests.Enqueue (ol);
+				} else {
+					readLocksTaken++;
+					ts.SetResult (ol);
+				}
+				return ts.Task;
+			}
+		}
+
+		protected Task<IDisposable> WriteLock ()
+		{
+			lock (lockLock) {
+				var ts = new TaskCompletionSource<IDisposable> ();
+				var ol = new ObjectLock { Object = this, IsWriteLock = true, TaskSource = ts };
+				if (writeLockTaken || readLocksTaken > 0) {
+					if (lockRequests == null)
+						lockRequests = new Queue<ObjectLock> ();
+					lockRequests.Enqueue (ol);
+				} else {
+					writeLockTaken = true;
+					ts.SetResult (ol);
+				}
+				return ts.Task;
+			}
+		}
+
+		void ReleaseLock (bool isWriteLock)
+		{
+			lock (lockLock) {
+				if (!isWriteLock) {
+					// If there are readers still running, we can't release the lock
+					if (--readLocksTaken > 0)
+						return;
+				}
+
+				while (lockRequests != null && lockRequests.Count > 0) {
+					// If readers have been awakened, we can't awaken a writer
+					if (readLocksTaken > 0 && lockRequests.Peek ().IsWriteLock)
+						return;
+					var next = lockRequests.Dequeue ();
+					if (next.IsWriteLock) {
+						// Only one writer at a time
+						next.TaskSource.SetResult (next);
+						return;
+					} else {
+						// All readers can be awakened at once
+						writeLockTaken = false;
+						readLocksTaken++;
+						next.TaskSource.SetResult (next);
+					}
+				}
+				writeLockTaken = false;
+			}
+		}
+
+		class ObjectLock: IDisposable
+		{
+			public WorkspaceObject Object;
+			public bool IsWriteLock;
+			public TaskCompletionSource<IDisposable> TaskSource;
+
+			public void Dispose ()
+			{
+				Object.ReleaseLock (IsWriteLock);
+			}
+		}
+
+		Queue<ObjectLock> lockRequests;
+
+		int readLocksTaken;
+		bool writeLockTaken;
+
+		object lockLock = new object ();
 	}
 
 	public static class WorkspaceObjectExtensions

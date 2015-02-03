@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (IsSingleType (ctx)) {
 					FileService.RenameFile (ctx.TextEditor.FileName, correctFileName);
 					if (ctx.FileContainerProject != null)
-						ctx.FileContainerProject.Save (new ProgressMonitor ());
+						ctx.FileContainerProject.SaveAsync (new ProgressMonitor ());
 					return;
 				}
 				

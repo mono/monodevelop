@@ -383,7 +383,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public virtual void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		internal protected virtual void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 		}
 
@@ -396,7 +396,7 @@ namespace MonoDevelop.Projects
 		{
 			FileName = fileName;
 			Name = Path.GetFileNameWithoutExtension (fileName);
-			SetSolutionFormat (format ?? new MSBuildFileFormatVS12 (), false);
+			SetSolutionFormat (format ?? MSBuildFileFormat.DefaultFormat, false);
 			return ItemExtension.OnLoad (monitor);
 		}
 
@@ -406,26 +406,16 @@ namespace MonoDevelop.Projects
 			return SaveAsync (monitor);
 		}
 		
-		/// <summary>
-		/// Saves the solution item
-		/// </summary>
-		/// <param name='monitor'>
-		/// A progress monitor.
-		/// </param>
-		public void Save (ProgressMonitor monitor)
-		{
-			ItemExtension.OnSave (monitor).Wait ();
-		}
-
-
 		public async Task SaveAsync (ProgressMonitor monitor)
 		{
-			await ItemExtension.OnSave (monitor);
+			using (await WriteLock ()) {
+				await ItemExtension.OnSave (monitor);
 
-			if (HasSlnData && !SavingSolution && ParentSolution != null) {
-				// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
-				await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
-				ParentSolution.NeedsReload = false;
+				if (HasSlnData && !SavingSolution && ParentSolution != null) {
+					// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
+					await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
+					ParentSolution.NeedsReload = false;
+				}
 			}
 		}
 		
@@ -715,8 +705,7 @@ namespace MonoDevelop.Projects
 				} finally {
 					monitor.EndTask ();
 				}
-			}
-			finally {
+			} finally {
 				tt.End ();
 			}
 		}
