@@ -378,6 +378,8 @@ namespace MonoDevelop.Ide.Gui
 			if (binding != null)
 				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
 
+			sdiWorkspaceWindow.CreateCommandHandler ();
+
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)
 				tab.Icon = mimeimage;

@@ -106,6 +106,13 @@ namespace MonoDevelop.Ide.Gui
 					return ret;
 			}
 
+			//If we didn't find in ActiveView or ViewContent... Try in SubViews
+			foreach (var subView in window.SubViewContents) {
+				foreach (var cnt in subView.GetContents<T> ()) {
+					return cnt;
+				}
+			}
+
 			return null;
 		}
 		
