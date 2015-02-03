@@ -212,20 +212,40 @@ namespace MonoDevelop.VersionControl
 			return result;
 		}
 
+		RecursiveDirectoryInfoQuery AcquireLockForQuery (FilePath path, bool getRemoteStatus)
+		{
+			RecursiveDirectoryInfoQuery rq;
+			bool query = false;
+			lock (queryLock) {
+				rq = recursiveDirectoryQueryQueue.FirstOrDefault (q => q.Directory == path);
+				if (rq == null) {
+					query = true;
+					var mre = new ManualResetEvent (false);
+					rq = new RecursiveDirectoryInfoQuery {
+						Directory = path,
+						GetRemoteStatus = getRemoteStatus,
+						ResetEvent = mre,
+						Count = 1,
+					};
+				} else
+					Interlocked.Increment (ref rq.Count);
+			}
+			if (query)
+				AddQuery (rq);
+			return rq;
+		}
+
 		public VersionInfo[] GetDirectoryVersionInfo (FilePath localDirectory, bool getRemoteStatus, bool recursive)
 		{
 			try {
 				if (recursive) {
-					using (var mre = new ManualResetEvent (false)) {
-						var rq = new RecursiveDirectoryInfoQuery {
-							Directory = localDirectory,
-							GetRemoteStatus = getRemoteStatus,
-							ResetEvent = mre,
-						};
-						AddQuery (rq);
-						rq.ResetEvent.WaitOne ();
-						return rq.Result;
-					}
+					RecursiveDirectoryInfoQuery rq = AcquireLockForQuery (localDirectory, getRemoteStatus);
+					rq.ResetEvent.WaitOne ();
+
+					lock (queryLock)
+						if (Interlocked.Decrement (ref rq.Count) == 0)
+							rq.ResetEvent.Dispose ();
+					return rq.Result;
 				}
 
 				var status = infoCache.GetDirectoryStatus (localDirectory);
@@ -272,6 +292,7 @@ namespace MonoDevelop.VersionControl
 		{
 			public VersionInfo[] Result;
 			public ManualResetEvent ResetEvent;
+			public int Count;
 		}
 
 		Queue<VersionInfoQuery> fileQueryQueue = new Queue<VersionInfoQuery> ();
