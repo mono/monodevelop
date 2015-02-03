@@ -570,7 +570,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
             | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
             | UnionCase | Enum _ -> style.UserTypesEnums
-            | Delegate _-> style.UserTypesDelegatess
+            | Delegate _-> style.UserTypesDelegates
             | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
             | Interface -> style.UserTypesInterfaces
             | ValueType _ -> style.UserTypesValueTypes
