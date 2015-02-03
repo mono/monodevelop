@@ -64,95 +64,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedEditor;
 		}
 
-		class ProjectedDocumentContext : DocumentContext
-		{
-			DocumentContext originalContext;
-			TextEditor projectedEditor;
-			ParsedDocument parsedDocument;
-
-			Microsoft.CodeAnalysis.Document projectedDocument;
-
-			public ProjectedDocumentContext (TextEditor projectedEditor, DocumentContext originalContext)
-			{
-				if (projectedEditor == null)
-					throw new ArgumentNullException ("projectedEditor");
-				if (originalContext == null)
-					throw new ArgumentNullException ("originalContext");
-				this.projectedEditor = projectedEditor;
-				this.originalContext = originalContext;
-
-				var originalProjectId = TypeSystemService.Workspace.GetProjectId (originalContext.Project);
-				var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
-
-				projectedDocument = originalProject.AddDocument (
-					projectedEditor.FileName,
-					projectedEditor
-				);
-				ReparseDocument ();
-			}
-
-			#region implemented abstract members of DocumentContext
-			public override void AttachToProject (MonoDevelop.Projects.Project project)
-			{
-			}
-
-			public override void ReparseDocument ()
-			{
-				var options = new ParseOptions {
-					FileName = projectedEditor.FileName,
-					Content = projectedEditor,
-					Project = Project,
-					RoslynDocument = projectedDocument
-				}; 
-				parsedDocument = TypeSystemService.ParseFile (options, projectedEditor.MimeType).Result;
-
-				base.OnDocumentParsed (EventArgs.Empty);
-			}
-
-			public override Microsoft.CodeAnalysis.Options.OptionSet GetOptionSet ()
-			{
-				return originalContext.GetOptionSet ();
-			}
-
-			public override MonoDevelop.Ide.TypeSystem.ParsedDocument UpdateParseDocument ()
-			{
-				ReparseDocument ();
-				return parsedDocument;
-			}
-
-			public override string Name {
-				get {
-					return projectedEditor.FileName;
-				}
-			}
-
-			public override MonoDevelop.Projects.Project Project {
-				get {
-					return originalContext.Project;
-				}
-			}
-
-			public override Microsoft.CodeAnalysis.Document AnalysisDocument {
-				get {
-					
-					return projectedDocument;
-				}
-			}
-
-			public override MonoDevelop.Ide.TypeSystem.ParsedDocument ParsedDocument {
-				get {
-					return parsedDocument;
-				}
-			}
-			#endregion
-		}
 
 		public Projection (ITextDocument document, ImmutableList<ProjectedSegment> projectedSegments)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			if (projectedSegments == null)
-				throw new ArgumentNullException ("projectedSegments");
 			this.Document = document;
 			this.ProjectedSegments = projectedSegments;
 		}

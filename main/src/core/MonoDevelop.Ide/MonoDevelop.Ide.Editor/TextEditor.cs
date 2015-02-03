@@ -1114,11 +1114,13 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
+		IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections = null;
 
 		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections)
 		{
 			if (ctx == null)
 				throw new ArgumentNullException ("ctx");
+			this.projections = projections;
 			if (SemanticHighlighting is ProjectedSemanticHighlighting) {
 				((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
 			} else {
@@ -1133,6 +1135,26 @@ namespace MonoDevelop.Ide.Editor
 					textEditorImpl.AddTooltipProvider (newProvider);
 				}
 			}
+			InitializeProjectionExtensions ();
+		}
+
+		void InitializeProjectionExtensions ()
+		{
+			if (projections.Count == 0)
+				return;
+			TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
+			while (lastExtension != null && lastExtension.Next != null)
+				lastExtension = lastExtension.Next;
+
+			// no extensions -> no projections needed
+			if (textEditorImpl.EditorExtension == null)
+				return;
+
+			var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
+			projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
+
+			textEditorImpl.EditorExtension = projectedCompletionExtension;
+			projectedCompletionExtension.Initialize (this, DocumentContext);
 		}
 	}
 }

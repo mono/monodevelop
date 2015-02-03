@@ -28,7 +28,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
-	public class ProjectedTooltipProvider  : TooltipProvider
+	sealed class ProjectedTooltipProvider  : TooltipProvider
 	{
 		readonly TextEditor editor;
 		readonly DocumentContext ctx;
