@@ -262,7 +262,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void SyncBuildPropertyGroup (MSBuildPropertyGroup xmlGroup, BuildPropertyGroup buildGroup)
 		{
-			var xmlProps = xmlGroup.Properties.ToArray ();
+			var xmlProps = xmlGroup.GetProperties ().ToArray ();
 			var buildProps = buildGroup.Cast<BuildProperty> ().ToArray ();
 			for (int n = 0; n < xmlProps.Length && n < buildProps.Length; n++)
 				SyncBuildProperty (xmlProps [n], buildProps [n]);

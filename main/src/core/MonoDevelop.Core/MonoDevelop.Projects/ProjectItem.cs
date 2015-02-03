@@ -35,6 +35,8 @@ namespace MonoDevelop.Projects
 	public class ProjectItem: IExtendedDataItem
 	{
 		Hashtable extendedProperties;
+		ProjectItemMetadata metadata;
+		static Dictionary<Type,HashSet<string>> knownMetadata = new Dictionary<Type, HashSet<string>> ();
 
 		public IDictionary ExtendedProperties {
 			get {
@@ -44,15 +46,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public void SetMetadata (string name, string value, bool isXml = false)
-		{
-		}
-
-		public string GetMetadata (string name, string defaultValue = null)
-		{
-			return null;
-		}
-		
 		internal string Condition { get; set; }
 
 		public string ItemName { get; protected set; }
@@ -62,6 +55,14 @@ namespace MonoDevelop.Projects
 		public string UnevaluatedInclude { get; protected set; }
 
 		public ProjectItemFlags Flags { get; set; }
+
+		public ProjectItemMetadata Metadata {
+			get {
+				if (metadata == null)
+					metadata = new ProjectItemMetadata (null);
+				return metadata;
+			}
+		}
 
 		public bool IsHidden {
 			get { return (Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden; }
@@ -73,11 +74,45 @@ namespace MonoDevelop.Projects
 			Include = buildItem.Include;
 			UnevaluatedInclude = buildItem.UnevaluatedInclude;
 			Condition = buildItem.Condition;
+			metadata = null;
+
+			HashSet<string> knownProps = GetKnownMetadata ();
+			foreach (var prop in buildItem.Metadata.GetProperties ()) {
+				if (!knownProps.Contains (prop.Name)) {
+					if (metadata == null)
+						metadata = new ProjectItemMetadata (project.SolutionFormat);
+					Metadata.SetValue (prop.Name, prop.Value);
+				}
+			}
 		}
 
 		internal protected virtual void Write (MSBuildFileFormat fmt, MSBuildItem buildItem)
 		{
 			buildItem.Condition = Condition;
+
+			if (metadata != null) {
+				foreach (var prop in metadata.GetProperties ())
+					buildItem.Metadata.SetValue (prop.Name, prop.Value);
+				metadata.WriteDataObjects (fmt);
+			}
+		}
+
+		/// <summary>
+		/// Gets a list of metadata properties which are read and written by this item, so they don't
+		/// have to be stored in the generic Metadata dictionary
+		/// </summary>
+		/// <returns>The known metadata properties.</returns>
+		protected virtual IEnumerable<string> GetKnownMetadataProperties ()
+		{
+			yield break;
+		}
+
+		HashSet<string> GetKnownMetadata ()
+		{
+			HashSet<string> mset;
+			if (!knownMetadata.TryGetValue (GetType (), out mset))
+				knownMetadata [GetType()] = mset = new HashSet<string> (GetKnownMetadataProperties ());
+			return mset;
 		}
 	}
 	

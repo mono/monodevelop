@@ -58,7 +58,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public int GroupCount {
 			get { return groups.Count; }
 		}
-		
+
+		IMetadataProperty IPropertySet.GetProperty (string name)
+		{
+			return GetProperty (name);
+		}
+
+		IEnumerable<IMetadataProperty> IPropertySet.GetProperties ()
+		{
+			return GetProperties ().Cast<IMetadataProperty> ();
+		}
+
 		public MSBuildProperty GetProperty (string name)
 		{
 			// Find property in reverse order, since the last set
@@ -187,18 +197,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public IEnumerable<MSBuildProperty> Properties {
-			get {
-				foreach (var g in groups) {
-					foreach (var p in g.Properties)
-						yield return p;
-				}
+		public IEnumerable<MSBuildProperty> GetProperties ()
+		{
+			foreach (var g in groups) {
+				foreach (var p in g.GetProperties ())
+					yield return p;
 			}
 		}
 		
 		void Prune (MSBuildPropertyGroup g)
 		{
-			if (g != groups [0] && !g.Properties.Any()) {
+			if (g != groups [0] && !g.GetProperties ().Any()) {
 				// Remove this group since it's now empty
 				g.Project.RemoveGroup (g);
 			}

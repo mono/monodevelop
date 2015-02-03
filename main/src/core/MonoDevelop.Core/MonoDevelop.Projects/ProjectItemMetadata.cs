@@ -1,10 +1,10 @@
-//
-// MSBuildPropertyGroup.cs
+﻿//
+// ProjectItemMetadata.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,100 +23,51 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 using System.Collections.Generic;
 using System.Xml;
+using System.Linq;
 
-using MonoDevelop.Core;
-using System.Xml.Linq;
-using Microsoft.Build.BuildEngine;
-
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects
 {
-	public class MSBuildPropertyGroup: MSBuildObject, IMSBuildPropertySet, IMSBuildPropertyGroupEvaluated
+	public class ProjectItemMetadata: IPropertySet
 	{
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		MSBuildProject parent;
-		
-		public MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
+		MSBuildFileFormat format;
+
+		public ProjectItemMetadata (MSBuildFileFormat format)
 		{
-			this.parent = parent;
+			this.format = format;
 		}
 
-		void InitProperties ()
+		internal void LoadProperties (XmlElement element)
 		{
-			if (properties != null)
-				return;
-
 			properties = new Dictionary<string,MSBuildProperty> ();
 			propertyList = new List<MSBuildProperty> ();
 
-			foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
+			foreach (var pelem in element.ChildNodes.OfType<XmlElement> ()) {
 				MSBuildProperty prevSameName;
 				if (properties.TryGetValue (pelem.Name, out prevSameName))
 					prevSameName.Overwritten = true;
 
-				var prop = new MSBuildProperty (parent, pelem);
-				prop.Owner = this;
+				var prop = new MSBuildProperty (null, pelem);
 				propertyList.Add (prop);
 				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 			}
 		}
 
-		public bool IsImported {
-			get;
-			set;
-		}
-		
-		public MSBuildProject Project {
-			get {
-				return this.parent;
-			}
-		}
-
-		internal bool IgnoreDefaultValues { get; set; }
-
-		internal bool UppercaseBools { get; set; }
-
-		IMetadataProperty IPropertySet.GetProperty (string name)
+		public IMetadataProperty GetProperty (string name)
 		{
-			return GetProperty (name);
-		}
-
-		IEnumerable<IMetadataProperty> IPropertySet.GetProperties ()
-		{
-			return GetProperties ().Cast<IMetadataProperty> ();
-		}
-
-		IMSBuildPropertyEvaluated IMSBuildPropertyGroupEvaluated.GetProperty (string name)
-		{
-			return GetProperty (name);
-		}
-
-		IEnumerable<IMSBuildPropertyEvaluated> IMSBuildPropertyGroupEvaluated.GetProperties ()
-		{
-			return GetProperties ().Cast<IMSBuildPropertyEvaluated> ();
-		}
-
-		public MSBuildProperty GetProperty (string name)
-		{
-			return GetProperty (name, null);
-		}
-
-		public MSBuildProperty GetProperty (string name, string condition)
-		{
-			InitProperties ();
 			MSBuildProperty prop;
 			properties.TryGetValue (name, out prop);
 			return prop;
 		}
-		
-		public IEnumerable<MSBuildProperty> GetProperties ()
+
+		public IEnumerable<IMetadataProperty> GetProperties ()
 		{
-			InitProperties ();
 			return propertyList.Where (p => !p.Overwritten);
 		}
 
@@ -183,63 +134,51 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			object ob;
 			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
 				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, parent.Format);
+				((IMSBuildDataObject)ob).Read (this, format);
 			}
 			return (T)ob;
 		}
 
-		public void SetObject<T> (T t, bool persist = true) where T:IMSBuildDataObject
+		public void SetObject<T> (T t) where T:IMSBuildDataObject
 		{
 			customDataObjects [typeof(T)] = t;
 		}
 
-		public void WriteDataObjects ()
+		public void WriteDataObjects (MSBuildFileFormat format)
 		{
 			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, parent.Format);
+				ob.Write (this, this.format ?? format);
 		}
 
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
-			InitProperties ();
 			int i = propertyOrder.IndexOf (name);
-			var pelem = Element.OwnerDocument.CreateElement (null, name, MSBuildProject.Schema);
 			int insertIndex = -1;
 			if (i != -1) {
 				var foundProp = FindExistingProperty (i - 1, -1);
 				if (foundProp != null) {
-					Element.InsertAfter (pelem, foundProp.Element);
 					insertIndex = propertyList.IndexOf (foundProp) + 1;
 				} else {
 					foundProp = FindExistingProperty (i + 1, 1);
-					if (foundProp != null) {
-						Element.InsertBefore (pelem, foundProp.Element);
+					if (foundProp != null)
 						insertIndex = propertyList.IndexOf (foundProp) - 1;
-					}
-					else
-						Element.AppendChild (pelem);
 				}
-			} else
-				Element.AppendChild (pelem);
+			}
 
-			var prop = new MSBuildProperty (parent, pelem);
-			prop.Owner = this;
+			var prop = new ItemMetadataProperty ();
 			properties [name] = prop;
 
 			if (insertIndex != -1)
 				propertyList.Insert (insertIndex, prop);
 			else
 				propertyList.Add (prop);
-
-			if (condition != null)
-				prop.Condition = condition;
 			return prop;
 		}
 
 		MSBuildProperty FindExistingProperty (int index, int inc)
 		{
 			while (index >= 0 && index < propertyOrder.Count) {
-				var ep = GetProperty (propertyOrder[index]);
+				var ep = (MSBuildProperty) GetProperty (propertyOrder[index]);
 				if (ep != null)
 					return ep;
 				index += inc;
@@ -247,26 +186,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		MSBuildProperty SafeGetProperty (string name, string condition)
+		void IPropertySet.SetValue (string name, string value, string defaultValue, bool preserveExistingCase, bool mergeToMainGroup, string condition)
 		{
-			var prop = GetProperty (name, condition);
-			if (prop == null) {
-				prop = GetProperty (name);
-				if (prop != null) {
-					prop.Condition = condition;
-					return prop;
-				}
-			}
-			return AddProperty (name, condition);
+			SetValue (name, value, defaultValue, preserveExistingCase);
 		}
 
-		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false, bool mergeToMainGroup = false, string condition = null)
+		public void SetValue (string name, string value, string defaultValue = null, bool preserveExistingCase = false)
 		{
 			if (value == null && defaultValue == "")
 				value = "";
-			var prop = GetProperty (name, condition);
+			var prop = (MSBuildProperty) GetProperty (name);
 			var isDefault = value == defaultValue;
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
 				if (prop != null && (defaultValue == null || !string.Equals (defaultValue, prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
@@ -274,16 +205,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 			}
 			if (prop == null)
-				prop = AddProperty (name, condition);
-			prop.SetValue (value, preserveExistingCase, mergeToMainGroup);
+				prop = AddProperty (name);
+			prop.SetValue (value, preserveExistingCase);
 			prop.HasDefaultValue = isDefault;
 		}
 
-		public void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false, string condition = null)
+		void IPropertySet.SetValue (string name, FilePath value, FilePath defaultValue, bool relativeToProject, FilePath relativeToPath, bool mergeToMainGroup, string condition)
 		{
-			var prop = GetProperty (name, condition);
+			SetValue (name, value, defaultValue, relativeToProject, relativeToPath);
+		}
+
+		public void SetValue (string name, FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath))
+		{
+			var prop = (MSBuildProperty) GetProperty (name);
 			var isDefault = value.CanonicalPath == defaultValue.CanonicalPath;
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
 				if (prop != null && (defaultValue == null || defaultValue != prop.GetPathValue (relativeToProject, relativeToPath)))
@@ -291,16 +227,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 			}
 			if (prop == null)
-				prop = AddProperty (name, condition);
-			prop.SetValue (value, relativeToProject, relativeToPath, mergeToMainGroup);
+				prop = AddProperty (name);
+			prop.SetValue (value, relativeToProject, relativeToPath);
 			prop.HasDefaultValue = isDefault;
 		}
 
-		public void SetValue (string name, object value, object defaultValue = null, bool mergeToMainGroup = false, string condition = null)
+		void IPropertySet.SetValue (string name, object value, object defaultValue, bool mergeToMainGroup, string condition)
 		{
-			var prop = GetProperty (name, condition);
+			SetValue (name, value, defaultValue);
+		}
+
+		public void SetValue (string name, object value, object defaultValue = null)
+		{
+			var prop = (MSBuildProperty) GetProperty (name);
 			var isDefault = object.Equals (value, defaultValue);
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
 				if (prop != null && (defaultValue == null || !object.Equals (defaultValue, prop.GetValue (defaultValue.GetType ()))))
@@ -308,14 +249,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 			}
 			if (prop == null)
-				prop = AddProperty (name, condition);
-			prop.SetValue (value, mergeToMainGroup);
+				prop = AddProperty (name);
+			prop.SetValue (value);
 			prop.HasDefaultValue = isDefault;
 		}
 
 		public bool RemoveProperty (string name)
 		{
-			MSBuildProperty prop = GetProperty (name);
+			MSBuildProperty prop = (MSBuildProperty) GetProperty (name);
 			if (prop != null) {
 				RemoveProperty (prop);
 				return true;
@@ -325,63 +266,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveProperty (MSBuildProperty prop)
 		{
-			InitProperties ();
 			properties.Remove (prop.Name);
 			propertyList.Remove (prop);
-			Element.RemoveChild (prop.Element);
-		}
-
-		public void RemoveAllProperties ()
-		{
-			InitProperties ();
-			List<XmlNode> toDelete = new List<XmlNode> ();
-			foreach (XmlNode node in Element.ChildNodes) {
-				if (node is XmlElement)
-					toDelete.Add (node);
-			}
-			foreach (XmlNode node in toDelete)
-				Element.RemoveChild (node);
-			properties.Clear ();
-			propertyList.Clear ();
-		}
-
-		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)
-		{
-			HashSet<string> baseProps = new HashSet<string> ();
-			foreach (MSBuildProperty prop in baseGrp.GetProperties ()) {
-				if (propsToExclude != null && propsToExclude.Contains (prop.Name))
-					continue;
-				baseProps.Add (prop.Name);
-				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && prop.Value.Equals (thisProp.Value, StringComparison.OrdinalIgnoreCase))
-					RemoveProperty (prop.Name);
-			}
-
-			// Remove properties which have the default value and which are not defined in the main group
-			foreach (var p in GetProperties ().ToArray ()) {
-				if (baseProps.Contains (p.Name))
-					continue;
-				if (p.HasDefaultValue)
-					RemoveProperty (p);
-			}
 		}
 
 		public override string ToString()
 		{
-			string s = "[MSBuildPropertyGroup:";
+			string s = "[ProjectItemMetadata:";
 			foreach (MSBuildProperty prop in GetProperties ())
 				s += " " + prop.Name + "=" + prop.Value;
 			return s + "]";
 		}
 
-		public void SetObject<T> (T t) where T : IMSBuildDataObject
-		{
-			throw new NotImplementedException ();
-		}
-
 		public bool HasProperty (string name)
 		{
-			InitProperties ();
 			return properties.ContainsKey (name);
 		}
 
@@ -406,26 +304,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				i++;
 			}
 		}
-	}
 
-	public interface IMSBuildPropertyGroupEvaluated
-	{
-		bool HasProperty (string name);
-
-		IMSBuildPropertyEvaluated GetProperty (string name);
-
-		IEnumerable<IMSBuildPropertyEvaluated> GetProperties ();
-
-		string GetValue (string name, string defaultValue = null);
-
-		FilePath GetPathValue (string name, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
-
-		bool TryGetPathValue (string name, out FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
-
-		T GetValue<T> (string name);
-
-		T GetValue<T> (string name, T defaultValue);
-
-		object GetValue (string name, Type type, object defaultValue);
+		public void RemoveAllProperties ()
+		{
+			properties.Clear ();
+			propertyList.Clear ();
+		}
 	}
 }
+

@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected override void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		internal protected override void Read (IPropertySet pset, MSBuildFileFormat format)
 		{
 			base.Read (pset, format);
 
@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects
 				((IMSBuildDataObject)compilationParameters).Read (pset, format);
 		}
 
-		internal protected override void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		internal protected override void Write (IPropertySet pset, MSBuildFileFormat format)
 		{
 			base.Write (pset, format);
 			pset.SetValue ("AssemblyName", assembly, mergeToMainGroup: true);

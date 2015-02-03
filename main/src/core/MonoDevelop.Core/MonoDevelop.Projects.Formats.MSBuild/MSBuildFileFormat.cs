@@ -40,10 +40,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public abstract class MSBuildFileFormat: IFileFormat
 	{
 		readonly SlnFileFormat slnFileFormat;
+		static MSBuildFileFormat defaultFormat = new MSBuildFileFormatVS12 ();
 
 		protected MSBuildFileFormat ()
 		{
 			slnFileFormat = new SlnFileFormat (this);
+		}
+
+		public static MSBuildFileFormat DefaultFormat {
+			get { return defaultFormat; }
 		}
 		
 		public string Name {

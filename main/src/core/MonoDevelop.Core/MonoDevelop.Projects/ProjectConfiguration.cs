@@ -50,19 +50,19 @@ namespace MonoDevelop.Projects
 
 		#region IProjectConfigurationData implementation
 
-		void IMSBuildDataObject.Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		void IMSBuildDataObject.Read (IPropertySet pset, MSBuildFileFormat format)
 		{
 			Read (pset, format);
 		}
 
-		void IMSBuildDataObject.Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		void IMSBuildDataObject.Write (IPropertySet pset, MSBuildFileFormat format)
 		{
 			Write (pset, format);
 		}
 
 		#endregion
 
-		internal protected virtual void Read (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		internal protected virtual void Read (IPropertySet pset, MSBuildFileFormat format)
 		{
 			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
 			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
@@ -83,7 +83,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual void Write (IMSBuildPropertySet pset, MSBuildFileFormat format)
+		internal protected virtual void Write (IPropertySet pset, MSBuildFileFormat format)
 		{
 			pset.SetValue ("IntermediateOutputPath", intermediateOutputDirectory, defaultValue:FilePath.Null);
 			pset.SetValue ("DebugSymbols", debugMode, false);

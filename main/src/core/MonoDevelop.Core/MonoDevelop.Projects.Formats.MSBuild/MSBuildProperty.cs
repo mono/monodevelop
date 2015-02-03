@@ -35,7 +35,7 @@ using System.Globalization;
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	
-	public sealed class MSBuildProperty: MSBuildPropertyCore
+	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty
 	{
 		bool preserverCase;
 		string defaultValue;
@@ -44,8 +44,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		public string Name {
-			get { return Element.Name; }
+		internal override string GetName ()
+		{
+			return Element.Name;
 		}
 
 		public bool IsImported {
@@ -114,7 +115,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}		
 
-		void SetPropertyValue (string value)
+		internal virtual void SetPropertyValue (string value)
 		{
 			Element.InnerText = value;
 		}
@@ -131,19 +132,48 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
+	class ItemMetadataProperty: MSBuildProperty
+	{
+		string value;
+
+		public ItemMetadataProperty (): base (null, null)
+		{
+		}
+
+		internal override void SetPropertyValue (string value)
+		{
+			this.value = value;
+		}
+
+		internal override string GetPropertyValue ()
+		{
+			return value;
+		}
+
+		public override string UnevaluatedValue {
+			get {
+				return value;
+			}
+		}
+	}
+
 	class MSBuildPropertyEvaluated: MSBuildPropertyCore
 	{
 		string value;
 		string evaluatedValue;
+		string name;
 
 		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue): base (project, null)
 		{
 			this.evaluatedValue = evaluatedValue;
 			this.value = value;
-			Name = name;
+			this.name = name;
 		}
 
-		public string Name { get; private set; }
+		internal override string GetName ()
+		{
+			return name;
+		}
 
 		public bool IsImported { get; set; }
 
@@ -168,6 +198,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProject Project {
 			get { return project; }
+		}
+
+		public string Name {
+			get { return GetName (); }
 		}
 
 		public string Value {
@@ -224,10 +258,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public abstract string UnevaluatedValue { get; }
 
 		internal abstract string GetPropertyValue ();
+
+		internal abstract string GetName ();
 	}
 
 	public interface IMSBuildPropertyEvaluated
 	{
+		string Name { get; }
+
 		MSBuildProject Project { get; }
 
 		string Value { get; }
@@ -241,6 +279,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		FilePath GetPathValue (bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
 
 		bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+	}
+
+	public interface IMetadataProperty
+	{
+		string Name { get; }
+
+		string Value { get; }
+
+		string UnevaluatedValue { get; }
+
+		T GetValue<T> ();
+
+		object GetValue (Type t);
+
+		FilePath GetPathValue (bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+
+		bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+
+		void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false);
+
+		void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false);
+
+		void SetValue (object value, bool mergeToMainGroup = false);
 	}
 
 	class MergedProperty

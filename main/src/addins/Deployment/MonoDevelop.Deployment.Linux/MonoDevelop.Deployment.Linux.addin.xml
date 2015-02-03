@@ -13,11 +13,6 @@
 		<Class id="Deployment.Linux" insertbefore="PrepareDeploy" class = "MonoDevelop.Deployment.Linux.LinuxDeployExtension" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-<!--		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.TargetDirectoryId" type = "System.String" />
--->	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 <!--		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackagingProjectNodeBuilder"/>
 		<NodeBuilder class = "MonoDevelop.Deployment.NodeBuilders.PackageNodeBuilder"/>
