@@ -206,6 +206,11 @@ type TooltipResults =
 
 module SymbolTooltips =
 
+    type NestedFunctionParams =
+    | GenericParam of FSharpGenericParameter
+    | TupleParam of IList<FSharpType>
+    | NamedType of FSharpType
+
     let internal escapeText = GLib.Markup.EscapeText
 
     /// Concat two strings with a space between if both a and b are not IsNullOrWhiteSpace
@@ -311,6 +316,84 @@ module SymbolTooltips =
                 if signatureOnly then typeArguments
                 else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
 
+    // For closures/nexted functions the curried arguments are not present but the following is used:
+    // Get FullType, iterate over generic arguments, if its a tuple type the use '*' for the seperator else use '->'
+
+    //e.g. let myClosure (p1: sting) = 42
+    // FullType.GenericArguments [2]
+    // [0]string
+    // [1]int
+    // myClosure -> string -> int
+
+    // e.g let myClosure (p1:string, p2:int) = 42
+    // FullType.GenericArguments [2]
+    //[0]IsTupleType, GenericArguments[2] [0]string;[1]int  
+    //[1]int
+    // myClosure -> string * int -> int
+    let getNestedFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
+        let indent = String.replicate indent " "
+        let functionName = escapeText func.DisplayName
+        let modifiers = "val" 
+
+        let argInfos =
+            let rec loop (args: FSharpType seq) parent =
+                [for ty in args do
+                    if ty.IsGenericParameter then
+                        yield GenericParam ty.GenericParameter
+                    elif ty.HasTypeDefinition then
+                        yield NamedType ty
+                    elif ty.IsTupleType then
+                        yield TupleParam ty.GenericArguments
+                    else
+                        yield! loop ty.GenericArguments ty ]
+
+            loop func.FullType.GenericArguments func.FullType
+
+
+        let padLength = 
+            let allLengths =
+                argInfos
+                |> List.map
+                    (fun p -> match p with
+                              | GenericParam gp -> gp.Name.Length+1
+                              | NamedType nt -> (nt.Format displayContext).Length
+                              | TupleParam tps ->
+                                tps
+                                |> Seq.map (fun t -> (t.Format displayContext).Length)
+                                |> Seq.max)
+            match allLengths with
+            | [] -> 0
+            | l -> l |> List.max
+
+        let typeArguments =
+            argInfos
+            |> Seq.mapi (fun i nestedFuncParam ->
+                let last = i = argInfos.Length-1
+                match nestedFuncParam with
+                | GenericParam gp ->
+                    let parameter = indent + asType UserType (("'" + gp.Name).PadRight padLength)
+                    if last then parameter else parameter + asType Symbol " ->"
+                | NamedType nt ->
+                    let parameter = indent + asType UserType ((nt.Format displayContext).PadRight padLength)
+                    if last then parameter else parameter + asType Symbol " ->"
+                | TupleParam tuples ->
+                    let parameters =
+                        tuples
+                        |> Seq.mapi (fun i t -> let lastTuple = i = tuples.Count-1
+                                                let parameter =
+                                                     indent + asType UserType ((t.Format displayContext).PadRight padLength)
+                                                if lastTuple then
+                                                    parameter
+                                                else parameter + asType Symbol " *")
+                        |> String.concat "\n"
+                    if last then parameters
+                    else parameters + asType Symbol " ->" )
+
+            |> String.concat "\n"
+
+        if signatureOnly then typeArguments
+        else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+
     let getEntitySignature displayContext (fse: FSharpEntity) =
         let modifier =
             match fse.Accessibility with
@@ -350,7 +433,10 @@ module SymbolTooltips =
             asType Symbol " =" + "\n" +
             "   " + asType Keyword "delegate" + " of\n" + invokerSig
                                  
-        let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
+        let typeDisplay =
+            let basicName = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
+            //TODO: add generic constraint display
+            basicName 
         let fullName =
             match fse.TryGetFullName () with
             | Some fullname -> "\n\nFull name: " + fullname
@@ -408,7 +494,7 @@ module SymbolTooltips =
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function, needs FCS support
-            let signature = escapeText <|func.FullType.Format symbol.DisplayContext
+            let signature = getNestedFuncSignature symbol.DisplayContext func 3 false
             let summary = getSummaryFromSymbol func backUpSig
             ToolTip(signature, summary)
 
