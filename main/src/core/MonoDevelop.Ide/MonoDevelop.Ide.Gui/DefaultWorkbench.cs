@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : WorkbenchWindow, ICommandRouter
+	public class DefaultWorkbench : WorkbenchWindow, ICommandRouter
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MainToolbar Toolbar {
+		internal MainToolbar Toolbar {
 			get {
 				return toolbar;
 			}
@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return topMenu; }
 		}
 
-		public MonoDevelopStatusBar BottomBar {
+		internal MonoDevelopStatusBar BottomBar {
 			get { return bottomBar; }
 		}
 
@@ -274,14 +274,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath)) {
-				if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
-					return;
-				
-				UninstallMenuBar ();
-				CreateMenuBar ();
-				InstallMenuBar ();
-			}
+			if (args.PathChanged (mainMenuPath) || args.PathChanged (appMenuPath))
+				RecreateMenu ();
+		}
+
+		public void RecreateMenu ()
+		{
+			if (DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
+				return;
+			UninstallMenuBar ();
+			CreateMenuBar ();
+			InstallMenuBar ();
 		}
 
 		void CreateMenuBar ()

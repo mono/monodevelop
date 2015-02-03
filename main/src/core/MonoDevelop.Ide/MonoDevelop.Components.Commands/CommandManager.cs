@@ -222,11 +222,7 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public CommandEntrySet CreateCommandEntrySet (ExtensionContext ctx, string addinPath)
 		{
-			CommandEntrySet cset = new CommandEntrySet ();
-			object[] items = ctx.GetExtensionObjects (addinPath, false);
-			foreach (CommandEntry e in items)
-				cset.Add (e);
-			return cset;
+			return PostProcess (ctx.GetExtensionObjects (addinPath, false));
 		}
 		
 		/// <summary>
@@ -240,13 +236,25 @@ namespace MonoDevelop.Components.Commands
 		/// </param>
 		public CommandEntrySet CreateCommandEntrySet (string addinPath)
 		{
+			return PostProcess (AddinManager.GetExtensionObjects (addinPath, false));
+		}
+
+		CommandEntrySet PostProcess(object[] items)
+		{
 			CommandEntrySet cset = new CommandEntrySet ();
-			object[] items = AddinManager.GetExtensionObjects (addinPath, false);
 			foreach (CommandEntry e in items)
 				cset.Add (e);
-			return cset;
+
+			if (CommandEntrySetPostProcessor == null)
+				return cset;
+
+			return CommandEntrySetPostProcessor (cset);
 		}
-		
+
+		public delegate CommandEntrySet PostProcessCommandEntrySet(CommandEntrySet input);
+
+		public PostProcessCommandEntrySet CommandEntrySetPostProcessor { get; set; }
+
 		bool isEnabled = true;
 		
 		/// <summary>

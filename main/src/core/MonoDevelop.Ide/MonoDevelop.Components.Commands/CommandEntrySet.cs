@@ -97,7 +97,12 @@ namespace MonoDevelop.Components.Commands
 			cmds.Add (cmdset);
 			return cmdset;
 		}
-		
+
+		public void Remove(CommandEntry entry)
+		{
+			cmds.Remove (entry);
+		}
+
 		public System.Collections.IEnumerator GetEnumerator ()
 		{
 			return cmds.GetEnumerator ();
