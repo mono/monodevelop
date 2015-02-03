@@ -1710,6 +1710,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (var e in AddinManager.GetExtensionObjects<MSBuildExtension> ("/MonoDevelop/ProjectModel/MSBuildExtensions")) {
 				e.Handler = this;
 				yield return e;
+				e.Handler = null;
 			}
 		}
 

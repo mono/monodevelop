@@ -42,6 +42,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			CurrentSolution = null;
+			base.Dispose (disposing);
+		}
 		
 		public MigrationType ShouldMigrateProject ()
 		{
