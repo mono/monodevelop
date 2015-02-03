@@ -776,14 +776,13 @@ namespace MonoDevelop.Ide.Gui
 		internal void StartReparseThread ()
 		{
 			lock (reparseLock) {
-				EnsureAnalysisDocumentIsOpen ();
-
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
 				// be parsed at the same time.
 				string currentParseFile = FileName;
 				if (string.IsNullOrEmpty (currentParseFile))
 					return;
+				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
 				if (IsProjectContextInUpdate) {
 					return;
