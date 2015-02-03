@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		}
 
 		public ProjectedSegment (int offset, int projectedOffset, int length)
+			: this ()
 		{
 			this.Offset = offset;
 			this.ProjectedOffset = projectedOffset;
