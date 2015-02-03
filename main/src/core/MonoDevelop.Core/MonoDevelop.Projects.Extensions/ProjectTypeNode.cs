@@ -46,27 +46,19 @@ namespace MonoDevelop.Projects.Extensions
 //					await MSBuildProjectService.MigrateFlavor (monitor, fileName, typeGuid, this, p);
 			}
 
+			var project = await base.CreateSolutionItem (monitor, fileName, typeGuid) as Project;
+			if (project == null)
+				throw new InvalidOperationException ("Project node type is not a subclass of MonoDevelop.Projects.Project");
 			if (p != null)
-				Project.CreationContext.LockContext (p, typeGuid);
-			try {
-				var project = await base.CreateSolutionItem (monitor, fileName, typeGuid) as Project;
-				if (project == null)
-					throw new InvalidOperationException ("Project node type is not a subclass of MonoDevelop.Projects.Project");
-				return project;
-			} finally {
-				if (p != null)
-					Project.CreationContext.UnlockContext ();
-			}
+				project.SetCreationContext (Project.CreationContext.Create (p, typeGuid));
+			return project;
 		}	
 
 		public virtual Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			try {
-				Project.CreationContext.LockContext (typeGuid, flavorGuids);
-				return (Project) CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
-			} finally {
-				Project.CreationContext.UnlockContext ();
-			}
+			var p = (Project) CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
+			p.SetCreationContext (Project.CreationContext.Create (typeGuid, flavorGuids));
+			return p;
 		}
 	}
 }

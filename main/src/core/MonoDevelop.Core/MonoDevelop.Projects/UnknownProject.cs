@@ -39,6 +39,11 @@ namespace MonoDevelop.Projects
 		{
 			Initialize (this);
 			IsUnsupportedProject = true;
+		}
+
+		protected override void OnExtensionChainInitialized ()
+		{
+			base.OnExtensionChainInitialized ();
 			NeedsReload = false;
 		}
 

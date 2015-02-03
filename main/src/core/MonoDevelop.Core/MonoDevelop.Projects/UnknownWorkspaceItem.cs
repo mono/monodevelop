@@ -40,8 +40,13 @@ namespace MonoDevelop.Projects
 		
 		public UnknownWorkspaceItem ()
 		{
-			NeedsReload = false;
 			Initialize (this);
+		}
+
+		protected override void OnExtensionChainInitialized ()
+		{
+			base.OnExtensionChainInitialized ();
+			NeedsReload = false;
 		}
 		
 		public string LoadError {

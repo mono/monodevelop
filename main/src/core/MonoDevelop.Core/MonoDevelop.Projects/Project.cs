@@ -96,49 +96,47 @@ namespace MonoDevelop.Projects
 
 		internal class CreationContext
 		{
-			static object theLock = new object ();
 			public MSBuildProject Project { get; set; }
 			public string TypeGuid { get; set; }
 			public string[] FlavorGuids { get; set; }
 
-			internal static void LockContext (MSBuildProject p, string typeGuid)
+			internal static CreationContext Create (MSBuildProject p, string typeGuid)
 			{
-				Monitor.Enter (theLock);
-				Current = new CreationContext ();
-				Current.Project = p;
-				Current.TypeGuid = typeGuid;
+				return new CreationContext {
+					Project = p,
+					TypeGuid = typeGuid
+				};
 			}
 
-			internal static void LockContext (string typeGuid, string[] flavorGuids)
+			internal static CreationContext Create (string typeGuid, string[] flavorGuids)
 			{
-				Monitor.Enter (theLock);
-				Current = new CreationContext ();
-				Current.TypeGuid = typeGuid;
-				Current.FlavorGuids = flavorGuids;
+				return new CreationContext {
+					TypeGuid = typeGuid,
+					FlavorGuids = flavorGuids
+				};
 			}
+		}
 
-			internal static void UnlockContext ()
-			{
-				Current = null;
-				Monitor.Exit (theLock);
-			}
+		CreationContext creationContext;
 
-			public static CreationContext Current { get; private set; }
+		internal void SetCreationContext (CreationContext ctx)
+		{
+			creationContext = ctx;
 		}
 
 		protected override void OnInitialize ()
 		{
 			base.OnInitialize ();
 
-			if (CreationContext.Current != null) {
+			if (creationContext != null) {
 
 				if (IsExtensionChainCreated)
 					throw new InvalidOperationException ("Extension chain already created for this object");
 
-				TypeGuid = CreationContext.Current.TypeGuid;
+				TypeGuid = creationContext.TypeGuid;
 
 				string projectTypeGuids;
-				this.sourceProject = CreationContext.Current.Project;
+				this.sourceProject = creationContext.Project;
 
 				if (this.sourceProject != null) {
 					IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
@@ -147,21 +145,21 @@ namespace MonoDevelop.Projects
 						var subtypeGuids = new List<string> ();
 						foreach (string guid in projectTypeGuids.Split (';')) {
 							string sguid = guid.Trim ();
-							if (sguid.Length > 0 && string.Compare (sguid, CreationContext.Current.TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
+							if (sguid.Length > 0 && string.Compare (sguid, creationContext.TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
 								subtypeGuids.Add (guid);
 						}
 						flavorGuids = subtypeGuids.ToArray ();
 					}
 				} else
-					flavorGuids = CreationContext.Current.FlavorGuids;
+					flavorGuids = creationContext.FlavorGuids;
 			}
 		}
 
 		protected override void OnExtensionChainInitialized ()
 		{
 			base.OnExtensionChainInitialized ();
-			if (CreationContext.Current != null && CreationContext.Current.Project != null)
-				FileName = CreationContext.Current.Project.FileName;
+			if (creationContext != null && creationContext.Project != null)
+				FileName = creationContext.Project.FileName;
 		}
 
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -586,9 +584,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to run the target
 		/// </param>
-		public Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public async Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			return ProjectExtension.OnRunTarget (monitor, target, configuration);
+			return await ProjectExtension.OnRunTarget (monitor, target, configuration);
 		}
 
 		public bool SupportsTarget (string target)
@@ -2088,7 +2086,7 @@ namespace MonoDevelop.Projects
 				// Remove groups corresponding to configurations that have been removed
 				// or groups which don't have any property and did not already exist
 				foreach (ConfigData cd in configData) {
-					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.Properties.Any ()))
+					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
 						msproject.RemoveGroup ((MSBuildPropertyGroup)cd.Group);
 				}
 			}
@@ -2130,7 +2128,7 @@ namespace MonoDevelop.Projects
 		{
 			Dictionary<string,MergedProperty> mergeProps = new Dictionary<string, MergedProperty> ();
 			foreach (var cd in configData.Where (d => d.FullySpecified)) {
-				foreach (var prop in cd.Group.Properties) {
+				foreach (var prop in cd.Group.GetProperties ()) {
 					if (!prop.MergeToMainGroup) {
 						mergeProps [prop.Name] = null;
 					} else if (!mergeProps.ContainsKey (prop.Name))

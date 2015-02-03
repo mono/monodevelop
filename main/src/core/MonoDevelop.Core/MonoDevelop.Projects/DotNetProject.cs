@@ -76,6 +76,12 @@ namespace MonoDevelop.Projects
 			Initialize (this);
 		}
 
+		public static DotNetProject CreateProject (string language, params string[] typeGuids)
+		{
+			string typeGuid = MSBuildProjectService.GetLanguageGuid (language);
+			return (DotNetProject) MSBuildProjectService.CreateProject (typeGuid, typeGuids);
+		}
+
 		protected override void OnInitialize ()
 		{
 			UseMSBuildEngineByDefault = true;
@@ -104,7 +110,7 @@ namespace MonoDevelop.Projects
 				CompileTarget = CompileTarget.Library;
 		}
 
-		public override void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		internal protected override void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 			if ((projectOptions != null) && (projectOptions.Attributes ["Target"] != null))
 				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes ["Target"].Value);

@@ -43,8 +43,13 @@ namespace MonoDevelop.Projects
 		public UnknownSolutionItem ()
 		{
 			Initialize (this);
-			NeedsReload = false;
 			IsUnsupportedProject = true;
+		}
+
+		protected override void OnExtensionChainInitialized ()
+		{
+			base.OnExtensionChainInitialized ();
+			NeedsReload = false;
 		}
 
 		public override bool SupportsConfigurations ()

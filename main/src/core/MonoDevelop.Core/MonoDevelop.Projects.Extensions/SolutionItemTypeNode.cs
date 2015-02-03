@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Runtime.Remoting.Messaging;
 
 namespace MonoDevelop.Projects.Extensions
 {
@@ -107,7 +108,12 @@ namespace MonoDevelop.Projects.Extensions
 					factory = (SolutionItemFactory) Activator.CreateInstance (ItemType);
 				return await factory.CreateItem (fileName, typeGuid);
 			}
-			return (SolutionItem) Activator.CreateInstance (ItemType);
+			try {
+				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
+				return (SolutionItem) Activator.CreateInstance (ItemType);
+			} finally {
+				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
+			}
 		}
 
 		public virtual bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -118,6 +124,7 @@ namespace MonoDevelop.Projects.Extensions
 		public virtual SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			var item = CreateSolutionItem (new ProgressMonitor (), null, Guid).Result;
+			item.EnsureInitialized ();
 			item.InitializeNew (info, projectOptions);
 			return item;
 		}

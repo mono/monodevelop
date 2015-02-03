@@ -149,7 +149,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (itemClass != null)
 				return (SolutionItem)Activator.CreateInstance (itemClass);
 
-			return await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
+			var it = await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
+			it.EnsureInitialized ();
+			return it;
 		}
 
 		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -165,7 +167,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (var node in GetItemTypeNodes ()) {
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
-					return node.CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
+					var it = node.CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
+					it.EnsureInitialized ();
+					return it;
 				}
 			}
 			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
@@ -175,7 +179,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
-					return node.CreateProject (typeGuid, flavorGuids);
+					var p = node.CreateProject (typeGuid, flavorGuids);
+					p.EnsureInitialized ();
+					return p;
 				}
 			}
 			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
