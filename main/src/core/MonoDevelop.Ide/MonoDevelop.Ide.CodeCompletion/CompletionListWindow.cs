@@ -443,7 +443,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			KeyActions ka = KeyActions.None;
 			return CompleteWord (ref ka, KeyDescriptor.Empty);
 		}
-		
+
+		internal bool IsInCompletion { get; set;  }
+
 		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (SelectedItem == -1 || completionDataList == null)
@@ -451,18 +453,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var item = completionDataList [SelectedItem];
 			if (item == null)
 				return false;
-			// first close the completion list, then insert the text.
-			// this is required because that's the logical event chain, otherwise things could be messed up
-			CloseCompletionList ();
-/*			var cdItem = (CompletionData)item;
-			cdItem.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
-			AddWordToHistory (PartialWord, cdItem.CompletionText);
-			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
-			*/
-			((CompletionData)item).InsertCompletionText (this, ref ka, descriptor);
-			AddWordToHistory (PartialWord, item.DisplayText);
-			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
-			return true;
+			IsInCompletion = true; 
+			try {
+				// first close the completion list, then insert the text.
+				// this is required because that's the logical event chain, otherwise things could be messed up
+				CloseCompletionList ();
+				/*			var cdItem = (CompletionData)item;
+							cdItem.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
+							AddWordToHistory (PartialWord, cdItem.CompletionText);
+							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
+							*/
+				((CompletionData)item).InsertCompletionText (this, ref ka, descriptor);
+				AddWordToHistory (PartialWord, item.DisplayText);
+				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
+			} finally {
+				IsInCompletion = false;
+				HideWindow ();
+			}
+            return true;
 		}
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)

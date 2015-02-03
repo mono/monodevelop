@@ -153,7 +153,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return;
-
+			if (wnd.IsInCompletion)
+				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
 			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
 				HideWindow ();
