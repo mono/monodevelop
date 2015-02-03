@@ -1229,7 +1229,7 @@ namespace MonoDevelop.Ide
 		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
 			foreach (var refItem in item.GetReferencedItems (configuration)) {
-				if (collected.Add (item)) {
+				if (collected.Add (refItem)) {
 					CollectReferencedItems (refItem, collected, configuration);
 				}
 			}
