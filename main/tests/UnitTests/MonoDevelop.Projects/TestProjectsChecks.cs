@@ -148,7 +148,7 @@ namespace MonoDevelop.Projects
 			Solution sol = new Solution ();
 			SolutionConfiguration scDebug = sol.AddConfiguration ("Debug", true);
 			
-			DotNetProject project = new CSharpProject ();
+			DotNetProject project = Services.ProjectService.CreateDotNetProject ("C#");
 			sol.RootFolder.Items.Add (project);
 			Assert.AreEqual (0, project.Configurations.Count);
 			
