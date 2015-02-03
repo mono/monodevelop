@@ -120,6 +120,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return false;
 		}
 
+		public override bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			return false;
+		}
+
 		protected override IEnumerable<string> GetStandardBuildActions ()
 		{
 			return BuildAction.DotNetActions;
