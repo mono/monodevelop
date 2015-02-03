@@ -76,7 +76,6 @@ namespace MonoDevelop.Projects
 		string customError;
 		FilePath hintPath;
 
-		string originalMSBuildReferenceInclude;
 		string originalMSBuildReferenceHintPath;
 
 		public event EventHandler StatusChanged;
@@ -225,7 +224,6 @@ namespace MonoDevelop.Projects
 					var hp = buildItem.Metadata.GetValue ("HintPath");
 					Init (ReferenceType.Assembly, hp, null);
 					SetInvalid (GettextCatalog.GetString ("Invalid file path"));
-					originalMSBuildReferenceInclude = buildItem.Include;
 				} else {
 					var type = File.Exists (path) ? ReferenceType.Assembly : ReferenceType.Package;
 					Init (type, buildItem.Include, path);

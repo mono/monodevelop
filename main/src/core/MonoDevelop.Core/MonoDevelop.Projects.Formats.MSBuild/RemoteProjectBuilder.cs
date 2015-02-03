@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				return engine.LoadProject (projectFile);
-			} catch (Exception ex) {
+			} catch {
 				CheckDisconnected ();
 				throw;
 			}
@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				engine.SetCulture (uiCulture);
-			} catch (Exception ex) {
+			} catch {
 				CheckDisconnected ();
 				throw;
 			}
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				engine.SetGlobalProperties (properties);
-			} catch (Exception ex) {
+			} catch {
 				CheckDisconnected ();
 				throw;
 			}
