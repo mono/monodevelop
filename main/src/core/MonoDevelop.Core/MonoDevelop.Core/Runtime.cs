@@ -42,6 +42,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
 using MonoDevelop.Core.Web;
+using System.Threading.Tasks;
 
 
 namespace MonoDevelop.Core
@@ -291,6 +292,94 @@ namespace MonoDevelop.Core
 					throw new InvalidOperationException ("The main synchronization context has already been set");
 				mainSynchronizationContext = value;
 			}
+		}
+
+		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		public static Task RunInMainThread (Action action)
+		{
+			var ts = new TaskCompletionSource<int> ();
+			if (SynchronizationContext.Current == MainSynchronizationContext) {
+				try {
+					action ();
+					ts.SetResult (0);
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+			} else {
+				MainSynchronizationContext.Post (delegate {
+					try {
+						action ();
+						ts.SetResult (0);
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+			}
+			return ts.Task;
+		}
+
+		/// <summary>
+		/// Runs a function in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		public static Task<T> RunInMainThread<T> (Func<T> func)
+		{
+			var ts = new TaskCompletionSource<T> ();
+			if (SynchronizationContext.Current == MainSynchronizationContext) {
+				try {
+					ts.SetResult (func ());
+				} catch (Exception ex) {
+					ts.SetException (ex);
+				}
+			} else {
+				MainSynchronizationContext.Post (delegate {
+					try {
+						ts.SetResult (func ());
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+			}
+			return ts.Task;
+		}
+
+		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		/// <remarks>This version of the method is useful when the operation to be executed in the main
+		/// thread is asynchronous.</remarks>
+		public static Task<T> RunInMainThread<T> (Func<Task<T>> func)
+		{
+			if (SynchronizationContext.Current == MainSynchronizationContext) {
+				return func ();
+			} else {
+				var ts = new TaskCompletionSource<T> ();
+				MainSynchronizationContext.Post (delegate {
+					try {
+						var t = func ();
+						t.ContinueWith (ta => {
+							try {
+								ts.SetResult (ta.Result);
+							} catch (Exception ex) {
+								ts.SetException (ex);
+							}
+						});
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+				return ts.Task;
+			}
+		}
+
+		/// <summary>
+		/// Asserts that the current thread is the main thread. It will throw an exception if it isn't.
+		/// </summary>
+		public static void AssertMainThread ()
+		{
+			if (SynchronizationContext.Current != MainSynchronizationContext)
+				throw new InvalidOperationException ("Operation not supported in background thread");
 		}
 
 		public static void SetProcessName (string name)

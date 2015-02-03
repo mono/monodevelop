@@ -121,7 +121,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					try {
 						monitor.BeginStep ();
 						item.SavingSolution = true;
-						item.Save (monitor);
+						item.SaveAsync (monitor).Wait ();
 					} finally {
 						item.SavingSolution = false;
 					}
@@ -633,9 +633,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				try {
 					if (sol.IsSolutionItemEnabled (projectPath)) {
-						var t = Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
-						item = t.Result;
-						
+						item = Runtime.RunInMainThread (delegate {
+							return Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
+						}).Result;
+
 						if (item == null) {
 							throw new UnknownSolutionItemTypeException (projTypeGuid);
 						}
