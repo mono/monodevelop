@@ -96,11 +96,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return GetProperty (name);
 		}
 
-		IEnumerable<IMSBuildPropertyEvaluated> IMSBuildPropertyGroupEvaluated.GetProperties ()
-		{
-			return GetProperties ().Cast<IMSBuildPropertyEvaluated> ();
-		}
-
 		public MSBuildProperty GetProperty (string name)
 		{
 			return GetProperty (name, null);
@@ -413,8 +408,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool HasProperty (string name);
 
 		IMSBuildPropertyEvaluated GetProperty (string name);
-
-		IEnumerable<IMSBuildPropertyEvaluated> GetProperties ();
 
 		string GetValue (string name, string defaultValue = null);
 

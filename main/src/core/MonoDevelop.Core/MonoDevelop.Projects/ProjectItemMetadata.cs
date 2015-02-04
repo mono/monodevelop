@@ -45,13 +45,15 @@ namespace MonoDevelop.Projects
 
 		internal void LoadProperties (XmlElement element)
 		{
-			properties = new Dictionary<string,MSBuildProperty> ();
-			propertyList = new List<MSBuildProperty> ();
-
 			foreach (var pelem in element.ChildNodes.OfType<XmlElement> ()) {
 				MSBuildProperty prevSameName;
-				if (properties.TryGetValue (pelem.Name, out prevSameName))
+				if (properties != null && properties.TryGetValue (pelem.Name, out prevSameName))
 					prevSameName.Overwritten = true;
+
+				if (properties == null) {
+					properties = new Dictionary<string,MSBuildProperty> ();
+					propertyList = new List<MSBuildProperty> ();
+				}
 
 				var prop = new MSBuildProperty (null, pelem);
 				propertyList.Add (prop);
@@ -61,6 +63,8 @@ namespace MonoDevelop.Projects
 
 		public IMetadataProperty GetProperty (string name)
 		{
+			if (properties == null)
+				return null;
 			MSBuildProperty prop;
 			properties.TryGetValue (name, out prop);
 			return prop;
@@ -68,6 +72,8 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<IMetadataProperty> GetProperties ()
 		{
+			if (propertyList == null)
+				return new IMetadataProperty [0];
 			return propertyList.Where (p => !p.Overwritten);
 		}
 
@@ -152,7 +158,11 @@ namespace MonoDevelop.Projects
 
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
-			int i = propertyOrder.IndexOf (name);
+			if (properties == null) {
+				properties = new Dictionary<string, MSBuildProperty> ();
+				propertyList = new List<MSBuildProperty> ();
+			}
+			int i = propertyOrder != null ? propertyOrder.IndexOf (name) : -1;
 			int insertIndex = -1;
 			if (i != -1) {
 				var foundProp = FindExistingProperty (i - 1, -1);
@@ -165,7 +175,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var prop = new ItemMetadataProperty ();
+			var prop = new ItemMetadataProperty (name);
 			properties [name] = prop;
 
 			if (insertIndex != -1)
@@ -266,8 +276,10 @@ namespace MonoDevelop.Projects
 
 		public void RemoveProperty (MSBuildProperty prop)
 		{
-			properties.Remove (prop.Name);
-			propertyList.Remove (prop);
+			if (properties != null) {
+				properties.Remove (prop.Name);
+				propertyList.Remove (prop);
+			}
 		}
 
 		public override string ToString()
@@ -280,13 +292,15 @@ namespace MonoDevelop.Projects
 
 		public bool HasProperty (string name)
 		{
-			return properties.ContainsKey (name);
+			return properties != null && properties.ContainsKey (name);
 		}
 
-		List<string> propertyOrder = new List<string> ();
+		List<string> propertyOrder;
 
 		public void SetPropertyOrder (params string[] propertyNames)
 		{
+			if (propertyOrder == null)
+				propertyOrder = new List<string> ();
 			int i = 0;
 			foreach (var name in propertyNames) {
 				if (i < propertyOrder.Count) {
@@ -307,8 +321,10 @@ namespace MonoDevelop.Projects
 
 		public void RemoveAllProperties ()
 		{
-			properties.Clear ();
-			propertyList.Clear ();
+			if (properties != null) {
+				properties.Clear ();
+				propertyList.Clear ();
+			}
 		}
 	}
 }

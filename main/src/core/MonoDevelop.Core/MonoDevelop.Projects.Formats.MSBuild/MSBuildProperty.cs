@@ -38,7 +38,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty
 	{
 		bool preserverCase;
-		string defaultValue;
 
 		internal MSBuildProperty (MSBuildProject project, XmlElement elem): base (project, elem)
 		{
@@ -64,11 +63,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal MergedProperty CreateMergedProperty ()
 		{
 			return new MergedProperty (Name, preserverCase, HasDefaultValue);
-		}
-
-		internal void SetDefaultValue (string value)
-		{
-			defaultValue = value;
 		}
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
@@ -135,9 +129,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class ItemMetadataProperty: MSBuildProperty
 	{
 		string value;
+		string name;
 
-		public ItemMetadataProperty (): base (null, null)
+		public ItemMetadataProperty (string name): base (null, null)
 		{
+			this.name = name;
+		}
+
+		internal override string GetName ()
+		{
+			return name;
 		}
 
 		internal override void SetPropertyValue (string value)

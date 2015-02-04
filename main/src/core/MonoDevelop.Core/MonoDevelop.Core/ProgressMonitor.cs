@@ -218,10 +218,12 @@ namespace MonoDevelop.Core
 
 		public void Step (string message, int work = 1)
 		{
-			if (currentTask == null)
-				throw new InvalidOperationException ("Task not started");
+			if (currentTask == null) {
+				LoggingService.LogError ("Task not started in progress monitor");
+				return;
+			}
 			if (work < 0)
-				throw new ArgumentException ("work can't be negative");
+				work = 0;
 
 			ConsumePendingWork ();
 			currentTask.Step (message, work);
@@ -367,6 +369,8 @@ namespace MonoDevelop.Core
 		{
 			if (parentMonitor != null)
 				parentMonitor.ReportError (message, exception);
+			else
+				LoggingService.LogError (message, exception);
 
 			var msg = message;
 			if (message == null && exception != null)

@@ -58,11 +58,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
-		{
-			return properties.Values;
-		}
-
 		public IMSBuildPropertyEvaluated GetProperty (string name)
 		{
 			MSBuildPropertyEvaluated prop;

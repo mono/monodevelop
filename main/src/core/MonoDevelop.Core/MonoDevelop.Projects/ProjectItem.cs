@@ -76,12 +76,14 @@ namespace MonoDevelop.Projects
 			Condition = buildItem.Condition;
 			metadata = null;
 
-			HashSet<string> knownProps = GetKnownMetadata ();
-			foreach (var prop in buildItem.Metadata.GetProperties ()) {
-				if (!knownProps.Contains (prop.Name)) {
-					if (metadata == null)
-						metadata = new ProjectItemMetadata (project.SolutionFormat);
-					Metadata.SetValue (prop.Name, prop.Value);
+			if (buildItem.SourceItem != null) {
+				HashSet<string> knownProps = GetKnownMetadata ();
+				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
+					if (!knownProps.Contains (prop.Name)) {
+						if (metadata == null)
+							metadata = new ProjectItemMetadata (project.SolutionFormat);
+						Metadata.SetValue (prop.Name, prop.Value);
+					}
 				}
 			}
 		}
