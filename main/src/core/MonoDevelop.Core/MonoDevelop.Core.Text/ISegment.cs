@@ -140,10 +140,6 @@ namespace MonoDevelop.Core.Text
 			this.length = length;
 		}
 
-		public TextSegment (ICSharpCode.NRefactory.Editor.ISegment nrefactorySegment) : this (nrefactorySegment.Offset, nrefactorySegment.Length)
-		{
-		}
-
 		public static bool operator == (TextSegment left, TextSegment right)
 		{
 			return Equals (left, right);

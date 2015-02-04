@@ -46,7 +46,6 @@
   <ItemGroup>
     <Reference Include="Mono.Posix" />
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
@@ -76,6 +75,8 @@
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
+    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -177,6 +178,7 @@
     <Compile Include="XmlDocIdLib\XmlDocIdGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.AssemblyBrowser\NRefactoryStock.cs" />
+    <Compile Include="MonoDevelop.AssemblyBrowser\HelpExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
