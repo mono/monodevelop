@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public abstract class ParameterHintingData : IParameterHintingData
+	public abstract class ParameterHintingData
 	{
 		public ISymbol Symbol {
 			get;

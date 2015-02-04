@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		#endregion
 
-		class ParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData
+		class ParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData, IParameterHintingData
 		{
 			public ParameterHintingData (IMethodSymbol symbol) : base (symbol)
 			{
@@ -174,7 +174,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		class DelegateParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData
+		class DelegateParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData, IParameterHintingData
 		{
 			readonly IMethodSymbol invocationMethod;
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		}
 
-		class ArrayParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData
+		class ArrayParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData, IParameterHintingData
 		{
 			readonly IArrayTypeSymbol arrayType;
 
@@ -248,7 +248,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 		}
 
-		class TypeParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData
+		class TypeParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData, IParameterHintingData
 		{
 			public TypeParameterHintingData (IMethodSymbol symbol) : base (symbol)
 			{
