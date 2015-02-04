@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		const int declarationWindowMargin = 3;
 
 		TooltipInformationWindow declarationviewwindow;
-		ICompletionData currentData;
+		CompletionData currentData;
 		Widget parsingMessage;
 		int initialWordLength;
 		int previousWidth = -1, previousHeight = -1;
@@ -353,9 +353,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		class DataItemComparer : IComparer<ICompletionData>
+		class DataItemComparer : IComparer<CompletionData>
 		{
-			public int Compare (ICompletionData a, ICompletionData b)
+			public int Compare (CompletionData a, CompletionData b)
 			{
 				if (a is IComparable && b is IComparable)
 					return ((IComparable)a).CompareTo (b);
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		IComparer<ICompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
+		IComparer<CompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
 		{
 			var concrete = dataList as CompletionDataList;
 			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
@@ -598,17 +598,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return false;
 			var data = completionDataList [selectedItem];
 
-			IEnumerable<ICompletionData> filteredOverloads;
+			IEnumerable<CompletionData> filteredOverloads;
 			if (data.HasOverloads) {
 				filteredOverloads = data.OverloadedData;
 			} else {
-				filteredOverloads = new ICompletionData[] { data };
+				filteredOverloads = new CompletionData[] { data };
 			}
 
 			EnsureDeclarationViewWindow ();
 			if (data != currentData) {
 				declarationviewwindow.Clear ();
-				var overloads = new List<ICompletionData> (filteredOverloads);
+				var overloads = new List<CompletionData> (filteredOverloads);
 				foreach (var overload in overloads) {
 					declarationviewwindow.AddOverload ((CompletionData)overload);
 				}
@@ -695,7 +695,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ((CompletionData)completionDataList[n]).CompletionText;
 		}
 
-		IComparer<ICompletionData> defaultComparer;
+		IComparer<CompletionData> defaultComparer;
 
 		int IListDataProvider.CompareTo (int n, int m)
 		{

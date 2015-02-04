@@ -2272,7 +2272,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
 	{
 		public int TriggerWordLength { get; set; }
 		public bool IsSorted { get; set; }
@@ -2324,7 +2324,7 @@ namespace MonoDevelop.Debugger
 		public event EventHandler CompletionListClosed;
 	}
 	
-	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
+	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 	{
 		readonly CompletionItem item;
 		
@@ -2348,6 +2348,17 @@ namespace MonoDevelop.Debugger
 		public override string CompletionText {
 			get {
 				return item.Name;
+			}
+		}
+
+		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+		{
+			base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
+		}
+
+		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+			get {
+				return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
 			}
 		}
 	}

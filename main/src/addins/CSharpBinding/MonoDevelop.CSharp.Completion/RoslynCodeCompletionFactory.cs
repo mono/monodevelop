@@ -28,6 +28,8 @@ using System;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -58,7 +60,7 @@ namespace MonoDevelop.CSharp.Completion
 			return new RoslynSymbolCompletionData (ext, field, field.Type.Name + "." + field.Name);
 		}
 		
-		class FormatItemCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
+		class FormatItemCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 		{
 			string format;
 			string description;
@@ -107,6 +109,17 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				return 0;
 			}
+
+			void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+			{
+				base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
+			}
+
+			IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+				get {
+					return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
+				}
+			}
 		}
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (string format, string description, object example)
@@ -114,7 +127,7 @@ namespace MonoDevelop.CSharp.Completion
 			return new FormatItemCompletionData (format, description, example);
 		}
 
-		class XmlDocCompletionData : CompletionData//, IListData
+		class XmlDocCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 		{
 			//readonly CSharpCompletionTextEditorExtension ext;
 			readonly string title;
@@ -153,6 +166,17 @@ namespace MonoDevelop.CSharp.Completion
 				if (descriptor.KeyChar != '>')
 					text += ">";
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+			}
+
+			void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+			{
+				base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
+			}
+
+			IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+				get {
+					return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
+				}
 			}
 		}
 

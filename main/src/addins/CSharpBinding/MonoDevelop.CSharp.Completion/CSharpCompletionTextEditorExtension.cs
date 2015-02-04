@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (completionResult == CompletionResult.Empty)
 					return null;
 				foreach (var symbol in completionResult) {
-					list.Add (symbol); 
+					list.Add ((CompletionData)symbol); 
 				}
 				if (completionResult.InsertTemplatesInList)
 					MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", list);

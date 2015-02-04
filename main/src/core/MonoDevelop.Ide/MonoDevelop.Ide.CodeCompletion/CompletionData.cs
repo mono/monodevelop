@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class CompletionData : ICompletionData, IComparable
+	public class CompletionData : IComparable
 	{
 		protected CompletionData () {}
 		
@@ -71,13 +71,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		public virtual IEnumerable<ICompletionData> OverloadedData {
+		public virtual IEnumerable<CompletionData> OverloadedData {
 			get {
 				throw new InvalidOperationException ();
 			}
 		}
 		
-		public virtual void AddOverload (ICompletionData data)
+		public virtual void AddOverload (CompletionData data)
 		{
 			throw new InvalidOperationException ();
 		}
@@ -118,12 +118,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual int CompareTo (object obj)
 		{
-			if (!(obj is ICompletionData))
+			if (!(obj is CompletionData))
 				return 0;
-			return Compare (this, (ICompletionData)obj);
+			return Compare (this, (CompletionData)obj);
 		}
 
-		public static int Compare (ICompletionData a, ICompletionData b)
+		public static int Compare (CompletionData a, CompletionData b)
 		{
 			var result =  ((a.DisplayFlags & DisplayFlags.Obsolete) == (b.DisplayFlags & DisplayFlags.Obsolete)) ? StringComparer.OrdinalIgnoreCase.Compare (a.DisplayText, b.DisplayText) : (a.DisplayFlags & DisplayFlags.Obsolete) != 0 ? 1 : -1;
 			if (result == 0) {
