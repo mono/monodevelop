@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 
 			// Handle code completion
-			if (descriptor.KeyChar != '\0' && CompletionWidget != null && currentCompletionContext == null) {
+			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
 				completionTokenSrc = new CancellationTokenSource ();
@@ -173,12 +173,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 				}
 			}
 
-			if (/*EnableParameterInsight &&*/ CompletionWidget != null) {
+			if (CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
 				parameterHintingSrc.Cancel ();
 				parameterHintingSrc = new CancellationTokenSource ();
 				var token = parameterHintingSrc.Token;
-
 				var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
 				if (task != null) {
 					task.ContinueWith ((Task<ParameterHintingResult> rt, object completionList) => {
