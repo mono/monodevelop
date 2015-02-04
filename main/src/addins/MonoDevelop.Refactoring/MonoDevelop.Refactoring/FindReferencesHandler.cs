@@ -69,6 +69,19 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			var pd = doc.ParsedDocument.GetAst<SemanticModel> ();
+			info.Enabled = pd != null;
+		}
+
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -114,7 +127,19 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}
-		
+
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			var pd = doc.ParsedDocument.GetAst<SemanticModel> ();
+			info.Enabled = pd != null;
+		}
+
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
