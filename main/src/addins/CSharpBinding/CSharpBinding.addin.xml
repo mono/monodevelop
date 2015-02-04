@@ -160,27 +160,13 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
 		<PolicySet id="1TBS" _name="SharpDevelop style (1TBS)" allowDiffSerialize="false">
-			<Policies resource="SharpDevelopCSharpPolicy.xml" />
+			<Policies resource="KRCSharpPolicy.xml" />
 			<Policies resource="InvariantTextStylePolicy.xml" />
 		</PolicySet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/PolicySets/VisualStudio" >
 		<Policies resource="AllmanCSharpPolicy.xml" />
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="Whitesmiths" _name="Whitesmiths style" allowDiffSerialize="false">
-			<Policies resource="WhitesmithsCSharpPolicy.xml" />
-			<Policies resource="InvariantTextStylePolicy.xml" />
-		</PolicySet>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/ProjectModel/PolicySets" >
-		<PolicySet id="GNU" _name="GNU style" allowDiffSerialize="false">
-			<Policies resource="GNUCSharpPolicy.xml" />
-			<Policies resource="GNUTextStylePolicy.xml" />
-		</PolicySet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
