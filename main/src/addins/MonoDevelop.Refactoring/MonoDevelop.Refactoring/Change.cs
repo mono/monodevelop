@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 

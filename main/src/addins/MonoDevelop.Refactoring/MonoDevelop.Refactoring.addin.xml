@@ -104,12 +104,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<ItemSet id = "Fix" _label = "Fix" autohide="true"
-			insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator">
-			<CommandItem id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" />
-		</ItemSet>
-		
-		
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 	</Extension>
 	
@@ -126,9 +120,6 @@
 	<!-- Quick fix commands -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.FixOperations" type="array" 
-			defaultHandler="MonoDevelop.AnalysisCore.FixOperationsHandler"
-			_label = "Fixes" />
 		<Command id = "MonoDevelop.AnalysisCore.AnalysisCommands.ShowFixes"
 			defaultHandler="MonoDevelop.AnalysisCore.ShowFixesHandler"
 			_label = "Show Fixes"

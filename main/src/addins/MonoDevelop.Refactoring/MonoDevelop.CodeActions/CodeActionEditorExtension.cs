@@ -121,6 +121,8 @@ namespace MonoDevelop.CodeActions
 
 		static void ConfirmUsage (string id)
 		{
+			if (id == null)
+				return;
 			if (!CodeActionUsages.ContainsKey (id)) {
 				CodeActionUsages [id] = 1;
 			} else {
@@ -307,8 +309,8 @@ namespace MonoDevelop.CodeActions
 				items = menu.Items.Count;
 			}
 
-
 			PopulateFixes (fixMenu, ref items);
+
 			if (items == 0) {
 				return;
 			}
@@ -404,7 +406,7 @@ namespace MonoDevelop.CodeActions
 			return true;
 		}
 
-		TextSpan GetTextSpan (CodeAction action)
+		internal static TextSpan GetTextSpan (CodeAction action)
 		{
 			var nrc = action as NRefactoryCodeAction;
 			if (nrc == null)
@@ -464,82 +466,68 @@ namespace MonoDevelop.CodeActions
 		}
 
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
-		{/*
+		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-			var fixesAdded = new List<string> ();
-			foreach (var fix_ in Fixes.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i), (int)i.Severity, GetUsage (i.IdString)))) {
+			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.Id)))) {
 				// filter out code actions that are already resolutions of a code issue
-				if (fixesAdded.Any (f => fix_.IdString.IndexOf (f, StringComparison.Ordinal) >= 0))
-					continue;
-				fixesAdded.Add (fix_.IdString);
-				if (IsAnalysisOrErrorFix (fix_))
+				if (IsAnalysisOrErrorFix (fix_.Item2))
 					gotImportantFix = true;
-				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_)) {
+				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_.Item2)) {
 					menu.Add (FixMenuEntry.Separator);
 					addedSeparator = true;
 				}
 
 				var fix = fix_;
-				var escapedLabel = fix.Title.Replace ("_", "__");
+				var escapedLabel = fix.Item2.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
 					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 					: "  " + escapedLabel;
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
-					new ContextActionRunner (fix, Editor, DocumentContext, currentSmartTagBegin).Run (null, EventArgs.Empty);
-					ConfirmUsage (fix.IdString);
+					new ContextActionRunner (fix.Item2, Editor, DocumentContext).Run (null, EventArgs.Empty);
+					ConfirmUsage (fix.Item2.Id);
 				});
 				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
 
 			bool first = true;
-			var settingsMenuFixes = Fixes
-				.OfType<AnalysisContextActionProvider.AnalysisCodeAction> ()
-				.Where (f => f.Result is InspectorResults)
-				.GroupBy (f => ((InspectorResults)f.Result).Inspector);
-			foreach (var analysisFixGroup_ in settingsMenuFixes) {
-				var analysisFixGroup = analysisFixGroup_;
-				var arbitraryFixInGroup = analysisFixGroup.First ();
-				var ir = (InspectorResults)arbitraryFixInGroup.Result;
-
+			foreach (var fix in Fixes.CodeRefactoringActions) {
 				if (first) {
 					menu.Add (FixMenuEntry.Separator);
 					first = false;
 				}
 
-				var subMenu = new FixMenuDescriptor ();
-				foreach (var analysisFix_ in analysisFixGroup) {
-					var analysisFix = analysisFix_;
-					if (analysisFix.SupportsBatchRunning) {
-						var batchRunMenuItem = new FixMenuEntry (
-							string.Format (GettextCatalog.GetString ("Apply in file: {0}"), analysisFix.Title), 
-							delegate {
-								ConfirmUsage (analysisFix.IdString);
-								new ContextActionRunner (analysisFix, Editor, DocumentContext, this.currentSmartTagBegin).BatchRun (null, EventArgs.Empty);
-							}
-						);
-						subMenu.Add (batchRunMenuItem);
-						subMenu.Add (FixMenuEntry.Separator);
-					}
-				}
-
-			if (Fixes.CodeDiagnosticActions.Count > 0) {
-				menu.Add (new SeparatorMenuItem ());
+				var escapedLabel = fix.Item2.Title.Replace ("_", "__");
+				var label = (mnemonic <= 10)
+					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+					: "  " + escapedLabel;
+				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
+					new ContextActionRunner (fix.Item2, Editor, DocumentContext).Run (null, EventArgs.Empty);
+					ConfirmUsage (fix.Item2.Id);
+				});
+				menu.Add (thisInstanceMenuItem);
+				items++;
 			}
 
-			foreach (var fix_ in Fixes.CodeDiagnosticActions) {
+			if (Fixes.CodeDiagnosticActions.Count > 0) {
+				menu.Add (FixMenuEntry.Separator);
+			}
+
+			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.Id)))) {
 				var fix = fix_;
-		//		var subMenu = new Menu ();
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.Item2.Title);
+				var subMenu = new FixMenuDescriptor (label);
 
 				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
-				if (inspector.CanSuppressWithAttribute) {
-					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
-						delegate {
-							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
-						});
-					subMenu.Add (menuItem);
-				}
+//				if (inspector.CanSuppressWithAttribute) {
+//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
+//						delegate {
+//							
+//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
+//						});
+//					subMenu.Add (menuItem);
+//				}
 
 				if (inspector.CanDisableWithPragma) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
@@ -564,8 +552,6 @@ namespace MonoDevelop.CodeActions
 						});
 					subMenu.Add (menuItem);
 				}
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
-				var subMenuItem = new FixMenuDescriptor (label);
 
 				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
 					delegate {
@@ -576,30 +562,32 @@ namespace MonoDevelop.CodeActions
 						panel.Widget.SelectCodeIssue (inspector.IdString);
 					});
 					});
-				subMenuItem.Add (optionsMenuItem);
+				subMenu.Add (optionsMenuItem);
 
-				menu.Add (subMenuItem);
+				menu.Add (subMenu);
 				items++;
 			}
-
-		}*/
 		}
-		class ContextActionRunner
+
+		internal class ContextActionRunner
 		{
 			readonly CodeAction act;
 			TextEditor editor;
 			DocumentContext documentContext;
-			int loc;
 
-			public ContextActionRunner (CodeAction act, TextEditor editor, DocumentContext documentContext, int loc)
+			public ContextActionRunner (CodeAction act, TextEditor editor, DocumentContext documentContext)
 			{
 				this.editor = editor;
 				this.act = act;
 				this.documentContext = documentContext;
-				this.loc = loc;
 			}
 
 			public void Run (object sender, EventArgs e)
+			{
+				Run ();
+			}
+
+			internal void Run ()
 			{
 				var token = default(CancellationToken);
 				foreach (var op in act.GetOperationsAsync (token).Result) {

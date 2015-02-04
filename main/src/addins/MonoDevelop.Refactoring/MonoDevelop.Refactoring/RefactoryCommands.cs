@@ -40,6 +40,8 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.CodeActions;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.Refactoring
 {
@@ -123,6 +125,64 @@ namespace MonoDevelop.Refactoring
 			return RefactoringSymbolInfo.Empty;
 		}
 
+		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
+		{
+			var result = new CommandInfoSet ();
+			result.Text = GettextCatalog.GetString ("Fix");
+			foreach (var diagnostic in container.CodeDiagnosticActions) {
+				var info = new CommandInfo (diagnostic.Item2.Title);
+				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.Item2, editor, ctx).Run));
+			}
+			if (result.CommandInfos.Count == 0)
+				return result;
+			result.CommandInfos.AddSeparator ();
+			foreach (var fix in container.CodeDiagnosticActions) {
+
+				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
+
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.Item2.Title);
+				var subMenu = new CommandInfoSet ();
+				subMenu.Text = label;
+
+//				if (inspector.CanSuppressWithAttribute) {
+//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
+//						delegate {
+//							
+//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
+//						});
+//					subMenu.Add (menuItem);
+//				}
+
+				if (inspector.CanDisableWithPragma) {
+					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+				}
+
+				if (inspector.CanDisableOnce) {
+					var info = new CommandInfo (GettextCatalog.GetString ("_Disable Once"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+				}
+
+				if (inspector.CanDisableAndRestore) {
+					var info = new CommandInfo (GettextCatalog.GetString ("Disable _and Restore"));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+				}
+
+				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
+				subMenu.CommandInfos.Add (configInfo, new Action (() => {
+					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+						var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
+						if (panel == null)
+							return;
+						panel.Widget.SelectCodeIssue (inspector.IdString);
+					});
+				}));
+
+				result.CommandInfos.Add (subMenu);
+			}
+
+			return result;
+		}
 
 		protected override void Update (CommandArrayInfo ainfo)
 		{
@@ -135,6 +195,15 @@ namespace MonoDevelop.Refactoring
 			var info = GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			bool added = false;
 
+			var ext = doc.GetContent<CodeActionEditorExtension> ();
+
+			if (ext != null) {
+				var fixMenu = CreateFixMenu (doc.Editor, doc, ext.Fixes);
+				if (fixMenu.CommandInfos.Count > 0) {
+					ainfo.Add (fixMenu, null);
+					added = true;
+				}
+			}
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
@@ -145,65 +214,21 @@ namespace MonoDevelop.Refactoring
 				}));
 				added = true;
 			}
+			bool first = true;
+			foreach (var fix in ext.Fixes.CodeRefactoringActions) {
+				if (added & first)
+					ciset.CommandInfos.AddSeparator ();
+				var info2 = new CommandInfo (fix.Item2.Title);
+				ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.Item2, doc.Editor, doc).Run));
+				added = true;
+				first = false;
+			}
 
-			//			foreach (var refactoring in RefactoringService.Refactorings) {
-			//				if (refactoring.IsValid (options)) {
-			//					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-			//					info.AccelKey = refactoring.AccelKey;
-			//					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-			//				}
-			//			}
-			//			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
-			//			if (refactoringInfo == null) {
-			//				refactoringInfo = new RefactoringDocumentInfo ();
-			//				doc.AddAnnotation (refactoringInfo);
-			//			}
-			//			var loc = doc.Editor.Caret.Location;
-			//			bool first = true;
-			//			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-			//
-			//				if (QuickTaskStrip.Enab///
-			////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
-			////				}
-			//			}
-			//
-			//			if (ciset.CommandInfos.Count > 0) {
-			//				ainfo.Add (ciset, null);
-			//				added = true;
-			//			}
-			//			
-			//			if (canRename) {leFancyFeatures) {
-			//					var ext = doc.GetContent <CodeActionEditorExtension> ();
-			//					//refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
-			//				} else {
-			//					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
-			//				}
-			//
-			//				lastLocation = loc;
-			//				refactoringInfo.lastDocument = doc.ParsedDocument;
-			//			}
-			//			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-			//				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-			//
-			////				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-			////					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-			////						continue;
-			////					var fix = fix_;
-			////					if (first) {
-			////						first = false;
-			////						if (ciset.CommandInfos.Count > 0)
-			////							ciset.CommandInfos.AddSeparator ();
-			////					}
-			////
-			////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
-			////				}
-			//			}
-			//
-			//			if (ciset.CommandInfos.Count > 0) {
-			//				ainfo.Add (ciset, null);
-			//				added = true;
-			//			}
-			//			
+			if (ciset.CommandInfos.Count > 0) {
+				ainfo.Add (ciset, null);
+				added = true;
+			}
+
 			if (IdeApp.ProjectOperations.CanJumpToDeclaration (info.Symbol) || info.Symbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
 				var type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
 				if (type != null && type.Locations.Length > 1) {

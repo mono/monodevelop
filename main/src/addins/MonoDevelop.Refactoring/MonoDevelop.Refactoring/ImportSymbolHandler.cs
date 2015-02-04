@@ -37,7 +37,6 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring
