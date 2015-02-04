@@ -87,6 +87,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultBaseDirectory ();
 		}
 
+		internal protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+		{
+			return next.OnGetExecutionDependencies ();
+		}
+
 		internal protected virtual IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 		{
 			return next.OnGetReferencedItems (configuration);

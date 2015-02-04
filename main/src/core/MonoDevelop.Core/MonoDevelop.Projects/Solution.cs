@@ -394,6 +394,11 @@ namespace MonoDevelop.Projects
 			return GetAllItems<Project> ();
 		}
 
+		public IEnumerable<Project> GetAllProjectsWithFlavor<T> () where T:ProjectExtension
+		{
+			return GetAllItems<Project> ().Where (p => p.HasFlavor<T> ());
+		}
+
 		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);

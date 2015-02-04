@@ -322,7 +322,11 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			// TODO NPM
+			return ItemExtension.OnGetExecutionDependencies ();
+		}
+
+		protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+		{
 			yield break;
 		}
 
@@ -1219,6 +1223,11 @@ namespace MonoDevelop.Projects
 			internal protected override FilePath OnGetDefaultBaseDirectory ()
 			{
 				return Item.FileName.IsNullOrEmpty ? FilePath.Empty : Item.FileName.ParentDirectory; 
+			}
+
+			internal protected override IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
+			{
+				return Item.OnGetExecutionDependencies ();
 			}
 
 			internal protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
