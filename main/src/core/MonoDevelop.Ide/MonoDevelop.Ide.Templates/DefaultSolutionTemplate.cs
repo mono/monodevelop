@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace MonoDevelop.Ide.Templates
 {
 	internal class DefaultSolutionTemplate : SolutionTemplate
@@ -46,8 +48,20 @@ namespace MonoDevelop.Ide.Templates
 			DefaultParameters = template.DefaultParameters;
 			ImageId = template.ImageId;
 			ImageFile = template.ImageFile;
+			Visibility = GetVisibility (template.Visibility);
 
 			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
+		}
+
+		SolutionTemplateVisibility GetVisibility (string value)
+		{
+			if (!String.IsNullOrEmpty (value)) {
+				SolutionTemplateVisibility visibility;
+				if (Enum.TryParse (value, true, out visibility)) {
+					return visibility;
+				}
+			}
+			return SolutionTemplateVisibility.All;
 		}
 
 		internal ProjectTemplate Template {

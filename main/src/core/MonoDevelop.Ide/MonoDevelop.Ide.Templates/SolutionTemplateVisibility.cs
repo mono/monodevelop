@@ -1,10 +1,10 @@
 ﻿//
-// TestableProjectTemplateCategorizer.cs
+// SolutionTemplateVisibility.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
-	class TestableProjectTemplateCategorizer : ProjectTemplateCategorizer
+	public enum SolutionTemplateVisibility
 	{
-		public TestableProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories)
-			: this (categories, solutionTemplate => true)
-		{
-		}
-
-		public TestableProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories, Predicate<SolutionTemplate> templateFilter)
-			: base (categories, templateFilter)
-		{
-		}
-
-		public List<string> WarningsLogged = new List<string> ();
-
-		protected override void LogWarning (string message)
-		{
-			WarningsLogged.Add (message);
-		}
+		All,
+		NewSolution,
+		NewProject
 	}
 }
 

@@ -173,6 +173,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return imageFile; }
 		}
 
+		private string visibility;
+		public string Visibility {
+			get { return visibility; }
+		}
+
 		//constructors
 		static ProjectTemplate ()
 		{
@@ -269,6 +274,10 @@ namespace MonoDevelop.Ide.Templates
 				if (!String.IsNullOrEmpty (imageFile)) {
 					imageFile = Path.Combine (codon.BaseDirectory, imageFile);
 				}
+			}
+
+			if (xmlConfiguration ["Visibility"] != null) {
+				visibility = xmlConfiguration ["Visibility"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {
