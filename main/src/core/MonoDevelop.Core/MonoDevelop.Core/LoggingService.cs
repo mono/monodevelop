@@ -94,6 +94,11 @@ namespace MonoDevelop.Core
 					LogError ("Error setting custom log file", e);
 				}
 			}
+			try {
+				PurgeOldLogs ();
+			} catch {
+				LogError ("Could not purge old log files");
+			}
 
 			timestamp = DateTime.Now;
 
@@ -172,8 +177,6 @@ namespace MonoDevelop.Core
 		
 		public static void Initialize (bool redirectOutput)
 		{
-			PurgeOldLogs ();
-
 			// Always redirect on windows otherwise we cannot get output at all
 			if (Platform.IsWindows || redirectOutput)
 				RedirectOutputToLogFile ();
