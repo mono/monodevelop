@@ -587,9 +587,34 @@ namespace MonoDevelop.CodeActions
 				Run ();
 			}
 
-			internal void Run ()
+			internal async void Run ()
 			{
 				var token = default(CancellationToken);
+				var insertionAction = act as InsertionAction;
+				if (insertionAction != null) {
+					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
+
+					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath);
+					var insertionPoints = CodeGenerationService.GetInsertionPoints (
+						document.Editor,
+						document.ParsedDocument,
+						insertion.Type,
+						insertion.Location
+					);
+
+					var options = new InsertionModeOptions (
+						insertionAction.Title,
+						insertionPoints,
+						point => {
+							if (point.Success)
+								point.InsertionPoint.Insert (document.Editor, insertion.Node.ToString ());
+						}
+					);
+
+					document.Editor.StartInsertionMode (options);
+					return;
+				}
+
 				foreach (var op in act.GetOperationsAsync (token).Result) {
 					op.Apply (documentContext.RoslynWorkspace, token); 
 				}

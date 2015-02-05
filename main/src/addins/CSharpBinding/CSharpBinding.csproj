@@ -316,7 +316,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
