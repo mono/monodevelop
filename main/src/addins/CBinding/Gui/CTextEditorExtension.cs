@@ -570,7 +570,7 @@ namespace CBinding
 			return list;
 		}
 		
-		public override Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			if (completionChar != '(')
 				return null;
@@ -594,7 +594,7 @@ namespace CBinding
 			if (string.IsNullOrEmpty (functionName))
 				return null;
 			
-			return Task.FromResult ((ParameterHintingResult)new ParameterDataProvider (nameStart, Editor, info, functionName));
+			return Task.FromResult ((MonoDevelop.Ide.CodeCompletion.ParameterHintingResult)new ParameterDataProvider (nameStart, Editor, info, functionName));
 		}
 		
 		private bool AllWhiteSpace (string lineText)

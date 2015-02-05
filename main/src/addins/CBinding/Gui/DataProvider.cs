@@ -39,13 +39,11 @@ using MonoDevelop.Ide.CodeCompletion;
 
 using CBinding.Parser;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 
 namespace CBinding
 {
-	public class ParameterDataProvider : ParameterHintingResult
+	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterHintingResult
 	{
 		private TextEditor editor;
 		private List<Function> functions = new List<Function> ();
@@ -56,7 +54,7 @@ namespace CBinding
 			
 			foreach (Function f in info.Functions) {
 				if (f.Name == functionName) {
-					AddData (f);
+					data.Add (new DataWrapper (f));
 				}
 			}
 			
@@ -66,7 +64,7 @@ namespace CBinding
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFile]) {
 					foreach (Function f in fi.Functions) {
 						if (f.Name == functionName) {
-							AddData (f);
+							data.Add (new DataWrapper (f));
 						}
 					}
 				}
@@ -109,7 +107,7 @@ namespace CBinding
 		// in the parameter information window.
 		public string GetHeading (int overload, string[] parameterMarkup, int currentParameter)
 		{
-			Function function = (Function)this[overload];
+			Function function = ((DataWrapper)this[overload]).Function;
 			string paramTxt = string.Join (", ", parameterMarkup);
 			
 			int len = function.FullName.LastIndexOf ("::");
@@ -134,7 +132,7 @@ namespace CBinding
 		// Returns the text to use to represent the specified parameter
 		public string GetParameterDescription (int overload, int paramIndex)
 		{
-			Function function = (Function)this[overload];
+			Function function = ((DataWrapper)this[overload]).Function;
 			
 			return GLib.Markup.EscapeText (function.Parameters[paramIndex]);
 		}

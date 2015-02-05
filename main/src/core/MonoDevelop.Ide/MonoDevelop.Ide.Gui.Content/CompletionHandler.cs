@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Content

@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int lastParam = -2;
 		TooltipInformation currentTooltipInformation;
 
-		public void ShowParameterInfo (ICSharpCode.NRefactory6.CSharp.Completion.ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
+		public void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");

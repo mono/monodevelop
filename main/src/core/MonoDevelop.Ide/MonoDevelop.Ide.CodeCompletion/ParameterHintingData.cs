@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Symbol = symbol;
 		}
-		
+
 		public abstract int ParameterCount {
 			get;
 		}

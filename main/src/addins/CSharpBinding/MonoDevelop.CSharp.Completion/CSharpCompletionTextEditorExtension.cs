@@ -366,7 +366,7 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, default(CancellationToken)).Result;
 		}
 
-		static bool HasAllUsedParameters (IParameterHintingData provider, string[] list)
+		static bool HasAllUsedParameters (MonoDevelop.Ide.CodeCompletion.ParameterHintingData provider, string[] list)
 		{
 			if (provider == null || list == null)
 				return true;
@@ -385,7 +385,7 @@ namespace MonoDevelop.CSharp.Completion
 			return true;
 		}
 		
-		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public override int GuessBestMethodOverload (MonoDevelop.Ide.CodeCompletion.ParameterHintingResult provider, int currentOverload)
 		{
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
@@ -537,7 +537,7 @@ namespace MonoDevelop.CSharp.Completion
 //		}
 		
 
-		public override Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			if (completionChar != '(' && completionChar != ',')
@@ -555,7 +555,9 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
 				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				return Task.FromResult (engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token));
+				var result = engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token);
+
+				return Task.FromResult (new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 

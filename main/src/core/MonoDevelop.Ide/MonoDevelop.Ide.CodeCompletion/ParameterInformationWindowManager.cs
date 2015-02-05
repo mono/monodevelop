@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion

@@ -33,11 +33,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
-using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Threading;
 using Gtk;
 

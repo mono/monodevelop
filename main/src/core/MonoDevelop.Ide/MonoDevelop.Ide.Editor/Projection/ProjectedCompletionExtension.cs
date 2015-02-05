@@ -269,7 +269,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override int GuessBestMethodOverload (ICSharpCode.NRefactory6.CSharp.Completion.ParameterHintingResult provider, int currentOverload)
+		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
 		{
 			var projectedExtension = GetCurrentExtension ();
 			if (projectedExtension == null)
@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.HandleCodeCompletionAsync (ConvertContext (completionContext), completionChar, token);
 		}
 
-		public override System.Threading.Tasks.Task<ICSharpCode.NRefactory6.CSharp.Completion.ParameterHintingResult> HandleParameterCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		public override System.Threading.Tasks.Task<ParameterHintingResult> HandleParameterCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
 		{
 			var projectedExtension = GetExtensionAt (completionContext.TriggerOffset);
 			if (projectedExtension == null)
@@ -302,7 +302,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return base.KeyPress (descriptor);
 		}
 
-		public override ICSharpCode.NRefactory6.CSharp.Completion.ParameterHintingResult ParameterCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public override ParameterHintingResult ParameterCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
 			var projectedExtension = GetExtensionAt (completionContext.TriggerOffset);
 			if (projectedExtension == null)
