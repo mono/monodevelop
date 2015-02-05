@@ -33,7 +33,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using System.Security.Permissions;
 using System.Security;
-using System.Threading.Tasks;
 
 
 namespace MonoDevelop.Ide.FindInFiles
@@ -44,25 +43,23 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
-		
-		public abstract Task<int> GetTotalWork (FilterOptions filterOptions);
-		public abstract Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results);
+
+		public abstract int GetTotalWork (FilterOptions filterOptions);
+		public abstract IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
 	}
 
 	public class DocumentScope : Scope
 	{
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return Task.FromResult (1);
+			return 1;
 		}
 
-		public override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", IdeApp.Workbench.ActiveDocument.FileName));
-			results.Enqueue (new FileProvider(IdeApp.Workbench.ActiveDocument.FileName));
-			results.SetComplete ();
-			return Task.FromResult (0);
+			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName);
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -76,17 +73,15 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class SelectionScope : Scope
 	{
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return Task.FromResult (1);
+			return 1;
 		}
 
-		public override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			var selection = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange;
-			results.Enqueue (new FileProvider (IdeApp.Workbench.ActiveDocument.FileName, null, selection.Offset, selection.EndOffset));
-			results.SetComplete ();
-			return Task.FromResult (0);
+			yield return new FileProvider(IdeApp.Workbench.ActiveDocument.FileName, null, selection.Offset, selection.EndOffset);
 		}
 
 		public override string GetDescription(FilterOptions filterOptions, string pattern, string replacePattern)
@@ -100,47 +95,45 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class WholeSolutionScope : Scope
 	{
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			int result = 0;
 			if (IdeApp.Workspace.IsOpen) 
 				result = IdeApp.Workspace.GetAllProjects ().Sum (p => p.Files.Count);
-			return Task.FromResult (result);
+			return result;
 		}
-		
-		public async override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				var alreadyVisited = new HashSet<string> ();
-				var allFiles = IdeApp.Workspace.GetAllSolutionItems ().OfType<SolutionFolder> ().SelectMany (sf => sf.Files).Where (f => filterOptions.NameMatches (f.FileName)).Select (f => f.FullPath).ToArray ();
-				await Task.Factory.StartNew (delegate {
-					foreach (var file in allFiles.Where (f => File.Exists (f.FullPath))) {
+				foreach (var solutionFolder in IdeApp.Workspace.GetAllSolutionItems().OfType<SolutionFolder>()) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in solution folder '{0}'", solutionFolder.Name));
+					foreach (var file in solutionFolder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FullPath))
 							continue;
 						if (alreadyVisited.Contains (file.FullPath))
 							continue;
 						alreadyVisited.Add (file.FullPath);
-						results.Enqueue (new FileProvider (file.FullPath));
+						yield return new FileProvider (file.FullPath);
 					}
-					results.SetComplete ();
-				});
-
-				var allProjectFiles = IdeApp.Workspace.GetAllProjects ().SelectMany (project => project.Files).Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name)).Select (f => new Tuple<Project,string>(f.Project,f.FilePath)).ToArray ();
-				await Task.Factory.StartNew (delegate {
-					foreach (var ft in allProjectFiles.Where (f => File.Exists (f.Item2))) {
-						var file = ft.Item2;
-						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))
+				}
+				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
+					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+						if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
 							continue;
-						if (alreadyVisited.Contains (file))
+						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
 							continue;
-						alreadyVisited.Add (file);
-						results.Enqueue (new FileProvider (file, ft.Item1));
+						if (alreadyVisited.Contains (file.FilePath.FullPath))
+							continue;
+						alreadyVisited.Add (file.FilePath.FullPath);
+						yield return new FileProvider (file.Name, project);
 					}
-					results.SetComplete ();
-				});
+				}
 			}
 		}
-		
+
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
 			if (replacePattern == null)
@@ -148,46 +141,42 @@ namespace MonoDevelop.Ide.FindInFiles
 			return GettextCatalog.GetString ("Replacing '{0}' in all projects", pattern);
 		}
 	}
-	
+
 	public class WholeProjectScope : Scope
 	{
 		readonly Project project;
-		
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return Task.FromResult (project.Files.Count);
+			return project.Files.Count;
 		}
-		
+
 		public WholeProjectScope (Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			
+
 			this.project = project;
 		}
-		
-		public override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
-				var allFiles = project.Files.Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => f.FilePath.FullPath).ToArray ();
-				return Task.Factory.StartNew (delegate {
-					foreach (string file in allFiles) {
-						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))
-							continue;
-
-						if (alreadyVisited.Contains (file))
-							continue;
-						alreadyVisited.Add (file);
-						results.Enqueue (new FileProvider (file, project));
-					}
-					results.SetComplete ();
-				});
+				foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+						continue;
+					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.Name))
+						continue;
+					if (alreadyVisited.Contains (file.FilePath.FullPath))
+						continue;
+					alreadyVisited.Add (file.FilePath.FullPath);
+					yield return new FileProvider (file.Name, project);
+				}
 			}
-			return Task.FromResult (0);
 		}
-		
+
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
 			if (replacePattern == null)
@@ -195,26 +184,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			return GettextCatalog.GetString ("Replacing '{0}' in project '{1}'", pattern, project.Name);
 		}
 	}
-	
-	
+
+
 	public class AllOpenFilesScope : Scope
 	{
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return Task.FromResult (IdeApp.Workbench.Documents.Count);
+			return IdeApp.Workbench.Documents.Count;
 		}
 
-		public override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			foreach (Document document in IdeApp.Workbench.Documents) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in '{0}'", document.FileName));
 				if (!string.IsNullOrEmpty (document.FileName) && filterOptions.NameMatches (document.FileName))
-					results.Enqueue (new FileProvider (document.FileName));
+					yield return new FileProvider (document.FileName);
 			}
-			results.SetComplete ();
-			return Task.FromResult (0);
 		}
-		
+
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)
 		{
 			if (replacePattern == null)
@@ -222,31 +209,29 @@ namespace MonoDevelop.Ide.FindInFiles
 			return GettextCatalog.GetString ("Replacing '{0}' in all open documents", pattern);
 		}
 	}
-	
-	
+
+
 	public class DirectoryScope : Scope
 	{
 		readonly string path;
 		readonly bool recurse;
-		
+
 		public bool IncludeHiddenFiles {
 			get;
 			set;
 		}
-		
-		public override Task<int> GetTotalWork (FilterOptions filterOptions)
+
+		public override int GetTotalWork (FilterOptions filterOptions)
 		{
-			return Task<int>.Factory.StartNew (delegate {
-				return GetFileNames (null, filterOptions).Count ();
-			});
+			return GetFileNames (null, filterOptions).Count ();
 		}
-		
+
 		public DirectoryScope (string path, bool recurse)
 		{
 			this.path = path;
 			this.recurse = recurse;
 		}
-		
+
 		IEnumerable<string> GetFileNames (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
 			if (monitor != null)
@@ -299,14 +284,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			}
 		}
-		
-		public override Task GetFiles (ProgressMonitor monitor, FilterOptions filterOptions, ResultQueue<FileProvider> results)
+
+		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			return Task.Factory.StartNew (delegate {
-				foreach (var r in GetFileNames (monitor, filterOptions).Select (file => new FileProvider (file)))
-					results.Enqueue (r);
-				results.SetComplete ();
-			});
+			return GetFileNames (monitor, filterOptions).Select (file => new FileProvider (file));
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)

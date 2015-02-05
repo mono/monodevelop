@@ -217,17 +217,20 @@ namespace MonoDevelop.Ide.Tasks
 				}
 			}
 		}
+
+		void HandleSolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			var newProject = e.SolutionItem as Project;
+			if (newProject == null)
+				return;
+			UpdateCommentTagsForProject (e.Solution, newProject);
+		}
 		
 		void LoadSolutionContents (Solution sln)
 		{
 			loadedSlns.Add (sln);
 			System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-				sln.SolutionItemAdded += delegate(object sender, SolutionItemChangeEventArgs e) {
-					var newProject = e.SolutionItem as Project;
-					if (newProject == null)
-						return;
-					UpdateCommentTagsForProject (sln, newProject);
-				};
+				sln.SolutionItemAdded += HandleSolutionItemAdded;
 
 				// Load all tags that are stored in pidb files
 				foreach (Project p in sln.GetAllProjects ()) {
@@ -247,8 +250,10 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
-			foreach (var sln in e.Item.GetAllItems<Solution>())
-				loadedSlns.Remove (sln);
+			foreach (var sln in e.Item.GetAllItems<Solution>()) {
+				if (loadedSlns.Remove (sln))
+					sln.SolutionItemAdded -= HandleSolutionItemAdded;
+			}
 			comments.RemoveItemTasks (e.Item, true);
 		}		
 

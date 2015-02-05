@@ -54,11 +54,21 @@ namespace MonoDevelop.Ide.Templates
 	{
 		public static List<ProjectTemplate> ProjectTemplates = new List<ProjectTemplate> ();
 
+		static MonoDevelop.Core.Instrumentation.Counter TemplateCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Template Instantiated", "Project Model", id:"Core.Template.Instantiated");
+
 		private List<string> actions = new List<string> ();
 
 		private string createdSolutionName;
 		IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 		private ProjectCreateInformation createdProjectInformation = null;
+
+		internal string CreatedSolutionName {
+			get { return createdSolutionName; }
+		}
+
+		internal IEnumerable<string> Actions {
+			get { return actions; }
+		}
 
 		private SolutionDescriptor solutionDescriptor = null;
 		public SolutionDescriptor SolutionDescriptor
@@ -76,6 +86,18 @@ namespace MonoDevelop.Ide.Templates
 		public string Id
 		{
 			get { return id; }
+		}
+
+		private string groupId;
+		public string GroupId
+		{
+			get { return groupId; }
+		}
+
+		private string condition;
+		public string Condition
+		{
+			get { return condition; }
 		}
 
 		private string category;
@@ -126,7 +148,31 @@ namespace MonoDevelop.Ide.Templates
 			get { return wizardPath; }
 		}
 
+		private string fileExtension;
+		public string FileExtension
+		{
+			get { return fileExtension; }
+		}
 
+		private string supportedParameters;
+		public string SupportedParameters {
+			get { return supportedParameters; }
+		}
+
+		private string defaultParameters;
+		public string DefaultParameters {
+			get { return defaultParameters; }
+		}
+
+		private string imageId;
+		public string ImageId {
+			get { return imageId; }
+		}
+
+		private string imageFile;
+		public string ImageFile {
+			get { return imageFile; }
+		}
 
 		//constructors
 		static ProjectTemplate ()
@@ -140,12 +186,16 @@ namespace MonoDevelop.Ide.Templates
 
 			XmlElement xmlConfiguration = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
+			// Get legacy category.
 			if (xmlConfiguration ["_Category"] != null) {
-				category = addin.Localizer.GetString (xmlConfiguration ["_Category"].InnerText);
+				category = xmlConfiguration ["_Category"].InnerText;
 			}
-			else
-				throw new InvalidOperationException (string.Format ("_Category missing in file template {0}", codon.Id));
 
+			if (xmlConfiguration ["Category"] != null) {
+				category = xmlConfiguration ["Category"].InnerText;
+			} else if (category == null) {
+				LoggingService.LogWarning (string.Format ("Category missing in project template {0}", codon.Id));
+			}
 
 			if (!string.IsNullOrEmpty (overrideLanguage)) {
 				this.languagename = overrideLanguage;
@@ -196,6 +246,32 @@ namespace MonoDevelop.Ide.Templates
 				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText, Gtk.IconSize.Dnd);
 			}
 
+			if (xmlConfiguration ["GroupId"] != null) {
+				this.groupId = xmlConfiguration ["GroupId"].InnerText;
+				this.condition = xmlConfiguration ["GroupId"].GetAttribute ("condition");
+			}
+
+			if (xmlConfiguration ["FileExtension"] != null) {
+				this.fileExtension = xmlConfiguration ["FileExtension"].InnerText;
+			}
+
+			if (xmlConfiguration ["SupportedParameters"] != null) {
+				this.supportedParameters = xmlConfiguration ["SupportedParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["DefaultParameters"] != null) {
+				this.defaultParameters = xmlConfiguration ["DefaultParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["Image"] != null) {
+				XmlElement imageElement = xmlConfiguration ["Image"];
+				imageId = imageElement.GetAttribute ("id");
+				imageFile = imageElement.GetAttribute ("file");
+				if (!String.IsNullOrEmpty (imageFile)) {
+					imageFile = Path.Combine (codon.BaseDirectory, imageFile);
+				}
+			}
+
 			if (xmlDocument.DocumentElement ["Combine"] == null) {
 				throw new InvalidOperationException ("Combine element not found");
 			}
@@ -240,6 +316,15 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().ToList ();
+
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.Name;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc.Count == 1 ? pDesc[0].ProjectType : "Multiple";
+			TemplateCounter.Inc (1, null, metadata);
+
 			return workspaceItemInfo.WorkspaceItem;
 		}
 
@@ -251,35 +336,58 @@ namespace MonoDevelop.Ide.Templates
 			var solutionEntryItems = new List<SolutionItem> ();
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 
-			foreach (var descriptor in solutionDescriptor.EntryDescriptors) {
-				ProjectCreateInformation entryProjectCI;
-				var entry = descriptor as ICustomProjectCIEntry;
-				if (entry != null)
-					entryProjectCI = entry.CreateProjectCI (cInfo);
-				else
-					entryProjectCI = cInfo;
+			foreach (ISolutionItemDescriptor solutionItemDescriptor in GetItemsToCreate (solutionDescriptor, cInfo)) {
+				ProjectCreateInformation itemCreateInfo = GetItemSpecificCreateInfo (solutionItemDescriptor, cInfo);
+				itemCreateInfo = new ProjectTemplateCreateInformation (itemCreateInfo, cInfo.ProjectName);
 
-				var solutionItemDesc = descriptor;
-
-				SolutionItem solutionEntryItem = solutionItemDesc.CreateItem (entryProjectCI, this.languagename);
+				SolutionItem solutionEntryItem = solutionItemDescriptor.CreateItem (itemCreateInfo, this.languagename);
 				if (solutionEntryItem != null) {
-					solutionItemDesc.InitializeItem (policyParent, entryProjectCI, this.languagename, solutionEntryItem);
+					solutionItemDescriptor.InitializeItem (policyParent, itemCreateInfo, this.languagename, solutionEntryItem);
 
-					SavePackageReferences (solutionEntryItem, solutionItemDesc);
-
-					this.createdProjectInformation = cInfo;
+					SavePackageReferences (solutionEntryItem, solutionItemDescriptor, itemCreateInfo);
 
 					solutionEntryItems.Add (solutionEntryItem);
 				}
 			}
 
+			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().FirstOrDefault ();
+			var metadata = new Dictionary<string, string> ();
+			metadata ["Id"] = this.Id;
+			metadata ["Name"] = this.Name;
+			metadata ["Language"] = this.LanguageName;
+			metadata ["Platform"] = pDesc != null ? pDesc.ProjectType : "Unknown";
+			TemplateCounter.Inc (1, null, metadata);
+
+			createdProjectInformation = cInfo;
+
 			return solutionEntryItems;
 		}
 
-		void SavePackageReferences (SolutionItem solutionEntryItem, ISolutionItemDescriptor descriptor)
+		static IEnumerable<ISolutionItemDescriptor> GetItemsToCreate (SolutionDescriptor solutionDescriptor, ProjectCreateInformation cInfo)
+		{
+			foreach (ISolutionItemDescriptor descriptor in solutionDescriptor.EntryDescriptors) {
+				var projectDescriptor = descriptor as ProjectDescriptor;
+				if ((projectDescriptor != null) && !projectDescriptor.ShouldCreateProject (cInfo)) {
+					// Skip.
+				} else {
+					yield return descriptor;
+				}
+			}
+		}
+
+		static ProjectCreateInformation GetItemSpecificCreateInfo (ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
+		{
+			var entry = descriptor as ICustomProjectCIEntry;
+				if (entry != null)
+					return entry.CreateProjectCI (cInfo);
+
+			return cInfo;
+		}
+
+		void SavePackageReferences (SolutionItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
 		{
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
-				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
+				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences (cInfo));
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);
 			}
 		}

@@ -49,31 +49,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	public class LogAgentPanelWidget : Gtk.Bin 
 	{	
-		bool? reportCrash;
 		bool? reportUsage;
-		
-		CheckButton chkCrash;
 		CheckButton chkUsage;
 		VBox container;
 		
 		public LogAgentPanelWidget ()
 		{
 			global::Stetic.BinContainer.Attach (this);
-			
-			var value = LoggingService.ReportCrashes;
-			chkCrash = new CheckButton (GettextCatalog.GetString ("Automatically submit error diagnostic information"));
-			if (value.HasValue)
-				chkCrash.Active = value.Value;
-			chkCrash.Toggled += (sender, e) => reportCrash = chkCrash.Active;
-			
-			value = LoggingService.ReportUsage;
-			chkUsage = new CheckButton (GettextCatalog.GetString ("Automatically submit usage information"));
+
+			var reportingLabel = GettextCatalog.GetString ("Report errors and usage information to help {0} improve my experience.", BrandingService.SuiteName);
+
+			var value = LoggingService.ReportUsage;
+			chkUsage = new CheckButton (reportingLabel);
 			if (value.HasValue)
 				chkUsage.Active = value.Value;
 			chkUsage.Toggled += (sender, e) => reportUsage = chkUsage.Active;
 			
 			container = new Gtk.VBox ();
-			container.Add (chkCrash);
 			container.Add (chkUsage);
 			
 			Add (container);
@@ -82,10 +74,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store ()
 		{
-			if (reportCrash.HasValue)
-				LoggingService.ReportCrashes = reportCrash.Value;
-			if (reportUsage.HasValue)
+			if (reportUsage.HasValue) {
+				LoggingService.ReportCrashes = reportUsage.Value;
 				LoggingService.ReportUsage = reportUsage.Value;
+			}
 		}
 	}
 }

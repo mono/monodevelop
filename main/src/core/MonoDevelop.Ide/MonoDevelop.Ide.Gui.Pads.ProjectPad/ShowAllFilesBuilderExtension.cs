@@ -110,9 +110,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)
 		{
+			if (!builder.Options ["ShowAllFiles"])
+				return;
+
 			string thisPath = GetFolderPath (dataObject);
 			
-			if ((dataObject is ProjectFolder) && builder.Options ["ShowAllFiles"] && Directory.Exists (thisPath))
+			if ((dataObject is ProjectFolder) && Directory.Exists (thisPath))
 			{
 				ProjectFolder pf = (ProjectFolder) dataObject;
 				if (pf.Project == null || !ProjectFolderCommandHandler.PathExistsInProject (pf.Project, thisPath)) {
@@ -134,8 +137,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
+			if (!builder.Options ["ShowAllFiles"])
+				return;
+
 			string path = GetFolderPath (dataObject);
-			if (builder.Options ["ShowAllFiles"] && Directory.Exists (path))
+			if (Directory.Exists (path))
 			{
 				Project project = (Project) builder.GetParentDataItem (typeof(Project), true);
 				SolutionFolderFileCollection folderFiles = null;

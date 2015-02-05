@@ -122,7 +122,8 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		static AutoResetEvent resetEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent resetEvent = new AutoResetEvent (false);
+		static readonly AutoResetEvent saveEvent = new AutoResetEvent (false);
 		static bool autoSaveThreadRunning = false;
 		static Thread autoSaveThread;
 		static Queue<FileContent> queue = new Queue<FileContent> ();
@@ -148,18 +149,23 @@ namespace MonoDevelop.SourceEditor
 					// Don't create an auto save for unsaved files.
 					if (string.IsNullOrEmpty (content.FileName))
 						continue;
+					string text = null;
+					bool set = false;
 					Application.Invoke (delegate {
-						string text;
 						try {
 							text = content.Content.Text;
+							set = true;
 						} catch (Exception e) {
 							LoggingService.LogError ("Exception in auto save thread.", e);
 							return;
+						} finally {
+							saveEvent.Set();
 						}
-						CreateAutoSave (content.FileName, text);
 					}
 					);
-					
+					saveEvent.WaitOne ();
+					if (set)
+						CreateAutoSave (content.FileName, text);
 				}
 			}
 		}

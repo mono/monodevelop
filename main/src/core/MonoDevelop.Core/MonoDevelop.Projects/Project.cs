@@ -701,7 +701,8 @@ namespace MonoDevelop.Projects
 			configs.Add (new ProjectConfigurationInfo () {
 				ProjectFile = FileName,
 				Configuration = c.Name,
-				Platform = GetExplicitPlatform (c)
+				Platform = GetExplicitPlatform (c),
+				ProjectGuid = ItemId
 			});
 			foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
 				var refConfig = refProject.GetConfiguration (configuration);
@@ -709,7 +710,8 @@ namespace MonoDevelop.Projects
 					configs.Add (new ProjectConfigurationInfo () {
 						ProjectFile = refProject.FileName,
 						Configuration = refConfig.Name,
-						Platform = GetExplicitPlatform (refConfig)
+						Platform = GetExplicitPlatform (refConfig),
+						ProjectGuid = refProject.ItemId
 					});
 				}
 			}

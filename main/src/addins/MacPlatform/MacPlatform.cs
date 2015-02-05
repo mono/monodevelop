@@ -804,7 +804,9 @@ namespace MonoDevelop.MacIntegration
 			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
 			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
 				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
-				  t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal)));
+					t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal) ||
+					t.Key.DebugDescription.StartsWith ("<NSCarbonMenuWindow", StringComparison.Ordinal)
+				));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

@@ -619,6 +619,18 @@
     <EmbeddedResource Include="icons\solution-32%402x.png">
       <LogicalName>solution-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-64.png">
+      <LogicalName>solution-64.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-64%402x.png">
+      <LogicalName>solution-64@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-128.png">
+      <LogicalName>solution-128.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-128%402x.png">
+      <LogicalName>solution-128@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
     </EmbeddedResource>
@@ -1982,6 +1994,84 @@
     <EmbeddedResource Include="icons\project-status-error-16%402x.png">
       <LogicalName>project-status-error-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-android-16%402x.png">
+      <LogicalName>platform-android-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-cross-platform-16.png">
+      <LogicalName>platform-cross-platform-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-cross-platform-16%402x.png">
+      <LogicalName>platform-cross-platform-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-ios-16.png">
+      <LogicalName>platform-ios-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-ios-16%402x.png">
+      <LogicalName>platform-ios-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-mac-16.png">
+      <LogicalName>platform-mac-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-mac-16%402x.png">
+      <LogicalName>platform-mac-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-other-16.png">
+      <LogicalName>platform-other-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-other-16%402x.png">
+      <LogicalName>platform-other-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-android-16.png">
+      <LogicalName>platform-android-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\generic-project.png">
+      <LogicalName>generic-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\generic-project%402x.png">
+      <LogicalName>generic-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution.png">
+      <LogicalName>blank-solution.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution%402x.png">
+      <LogicalName>blank-solution@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project.png">
+      <LogicalName>console-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project%402x.png">
+      <LogicalName>console-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project.png">
+      <LogicalName>library-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project%402x.png">
+      <LogicalName>library-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project.png">
+      <LogicalName>pcl-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project%402x.png">
+      <LogicalName>pcl-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project.png">
+      <LogicalName>shared-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project%402x.png">
+      <LogicalName>shared-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace.png">
+      <LogicalName>workspace.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace%402x.png">
+      <LogicalName>workspace@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project.png">
+      <LogicalName>gtk2-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project%402x.png">
+      <LogicalName>gtk2-project@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\preview-active-16.png">
       <LogicalName>preview-active-16.png</LogicalName>
     </EmbeddedResource>
@@ -2065,6 +2155,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\spinner-selected-5-16%402x.png">
       <LogicalName>spinner-selected-5-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24.png">
+      <LogicalName>done-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24%402x.png">
+      <LogicalName>done-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32.png">
+      <LogicalName>done-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32%402x.png">
+      <LogicalName>done-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48.png">
+      <LogicalName>done-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48%402x.png">
+      <LogicalName>done-48@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -2534,7 +2642,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\ProjectOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\RenameConfigDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewFileDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\NewProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddMimeTypeDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AssemblyReferencePanel.cs" />
@@ -2595,7 +2702,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewConfigurationDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewFileDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\PolicyOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.RenameConfigDialog.cs" />
@@ -2868,6 +2974,39 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\SolutionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateCategory.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\WizardPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\INewProjectController.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewProjectController.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkNewProjectDialogBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\INewProjectDialogBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkNewProjectDialogBackend.UI.cs">
+      <DependentUpon>GtkNewProjectDialogBackend.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Ide.Projects\GtkProjectFolderPreviewWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkProjectConfigurationWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplatingService.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\TemplateCategoryCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\DefaultSolutionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\IProjectTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateCategoryPath.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProcessedTemplateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\DefaultProcessedTemplateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\FinalProjectConfigurationPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCategoryCellRenderer.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCellRenderer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateCondition.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateParameter.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\IVersionControlProjectTemplateHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateImageProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\ImageCodon.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
@@ -2880,6 +3019,9 @@
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\UserTask.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewProjectConfiguration.cs" />
+    <Compile Include="MonoDevelop.Components\EventBoxTooltip.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCreateInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -166,6 +166,7 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 <!--		<ProjectTemplate id = "NUnitAssemblyGroup" resource = "NUnitAssemblyGroup.xpt.xml"/>-->
 		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
+		<ProjectTemplate id = "NUnitProjectVBNet" resource = "NUnitProjectVBNet.xpt.xml"/>
 	</Extension>
 
   	<Extension path = "/MonoDevelop/Ide/FileTemplates">
@@ -203,4 +204,7 @@
 			name = "TestRunnerArgs" type = "System.String" external="false" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
+	</Extension>
 </ExtensionModel>

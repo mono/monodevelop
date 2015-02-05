@@ -32,6 +32,12 @@ namespace MonoDevelop.Core
 	{
 		public MonoDevelop.Projects.Solution CurrentSolution { get; set; }
 		public abstract MigrationType ShouldMigrateProject ();
+
+		protected override void Dispose (bool disposing)
+		{
+			CurrentSolution = null;
+			base.Dispose (disposing);
+		}
 	}
 }
 

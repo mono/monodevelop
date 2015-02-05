@@ -479,6 +479,7 @@
     <Compile Include="MonoDevelop.Projects\ExportProjectFlavorAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ExportProjectTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\ExportDotNetProjectTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
     <Compile Include="MonoDevelop.Projects\BuildError.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemMetadata.cs" />

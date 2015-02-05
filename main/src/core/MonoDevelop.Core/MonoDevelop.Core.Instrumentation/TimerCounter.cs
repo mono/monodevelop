@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -87,7 +88,7 @@ namespace MonoDevelop.Core.Instrumentation
 					lastTimer.Trace (message);
 				else {
 					lock (values) {
-						StoreValue (message, null);
+						StoreValue (message, null, null);
 					}
 				}
 			}
@@ -102,6 +103,11 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public ITimeTracker BeginTiming (string message)
 		{
+			return BeginTiming (message, null);
+		}
+
+		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
+		{
 			ITimeTracker timer;
 			if (!Enabled) {
 				timer = dummyTimer;
@@ -110,7 +116,8 @@ namespace MonoDevelop.Core.Instrumentation
 				lock (values) {
 					timer = lastTimer = c;
 					count++;
-					int i = StoreValue (message, lastTimer);
+					totalCount++;
+					int i = StoreValue (message, lastTimer, metadata);
 					lastTimer.TraceList.ValueIndex = i;
 				}
 			}
@@ -118,7 +125,7 @@ namespace MonoDevelop.Core.Instrumentation
 				InstrumentationService.LogMessage (message);
 			return timer;
 		}
-		
+
 		public void EndTiming ()
 		{
 			if (Enabled && lastTimer != null)

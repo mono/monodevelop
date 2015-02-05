@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011-2015 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +44,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class ProjectConfigurationInfo
 	{
 		public string ProjectFile;
+		public string ProjectGuid;
 		public string Configuration;
 		public string Platform;
 	}

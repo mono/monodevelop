@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace MonoDevelop.Projects
 {
@@ -35,6 +36,10 @@ namespace MonoDevelop.Projects
 		Workspace parent;
 		
 		public WorkspaceItemCollection ()
+		{
+		}
+
+		public WorkspaceItemCollection (IList<WorkspaceItem> list) : base(list)
 		{
 		}
 		

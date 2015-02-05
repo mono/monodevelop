@@ -39,6 +39,12 @@ namespace MonoDevelop.Ide.Gui
 		{
 			AddSlaveMonitor (monitor);
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			CurrentSolution = null;
+			base.Dispose (disposing);
+		}
 		
 		public override MigrationType ShouldMigrateProject ()
 		{

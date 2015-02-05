@@ -37,6 +37,9 @@ namespace MonoDevelop.PackageManagement
 {
 	public class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
+		static MonoDevelop.Core.Instrumentation.Counter InstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Installed", "Package Management", id:"PackageManagement.Package.Installed");
+		static MonoDevelop.Core.Instrumentation.Counter UninstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id:"PackageManagement.Package.Uninstalled");
+
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
@@ -126,7 +129,57 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (IPackageAction action in packageActions) {
 				action.Execute ();
+				InstrumentPackageAction (action);
 				monitor.Step (1);
+			}
+		}
+
+		protected virtual void InstrumentPackageAction (IPackageAction action) 
+		{
+			try {
+				var addAction = action as InstallPackageAction;
+				if (addAction != null) {
+					InstrumentPackageOperations (addAction.Operations);
+					return;
+				}
+
+				var updateAction = action as UpdatePackageAction;
+				if (updateAction != null) {
+					InstrumentPackageOperations (updateAction.Operations);
+					return;
+				}
+
+				var removeAction = action as UninstallPackageAction;
+				if (removeAction != null) {
+					var metadata = new Dictionary<string, string> ();
+
+					metadata ["PackageId"] = removeAction.GetPackageId ();
+					var version = removeAction.GetPackageVersion ();
+					if (version != null)
+						metadata ["PackageVersion"] = version.ToString ();
+
+					UninstallPackageCounter.Inc (1, null, metadata);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
+			}
+		}
+
+		static void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
+		{
+			foreach (var op in operations) {
+				var metadata = new Dictionary<string, string> ();
+				metadata ["PackageId"] = op.Package.Id;
+				metadata ["PackageVersion"] = op.Package.Version.ToString ();
+
+				switch (op.Action) {
+				case PackageAction.Install: 
+					InstallPackageCounter.Inc (1, null, metadata);
+					break;
+				case PackageAction.Uninstall:
+					UninstallPackageCounter.Inc (1, null, metadata);
+					break;
+				}
 			}
 		}
 

@@ -67,14 +67,16 @@ namespace MonoDevelop.Ide.CustomTools
 
 			var provider = dnp.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null) {
-				var err = "ResXFileCodeGenerator can only be used with languages that support CodeDOM";
+				const string err = "ResXFileCodeGenerator can only be used with languages that support CodeDOM";
 				result.Errors.Add (new CompilerError (null, 0, 0, null, err));
 				return;
 			}
 
 			var outputfile = file.FilePath.ChangeExtension (".Designer." + provider.FileExtension);
-			var ns = CustomToolService.GetFileNamespace (file, outputfile);
-			var cn = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+			var codeNamespace = CustomToolService.GetFileNamespace (file, outputfile);
+			var name = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+			var resourcesNamespace = dnp.DefaultNamespace;
+
 			var rd = new Dictionary<object, object> ();
 			var filePath = file.FilePath;
 			var targetsPcl2Framework = TargetsPcl2Framework (dnp);
@@ -82,14 +84,13 @@ namespace MonoDevelop.Ide.CustomTools
 			await Task.Factory.StartNew (() => {
 				using (var r = new ResXResourceReader (filePath)) {
 					r.BasePath = filePath.ParentDirectory;
-
 					foreach (DictionaryEntry e in r) {
 						rd.Add (e.Key, e.Value);
 					}
 				}
 
 				string[] unmatchable;
-				var ccu = StronglyTypedResourceBuilder.Create (rd, cn, ns, provider, internalClass, out unmatchable);
+				var ccu = StronglyTypedResourceBuilder.Create (rd, name, codeNamespace, resourcesNamespace, provider, internalClass, out unmatchable);
 			
 				if (targetsPcl2Framework) {
 					FixupPclTypeInfo (ccu);

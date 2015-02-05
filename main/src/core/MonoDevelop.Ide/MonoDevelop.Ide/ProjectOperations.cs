@@ -640,10 +640,10 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
-			NewProjectDialog pd = new NewProjectDialog (null, true, null);
-			if (defaultTemplate != null)
-				pd.SelectTemplate (defaultTemplate);
-			MessageService.ShowCustomDialog (pd);
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.OpenSolution = true;
+			newProjectDialog.SelectedTemplateId = defaultTemplate;
+			newProjectDialog.Show ();
 		}
 		
 		public Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -653,16 +653,14 @@ namespace MonoDevelop.Ide
 		
 		public async Task<WorkspaceItem> AddNewWorkspaceItem (Workspace parentWorkspace, string defaultItemId)
 		{
-			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
-			npdlg.SelectTemplate (defaultItemId);
-			try {
-				if (MessageService.RunCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
-					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
-					await SaveAsync ((IWorkspaceFileObject)parentWorkspace);
-					return (WorkspaceItem) npdlg.NewItem;
-				}
-			} finally {
-				npdlg.Destroy ();
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
+			newProjectDialog.SelectedTemplateId = defaultItemId;
+
+			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
+				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);
+				await SaveAsync (parentWorkspace);
+				return (WorkspaceItem)newProjectDialog.NewItem;
 			}
 			return null;
 		}
@@ -706,9 +704,12 @@ namespace MonoDevelop.Ide
 		public SolutionFolderItem CreateProject (SolutionFolder parentFolder)
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok) {
-				var item = npdlg.NewItem as SolutionFolderItem;
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.ParentFolder = parentFolder;
+			newProjectDialog.BasePath = basePath;
+
+			if (newProjectDialog.Show ()) {
+				var item = newProjectDialog.NewItem as SolutionFolderItem;
 				if ((item is Project) && ProjectCreated != null)
 					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
 				return item;
@@ -1096,6 +1097,10 @@ namespace MonoDevelop.Ide
 
 		public async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget)
 		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return new FinishBuildAndCheckAgainOperation (currentBuildOperation, () => CheckAndBuildForExecute (executionTarget));
+			}
+
 			//saves open documents since it may dirty the "needs building" check
 			var r = DoBeforeCompileAction ();
 			if (r.Failed)
@@ -1152,6 +1157,111 @@ namespace MonoDevelop.Ide
 			return false;
 		}
 
+		class FinishBuildAndCheckAgainOperation : IAsyncOperation
+		{
+			object locker = new object ();
+			IAsyncOperation buildOp;
+			IAsyncOperation checkOp;
+			bool cancelled;
+			OperationHandler completedEvt;
+			System.Threading.ManualResetEvent completedSignal;
+
+			public FinishBuildAndCheckAgainOperation (IAsyncOperation build, Func<IAsyncOperation> checkAgain)
+			{
+				buildOp = build;
+				build.Completed += bop => {
+					if (!bop.Success) {
+						MarkCompleted (false);
+						return;
+					}
+					bool alreadyCancelled;
+					lock (locker) {
+						alreadyCancelled = cancelled;
+						if (!alreadyCancelled)
+							checkOp = checkAgain ();
+					}
+
+					if (alreadyCancelled) {
+						MarkCompleted (false);
+					} else {
+						checkOp.Completed += o => MarkCompleted (o.Success);
+					}
+				};
+			}
+
+			void MarkCompleted (bool success)
+			{
+				OperationHandler evt;
+				System.Threading.ManualResetEvent signal;
+
+				lock (locker) {
+					evt = completedEvt;
+					signal = completedSignal;
+					IsCompleted = true;
+					Success = success;
+				}
+
+				if (evt != null)
+					evt (this);
+
+				if (signal != null)
+					signal.Set ();
+			}
+
+			public event OperationHandler Completed {
+				add {
+					bool alreadyCompleted;
+					lock (locker) {
+						completedEvt += value;
+						alreadyCompleted = IsCompleted;
+					}
+					if (alreadyCompleted)
+						value (this);
+				}
+				remove {
+					lock (locker) {
+						completedEvt -= value;
+					}
+				}
+			}
+
+			public void Cancel ()
+			{
+				buildOp.Cancel ();
+
+				bool checkStarted;
+				lock (locker) {
+					cancelled = true;
+					checkStarted = checkOp != null;
+				}
+
+				if (checkStarted) {
+					checkOp.Cancel ();
+				}
+			}
+
+			public void WaitForCompleted ()
+			{
+				if (IsCompleted)
+					return;
+				lock (locker) {
+					if (IsCompleted)
+						return;
+					if (completedSignal == null)
+						completedSignal = new System.Threading.ManualResetEvent (false);
+				}
+				completedSignal.WaitOne ();
+			}
+
+			public bool IsCompleted { get; private set; }
+
+			public bool Success { get; private set; }
+
+			public bool SuccessWithWarnings {
+				get { return false; }
+			}
+		}
+
 		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
 		{
 			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
@@ -1188,7 +1298,7 @@ namespace MonoDevelop.Ide
 		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
 			foreach (var refItem in item.GetReferencedItems (configuration)) {
-				if (collected.Add (item)) {
+				if (collected.Add (refItem)) {
 					CollectReferencedItems (refItem, collected, configuration);
 				}
 			}

@@ -311,10 +311,9 @@ namespace Templating {
                     return this.formatProvider;
                 }
                 set {
-                    if ((this.formatProvider == null)) {
-                        throw new global::System.ArgumentNullException(""formatProvider"");
+                    if ((value != null)) {
+                        this.formatProvider = value;
                     }
-                    this.formatProvider = value;
                 }
             }
             
@@ -577,10 +576,9 @@ namespace Templating {
                     return this.formatProvider;
                 }
                 set {
-                    if ((this.formatProvider == null)) {
-                        throw new global::System.ArgumentNullException(""formatProvider"");
+                    if ((value != null)) {
+                        this.formatProvider = value;
                     }
-                    this.formatProvider = value;
                 }
             }
             
