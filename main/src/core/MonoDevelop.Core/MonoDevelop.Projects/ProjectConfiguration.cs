@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects
 			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
 
 			var svars = pset.GetValue ("EnvironmentVariables");
-			if (svars != null) {
+			if (!string.IsNullOrEmpty (svars)) {
 				XElement vars = XElement.Parse (svars);
 				foreach (var val in vars.Elements ("Variable")) {
 					var name = (string)val.Attribute ("name");
@@ -102,7 +102,8 @@ namespace MonoDevelop.Projects
 					e.Add (val);
 				}
 				pset.SetValue ("EnvironmentVariables", e.ToString ());
-			}
+			} else
+				pset.RemoveProperty ("EnvironmentVariables");
 		}
 
 		FilePath intermediateOutputDirectory = FilePath.Empty;
