@@ -44,6 +44,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {

@@ -37,6 +37,7 @@ using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore
 {

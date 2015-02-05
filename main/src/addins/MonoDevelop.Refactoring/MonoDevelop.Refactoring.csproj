@@ -178,6 +178,7 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeFixDescriptor.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
     <Compile Include="MonoDevelop.Refactoring\CodeGenerationService.cs" />
+    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

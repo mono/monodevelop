@@ -41,14 +41,24 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
+		IReadOnlyList<Tuple<CodeFixDescriptor, CodeAction>> codeDiagnosticActions;
 		public IReadOnlyList<Tuple<CodeFixDescriptor, CodeAction>> CodeDiagnosticActions {
-			get;
-			private set;
+			get {
+				return codeDiagnosticActions ?? new Tuple<CodeFixDescriptor, CodeAction>[0];
+			}
+			private set {
+				codeDiagnosticActions = value;
+			}
 		}
 
+		IReadOnlyList<Tuple<CodeRefactoringDescriptor, CodeAction>> codeRefactoringActions;
 		public IReadOnlyList<Tuple<CodeRefactoringDescriptor, CodeAction>> CodeRefactoringActions {
-			get;
-			private set;
+			get {
+				return codeRefactoringActions ?? new Tuple<CodeRefactoringDescriptor, CodeAction>[0];
+			}
+			private set {
+				codeRefactoringActions = value;
+			}
 		}
 
 		CodeActionContainer ()

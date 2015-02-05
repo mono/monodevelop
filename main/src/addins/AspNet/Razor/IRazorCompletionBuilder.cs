@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.Razor
 		ICompletionDataList HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
 		ICompletionDataList HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		ParameterHintingResult HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
+		MonoDevelop.Ide.CodeCompletion.ParameterHintingResult HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
 		bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
 		int GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);

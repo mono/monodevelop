@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Refactoring;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder

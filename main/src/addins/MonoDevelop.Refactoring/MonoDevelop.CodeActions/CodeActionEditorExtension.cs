@@ -595,7 +595,7 @@ namespace MonoDevelop.CodeActions
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
 					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath);
-					var insertionPoints = CodeGenerationService.GetInsertionPoints (
+					var insertionPoints = InsertionPointService.GetInsertionPoints (
 						document.Editor,
 						document.ParsedDocument,
 						insertion.Type,
