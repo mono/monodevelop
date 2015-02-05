@@ -61,6 +61,7 @@
     <Reference Include="GuiUnit">
       <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -256,6 +257,8 @@
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ColorizationTests.cs" />
+    <Compile Include="MonoDevelop.Projects\ItemMetadataTests.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildProjectTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
