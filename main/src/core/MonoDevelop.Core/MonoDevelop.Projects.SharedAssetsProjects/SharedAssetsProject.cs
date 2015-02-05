@@ -221,14 +221,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return false;
 		}
 
-		protected override bool OnGetSupportsExecute ()
+		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
-			return false;
-		}
-
-		protected override bool OnGetSupportsBuild ()
-		{
-			return false;
+			return ProjectFeatures.None;
 		}
 
 		protected override IEnumerable<string> GetStandardBuildActions ()

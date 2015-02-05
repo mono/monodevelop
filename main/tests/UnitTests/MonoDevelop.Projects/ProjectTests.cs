@@ -504,5 +504,42 @@ namespace MonoDevelop.Projects
 			project = (DotNetProject) Services.ProjectService.CreateProject ("DotNet", info, projectOptions);
 			Assert.AreEqual ("a", project.DefaultNamespace);
 		}
+
+		[Test]
+		public async Task RefreshInMemoryProjectFirstTime ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+
+			var refs = p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
+
+			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+		}
+
+		[Test]
+		public async Task RefreshInMemoryProject ()
+		{
+			// Check that the builder is refreshed when the file has been modified in memory.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+
+			// This will force the loading of the builder
+			p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
+
+			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+
+			var refs = p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
+
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+		}
 	}
 }

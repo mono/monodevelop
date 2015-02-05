@@ -166,6 +166,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		internal protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			return next.OnFastCheckNeedsBuild (configuration);
+		}
+
 		#endregion
 
 		#region Events

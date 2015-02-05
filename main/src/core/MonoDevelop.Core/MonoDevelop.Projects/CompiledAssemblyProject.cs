@@ -201,30 +201,10 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 
-		public override bool HasSlnData {
-			get {
-				return true;
-			}
-		}
-
-		public override DataItem WriteSlnData ()
+		internal protected override Task OnSave (ProgressMonitor monitor)
 		{
-			DataSerializer ser = new DataSerializer (MSBuildProjectService.DataContext);
-			ser.SerializationContext.BaseFile = FileName;
-			ser.SerializationContext.DirectorySeparatorChar = '\\';
-			DataItem data = (DataItem) ser.Serialize (this, typeof(CompiledAssemblyProject));
-			return data;
-		}
-
-		public override void ReadSlnData (DataItem item)
-		{
-			// Remove the default configuration, since new ones will be loaded
-			Configurations.Clear ();
-
-			DataSerializer ser = new DataSerializer (MSBuildProjectService.DataContext);
-			ser.SerializationContext.BaseFile = FileName;
-			ser.SerializationContext.DirectorySeparatorChar = '\\';
-			ser.Deserialize (this, item);
+			// Compiled assemblies can't be saved
+			return Task.FromResult (0);
 		}
 	}
 	

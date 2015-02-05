@@ -443,23 +443,6 @@ namespace MonoDevelop.Projects
 			this.SolutionFormat = format;
 		}
 
-		public virtual bool HasSlnData {
-			get { return false; }
-		}
-
-		DataItem customSlnData;
-
-		// TODO NPM: Remove, use solution extension
-		public virtual DataItem WriteSlnData ()
-		{
-			return customSlnData;
-		}
-
-		public virtual void ReadSlnData (DataItem item)
-		{
-			customSlnData = item;
-		}
-
 		/// <summary>
 		/// Notifies that this solution item has been modified
 		/// </summary>

@@ -195,8 +195,10 @@ namespace MonoDevelop.Ide
 
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
-			// TODO NPM
-			yield break;
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null)
+				return IdeApp.ProjectOperations.CurrentSelectedSolution.GetExecutionDependencies ();
+			else
+				return new IBuildTarget [0];
 		}
 
 

@@ -1,9 +1,10 @@
-// IBuildTarget.cs
+﻿//
+// ProjectFeature.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
 using System;
 
 namespace MonoDevelop.Projects
 {
-	public interface IBuildTarget
+	[Flags]
+	public enum ProjectFeatures
 	{
-		Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false);
-		Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration);
-		Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration);
-		bool CanExecute (ExecutionContext context, ConfigurationSelector configuration);
-		[Obsolete ("This method will be removed in future releases")]
-		bool NeedsBuilding (ConfigurationSelector configuration);
-		string Name { get; }
-
-		/// <summary>
-		/// Gets the build targets that should be built before the project is executed.
-		/// If the project itself is not executed, it will not be built.
-		/// </summary>
-		IEnumerable<IBuildTarget> GetExecutionDependencies ();
+		None = 0,
+		Build = 1,
+		Execute = 2,
+		Configurations = 4
 	}
 }
+

@@ -482,6 +482,7 @@
     <Compile Include="MonoDevelop.Projects\BuildError.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectItemMetadata.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectFeature.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

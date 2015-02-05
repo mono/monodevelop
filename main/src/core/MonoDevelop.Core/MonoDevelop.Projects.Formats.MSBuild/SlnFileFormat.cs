@@ -707,11 +707,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					item.UnresolvedProjectDependencies = ReadSolutionItemDependencies (sec);
 
 					// Deserialize the object
-					var ssec = sec.Sections.GetSection ("MonoDevelopProperties");
-					if (ssec != null) {
-						DataItem it = ReadDataItem (ssec);
-						item.ReadSlnData (it);
-					}
+					DeserializeSolutionItem (monitor, sol, item, sec);
 
 					lock (items) {
 						if (!items.ContainsKey (projectGuid)) {

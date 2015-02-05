@@ -759,11 +759,11 @@ namespace MonoDevelop.Projects
 					lastBuildRuntime = runtime.Id;
 					lastFileName = FileName;
 					lastSlnFileName = slnFile;
-				} else if (modifiedInMemory) {
+				}
+				if (modifiedInMemory) {
 					modifiedInMemory = false;
-					// TODO NPM
-//				var p = SaveProject (new NullProgressMonitor ());
-//				projectBuilder.RefreshWithContent (p.SaveToString ());
+					var p = WriteProject (new ProgressMonitor ());
+					projectBuilder.RefreshWithContent (p.SaveToString ());
 				}
 			}
 			return projectBuilder;
@@ -981,15 +981,19 @@ namespace MonoDevelop.Projects
 		//null if any file in the project has since changed
 		string fastUpToDateCheckGoodConfig;
 
-		// TODO NPM: add to extension chain
-		public virtual bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		public bool FastCheckNeedsBuild (ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnFastCheckNeedsBuild (configuration);
+		}
+		
+		protected virtual bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 		{
 			if (disableFastUpToDateCheck || fastUpToDateCheckGoodConfig == null)
-					return true;
+				return true;
 			var cfg = GetConfiguration (configuration);
 			return cfg == null || cfg.Id != fastUpToDateCheckGoodConfig;
 		}
-		
+
 		protected void SetFastBuildCheckDirty ()
 		{
 			fastUpToDateCheckGoodConfig = null;
@@ -2499,6 +2503,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnPrepareForEvaluation (MSBuildProject project)
 			{
 				Project.OnPrepareForEvaluation (project);
+			}
+
+			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
+			{
+				return Project.OnFastCheckNeedsBuild (configuration);
 			}
 		}
 	}

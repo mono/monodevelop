@@ -415,7 +415,7 @@ namespace MonoDevelop.Projects
 			using (await WriteLock ()) {
 				await ItemExtension.OnSave (monitor);
 
-				if (HasSlnData && !SavingSolution && ParentSolution != null) {
+				if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
 					// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
 					await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
 					ParentSolution.NeedsReload = false;
@@ -459,28 +459,25 @@ namespace MonoDevelop.Projects
 
 		public bool SupportsBuild ()
 		{
-			return ItemExtension.OnSupportsBuild ();
-		}
-
-		protected virtual bool OnGetSupportsBuild ()
-		{
-			return true;
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Build);
 		}
 
 		public bool SupportsExecute ()
 		{
-			return ItemExtension.OnSupportsExecute ();
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Execute);
 		}
 
-		protected virtual bool OnGetSupportsExecute ()
+		public bool SupportsConfigurations ()
 		{
-			return true;
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Configurations);
 		}
 
-		public virtual bool SupportsConfigurations ()
+		protected virtual ProjectFeatures OnGetSupportedFeatures ()
 		{
-			// TODO NPM: -> extension chain
-			return SupportsBuild ();
+			if (IsUnsupportedProject)
+				return ProjectFeatures.Configurations;
+			else
+				return ProjectFeatures.Execute | ProjectFeatures.Build | ProjectFeatures.Configurations;
 		}
 
 		/// <summary>
@@ -1209,9 +1206,41 @@ namespace MonoDevelop.Projects
 			base.OnUnboundFromSolution ();
 		}
 
+		/// <summary>
+		/// Override to return True if this class needs to store project related data in the solution file
+		/// </summary>
+		protected virtual bool OnCheckHasSolutionData ()
+		{
+			return false;
+		}
+
+		internal void ReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			ItemExtension.OnReadSolutionData (monitor, properties);
+		}
+
+		/// <summary>
+		/// Override to read project related information stored in the solution file
+		/// </summary>
+		protected virtual void OnReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			// Do nothing by default
+		}
+
+		internal void WriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			ItemExtension.OnWriteSolutionData (monitor, properties);
+		}
+
+		/// <summary>
+		/// Override to store project related information in the solution file
+		/// </summary>
+		protected virtual void OnWriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			// Do nothing by default
+		}
 
 		public event SolutionItemEventHandler Saved;
-		
 	
 		class DefaultMSBuildItemExtension: SolutionItemExtension
 		{
@@ -1281,14 +1310,9 @@ namespace MonoDevelop.Projects
 				return Item.DoSave (monitor);
 			}
 
-			internal protected override bool OnSupportsBuild ()
+			internal protected override ProjectFeatures OnGetSupportedFeatures ()
 			{
-				return Item.OnGetSupportsBuild ();
-			}
-
-			internal protected override bool OnSupportsExecute ()
-			{
-				return Item.OnGetSupportsExecute ();
+				return Item.OnGetSupportedFeatures ();
 			}
 
 			internal protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
@@ -1386,6 +1410,21 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnNeedsBuilding (ConfigurationSelector configuration)
 			{
 				return Item.OnGetNeedsBuilding (configuration);
+			}
+
+			internal protected override void OnWriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+			{
+				Item.OnWriteSolutionData (monitor, properties);
+			}
+
+			internal protected override void OnReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+			{
+				Item.OnReadSolutionData (monitor, properties);
+			}
+
+			internal protected override bool OnCheckHasSolutionData ()
+			{
+				return Item.OnCheckHasSolutionData ();
 			}
 		}	
 	}

@@ -134,19 +134,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()
+		{
+			return next.OnGetSupportedFeatures ();
+		}
+
 		#endregion
 
 		#region Building
-
-		internal protected virtual bool OnSupportsBuild ()
-		{
-			return next.OnSupportsBuild ();
-		}
-
-		internal protected virtual bool OnSupportsExecute ()
-		{
-			return next.OnSupportsExecute ();
-		}
 
 		internal protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
@@ -188,6 +183,21 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnEndLoad ()
 		{
+		}
+
+		internal protected virtual void OnReadSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			next.OnReadSolutionData (monitor, properties);
+		}
+
+		internal protected virtual void OnWriteSolutionData (ProgressMonitor monitor, SlnPropertySet properties)
+		{
+			next.OnWriteSolutionData (monitor, properties);
+		}
+
+		internal protected virtual bool OnCheckHasSolutionData ()
+		{
+			return next.OnCheckHasSolutionData ();
 		}
 
 		#endregion

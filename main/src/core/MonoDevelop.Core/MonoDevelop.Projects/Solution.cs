@@ -894,7 +894,8 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
 		{
-			// Do nothing by default
+			if (item is SolutionItem)
+				((SolutionItem)item).ReadSolutionData (monitor, properties);
 		}
 			
 		internal void WriteSolution (ProgressMonitor monitor, SlnFile file)
@@ -924,7 +925,8 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
 		{
-			// Do nothing by default
+			if (item is SolutionItem)
+				((SolutionItem)item).WriteSolutionData (monitor, properties);
 		}
 
 		internal void NotifyConfigurationsChanged ()

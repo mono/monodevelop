@@ -54,11 +54,6 @@ namespace MonoDevelop.Projects
 			UnsupportedProjectMessage = loadError;
 		}
 
-		public override bool SupportsConfigurations ()
-		{
-			return true;
-		}
-
 		public override FilePath FileName {
 			get { return fileName; }
 			set {
