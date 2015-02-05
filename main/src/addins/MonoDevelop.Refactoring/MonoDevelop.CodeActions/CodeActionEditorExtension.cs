@@ -170,7 +170,7 @@ namespace MonoDevelop.CodeActions
 					if (Editor.IsSomethingSelected)
 						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
 					else
-						span = TextSpan.FromBounds (loc, loc + 1);
+						span = TextSpan.FromBounds (loc, loc);
 
 					var diagnosticsAtCaret =
 						Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)

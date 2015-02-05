@@ -2917,6 +2917,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedTooltipProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedCompletionExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedDocumentContext.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCategory.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\DisplayFlags.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -27,11 +27,24 @@ using System;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class CompletionCategory
+	public abstract class CompletionCategory : IComparable<CompletionCategory>
 	{
-		public CompletionCategory ()
+		public string DisplayText { get; set; }
+
+		public string Icon { get; set; }
+
+		protected CompletionCategory ()
 		{
 		}
+
+		protected CompletionCategory (string displayText, string icon)
+		{
+			this.DisplayText = displayText;
+			this.Icon = icon;
+		}
+
+		public abstract int CompareTo (CompletionCategory other);
 	}
+
 }
 

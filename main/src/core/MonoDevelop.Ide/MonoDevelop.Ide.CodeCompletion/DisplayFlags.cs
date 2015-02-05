@@ -28,7 +28,6 @@ using System;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-
 	[Flags]
 	public enum DisplayFlags
 	{

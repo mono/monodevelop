@@ -120,6 +120,24 @@ namespace MonoDevelop.CSharp.Completion
 					return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
 				}
 			}
+
+			ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
+				get {
+					return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
+				} 
+				set {
+					base.CompletionCategory = (CompletionCategory)value;
+				} 
+			}
+
+			ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
+				get {
+					return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
+				}
+				set {
+					base.DisplayFlags = (DisplayFlags)value;
+				}
+			}
 		}
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (string format, string description, object example)
@@ -176,6 +194,24 @@ namespace MonoDevelop.CSharp.Completion
 			IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
 				get {
 					return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
+				}
+			}
+
+			ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
+				get {
+					return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
+				} 
+				set {
+					base.CompletionCategory = (CompletionCategory)value;
+				} 
+			}
+
+			ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
+				get {
+					return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
+				}
+				set {
+					base.DisplayFlags = (DisplayFlags)value;
 				}
 			}
 		}
