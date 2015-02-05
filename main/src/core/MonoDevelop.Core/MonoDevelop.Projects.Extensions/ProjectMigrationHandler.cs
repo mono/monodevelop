@@ -42,13 +42,13 @@ namespace MonoDevelop.Projects.Extensions
 			yield break;
 		}
 
-		public abstract bool Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
+		public abstract Task<bool> Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
 
 		public virtual bool CanPromptForMigration {
 			get { return false; }
 		}
 
-		public virtual MigrationType PromptForMigration (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
+		public virtual Task<MigrationType> PromptForMigration (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
 		{
 			throw new NotImplementedException ();
 		}

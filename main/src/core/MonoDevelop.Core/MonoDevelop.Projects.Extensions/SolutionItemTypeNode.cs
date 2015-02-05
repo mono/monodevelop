@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.Extensions
 			}
 		}
 
-		internal string ItenTypeName {
+		internal string ItemTypeName {
 			get { return type; }
 		}
 

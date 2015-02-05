@@ -187,6 +187,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			TextFile.WriteFile (fileName, content, bom, true);
 		}
 		
+		public Task SaveAsync (string fileName)
+		{
+			return Task.Run (() => {
+				string content = SaveToString ();
+				TextFile.WriteFile (fileName, content, bom, true);
+			});
+		}
+
 		public string SaveToString ()
 		{
 			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the

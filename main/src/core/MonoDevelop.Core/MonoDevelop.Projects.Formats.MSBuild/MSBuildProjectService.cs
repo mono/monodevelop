@@ -138,7 +138,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item.EndLoad ();
 			};
 
-			item.TypeGuid = typeGuid ?? node.Guid;
 			await item.LoadAsync (monitor, fileName, format);
 			return item;
 		}
@@ -163,18 +162,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return false;
 		}
 
-		internal static SolutionItem CreateSolutionItem (string typeGuid)
-		{
-			foreach (var node in GetItemTypeNodes ()) {
-				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
-					var it = node.CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
-					it.EnsureInitialized ();
-					return it;
-				}
-			}
-			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
-		}
-
 		internal static Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
@@ -196,27 +183,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}
 
-/* TODO NPM
-		internal static bool CanMigrateFlavor (string[] guids)
-		{
-
-		}
-
-		internal static async Task<bool> MigrateFlavor (IProgressMonitor monitor, string fileName, string typeGuid, MSBuildProjectNode node, MSBuildProject p)
+		internal static async Task<bool> MigrateFlavor (ProgressMonitor monitor, string fileName, string typeGuid, MSBuildProject p, ProjectTypeNode node)
 		{
 			var language = GetLanguageFromGuid (typeGuid);
 
-			if (MigrateProject (monitor, node, p, fileName, language)) {
-				p.Save (fileName);
+			if (await MigrateProject (monitor, node, p, fileName, language)) {
+				await p.SaveAsync (fileName);
 				return true;
 			}
 
 			return false;
 		}
 
-		static async Task<bool> MigrateProject (IProgressMonitor monitor, MSBuildProjectNode st, MSBuildProject p, string fileName, string language)
+		static async Task<bool> MigrateProject (ProgressMonitor monitor, ProjectTypeNode st, MSBuildProject p, string fileName, string language)
 		{
-			var projectLoadMonitor = monitor as IProjectLoadProgressMonitor;
+			var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 			if (projectLoadMonitor == null) {
 				// projectLoadMonitor will be null when running through md-tool, but
 				// this is not fatal if migration is not required, so just ignore it. --abock
@@ -229,7 +210,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			var migrationType = st.MigrationHandler.CanPromptForMigration
-				? st.MigrationHandler.PromptForMigration (projectLoadMonitor, p, fileName, language)
+				? await st.MigrationHandler.PromptForMigration (projectLoadMonitor, p, fileName, language)
 				: projectLoadMonitor.ShouldMigrateProject ();
 			if (migrationType == MigrationType.Ignore) {
 				if (st.IsMigrationRequired) {
@@ -260,7 +241,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				throw new Exception ("Could not migrate the project");
 
 			return true;
-		}*/
+		}
 
 		internal static string GetLanguageGuid (string language)
 		{
@@ -349,7 +330,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var className = item.GetType ().FullName;
 			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
-				if (node.ItenTypeName == className)
+				if (node.ItemTypeName == className)
 					return node.Guid;
 			}
 			return GenericItemGuid;
