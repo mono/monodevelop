@@ -220,7 +220,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				LoggingService.LogError (Environment.StackTrace);
 				monitor.ReportError ("Could not open unmigrated project and no migrator was supplied", null);
-				throw new Exception ("Could not open unmigrated project and no migrator was supplied");
+				throw new UserException ("Project migration failed");
 			}
 			
 			var migrationType = st.MigrationHandler.CanPromptForMigration
@@ -229,7 +229,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (migrationType == MigrationType.Ignore) {
 				if (st.IsMigrationRequired) {
 					monitor.ReportError (string.Format ("{1} cannot open the project '{0}' unless it is migrated.", Path.GetFileName (fileName), BrandingService.ApplicationName), null);
-					throw new Exception ("The user choose not to migrate the project");
+					throw new UserException ("The user choose not to migrate the project");
 				} else
 					return false;
 			}
@@ -250,7 +250,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
 			}
 
-			await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language);
+			if (!await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language))
+				throw new UserException ("Project migration failed");
 
 			return true;
 		}

@@ -236,13 +236,11 @@ namespace MonoDevelop.Projects
 			MigrationResult = true;
 		}
 
-		public override Task Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
+		public override Task<bool> Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
 		{
 			project.RemoveProjectTypeGuid ("{D049D6DC-2C66-40ED-8249-2DB930ACA0B4}");
 			project.AddProjectTypeGuid ("{466CB615-7798-440F-9326-B783655656F0}");
-			if (!MigrationResult)
-				throw new UserException ("Project could not be migrated");
-			return Task.FromResult (0);
+			return Task.FromResult (MigrationResult);
 		}
 
 		public override bool CanPromptForMigration {
