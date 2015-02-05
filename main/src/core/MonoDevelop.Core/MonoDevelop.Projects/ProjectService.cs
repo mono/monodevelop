@@ -187,65 +187,70 @@ namespace MonoDevelop.Projects
 				return ReadSolutionItem (monitor, file, null, null, null, ctx);
 		}
 		
-		public async Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
+		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
 		{
-			file = Path.GetFullPath (file);
-			using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
-				file = GetTargetFile (file);
-				SolutionItem loadedItem = await GetExtensionChain (null).LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
-				loadedItem.NeedsReload = false;
-				return loadedItem;
-			}
+			return Runtime.RunInMainThread (async delegate {
+				file = Path.GetFullPath (file);
+				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
+					file = GetTargetFile (file);
+					SolutionItem loadedItem = await GetExtensionChain (null).LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
+					loadedItem.NeedsReload = false;
+					return loadedItem;
+				}
+			});
 		}
 
-		public async Task<SolutionFolderItem> ReadSolutionItem (ProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
+		public Task<SolutionFolderItem> ReadSolutionItem (ProgressMonitor monitor, SolutionItemReference reference, params WorkspaceItem[] workspaces)
 		{
-			if (reference.Id == null) {
-				FilePath file = reference.Path.FullPath;
-				foreach (WorkspaceItem workspace in workspaces) {
-					foreach (SolutionItem eitem in workspace.GetAllItems<Solution>().SelectMany (s => s.GetAllSolutionItems ()))
-						if (file == eitem.FileName)
-							return eitem;
-				}
-				return await ReadSolutionItem (monitor, reference.Path);
-			}
-			else {
-				Solution sol = null;
-				if (workspaces.Length > 0) {
+			return Runtime.RunInMainThread (async delegate {
+				if (reference.Id == null) {
 					FilePath file = reference.Path.FullPath;
 					foreach (WorkspaceItem workspace in workspaces) {
-						foreach (Solution item in workspace.GetAllItems<Solution>()) {
-							if (item.FileName.FullPath == file) {
-								sol = item;
-								break;
-							}
-						}
-						if (sol != null)
-							break;
+						foreach (SolutionItem eitem in workspace.GetAllItems<Solution>().SelectMany (s => s.GetAllSolutionItems ()))
+							if (file == eitem.FileName)
+								return eitem;
 					}
+					return await ReadSolutionItem (monitor, reference.Path);
+				} else {
+					Solution sol = null;
+					if (workspaces.Length > 0) {
+						FilePath file = reference.Path.FullPath;
+						foreach (WorkspaceItem workspace in workspaces) {
+							foreach (Solution item in workspace.GetAllItems<Solution>()) {
+								if (item.FileName.FullPath == file) {
+									sol = item;
+									break;
+								}
+							}
+							if (sol != null)
+								break;
+						}
+					}
+					if (sol == null)
+						sol = await ReadWorkspaceItem (monitor, reference.Path) as Solution;
+					
+					if (reference.Id == ":root:")
+						return sol.RootFolder;
+					else
+						return sol.GetSolutionItem (reference.Id);
 				}
-				if (sol == null)
-					sol = await ReadWorkspaceItem (monitor, reference.Path) as Solution;
-				
-				if (reference.Id == ":root:")
-					return sol.RootFolder;
-				else
-					return sol.GetSolutionItem (reference.Id);
-			}
+			});
 		}
 		
-		public async Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, string file)
+		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, string file)
 		{
-			file = Path.GetFullPath (file);
-			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
-				file = GetTargetFile (file);
-				WorkspaceItem item = await GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
-				if (item != null)
-					item.NeedsReload = false;
-				else
-					throw new InvalidOperationException ("Invalid file format: " + file);
-				return item;
-			}
+			return Runtime.RunInMainThread (async delegate {
+				file = Path.GetFullPath (file);
+				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
+					file = GetTargetFile (file);
+					WorkspaceItem item = await GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+					if (item != null)
+						item.NeedsReload = false;
+					else
+						throw new InvalidOperationException ("Invalid file format: " + file);
+					return item;
+				}
+			});
 		}
 		
 		internal async Task<WorkspaceItem> InternalReadWorkspaceItem (string file, ProgressMonitor monitor)

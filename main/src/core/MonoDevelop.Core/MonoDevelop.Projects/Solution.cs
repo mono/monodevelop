@@ -1066,6 +1066,21 @@ namespace MonoDevelop.Projects
 			{
 				Solution.OnWriteConfigurationData (monitor, properties, configuration);
 			}
+
+			internal protected override void OnReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
+			{
+				Solution.OnReadConfigurationData (monitor, properties, configuration);
+			}
+
+			internal protected override void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
+			{
+				Solution.OnReadSolutionFolderItemData (monitor, properties, item);
+			}
+
+			internal protected override IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)
+			{
+				yield break;
+			}
 		}
 	}
 

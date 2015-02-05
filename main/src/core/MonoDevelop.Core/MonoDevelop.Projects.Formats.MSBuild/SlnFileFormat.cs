@@ -575,6 +575,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Dictionary<string, SolutionFolderItem> items = new Dictionary<string, SolutionFolderItem> ();
 			List<SolutionFolderItem> sortedList = new List<SolutionFolderItem> ();
 
+			List<Task> loadTasks = new List<Task> ();
+
 			foreach (SlnProject sec in sln.Projects) {
 				monitor.Step (1);
 				try {
@@ -604,8 +606,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					
 					foreach (string f in ReadFolderFiles (sec))
 						sfolder.Files.Add (MSBuildProjectService.FromMSBuildPath (Path.GetDirectoryName (sol.FileName), f));
-					
-					items.Add (projectGuid, sfolder);
+
+					lock (items)
+						items.Add (projectGuid, sfolder);
 					sortedList.Add (sfolder);
 					
 					continue;
@@ -630,91 +633,100 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				projectPath = Path.GetFullPath (path);
 				
 				SolutionItem item = null;
-				
-				try {
-					if (sol.IsSolutionItemEnabled (projectPath)) {
-						item = Runtime.RunInMainThread (delegate {
-							return Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
-						}).Result;
+				Task<SolutionItem> loadTask;
+				DateTime ti = DateTime.Now;
 
-						if (item == null) {
-							throw new UnknownSolutionItemTypeException (projTypeGuid);
-						}
-					} else {
-						item = new UnloadedSolutionItem () {
-							FileName = projectPath
-						};
-					}
-					
-				} catch (Exception e) {
-					// If we get a TargetInvocationException from using Activator.CreateInstance we
-					// need to unwrap the real exception
-					while (e is TargetInvocationException)
-						e = ((TargetInvocationException) e).InnerException;
-					
-					bool loadAsProject = false;
-
-					if (e is UnknownSolutionItemTypeException) {
-						var name = ((UnknownSolutionItemTypeException)e).TypeName;
-
-						var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
-						if (!string.IsNullOrEmpty (name)) {
-							var guids = name.Split (';');
-							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, sol.FileName);
-							if (projectInfo != null) {
-								loadAsProject = projectInfo.LoadFiles;
-								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-							} else {
-								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-							}
-						} else {
-							LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
-							monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
-						}
-
-					} else if (e is UserException) {
-						var ex = (UserException) e;
-						LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
-						monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
-					} else {
-						LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
-						monitor.ReportWarning (GettextCatalog.GetString (
-							"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
-					}
-
-					SolutionItem uitem;
-					if (loadAsProject) {
-						uitem = new UnknownProject () {
-							FileName = projectPath,
-							UnsupportedProjectMessage = e.Message,
-						};
-					} else {
-						uitem = new UnknownSolutionItem () {
-							FileName = projectPath,
-							UnsupportedProjectMessage = e.Message,
-						};
-					}
-					item = uitem;
-				}
-
-				item.UnresolvedProjectDependencies = ReadSolutionItemDependencies (sec);
-
-				// Deserialize the object
-				var ssec = sec.Sections.GetSection ("MonoDevelopProperties");
-				if (ssec != null) {
-					DataItem it = ReadDataItem (ssec);
-					item.ReadSlnData (it);
-				}
-
-				if (!items.ContainsKey (projectGuid)) {
-					items.Add (projectGuid, item);
-					sortedList.Add (item);
+				if (sol.IsSolutionItemEnabled (projectPath)) {
+					Console.WriteLine (">> Start Loading " + Path.GetFileName (projectPath));
+					loadTask = Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
 				} else {
-					monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
+					loadTask = Task.FromResult<SolutionItem> (new UnloadedSolutionItem () {
+						FileName = projectPath
+					});
 				}
+
+				var ft = loadTask.ContinueWith (ta => {
+					try {
+						Console.WriteLine ("<< End Loading " + Path.GetFileName (projectPath) + " t:" + (DateTime.Now - ti).TotalMilliseconds);
+						item = ta.Result;
+						if (item == null)
+							throw new UnknownSolutionItemTypeException (projTypeGuid);
+					} catch (Exception e) {
+						// If we get a TargetInvocationException from using Activator.CreateInstance we
+						// need to unwrap the real exception
+						while (e is TargetInvocationException)
+							e = e.InnerException;
+
+						bool loadAsProject = false;
+
+						if (e is UnknownSolutionItemTypeException) {
+							var name = ((UnknownSolutionItemTypeException)e).TypeName;
+
+							var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
+							if (!string.IsNullOrEmpty (name)) {
+								var guids = name.Split (';');
+								var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, sol.FileName);
+								if (projectInfo != null) {
+									loadAsProject = projectInfo.LoadFiles;
+									LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+									monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+								} else {
+									LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
+									monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
+								}
+							} else {
+								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
+							}
+
+						} else if (e is UserException) {
+							var ex = (UserException) e;
+							LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
+							monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
+						} else {
+							LoggingService.LogError (string.Format ("Error while trying to load the project {0}", projectPath), e);
+							monitor.ReportWarning (GettextCatalog.GetString (
+								"Error while trying to load the project '{0}': {1}", projectPath, e.Message));
+						}
+
+						SolutionItem uitem;
+						if (loadAsProject) {
+							uitem = new UnknownProject () {
+								FileName = projectPath,
+								UnsupportedProjectMessage = e.Message,
+							};
+						} else {
+							uitem = new UnknownSolutionItem () {
+								FileName = projectPath,
+								UnsupportedProjectMessage = e.Message,
+							};
+						}
+						item = uitem;
+					}
+
+					item.UnresolvedProjectDependencies = ReadSolutionItemDependencies (sec);
+
+					// Deserialize the object
+					var ssec = sec.Sections.GetSection ("MonoDevelopProperties");
+					if (ssec != null) {
+						DataItem it = ReadDataItem (ssec);
+						item.ReadSlnData (it);
+					}
+
+					lock (items) {
+						if (!items.ContainsKey (projectGuid)) {
+							items.Add (projectGuid, item);
+							sortedList.Add (item);
+						} else {
+							monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
+						}
+					}
+				});
+				loadTasks.Add (ft);
 			}
+
+			Task.WaitAll (loadTasks.ToArray ());
+
 			monitor.EndTask ();
 
 			sol.LoadedProjects = new HashSet<string> (items.Keys);
