@@ -215,7 +215,7 @@ namespace MonoDevelop.Projects
 			// Collect extensions that support this object
 
 			var extensions = new List<WorkspaceObjectExtension> ();
-			foreach (ProjectModelExtensionNode node in AddinManager.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath)) {
+			foreach (ProjectModelExtensionNode node in GetModelExtensions ()) {
 				if (node.CanHandleObject (this)) {
 					var ext = node.CreateExtension ();
 					if (ext.SupportsObject (this))
@@ -237,6 +237,23 @@ namespace MonoDevelop.Projects
 				e.Init (this);
 			foreach (var e in extensions)
 				e.OnExtensionChainCreated ();
+		}
+
+		internal static IEnumerable<ProjectModelExtensionNode> GetModelExtensions ()
+		{
+			return AddinManager.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
+		}
+
+		static List<ProjectModelExtensionNode> customNodes = new List<ProjectModelExtensionNode> ();
+
+		internal static void RegisterCustomExtension (ProjectModelExtensionNode node)
+		{
+			customNodes.Add (node);
+		}
+
+		internal static void UnregisterCustomExtension (ProjectModelExtensionNode node)
+		{
+			customNodes.Remove (node);
 		}
 
 		protected virtual IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()

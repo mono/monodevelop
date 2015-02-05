@@ -35,28 +35,15 @@ namespace MonoDevelop.Projects.Extensions
 	[ExtensionNode (ExtensionAttributeType=typeof(ExportProjectTypeAttribute))]
 	public class ProjectTypeNode: SolutionItemTypeNode
 	{
-		[NodeAttribute]
-		bool migrationRequired = true;
-
-		[NodeAttribute]
-		string migrationHandler;
-
-		public bool IsMigrationRequired {
-			get { return migrationRequired; }
-		}
-
-		public ProjectMigrationHandler MigrationHandler {
-			get { return (ProjectMigrationHandler) Addin.CreateInstance (migrationHandler); }
-		}
-
 		public override async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid)
 		{
 			MSBuildProject p = null;
 
 			if (!string.IsNullOrEmpty (fileName)) {
 				p = await MSBuildProject.LoadAsync (fileName);
-				if (!string.IsNullOrEmpty (migrationHandler))
-					await MSBuildProjectService.MigrateFlavor (monitor, fileName, typeGuid, p, this);
+				var migrators = MSBuildProjectService.GetMigrableFlavors (p.ProjectTypeGuids);
+				if (migrators.Count > 0)
+					await MSBuildProjectService.MigrateFlavors (monitor, fileName, typeGuid, p, migrators);
 			}
 
 			var project = await base.CreateSolutionItem (monitor, fileName, typeGuid) as Project;

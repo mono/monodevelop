@@ -183,19 +183,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}
 
-		internal static async Task<bool> MigrateFlavor (ProgressMonitor monitor, string fileName, string typeGuid, MSBuildProject p, ProjectTypeNode node)
+		internal static List<SolutionItemExtensionNode> GetMigrableFlavors (string[] flavorGuids)
+		{
+			var list = new List<SolutionItemExtensionNode> ();
+			foreach (var fid in flavorGuids) {
+				foreach (var node in WorkspaceObject.GetModelExtensions ().OfType<SolutionItemExtensionNode> ()) {
+					if (node.SupportsMigration && node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))
+						list.Add (node);
+				}
+			}
+			return list;
+		}
+
+		internal static async Task MigrateFlavors (ProgressMonitor monitor, string fileName, string typeGuid, MSBuildProject p, List<SolutionItemExtensionNode> nodes)
 		{
 			var language = GetLanguageFromGuid (typeGuid);
 
-			if (await MigrateProject (monitor, node, p, fileName, language)) {
-				await p.SaveAsync (fileName);
-				return true;
-			}
+			bool migrated = false;
 
-			return false;
+			foreach (var node in nodes) {
+				if (await MigrateProject (monitor, node, p, fileName, language))
+					migrated = true;
+			}
+			if (migrated)
+				await p.SaveAsync (fileName);
 		}
 
-		static async Task<bool> MigrateProject (ProgressMonitor monitor, ProjectTypeNode st, MSBuildProject p, string fileName, string language)
+		static async Task<bool> MigrateProject (ProgressMonitor monitor, SolutionItemExtensionNode st, MSBuildProject p, string fileName, string language)
 		{
 			var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 			if (projectLoadMonitor == null) {
@@ -235,10 +249,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				foreach (var file in st.MigrationHandler.FilesToBackup (fileName))
 					File.Copy (file, Path.Combine (backupDir, Path.GetFileName (file)));
 			}
-			
-			var res = await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language);
-			if (!res)
-				throw new Exception ("Could not migrate the project");
+
+			await st.MigrationHandler.Migrate (projectLoadMonitor, p, fileName, language);
 
 			return true;
 		}
@@ -304,8 +316,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node is SolutionItemTypeNode)
 					yield return (SolutionItemTypeNode) node;
 			}
+			foreach (var node in customNodes)
+				yield return node;
+		}
+
+		static List<SolutionItemTypeNode> customNodes = new List<SolutionItemTypeNode> ();
+
+		internal static void RegisterCustomItemExtension (SolutionItemTypeNode node)
+		{
+			customNodes.Add (node);
 		}
 		
+		internal static void UnregisterCustomItemExtension (SolutionItemTypeNode node)
+		{
+			customNodes.Remove (node);
+		}
+
 		internal static bool CanReadFile (FilePath file)
 		{
 			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {

@@ -38,6 +38,35 @@ namespace MonoDevelop.Projects.Extensions
 
 		public string Guid {
 			get { return guid; }
+			set { guid = value; }
+		}
+
+		[NodeAttribute]
+		bool migrationRequired = true;
+
+		[NodeAttribute]
+		string migrationHandler;
+
+		ProjectMigrationHandler handler;
+
+		public bool IsMigrationRequired {
+			get { return migrationRequired; }
+			set { migrationRequired = value; }
+		}
+
+		public bool SupportsMigration {
+			get { return !string.IsNullOrEmpty (migrationHandler) || handler != null; }
+		}
+
+		public ProjectMigrationHandler MigrationHandler {
+			get {
+				if (handler == null)
+					handler = (ProjectMigrationHandler) Addin.CreateInstance (migrationHandler); 
+				return handler;
+			}
+			set {
+				handler = value;
+			}
 		}
 
 		public override bool CanHandleObject (object ob)

@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Extensions
 			yield break;
 		}
 
-		public abstract Task<bool> Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
+		public abstract Task Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
 
 		public virtual bool CanPromptForMigration {
 			get { return false; }
