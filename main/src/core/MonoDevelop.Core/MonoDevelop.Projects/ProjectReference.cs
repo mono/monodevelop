@@ -115,6 +115,7 @@ namespace MonoDevelop.Projects
 				}
 				return base.Include;
 			}
+			protected set { base.Include = value; }
 		}
 		
 		public ProjectReference (ReferenceType referenceType, string reference): this (referenceType, reference, null)
