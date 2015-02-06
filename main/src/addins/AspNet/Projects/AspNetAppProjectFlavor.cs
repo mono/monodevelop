@@ -690,13 +690,13 @@ namespace MonoDevelop.AspNet.Projects
 
 		public bool IsAspWebApiProject {
 			get {
-				return References.Any (r => r.Reference.StartsWith ("System.Web.Http.WebHost", StringComparison.Ordinal));
+				return Project.References.Any (r => r.Reference.StartsWith ("System.Web.Http.WebHost", StringComparison.Ordinal));
 			}
 		}
 
 		public virtual bool IsAspWebFormsProject {
 			get {
-				return Files.Any (f => f.Name.EndsWith (".aspx", StringComparison.Ordinal));
+				return Project.Files.Any (f => f.Name.EndsWith (".aspx", StringComparison.Ordinal));
 			}
 		}
 

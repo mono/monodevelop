@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		SearchResultPad outputPad;
 
-		public SearchProgressMonitor (Pad pad): base (Runtime.MainSynchronizationContext)
+		internal SearchProgressMonitor (Pad pad, CancellationTokenSource cancellationTokenSource = null): base (Runtime.MainSynchronizationContext, cancellationTokenSource)
 		{
 			AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad));
 

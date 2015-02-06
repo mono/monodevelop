@@ -31,7 +31,7 @@ using MonoDevelop.Core.StringParsing;
 namespace MonoDevelop.AspNet.Projects
 {
 	[Mono.Addins.Extension]
-	class AspNetStringTagProvider : StringTagProvider<AspNetAppProject>
+	class AspNetStringTagProvider : StringTagProvider<AspNetAppProjectFlavor>
 	{
 		public override IEnumerable<StringTagDescription> GetTags ()
 		{
@@ -40,7 +40,7 @@ namespace MonoDevelop.AspNet.Projects
 			yield return new StringTagDescription ("UsesAspNetWebApi", "Whether the project uses ASP.NET Web API");
 		}
 
-		public override object GetTagValue (AspNetAppProject instance, string tag)
+		public override object GetTagValue (AspNetAppProjectFlavor instance, string tag)
 		{
 			switch (tag) {
 			case "USESASPNETMVC":

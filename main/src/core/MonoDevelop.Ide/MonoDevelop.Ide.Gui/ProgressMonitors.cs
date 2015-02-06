@@ -237,12 +237,7 @@ namespace MonoDevelop.Ide.Gui
 			pad.Destroy ();
 		}
 		
-		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront)
-		{
-			return GetSearchProgressMonitor (bringToFront, false);
-		}
-		
-		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad)
+		public SearchProgressMonitor GetSearchProgressMonitor (bool bringToFront, bool focusPad = false, CancellationTokenSource cancellationTokenSource = null)
 		{
 			Pad pad = null;
 			string title = GettextCatalog.GetString ("Search Results");
@@ -263,7 +258,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			if (pad != null) {
 				if (bringToFront) pad.BringToFront (focusPad);
-				return new SearchProgressMonitor (pad);
+				return new SearchProgressMonitor (pad, cancellationTokenSource);
 			}
 			
 			instanceNum++;
@@ -291,7 +286,7 @@ namespace MonoDevelop.Ide.Gui
 			if (bringToFront)
 				pad.BringToFront (focusPad);
 			
-			return new SearchProgressMonitor (pad);
+			return new SearchProgressMonitor (pad, cancellationTokenSource);
 		}
 	}
 }

@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		CombinedTagModel GetTagModel (SolutionItem policyParent, Project project, string language, string identifier, string fileName)
+		CombinedTagModel GetTagModel (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName)
 		{
 			var model = new CombinedTagModel { BaseModel = ProjectTagModel };
 			ModifyTags (policyParent, project, language, identifier, fileName, ref model.OverrideTags);
