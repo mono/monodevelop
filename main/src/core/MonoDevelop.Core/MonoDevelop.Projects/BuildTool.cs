@@ -151,20 +151,21 @@ namespace MonoDevelop.Projects
 						res = await item.Clean (monitor, configuration);
 				} else {
 					ConfigurationSelector configuration = new SolutionConfigurationSelector (config);
-					SolutionItem solutionEntityItem = item as SolutionItem;
-					if (solutionEntityItem != null) {
-						if (command == ProjectService.BuildTarget)
-							res = await solutionEntityItem.Build (monitor, configuration, true);
-						else if (command == ProjectService.CleanTarget)
-							await solutionEntityItem.Clean (monitor, configuration);
-						else if (solutionEntityItem is Project)
-							res = await ((Project)item).RunTarget (monitor, command, configuration);
-					} else {
-						Console.WriteLine ("The project '" + project + "' can't be built");
-						return 1;
+
+					if (command == ProjectService.BuildTarget)
+						res = await item.Build (monitor, configuration, true);
+					else if (command == ProjectService.CleanTarget)
+						res = await item.Clean (monitor, configuration);
+					else {
+						var p = item as Project;
+						if (p != null) {
+							res = await p.RunTarget (monitor, command, configuration);
+						} else {
+							Console.WriteLine ("Target '" + command + " not supported");
+							return 1;
+						}
 					}
 				}
-				
 
 				if (targetRuntime != null)
 				{
