@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects
 
 			int categoryStart = originEnd + 2;
 
-			if (categoryStart >= line.Length)
+			if (categoryStart > line.Length)
 				return null;
 
 			MovePrevNonSpace (line, ref originEnd);
@@ -93,9 +93,6 @@ namespace MonoDevelop.Projects
 
 			//find the category section, if there is one
 			MoveNextNonSpace (line, ref categoryStart);
-
-			if (categoryStart >= line.Length)
-				return null;
 
 			int categoryEnd = line.IndexOf (':', categoryStart) - 1;
 			int messageStart = categoryEnd + 2;
