@@ -465,6 +465,12 @@ namespace MonoDevelop.Projects
 			return MSBuildProjectService.CreateSolutionItem (typeAlias, info, projectOptions) as Project;
 		}
 
+		public bool CanCreateProject (string typeAlias)
+		{
+			// TODO NPM: review
+			return MSBuildProjectService.CanCreateSolutionItem (typeAlias, null, null);
+		}
+
 		public bool CanCreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)
 		{
 			return MSBuildProjectService.CanCreateSolutionItem (typeAlias, info, projectOptions);
