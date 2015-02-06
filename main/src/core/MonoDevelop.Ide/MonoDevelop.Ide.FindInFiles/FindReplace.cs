@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
-			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
+			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
@@ -98,7 +98,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				var contents = new List<Tuple<FileProvider, string, List<SearchResult>>>();
 				foreach (var provider in scope.GetFiles (monitor, filter)) {
 					try {
+						searchedFilesCount++;
 						contents.Add(Tuple.Create (provider, provider.ReadString (), new List<SearchResult> ()));
+						if (searchedFilesCount % step == 0)
+							monitor.Step (2); 
 					} catch (FileNotFoundException) {
 						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 					}
