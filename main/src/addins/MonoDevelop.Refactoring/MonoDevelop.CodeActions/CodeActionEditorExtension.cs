@@ -52,6 +52,8 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CodeActions
 {
@@ -625,6 +627,22 @@ namespace MonoDevelop.CodeActions
 
 				foreach (var op in act.GetOperationsAsync (token).Result) {
 					op.Apply (documentContext.RoslynWorkspace, token); 
+				}
+
+				var dca = act as DocumentChangeAction;
+
+				if (dca != null && dca.NodesToRename != null) {
+					var model = await documentContext.AnalysisDocument.GetSemanticModelAsync (token).ConfigureAwait (false);
+					var root = await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false);
+					foreach (var snt in dca.NodesToRename) {
+						var node = root.FindNode (snt.Span, false, false);
+						var info = model.GetSymbolInfo (node);
+						var sym = info.Symbol ?? model.GetDeclaredSymbol (node);
+						if (sym != null) {
+							new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym); 
+							break;
+						}
+					}
 				}
 			}
 
