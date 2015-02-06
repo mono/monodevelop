@@ -408,8 +408,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null)
 				return;
 			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath);
-			
-			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result)) {
+
+			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start)) {
 				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
 			}
 			
