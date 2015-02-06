@@ -2673,7 +2673,7 @@ namespace Mono.TextEditor
 				int wx, ww, wh;
 				tipWindow.GetSize (out ww, out wh);
 				wx = tipX - ww/2;
-				if (xloc >= wx && xloc < wx + ww && yloc >= tipY && yloc < tipY + 20 + wh)
+				if (xloc >= wx && xloc < tipX + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
 			}
 			if (tipItem != null && !tipItem.ItemSegment.IsInvalid && !tipItem.ItemSegment.Contains (offset)) 

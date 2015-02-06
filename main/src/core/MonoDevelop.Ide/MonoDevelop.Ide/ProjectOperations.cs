@@ -1106,6 +1106,10 @@ namespace MonoDevelop.Ide
 
 		public IAsyncOperation CheckAndBuildForExecute (IBuildTarget executionTarget)
 		{
+			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
+				return new FinishBuildAndCheckAgainOperation (currentBuildOperation, () => CheckAndBuildForExecute (executionTarget));
+			}
+
 			//saves open documents since it may dirty the "needs building" check
 			var r = DoBeforeCompileAction ();
 			if (r.Failed)
@@ -1193,6 +1197,111 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		class FinishBuildAndCheckAgainOperation : IAsyncOperation
+		{
+			object locker = new object ();
+			IAsyncOperation buildOp;
+			IAsyncOperation checkOp;
+			bool cancelled;
+			OperationHandler completedEvt;
+			System.Threading.ManualResetEvent completedSignal;
+
+			public FinishBuildAndCheckAgainOperation (IAsyncOperation build, Func<IAsyncOperation> checkAgain)
+			{
+				buildOp = build;
+				build.Completed += bop => {
+					if (!bop.Success) {
+						MarkCompleted (false);
+						return;
+					}
+					bool alreadyCancelled;
+					lock (locker) {
+						alreadyCancelled = cancelled;
+						if (!alreadyCancelled)
+							checkOp = checkAgain ();
+					}
+
+					if (alreadyCancelled) {
+						MarkCompleted (false);
+					} else {
+						checkOp.Completed += o => MarkCompleted (o.Success);
+					}
+				};
+			}
+
+			void MarkCompleted (bool success)
+			{
+				OperationHandler evt;
+				System.Threading.ManualResetEvent signal;
+
+				lock (locker) {
+					evt = completedEvt;
+					signal = completedSignal;
+					IsCompleted = true;
+					Success = success;
+				}
+
+				if (evt != null)
+					evt (this);
+
+				if (signal != null)
+					signal.Set ();
+			}
+
+			public event OperationHandler Completed {
+				add {
+					bool alreadyCompleted;
+					lock (locker) {
+						completedEvt += value;
+						alreadyCompleted = IsCompleted;
+					}
+					if (alreadyCompleted)
+						value (this);
+				}
+				remove {
+					lock (locker) {
+						completedEvt -= value;
+					}
+				}
+			}
+
+			public void Cancel ()
+			{
+				buildOp.Cancel ();
+
+				bool checkStarted;
+				lock (locker) {
+					cancelled = true;
+					checkStarted = checkOp != null;
+				}
+
+				if (checkStarted) {
+					checkOp.Cancel ();
+				}
+			}
+
+			public void WaitForCompleted ()
+			{
+				if (IsCompleted)
+					return;
+				lock (locker) {
+					if (IsCompleted)
+						return;
+					if (completedSignal == null)
+						completedSignal = new System.Threading.ManualResetEvent (false);
+				}
+				completedSignal.WaitOne ();
+			}
+
+			public bool IsCompleted { get; private set; }
+
+			public bool Success { get; private set; }
+
+			public bool SuccessWithWarnings {
+				get { return false; }
+			}
+		}
+
 		bool FastCheckNeedsBuild (IBuildTarget target, ConfigurationSelector configuration)
 		{
 			var env = Environment.GetEnvironmentVariable ("DisableFastUpToDateCheck");
@@ -1229,7 +1338,7 @@ namespace MonoDevelop.Ide
 		void CollectReferencedItems (SolutionItem item, HashSet<SolutionItem> collected, ConfigurationSelector configuration)
 		{
 			foreach (var refItem in item.GetReferencedItems (configuration)) {
-				if (collected.Add (item)) {
+				if (collected.Add (refItem)) {
 					CollectReferencedItems (refItem, collected, configuration);
 				}
 			}

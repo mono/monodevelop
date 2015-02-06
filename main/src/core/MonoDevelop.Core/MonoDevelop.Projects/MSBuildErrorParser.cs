@@ -60,15 +60,31 @@ namespace MonoDevelop.Projects
 		//
 		public static Result TryParseLine (string line)
 		{
+			int originEnd, originStart = 0;
 			var result = new Result ();
 
-			int originStart = 0;
 			MoveNextNonSpace (line, ref originStart);
+
+			if (originStart >= line.Length)
+				return null;
 
 			//find the origin section
 			//the filename may include a colon for Windows drive e.g. C:\foo, so ignore colon in first 2 chars
-			int originEnd = line[originStart] == ':'? originStart : line.IndexOf (':', originStart + 2) - 1;
+			if (line[originStart] != ':') {
+				if (originStart + 2 >= line.Length)
+					return null;
+
+				if ((originEnd = line.IndexOf (':', originStart + 2) - 1) < 0)
+					return null;
+			} else {
+				originEnd = originStart;
+			}
+
 			int categoryStart = originEnd + 2;
+
+			if (categoryStart > line.Length)
+				return null;
+
 			MovePrevNonSpace (line, ref originEnd);
 
 			//if there is no origin section, then we can't parse the message
@@ -77,8 +93,10 @@ namespace MonoDevelop.Projects
 
 			//find the category section, if there is one
 			MoveNextNonSpace (line, ref categoryStart);
+
 			int categoryEnd = line.IndexOf (':', categoryStart) - 1;
 			int messageStart = categoryEnd + 2;
+
 			if (categoryEnd >= 0) {
 				MovePrevNonSpace (line, ref categoryEnd);
 				if (categoryEnd <= categoryStart)
