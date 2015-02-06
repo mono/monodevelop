@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -73,6 +74,25 @@ namespace MonoDevelop.Ide.Editor
 
 			editor.InsertText (offset, str);
 			offset += str.Length;
+		}
+
+		public int Insert (TextEditor editor, DocumentContext ctx, string text)
+		{
+			int offset = editor.LocationToOffset (Location);
+			using (var undo = editor.OpenUndoGroup ()) {
+				
+				var line = editor.GetLineByOffset (offset);
+				int insertionOffset = line.Offset + Location.Column - 1;
+				offset = insertionOffset;
+				InsertNewLine (editor, LineBefore, ref offset);
+				int result = offset - insertionOffset;
+
+				editor.InsertText (offset, text);
+				offset += text.Length;
+				InsertNewLine (editor, LineAfter, ref offset);
+				CodeFormatterService.Format (editor, ctx, TextSegment.FromBounds (insertionOffset - 1, offset));
+				return result;
+			}
 		}
 
 		public int Insert (ITextDocument editor, string text)

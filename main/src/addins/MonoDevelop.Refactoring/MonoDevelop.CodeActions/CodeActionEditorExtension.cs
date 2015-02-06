@@ -50,6 +50,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Simplification;
+using Microsoft.CodeAnalysis.Formatting;
 
 namespace MonoDevelop.CodeActions
 {
@@ -605,9 +607,15 @@ namespace MonoDevelop.CodeActions
 					var options = new InsertionModeOptions (
 						insertionAction.Title,
 						insertionPoints,
-						point => {
-							if (point.Success)
-								point.InsertionPoint.Insert (document.Editor, insertion.Node.ToString ());
+						async point => {
+							if (!point.Success) 
+								return;
+
+							var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
+
+							point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+							// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
+
 						}
 					);
 
