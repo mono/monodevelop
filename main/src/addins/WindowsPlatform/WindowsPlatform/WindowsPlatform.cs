@@ -274,7 +274,7 @@ namespace MonoDevelop.Platform
 				)
 			};
 			proc.Start ();
-			return proc;
+			return proc.ProcessAsyncOperation;
 		}
 
 		public override bool CanOpenTerminal {

@@ -139,7 +139,7 @@ namespace SubversionAddinWindows
 				if (updateMonitor == null)
 					return;
 
-				a.Cancel = updateMonitor.IsCancelRequested;
+				a.Cancel = updateMonitor.CancellationToken.IsCancellationRequested;
 			};
 		}
 
