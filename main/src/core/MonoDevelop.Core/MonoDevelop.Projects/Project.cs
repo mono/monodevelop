@@ -160,6 +160,7 @@ namespace MonoDevelop.Projects
 			base.OnExtensionChainInitialized ();
 			if (creationContext != null && creationContext.Project != null)
 				FileName = creationContext.Project.FileName;
+			MSBuildEngineSupport = ProjectExtension.OnGetMSBuildSupport ();
 		}
 
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -204,11 +205,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		/// <summary>Whether to use the MSBuild engine by default.</summary>
-		internal bool UseMSBuildEngineByDefault { get; set; }
+		public MSBuildSupport MSBuildEngineSupport { get; private set; }
 
-		/// <summary>Forces the MSBuild engine to be used.</summary>
-		internal bool RequireMSBuildEngine { get; set; }
+		internal protected virtual MSBuildSupport OnGetMSBuildSupport ()
+		{
+			return MSBuildSupport.Supported;
+		}
 
 		protected override void OnModified (SolutionItemModifiedEventArgs args)
 		{
@@ -796,7 +798,7 @@ namespace MonoDevelop.Projects
 		internal bool CheckUseMSBuildEngine (ConfigurationSelector sel, bool checkReferences = true)
 		{
 			// if the item mandates MSBuild, always use it
-			if (RequireMSBuildEngine)
+			if (MSBuildEngineSupport.HasFlag (MSBuildSupport.Required))
 				return true;
 			// if the user has set the option, use the setting
 			if (UseMSBuildEngine.HasValue)
@@ -806,7 +808,7 @@ namespace MonoDevelop.Projects
 			// This prevents a not-uncommon common error referencing non-MSBuild projects from MSBuild projects
 			// NOTE: This adds about 11ms to the load/build/etc times of the MonoDevelop solution. Doing it recursively
 			// adds well over a second.
-			return UseMSBuildEngineByDefault && (
+			return MSBuildEngineSupport.HasFlag (MSBuildSupport.Supported) && (
 				!checkReferences || GetReferencedItems (sel).OfType<Project>().All (i => i.CheckUseMSBuildEngine (sel, false))
 			);
 		}
@@ -2510,6 +2512,11 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration);
+			}
+
+			internal protected override MSBuildSupport OnGetMSBuildSupport ()
+			{
+				return Project.OnGetMSBuildSupport ();
 			}
 		}
 	}

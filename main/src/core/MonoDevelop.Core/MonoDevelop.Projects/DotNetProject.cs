@@ -84,8 +84,6 @@ namespace MonoDevelop.Projects
 
 		protected override void OnInitialize ()
 		{
-			UseMSBuildEngineByDefault = true;
-			RequireMSBuildEngine = false;
 			projectReferences = new ProjectReferenceCollection ();
 			Items.Bind (projectReferences);
 			FileService.FileRemoved += OnFileRemoved;
@@ -201,6 +199,11 @@ namespace MonoDevelop.Projects
 				moniker = new TargetFrameworkMoniker (defaultMoniker.Identifier, moniker.Version, moniker.Profile);
 
 			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
+		}
+
+		protected virtual MSBuildSupport OnGetMSBuildSupport ()
+		{
+			return MSBuildSupport.Supported;
 		}
 
 		protected override void OnGetProjectTypes (HashSet<string> types)

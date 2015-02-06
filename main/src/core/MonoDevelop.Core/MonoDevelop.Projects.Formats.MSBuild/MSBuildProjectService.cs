@@ -307,8 +307,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				useByDefault = require = false;
 				return;
 			}
-			useByDefault = handler.UseMSBuildEngineByDefault;
-			require = handler.RequireMSBuildEngine;
+			useByDefault = handler.MSBuildEngineSupport.HasFlag (MSBuildSupport.Supported);
+			require = handler.MSBuildEngineSupport.HasFlag (MSBuildSupport.Required);
 		}
 
 		static IEnumerable<SolutionItemTypeNode> GetItemTypeNodes ()

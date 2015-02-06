@@ -171,6 +171,11 @@ namespace MonoDevelop.Projects
 			return next.OnFastCheckNeedsBuild (configuration);
 		}
 
+		internal protected virtual MSBuildSupport OnGetMSBuildSupport ()
+		{
+			return next.OnGetMSBuildSupport ();
+		}
+
 		#endregion
 
 		#region Events

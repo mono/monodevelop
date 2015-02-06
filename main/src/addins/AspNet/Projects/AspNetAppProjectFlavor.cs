@@ -69,6 +69,11 @@ namespace MonoDevelop.AspNet.Projects
 			types.Add ("AspNetApp");
 		}
 
+		protected override MSBuildSupport OnGetMSBuildSupport ()
+		{
+			return MSBuildSupport.NotSupported;
+		}
+
 		protected override bool IsLibraryBasedProjectType {
 			get { return true; }
 		}
