@@ -117,7 +117,7 @@ namespace MonoDevelop.Projects.Extensions
 				// When this property is set, the object is not initialized, and it has
 				// to be manually initialized by calling EnsureInitialized.
 				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
-				return (SolutionItem) Activator.CreateInstance (ItemType);
+				return (SolutionItem) Activator.CreateInstance (ItemType, true);
 			} finally {
 				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
 			}

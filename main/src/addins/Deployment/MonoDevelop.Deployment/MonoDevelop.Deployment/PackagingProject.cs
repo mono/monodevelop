@@ -17,6 +17,7 @@ namespace MonoDevelop.Deployment
 		
 		public PackagingProject()
 		{
+			Initialize (this);
 			packages = new PackageCollection (this);
 		}
 		

@@ -54,8 +54,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			languageName = language;
 		}
 
-		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions): this ()
+		internal protected override void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
+			base.InitializeNew (projectCreateInfo, projectOptions);
 			languageName = projectOptions.GetAttribute ("language");
 			DefaultNamespace = projectCreateInfo.ProjectName;
 		}

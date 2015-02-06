@@ -55,5 +55,14 @@ namespace MonoDevelop.Projects.Extensions
 			string lang = projectOptions.GetAttribute ("language");
 			return base.CanCreateSolutionItem (type, info, projectOptions) && lang == Language;
 		}
+
+		public override Type ItemType {
+			get {
+				if (!string.IsNullOrEmpty (ItemTypeName))
+					return base.ItemType;
+				else
+					return typeof(DotNetProject);
+			}
+		}
 	}
 }

@@ -65,8 +65,6 @@ namespace MonoDevelop.Ide.Templates
 			projectDescriptor.createCondition = xmlElement.GetAttribute ("if");
 
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
-			if (String.IsNullOrEmpty (projectDescriptor.type))
-				projectDescriptor.type = "DotNet";
 
 			if (xmlElement ["Files"] != null) {
 				foreach (XmlNode xmlNode in xmlElement["Files"].ChildNodes)
@@ -115,15 +113,18 @@ namespace MonoDevelop.Ide.Templates
 			if (string.IsNullOrEmpty (projectOptions.GetAttribute ("language")) && !string.IsNullOrEmpty (defaultLanguage))
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
-			if (!Services.ProjectService.CanCreateProject (type, projectCreateInformation, projectOptions)) {
-				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
+			var lang = projectOptions.GetAttribute ("language");
+			var projectType = !string.IsNullOrEmpty (type) ? type : lang;
+
+			if (!Services.ProjectService.CanCreateProject (projectType, projectCreateInformation, projectOptions)) {
+				LoggingService.LogError ("Could not create project of type '" + projectType + "'. Project skipped");
 				return null;
 			}
 
 			if (!ShouldCreateProject (projectCreateInformation))
 				return null;
 
-			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
+			Project project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
 			return project;
 		}
 
