@@ -573,7 +573,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			monitor.BeginTask("Loading projects ..", sln.Projects.Count + 1);
 			Dictionary<string, SolutionFolderItem> items = new Dictionary<string, SolutionFolderItem> ();
-			List<SolutionFolderItem> sortedList = new List<SolutionFolderItem> ();
+			List<string> sortedList = new List<string> ();
 
 			List<Task> loadTasks = new List<Task> ();
 
@@ -596,6 +596,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string projectPath = sec.FilePath;
 				string projectGuid = sec.Id;
 
+				lock (items)
+					sortedList.Add (projectGuid);
+
 				if (projTypeGuid == MSBuildProjectService.FolderTypeGuid) {
 					//Solution folder
 					SolutionFolder sfolder = new SolutionFolder ();
@@ -609,8 +612,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					lock (items)
 						items.Add (projectGuid, sfolder);
-					sortedList.Add (sfolder);
-					
+
 					continue;
 				}
 
@@ -712,7 +714,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					lock (items) {
 						if (!items.ContainsKey (projectGuid)) {
 							items.Add (projectGuid, item);
-							sortedList.Add (item);
 						} else {
 							monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
 						}
@@ -747,8 +748,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			//Add top level folders and projects to the main folder
-			foreach (SolutionFolderItem ce in sortedList) {
-				if (ce.ParentFolder == null)
+			foreach (string id in sortedList) {
+				SolutionFolderItem ce;
+				if (items.TryGetValue (id, out ce) && ce.ParentFolder == null)
 					folder.Items.Add (ce);
 			}
 
