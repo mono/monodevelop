@@ -136,7 +136,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p = null;
 				}
 
-				Environment.CurrentDirectory = Path.GetDirectoryName (file);
+				Environment.CurrentDirectory = Path.GetDirectoryName (Path.GetFullPath (file));
 
 				if (p == null) {
 					p = new Project (buildEngine.Engine);
@@ -144,7 +144,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (content == null) {
 						p.Load (pc.ProjectFile);
 					} else {
-						p.FullFileName = pc.ProjectFile;
+						p.FullFileName = Path.GetFullPath (pc.ProjectFile);
 
 						if (HasXbuildFileBug ()) {
 							// Workaround for Xamarin bug #14295: Project.Load incorrectly resets the FullFileName property
@@ -167,7 +167,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					project = p;
 			}
 
-			Environment.CurrentDirectory = Path.GetDirectoryName (file);
+			Environment.CurrentDirectory = Path.GetDirectoryName (Path.GetFullPath (file));
 			return project;
 		}
 

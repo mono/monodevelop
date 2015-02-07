@@ -702,8 +702,8 @@ namespace MonoDevelop.Projects
 			var c = GetConfiguration (configuration);
 			configs.Add (new ProjectConfigurationInfo () {
 				ProjectFile = FileName,
-				Configuration = c.Name,
-				Platform = GetExplicitPlatform (c),
+				Configuration = c != null ? c.Name : "",
+				Platform = c != null ? GetExplicitPlatform (c) : "",
 				ProjectGuid = ItemId
 			});
 			foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
