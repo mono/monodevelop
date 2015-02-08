@@ -353,7 +353,8 @@ namespace MonoDevelop.Refactoring
 				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
 					var handler = new FindDerivedSymbolsHandler (doc, member);
 					if (handler.IsValid) {
-						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
+						var a = ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new Action (handler.Run));
+						a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
 						added = true;
 					}
 				}
@@ -378,7 +379,9 @@ namespace MonoDevelop.Refactoring
 					}
 				}
 				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
-					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
+					var label = cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes");
+					var a = ainfo.Add (label, new System.Action (new FindDerivedClasses (cls).Run));
+					a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
 				}
 				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
 				added = true;

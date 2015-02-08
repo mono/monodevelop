@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -37,9 +36,6 @@ using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using System.Linq;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading.Tasks;
@@ -122,30 +118,25 @@ namespace MonoDevelop.Refactoring
 		
 		protected override void Run (object data)
 		{
-//			var doc = IdeApp.Workbench.ActiveDocument;
-//			if (doc == null || doc.FileName == FilePath.Null)
-//				return;
-//			ResolveResult resolveResult;
-//			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResult);
-//			
-//			IMember eitem = resolveResult != null ? (resolveResult.CallingMember ?? resolveResult.CallingType) : null;
-//			string itemName = null;
-//			if (item is IMember)
-//				itemName = ((IMember)item).FullName;
-//			if (item != null && eitem != null && (eitem.Equals (item) || (eitem.FullName == itemName && !(eitem is IProperty) && !(eitem is IMethod)))) {
-//				item = eitem;
-//				eitem = null;
-//			}
-//			ITypeDefinition eclass = null;
-//			if (item is ITypeDefinition) {
-//				if (((ITypeDefinition)item).Kind == TypeKind.Interface)
-//					eclass = CurrentRefactoryOperationsHandler.FindEnclosingClass (ctx, editor.Name, line, column); else
-//					eclass = (IType)item;
-//				if (eitem is IMethod && ((IMethod)eitem).IsConstructor && eitem.DeclaringType.Equals (item)) {
-//					item = eitem;
-//					eitem = null;
-//				}
-//			}
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+
+			ResolveResult resolveResult;
+			var item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResult);
+
+			var typeDef = item as ITypeDefinition;
+			if (typeDef != null && ((typeDef.Kind == TypeKind.Class && !typeDef.IsSealed) || typeDef.Kind == TypeKind.Interface)) {
+				FindDerivedClasses (typeDef);
+				return;
+			}
+
+			var member = item as IMember;
+			if (member != null && (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface)) {
+				var handler = new FindDerivedSymbolsHandler (doc, member);
+				handler.Run ();
+				return;
+			}
 		}
 	}
 }
