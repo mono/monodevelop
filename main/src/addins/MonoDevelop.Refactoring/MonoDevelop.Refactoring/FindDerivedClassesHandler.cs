@@ -79,39 +79,48 @@ namespace MonoDevelop.Refactoring
 				monitor.BeginTask (label, compilations.Count);
 
 				Parallel.ForEach (compilations, comp => {
-					var importedType = comp.Import (cls);
-					if (importedType == null) {
-						return;
-					}
-
-					IMember impMember = null;
-					if (member != null) {
-						impMember = comp.Import (member);
-						if (impMember == null) {
-							return;
-						}
-					}
-
-					foreach (var derivedType in comp.MainAssembly.GetAllTypeDefinitions ()) {
-						if (!derivedType.IsDerivedFrom (importedType))
-							continue;
-
-						IEntity result;
-						if (member != null) {
-							result = FindDerivedMember (impMember, derivedType);
-							if (result == null)
-								continue;
-						} else {
-							result = derivedType;
-						}
-
-						ReportResult (monitor, result);
+					try {
+						SearchCompilation (monitor, comp, cls, member);
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+						monitor.ReportError ("Unhandled error while searching", ex);
 					}
 					monitor.Step (1);
 				});
 
 				monitor.EndTask ();
 			};
+		}
+
+		static void SearchCompilation (ISearchProgressMonitor monitor, ICompilation comp, ITypeDefinition cls, IMember member)
+		{
+			var importedType = comp.Import (cls);
+			if (importedType == null) {
+				return;
+			}
+
+			IMember impMember = null;
+			if (member != null) {
+				impMember = comp.Import (member);
+				if (impMember == null) {
+					return;
+				}
+			}
+
+			foreach (var derivedType in comp.MainAssembly.GetAllTypeDefinitions ()) {
+				if (!derivedType.IsDerivedFrom (importedType))
+					continue;
+				IEntity result;
+				if (member != null) {
+					result = FindDerivedMember (impMember, derivedType);
+					if (result == null)
+						continue;
+				}
+				else {
+					result = derivedType;
+				}
+				ReportResult (monitor, result);
+			}
 		}
 
 		static IMember FindDerivedMember (IMember importedMember, ITypeDefinition derivedType)
