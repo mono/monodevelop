@@ -350,13 +350,11 @@ namespace MonoDevelop.Refactoring
 
 			if (item is IMember) {
 				var member = (IMember)item;
-				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-					var handler = new FindDerivedSymbolsHandler (doc, member);
-					if (handler.IsValid) {
-						var a = ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new Action (handler.Run));
-						a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
-						added = true;
-					}
+				var handler = new FindDerivedSymbolsHandler (member);
+				if (handler.IsValid) {
+					var a = ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new Action (handler.Run));
+					a.AccelKey = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindDerivedClasses).AccelKey;
+					added = true;
 				}
 			}
 			if (item is IMember) {
