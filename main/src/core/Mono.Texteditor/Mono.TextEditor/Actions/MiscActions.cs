@@ -563,7 +563,7 @@ namespace Mono.TextEditor
 
 		static DocumentLocation LimitColumn (TextEditorData data, DocumentLocation loc)
 		{
-			return new DocumentLocation (loc.Line, Math.Min (loc.Column, data.GetLine (loc.Line).Length + 1));
+			return new DocumentLocation (loc.Line, System.Math.Min (loc.Column, data.GetLine (loc.Line).Length + 1));
 		}
 	}
 }
