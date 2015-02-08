@@ -80,8 +80,9 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
-			<SeparatorItem id = "Separator1" />
+			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines" />
 		</ItemSet>
 
 		<ItemSet id = "Folding" _label = "F_olding">
