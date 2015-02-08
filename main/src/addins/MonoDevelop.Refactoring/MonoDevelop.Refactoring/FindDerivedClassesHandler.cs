@@ -40,6 +40,7 @@ using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.Refactoring
 {
@@ -68,57 +69,49 @@ namespace MonoDevelop.Refactoring
 			if (sourceProject == null)
 				return;
 
-			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
-			ThreadPool.QueueUserWorkItem (delegate {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					var cache = new Dictionary<string, TextEditorData> ();
-					var label = member == null
-						? GettextCatalog.GetString ("Searching for derived classes in solution...")
-						: GettextCatalog.GetString ("Searching for derived members in solution...");
-					monitor.BeginTask (label, projects.Count);
+			var compilations = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject)
+				.Select (TypeSystemService.GetCompilation).Where (c => c != null).ToList ();
 
-					Parallel.ForEach (projects, p => {
-						var comp = TypeSystemService.GetCompilation (p);
-						if (comp == null)
-							return;
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				var label = member == null
+					? GettextCatalog.GetString ("Searching for derived classes in solution...")
+					: GettextCatalog.GetString ("Searching for derived members in solution...");
+				monitor.BeginTask (label, compilations.Count);
 
-						var importedType = comp.Import (cls);
-						if (importedType == null) {
-							return;
-						}
-
-						IMember impMember = null;
-						if (member != null) {
-							impMember = comp.Import (member);
-							if (impMember == null) {
-								return;
-							}
-						}
-
-						foreach (var derivedType in comp.MainAssembly.GetAllTypeDefinitions ()) {
-							if (!derivedType.IsDerivedFrom (importedType))
-								continue;
-
-							IEntity result;
-							if (member != null) {
-								result = FindDerivedMember (impMember, derivedType);
-								if (result == null)
-									continue;
-							} else {
-								result = derivedType;
-							}
-
-							ReportResult (monitor, result, cache);
-						}
-						monitor.Step (1);
-					});
-					foreach (var tf in cache.Values) {
-						if (tf.Parent == null)
-							tf.Dispose ();
+				Parallel.ForEach (compilations, comp => {
+					var importedType = comp.Import (cls);
+					if (importedType == null) {
+						return;
 					}
-					monitor.EndTask ();
-				}
-			});
+
+					IMember impMember = null;
+					if (member != null) {
+						impMember = comp.Import (member);
+						if (impMember == null) {
+							return;
+						}
+					}
+
+					foreach (var derivedType in comp.MainAssembly.GetAllTypeDefinitions ()) {
+						if (!derivedType.IsDerivedFrom (importedType))
+							continue;
+
+						IEntity result;
+						if (member != null) {
+							result = FindDerivedMember (impMember, derivedType);
+							if (result == null)
+								continue;
+						} else {
+							result = derivedType;
+						}
+
+						ReportResult (monitor, result);
+					}
+					monitor.Step (1);
+				});
+
+				monitor.EndTask ();
+			};
 		}
 
 		static IMember FindDerivedMember (IMember importedMember, ITypeDefinition derivedType)
@@ -134,22 +127,21 @@ namespace MonoDevelop.Refactoring
 			return derivedMember;
 		}
 
-		static void ReportResult (ISearchProgressMonitor monitor, IEntity result, Dictionary<string, TextEditorData> cache)
+		static void ReportResult (ISearchProgressMonitor monitor, IEntity result)
 		{
 			string filename = result.Region.FileName;
 			if (string.IsNullOrEmpty (filename))
 				return;
 
-			TextEditorData textFile;
-			if (!cache.TryGetValue (filename, out textFile)) {
-				cache [filename] = textFile = TextFileProvider.Instance.GetTextEditorData (filename);
-			}
-
+			var textFile = TextFileProvider.Instance.GetTextEditorData (filename);
 			var start = textFile.LocationToOffset (result.Region.Begin);
 			textFile.SearchRequest.SearchPattern = result.Name;
 			var sr = textFile.SearchForward (start);
 			if (sr != null)
 				start = sr.Offset;
+
+			if (textFile.Parent == null)
+				textFile.Dispose ();
 
 			monitor.ReportResult (new MemberReference (result, result.Region, start, result.Name.Length));
 		}
