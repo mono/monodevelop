@@ -10,11 +10,14 @@ open System.Diagnostics
 open System.Reflection
 open System.Globalization
 open Microsoft.FSharp.Reflection
-open MonoDevelop.Projects
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide
-open MonoDevelop.Core.Assemblies
+
 open MonoDevelop.Core
+open MonoDevelop.Core.ProgressMonitoring
+open MonoDevelop.Core.Serialization
+open MonoDevelop.Projects
+open MonoDevelop.Core.Execution
+open MonoDevelop.Core.Assemblies
+
 open FSharp.CompilerBinding
 
 // --------------------------------------------------------------------------------------
@@ -38,10 +41,10 @@ module CompilerArguments =
   
   module Project =
                                     
-      let isPortable (project: DotNetProject) =
+      let isPortable (project: MonoDevelop.Projects.DotNetProject) =
         not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
       
-      let getPortableReferences (project: DotNetProject) configSelector = 
+      let getPortableReferences (project: MonoDevelop.Projects.DotNetProject) configSelector = 
         let portableReferences =
             // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
             // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  We cant use a PortableDotnetProject as this 
@@ -81,7 +84,7 @@ module CompilerArguments =
        
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) = 
+  let generateReferences (project: MonoDevelop.Projects.DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) = 
    if Project.isPortable project then
         Project.getPortableReferences project configSelector 
    else
@@ -135,7 +138,7 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the 
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+  let generateCompilerOptions (project:MonoDevelop.Projects.DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  yield "--noframework"
@@ -151,8 +154,8 @@ module CompilerArguments =
 
   /// Get source files of the current project (returns files that have 
   /// build action set to 'Compile', but not e.g. scripts or resources)
-  let getSourceFiles (items:ProjectItemCollection) = 
-    [ for file in items.GetAll<ProjectFile>() do
+  let getSourceFiles (items:MonoDevelop.Projects.ProjectItemCollection) = 
+    [ for file in items.GetAll<MonoDevelop.Projects.ProjectFile>() do
         if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then 
           yield file.Name.ToString() ]
 
@@ -235,7 +238,7 @@ module CompilerArguments =
 
   let getDefaultInteractive() =
 
-    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let runtime = MonoDevelop.Ide.IdeApp.Preferences.DefaultTargetRuntime
     let framework = getDefaultTargetFramework runtime
 
     match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsharpi" with
@@ -267,7 +270,7 @@ module CompilerArguments =
   // file finds FSharp.Build.dll which finds the F# compiler.
   let getDefaultFSharpCompiler() =
   
-    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let runtime = MonoDevelop.Ide.IdeApp.Preferences.DefaultTargetRuntime
     let framework = getDefaultTargetFramework runtime
 
     match getCompilerFromEnvironment runtime framework with
@@ -295,19 +298,16 @@ module CompilerArguments =
         generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 
   let getDefineSymbols (fileName:string) (project: MonoDevelop.Projects.Project option) =
-    [
-        if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
-            yield "INTERACTIVE"
-        else
-            yield "COMPILED"
-
-        let workspace = IdeApp.Workspace
-        if workspace <> null then
-            match project with
-            | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
-                        | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
-                            yield! configuration.GetDefineSymbols()
-                        | _ -> ()
-            | None -> ()
-        else () ]
-
+    [ let workspace = MonoDevelop.Ide.IdeApp.Workspace
+      if workspace = null then
+          if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
+              yield "INTERACTIVE"
+          else
+              yield "COMPILED"
+      match project with
+      | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
+                  | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
+                      for s in configuration.GetDefineSymbols() do
+                          yield s
+                  | _ -> ()
+      | None -> ()]
