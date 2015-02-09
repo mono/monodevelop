@@ -157,12 +157,12 @@ namespace MonoDevelop.Core
 
 			currentTask = t;
 
-			if (name != null) {
+		//	if (name != null) {
 				if (context != null)
 					context.Post ((o) => OnBeginTask (name, totalWork, t.StepWork), null);
 				else
 					OnBeginTask (name, totalWork, t.StepWork);
-			}
+		//	}
 
 			ReportProgressChanged ();
 
@@ -187,12 +187,12 @@ namespace MonoDevelop.Core
 				if (currentTask == null)
 					rootTask = null;
 				t.SetComplete ();
-				if (t.Name != null) {
+		//		if (t.Name != null) {
 					if (context != null)
 						context.Post ((o) => OnEndTask (t.Name, t.TotalWork, t.StepWork), null);
 					else
 						OnEndTask (t.Name, t.TotalWork, t.StepWork);
-				}
+		//		}
 			} else
 				LoggingService.LogError ("Task not started");
 
