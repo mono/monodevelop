@@ -13,13 +13,14 @@ open System.Text
 open System.Diagnostics
 open Mono.TextEditor
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 
 module internal MonoDevelop =
-    let getLineInfoFromOffset (offset, doc:Mono.TextEditor.TextDocument) =
+    let getLineInfoFromOffset (offset, doc:TextEditor) =
         let loc  = doc.OffsetToLocation(offset)
         let line, col = max loc.Line 1, loc.Column-1
         let currentLine = doc.GetLineByOffset(offset)
