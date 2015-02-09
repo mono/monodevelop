@@ -67,25 +67,28 @@ type FSharpParser() =
         let errorType = 
             if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
             else ErrorType.Warning
-        Error(errorType, wrapText error.Message 80, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+        Error(errorType, wrapText error.Message 80, Editor.DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
 
-    override x.Parse(storeAst : bool, fileName : string, content : System.IO.TextReader, proj : MonoDevelop.Projects.Project) = 
-        if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null
+    override x.Parse(parseOptions, cancellationToken) =
+        let fileName = parseOptions.FileName
+        let content = parseOptions.Content
+        let proj = parseOptions.Project
+        Async.StartAsTask (
+            computation = async {
+        if fileName = null || not (MDLanguageService.SupportedFileName (fileName))
+        then return null
         else 
-            let fileContent = content.ReadToEnd()
-            let fileHash = hash fileContent 
             let shortFilename = Path.GetFileName fileName
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
             // Not sure if these are needed yet. 
-            doc.CreateRefactoringContext <- Func<_, _, _>(fun doc token -> FSharpRefactoringContext() :> _)
-            doc.CreateRefactoringContextWithEditor <- Func<_, _, _, _> (fun data resolver token -> FSharpRefactoringContext() :> _)
-            LoggingService.LogInfo ("FSharpParser: [Thread {0}] Parse {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash)
+            //TODO Check...
+            //doc.CreateRefactoringContext <- Func<_, _, _>(fun doc token -> FSharpRefactoringContext() :> _)
+            //doc.CreateRefactoringContextWithEditor <- Func<_, _, _, _> (fun data resolver token -> FSharpRefactoringContext() :> _)
+            LoggingService.LogInfo ("FSharpParser: [Thread {0}] Parse {1}, ", Thread.CurrentThread.ManagedThreadId, shortFilename)
 
             let filePathOpt = 
                 // TriggerParse will work only for full paths
-                
-                
                 if IO.Path.IsPathRooted(fileName) then Some(fileName)
                 else 
                     let workBench = IdeApp.Workbench
@@ -101,7 +104,6 @@ type FSharpParser() =
                         let res = filePaths |> Seq.find(fun t -> t.FileName = fileName)
                         Some(res.FullPath.ToString())
                         
-
             match filePathOpt with
             | None -> ()
             | Some filePath -> 
@@ -109,35 +111,37 @@ type FSharpParser() =
 
                 let results =
                     try
-                        LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash)
+                        LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
                         Async.RunSynchronously (
-                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, storeAst, false), 
+                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, content.Text, files, args, false), 
                             timeout = ServiceSettings.maximumTimeout)
                     with
                     | :? TimeoutException ->
                         doc.IsInvalid <- true
-                        LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash)
+                        LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
                         ParseAndCheckResults.Empty
                     | ex -> doc.IsInvalid <- true
-                            LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, shortFilename, fileHash, ex)
+                            LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename, ex)
                             ParseAndCheckResults.Empty
                                                                                      
-                results.GetErrors() |> Option.iter (Array.map formatError >> doc.Add)
+                results.GetErrors()
+                |> Option.iter (Array.map formatError >> Array.iter doc.Add)
 
                 //Set code folding regions, GetNavigationItems may throw in some situations
                 try 
                     let regions = 
                         let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
                             let m = decl.Range
-                            FoldingRegion(decl.Name, DomRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+                            FoldingRegion(decl.Name, Editor.DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
                         seq {for toplevel in results.GetNavigationItems() do
                                 yield processDecl toplevel.Declaration
                                 for next in toplevel.Nested do
                                     yield processDecl next }
-                    doc.Add(regions)
+                    regions |> Seq.iter doc.Add
                 with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
                 //also store the AST of active results if applicable 
                 //Is there any reason not to store the AST? The navigation extension depends on it
-                if storeAst then doc.Ast <- results
+                doc.Ast <- results
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
-            doc :> ParsedDocument
+            return doc :> _}, cancellationToken = cancellationToken)
+
