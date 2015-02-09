@@ -3,6 +3,8 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Editor.Highlighting
 open MonoDevelop.Core
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
@@ -433,7 +435,7 @@ module internal Patterns =
                     StringCode span.Color
                 | span when span.Rule = "Comment" || span.Rule = "MultiComment" ->
                     CommentCode span.Color
-                | span -> OtherCode (style.PlainText.Name, docText)
+                | _span -> OtherCode (style.PlainText.Name, docText)
 
         else
             if docText.StartsWith ("#") then
@@ -458,180 +460,181 @@ module internal Rules =
 
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
-type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
-    inherit SyntaxMode()
-
-    do match Rules.baseMode with
-       | Some baseMode ->
-           this.rules <- ResizeArray (baseMode.Rules)
-           this.keywords <- ResizeArray (baseMode.Keywords)
-           this.spans <- baseMode.Spans |> Array.ofSeq
-           this.matches <- baseMode.Matches
-           this.prevMarker <- baseMode.PrevMarker
-           this.SemanticRules <- ResizeArray (baseMode.SemanticRules)
-           this.keywordTable <- baseMode.keywordTable
-           this.keywordTableIgnoreCase <- baseMode.keywordTableIgnoreCase
-           this.properties <- baseMode.Properties
-       | None -> ()
-
-    // Mutable Local Variables
-    let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
-    let mutable symbolsInFile: FSharpSymbolUse[] option = None
-    let mutable colourizations = None
-
-    let handlePropertyChanged =
-        EventHandler<PropertyChangedEventArgs>
-            (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
-                                    semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
-
-    let getProject (doc : Gui.Document) =
-        if doc <> null && doc.Project <> null then Some doc.Project else
-        let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
-        if view <> null && view.Project <> null then Some view.Project
-        else let projects = IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString())
-             if Seq.isEmpty projects then None
-             else Seq.head projects |> Some
-
-    let project = getProject document
-    let fileName = document.FileName.FileName
-
-    let sourceTokenizer = SourceTokenizer(CompilerArguments.getDefineSymbols fileName project, fileName)
-
-    let handleConfigurationChanged =
-        EventHandler
-            (fun o e ->
-                for doc in IdeApp.Workbench.Documents do
-                    let data = doc.Editor
-                    if data <> null then
-                        // Force Syntax Mode Reparse
-                        if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
-                            let sm = data.Document.SyntaxMode :?> SyntaxMode
-                            sm.UpdateDocumentHighlighting()
-                            SyntaxModeService.WaitUpdate(data.Document)
-                        data.Parent.TextViewMargin.PurgeLayoutCache()
-                        doc.ReparseDocument()
-                        data.Parent.QueueDraw())
-
-    let getAndProcessSymbols (pd:ParseAndCheckResults) =
-        async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
-               do symbolsInFile <- symbols
-               do colourizations <- pd.GetExtraColorizations()
-
-               if document <> null &&
-                  document.Editor <> null &&
-                  document.Editor.Parent <> null &&
-                  document.Editor.Parent.TextViewMargin <> null
-               then Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
-                                                       document.Editor.Parent.QueueDraw())}
-    let handleDocumentParsed =
-        EventHandler
-            (fun _ _ ->
-                if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
-                    let localParsedDocument = document.ParsedDocument
-                    if localParsedDocument <> null then
-                        localParsedDocument.Ast 
-                        |> tryCast<ParseAndCheckResults>
-                        |> Option.iter (getAndProcessSymbols >> Async.Start))
-
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: FSharpTokenInfo) =
-        let symbol =
-            if isSimpleToken token.ColorClass then None else
-            match symbolsInFile with
-            | None -> None
-            | Some(symbols) ->
-                symbols
-                |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
-
-        let extraColor =
-            match colourizations with
-            | None -> None
-            | Some(extraColourInfo) ->
-                extraColourInfo
-                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.EndColumn = token.RightColumn+1)
-
-        let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
-        let chunkStyle =
-            match tokenSymbol with
-            | UnusedCode -> style.ExcludedCode
-            | ComputationExpression
-            | Keyword -> 
-                Option.ofNull (this.GetKeyword (token.TokenName.ToLowerInvariant ()))
-                |> Option.map (fun keywords -> style.GetChunkStyle keywords.Color)
-                |> Option.fill style.KeywordTypes
-            | Comment -> style.CommentsSingleLine
-            | StringLiteral -> style.String
-            | NumberLiteral -> style.Number
-            | PunctuationBrackets -> style.PunctuationForBrackets
-            | Punctuation -> style.Punctuation
-            | Module _|ActivePatternCase|Record _|Union _|TypeAbbreviation|Class _ -> style.UserTypes
-            | Namespace _ -> style.KeywordNamespace
-            | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
-            | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
-            | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
-            | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
-            | UnionCase | Enum _ -> style.UserTypesEnums
-            | Delegate _-> style.UserTypesDelegates
-            | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
-            | Interface -> style.UserTypesInterfaces
-            | ValueType _ -> style.UserTypesValueTypes
-            | PreprocessorKeyword -> style.Preprocessor
-            | _ -> style.PlainText
-        let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
-        chunks
-
-    let scanToken (tokenizer:FSharpLineTokenizer) s =
-        match tokenizer.ScanToken(s) with
-        | Some t, s -> Some(t, s)
-        | _ -> None
-
-    let getLexedTokens (style, line:DocumentLine, offset, lineText) =
-        let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
-        let tokens = 
-            List.unfold (scanToken tokenizer) 0L
-            |> List.map (makeChunk line.LineNumber style offset)
-        tokens
-
-    let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
-    let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
-    let configHandler =
-        maybe { let! workspace = IdeApp.Workspace |> Option.ofNull
-                return workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged }
-
-    override this.CreateSpanParser(line, spanStack) =
-        let ss =
-            if spanStack = null then line.StartSpan.Clone()
-            else spanStack
-
-        let defines =
-            if (this.Document = null) then List.empty
-            else CompilerArguments.getDefineSymbols fileName project
-
-        FSharpSyntaxModeInternals.FSharpSpanParser(this, ss, defines) :> SyntaxMode.SpanParser
-
-    override this.GetChunks(style, line, offset, length) =
-        try
-            match (this.Document, line, offset, length, style) with
-            | ExcludedCode styleName -> Seq.singleton(Chunk(offset, length, styleName))
-            | OtherCode (_, lineText) when semanticHighlightingEnabled -> 
-                let tokens = getLexedTokens(style, line, offset, lineText)
-                if (tokens |> List.isEmpty || (tokens |> List.last).EndOffset < offset + lineText.Length ) then
-                    base.GetChunks(style, line, offset, length)
-                else
-                    tokens |> Seq.ofList
-            | CommentCode styleName ->
-                Seq.singleton(Chunk(offset, length, styleName ))
-            | StringCode styleName ->
-                Seq.singleton(Chunk(offset, length, styleName ))
-            | PreProcessor pp ->
-                base.GetChunks(style, line, offset, length)
-            | _ -> base.GetChunks(style, line, offset, length)
-        with
-            | exn ->
-                LoggingService.LogError("Error in FSharpSyntaxMode.GetChunks", exn)
-                base.GetChunks(style, line, offset, length)
-
-    interface IDisposable with
-        member x.Dispose () =
-            propertyChangedHandler.Dispose ()
-            documentParsedHandler.Dispose ()
-            configHandler |> Option.iter (fun ch -> ch.Dispose ())
+//type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
+//    inherit SyntaxMode()
+//
+//    do match Rules.baseMode with
+//       | Some baseMode ->
+//           this.rules <- ResizeArray (baseMode.Rules)
+//           this.keywords <- ResizeArray (baseMode.Keywords)
+//           this.spans <- baseMode.Spans |> Array.ofSeq
+//           this.matches <- baseMode.Matches
+//           this.prevMarker <- baseMode.PrevMarker
+//           this.SemanticRules <- ResizeArray (baseMode.SemanticRules)
+//           this.keywordTable <- baseMode.keywordTable
+//           this.keywordTableIgnoreCase <- baseMode.keywordTableIgnoreCase
+//           this.properties <- baseMode.Properties
+//       | None -> ()
+//
+//    // Mutable Local Variables
+//    let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
+//    let mutable symbolsInFile: FSharpSymbolUse[] option = None
+//    let mutable colourizations = None
+//
+//    let handlePropertyChanged =
+//        EventHandler<PropertyChangedEventArgs>
+//            (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
+//                                    semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
+//
+//    let getProject (doc : Gui.Document) =
+//        if doc <> null && doc.Project <> null then Some doc.Project else
+//        let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
+//        if view <> null && view.Project <> null then Some view.Project
+//        else let projects = IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString())
+//             if Seq.isEmpty projects then None
+//             else Seq.head projects |> Some
+//
+//    let project = getProject document
+//    let fileName = document.FileName.FileName
+//
+//    let sourceTokenizer = SourceTokenizer(CompilerArguments.getDefineSymbols fileName project, fileName)
+//
+//    let handleConfigurationChanged =
+//        EventHandler
+//            (fun o e ->
+//                for doc in IdeApp.Workbench.Documents do
+//                    let data = doc.Editor
+//                    if data <> null then
+//                        // Force Syntax Mode Reparse
+//                        if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
+//                            let sm = data.Document.SyntaxMode :?> SyntaxMode
+//                            sm.UpdateDocumentHighlighting()
+//                            SyntaxModeService.WaitUpdate(data.Document)
+//                        data.Parent.TextViewMargin.PurgeLayoutCache()
+//                        doc.ReparseDocument()
+//                        data.Parent.QueueDraw())
+//
+//    let getAndProcessSymbols (pd:ParseAndCheckResults) =
+//        async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
+//               do symbolsInFile <- symbols
+//               do colourizations <- pd.GetExtraColorizations()
+//
+//               if document <> null &&
+//                  document.Editor <> null &&
+//                  document.Editor.Parent <> null &&
+//                  document.Editor.Parent.TextViewMargin <> null
+//               then Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
+//                                                       document.Editor.Parent.QueueDraw())}
+//    let handleDocumentParsed =
+//        EventHandler
+//            (fun _ _ ->
+//                if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
+//                    let localParsedDocument = document.ParsedDocument
+//                    if localParsedDocument <> null then
+//                        localParsedDocument.Ast 
+//                        |> tryCast<ParseAndCheckResults>
+//                        |> Option.iter (getAndProcessSymbols >> Async.Start))
+//
+//    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: FSharpTokenInfo) =
+//        let symbol =
+//            if isSimpleToken token.ColorClass then None else
+//            match symbolsInFile with
+//            | None -> None
+//            | Some(symbols) ->
+//                symbols
+//                |> Array.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
+//
+//        let extraColor =
+//            match colourizations with
+//            | None -> None
+//            | Some(extraColourInfo) ->
+//                extraColourInfo
+//                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.EndColumn = token.RightColumn+1)
+//
+//        let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
+//        let chunkStyle =
+//            match tokenSymbol with
+//            | UnusedCode -> style.ExcludedCode
+//            | ComputationExpression
+//            | Keyword -> 
+//                Option.ofNull (this.GetKeyword (token.TokenName.ToLowerInvariant ()))
+//                |> Option.map (fun keywords -> style.GetChunkStyle keywords.Color)
+//                |> Option.fill style.KeywordTypes
+//            | Comment -> style.CommentsSingleLine
+//            | StringLiteral -> style.String
+//            | NumberLiteral -> style.Number
+//            | PunctuationBrackets -> style.PunctuationForBrackets
+//            | Punctuation -> style.Punctuation
+//            | Module _|ActivePatternCase|Record _|Union _|TypeAbbreviation|Class _ -> style.UserTypes
+//            | Namespace _ -> style.KeywordNamespace
+//            | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
+//            | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+//            | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
+//            | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+//            | UnionCase | Enum _ -> style.UserTypesEnums
+//            | Delegate _-> style.UserTypesDelegates
+//            | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
+//            | Interface -> style.UserTypesInterfaces
+//            | ValueType _ -> style.UserTypesValueTypes
+//            | PreprocessorKeyword -> style.Preprocessor
+//            | _ -> style.PlainText
+//        let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
+//        chunks
+//
+//    let scanToken (tokenizer:FSharpLineTokenizer) s =
+//        match tokenizer.ScanToken(s) with
+//        | Some t, s -> Some(t, s)
+//        | _ -> None
+//
+//    let getLexedTokens (style, line:DocumentLine, offset, lineText) =
+//        let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
+//        let tokens = 
+//            List.unfold (scanToken tokenizer) 0L
+//            |> List.map (makeChunk line.LineNumber style offset)
+//        tokens
+//
+//    let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
+//    let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
+//    let configHandler =
+//        maybe { let! workspace = IdeApp.Workspace |> Option.ofNull
+//                return workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged }
+//
+//    override this.CreateSpanParser(line, spanStack) =
+//        let ss =
+//            if spanStack = null then line.StartSpan.Clone()
+//            else spanStack
+//
+//        let defines =
+//            if (this.Document = null) then List.empty
+//            else CompilerArguments.getDefineSymbols fileName project
+//
+//        FSharpSyntaxModeInternals.FSharpSpanParser(this, ss, defines) :> SyntaxMode.SpanParser
+//
+//    override this.GetChunks(style, line, offset, length) =
+//        try
+//            match (this.Document, line, offset, length, style) with
+//            | ExcludedCode styleName -> Seq.singleton(Chunk(offset, length, styleName))
+//            | OtherCode (_, lineText) when semanticHighlightingEnabled -> 
+//                let tokens = getLexedTokens(style, line, offset, lineText)
+//                if (tokens |> List.isEmpty || (tokens |> List.last).EndOffset < offset + lineText.Length ) then
+//                    base.GetChunks(style, line, offset, length)
+//                else
+//                    tokens |> Seq.ofList
+//            | CommentCode styleName ->
+//                Seq.singleton(Chunk(offset, length, styleName ))
+//            | StringCode styleName ->
+//                Seq.singleton(Chunk(offset, length, styleName ))
+//            | PreProcessor pp ->
+//                base.GetChunks(style, line, offset, length)
+//            | _ -> base.GetChunks(style, line, offset, length)
+//        with
+//            | exn ->
+//                LoggingService.LogError("Error in FSharpSyntaxMode.GetChunks", exn)
+//                base.GetChunks(style, line, offset, length)
+//
+//    interface IDisposable with
+//        member x.Dispose () =
+//            propertyChangedHandler.Dispose ()
+//            documentParsedHandler.Dispose ()
+//            configHandler |> Option.iter (fun ch -> ch.Dispose ())
+//
