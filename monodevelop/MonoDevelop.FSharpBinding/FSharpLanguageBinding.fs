@@ -63,9 +63,9 @@ type FSharpLanguageBinding() =
   let ensureCorrectEditorOptions _args =
       let doc = IdeApp.Workbench.ActiveDocument
       if doc <> null && doc.Editor <> null &&
-        not doc.Editor.TabsToSpaces &&
-        (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
-        doc.Editor.TabsToSpaces <- true
+        not doc.Editor.Options.TabsToSpaces &&
+        (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
+        //TODO doc.Editor.Options.TabsToSpaces <- true
       
   let eventDisposer =
       ResizeArray<IDisposable> ()
