@@ -195,14 +195,15 @@ namespace Microsoft.WindowsAPICodePack.Shell.PropertySystem
                 // Make sure we use the correct type
                 Debug.Assert(ValueType == ShellPropertyFactory.VarEnumToSystemType(Description.VarEnumType));
 
-                if (typeof(T) != ValueType)
+				var type = typeof(T);
+                if (type != ValueType)
                 {
                     throw new NotSupportedException(
                         string.Format(System.Globalization.CultureInfo.InvariantCulture,
                         LocalizedMessages.ShellPropertyWrongType, ValueType.Name));
                 }
 
-                if (value is Nullable)
+				if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     Type t = typeof(T);
                     PropertyInfo pi = t.GetProperty("HasValue");
