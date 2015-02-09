@@ -71,6 +71,20 @@ namespace MonoDevelop.Projects
 			next.OnInitializeFromTemplate (template);
 		}
 
+		internal void BeginLoad ()
+		{
+			OnBeginLoad ();
+			if (next != null)
+				next.BeginLoad ();
+		}
+
+		internal void EndLoad ()
+		{
+			OnEndLoad ();
+			if (next != null)
+				next.OnEndLoad ();
+		}
+
 		#region Project properties
 
 		internal protected virtual IconId StockIcon {

@@ -159,11 +159,13 @@ namespace MonoDevelop.Projects
 		{
 			loading++;
 			OnBeginLoad ();
+			ItemExtension.BeginLoad ();
 		}
 
 		internal void EndLoad ()
 		{
 			loading--;
+			ItemExtension.EndLoad ();
 			OnEndLoad ();
 		}
 
