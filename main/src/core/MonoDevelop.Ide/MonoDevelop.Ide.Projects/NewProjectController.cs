@@ -497,6 +497,7 @@ namespace MonoDevelop.Ide.Projects
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
+				RunTemplateActions (processedTemplate);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
@@ -596,12 +597,17 @@ namespace MonoDevelop.Ide.Projects
 			IAsyncOperation asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (templateResult.SolutionFileName);
 			asyncOperation.Completed += delegate {
 				if (asyncOperation.Success) {
-					foreach (string action in templateResult.Actions) {
-						IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
-					}
+					RunTemplateActions (templateResult);
 				}
 			};
 			return asyncOperation;
+		}
+
+		static void RunTemplateActions (ProcessedTemplateResult templateResult)
+		{
+			foreach (string action in templateResult.Actions) {
+				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
+			}
 		}
 
 		void CreateVersionControlItems ()
