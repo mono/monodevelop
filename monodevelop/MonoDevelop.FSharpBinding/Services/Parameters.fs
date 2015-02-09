@@ -11,7 +11,7 @@ open MonoDevelop.Core.Serialization
 
 /// Serializable type respresnting F# compiler parameters
 type FSharpCompilerParameters() = 
-  inherit DotNetConfigurationParameters()
+  inherit MonoDevelop.Projects.DotNetConfigurationParameters()
 
   let asBool (s:string) = (String.Compare(s, "true", StringComparison.InvariantCultureIgnoreCase) = 0)
   let asString (b:bool) = if b then "true" else "false"
@@ -66,6 +66,12 @@ type FSharpCompilerParameters() =
 
   override x.HasDefineSymbol(symbol) =
     x.DefineConstants.Split(';', ',', ' ', '\t') |> Array.exists (fun s -> symbol = s)
+
+  override x.CreateCompilationOptions () =
+      null //TODO
+
+  override x.CreateParseOptions () =
+      null //TODO
 
   member x.GenerateTailCalls
     with get() = asBool generateTailCalls
