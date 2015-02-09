@@ -1509,6 +1509,7 @@ namespace MonoDevelop.Projects
 		{
 			OnReadProjectHeader (monitor, msproject);
 			ProjectExtension.OnReadProject (monitor, msproject);
+			modifiedInMemory = false;
 			NeedsReload = false;
 		}
 
