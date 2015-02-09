@@ -402,7 +402,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fileName, actualReference.HintPath);
+			Assert.AreEqual (fileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
@@ -417,7 +417,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fullFileName, actualReference.HintPath);
+			Assert.AreEqual (fullFileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
