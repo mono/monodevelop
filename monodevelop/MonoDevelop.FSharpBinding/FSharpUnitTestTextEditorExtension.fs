@@ -5,6 +5,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor
 open MonoDevelop.NUnit
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -29,47 +30,57 @@ type FSharpUnitTestTextEditorExtension() =
         sb.Append ")" |> ignore
         sb.ToString ()
 
-    override x.GatherUnitTests () =
-        let tests = ResizeArray<AbstractUnitTestTextEditorExtension.UnitTestLocation>()
+    override x.GatherUnitTests (cancellationToken) =
+        let tests = ResizeArray<UnitTestLocation>()
 
         let hasNUnitReference =
-            match x.Document.Project with
+            match x.DocumentContext.Project with
             | null -> false
             | :? MonoDevelop.Projects.DotNetProject as dnp ->
-                let refs = dnp.GetReferencedAssemblies(MonoDevelop.getConfig()) |> Seq.toArray
-                refs |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
+                 dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
+                |> Seq.toArray
+                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
             | _ -> false
 
-        if x.Document.ParsedDocument = null || not hasNUnitReference then tests :> IList<_> else
-
-        match x.Document.ParsedDocument.Ast with
-        | :? ParseAndCheckResults as ast ->
-            let allSymbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
-            let testSymbols = 
-                match allSymbols with
-                | None -> None
-                | Some symbols ->
-                    symbols 
-                    |> Array.filter
-                        (fun s -> match s.Symbol with
-                                  | :? FSharpMemberOrFunctionOrValue as fom -> 
-                                        fom.Attributes
-                                        |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
-                                  | :? FSharpEntity as fse ->
-                                        fse.Attributes
-                                        |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
-                                  | _ -> false )
-                    |> Seq.distinctBy (fun su -> su.RangeAlternate)
-                    |> Seq.choose (fun symbolUse -> 
+        if x.DocumentContext.ParsedDocument = null || not hasNUnitReference then
+            Threading.Tasks.Task.FromResult (tests :> IList<_>)
+        else
+        Async.StartAsTask (
+            cancellationToken = cancellationToken,
+            computation = async {
+                match x.DocumentContext.ParsedDocument.Ast with
+                | :? ParseAndCheckResults as ast ->
+                    let! allSymbols = ast.GetAllUsesOfAllSymbolsInFile()
+                    let testSymbols = 
+                        match allSymbols with
+                        | None -> None
+                        | Some symbols ->
+                            symbols 
+                            |> Array.filter
+                                (fun s -> match s.Symbol with
+                                          | :? FSharpMemberOrFunctionOrValue as fom -> 
+                                                fom.Attributes
+                                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
+                                          | :? FSharpEntity as fse ->
+                                                fse.Attributes
+                                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestFixtureAttribute")
+                                          | _ -> false )
+                            |> Seq.distinctBy (fun su -> su.RangeAlternate)
+                            |> Seq.choose
+                                (fun symbolUse -> 
                                        let range = symbolUse.RangeAlternate
-                                       let test = AbstractUnitTestTextEditorExtension.UnitTestLocation(range.StartLine)
+                                       let test = UnitTestLocation(range.StartLine)
                                        match symbolUse.Symbol with
                                        | :? FSharpMemberOrFunctionOrValue as func -> 
                                             let typeName = func.EnclosingEntity.QualifiedName
                                             let methName = func.CompiledName
-                                            let isIgnored = func.Attributes |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                                            let isIgnored =
+                                                func.Attributes
+                                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
                                             //add test cases
-                                            let testCases = func.Attributes |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
+                                            let testCases =
+                                                func.Attributes
+                                                |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
                                             testCases
                                             |> Seq.map createTestCase
                                             |> test.TestCases.AddRange
@@ -78,15 +89,17 @@ type FSharpUnitTestTextEditorExtension() =
                                             Some test
                                         | :? FSharpEntity as entity ->
                                             let typeName = entity.QualifiedName
-                                            let isIgnored = entity.Attributes |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
+                                            let isIgnored =
+                                                entity.Attributes
+                                                |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
                                             test.UnitTestIdentifier <- typeName
                                             test.IsIgnored <- isIgnored
                                             test.IsFixture <- true
                                             Some test
                                         | _ -> None)
-                    |> Some
-            testSymbols
-            |> Option.iter tests.AddRange
-        | _ -> ()
-        tests :> IList<_>
-#endif
+                            |> Some
+                    testSymbols
+                    |> Option.iter tests.AddRange
+                | _ -> ()
+                return tests :> IList<_>})
+    #endif
