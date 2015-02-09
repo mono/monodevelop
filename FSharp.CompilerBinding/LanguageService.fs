@@ -18,7 +18,8 @@ module Symbols =
             (endLine,endCol-lastIdentAtLoc.Length)
         else
             (beginLine, beginCol)
-    (beginLine, beginCol), (endLine, endCol)
+    Range.mkPos beginLine beginCol, Range.mkPos endLine endCol
+    //(beginLine, beginCol), (endLine, endCol)
 
 /// Contains settings of the F# language service
 module ServiceSettings =
@@ -83,8 +84,8 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
           let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
           let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
           Debug.WriteLine("Result: Got something, returning")
-          return sym |> Option.bind (fun sym -> let (_, startCol), (_, endCol) = Symbols.trimSymbolRegion sym (Seq.last identIsland)
-                                                Some (res, (startCol, endCol)))
+          return sym |> Option.bind (fun sym -> let start, finish = Symbols.trimSymbolRegion sym (Seq.last identIsland)
+                                                Some (res, (start.Column, finish.Column)))
       }
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
@@ -344,16 +345,12 @@ type LanguageService(dirtyNotify) =
   
   /// Parses and checks the given file in the given project under the given configuration. Asynchronously
   /// returns the results of checking the file.
-  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, storeAst, ?startBgCompile) =
+  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, ?startBgCompile) =
    let startBgCompile = defaultArg startBgCompile true
 
    async {
     let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args)
     Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
-
-    // storeAst is passed from monodevelop when it finds files with the same name in other projects. 
-    // It will then ask for a reparse of all files in the second project. If storeAst = false, do nothing. 
-    if not storeAst then return ParseAndCheckResults.Empty else
     let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
     if startBgCompile then
         Debug.WriteLine(sprintf "LanguageService: Starting background compilations")
