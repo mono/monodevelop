@@ -211,12 +211,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public T GetValue<T> ()
 		{
-			var val = GetPropertyValue ();
-			if (typeof(T) == typeof(bool))
-				return (T) (object) val.Equals ("true", StringComparison.InvariantCultureIgnoreCase);
-			if (typeof(T).IsEnum)
-				return (T) Enum.Parse (typeof(T), val, true);
-			return (T) Convert.ChangeType (Value, typeof(T), CultureInfo.InvariantCulture);
+			return (T)GetValue (typeof(T));
 		}
 
 		public object GetValue (Type t)
@@ -224,6 +219,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var val = GetPropertyValue ();
 			if (t == typeof(bool))
 				return (object) val.Equals ("true", StringComparison.InvariantCultureIgnoreCase);
+			if (t.IsEnum)
+				return Enum.Parse (t, val, true);
+			if (t.IsGenericType && t.GetGenericTypeDefinition () == typeof(Nullable<>)) {
+				var at = t.GetGenericArguments () [0];
+				if (string.IsNullOrEmpty (Value))
+					return null;
+				return Convert.ChangeType (Value, at, CultureInfo.InvariantCulture);
+
+			}
 			return Convert.ChangeType (Value, t, CultureInfo.InvariantCulture);
 		}
 
