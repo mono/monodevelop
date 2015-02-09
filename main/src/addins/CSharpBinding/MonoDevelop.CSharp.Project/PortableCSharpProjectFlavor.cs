@@ -38,11 +38,9 @@ namespace MonoDevelop.CSharp.Project
 			Project.UseMSBuildEngine = true;
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
+		protected override void OnGetDefaultImports (System.Collections.Generic.List<string> imports)
 		{
-			base.OnWriteProject (monitor, msproject);
-			msproject.RemoveImport ("$(MSBuildBinPath)\\Microsoft.CSharp.targets");
-			msproject.AddNewImport ("$(MSBuildExtensionsPath32)\\Microsoft\\Portable\\$(TargetFrameworkVersion)\\Microsoft.Portable.CSharp.targets");
+			imports.Add ("$(MSBuildExtensionsPath32)\\Microsoft\\Portable\\$(TargetFrameworkVersion)\\Microsoft.Portable.CSharp.targets");
 		}
 	}
 }
