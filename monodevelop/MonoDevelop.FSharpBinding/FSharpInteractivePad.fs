@@ -234,17 +234,17 @@ type FSharpInteractivePad() as this =
     if IdeApp.Workbench.ActiveDocument = null then () 
     else
       ensureCorrectDirectory()
-      let line = IdeApp.Workbench.ActiveDocument.Editor.Caret.Line
+      let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
       let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
       let file = IdeApp.Workbench.ActiveDocument.FileName
       let sel = String.Format("# {0} \"{1}\"\n{2}\n", line, file.FullPath, text)
       sendCommand sel
       //advance to the next line
       if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
-      then IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
+      then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
 
   member x.SendFile() =
-    let text = IdeApp.Workbench.ActiveDocument.Editor.Document.Text
+    let text = IdeApp.Workbench.ActiveDocument.Editor.Text
     ensureCorrectDirectory()
     sendCommand (AddSourceToSelection text)
 
