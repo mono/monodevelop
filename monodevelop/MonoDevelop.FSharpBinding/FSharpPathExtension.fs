@@ -6,6 +6,7 @@ open System.Diagnostics
 open MonoDevelop.Core
 open MonoDevelop.Components
 open MonoDevelop.Ide
+open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -17,7 +18,7 @@ type FSharpPathExtension() =
     let pathChanged = new Event<_,_>()
     let mutable currentPath = [||]
     let mutable subscriptions = []
-    member x.Document = base.Document
+    member x.Document = base.Editor
     member x.GetEntityMarkup(node: FSharpNavigationDeclarationItem) =
         let prefix = match node.Kind with
                      | NamespaceDecl-> "Namespace: "
@@ -35,16 +36,16 @@ type FSharpPathExtension() =
 
     override x.Initialize() =
         currentPath <- [| new PathEntry("No selection", Tag = null) |]
-        let positionChanged = x.Document.Editor.Caret.PositionChanged.Subscribe(fun o e -> x.PathUpdated())
-        let documentParsed  = x.Document.DocumentParsed.Subscribe(fun o e -> x.PathUpdated())
+        let positionChanged = x.Editor.CaretPositionChanged.Subscribe(fun o e -> x.PathUpdated())
+        let documentParsed  = x.DocumentContext.DocumentParsed.Subscribe(fun o e -> x.PathUpdated())
         subscriptions <- positionChanged :: documentParsed :: subscriptions
         
     member private x.PathUpdated() =
-        let loc = x.Document.Editor.Caret.Location
+        let loc = x.Editor.CaretLocation
         
-        if x.Document.ParsedDocument = null ||
-           IdeApp.Workbench.ActiveDocument <> x.Document then () else
-        match x.Document.ParsedDocument.Ast with
+        if x.DocumentContext.ParsedDocument = null ||
+           IdeApp.Workbench.ActiveDocument.Name <> x.DocumentContext.Name then () else
+        match x.DocumentContext.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
 
             let posGt (p1Column, p1Line) (p2Column, p2Line) = 
@@ -56,15 +57,17 @@ type FSharpPathExtension() =
             let posGeq p1 p2 =
                 posEq p1 p2 || posGt p1 p2
 
-            let inside (docloc:Mono.TextEditor.DocumentLocation) (start, finish) =
+            let isInside (docloc:Editor.DocumentLocation) (start, finish) =
                 let cursor = (docloc.Column, docloc.Line)
                 posGeq cursor start && posGeq finish cursor
 
             let toplevel = ast.GetNavigationItems()
 
             let topLevelTypesInsideCursor =
-                toplevel |> Array.filter (fun tl -> let m = tl.Declaration.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
-                         |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
+                toplevel
+                |> Array.filter (fun tl -> let range = tl.Declaration.Range
+                                           isInside loc ((range.StartColumn, range.StartLine),(range.EndColumn, range.EndLine)))
+                |> Array.sortBy(fun xs -> xs.Declaration.Range.StartLine)
 
             let newPath = ResizeArray<_>()
             for top in topLevelTypesInsideCursor do
@@ -77,8 +80,14 @@ type FSharpPathExtension() =
             if topLevelTypesInsideCursor.Length > 0 then
                 let lastToplevel = topLevelTypesInsideCursor.Last()
                 //only first child found is returned, could there be multiple children found?
-                let child = lastToplevel.Nested |> Array.tryFind (fun tl -> let m = tl.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
-                let multichild = lastToplevel.Nested |> Array.filter (fun tl -> let m = tl.Range in inside loc ((m.StartColumn, m.StartLine),(m.EndColumn, m.EndLine)))
+                let child =
+                    lastToplevel.Nested
+                    |> Array.tryFind (fun tl -> let range = tl.Range
+                                                isInside loc ((range.StartColumn, range.StartLine),(range.EndColumn, range.EndLine)))
+                let multichild =
+                    lastToplevel.Nested
+                    |> Array.filter (fun tl -> let range = tl.Range
+                                               isInside loc ((range.StartColumn, range.StartLine),(range.EndColumn, range.EndLine)))
 
                 Debug.Assert( multichild.Length <= 1, String.Format("{0} children found please investigate!", multichild.Length))
                 match child with
@@ -145,10 +154,10 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
 
         member x.ActivateItem(n) =
             let node = memberList.[n]
-            let extEditor = ext.Document.GetContent<IExtensibleTextEditor>()
+            let extEditor = ext.DocumentContext.GetContent<Editor.TextEditor>()
             if extEditor <> null then
                 let (scol,sline) = node.Range.StartColumn, node.Range.StartLine
-                extEditor.SetCaretTo(max 1 sline, max 1 scol, true)
+                extEditor.SetCaretLocation(max 1 sline, max 1 scol, true)
 
         member x.GetMarkup(n) =
             let node = memberList.[n]
