@@ -44,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 
 			projectService.SolutionLoaded += SolutionLoaded;
 			projectService.SolutionUnloaded += SolutionUnloaded;
+			projectService.ProjectReloaded += ProjectReloaded;
 		}
 
 		public event EventHandler<ProjectTargetFrameworkChangedEventArgs> ProjectTargetFrameworkChanged;
@@ -89,6 +90,21 @@ namespace MonoDevelop.PackageManagement
 			if (e.IsTargetFramework ()) {
 				OnProjectTargetFrameworkChanged (e.Project);
 			}
+		}
+
+		void ProjectReloaded (object sender, ProjectReloadedEventArgs e)
+		{
+			if (HasTargetFrameworkChanged (e.NewProject, e.OldProject)) {
+				OnProjectTargetFrameworkChanged (e.NewProject);
+			}
+		}
+
+		static bool HasTargetFrameworkChanged (IDotNetProject newProject, IDotNetProject oldProject)
+		{
+			if (newProject.TargetFrameworkMoniker != null) {
+				return !newProject.TargetFrameworkMoniker.Equals (oldProject.TargetFrameworkMoniker);
+			}
+			return false;
 		}
 	}
 }
