@@ -1,15 +1,15 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
-open MonoDevelop.Ide.Gui
-open MonoDevelop.Ide.Gui.Content
-open Mono.TextEditor
+open MonoDevelop.Core
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Editor.Extension
 
-type FSharpIndentationTracker(doc:Document) = 
-    let textDoc = doc.Editor.Document
-    let indentSize = doc.Editor.Options.IndentationSize
+type FSharpIndentationTracker(data:TextEditor) = 
+    inherit IndentationTracker ()
+    let indentSize = data.Options.IndentationSize
 
-    // Lines ending in these strings will be indented
+    // Lines ending in  these strings will be indented
     let indenters = ["=";" do";"{";"[";"[|";"->";" try"]
 
     let (|AddIndent|_|) (x:string) = 
@@ -24,35 +24,31 @@ type FSharpIndentationTracker(doc:Document) =
         let s = s.Substring offset
         s.Length - s.TrimStart([|' '|]).Length
                 
-    let rec getIndentation lineDistance (line: DocumentLine) = 
+    let rec getIndentation lineDistance (line: IDocumentLine) = 
         if line = null then "" else
-        match textDoc.GetLineText(line.LineNumber).TrimEnd() with
+
+        match data.GetLineText(line.LineNumber).TrimEnd() with
         | x when String.IsNullOrWhiteSpace(x) -> getIndentation (lineDistance + 1) line.PreviousLine
         | Match i   when lineDistance < 2 -> String(' ', i)
-        | AddIndent when lineDistance < 2 -> String(' ', line.GetIndentation(textDoc).Length + indentSize)
-        | _ -> line.GetIndentation textDoc
+        | AddIndent when lineDistance < 2 -> String(' ', line.GetIndentation(data).Length + indentSize)
+        | _ -> line.GetIndentation data
   
-    let getIndentString lineNumber column =  
-        let caretColumn = doc.Editor.Caret.Column
-        let line = textDoc.GetLine lineNumber
+    let getIndentString lineNumber =  
+        let caretColumn = data.CaretColumn
+        let line = data.GetLine lineNumber
 
         let indentation = getIndentation 0 line
         if line = null then indentation else
         // Find white space in front of the caret and strip it out
-        let text = textDoc.GetLineText(line.LineNumber)
-        let reIndent = column = text.Length + 1 && caretColumn = 1 
+        let text = data.GetLineText(line.LineNumber)
+        //TODO using 0 instead of column, which we dont have now
+        let reIndent = 0 = text.Length + 1 && caretColumn = 1 
         if not reIndent then indentation else
           let indent = getIndentation 0 (line.PreviousLine)
           indent.Substring(initialWhiteSpace text 0)
 
-    interface IIndentationTracker with
-        member x.GetIndentationString (lineNumber, column) =
-            getIndentString lineNumber column
-        member x.GetIndentationString (offset) = 
-            let loc = textDoc.OffsetToLocation (offset)
-            getIndentString loc.Line loc.Column
-        member x.GetVirtualIndentationColumn (offset) = 
-            let loc = textDoc.OffsetToLocation (offset)
-            1 + (getIndentString loc.Line loc.Column).Length
-        member x.GetVirtualIndentationColumn (lineNumber, column) = 
-            1 + (getIndentString lineNumber column).Length
+    override x.GetIndentationString (lineNumber) =
+        let line = data.GetLine (lineNumber)
+        if line = null then "" else
+            getIndentString lineNumber
+       
