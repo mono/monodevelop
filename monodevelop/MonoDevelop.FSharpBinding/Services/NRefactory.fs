@@ -66,24 +66,24 @@ module NRefactory =
             member x.ConstantValue = null 
    
     /// Build an NRefactory symbol for an F# symbol.
-    let createSymbol (projectContent: IProjectContent, fsSymbol: FSharpSymbol, lastIdent, region) = 
+    let createSymbol (doc, context:MonoDevelop.Ide.Editor.DocumentContext, fsSymbol: FSharpSymbol, lastIdent, region) = 
         match fsSymbol with 
-
+    
         // Type Definitions, Type Abbreviations, Exception Definitions and Modules
         | :? FSharpEntity as fsEntity -> 
-
+    
            // The accessibility used here can influence the scope of a renaming operation.
            // For now we just use 'public' to rename across the whole solution (though really it will just be
            // across the whole project because of the limits of the range of symbols returned by F.C.S).
            let access = Accessibility.Public
-
+    
            // The 'DefaultUnresolvedTypeDefinition' has an UnresolvedFile property. However it doesn't seem needed.
            // let unresolvedFile = MonoDevelop.Ide.TypeSystem.DefaultParsedDocument(e.DeclarationLocation.FileName)
-           
+
            // Create a resolution context for the resolved type definition.
            let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
            let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, Region=region, Name=lastIdent, Accessibility=access (* , UnresolvedFile=unresolvedFile *) )
-
+    
            // TODO: Add base type references, this will allow 'Go To Base' to work. 
            // It may also allow 'Find Derived Types' to work. This would require generating 
            // ITypeReference nodes to reference other type definitions in the assembly being edited.
@@ -93,97 +93,103 @@ module NRefactory =
 
            // Create an IUnresolveAssembly holding the type definition.
            // For scripts, there is no assembly so avoid errors caused by null in XS
-           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "fakeassembly.dll" | Some n -> n
-           let assemblyName = match projectContent.AssemblyName with | null -> "FakeAssembly" | x -> x
+           let assemblyFilename =
+                match fsEntity.Assembly.FileName with
+                | None -> "fakeassembly.dll"
+                | Some n -> n
+           let assemblyName = fsEntity.Assembly.QualifiedName
            let unresolvedAssembly = DefaultUnresolvedAssembly(assemblyName, Location = assemblyFilename)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
-
+    
            // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
            //
            // TODO; this is surely not correct, we should be using the compilation retrieved from the 
            // appropriate document.  However it doesn't seem to matter in practice.
-           let comp = SimpleCompilation(unresolvedAssembly, projectContent.AssemblyReferences)
 
+           let comp = SimpleCompilation(unresolvedAssembly, Array.empty) //TODO get AssemblyReferences
+    
            // Create a resolution context for the resolved type definition.
            let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)
            let context = SimpleTypeResolveContext(resolvedAssembly)
-
+    
            // Finally, create the resolved type definition, which wraps the unresolved one
            let resolvedTypeDef = FSharpResolvedTypeDefinition(context, unresolvedTypeDef, fsSymbol, lastIdent)
            resolvedTypeDef :> ISymbol
-
+    
         // Members, Module-defined functions and Module-definned values
         | :? FSharpMemberOrFunctionOrValue as fsMember when fsMember.IsModuleValueOrMember && fsMember.CurriedParameterGroups.Count > 0 -> 
-
+    
            // This is more or less like the case above for entities.
            let access = Accessibility.Public
            let fsEntity = fsMember.EnclosingEntity
-
+    
            // We create a fake 'Compilation', 'TypeDefinition' and 'Assembly' for the symbol 
            let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
            let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, fsEntity.DisplayName, Accessibility=access)
-
+    
            // We use an IUnresolvedMethod for the symbol regardless of whether it is a property, event, 
            // method or function. For the operations we're implementing (Find-all references and rename refactoring)
            // it doesn't seem to matter.
            let unresolvedMember = FSharpUnresolvedMethod(unresolvedTypeDef, fsMember.DisplayName, fsSymbol, lastIdent, Region=region, Accessibility=access)
-
+    
            // For scripts, there is no assembly so avoid errors caused by null in XS
-           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "fakeassembly.dll" | Some n -> n
-           let assemblyName = match projectContent.AssemblyName with | null -> "FakeAssembly" | x -> x
+           let assemblyFilename =
+               match fsEntity.Assembly.FileName with
+               | None -> "fakeassembly.dll"
+               | Some n -> n
+           let assemblyName = fsMember.Assembly.QualifiedName
            let unresolvedAssembly = DefaultUnresolvedAssembly(assemblyName, Location = assemblyFilename)
-
+    
            unresolvedTypeDef.Members.Add(unresolvedMember)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
-
+    
            // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
            //
            // TODO; this is surely not correct, we should be using the compilation retrieved from the 
            // appropriate document.  However it doesn't seem to matter in practice.
-           let comp = SimpleCompilation(unresolvedAssembly, projectContent.AssemblyReferences)
-
+           let comp = SimpleCompilation(unresolvedAssembly, Array.empty) //TODO projectContent.AssemblyReferences
+    
            // Create a resolution context for the resolved method definition.
            let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)
            let context = SimpleTypeResolveContext(resolvedAssembly)
            let resolvedTypeDef = DefaultResolvedTypeDefinition(context, unresolvedTypeDef)
            let context = context.WithCurrentTypeDefinition(resolvedTypeDef)
-
+    
            // Finally, create the resolved method definition, which wraps the unresolved one
            let resolvedMember = FSharpResolvedMethod(unresolvedMember, context, fsSymbol, lastIdent)
            resolvedMember :> ISymbol
-
+    
         | _ -> 
             // All other cases are treated as 'local variables'. This will not be renamed across files.
             FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent) :> ISymbol
-
+    
     /// Create an NRefactory MemberReference for an F# symbol.
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
-    let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, text, lastIdentAtLoc:string) =
-         let (beginLine, beginCol), (endLine, endCol) = Symbols.trimSymbolRegion symbolUse lastIdentAtLoc
+    let createMemberReference(doc:MonoDevelop.Ide.Editor.TextEditor, context:MonoDevelop.Ide.Editor.DocumentContext, symbolUse: FSharpSymbolUse, lastIdentAtLoc:string) =
+        let start, finish = Symbols.trimSymbolRegion symbolUse lastIdentAtLoc
              
-         let document = TextDocument(text)
-         let offset = document.LocationToOffset(beginLine, beginCol+1)
-         let domRegion = DomRegion(fileNameOfRef, beginLine, beginCol+1, endLine, endCol+1)
-
-         let symbol = createSymbol(projectContent, symbolUse.Symbol, lastIdentAtLoc, domRegion)
-         let memberRef = MemberReference(symbol, domRegion, offset, lastIdentAtLoc.Length)
-
-         //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
-         if symbolUse.IsFromDefinition then
+        let offset = doc.LocationToOffset(start.Line, start.Column+1)
+        let domRegion = DomRegion(context.Name, start.Line, start.Column+1, finish.Line, finish.Column+1)
+    
+        let symbol = createSymbol(doc, context, symbolUse.Symbol, lastIdentAtLoc, domRegion)
+        let memberRef = MemberReference(symbol, context.Name, offset, lastIdentAtLoc.Length)
+    
+        //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
+        if symbolUse.IsFromDefinition then
             memberRef.ReferenceUsageType <- ReferenceUsageType.Write
-
-         memberRef
-
-    /// Create an NRefactory ResolveResult for an F# symbol.
-    let createResolveResult(projectContent, fsSymbol: FSharpSymbol, lastIdent, region) =
-        let sym = createSymbol(projectContent, fsSymbol, lastIdent, region)
-        match sym with 
-        | :? IType as ty -> TypeResolveResult(ty) :> ResolveResult
-        | :? IMember as memb -> 
-            let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
-            let thisRes = LocalResolveResult(sym) :> ResolveResult
-            MemberResolveResult(thisRes, memb) :> ResolveResult
-        | _ -> 
-            let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
-            LocalResolveResult(sym) :> ResolveResult
+    
+        memberRef
+    
+    ///// Create an NRefactory ResolveResult for an F# symbol.
+    //let createResolveResult(doc: MonoDevelop.Ide.Gui.Document, fsSymbol: FSharpSymbol, lastIdent, region) =
+    //    let sym = createSymbol(doc, fsSymbol, lastIdent, region)
+    //    match sym with 
+    //    | :? IType as ty -> TypeResolveResult(ty) :> ResolveResult
+    //    | :? IMember as memb -> 
+    //        let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
+    //        let thisRes = LocalResolveResult(sym) :> ResolveResult
+    //        MemberResolveResult(thisRes, memb) :> ResolveResult
+    //    | _ -> 
+    //        let sym = FSharpResolvedVariable(lastIdent, region, fsSymbol, lastIdent)
+    //        LocalResolveResult(sym) :> ResolveResult
