@@ -15,13 +15,13 @@ module Symbols =
         | None -> ""
 
     ///Returns a TextSegment that is trimmed to only include the identifier
-    let getTextSegment (doc:TextDocument) (symbolUse:FSharpSymbolUse) column line =
+    let getTextSegment (doc:Editor.TextEditor) (symbolUse:FSharpSymbolUse) column line =
         let lastIdent = lastIdent  column line
-        let (startLine, startColumn), (endLine, endColumn) = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+        let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
 
-        let startOffset = doc.LocationToOffset(startLine, startColumn+1)
-        let endOffset = doc.LocationToOffset(endLine, endColumn+1)
-        TextSegment.FromBounds(startOffset, endOffset)
+        let startOffset = doc.LocationToOffset(start.Line, start.Column+1)
+        let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
+        MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
 [<AutoOpen>]
 module FSharpTypeExt =
@@ -202,7 +202,7 @@ type TooltipResults =
 | ParseAndCheckNotFound
 | NoToolTipText
 | NoToolTipData
-| Tooltip of TooltipItem
+| Tooltip of MonoDevelop.Ide.Editor.TooltipItem
 
 module SymbolTooltips =
 
