@@ -541,5 +541,14 @@ namespace MonoDevelop.Projects
 			// Check that the in-memory project data is used when the builder is loaded for the first time.
 			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
 		}
+
+		[Test]
+		public async Task DefaultMSBuildSupport ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+			Assert.AreEqual (MSBuildSupport.Supported, p.MSBuildEngineSupport);
+		}
 	}
 }
