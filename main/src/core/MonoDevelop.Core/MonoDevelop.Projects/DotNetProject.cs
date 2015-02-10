@@ -933,7 +933,7 @@ namespace MonoDevelop.Projects
 		}
 
 
-		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
+		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			if (conf != null)

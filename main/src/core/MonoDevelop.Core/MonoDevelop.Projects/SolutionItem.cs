@@ -971,7 +971,7 @@ namespace MonoDevelop.Projects
 			return ImmutableList<string>.Empty;
 		}
 
-		public virtual SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
+		public SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
 		{
 			return (SolutionItemConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
@@ -1009,7 +1009,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual ReadOnlyCollection<string> GetConfigurations ()
+		public ReadOnlyCollection<string> GetConfigurations ()
 		{
 			List<string> configs = new List<string> ();
 			foreach (SolutionItemConfiguration conf in Configurations)

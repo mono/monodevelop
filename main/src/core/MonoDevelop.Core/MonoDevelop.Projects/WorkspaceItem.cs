@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		FilePath baseDirectory;
 
-		protected WorkspaceItem ()
+		internal WorkspaceItem ()
 		{
 			userProperties = new PropertyBag ();
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));

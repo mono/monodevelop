@@ -48,17 +48,12 @@ namespace MonoDevelop.Projects
 		public CompiledAssemblyProject ()
 		{
 			AddNewConfiguration ("Default");
+			StockIcon = "md-assembly-project";
 		}
 
 		protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
 		{
 			return base.OnGetProjectTypes ().Add ("CompiledAssembly");
-		}
-
-		public override IconId StockIcon {
-			get {
-				return "md-assembly-project";
-			}
 		}
 
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name)

@@ -421,9 +421,14 @@ namespace MonoDevelop.Projects
 		/// <param name='fileName'>
 		/// File name.
 		/// </param>
-		public virtual string GetDefaultBuildAction (string fileName)
+		public string GetDefaultBuildAction (string fileName)
 		{
 			return ProjectExtension.OnGetDefaultBuildAction (fileName);
+		}
+
+		protected virtual string OnGetDefaultBuildAction (string fileName)
+		{
+			return IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
 		}
 
 		public string GetDefaultResourceId (ProjectFile projectFile)
@@ -1303,9 +1308,14 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Build configuration.
 		/// </param>
-		public virtual FilePath GetOutputFileName (ConfigurationSelector configuration)
+		public FilePath GetOutputFileName (ConfigurationSelector configuration)
 		{
 			return ProjectExtension.OnGetOutputFileName (configuration);
+		}
+
+		protected virtual FilePath OnGetOutputFileName (ConfigurationSelector configuration)
+		{
+			return FilePath.Null;
 		}
 
 		internal protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)
@@ -2430,7 +2440,7 @@ namespace MonoDevelop.Projects
 
 			internal protected override string OnGetDefaultBuildAction (string fileName)
 			{
-				return Project.IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
+				return Project.OnGetDefaultBuildAction (fileName);
 			}
 
 			internal protected override string OnGetDefaultResourceId (ProjectFile projectFile)
@@ -2465,7 +2475,7 @@ namespace MonoDevelop.Projects
 
 			internal protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
 			{
-				return FilePath.Null;
+				return Project.OnGetOutputFileName (configuration);
 			}
 
 			internal protected override string[] SupportedLanguages {
