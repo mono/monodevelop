@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionConfigurationSelector: ConfigurationSelector
+	public sealed class SolutionConfigurationSelector: ConfigurationSelector
 	{
 		public string Id { get; private set; }
 		

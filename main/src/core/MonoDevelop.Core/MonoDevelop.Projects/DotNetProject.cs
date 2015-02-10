@@ -27,7 +27,6 @@
 
 using System;
 using System.Linq;
-using System.CodeDom.Compiler;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,8 +35,6 @@ using System.Xml;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Serialization;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Projects.Formats.MD1;
 using MonoDevelop.Projects.Extensions;
@@ -45,7 +42,6 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.Assemblies;
 using System.Globalization;
 using System.Threading.Tasks;
-using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
@@ -64,6 +60,8 @@ namespace MonoDevelop.Projects
 		protected ProjectReferenceCollection projectReferences;
 
 		protected string defaultNamespace = String.Empty;
+
+		DotNetProjectFlags flags;
 
 		protected DotNetProject ()
 		{
@@ -100,13 +98,14 @@ namespace MonoDevelop.Projects
 			projectExtension = ExtensionChain.GetExtension<DotNetProjectExtension> ();
 			base.OnExtensionChainInitialized ();
 
-			this.usePartialTypes = SupportsPartialTypes;
-
 			if (LanguageBinding != null)
 				this.StockIcon = LanguageBinding.ProjectStockIcon;
 
 			if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
+
+			this.usePartialTypes = SupportsPartialTypes;
+			flags = ProjectExtension.OnGetDotNetProjectFlags ();
 		}
 
 		protected override void SetShared ()
@@ -252,16 +251,28 @@ namespace MonoDevelop.Projects
 			get { return ProjectExtension.SupportedLanguages; }
 		}
 
-		public virtual bool IsLibraryBasedProjectType {
-			get { return ProjectExtension.IsLibraryBasedProjectType; }
+		public bool IsLibraryBasedProjectType {
+			get { return (flags & DotNetProjectFlags.IsLibrary) != 0; }
 		}
 
 		public bool IsPortableLibrary {
 			get { return GetService<PortableDotNetProjectFlavor> () != null; }
 		}
 
-		public virtual bool GeneratesDebugInfoFile {
-			get { return ProjectExtension.GeneratesDebugInfoFile; }
+		public bool GeneratesDebugInfoFile {
+			get { return (flags & DotNetProjectFlags.GeneratesDebugInfoFile) != 0; }
+		}
+
+		protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
+		{
+			var flags = DotNetProjectFlags.GeneratesDebugInfoFile;
+
+			if (LanguageBinding != null) {
+				var provider = LanguageBinding.GetCodeDomProvider ();
+				if (provider != null && provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes))
+					flags |= DotNetProjectFlags.SupportsPartialTypes;
+			}
+			return flags;
 		}
 
 		protected string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
@@ -312,7 +323,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public virtual bool CanReferenceProject (DotNetProject targetProject, out string reason)
+		public bool CanReferenceProject (DotNetProject targetProject, out string reason)
 		{
 			return ProjectExtension.OnGetCanReferenceProject (targetProject, out reason);
 		}
@@ -544,15 +555,8 @@ namespace MonoDevelop.Projects
 			base.Dispose ();
 		}
 
-		public virtual bool SupportsPartialTypes {
-			get {
-				if (LanguageBinding == null)
-					return false;
-				System.CodeDom.Compiler.CodeDomProvider provider = LanguageBinding.GetCodeDomProvider ();
-				if (provider == null)
-					return false;
-				return provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes);
-			}
+		public bool SupportsPartialTypes {
+			get { return (flags & DotNetProjectFlags.SupportsPartialTypes) != 0; }
 		}
 
 		public override string[] SupportedPlatforms {
@@ -1427,24 +1431,10 @@ namespace MonoDevelop.Projects
 
 		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
 		{
-			internal protected override bool IsLibraryBasedProjectType {
-				get {
-					return false;
-				}
+			internal protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
+			{
+				return Project.OnGetDotNetProjectFlags ();
 			}
-
-			internal protected override bool GeneratesDebugInfoFile {
-				get {
-					return true;
-				}
-			}
-
-			internal protected override bool SupportsPartialTypes {
-				get {
-					return Project.SupportsPartialTypes;
-				}
-			}
-
 
 			internal protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
 			{
@@ -1500,5 +1490,14 @@ namespace MonoDevelop.Projects
 
 			#endregion
 		}
+	}
+
+	[Flags]
+	public enum DotNetProjectFlags
+	{
+		None = 0,
+		SupportsPartialTypes = 1,
+		GeneratesDebugInfoFile = 2,
+		IsLibrary = 4
 	}
 }

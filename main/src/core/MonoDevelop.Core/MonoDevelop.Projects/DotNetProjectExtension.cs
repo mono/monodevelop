@@ -54,22 +54,9 @@ namespace MonoDevelop.Projects
 		}
 
 
-		internal protected virtual bool IsLibraryBasedProjectType {
-			get {
-				return next.IsLibraryBasedProjectType;
-			}
-		}
-
-		internal protected virtual bool GeneratesDebugInfoFile {
-			get {
-				return next.GeneratesDebugInfoFile;
-			}
-		}
-
-		internal protected virtual bool SupportsPartialTypes {
-			get {
-				return next.SupportsPartialTypes;
-			}
+		internal protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
+		{
+			return next.OnGetDotNetProjectFlags ();
 		}
 
 		#endregion

@@ -267,9 +267,9 @@ namespace MonoDevelop.Projects
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 
-		public override async Task LoadUserProperties ()
+		protected override async Task OnLoadUserProperties ()
 		{
-			await base.LoadUserProperties ();
+			await base.OnLoadUserProperties ();
 			var sitem = UserProperties.GetValue<string> ("StartupItem");
 			if (!string.IsNullOrEmpty (sitem))
 				startItemFileName = GetAbsoluteChildPath (sitem);
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects
 				multiStartupItems = sitems.Select (p => (string) GetAbsoluteChildPath (p)).ToList ();
 		}
 
-		public override async Task SaveUserProperties ()
+		protected override async Task OnSaveUserProperties ()
 		{
 			UserProperties.SetValue ("StartupItem", (string) GetRelativeChildPath (StartupItemFileName));
 			if (MultiStartupItemFileNames != null) {
@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 				UserProperties.RemoveValue ("StartupItems");
 
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
-			await base.SaveUserProperties ();
+			await base.OnSaveUserProperties ();
 			CleanItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 		

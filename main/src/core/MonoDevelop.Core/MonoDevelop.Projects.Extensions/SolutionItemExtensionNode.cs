@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		public override WorkspaceObjectExtension CreateExtension ()
 		{
-			var ext = (ProjectExtension) CreateInstance (typeof(ProjectExtension));
+			var ext = (SolutionItemExtension) CreateInstance (typeof(SolutionItemExtension));
 			ext.FlavorGuid = Guid;
 			return ext;
 		}

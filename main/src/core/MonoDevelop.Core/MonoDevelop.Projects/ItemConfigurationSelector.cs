@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.Projects
 {
-	public class ItemConfigurationSelector: ConfigurationSelector
+	public sealed class ItemConfigurationSelector: ConfigurationSelector
 	{
 		public string Id { get; private set; }
 		

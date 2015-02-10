@@ -74,8 +74,9 @@ namespace MonoDevelop.AspNet.Projects
 			return MSBuildSupport.NotSupported;
 		}
 
-		protected override bool IsLibraryBasedProjectType {
-			get { return true; }
+		protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
+		{
+			return base.OnGetDotNetProjectFlags () | DotNetProjectFlags.IsLibrary;
 		}
 
 		public XspParameters XspParameters {
