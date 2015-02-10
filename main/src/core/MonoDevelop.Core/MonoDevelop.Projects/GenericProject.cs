@@ -28,6 +28,7 @@
 
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -49,9 +50,9 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
+		protected override ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			types.Add ("GenericProject");
+			return base.OnGetProjectTypes ().Add ("GenericProject");
 		}
 	}
 	

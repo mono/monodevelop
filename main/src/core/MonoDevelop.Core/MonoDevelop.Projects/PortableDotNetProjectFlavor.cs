@@ -32,9 +32,9 @@ namespace MonoDevelop.Projects
 {
 	public class PortableDotNetProjectFlavor: DotNetProjectExtension
 	{
-		internal protected override void OnGetProjectTypes (HashSet<string> types)
+		internal protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			types.Add ("PortableDotNet");
+			return base.OnGetProjectTypes ().Add ("PortableDotNet");
 		}
 
 		internal protected override bool OnGetSupportsFormat (FileFormat format)

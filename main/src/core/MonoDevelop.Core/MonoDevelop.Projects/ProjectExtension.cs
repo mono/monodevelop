@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Projects.Formats.MSBuild;
 using Mono.Addins;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -74,9 +75,12 @@ namespace MonoDevelop.Projects
 			next.OnGetDefaultImports (imports);
 		}
 
-		internal protected virtual void OnGetProjectTypes (HashSet<string> types)
+		internal protected virtual ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			next.OnGetProjectTypes (types);
+			var res = next.OnGetProjectTypes ();
+			if (TypeAlias != null)
+				res = res.Add (TypeAlias);
+			return res;
 		}
 
 		/// <summary>

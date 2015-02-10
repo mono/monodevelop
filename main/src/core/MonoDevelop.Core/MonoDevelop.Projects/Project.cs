@@ -42,6 +42,7 @@ using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
+using System.Collections.Immutable;
 
 
 namespace MonoDevelop.Projects
@@ -226,7 +227,7 @@ namespace MonoDevelop.Projects
 
 		public MSBuildSupport MSBuildEngineSupport { get; private set; }
 
-		internal protected virtual MSBuildSupport OnGetMSBuildSupport ()
+		protected virtual MSBuildSupport OnGetMSBuildSupport ()
 		{
 			return MSBuildSupport.Supported;
 		}
@@ -321,9 +322,14 @@ namespace MonoDevelop.Projects
 		/// <param name='fileName'>
 		/// File name
 		/// </param>
-		public virtual bool IsCompileable (string fileName)
+		public bool IsCompileable (string fileName)
 		{
 			return ProjectExtension.OnGetIsCompileable (fileName);
+		}
+
+		protected virtual bool OnGetIsCompileable (string fileName)
+		{
+			return false;
 		}
 
 		/// <summary>
@@ -336,7 +342,7 @@ namespace MonoDevelop.Projects
 
 		FilePath baseIntermediateOutputPath;
 
-		public virtual FilePath BaseIntermediateOutputPath {
+		public FilePath BaseIntermediateOutputPath {
 			get {
 				if (!baseIntermediateOutputPath.IsNullOrEmpty)
 					return baseIntermediateOutputPath;
@@ -352,28 +358,16 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Gets the type of the project.
-		/// </summary>
-		/// <value>
-		/// The type of the project.
-		/// </value>
-		[Obsolete ("Use GetProjectTypes")]
-		public virtual string ProjectType {
-			get { return GetProjectTypes ().First (); }
-		}
-
-		/// <summary>
 		/// Gets the project type and its base types.
 		/// </summary>
 		public IEnumerable<string> GetProjectTypes ()
 		{
-			var types = new HashSet<string> ();
-			ProjectExtension.OnGetProjectTypes (types);
-			return types;
+			return ProjectExtension.OnGetProjectTypes ();
 		}
 
-		protected virtual void OnGetProjectTypes (HashSet<string> types)
+		protected virtual ImmutableHashSet<string> OnGetProjectTypes ()
 		{
+			return ImmutableHashSet<string>.Empty;
 		}
 
 		public bool HasFlavor<T> ()
@@ -397,7 +391,7 @@ namespace MonoDevelop.Projects
 		/// <value>
 		/// The stock icon.
 		/// </value>
-		public virtual IconId StockIcon {
+		public IconId StockIcon {
 			get {
 				if (stockIcon != null)
 					return stockIcon.Value;
@@ -2416,12 +2410,12 @@ namespace MonoDevelop.Projects
 
 			internal protected override bool OnGetIsCompileable (string fileName)
 			{
-				return false;
+				return Project.OnGetIsCompileable (fileName);
 			}
 
-			internal protected override void OnGetProjectTypes (HashSet<string> types)
+			internal protected override ImmutableHashSet<string> OnGetProjectTypes ()
 			{
-				Project.OnGetProjectTypes (types);
+				return Project.OnGetProjectTypes ();
 			}
 
 			internal protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)

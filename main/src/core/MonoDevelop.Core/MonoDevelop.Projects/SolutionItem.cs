@@ -48,6 +48,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Collections;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.Formats.MSBuild;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -451,7 +452,7 @@ namespace MonoDevelop.Projects
 			set { fileStatusTracker.NeedsReload = value; }
 		}
 		
-		public virtual bool ItemFilesChanged {
+		public bool ItemFilesChanged {
 			get { return ItemExtension.ItemFilesChanged; }
 		}
 		
@@ -961,12 +962,15 @@ namespace MonoDevelop.Projects
 				Saved (this, args);
 		}
 		
-		public virtual string[] SupportedPlatforms {
-			get {
-				return new string [0];
-			}
+		public string[] SupportedPlatforms {
+			get { return ItemExtension.OnGetSupportedPlatforms ().ToArray () ; }
 		}
-		
+
+		protected virtual ImmutableList<string> OnGetSupportedPlatforms ()
+		{
+			return ImmutableList<string>.Empty;
+		}
+
 		public virtual SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
 		{
 			return (SolutionItemConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
@@ -1286,10 +1290,9 @@ namespace MonoDevelop.Projects
 				return Item.OnCreateConfiguration (name);
 			}
 
-			internal protected override string[] SupportedPlatforms {
-				get {
-					return new string [0];
-				}
+			internal protected override ImmutableList<string> OnGetSupportedPlatforms ()
+			{
+				return Item.OnGetSupportedPlatforms ();
 			}
 
 			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

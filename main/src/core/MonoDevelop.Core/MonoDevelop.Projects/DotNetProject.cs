@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.Assemblies;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -209,15 +210,14 @@ namespace MonoDevelop.Projects
 			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
-		protected virtual MSBuildSupport OnGetMSBuildSupport ()
+		protected override MSBuildSupport OnGetMSBuildSupport ()
 		{
 			return MSBuildSupport.Supported;
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
+		protected override ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			types.Add ("DotNet");
-			types.Add ("DotNetAssembly");
+			return base.OnGetProjectTypes ().Add ("DotNet").Add ("DotNetAssembly");
 		}
 
 		DotNetProjectExtension projectExtension;
@@ -559,8 +559,9 @@ namespace MonoDevelop.Projects
 			get { return (flags & DotNetProjectFlags.SupportsPartialTypes) != 0; }
 		}
 
-		public override string[] SupportedPlatforms {
-			get { return new string[] { "AnyCPU" }; }
+		protected override System.Collections.Immutable.ImmutableList<string> OnGetSupportedPlatforms ()
+		{
+			return base.OnGetSupportedPlatforms ().Add ("AnyCPU");
 		}
 
 		void CheckReferenceChange (FilePath updatedFile)
@@ -1072,7 +1073,7 @@ namespace MonoDevelop.Projects
 			return MD1DotNetProjectHandler.Compile (monitor, this, buildData);
 		}
 
-		public override bool IsCompileable (string fileName)
+		protected override bool OnGetIsCompileable (string fileName)
 		{
 			if (LanguageBinding == null)
 				return false;
@@ -1084,6 +1085,15 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
 		public virtual string GetDefaultNamespace (string fileName)
+		{
+			return OnGetDefaultNamespace (fileName);
+		}
+
+		/// <summary>
+		/// Gets the default namespace for the file, according to the naming policy.
+		/// </summary>
+		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
+		protected virtual string OnGetDefaultNamespace (string fileName)
 		{
 			return GetDefaultNamespace (this, DefaultNamespace, fileName);
 		}

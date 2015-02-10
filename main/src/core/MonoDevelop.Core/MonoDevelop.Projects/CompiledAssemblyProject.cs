@@ -50,11 +50,11 @@ namespace MonoDevelop.Projects
 			AddNewConfiguration ("Default");
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
+		protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			types.Add ("CompiledAssembly");
+			return base.OnGetProjectTypes ().Add ("CompiledAssembly");
 		}
-		
+
 		public override IconId StockIcon {
 			get {
 				return "md-assembly-project";

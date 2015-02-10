@@ -33,6 +33,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -41,6 +42,7 @@ namespace MonoDevelop.Projects
 		SolutionItemExtension next;
 
 		internal string FlavorGuid { get; set; }
+		internal string TypeAlias { get; set; }
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
@@ -143,10 +145,9 @@ namespace MonoDevelop.Projects
 			return next.OnCreateConfiguration (name);
 		}
 
-		internal protected virtual string[] SupportedPlatforms {
-			get {
-				return next.SupportedPlatforms;
-			}
+		internal protected virtual ImmutableList<string> OnGetSupportedPlatforms ()
+		{
+			return next.OnGetSupportedPlatforms ();
 		}
 
 		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()

@@ -187,10 +187,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
+		protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
 		{
-			types.Add ("SharedAssets");
-			types.Add ("DotNet");
+			return base.OnGetProjectTypes ().Add ("SharedAssets").Add ("DotNet");
 		}
 
 		public override string[] SupportedLanguages {
@@ -207,7 +206,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 		}
 
-		public override bool IsCompileable (string fileName)
+		protected override bool OnGetIsCompileable (string fileName)
 		{
 			return LanguageBinding.IsSourceCodeFile (fileName);
 		}

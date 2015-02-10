@@ -49,6 +49,9 @@ namespace MonoDevelop.Projects.Extensions
 
 		ProjectMigrationHandler handler;
 
+		[NodeAttribute ("alias", Description = "Friendly id of the extension")]
+		public string TypeAlias { get; set; }
+
 		public bool IsMigrationRequired {
 			get { return migrationRequired; }
 			set { migrationRequired = value; }
@@ -86,6 +89,7 @@ namespace MonoDevelop.Projects.Extensions
 		{
 			var ext = (SolutionItemExtension) CreateInstance (typeof(SolutionItemExtension));
 			ext.FlavorGuid = Guid;
+			ext.TypeAlias = TypeAlias;
 			return ext;
 		}
 	}
