@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.CodeDom.Compiler;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core.StringParsing;
-using Microsoft.VisualStudio.TextTemplating;
+using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -66,11 +66,11 @@ namespace MonoDevelop.TextTemplating
 				if (host.Errors.HasErrors) {
 					foreach (var err in host.Errors)
 						LoggingService.LogError ("Error in template generator: {0}", err.ToString());
-					throw new Exception ("Failed to generate file");
+					var firstError = host.Errors.OfType<CompilerError> ().First (f => !f.IsWarning);
+					throw new Exception ("Failed to generate file: " + firstError.ErrorText);
 				}
 				return output;
 			}
 		}
 	}
 }
-
