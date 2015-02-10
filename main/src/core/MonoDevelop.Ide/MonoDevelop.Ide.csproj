@@ -3025,6 +3025,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Components\EventBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCreateInformation.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

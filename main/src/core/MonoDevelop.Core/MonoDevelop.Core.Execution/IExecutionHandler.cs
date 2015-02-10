@@ -58,4 +58,15 @@ namespace MonoDevelop.Core.Execution
 		/// </param>
 		IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console);
 	}
+
+	/// <summary>
+	/// An execution handler that executes on a particular execution target.
+	/// </summary>
+	public interface ITargetedExecutionHandler : IExecutionHandler
+	{
+		/// <summary>
+		/// The execution target
+		/// </summary>
+		ExecutionTarget Target { get; }
+	}
 }

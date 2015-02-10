@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using Mono.Addins;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Execution
 {
@@ -113,7 +114,8 @@ namespace MonoDevelop.Ide.Execution
 		public bool CanExecute (ExecutionCommand command)
 		{
 			if (Mode != null)
-				return Mode.ExecutionHandler.CanExecute (command);
+				return Mode.ExecutionHandler.CanExecute (command)
+					&& GetCachedCustomizers ().All (c => c.Item1.CanCustomize (command));
 			return false;
 		}
 		
@@ -125,35 +127,51 @@ namespace MonoDevelop.Ide.Execution
 		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, bool allowPrompt, bool forcePrompt)
 		{
 			if ((PromptForParameters || forcePrompt) && allowPrompt) {
-				CommandExecutionContext ctx = new CommandExecutionContext (Project, command);
+				var ctx = new CommandExecutionContext (Project, command);
 				CustomExecutionMode customMode = ExecutionModeCommandService.ShowParamtersDialog (ctx, Mode, this);
 				if (customMode == null)
 					return new CancelledProcessAsyncOperation ();
-				else
-					return customMode.Execute (command, console, false, false);
+				return customMode.Execute (command, console, false, false);
 			}
-			if (commandData != null) {
-				foreach (KeyValuePair<string,object> cmdData in commandData) {
-					ExecutionCommandCustomizer cc = ExecutionModeCommandService.GetExecutionCommandCustomizer (cmdData.Key);
-					if (cc != null)
-						cc.Customize (command, cmdData.Value);
-				}
+
+			foreach (var cc in GetCachedCustomizers ()) {
+				cc.Item1.Customize (command, cc.Item2);
 			}
-			ParameterizedExecutionHandler cmode = Mode.ExecutionHandler as ParameterizedExecutionHandler;
+
+			var cmode = Mode.ExecutionHandler as ParameterizedExecutionHandler;
 			if (cmode != null) {
 				CommandExecutionContext ctx = new CommandExecutionContext (Project, command);
 				return cmode.Execute (command, console, ctx, Data);
-			} else
-				return Mode.ExecutionHandler.Execute (command, console);
+			}
+
+			return Mode.ExecutionHandler.Execute (command, console);
 		}
 		#endregion
+
+		IList<Tuple<ExecutionCommandCustomizer,object>> cachedCustomizers;
+
+		IList<Tuple<ExecutionCommandCustomizer,object>> GetCachedCustomizers ()
+		{
+			if (cachedCustomizers != null)
+				return cachedCustomizers;
+
+			if (commandData == null)
+				return cachedCustomizers = new Tuple<ExecutionCommandCustomizer,object>[0];
+
+			return cachedCustomizers = commandData
+					.Select (cmdData => Tuple.Create (
+						ExecutionModeCommandService.GetExecutionCommandCustomizer (cmdData.Key),
+						cmdData.Value))
+					.Where (cc => cc != null)
+					.ToList();
+		}
 	}
 		
 	class UnknownModeData
 	{
 	}
 	
-	internal enum CustomModeScope
+	enum CustomModeScope
 	{
 		Project = 0,
 		Solution = 1,

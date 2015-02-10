@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 		{
 			if (Platform.IsMac) {
 				try {
-					isSupported = gdk_quartz_supports_gesture_events ();
+					isSupported = gdk_quartz_supports_gesture_events () && Environment.GetEnvironmentVariable ("DISABLE_ZOOM_GESTURE") == null;
 				} catch (EntryPointNotFoundException) {
 				}
 			}
