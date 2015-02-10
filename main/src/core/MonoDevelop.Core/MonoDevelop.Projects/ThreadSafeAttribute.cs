@@ -1,9 +1,10 @@
-// UnknownWorkspaceItem.cs
+﻿//
+// ThreadSafeAttribute.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,58 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
-	
-	
-	public class UnknownWorkspaceItem: WorkspaceItem
+	public class ThreadSafeAttribute: Attribute
 	{
-		string loadError = string.Empty;
-		bool unloaded;
-		
-		public UnknownWorkspaceItem ()
-		{
-			Initialize (this);
-			Name = GettextCatalog.GetString ("Unknown entry");
-		}
-
-		protected override void OnExtensionChainInitialized ()
-		{
-			base.OnExtensionChainInitialized ();
-			NeedsReload = false;
-		}
-		
-		public string LoadError {
-			get { return loadError; }
-			set { loadError = value; }
-		}
-		
-		public bool UnloadedEntry {
-			get { return unloaded; }
-			set { unloaded = value; }
-		}
-		
-		protected internal override Task OnSave (ProgressMonitor monitor)
-		{
-			return Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
-		}
-
-		public override FilePath FileName {
-			get {
-				return base.FileName;
-			}
-			set {
-				base.FileName = value;
-				if (!FileName.IsNullOrEmpty)
-					Name = FileName.FileNameWithoutExtension;
-			}
-		}
 	}
 }
+

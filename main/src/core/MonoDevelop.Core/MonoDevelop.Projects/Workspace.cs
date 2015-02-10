@@ -46,15 +46,24 @@ namespace MonoDevelop.Projects
 		public Workspace ()
 		{
 			Initialize (this);
+			items = new WorkspaceItemCollection (this);
+		}
+
+		protected override void SetShared ()
+		{
+			base.SetShared ();
+			items.SetShared ();
 		}
 		
 		public override void Dispose ()
 		{
+			AssertMainThread ();
 			base.Dispose ();
 			foreach (WorkspaceItem it in Items)
 				it.Dispose ();
 		}
 
+		[ThreadSafe]
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false)
 		{
 			var res = new BuildResult { BuildCount = 0 };
@@ -63,8 +72,10 @@ namespace MonoDevelop.Projects
 			return res;
 		}
 
+		[ThreadSafe]
 		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
+			AssertMainThread ();
 			var res = new BuildResult { BuildCount = 0 };
 			foreach (var bt in Items.OfType<IBuildTarget> ())
 				res.Append (await bt.Clean (monitor, configuration));
@@ -86,6 +97,7 @@ namespace MonoDevelop.Projects
 			return Items.OfType<IBuildTarget> ().Any (t => t.NeedsBuilding (configuration));
 		}
 		
+		[ThreadSafe]
 		public override ReadOnlyCollection<string> GetConfigurations ()
 		{
 			List<string> configs = new List<string> ();
@@ -98,30 +110,20 @@ namespace MonoDevelop.Projects
 			return configs.AsReadOnly ();
 		}
 		
+		[ThreadSafe]
 		public WorkspaceItemCollection Items {
 			get {
-				if (items == null)
-					items = new WorkspaceItemCollection (this);
 				return items; 
 			}
 		}
 
+		[ThreadSafe]
 		protected override IEnumerable<WorkspaceObject> OnGetChildren ()
 		{
 			return Items;
 		}
 		
-		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
-		public override Project GetProjectContainingFile (FilePath fileName)
-		{
-			foreach (WorkspaceItem it in Items) {
-				Project p = it.GetProjectContainingFile (fileName);
-				if (p != null)
-					return p;
-			}
-			return null;
-		}
-
+		[ThreadSafe]
 		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
@@ -131,6 +133,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[ThreadSafe]
 		public override bool ContainsItem (WorkspaceObject obj)
 		{
 			if (base.ContainsItem (obj))
@@ -153,34 +156,38 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public async Task<WorkspaceItem> ReloadItem (ProgressMonitor monitor, WorkspaceItem item)
+		[ThreadSafe]
+		public Task<WorkspaceItem> ReloadItem (ProgressMonitor monitor, WorkspaceItem item)
 		{
-			if (Items.IndexOf (item) == -1)
-				throw new InvalidOperationException ("Item '" + item.Name + "' does not belong to workspace '" + Name + "'");
+			return Runtime.RunInMainThread (async delegate {
+				if (Items.IndexOf (item) == -1)
+					throw new InvalidOperationException ("Item '" + item.Name + "' does not belong to workspace '" + Name + "'");
 
-			// Load the new item
-			
-			WorkspaceItem newItem;
-			try {
-				newItem = await Services.ProjectService.ReadWorkspaceItem (monitor, item.FileName);
-			} catch (Exception ex) {
-				UnknownWorkspaceItem e = new UnknownWorkspaceItem ();
-				e.LoadError = ex.Message;
-				e.FileName = item.FileName;
-				newItem = e;
-			}
-			
-			// Replace in the file list
-			Items.Replace (item, newItem);
-			
-			NotifyModified ();
-			NotifyItemRemoved (new WorkspaceItemChangeEventArgs (item, true));
-			NotifyItemAdded (new WorkspaceItemChangeEventArgs (newItem, true));
-			
-			item.Dispose ();
-			return newItem;
+				// Load the new item
+				
+				WorkspaceItem newItem;
+				try {
+					newItem = await Services.ProjectService.ReadWorkspaceItem (monitor, item.FileName);
+				} catch (Exception ex) {
+					UnknownWorkspaceItem e = new UnknownWorkspaceItem ();
+					e.LoadError = ex.Message;
+					e.FileName = item.FileName;
+					newItem = e;
+				}
+				
+				// Replace in the file list
+				Items.Replace (item, newItem);
+				
+				NotifyModified ();
+				NotifyItemRemoved (new WorkspaceItemChangeEventArgs (item, true));
+				NotifyItemAdded (new WorkspaceItemChangeEventArgs (newItem, true));
+				
+				item.Dispose ();
+				return newItem;
+			});
 		}
 
+		[ThreadSafe]
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> list = base.OnGetItemFiles (includeReferencedFiles).ToList ();
@@ -194,12 +201,14 @@ namespace MonoDevelop.Projects
 		
 		internal void NotifyItemAdded (WorkspaceItemChangeEventArgs args)
 		{
+			AssertMainThread ();
 			OnItemAdded (args);
 			OnConfigurationsChanged ();
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
+			AssertMainThread ();
 			OnItemRemoved (args);
 			OnConfigurationsChanged ();
 		}

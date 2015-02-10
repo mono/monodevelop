@@ -815,7 +815,7 @@ namespace MonoDevelop.VersionControl.Views
 			string[] files = GetCurrentFiles ();
 			VersionControlItemList items = new VersionControlItemList ();
 			foreach (string file in files) {
-				Project prj = IdeApp.Workspace.GetProjectContainingFile (file);
+				Project prj = IdeApp.Workspace.GetProjectsContainingFile (file).FirstOrDefault ();
 				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), null));
 			}
 			return items;

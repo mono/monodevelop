@@ -47,9 +47,9 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
-	public class RootWorkspace: WorkspaceObject, IBuildTarget
+	public sealed class RootWorkspace: WorkspaceObject, IBuildTarget
 	{
-		WorkspaceItemCollection items;
+		RootWorkspaceItemCollection items;
 //		IParserDatabase parserDatabase;
 		string activeConfiguration;
 		bool useDefaultRuntime;
@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide
 		
 		internal RootWorkspace ()
 		{
+			items = new RootWorkspaceItemCollection (this);
+
 			fileAddedToProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
 			fileRemovedFromProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
 			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
@@ -97,13 +99,11 @@ namespace MonoDevelop.Ide
 				}
 			};
 			
-			FileService.FileChanged += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckWorkspaceItems));;
+			FileService.FileChanged += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckWorkspaceItems));
 		}
 		
-		public WorkspaceItemCollection Items {
+		public RootWorkspaceItemCollection Items {
 			get {
-				if (items == null)
-					items = new RootWorkspaceItemCollection (this, 256);
 				return items; 
 			}
 		}
@@ -173,6 +173,7 @@ namespace MonoDevelop.Ide
 			get { return Items.Count > 0; }
 		}
 		
+		[ThreadSafe]
 		protected override string OnGetName ()
 		{
 			return "MonoDevelop Workspace";
@@ -219,17 +220,6 @@ namespace MonoDevelop.Ide
 			return GetAllItems<Solution> ();
 		}
 			
-		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
-		public Project GetProjectContainingFile (string fileName)
-		{
-			foreach (WorkspaceItem it in Items) {
-				Project p = it.GetProjectContainingFile (fileName);
-				if (p != null)
-					return p;
-			}
-			return null;
-		}
-
 		public IEnumerable<Project> GetProjectsContainingFile (string fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
@@ -508,7 +498,7 @@ namespace MonoDevelop.Ide
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.Project == null && doc.IsFile) {
-					Project p = GetProjectContainingFile (doc.FileName);
+					Project p = GetProjectsContainingFile (doc.FileName).FirstOrDefault ();
 					if (p != null)
 						doc.SetProject (p);
 				}
@@ -673,7 +663,7 @@ namespace MonoDevelop.Ide
 			return bestConfig;
 		}
 		
-		public void SavePreferences (WorkspaceItem item)
+		public async Task SavePreferences (WorkspaceItem item)
 		{
 			// Local configuration info
 			
@@ -697,7 +687,7 @@ namespace MonoDevelop.Ide
 			
 			// Save the file
 			
-			item.SaveUserProperties ();
+			await item.SaveUserProperties ();
 		}
 		
 		public FileStatusTracker GetFileStatusTracker ()
@@ -1337,52 +1327,31 @@ namespace MonoDevelop.Ide
 #endregion
 	}
 	
-	class RootWorkspaceItemCollection: WorkspaceItemCollection
+	public class RootWorkspaceItemCollection: ItemCollection<WorkspaceItem>
 	{
 		RootWorkspace parent;
 		
-		public RootWorkspaceItemCollection (RootWorkspace parent) : this(parent, 0)
-		{
-		}
-
-		public RootWorkspaceItemCollection (RootWorkspace parent, int capacity) : base(new List<WorkspaceItem> (capacity))
+		internal RootWorkspaceItemCollection (RootWorkspace parent)
 		{
 			this.parent = parent;
 		}
-		
-		protected override void ClearItems ()
+
+
+		protected override void OnItemsRemoved (IEnumerable<WorkspaceItem> items)
 		{
+			base.OnItemsRemoved (items);
 			if (parent != null) {
-				List<WorkspaceItem> items = new List<WorkspaceItem> (this);
 				foreach (WorkspaceItem it in items)
 					parent.NotifyItemRemoved (it);
 			}
-			else
-				base.ClearItems ();
 		}
-		
-		protected override void InsertItem (int index, WorkspaceItem item)
+
+		protected override void OnItemsAdded (IEnumerable<WorkspaceItem> items)
 		{
-			base.InsertItem (index, item);
-			if (parent != null)
-				parent.NotifyItemAdded (item);
-		}
-		
-		protected override void RemoveItem (int index)
-		{
-			WorkspaceItem item = this [index];
-			base.RemoveItem (index);
-			if (parent != null)
-				parent.NotifyItemRemoved (item);
-		}
-		
-		protected override void SetItem (int index, WorkspaceItem item)
-		{
-			WorkspaceItem oldItem = this [index];
-			base.SetItem (index, item);
+			base.OnItemsAdded (items);
 			if (parent != null) {
-				parent.NotifyItemRemoved (oldItem);
-				parent.NotifyItemAdded (item);
+				foreach (var item in items)
+					parent.NotifyItemAdded (item);
 			}
 		}
 	}

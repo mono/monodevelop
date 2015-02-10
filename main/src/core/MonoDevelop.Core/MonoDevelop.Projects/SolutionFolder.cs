@@ -27,21 +27,13 @@
 
 
 using System;
-using System.Xml;
 using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Reflection;
-using System.Diagnostics;
-using System.CodeDom.Compiler;
-using System.ComponentModel;
-using System.Threading;
 
 using MonoDevelop.Core;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Core.Serialization;
@@ -92,10 +84,12 @@ namespace MonoDevelop.Projects
 			get { return ParentFolder == null; }
 		}
 
+		[ThreadSafe]
 		protected override string OnGetName ()
 		{
-			if (ParentFolder == null && ParentSolution != null)
-				return ParentSolution.Name;
+			var parent = ParentFolder == null && ParentSolution != null ? ParentSolution : null;
+			if (parent != null)
+				return parent.Name;
 			else
 				return name;
 		}
@@ -191,7 +185,7 @@ namespace MonoDevelop.Projects
 				return null;
 		}
 
-		protected override IDictionary OnGetExtendedProperties ()
+		internal override IDictionary OnGetExtendedProperties ()
 		{
 			if (ParentSolution != null && ParentFolder == null)
 				return ParentSolution.ExtendedProperties;

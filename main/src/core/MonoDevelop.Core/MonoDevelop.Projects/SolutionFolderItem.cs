@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects
 			return BaseDirectory;
 		}
 		
-		protected override string OnGetItemDirectory ()
+		protected sealed override string OnGetItemDirectory ()
 		{
 			FilePath dir = GetDefaultBaseDirectory ();
 			if (string.IsNullOrEmpty (dir))

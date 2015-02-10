@@ -812,17 +812,17 @@ namespace MonoDevelop.Ide.Gui
 					project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			}
 			if (project == null && IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem != null) {
-				project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectContainingFile (fileName);
+				project = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetProjectsContainingFile (fileName).FirstOrDefault ();
 				if (project == null) {
 					WorkspaceItem it = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.ParentWorkspace;
 					while (it != null && project == null) {
-						project = it.GetProjectContainingFile (fileName);
+						project = it.GetProjectsContainingFile (fileName).FirstOrDefault ();
 						it = it.ParentWorkspace;
 					}
 				}
 			}
 			if (project == null) {
-				project = IdeApp.Workspace.GetProjectContainingFile (fileName);
+				project = IdeApp.Workspace.GetProjectsContainingFile (fileName).FirstOrDefault ();
 			}
 			return project;
 		}

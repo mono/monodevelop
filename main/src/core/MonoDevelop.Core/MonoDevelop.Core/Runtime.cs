@@ -374,6 +374,35 @@ namespace MonoDevelop.Core
 		}
 
 		/// <summary>
+		/// Runs an action in the main thread (usually the UI thread). The method returns a task, so it can be awaited.
+		/// </summary>
+		/// <remarks>This version of the method is useful when the operation to be executed in the main
+		/// thread is asynchronous.</remarks>
+		public static Task RunInMainThread (Func<Task> func)
+		{
+			if (SynchronizationContext.Current == MainSynchronizationContext) {
+				return func ();
+			} else {
+				var ts = new TaskCompletionSource<int> ();
+				MainSynchronizationContext.Post (delegate {
+					try {
+						var t = func ();
+						t.ContinueWith (ta => {
+							try {
+								ts.SetResult (0);
+							} catch (Exception ex) {
+								ts.SetException (ex);
+							}
+						});
+					} catch (Exception ex) {
+						ts.SetException (ex);
+					}
+				}, null);
+				return ts.Task;
+			}
+		}
+
+		/// <summary>
 		/// Asserts that the current thread is the main thread. It will throw an exception if it isn't.
 		/// </summary>
 		public static void AssertMainThread ()

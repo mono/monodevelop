@@ -218,6 +218,7 @@ namespace MonoDevelop.Projects
 				return releaseVersion;
 			}
 			set {
+				AssertMainThread ();
 				releaseVersion = value;
 				NotifyModified ("Version");
 			}
@@ -228,6 +229,7 @@ namespace MonoDevelop.Projects
 				return syncReleaseVersion;
 			}
 			set {
+				AssertMainThread ();
 				syncReleaseVersion = value;
 				if (syncReleaseVersion && ParentSolution != null)
 					Version = ParentSolution.Version;
@@ -235,6 +237,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
+		[ThreadSafe]
 		protected override string OnGetName ()
 		{
 			return name ?? string.Empty;
@@ -243,7 +246,7 @@ namespace MonoDevelop.Projects
 		protected override void OnSetName (string value)
 		{
 			name = value;
-			if (!Loading && SyncFileName) {
+			if (!Loading) {
 				if (string.IsNullOrEmpty (fileName))
 					FileName = value;
 				else {
@@ -253,16 +256,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		/// <summary>
-		/// Returns a value indicating whether the name of the solution item should be the same as the name of the file
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if the file name must be in sync with the solution item name; otherwise, <c>false</c>.
-		/// </value>
-		protected virtual bool SyncFileName {
-			get { return true; }
-		}
-		
 		public virtual FilePath FileName {
 			get {
 				return fileName;
@@ -272,8 +265,7 @@ namespace MonoDevelop.Projects
 					value = FileFormat.GetValidFileName (this, value);
 				if (value != fileName) {
 					fileName = value;
-					if (SyncFileName)
-						Name = fileName.FileNameWithoutExtension;
+					Name = fileName.FileNameWithoutExtension;
 					NotifyModified ("FileName");
 				}
 			}

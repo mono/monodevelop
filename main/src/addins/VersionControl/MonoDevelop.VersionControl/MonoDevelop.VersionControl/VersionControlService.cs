@@ -757,7 +757,7 @@ namespace MonoDevelop.VersionControl
 						break;
 					}
 				} else {
-					project = IdeApp.Workspace.GetProjectContainingFile (item.LocalPath);
+					project = IdeApp.Workspace.GetProjectsContainingFile (item.LocalPath).FirstOrDefault ();
 				}
 			}
 			CommitMessageStyle style;

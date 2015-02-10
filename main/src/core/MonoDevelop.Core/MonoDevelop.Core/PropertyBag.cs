@@ -33,22 +33,41 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using System.Text;
 using System.Globalization;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Core
 {
 	[DataItem ("Properties")]
-	public class PropertyBag: ICustomDataItem, IDisposable
+	public sealed class PropertyBag: ICustomDataItem, IDisposable
 	{
-		Dictionary<string,object> properties;
+		ImmutableDictionary<string,object> properties = ImmutableDictionary<string,object>.Empty;
 		DataContext context;
 		string sourceFile;
-		
+		bool isShared;
+
+		class DataNodeInfo
+		{
+			public DataNode DataNode;
+			public object Object;
+		}
+
 		public PropertyBag()
 		{
 		}
 		
+		void AssertMainThread ()
+		{
+			if (isShared)
+				Runtime.AssertMainThread ();
+		}
+
+		public void SetShared ()
+		{
+			isShared = true;
+		}
+
 		public bool IsEmpty {
-			get { return properties == null || properties.Count == 0; }
+			get { return properties.Count == 0; }
 		}
 		
 		public T GetValue<T> ()
@@ -63,18 +82,7 @@ namespace MonoDevelop.Core
 		
 		public T GetValue<T> (string name, DataContext ctx)
 		{
-			if (properties != null) {
-				object val;
-				if (properties.TryGetValue (name, out val)) {
-					if (val is DataNode) {
-						val = Deserialize (name, (DataNode) val, typeof(T), ctx ?? context);
-						properties [name] = val;
-						OnChanged (name);
-					}
-					return (T) val;
-				}
-			}
-			return default (T);
+			return GetValue<T> (name, default(T), ctx);
 		}
 		
 		public T GetValue<T> (string name, T defaultValue)
@@ -87,9 +95,13 @@ namespace MonoDevelop.Core
 			if (properties != null) {
 				object val;
 				if (properties.TryGetValue (name, out val)) {
-					if (val is DataNode) {
-						val = Deserialize (name, (DataNode) val, typeof(T), ctx ?? context);
-						properties [name] = val;
+					var di = val as DataNodeInfo;
+					if (di != null) {
+						if (di.Object == null) {
+							di.Object = Deserialize (name, di.DataNode, typeof(T), ctx ?? context);
+							di.DataNode = null;
+						}
+						val = di.Object;
 					}
 					return (T) val;
 				}
@@ -104,9 +116,8 @@ namespace MonoDevelop.Core
 		
 		public void SetValue<T> (string name, T value)
 		{
-			if (properties == null)
-				properties = new Dictionary<string,object> ();
-			properties [name] = value;
+			AssertMainThread ();
+			properties = properties.SetItem (name, value);
 			OnChanged (name);
 		}
 		
@@ -117,12 +128,15 @@ namespace MonoDevelop.Core
 		
 		public bool RemoveValue (string name)
 		{
-			if (properties != null && properties.Remove (name)) {
-				OnChanged (name);
-				return true;
-			}
+			AssertMainThread ();
+			var cc = properties.Count;
 
-			return false;
+			properties = properties.Remove (name);
+			if (cc == properties.Count)
+				return false;
+
+			OnChanged (name);
+			return true;
 		}
 		
 		public bool HasValue<T> ()
@@ -132,7 +146,7 @@ namespace MonoDevelop.Core
 		
 		public bool HasValue (string name)
 		{
-			return properties != null && properties.ContainsKey (name);
+			return properties.ContainsKey (name);
 		}
 
 		public event EventHandler<PropertyBagChangedEventArgs> Changed;
@@ -147,14 +161,13 @@ namespace MonoDevelop.Core
 		
 		public void Dispose ()
 		{
-			if (properties != null) {
-				foreach (object ob in properties.Values) {
-					IDisposable disp = ob as IDisposable;
-					if (disp != null)
-						disp.Dispose ();
-				}
-				properties = null;
+			AssertMainThread ();
+			foreach (object ob in properties.Values) {
+				IDisposable disp = ob as IDisposable;
+				if (disp != null)
+					disp.Dispose ();
 			}
+			properties = properties.Clear ();
 		}
 		
 		object Deserialize (string name, DataNode node, Type type, DataContext ctx)
@@ -212,12 +225,12 @@ namespace MonoDevelop.Core
 			if (data.Count == 0)
 				return;
 			
-			properties = new Dictionary<string,object> ();
+			properties = ImmutableDictionary<string,object>.Empty;
 			context = handler.SerializationContext.Serializer.DataContext;
 			sourceFile = handler.SerializationContext.BaseFile;
 			foreach (DataNode nod in data) {
 				if (nod.Name != "ctype")
-					properties [UnescapeName (nod.Name)] = nod;
+					properties = properties.SetItem (UnescapeName (nod.Name), new DataNodeInfo { DataNode = nod });
 			}
 		}
 		

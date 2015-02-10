@@ -488,6 +488,7 @@
     <Compile Include="MonoDevelop.Projects\ProjectItemMetadata.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectFeature.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSupport.cs" />
+    <Compile Include="MonoDevelop.Projects\ThreadSafeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

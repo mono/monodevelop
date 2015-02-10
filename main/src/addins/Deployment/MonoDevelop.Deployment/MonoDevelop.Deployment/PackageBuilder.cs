@@ -35,6 +35,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Deployment
 {

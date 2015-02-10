@@ -25,7 +25,7 @@ namespace MonoDevelop.VersionControl
 		{
 			path = path.FullPath;
 			
-			Project p = IdeApp.Workspace.GetProjectContainingFile (path);
+			Project p = IdeApp.Workspace.GetProjectsContainingFile (path).FirstOrDefault ();
 			if (p != null)
 				return VersionControlService.GetRepository (p);
 			

@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects
 		Hashtable extendedProperties;
 		bool initializeCalled;
 		bool isShared;
+		object localLock = new object ();
 
 		internal protected void Initialize<T> (T instance)
 		{
@@ -130,6 +131,8 @@ namespace MonoDevelop.Projects
 
 		public virtual void Dispose ()
 		{
+			AssertMainThread ();
+
 			if (Disposed)
 				return;
 
@@ -295,11 +298,13 @@ namespace MonoDevelop.Projects
 			itemExtension = ExtensionChain.GetExtension<WorkspaceObjectExtension> ();
 		}
 
-		protected virtual IDictionary OnGetExtendedProperties ()
+		internal virtual IDictionary OnGetExtendedProperties ()
 		{
-			if (extendedProperties == null)
-				extendedProperties = new Hashtable ();
-			return extendedProperties;
+			lock (localLock) {
+				if (extendedProperties == null)
+					extendedProperties = new Hashtable ();
+				return extendedProperties;
+			}
 		}
 
 		protected virtual IEnumerable<WorkspaceObject> OnGetChildren ()

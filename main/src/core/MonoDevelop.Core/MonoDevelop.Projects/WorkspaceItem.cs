@@ -59,6 +59,13 @@ namespace MonoDevelop.Projects
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		FilePath baseDirectory;
 
+		protected WorkspaceItem ()
+		{
+			userProperties = new PropertyBag ();
+			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
+			format = Services.ProjectService.GetDefaultFormat (this);
+		}
+
 		public Workspace ParentWorkspace {
 			get { return parentWorkspace; }
 			internal set {
@@ -70,8 +77,6 @@ namespace MonoDevelop.Projects
 		// User properties are only loaded when the project is loaded in the IDE.
 		public virtual PropertyBag UserProperties {
 			get {
-				if (userProperties == null)
-					userProperties = new PropertyBag ();
 				return userProperties; 
 			}
 		}
@@ -81,6 +86,7 @@ namespace MonoDevelop.Projects
 				return base.Name;
 			}
 			set {
+				AssertMainThread ();
 				if (fileName.IsNullOrEmpty)
 					SetLocation (FilePath.Empty, value);
 				else {
@@ -91,19 +97,22 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		[ThreadSafe]
 		protected override string OnGetName ()
 		{
-			if (fileName.IsNullOrEmpty)
+			var fname = fileName;
+			if (fname.IsNullOrEmpty)
 				return string.Empty;
 			else
-				return fileName.FileNameWithoutExtension;
+				return fname.FileNameWithoutExtension;
 		}
 		
 		public virtual FilePath FileName {
-			get {
+			[ThreadSafe] get {
 				return fileName;
 			}
 			set {
+				AssertMainThread ();
 				string oldName = Name;
 				fileName = value;
 				if (FileFormat != null)
@@ -126,6 +135,7 @@ namespace MonoDevelop.Projects
 				return base.BaseDirectory;
 			}
 			set {
+				AssertMainThread ();
 				if (!value.IsNull && !FileName.IsNull && FileName.ParentDirectory.FullPath == value.FullPath)
 					baseDirectory = null;
 				else if (value.IsNullOrEmpty)
@@ -136,24 +146,22 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override string OnGetBaseDirectory ()
+		[ThreadSafe]
+		protected sealed override string OnGetBaseDirectory ()
 		{
-			if (baseDirectory.IsNull)
+			var dir = baseDirectory;
+			if (dir.IsNull)
 				return FileName.ParentDirectory.FullPath;
 			else
-				return baseDirectory;
+				return dir;
 		}
 		
-		protected override string OnGetItemDirectory ()
+		[ThreadSafe]
+		protected sealed override string OnGetItemDirectory ()
 		{
 			return FileName.ParentDirectory.FullPath;
 		}
 		
-		protected WorkspaceItem ()
-		{
-			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
-		}
-
 		protected override void OnExtensionChainInitialized ()
 		{
 			itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
@@ -175,35 +183,35 @@ namespace MonoDevelop.Projects
 			yield return new DefaultWorkspaceItemExtension ();
 		}
 
+		[ThreadSafe]
 		public IEnumerable<FilePath> GetItemFiles (bool includeReferencedFiles)
 		{
 			return ItemExtension.GetItemFiles (includeReferencedFiles);
 		}
 		
+		[ThreadSafe]
 		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
-			if (!string.IsNullOrEmpty (FileName) && !col.Contains (FileName))
-				col.Add (FileName);
+			var file = FileName;
+			if (!string.IsNullOrEmpty (file) && !col.Contains (file))
+				col.Add (file);
 			return col;
 		}
 
+		[ThreadSafe]
 		public virtual bool ContainsItem (WorkspaceObject obj)
 		{
 			return this == obj;
 		}
 		
-		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
-		public virtual Project GetProjectContainingFile (FilePath fileName)
-		{
-			return null;
-		}
-
+		[ThreadSafe]
 		public virtual IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
 		{
 			yield break;
 		}
 		
+		[ThreadSafe]
 		public virtual ReadOnlyCollection<string> GetConfigurations ()
 		{
 			return new ReadOnlyCollection<string> (new string [0]);
@@ -211,30 +219,33 @@ namespace MonoDevelop.Projects
 
 		internal void SetParentWorkspace (Workspace workspace)
 		{
+			AssertMainThread ();
 			parentWorkspace = workspace;
 		}
 
+		[ThreadSafe]
 		public virtual FileFormat FileFormat {
 			get {
-				if (format == null) {
-					format = Services.ProjectService.GetDefaultFormat (this);
-				}
 				return format;
 			}
 		}
 		
+		[ThreadSafe]
 		public virtual bool SupportsFormat (FileFormat format)
 		{
 			return true;
 		}
 		
+		[ThreadSafe]
 		public virtual Task ConvertToFormat (FileFormat format, bool convertChildren)
 		{
-			FormatSet = true;
-			this.format = format;
-			if (!string.IsNullOrEmpty (FileName))
-				FileName = format.GetValidFileName (this, FileName);
-			return Task.FromResult (0);
+			return Runtime.RunInMainThread (delegate {
+				FormatSet = true;
+				this.format = format;
+				if (!string.IsNullOrEmpty (FileName))
+					FileName = format.GetValidFileName (this, FileName);
+				return Task.FromResult (0);
+			});
 		}
 		
 		protected virtual void OnConfigurationsChanged ()
@@ -247,25 +258,29 @@ namespace MonoDevelop.Projects
 
 		public Task SaveAsync (FilePath fileName, ProgressMonitor monitor)
 		{
+			AssertMainThread ();
 			FileName = fileName;
 			return SaveAsync (monitor);
 		}
 
-		public async Task SaveAsync (ProgressMonitor monitor)
+		[ThreadSafe]
+		public Task SaveAsync (ProgressMonitor monitor)
 		{
-			using (await WriteLock ()) {
-				try {
-					fileStatusTracker.BeginSave ();
-					await ItemExtension.Save (monitor);
-					SaveUserProperties ();
-					OnSaved (new WorkspaceItemEventArgs (this));
+			return Runtime.RunInMainThread (async delegate {
+				using (await WriteLock ()) {
+					try {
+						fileStatusTracker.BeginSave ();
+						await ItemExtension.Save (monitor);
+						await SaveUserProperties ();
+						OnSaved (new WorkspaceItemEventArgs (this));
 				
-					// Update save times
-				} finally {
-					fileStatusTracker.EndSave ();
+						// Update save times
+					} finally {
+						fileStatusTracker.EndSave ();
+					}
 				}
-			}
-			FileService.NotifyFileChanged (FileName);
+				FileService.NotifyFileChanged (FileName);
+			});
 		}
 
 		protected internal virtual Task OnSave (ProgressMonitor monitor)
@@ -282,17 +297,20 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual bool ItemFilesChanged {
+		[ThreadSafe]
+		public bool ItemFilesChanged {
 			get {
 				return fileStatusTracker.ItemFilesChanged;
 			}
 		}
 
+		[ThreadSafe]
 		internal protected virtual bool OnGetSupportsExecute ()
 		{
 			return true;
 		}
 
+		[ThreadSafe]
 		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
 		{
 			yield break;
@@ -311,11 +329,11 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Called when a load operation for this item has finished
 		/// </summary>
-		internal protected virtual void OnEndLoad ()
+		internal protected virtual async Task OnEndLoad ()
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			LoadUserProperties ();
+			await LoadUserProperties ();
 		}
 
 		/// <summary>
@@ -338,56 +356,61 @@ namespace MonoDevelop.Projects
 			OnItemReady ();
 		}
 
-		public virtual void LoadUserProperties ()
+		public virtual async Task LoadUserProperties ()
 		{
-			if (userProperties != null)
-				userProperties.Dispose ();
-			userProperties = null;
-			
-			string preferencesFileName = GetPreferencesFileName ();
-			if (!File.Exists (preferencesFileName))
-				return;
-			
-			XmlTextReader reader = new XmlTextReader (preferencesFileName);
-			try {
-				reader.MoveToContent ();
-				if (reader.LocalName != "Properties")
-					return;
+			userProperties.Dispose ();
+			userProperties = new PropertyBag ();
 
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.SerializationContext.BaseFile = preferencesFileName;
-				userProperties = (PropertyBag) ser.Deserialize (reader, typeof(PropertyBag));
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while loading user solution preferences.", e);
-				return;
-			} finally {
-				reader.Close ();
-			}
+			string preferencesFileName = GetPreferencesFileName ();
+
+			await Task.Run (() => {
+				if (!File.Exists (preferencesFileName))
+					return;
+			
+				XmlTextReader reader = new XmlTextReader (preferencesFileName);
+				try {
+					reader.MoveToContent ();
+					if (reader.LocalName != "Properties")
+						return;
+
+					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+					ser.SerializationContext.BaseFile = preferencesFileName;
+					userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while loading user solution preferences.", e);
+					return;
+				} finally {
+					reader.Close ();
+				}
+			});
 		}
 		
-		public virtual void SaveUserProperties ()
+		public virtual Task SaveUserProperties ()
 		{
 			string file = GetPreferencesFileName ();
+			var userProps = userProperties;
+
+			return Task.Run (() => {
+				if (userProps == null || userProps.IsEmpty) {
+					if (File.Exists (file))
+						File.Delete (file);
+					return;
+				}
 			
-			if (userProperties == null || userProperties.IsEmpty) {
-				if (File.Exists (file))
-					File.Delete (file);
-				return;
-			}
-			
-			XmlTextWriter writer = null;
-			try {
-				writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-				ser.SerializationContext.BaseFile = file;
-				ser.Serialize (writer, userProperties, typeof(PropertyBag));
-			} catch (Exception e) {
-				LoggingService.LogWarning ("Could not save solution preferences: " + GetPreferencesFileName (), e);
-			} finally {
-				if (writer != null)
-					writer.Close ();
-			}
+				XmlTextWriter writer = null;
+				try {
+					writer = new XmlTextWriter (file, System.Text.Encoding.UTF8);
+					writer.Formatting = Formatting.Indented;
+					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+					ser.SerializationContext.BaseFile = file;
+					ser.Serialize (writer, userProps, typeof(PropertyBag));
+				} catch (Exception e) {
+					LoggingService.LogWarning ("Could not save solution preferences: " + file, e);
+				} finally {
+					if (writer != null)
+						writer.Close ();
+				}
+			});
 		}
 		
 		string GetPreferencesFileName ()

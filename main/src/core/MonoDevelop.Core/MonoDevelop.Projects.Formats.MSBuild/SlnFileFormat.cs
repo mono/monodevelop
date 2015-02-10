@@ -542,7 +542,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				throw;
 			} finally {
 				monitor.EndTask ();
-				sol.OnEndLoad ();
+				await sol.OnEndLoad ();
 				sol.NotifyItemReady ();
 			}
 			return sol;

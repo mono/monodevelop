@@ -261,15 +261,15 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected override void OnEndLoad ()
+		internal protected override async Task OnEndLoad ()
 		{
-			base.OnEndLoad ();
+			await base.OnEndLoad ();
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 
-		public override void LoadUserProperties ()
+		public override async Task LoadUserProperties ()
 		{
-			base.LoadUserProperties ();
+			await base.LoadUserProperties ();
 			var sitem = UserProperties.GetValue<string> ("StartupItem");
 			if (!string.IsNullOrEmpty (sitem))
 				startItemFileName = GetAbsoluteChildPath (sitem);
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects
 				multiStartupItems = sitems.Select (p => (string) GetAbsoluteChildPath (p)).ToList ();
 		}
 
-		public override void SaveUserProperties ()
+		public override async Task SaveUserProperties ()
 		{
 			UserProperties.SetValue ("StartupItem", (string) GetRelativeChildPath (StartupItemFileName));
 			if (MultiStartupItemFileNames != null) {
@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 				UserProperties.RemoveValue ("StartupItems");
 
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
-			base.SaveUserProperties ();
+			await base.SaveUserProperties ();
 			CleanItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 		
@@ -419,12 +419,6 @@ namespace MonoDevelop.Projects
 		public ReadOnlyCollection<Project> GetAllProjectsWithTopologicalSort (ConfigurationSelector configuration)
 		{
 			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
-		}
-
-		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
-		public override Project GetProjectContainingFile (FilePath fileName) 
-		{
-			return RootFolder.GetProjectContainingFile (fileName);
 		}
 
 		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
