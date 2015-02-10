@@ -35,8 +35,8 @@
 				<Reference type="Package" refto="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Packages>
-				<Package Id="Microsoft.AspNet.Mvc" Version="5.2.2" if="UsesAspNetMvc" />
-				<Package id="Microsoft.AspNet.WebApi" version="5.2.2" if="UsesAspNetWebApi" />
+				<Package Id="Microsoft.AspNet.Mvc" Version="5.2.3" if="UsesAspNetMvc" />
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3" if="UsesAspNetWebApi" />
 				<package id="Newtonsoft.Json" version="6.0.8" if="UsesAspNetWebApi" />
 			</Packages>
 			<Files>
@@ -73,9 +73,9 @@
 				<Reference type="Project" refto="${ProjectName}" />
 			</References>
 			<Packages>
-				<Package ID="NUnit" Version="2.6.3" />
-				<Package ID="Microsoft.AspNet.Mvc" Version="5.2.2" if="UsesAspNetMvc"/>
-				<Package id="Microsoft.AspNet.WebApi" version="5.2.2" if=" " />
+				<Package ID="NUnit" Version="2.6.4" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2.3" if="UsesAspNetMvc"/>
+				<Package id="Microsoft.AspNet.WebApi" version="5.2.3" if=" " />
 				<package id="Newtonsoft.Json" version="6.0.8" if=" " />
 			</Packages>
 			<Files>
