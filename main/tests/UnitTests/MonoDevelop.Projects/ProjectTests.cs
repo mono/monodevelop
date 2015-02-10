@@ -550,5 +550,43 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			Assert.AreEqual (MSBuildSupport.Supported, p.MSBuildEngineSupport);
 		}
+
+		[Test]
+		public async Task SerializedWrite ()
+		{
+			var node = new CustomItemNode<SerializedSaveTestExtension> ();
+			WorkspaceObject.RegisterCustomExtension (node);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+				Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (DotNetProject) sol.Items [0];
+
+				var op1 = p.SaveAsync (Util.GetMonitor ());
+				var op2 = p.SaveAsync (Util.GetMonitor ());
+				await op1;
+				await op2;
+				Assert.AreEqual (2, SerializedSaveTestExtension.SaveCount);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (node);
+			}
+		}
+	}
+
+	class SerializedSaveTestExtension: SolutionItemExtension
+	{
+		static bool Running = false;
+		public static int SaveCount = 0;
+
+		internal protected override async Task OnSave (ProgressMonitor monitor)
+		{
+			if (Running)
+				Assert.Fail ("A save operation is already running");
+			Running = true;
+			await Task.Delay (500);
+			Running = false;
+			SaveCount++;
+			await base.OnSave (monitor);
+		}
 	}
 }

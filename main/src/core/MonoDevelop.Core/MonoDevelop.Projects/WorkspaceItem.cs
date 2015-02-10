@@ -356,7 +356,13 @@ namespace MonoDevelop.Projects
 			OnItemReady ();
 		}
 
-		public virtual async Task LoadUserProperties ()
+		public async Task LoadUserProperties ()
+		{
+			using (await ReadLock ())
+				await OnLoadUserProperties ();
+		}
+
+		protected virtual async Task OnLoadUserProperties ()
 		{
 			userProperties.Dispose ();
 			userProperties = new PropertyBag ();
@@ -385,7 +391,13 @@ namespace MonoDevelop.Projects
 			});
 		}
 		
-		public virtual Task SaveUserProperties ()
+		public async Task SaveUserProperties ()
+		{
+			using (await WriteLock ())
+				await OnSaveUserProperties ();
+		}
+
+		protected virtual Task OnSaveUserProperties ()
 		{
 			string file = GetPreferencesFileName ();
 			var userProps = userProperties;
