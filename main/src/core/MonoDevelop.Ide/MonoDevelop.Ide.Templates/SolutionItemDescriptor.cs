@@ -68,9 +68,10 @@ namespace MonoDevelop.Ide.Templates
 				MessageService.ShowError (GettextCatalog.GetString ("Can't create project with type : {0}", typeName));
 				return null;
 			}
-			
+
+			// TODO NPM: should use the project service
 			SolutionItem item = (SolutionItem) Activator.CreateInstance (type);
-			item.InitializeFromTemplate (template);
+			item.InitializeFromTemplate (projectCreateInformation, template);
 			
 			string newProjectName = StringParserService.Parse (name, new string[,] { 
 				{"ProjectName", projectCreateInformation.ProjectName}

@@ -50,7 +50,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(SolutionConfiguration))]
-	public class SolutionFolder : SolutionFolderItem
+	public sealed class SolutionFolder : SolutionFolderItem
 	{
 		SolutionFolderItemCollection items;
 		SolutionFolderFileCollection files;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public virtual bool IsRoot {
+		public bool IsRoot {
 			get { return ParentFolder == null; }
 		}
 
@@ -819,7 +819,7 @@ namespace MonoDevelop.Projects
 			OnItemAdded (e);
 		}
 		
-		protected virtual void OnItemAdded (SolutionItemChangeEventArgs e)
+		void OnItemAdded (SolutionItemChangeEventArgs e)
 		{
 			if (ItemAdded != null)
 				ItemAdded (this, e);
@@ -831,13 +831,13 @@ namespace MonoDevelop.Projects
 			NotifyItemRemovedFromFolder (this, e, removedFromSolution);
 		}
 		
-		protected virtual void OnItemRemoved (SolutionItemChangeEventArgs e)
+		void OnItemRemoved (SolutionItemChangeEventArgs e)
 		{
 			if (ItemRemoved != null)
 				ItemRemoved (this, e);
 		}
 		
-		protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
+		void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnFileRemovedFromProject (e);
@@ -846,7 +846,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected virtual void OnFileChangedInProject (ProjectFileEventArgs e)
+		void OnFileChangedInProject (ProjectFileEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnFileChangedInProject (e);
@@ -855,7 +855,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected virtual void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
+		void OnFilePropertyChangedInProject (ProjectFileEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnFilePropertyChangedInProject (e);
@@ -864,7 +864,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected virtual void OnFileAddedToProject (ProjectFileEventArgs e)
+		void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnFileAddedToProject (e);
@@ -873,7 +873,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected virtual void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
+		void OnFileRenamedInProject (ProjectFileRenamedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnFileRenamedInProject (e);
@@ -882,7 +882,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected virtual void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+		void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnReferenceRemovedFromProject (e);
@@ -891,7 +891,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnReferenceAddedToProject (e);
@@ -900,7 +900,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected virtual void OnItemModified (SolutionItemModifiedEventArgs e)
+		void OnItemModified (SolutionItemModifiedEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntryModified (e);
@@ -908,7 +908,7 @@ namespace MonoDevelop.Projects
 				ItemModified (this, e);
 		}
 		
-		protected virtual void OnItemSaved (SolutionItemEventArgs e)
+		void OnItemSaved (SolutionItemEventArgs e)
 		{
 			if (ParentFolder == null && ParentSolution != null)
 				ParentSolution.OnEntrySaved (e);
@@ -916,13 +916,13 @@ namespace MonoDevelop.Projects
 				ItemSaved (this, e);
 		}
 		
-		protected virtual void OnSolutionItemFileAdded (SolutionItemFileEventArgs args)
+		void OnSolutionItemFileAdded (SolutionItemFileEventArgs args)
 		{
 			if (SolutionItemFileAdded != null)
 				SolutionItemFileAdded (this, args);
 		}
 		
-		protected virtual void OnSolutionItemFileRemoved (SolutionItemFileEventArgs args)
+		void OnSolutionItemFileRemoved (SolutionItemFileEventArgs args)
 		{
 			if (SolutionItemFileRemoved != null)
 				SolutionItemFileRemoved (this, args);

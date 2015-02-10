@@ -61,14 +61,20 @@ namespace MonoDevelop.Projects
 			get { return (SolutionItem) Owner; }
 		}
 
-		internal protected virtual void OnInitializeNew (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+		internal protected virtual void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
-			next.OnInitializeNew (languageName, info, projectOptions);
+			next.OnInitializeFromTemplate (projectCreateInfo, template);
 		}
 
-		internal protected virtual void OnInitializeFromTemplate (XmlElement template)
+		internal void ItemReady ()
 		{
-			next.OnInitializeFromTemplate (template);
+			OnItemReady ();
+			if (next != null)
+				next.ItemReady ();
+		}
+
+		protected virtual void OnItemReady ()
+		{
 		}
 
 		internal void BeginLoad ()
@@ -95,11 +101,6 @@ namespace MonoDevelop.Projects
 		#endregion
 
 		#region Project model
-
-		internal protected virtual FilePath OnGetDefaultBaseDirectory ()
-		{
-			return next.OnGetDefaultBaseDirectory ();
-		}
 
 		internal protected virtual IEnumerable<IBuildTarget> OnGetExecutionDependencies ()
 		{

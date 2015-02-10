@@ -131,26 +131,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, string typeGuid, Type itemType, SolutionItemTypeNode node, SolutionLoadContext ctx)
 		{
-			var item = await CreateSolutionItem (monitor, fileName, typeGuid, itemType, node);
+			SolutionItem item;
+
+			if (itemType != null)
+				item = (SolutionItem)Activator.CreateInstance (itemType);
+			else {
+				item = await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
+				item.EnsureInitialized ();
+			}
 
 			item.BeginLoad ();
 			ctx.LoadCompleted += delegate {
 				item.EndLoad ();
+				item.NotifyItemReady ();
 			};
 
 			await item.LoadAsync (monitor, fileName, format);
 			return item;
-		}
-
-		// All of the last 4 parameters are optional, but at least one must be provided.
-		static async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid, Type itemClass, SolutionItemTypeNode node)
-		{
-			if (itemClass != null)
-				return (SolutionItem)Activator.CreateInstance (itemClass);
-
-			var it = await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
-			it.EnsureInitialized ();
-			return it;
 		}
 
 		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -168,6 +165,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
 					var p = node.CreateProject (typeGuid, flavorGuids);
 					p.EnsureInitialized ();
+					p.NotifyItemReady ();
 					return p;
 				}
 			}
@@ -177,8 +175,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			foreach (var node in GetItemTypeNodes ()) {
-				if (node.CanCreateSolutionItem (type, info, projectOptions))
-					return node.CreateSolutionItem (type, info, projectOptions);
+				if (node.CanCreateSolutionItem (type, info, projectOptions)) {
+					var item = node.CreateSolutionItem (type, info, projectOptions);
+					item.NotifyItemReady ();
+					return item;
+				}
 			}
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}

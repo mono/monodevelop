@@ -108,8 +108,16 @@ namespace MonoDevelop.Projects
 				CompileTarget = CompileTarget.Library;
 		}
 
-		internal protected override void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		protected override void SetShared ()
 		{
+			base.SetShared ();
+			projectReferences.SetShared ();
+		}
+
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		{
+			base.OnInitializeFromTemplate (projectCreateInfo, projectOptions);
+
 			if ((projectOptions != null) && (projectOptions.Attributes ["Target"] != null))
 				CompileTarget = (CompileTarget)Enum.Parse (typeof(CompileTarget), projectOptions.Attributes ["Target"].Value);
 			else if (IsLibraryBasedProjectType)

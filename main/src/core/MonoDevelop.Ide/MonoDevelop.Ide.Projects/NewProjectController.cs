@@ -460,17 +460,20 @@ namespace MonoDevelop.Ide.Projects
 						// Inherit the file format from the solution
 						eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
 
-						// Remove any references to other projects and add them back after the
-						// project is saved because a project reference cannot be resolved until
-						// the project has a parent solution.
-						List<ProjectReference> projectReferences = GetProjectReferences (eitem);
-						if (projectReferences.Any ())
-							eitem.Items.RemoveRange (projectReferences);
+						var project = eitem as Project;
+						if (project != null) {
+							// Remove any references to other projects and add them back after the
+							// project is saved because a project reference cannot be resolved until
+							// the project has a parent solution.
+							List<ProjectReference> projectReferences = GetProjectReferences (project);
+							if (projectReferences.Any ())
+								project.Items.RemoveRange (projectReferences);
 
-						await IdeApp.ProjectOperations.SaveAsync (eitem);
+							await IdeApp.ProjectOperations.SaveAsync (eitem);
 
-						if (projectReferences.Any ())
-							eitem.Items.AddRange (projectReferences);
+							if (projectReferences.Any ())
+								project.Items.AddRange (projectReferences);
+						}
 					}
 					ParentFolder.AddItem (currentEntry, true);
 				}
@@ -515,7 +518,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		List<ProjectReference> GetProjectReferences (SolutionItem solutionItem)
+		List<ProjectReference> GetProjectReferences (Project solutionItem)
 		{
 			return solutionItem.Items.OfType<ProjectReference> ()
 				.Where (item => item.ReferenceType == ReferenceType.Project)

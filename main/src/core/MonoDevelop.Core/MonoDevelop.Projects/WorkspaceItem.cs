@@ -311,7 +311,27 @@ namespace MonoDevelop.Projects
 			fileStatusTracker.ResetLoadTimes ();
 			LoadUserProperties ();
 		}
-		
+
+		/// <summary>
+		/// Called when an item has been fully created and/or loaded
+		/// </summary>
+		/// <remarks>>
+		/// This method is invoked when all operations required for creating or loading this item have finished.
+		/// If the item is being created in memory, this method will be called just after OnExtensionChainInitialized.
+		/// If the item is being loaded from a file, it will be called after OnEndLoad.
+		/// If the item is being created from a template, it will be called after InitializeNew
+		/// </remarks>
+		protected virtual void OnItemReady ()
+		{
+			SetShared ();
+		}
+
+		internal void NotifyItemReady ()
+		{
+			ItemExtension.ItemReady ();
+			OnItemReady ();
+		}
+
 		public virtual void LoadUserProperties ()
 		{
 			if (userProperties != null)

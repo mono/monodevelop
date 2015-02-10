@@ -53,7 +53,7 @@ namespace MonoDevelop.NUnit
 				Configurations.Add (CreateConfiguration ("Default"));
 		}
 
-		protected override void OnInitializeFromTemplate (XmlElement element)
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement element)
 		{
 			Configurations.Add (CreateConfiguration ("Default"));
 		}

@@ -31,6 +31,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using MonoDevelop.Core;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
@@ -113,12 +114,12 @@ namespace MonoDevelop.Projects
 	[Serializable()]
 	public class ProjectFileCollection : ProjectItemCollection<ProjectFile>
 	{
-		Dictionary<FilePath, ProjectFile> files;
+		ImmutableDictionary<FilePath, ProjectFile> files;
 		ProjectFileNode root;
 
 		public ProjectFileCollection ()
 		{
-			files = new Dictionary<FilePath, ProjectFile> ();
+			files = ImmutableDictionary<FilePath, ProjectFile>.Empty;
 			root = new ProjectFileNode ();
 		}
 
@@ -142,9 +143,10 @@ namespace MonoDevelop.Projects
 
 		void FilePathChanged (object sender, ProjectFilePathChangedEventArgs e)
 		{
+			AssertCanWrite ();
 			ProjectVirtualPathChanged (sender, e);
-			files.Remove (e.OldPath);
-			files[e.NewPath] = e.ProjectFile;
+			files = files.Remove (e.OldPath);
+			files = files.SetItem (e.NewPath, e.ProjectFile);
 		}
 
 		void AddProjectFile (ProjectFile item)
@@ -158,7 +160,7 @@ namespace MonoDevelop.Projects
 				node.ProjectFile = item;
 			}
 
-			files[item.FilePath] = item;
+			files = files.SetItem (item.FilePath, item);
 		}
 
 		void PruneEmptyParents (ProjectFileNode node)
@@ -178,37 +180,25 @@ namespace MonoDevelop.Projects
 				PruneEmptyParents (node.Parent);
 			}
 
-			files.Remove (item.FilePath);
+			files = files.Remove (item.FilePath);
 
 			item.VirtualPathChanged -= ProjectVirtualPathChanged;
 			item.PathChanged -= FilePathChanged;
 		}
 
 		#region ItemCollection<T>
-		protected override void OnItemAdded (ProjectFile item)
+		protected override void OnItemsAdded (IEnumerable<ProjectFile> items)
 		{
-			AddProjectFile (item);
-			base.OnItemAdded (item);
+			foreach (var item in items)
+				AddProjectFile (item);
+			base.OnItemsAdded (items);
 		}
 
-		protected override void OnItemRemoved (ProjectFile item)
+		protected override void OnItemsRemoved (IEnumerable<ProjectFile> items)
 		{
-			RemoveProjectFile (item);
-			base.OnItemRemoved (item);
-		}
-		#endregion
-
-		#region ProjectItemCollection<T>
-		protected override void AddItem (ProjectFile item)
-		{
-			AddProjectFile (item);
-			base.AddItem (item);
-		}
-
-		protected override void RemoveItem (ProjectFile item)
-		{
-			RemoveProjectFile (item);
-			base.RemoveItem (item);
+			foreach (var item in items)
+				RemoveProjectFile (item);
+			base.OnItemsRemoved (items);
 		}
 		#endregion
 
@@ -254,7 +244,7 @@ namespace MonoDevelop.Projects
 		public ProjectFile[] GetFilesInPath (FilePath path)
 		{
 			List<ProjectFile> list = new List<ProjectFile> ();
-			foreach (ProjectFile file in Items) {
+			foreach (ProjectFile file in this) {
 				if (file.FilePath.IsChildPathOf (path))
 					list.Add (file);
 			}
@@ -265,7 +255,7 @@ namespace MonoDevelop.Projects
 		{
 			fileName = FileService.GetFullPath (fileName);
 			for (int n = 0; n < Count; n++) {
-				if (Items[n].Name == fileName) {
+				if (this[n].Name == fileName) {
 					RemoveAt (n);
 					break;
 				}

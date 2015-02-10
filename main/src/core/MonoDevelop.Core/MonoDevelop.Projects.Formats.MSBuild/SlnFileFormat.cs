@@ -529,7 +529,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (fileName == null || monitor == null)
 				return null;
 
-			var sol = new Solution ();
+			var sol = new Solution (true);
 			sol.OnBeginLoad ();
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
@@ -543,6 +543,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} finally {
 				monitor.EndTask ();
 				sol.OnEndLoad ();
+				sol.NotifyItemReady ();
 			}
 			return sol;
 		}

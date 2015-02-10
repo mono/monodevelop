@@ -69,6 +69,17 @@ namespace MonoDevelop.Projects
 		{
 			return t.IsInstanceOfType (this) ? this : next.GetService (t);
 		}
+
+		internal void NotifyShared ()
+		{
+			SetShared ();
+			if (next != null)
+				next.SetShared ();
+		}
+
+		protected virtual void SetShared ()
+		{
+		}
 	}
 }
 

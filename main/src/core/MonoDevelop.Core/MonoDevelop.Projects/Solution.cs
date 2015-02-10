@@ -69,11 +69,17 @@ namespace MonoDevelop.Projects
 		[ProjectPathItemProperty ("outputpath")]
 		string outputdir     = null;
 		
-		public Solution ()
+		public Solution (): this (false)
+		{
+		}
+
+		internal Solution (bool loading)
 		{
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
 			Initialize (this);
+			if (!loading)
+				NotifyItemReady ();
 		}
 
 		internal HashSet<string> LoadedProjects {
@@ -590,7 +596,6 @@ namespace MonoDevelop.Projects
 				}
 			}
 		}	 
-
 
 		public Task<BuildResult> Clean (ProgressMonitor monitor, string configuration)
 		{

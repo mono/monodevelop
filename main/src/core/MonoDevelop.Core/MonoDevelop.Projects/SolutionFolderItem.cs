@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 		SolutionFolder parentFolder;
 		Solution parentSolution;
 		SolutionFolder internalChildren;
+		string typeGuid;
 		
 		[ProjectPathItemProperty ("BaseDirectory", DefaultValue=null)]
 		string baseDirectory;
@@ -53,7 +54,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("UseMSBuildEngine")]
 		public bool? UseMSBuildEngine { get; set; }
 		
-		PropertyBag userProperties;
+		PropertyBag userProperties = new PropertyBag ();
 
 		internal List<string> UnresolvedProjectDependencies { get; set; }
 
@@ -63,6 +64,7 @@ namespace MonoDevelop.Projects
 				return base.Name;
 			}
 			set {
+				AssertMainThread ();
 				if (value != Name) {
 					var oldName = Name;
 					OnSetName (value);
@@ -72,8 +74,13 @@ namespace MonoDevelop.Projects
 		}
 
 		public string TypeGuid {
-			get;
-			set;
+			get {
+				return this.typeGuid;
+			}
+			set {
+				AssertMainThread ();
+				typeGuid = value;
+			}
 		}
 
 		protected abstract void OnSetName (string value);
@@ -118,6 +125,7 @@ namespace MonoDevelop.Projects
 					return baseDirectory;
 			}
 			set {
+				AssertMainThread ();
 				FilePath def = GetDefaultBaseDirectory ();
 				if (value != FilePath.Null && def != FilePath.Null && value.FullPath == def.FullPath)
 					baseDirectory = null;
@@ -172,6 +180,7 @@ namespace MonoDevelop.Projects
 				return itemId;
 			}
 			set {
+				AssertMainThread ();
 				itemId = value;
 			}
 		}
@@ -216,8 +225,6 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public PropertyBag UserProperties {
 			get {
-				if (userProperties == null)
-					userProperties = new PropertyBag ();
 				return userProperties; 
 			}
 		}
@@ -249,6 +256,7 @@ namespace MonoDevelop.Projects
 				return parentFolder;
 			}
 			internal set {
+				AssertMainThread ();
 				if (parentFolder != null && parentFolder.ParentSolution != null && (value == null || value.ParentSolution != parentFolder.ParentSolution))
 					NotifyUnboundFromSolution (false);
 
@@ -370,6 +378,7 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		protected void RegisterInternalChild (SolutionFolderItem item)
 		{
+			AssertMainThread ();
 			if (internalChildren == null) {
 				internalChildren = new SolutionFolder ();
 				internalChildren.ParentFolder = parentFolder;
@@ -385,6 +394,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		protected void UnregisterInternalChild (SolutionFolderItem item)
 		{
+			AssertMainThread ();
 			if (internalChildren != null)
 				internalChildren.Items.Remove (item);
 		}
@@ -462,6 +472,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		protected virtual void OnModified (SolutionItemModifiedEventArgs args)
 		{
+			AssertMainThread ();
 			if (Modified != null && !Disposed)
 				Modified (this, args);
 		}

@@ -94,12 +94,12 @@ namespace MonoDevelop.AspNet.Projects
 
 		#region constructors
 
-		protected override void OnInitializeNew (string languageName, ProjectCreateInformation info, XmlElement projectOptions)
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
-			base.OnInitializeNew (languageName, info, projectOptions);
+			base.OnInitializeFromTemplate (projectCreateInfo, template);
 			codebehindTypeNameCache = new WebFormsCodeBehindTypeNameCache (Project);
 
-			var binPath = info == null? (FilePath)"bin" : info.BinPath;
+			var binPath = projectCreateInfo == null? (FilePath)"bin" : projectCreateInfo.BinPath;
 			foreach (var cfg in Project.Configurations.Cast<DotNetProjectConfiguration> ())
 				cfg.OutputDirectory = binPath;
 		}

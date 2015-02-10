@@ -56,8 +56,6 @@ namespace MonoDevelop.Projects
 		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
 
 		int loading;
-		ProjectItemCollection items;
-		ProjectItemCollection wildcardItems;
 		ItemCollection<SolutionItem> dependencies = new ItemCollection<SolutionItem> ();
 
 		SolutionItemEventArgs thisItemArgs;
@@ -88,8 +86,6 @@ namespace MonoDevelop.Projects
 			TypeGuid = MSBuildProjectService.GetTypeGuidForItem (this);
 
 			SetSolutionFormat ((MSBuildFileFormat)fmt.Format, true);
-			items = new ProjectItemCollection (this);
-			wildcardItems = new ProjectItemCollection (this);
 			thisItemArgs = new SolutionItemEventArgs (this);
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += OnConfigurationAddedToCollection;
@@ -125,12 +121,6 @@ namespace MonoDevelop.Projects
 			base.Dispose ();
 			Counters.ItemsLoaded--;
 
-			foreach (var item in items.Concat (wildcardItems)) {
-				IDisposable disp = item as IDisposable;
-				if (disp != null)
-					disp.Dispose ();
-			}
-			
 			// items = null;
 			// wildcardItems = null;
 			// thisItemArgs = null;
@@ -168,6 +158,33 @@ namespace MonoDevelop.Projects
 			ItemExtension.EndLoad ();
 			OnEndLoad ();
 		}
+
+		/// <summary>
+		/// Called when an item has been fully created and/or loaded
+		/// </summary>
+		/// <remarks>>
+		/// This method is invoked when all operations required for creating or loading this item have finished.
+		/// If the item is being created in memory, this method will be called just after OnExtensionChainInitialized.
+		/// If the item is being loaded from a file, it will be called after OnEndLoad.
+		/// If the item is being created from a template, it will be called after InitializeNew
+		/// </remarks>
+		protected virtual void OnItemReady ()
+		{
+			SetShared ();
+		}
+
+		internal void NotifyItemReady ()
+		{
+			ItemExtension.ItemReady ();
+			OnItemReady ();
+		}
+
+		protected override void SetShared ()
+		{
+			base.SetShared ();
+			configurations.SetShared ();
+		}
+
 
 		/// <summary>
 		/// Called when a load operation for this solution item has started
@@ -295,14 +312,6 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		public ProjectItemCollection Items {
-			get { return items; }
-		}
-
-		internal ProjectItemCollection WildcardItems {
-			get { return wildcardItems; }
-		}
-		
 		/// <summary>
 		/// Projects that need to be built before building this one
 		/// </summary>
@@ -380,22 +389,20 @@ namespace MonoDevelop.Projects
 		/// <param name='template'>
 		/// The template
 		/// </param>
-		public void InitializeFromTemplate (XmlElement template)
+		public void InitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
-			ItemExtension.OnInitializeFromTemplate (template);
+			// TODO NPM: should be internal
+			ItemExtension.OnInitializeFromTemplate (projectCreateInfo, template);
 		}
 
-		protected virtual void OnInitializeFromTemplate (XmlElement template)
-		{
-		}
-
-		internal protected virtual void InitializeNew (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
+		protected virtual void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
 		}
 
-		protected override FilePath GetDefaultBaseDirectory ( )
+		protected sealed override FilePath GetDefaultBaseDirectory ( )
 		{
-			return ItemExtension.OnGetDefaultBaseDirectory ();
+			var file = FileName;
+			return file.IsNullOrEmpty ? FilePath.Empty : file.ParentDirectory; 
 		}
 
 		internal Task LoadAsync (ProgressMonitor monitor, FilePath fileName, MSBuildFileFormat format)
@@ -1246,14 +1253,9 @@ namespace MonoDevelop.Projects
 	
 		class DefaultMSBuildItemExtension: SolutionItemExtension
 		{
-			internal protected override void OnInitializeFromTemplate (XmlElement template)
+			internal protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 			{
-				Item.OnInitializeFromTemplate (template);
-			}
-
-			internal protected override FilePath OnGetDefaultBaseDirectory ()
-			{
-				return Item.FileName.IsNullOrEmpty ? FilePath.Empty : Item.FileName.ParentDirectory; 
+				Item.OnInitializeFromTemplate (projectCreateInfo, template);
 			}
 
 			internal protected override IEnumerable<IBuildTarget> OnGetExecutionDependencies ()

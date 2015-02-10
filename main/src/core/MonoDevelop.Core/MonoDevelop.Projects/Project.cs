@@ -33,7 +33,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using MonoDevelop;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
@@ -43,8 +42,6 @@ using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
-using System.Threading;
-using Mono.Addins;
 
 
 namespace MonoDevelop.Projects
@@ -68,13 +65,26 @@ namespace MonoDevelop.Projects
 
 		List<string> defaultImports;
 
+		ProjectItemCollection items;
+		ProjectItemCollection wildcardItems;
+
 		protected Project ()
 		{
+			items = new ProjectItemCollection (this);
+			wildcardItems = new ProjectItemCollection (this);
 			FileService.FileChanged += OnFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
+		}
+
+		public ProjectItemCollection Items {
+			get { return items; }
+		}
+
+		internal ProjectItemCollection WildcardItems {
+			get { return wildcardItems; }
 		}
 
 		protected Project (params string[] flavorGuids): this()
@@ -92,6 +102,14 @@ namespace MonoDevelop.Projects
 			if (!string.IsNullOrEmpty (ids)) {
 				this.flavorGuids = ids.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			}
+		}
+
+		protected override void SetShared ()
+		{
+			base.SetShared ();
+			items.SetShared ();
+			wildcardItems.SetShared ();
+			files.SetShared ();
 		}
 
 		internal class CreationContext
@@ -565,6 +583,12 @@ namespace MonoDevelop.Projects
 
 		public override void Dispose ()
 		{
+			foreach (var item in items.Concat (wildcardItems)) {
+				IDisposable disp = item as IDisposable;
+				if (disp != null)
+					disp.Dispose ();
+			}
+
 			FileService.FileChanged -= OnFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 			CleanupProjectBuilder ();

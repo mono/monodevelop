@@ -128,7 +128,7 @@ namespace MonoDevelop.Gettext
 			return true;
 		}
 		
-		protected override void OnInitializeFromTemplate (XmlElement template)
+		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
 			OutputType  = (TranslationOutputType)Enum.Parse (typeof(TranslationOutputType), template.GetAttribute ("outputType"));
 			PackageName = template.GetAttribute ("packageName");

@@ -53,6 +53,17 @@ namespace MonoDevelop.Projects
 			return next.SupportsItem (item);
 		}
 
+		internal void ItemReady ()
+		{
+			OnItemReady ();
+			if (next != null)
+				next.OnItemReady ();
+		}
+
+		protected virtual void OnItemReady ()
+		{
+		}
+
 		internal protected virtual Task Save (ProgressMonitor monitor)
 		{
 			return next.Save (monitor);

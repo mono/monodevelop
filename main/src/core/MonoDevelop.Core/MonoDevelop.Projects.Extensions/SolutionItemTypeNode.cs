@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects.Extensions
 		{
 			var item = CreateSolutionItem (new ProgressMonitor (), null, Guid).Result;
 			item.EnsureInitialized ();
-			item.InitializeNew (info, projectOptions);
+			item.InitializeFromTemplate (info, projectOptions);
 			return item;
 		}
 	}

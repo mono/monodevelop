@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects
 	{
 		Hashtable extendedProperties;
 		bool initializeCalled;
+		bool isShared;
 
 		internal protected void Initialize<T> (T instance)
 		{
@@ -62,6 +63,18 @@ namespace MonoDevelop.Projects
 				InitializeExtensionChain ();
 				OnExtensionChainInitialized ();
 			}
+		}
+
+		protected void AssertMainThread ()
+		{
+			if (isShared)
+				Runtime.AssertMainThread ();
+		}
+
+		protected virtual void SetShared ()
+		{
+			isShared = true;
+			ItemExtension.NotifyShared ();
 		}
 
 		public string Name {
