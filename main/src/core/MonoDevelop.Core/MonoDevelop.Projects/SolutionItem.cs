@@ -57,14 +57,11 @@ namespace MonoDevelop.Projects
 
 		int loading;
 		ItemCollection<SolutionItem> dependencies = new ItemCollection<SolutionItem> ();
-
 		SolutionItemEventArgs thisItemArgs;
-		
 		FileStatusTracker<SolutionItemEventArgs> fileStatusTracker;
-
 		FilePath fileName;
 		string name;
-		
+		SolutionItemExtension itemExtension;
 		FileFormat fileFormat;
 		
 		SolutionItemConfiguration activeConfiguration;
@@ -94,12 +91,16 @@ namespace MonoDevelop.Projects
 			fileStatusTracker = new FileStatusTracker<SolutionItemEventArgs> (this, OnReloadRequired, new SolutionItemEventArgs (this));
 		}
 
-		SolutionItemExtension itemExtension;
+		protected override void OnExtensionChainInitialized ()
+		{
+			itemExtension = ExtensionChain.GetExtension<SolutionItemExtension> ();
+			base.OnExtensionChainInitialized ();
+		}
 
 		SolutionItemExtension ItemExtension {
 			get {
 				if (itemExtension == null)
-					itemExtension = ExtensionChain.GetExtension<SolutionItemExtension> ();
+					AssertExtensionChainCreated ();
 				return itemExtension;
 			}
 		}

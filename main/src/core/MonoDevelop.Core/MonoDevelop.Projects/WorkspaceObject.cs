@@ -194,13 +194,18 @@ namespace MonoDevelop.Projects
 		ExtensionChain extensionChain;
 		protected ExtensionChain ExtensionChain {
 			get {
-				if (extensionChain == null) {
-					if (!initializeCalled)
-						throw new InvalidOperationException ("The constructor of type " + GetType () + " must call Initialize(this)");
-					else
-						throw new InvalidOperationException ("The extension chain can't be used before OnExtensionChainInitialized() method is called");
-				}
+				AssertExtensionChainCreated ();
 				return extensionChain;
+			}
+		}
+
+		protected void AssertExtensionChainCreated ()
+		{
+			if (extensionChain == null) {
+				if (!initializeCalled)
+					throw new InvalidOperationException ("The constructor of type " + GetType () + " must call Initialize(this)");
+				else
+					throw new InvalidOperationException ("The extension chain can't be used before OnExtensionChainInitialized() method is called");
 			}
 		}
 
@@ -209,7 +214,7 @@ namespace MonoDevelop.Projects
 		WorkspaceObjectExtension ItemExtension {
 			get {
 				if (itemExtension == null)
-					itemExtension = ExtensionChain.GetExtension<WorkspaceObjectExtension> ();
+					AssertExtensionChainCreated ();
 				return itemExtension;
 			}
 		}
@@ -287,6 +292,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual void OnExtensionChainInitialized ()
 		{
+			itemExtension = ExtensionChain.GetExtension<WorkspaceObjectExtension> ();
 		}
 
 		protected virtual IDictionary OnGetExtendedProperties ()

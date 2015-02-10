@@ -154,12 +154,18 @@ namespace MonoDevelop.Projects
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
 		}
 
+		protected override void OnExtensionChainInitialized ()
+		{
+			itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
+			base.OnExtensionChainInitialized ();
+		}
+
 		WorkspaceItemExtension itemExtension;
 
 		WorkspaceItemExtension ItemExtension {
 			get {
 				if (itemExtension == null)
-					itemExtension = ExtensionChain.GetExtension<WorkspaceItemExtension> ();
+					AssertExtensionChainCreated ();
 				return itemExtension;
 			}
 		}

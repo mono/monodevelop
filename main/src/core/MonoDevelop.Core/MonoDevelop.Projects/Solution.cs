@@ -87,12 +87,18 @@ namespace MonoDevelop.Projects
 			set;
 		}
 
+		protected override void OnExtensionChainInitialized ()
+		{
+			itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
+			base.OnExtensionChainInitialized ();
+		}
+
 		SolutionExtension itemExtension;
 
 		SolutionExtension SolutionExtension {
 			get {
 				if (itemExtension == null)
-					itemExtension = ExtensionChain.GetExtension<SolutionExtension> ();
+					AssertExtensionChainCreated ();
 				return itemExtension;
 			}
 		}

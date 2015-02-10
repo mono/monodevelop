@@ -62,6 +62,7 @@ namespace MonoDevelop.Projects
 		string productVersion;
 		string schemaVersion;
 		bool modifiedInMemory;
+		ProjectExtension projectExtension;
 
 		List<string> defaultImports;
 
@@ -175,6 +176,7 @@ namespace MonoDevelop.Projects
 
 		protected override void OnExtensionChainInitialized ()
 		{
+			projectExtension = ExtensionChain.GetExtension<ProjectExtension> ();
 			base.OnExtensionChainInitialized ();
 			if (creationContext != null && creationContext.Project != null)
 				FileName = creationContext.Project.FileName;
@@ -214,11 +216,10 @@ namespace MonoDevelop.Projects
 			return FlavorGuids.All (g => ProjectExtension.SupportsFlavor (g));
 		}
 
-		ProjectExtension projectExtension;
 		ProjectExtension ProjectExtension {
 			get {
 				if (projectExtension == null)
-					projectExtension = ExtensionChain.GetExtension<ProjectExtension> ();
+					AssertExtensionChainCreated ();
 				return projectExtension;
 			}
 		}

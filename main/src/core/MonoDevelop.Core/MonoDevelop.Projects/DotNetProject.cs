@@ -97,6 +97,7 @@ namespace MonoDevelop.Projects
 
 		protected override void OnExtensionChainInitialized ()
 		{
+			projectExtension = ExtensionChain.GetExtension<DotNetProjectExtension> ();
 			base.OnExtensionChainInitialized ();
 
 			this.usePartialTypes = SupportsPartialTypes;
@@ -224,7 +225,7 @@ namespace MonoDevelop.Projects
 		DotNetProjectExtension ProjectExtension {
 			get {
 				if (projectExtension == null)
-					projectExtension = ExtensionChain.GetExtension<DotNetProjectExtension> ();
+					AssertExtensionChainCreated ();
 				return projectExtension;
 			}
 		}
