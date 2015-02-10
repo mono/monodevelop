@@ -36,10 +36,10 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
         overloads
         |> Seq.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, List.empty) :> _ )
 
-    override x.AddOverload (data: CompletionData) = () //not currently called
+    override x.AddOverload (_data) = () //not currently called
 
     // TODO: what does 'smartWrap' indicate?
-    override x.CreateTooltipInformation (smartWrap: bool) = 
+    override x.CreateTooltipInformation (_smartWrap) = 
       Debug.WriteLine("computing tooltip for {0}", name)
       let tip = SymbolTooltips.getTooltipFromSymbolUse symbol (lazy None)
       match tip  with
@@ -63,6 +63,81 @@ type Category(category) =
     inherit CompletionCategory(category, null)
     override x.CompareTo other =
         if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
+
+type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem ) =
+    inherit ParameterHintingData (null)
+
+    override x.ParameterCount =
+        meth.Parameters.Length
+
+    override x.IsParameterListAllowed = false
+
+    override x.GetParameterName i = 
+        meth.Parameters.[i].ParameterName
+
+    /// Returns the markup to use to represent the specified method overload
+    /// in the parameter information window.
+    override x.CreateTooltipInformation (_editor, _context, currentParameter:int, _smartWrap:bool) = 
+        // Get the lower part of the text for the display of an overload
+        let signature, comment =
+            match TooltipFormatting.formatTip meth.Description with
+            | [signature,comment] -> signature,comment
+            //With multiple tips just take the head.  
+            //This shouldnt happen anyway as we split them in the resolver provider
+            | multiple ->
+                multiple 
+                |> List.head
+                |> (fun (signature,comment) -> signature,comment)
+
+        let description =
+            let param = 
+                meth.Parameters |> Array.mapi (fun i param -> 
+                    let paramDesc = 
+                        // Sometimes the parameter decription is hidden in the XML docs
+                        match TooltipFormatting.extractParamTip param.ParameterName meth.Description with 
+                        | Some(tip) -> tip
+                        | None -> param.Description
+                    let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
+                    let text = name + ": " + GLib.Markup.EscapeText paramDesc
+                    text )
+            if String.IsNullOrEmpty comment then String.Join("\n", param)
+            else comment + "\n" + String.Join("\n", param)
+            
+        
+        // Returns the text to use to represent the specified parameter
+        let paramDescription = 
+            if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
+            let param = meth.Parameters.[currentParameter]
+            param.ParameterName 
+
+        let heading = 
+
+            let lines = signature.Split [| '\n';'\r' |]
+
+            // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
+            // put it back together again.
+            //
+            // @todo This will not be perfect when the text contains generic types with more than one type parameter
+            // since they will have extra commas. 
+
+            let text = if lines.Length = 0 then name else  lines.[0]
+            let textL = text.Split '('
+            if textL.Length <> 2 then text else
+            let _text0 = textL.[0] //TODO where is this/was used. Fix
+            let text1 = textL.[1]
+            let text1L = text1.Split ')'
+            if text1L.Length <> 2 then text else
+            let text10 = text1L.[0]
+            let text11 = text1L.[1]
+            let text10L =  text10.Split ','
+            let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
+            textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
+
+        let tooltipInfo = TooltipInformation(SummaryMarkup   = description,
+                                             SignatureMarkup = heading,
+                                             FooterMarkup    = paramDescription)
+        tooltipInfo
+
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
 type FSharpTextEditorCompletion() =
@@ -143,9 +218,9 @@ type FSharpTextEditorCompletion() =
                 match symbolUse with
                 | Constructor c ->
                     Some c.EnclosingEntity.DisplayName
-                | TypeAbbreviation ta -> None
-                | Class cl -> None
-                | Delegate dl -> None
+                | TypeAbbreviation _ta -> None
+                | Class _cl -> None
+                | Delegate _dl -> None
                 | Event ev ->
                     Some ev.EnclosingEntity.DisplayName
                 | Property pr ->
@@ -166,7 +241,7 @@ type FSharpTextEditorCompletion() =
                     Some o.EnclosingEntity.DisplayName
                 | Pattern p ->
                     Some p.EnclosingEntity.DisplayName
-                | ClosureOrNestedFunction cl ->
+                | ClosureOrNestedFunction _cl ->
                     //Theres no link to a parent type for a closure (FCS limitation)
                     None
                 | Val _ |  Enum _ | Interface _ | Module _ | Namespace _
@@ -202,7 +277,7 @@ type FSharpTextEditorCompletion() =
     try
         if suppressParameterCompletion then
            suppressParameterCompletion <- false
-           return null
+           return ParameterHintingResult.Empty
         else
         let docText = x.Editor.Text
         let offset = context.TriggerOffset
@@ -219,7 +294,8 @@ type FSharpTextEditorCompletion() =
                 else loop depth (i-1) 
             loop 0 (offset-1)
         
-        if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset then return null 
+        if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset
+        then return ParameterHintingResult.Empty 
         else
         LoggingService.LogDebug("FSharpTextEditorCompletion: Getting Parameter Info, startOffset = {0}", startOffset)
         
@@ -227,22 +303,31 @@ type FSharpTextEditorCompletion() =
         
         // Try to get typed result - within the specified timeout
         let! methsOpt =
-            async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
+            async {let! tyRes =
+                       MDLanguageService.Instance.GetTypedParseResultAsync
+                           (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
                    let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, x.Editor)
                    let! methsOpt = tyRes.GetMethods(line, col, lineStr)
                    return methsOpt }
         
-        match methsOpt with 
+        match methsOpt with
         | Some(name, meths) when meths.Length > 0 -> 
             LoggingService.LogInfo ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
             //TODO Convert meths to ParameterHintingData
-            let data = ResizeArray()
-            return ParameterHintingResult(data, startOffset) 
+            let hintingData =
+                meths
+                |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
+                |> ResizeArray.ofArray
+
+            return ParameterHintingResult(hintingData, startOffset) 
         | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")
-               return null 
-    with ex ->
+               return ParameterHintingResult.Empty 
+    with
+    | :? Threading.Tasks.TaskCanceledException ->
+        return ParameterHintingResult.Empty
+    | ex ->
         LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
-        return null})
+        return ParameterHintingResult.Empty})
 
   override x.KeyPress (descriptor:KeyDescriptor) =
       // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
@@ -266,24 +351,18 @@ type FSharpTextEditorCompletion() =
   override x.HandleCodeCompletionAsync(context, completionChar, token) =
       if completionChar <> '.' then null else
 
-      // We generally avoids forcing a re-typecheck on '.' presses by using
-      // TryGetRecentTypeCheckResults. Forcing a re-typecheck on a user action can cause a 
-      // blocking delay in the UI (up to the blockingTimeout=500). We can't do it asynchronously 
-      // because MD doesn't allow this yet). 
+      // We generally avoid forcing a re-typecheck on '.' by using TryGetRecentTypeCheckResults. Forcing a re-typecheck on a user action 
+      // can cause a blocking delay in the UI (up to the blockingTimeout=500). We can't do it asynchronously because MD doesn't allow this yet). 
       //
-      // However, if the '.' is pressed then in some situations the F# compiler language service 
-      // really does need to re-typecheck, especially when relying on 'expression' typings 
-      // (rather than just name lookup). This is specifically the case on '.' because of this curious
-      // line in service.fs:
-      //   https://github.com/fsharp/fsharp/blob/0e80412570847e3e825b30f8636fc313ebaa3be0/src/fsharp/vs/service.fs#L771
-      // where the location is adjusted by +1. However that location won't yield good expression typings 
-      // because the resuls returned by TryGetRecentTypeCheckResults will be based on code where the 
-      // '.' was not present.
+      // However, if a '.' is pressed then in some situations the F# compiler language service really does need to re-typecheck, especially when
+      // relying on 'expression' typings (rather than just name lookup). This is specifically the case on '.' because of this curious
+      // line in service.fs: https://github.com/fsharp/fsharp/blob/0e80412570847e3e825b30f8636fc313ebaa3be0/src/fsharp/vs/service.fs#L771
+      // where the location is adjusted by +1. However that location won't yield good expression typings because the results returned by 
+      // TryGetRecentTypeCheckResults will be based on code where the '.' was not present.
       //
-      // Because of this, we like to force re-typechecking in those situations where '.' is pressed 
-      // AND when expression typings are highly likely to be useful. The most common example of this
-      // is where a character to the left of the '.' is not a letter. This catches situations like
-      //     (abc + def).
+      // Because of this, we like to force re-typechecking in those situations where '.' is pressed AND when expression typings are highly 
+      // likely to be useful. The most common example of this is where a character to the left of the '.' is not a letter. This catches 
+      // situations like (abc + def).
       // Note, however, that this is just an approximation - for example no re-typecheck is enforced here:
       //      (abc + def).PPP.
       
