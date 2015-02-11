@@ -180,6 +180,8 @@ namespace MonoDevelop.Projects
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
 		{
+			foreach (var e in base.CreateDefaultExtensions ())
+				yield return e;
 			yield return new DefaultWorkspaceItemExtension ();
 		}
 

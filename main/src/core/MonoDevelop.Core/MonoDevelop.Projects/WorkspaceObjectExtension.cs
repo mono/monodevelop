@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.Addins;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Projects
 {
@@ -79,6 +80,20 @@ namespace MonoDevelop.Projects
 
 		protected virtual void SetShared ()
 		{
+		}
+
+		internal protected virtual StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
+		{
+			var m = next.OnGetStringTagModelDescription (conf);
+			m.Add (GetType ());
+			return m;
+		}
+
+		internal protected virtual StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
+		{
+			var m = next.OnGetStringTagModel (conf);
+			m.Add (this);
+			return m;
 		}
 	}
 }

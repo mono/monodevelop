@@ -114,16 +114,6 @@ namespace MonoDevelop.Projects
 			return next.OnGetReferencedItems (configuration);
 		}
 
-		internal protected virtual StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
-		{
-			return next.OnGetStringTagModelDescription (conf);
-		}
-
-		internal protected virtual StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
-		{
-			return next.OnGetStringTagModel (conf);
-		}
-
 		internal protected virtual bool OnGetSupportsFormat (FileFormat format)
 		{
 			return next.OnGetSupportsFormat (format);

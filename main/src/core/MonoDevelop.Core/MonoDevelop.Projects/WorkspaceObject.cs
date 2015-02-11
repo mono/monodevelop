@@ -35,6 +35,7 @@ using Mono.Addins;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.Remoting.Messaging;
+using MonoDevelop.Core.StringParsing;
 
 
 namespace MonoDevelop.Projects
@@ -187,6 +188,39 @@ namespace MonoDevelop.Projects
 			return ItemExtension.GetService (t);
 		}
 
+		public StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
+		{
+			return ItemExtension.OnGetStringTagModelDescription (conf);
+		}
+
+		protected virtual StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
+		{
+			var m = new StringTagModelDescription ();
+			m.Add (GetType ());
+			return m;
+		}
+
+		/// <summary>
+		/// Gets the string tag model for this solution item
+		/// </summary>
+		/// <returns>
+		/// The string tag model
+		/// </returns>
+		/// <param name='conf'>
+		/// Configuration for which to get the string tag model
+		/// </param>
+		public StringTagModel GetStringTagModel (ConfigurationSelector conf)
+		{
+			return ItemExtension.OnGetStringTagModel (conf);
+		}
+
+		protected virtual StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
+		{
+			var m = new StringTagModel ();
+			m.Add (this);
+			return m;
+		}
+
 		/// <summary>
 		/// Gets a value indicating whether the extension chain for this object has already been created and initialized
 		/// </summary>
@@ -328,6 +362,16 @@ namespace MonoDevelop.Projects
 			internal protected override object GetService (Type t)
 			{
 				return Owner.OnGetService (t);
+			}
+
+			internal protected override StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
+			{
+				return Owner.OnGetStringTagModelDescription (conf);
+			}
+
+			internal protected override StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
+			{
+				return Owner.OnGetStringTagModel (conf);
 			}
 		}
 

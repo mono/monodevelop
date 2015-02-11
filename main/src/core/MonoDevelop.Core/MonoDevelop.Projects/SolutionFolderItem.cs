@@ -399,36 +399,18 @@ namespace MonoDevelop.Projects
 				internalChildren.Items.Remove (item);
 		}
 		
-		/// <summary>
-		/// Gets the string tag model description for this solution item
-		/// </summary>
-		/// <returns>
-		/// The string tag model description
-		/// </returns>
-		/// <param name='conf'>
-		/// Configuration for which to get the string tag model description
-		/// </param>
-		public virtual StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
+		protected override StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
 		{
-			StringTagModelDescription model = new StringTagModelDescription ();
+			var model = base.OnGetStringTagModelDescription (conf);
 			model.Add (GetType ());
-			model.Add (typeof(Solution));
+			if (ParentSolution != null)
+				model.Add (typeof(Solution));
 			return model;
 		}
-		
-		/// <summary>
-		/// Gets the string tag model for this solution item
-		/// </summary>
-		/// <returns>
-		/// The string tag model
-		/// </returns>
-		/// <param name='conf'>
-		/// Configuration for which to get the string tag model
-		/// </param>
-		public virtual StringTagModel GetStringTagModel (ConfigurationSelector conf)
+
+		protected override StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
 		{
-			StringTagModel source = new StringTagModel ();
-			source.Add (this);
+			StringTagModel source = base.OnGetStringTagModel (conf);
 			if (ParentSolution != null)
 				source.Add (ParentSolution.GetStringTagModel ());
 			return source;

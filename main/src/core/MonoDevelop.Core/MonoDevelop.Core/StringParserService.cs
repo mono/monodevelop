@@ -222,6 +222,20 @@ namespace MonoDevelop.Core
 		{
 			foreach (IStringTagProvider provider in AddinManager.GetExtensionObjects (typeof(IStringTagProvider)))
 				yield return provider;
+			foreach (IStringTagProvider provider in customProviders)
+				yield return provider;
+		}
+
+		static List<IStringTagProvider> customProviders = new List<IStringTagProvider> ();
+
+		public static void RegisterStringTagProvider (IStringTagProvider provider)
+		{
+			customProviders.Add (provider);
+		}
+
+		public static void UnregisterStringTagProvider (IStringTagProvider provider)
+		{
+			customProviders.Remove (provider);
 		}
 	}
 }

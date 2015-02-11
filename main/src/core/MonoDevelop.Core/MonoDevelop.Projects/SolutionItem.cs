@@ -1077,14 +1077,9 @@ namespace MonoDevelop.Projects
 				ConfigurationsChanged (this, EventArgs.Empty);
 		}
 		
-		public override StringTagModelDescription GetStringTagModelDescription (ConfigurationSelector conf)
+		protected override StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
 		{
-			return ItemExtension.OnGetStringTagModelDescription (conf);
-		}
-		
-		StringTagModelDescription DoGetStringTagModelDescription (ConfigurationSelector conf)
-		{
-			StringTagModelDescription model = base.GetStringTagModelDescription (conf);
+			StringTagModelDescription model = base.OnGetStringTagModelDescription (conf);
 			SolutionItemConfiguration config = GetConfiguration (conf);
 			if (config != null)
 				model.Add (config.GetType ());
@@ -1093,14 +1088,9 @@ namespace MonoDevelop.Projects
 			return model;
 		}
 
-		public override StringTagModel GetStringTagModel (ConfigurationSelector conf)
+		protected override StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
 		{
-			return ItemExtension.OnGetStringTagModel (conf);
-		}
-		
-		StringTagModel DoGetStringTagModel (ConfigurationSelector conf)
-		{
-			StringTagModel source = base.GetStringTagModel (conf);
+			var source = base.OnGetStringTagModel (conf);
 			SolutionItemConfiguration config = GetConfiguration (conf);
 			if (config != null)
 				source.Add (config);
@@ -1263,16 +1253,6 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<SolutionItem> OnGetReferencedItems (ConfigurationSelector configuration)
 			{
 				return Item.OnGetReferencedItems (configuration);
-			}
-
-			internal protected override StringTagModelDescription OnGetStringTagModelDescription (ConfigurationSelector conf)
-			{
-				return Item.DoGetStringTagModelDescription (conf);
-			}
-
-			internal protected override StringTagModel OnGetStringTagModel (ConfigurationSelector conf)
-			{
-				return Item.DoGetStringTagModel (conf);
 			}
 
 			internal protected override bool OnGetSupportsFormat (FileFormat format)

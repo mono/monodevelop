@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
+			base.InitializeChain (next);
 			this.next = FindNextImplementation<WorkspaceItemExtension> (next);
 		}
 

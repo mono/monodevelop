@@ -267,6 +267,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\TestableWizardPage.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizard.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
+    <Compile Include="MonoDevelop.Projects\StringTagTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
