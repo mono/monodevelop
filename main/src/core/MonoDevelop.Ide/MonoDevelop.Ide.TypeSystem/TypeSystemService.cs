@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("options");
 			if (options.FileName == null)
 				throw new ArgumentNullException ("fileName");
-			
+
 			var parser = GetParser (mimeType);
 			if (parser == null)
 				return Task.FromResult ((ParsedDocument)null);
@@ -199,6 +199,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
+		{
+			var parser = GetParser (mimeType);
+			if (parser == null)
+				return false;
+			var projectFile = project.GetProjectFile (fileName);
+			if (projectFile == null)
+				return false;
+
+			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
+		}
+
 		public static Task<ParsedDocument> ParseFile (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return ParseFile (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
@@ -214,6 +226,55 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
+		internal static Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			if (options.FileName == null)
+				throw new ArgumentNullException ("fileName");
+
+			var parser = GetParser (mimeType);
+			if (parser == null)
+				return Task.FromResult ((ParsedDocumentProjection)null);
+
+			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
+			try {
+				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				if (options.Project != null) {
+					var projectId = Workspace.GetProjectId (options.Project);
+					if (projectId != null) {
+						var docId = Workspace.GetDocumentId (projectId, result.Result.Projection.Document.FileName);
+						if (docId != null)
+							Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (result.Result.Projection.Document));
+					}
+				}
+				return result;
+			} catch (OperationCanceledException) {
+				return Task.FromResult ((ParsedDocumentProjection)null);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while parsing: " + e);
+				return Task.FromResult ((ParsedDocumentProjection)null);
+			} finally {
+				t.Dispose ();
+			}
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, ITextSource content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (new ParseOptions { FileName = fileName, Project = project, Content = content }, mimeType, cancellationToken);
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, string fileName, string mimeType, TextReader content, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (project, fileName, mimeType, new StringTextSource (content.ReadToEnd ()), cancellationToken);
+		}
+
+		internal static Task<ParsedDocumentProjection> ParseProjection (Project project, IReadonlyTextDocument data, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return ParseProjection (project, data.FileName, data.MimeType, data, cancellationToken);
+		}
+
+	
 		#region Folding parsers
 		static List<MimeTypeExtensionNode> foldingParsers;
 

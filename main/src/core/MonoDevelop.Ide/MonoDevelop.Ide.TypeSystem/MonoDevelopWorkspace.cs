@@ -62,6 +62,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
+
+		}
+
+		internal void InformDocumentTextChange (DocumentId id, SourceText text)
+		{
+			base.ChangedDocumentText (id, text);
 		}
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)

@@ -746,7 +746,15 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
-				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
+				if (TypeSystemService.CanParseProjections (Project, Editor.MimeType, FileName)) {
+					var task = TypeSystemService.ParseProjection (Project, currentParseFile, editor.MimeType, currentParseText);
+					if (task.Result != null) {
+						this.parsedDocument = task.Result.ParsedDocument;
+						Editor.SetOrUpdateProjections (this, new [] { task.Result.Projection });
+					}
+				} else { 
+					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
+				}
 			} finally {
 
 				OnDocumentParsed (EventArgs.Empty);
@@ -794,15 +802,28 @@ namespace MonoDevelop.Ide.Gui
 				var token = parseTokenSource.Token;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
-					TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
-						Application.Invoke (delegate {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							if (isClosed || task.Result == null)
-								return;
-							this.parsedDocument = task.Result;
-							OnDocumentParsed (EventArgs.Empty);
+					if (TypeSystemService.CanParseProjections (Project, mimeType, FileName)) {
+						TypeSystemService.ParseProjection (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+							Application.Invoke (delegate {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								if (isClosed || task.Result == null)
+									return;
+								this.parsedDocument = task.Result.ParsedDocument;
+								Editor.SetOrUpdateProjections (this, new [] { task.Result.Projection });
+								OnDocumentParsed (EventArgs.Empty);
+							});
 						});
-					});
+					} else {
+						TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+							Application.Invoke (delegate {
+								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+								if (isClosed || task.Result == null)
+									return;
+								this.parsedDocument = task.Result;
+								OnDocumentParsed (EventArgs.Empty);
+							});
+						});
+					}
 					parseTimeout = 0;
 				});
 			}
