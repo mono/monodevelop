@@ -750,7 +750,9 @@ namespace MonoDevelop.Ide.Gui
 					var task = TypeSystemService.ParseProjection (Project, currentParseFile, editor.MimeType, currentParseText);
 					if (task.Result != null) {
 						this.parsedDocument = task.Result.ParsedDocument;
-						Editor.SetOrUpdateProjections (this, new [] { task.Result.Projection });
+						var projection = task.Result.Projection;
+						projection.CreateProjectedEditor (this);
+						Editor.SetOrUpdateProjections (this, new [] { projection });
 					}
 				} else { 
 					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
@@ -809,7 +811,9 @@ namespace MonoDevelop.Ide.Gui
 								if (isClosed || task.Result == null)
 									return;
 								this.parsedDocument = task.Result.ParsedDocument;
-								Editor.SetOrUpdateProjections (this, new [] { task.Result.Projection });
+								var projection = task.Result.Projection;
+								projection.CreateProjectedEditor (this);
+								Editor.SetOrUpdateProjections (this, new [] { projection });
 								OnDocumentParsed (EventArgs.Empty);
 							});
 						});
