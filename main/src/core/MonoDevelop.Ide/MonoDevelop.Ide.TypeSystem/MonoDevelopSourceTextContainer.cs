@@ -84,14 +84,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			private set;
 		}
 
-		public MonoDevelopSourceTextContainer (DocumentId documentId, ITextDocument document)
+		public MonoDevelopSourceTextContainer (DocumentId documentId, ITextDocument document) : this (document)
 		{
 			this.Id = documentId;
+		}
+
+		public MonoDevelopSourceTextContainer (ITextDocument document)
+		{
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
 			this.document.TextChanged += HandleTextReplaced;
 		}
-		
+
 		~MonoDevelopSourceTextContainer ()
 		{
 			document.TextChanged -= HandleTextReplaced;

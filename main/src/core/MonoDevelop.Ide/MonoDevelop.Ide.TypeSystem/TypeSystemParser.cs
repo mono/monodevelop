@@ -31,6 +31,7 @@ using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -87,12 +88,12 @@ namespace MonoDevelop.Ide.TypeSystem
 //			return Parse (storeAst, fileName, src, project, cancellationToken);
 //		}
 //
-		public virtual bool CanGenerateCodeBehind (string mimeType, string buildAction, string[] supportedLanguages)
+		public virtual bool CanGenerateProjection (string mimeType, string buildAction, string[] supportedLanguages)
 		{
 			return false;
 		}
 
-		public virtual TextAndVersion GenerateTextAndVersion (string mimeType, string buildAction, string[] supportedLanguages, string fileName)
+		public virtual Task<Projection> GenerateProjection (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException ();
 		}

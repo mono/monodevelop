@@ -257,19 +257,23 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
-				if (node == null || !node.Parser.CanGenerateCodeBehind (mimeType, f.BuildAction, p.SupportedLanguages))
+				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					continue;
 				if (!duplicates.Add (GetDocumentId (id, f)))
 					continue;
-
-				var textAndVersion = node.Parser.GenerateTextAndVersion (mimeType, f.BuildAction, p.SupportedLanguages, f.FilePath);
-
+				var options = new ParseOptions {
+					FileName = f.FilePath,
+					Project = p,
+					Content = StringTextSource.ReadFrom (f.FilePath),
+				};
+				var projection = node.Parser.GenerateProjection (options);
+				var projectedFileName = f.FilePath.ChangeExtension (".g" + f.FilePath.Extension);
 				yield return DocumentInfo.Create (
 					id.GetOrCreateDocumentId (f.Name),
-					f.FilePath.ChangeExtension (".g" + f.FilePath.Extension), 
+					projectedFileName, 
 					null, 
 					SourceCodeKind.Regular,
-					TextLoader.From (textAndVersion), 
+					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Result.Document), VersionStamp.Create (), projectedFileName)), 
 					f.Name, 
 					System.Text.Encoding.Default, 
 					false
