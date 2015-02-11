@@ -32,6 +32,8 @@ namespace MonoDevelop.VBNetBinding
 {
 	class VBProject: DotNetProject
 	{
+		static VBNetResourceIdBuilder resourceBuilder = new VBNetResourceIdBuilder ();
+
 		[ItemProperty ("OptionInfer", DefaultValue="Off")]
 		string optionInfer = "Off";
 
@@ -100,6 +102,7 @@ namespace MonoDevelop.VBNetBinding
 		{
 			base.OnInitialize ();
 			DefaultNamespaceIsImplicit = true;
+			DefaultResourceHandler = resourceBuilder;
 		}
 
 		protected override void OnReadProject (MonoDevelop.Core.ProgressMonitor monitor, MSBuildProject msproject)

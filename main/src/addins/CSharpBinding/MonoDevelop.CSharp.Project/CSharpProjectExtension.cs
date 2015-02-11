@@ -54,6 +54,12 @@ namespace MonoDevelop.CSharp.Project
 			Initialize (this);
 		}
 
+		protected override void OnInitialize ()
+		{
+			base.OnInitialize ();
+			DefaultResourceHandler = resourceHandler;
+		}
+
 		protected override void OnGetDefaultImports (List<string> imports)
 		{
 			base.OnGetDefaultImports (imports);
@@ -94,13 +100,6 @@ namespace MonoDevelop.CSharp.Project
 			set {
 				win32Resource = value ?? string.Empty;
 			}
-		}
-
-		protected override object OnGetService (Type t)
-		{
-			if (t == typeof(IResourceHandler))
-				return resourceHandler;
-			return base.OnGetService (t);
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)

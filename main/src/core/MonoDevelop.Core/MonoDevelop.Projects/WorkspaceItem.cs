@@ -273,7 +273,7 @@ namespace MonoDevelop.Projects
 					try {
 						fileStatusTracker.BeginSave ();
 						await ItemExtension.Save (monitor);
-						await SaveUserProperties ();
+						await OnSaveUserProperties (); // Call the virtual to avoid the lock
 						OnSaved (new WorkspaceItemEventArgs (this));
 				
 						// Update save times

@@ -105,8 +105,8 @@ namespace MonoDevelop.Projects
 			if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
 
-			this.usePartialTypes = SupportsPartialTypes;
 			flags = ProjectExtension.OnGetDotNetProjectFlags ();
+			usePartialTypes = SupportsPartialTypes;
 		}
 
 		protected override void SetShared ()
@@ -400,15 +400,24 @@ namespace MonoDevelop.Projects
 				if (resourceHandler == null) {
 					DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
 					if (pol.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault || pol.ResourceNamePolicy == ResourceNamePolicy.MSBuild) {
-						resourceHandler = GetService<IResourceHandler> ();
+						resourceHandler = DefaultResourceHandler ?? GetService<IResourceHandler> ();
 						if (resourceHandler == null)
 							resourceHandler = MSBuildResourceHandler.Instance;
 					}
 					else
-						resourceHandler = DefaultResourceHandler.Instance;
+						resourceHandler = MonoDevelop.Projects.Extensions.DefaultResourceHandler.Instance;
 				}
 				return resourceHandler;
 			}
+		}
+
+		/// <summary>
+		/// The resource handle that will be used when the user selects the format default naming policy
+		/// </summary>
+		/// <value>The default resource handler.</value>
+		public IResourceHandler DefaultResourceHandler {
+			get;
+			set;
 		}
 
 		TargetFramework targetFramework;
