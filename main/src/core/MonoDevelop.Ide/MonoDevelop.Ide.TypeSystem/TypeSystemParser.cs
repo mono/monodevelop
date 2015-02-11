@@ -46,6 +46,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		public Document RoslynDocument { get; set; }
 	}
 
+	public class ParsedDocumentProjection 
+	{
+		public ParsedDocument ParsedDocument { get; private set; }
+		public Projection Projection { get; private set;}
+
+		public ParsedDocumentProjection (ParsedDocument parsedDocument, Projection projection)
+		{
+			this.ParsedDocument = parsedDocument;
+			this.Projection = projection;
+		}
+	}
+
 	/// <summary>
 	/// A type system parser provides a ParsedDocument (which just adds some more information to a IUnresolvedFile) for
 	/// a given file. This is required for adding information to the type system service to make the file contents available
@@ -97,6 +109,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			throw new NotSupportedException ();
 		}
+
+		public virtual Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotSupportedException ();
+		}
+
 	}
 }
 
