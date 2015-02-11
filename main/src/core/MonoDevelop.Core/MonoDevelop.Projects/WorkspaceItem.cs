@@ -190,7 +190,8 @@ namespace MonoDevelop.Projects
 		[ThreadSafe]
 		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			yield return FileName;
+			if (!FileName.IsNullOrEmpty)
+				yield return FileName;
 		}
 
 		[ThreadSafe]

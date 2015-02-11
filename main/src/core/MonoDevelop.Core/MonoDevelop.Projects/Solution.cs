@@ -281,6 +281,11 @@ namespace MonoDevelop.Projects
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 
+		internal protected override Task OnSave (ProgressMonitor monitor)
+		{
+			return FileFormat.WriteFile (FileName, this, monitor);
+		}
+
 		protected override async Task OnLoadUserProperties ()
 		{
 			await base.OnLoadUserProperties ();
@@ -809,7 +814,7 @@ namespace MonoDevelop.Projects
 		{
 			SolutionItem eitem = item as SolutionItem;
 			if (eitem != null) {
-				eitem.FileFormat = FileFormat;
+				eitem.ConvertToFormat (FileFormat);
 				eitem.NeedsReload = false;
 				if (eitem.SupportsConfigurations () || replacedItem != null) {
 					if (replacedItem == null) {

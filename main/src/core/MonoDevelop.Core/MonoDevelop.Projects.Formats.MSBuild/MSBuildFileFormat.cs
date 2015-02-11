@@ -38,10 +38,9 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public abstract class MSBuildFileFormat: IFileFormat
+	public abstract class MSBuildFileFormat
 	{
 		readonly SlnFileFormat slnFileFormat;
-		static MSBuildFileFormat defaultFormat = VS2012;
 
 		protected MSBuildFileFormat ()
 		{
@@ -67,7 +66,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public static MSBuildFileFormat DefaultFormat {
-			get { return defaultFormat; }
+			get { return VS2012; }
 		}
 		
 		public string Name {
@@ -113,7 +112,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public bool CanReadFile (FilePath file, Type expectedType)
+		internal bool CanReadFile (FilePath file, Type expectedType)
 		{
 			if (expectedType.IsAssignableFrom (typeof(Solution)) && slnFileFormat.CanReadFile (file, this))
 				return true;
@@ -170,7 +169,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
-		public async Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
+		internal async Task WriteFile (FilePath file, object obj, ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanWriteFile (obj, this)) {
 				await slnFileFormat.WriteFile (file, obj, true, monitor);
@@ -179,21 +178,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public async Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
+		internal async Task<object> ReadFile (FilePath file, Type expectedType, MonoDevelop.Core.ProgressMonitor monitor)
 		{
 			if (slnFileFormat.CanReadFile (file, this))
 				return await slnFileFormat.ReadFile (file, monitor);
 			else
-				return await MSBuildProjectService.LoadItem (monitor, file, null, null, null, null);
-		}
-
-		public List<FilePath> GetItemFiles (object obj)
-		{
-			return new List<FilePath> ();
-		}
-
-		public bool SupportsMixedFormats {
-			get { return false; }
+				throw new NotSupportedException (); 
 		}
 
 		public abstract string DefaultToolsVersion { get; }

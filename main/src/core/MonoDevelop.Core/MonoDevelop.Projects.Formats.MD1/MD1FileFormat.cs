@@ -37,7 +37,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MD1
 {
-	class MD1FileFormat: IFileFormat
+	class MD1FileFormat
 	{
 		public static readonly MD1FileFormat Instance = new MD1FileFormat ();
 

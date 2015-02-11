@@ -294,7 +294,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\DataTypeCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\IFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicySetNode.cs" />

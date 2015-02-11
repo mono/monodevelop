@@ -224,6 +224,8 @@
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
+		<Class class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
+		<Class class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
 		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 	</Extension>

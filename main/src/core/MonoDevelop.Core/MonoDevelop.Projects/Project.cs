@@ -182,6 +182,7 @@ namespace MonoDevelop.Projects
 			if (creationContext != null && creationContext.Project != null)
 				FileName = creationContext.Project.FileName;
 			MSBuildEngineSupport = ProjectExtension.OnGetMSBuildSupport ();
+			InitFormatProperties ();
 		}
 
 		void OnDefaultRuntimeChanged (object o, EventArgs args)
@@ -1896,18 +1897,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal override void SetSolutionFormat (MSBuildFileFormat format, bool converting)
+		protected override void OnSetFormat (MSBuildFileFormat format)
 		{
-			base.SetSolutionFormat (format, converting);
+			base.OnSetFormat (format);
+			InitFormatProperties ();
+		}
 
-			// when converting formats, set ToolsVersion, ProductVersion, SchemaVersion to default values written by VS 
-			// this happens on creation too
-			// else we leave them alone and just roundtrip them
-			if (converting) {
-				ToolsVersion = format.DefaultToolsVersion;
-				productVersion = format.DefaultProductVersion;
-				schemaVersion = format.DefaultSchemaVersion;
-			}
+		void InitFormatProperties ()
+		{
+			ToolsVersion = FileFormat.DefaultToolsVersion;
+			productVersion = FileFormat.DefaultProductVersion;
+			schemaVersion = FileFormat.DefaultSchemaVersion;
 		}
 
 		internal ProjectItem ReadItem (IMSBuildItemEvaluated buildItem)

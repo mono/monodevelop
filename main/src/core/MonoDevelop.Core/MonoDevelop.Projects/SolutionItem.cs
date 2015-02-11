@@ -295,10 +295,10 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public void ConvertToFormat (MSBuildFileFormat format)
 		{
-			if (format == FileFormat)
+			if (format == fileFormat)
 				return;
 
-			if (ParentSolution != null)
+			if (ParentSolution != null && ParentSolution.FileFormat != format)
 				throw new InvalidOperationException ("The file format can't be changed when the item belongs to a solution.");
 			InternalConvertToFormat (format);
 		}
@@ -937,7 +937,8 @@ namespace MonoDevelop.Projects
 
 		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			yield return FileName;
+			if (!FileName.IsNullOrEmpty)
+				yield return FileName;
 		}
 
 		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)

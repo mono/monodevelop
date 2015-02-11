@@ -430,11 +430,6 @@ namespace MonoDevelop.Projects
 
 		internal MSBuildFileFormat SolutionFormat { get; private set; }
 
-		internal virtual void SetSolutionFormat (MSBuildFileFormat format, bool converting)
-		{
-			this.SolutionFormat = format;
-		}
-
 		/// <summary>
 		/// Notifies that this solution item has been modified
 		/// </summary>

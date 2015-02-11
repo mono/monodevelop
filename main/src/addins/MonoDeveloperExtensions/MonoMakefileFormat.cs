@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 
 namespace MonoDeveloper
 {
-	public class MonoMakefileFormat: IFileFormat
+	public class MonoMakefileFormat
 	{
 		public static readonly string[] Configurations = new string [] {
 			"default", "net_2_0"
