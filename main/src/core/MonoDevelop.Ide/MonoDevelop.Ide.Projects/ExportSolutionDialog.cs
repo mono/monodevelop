@@ -30,21 +30,23 @@ using System;
 using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Projects
 {
 	partial class ExportSolutionDialog : Gtk.Dialog
 	{
-		FileFormat[] formats;
+		MSBuildFileFormat[] formats;
 		
-		public ExportSolutionDialog (WorkspaceItem item, FileFormat selectedFormat)
+		public ExportSolutionDialog (IMSBuildFileObject item, MSBuildFileFormat selectedFormat)
 		{
 			this.Build();
 			
 			labelNewFormat.Text = item.FileFormat.Name;
 			
-			formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (item);
-			foreach (FileFormat format in formats)
+			formats = MSBuildFileFormat.GetSupportedFormats (item).ToArray ();
+			foreach (var format in formats)
 				comboFormat.AppendText (format.Name);
 
 			int sel = Array.IndexOf (formats, selectedFormat);
@@ -68,7 +70,7 @@ namespace MonoDevelop.Ide.Projects
 			UpdateControls ();
 		}
 		
-		public FileFormat Format {
+		public MSBuildFileFormat Format {
 			get {
 				if (comboFormat == null)
 					return formats[0];

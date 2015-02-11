@@ -246,11 +246,11 @@ namespace Foo {
 			project.FileName = pfile;
 		}
 		
-		public static async Task CheckGenericItemProject (string fileFormat)
+		public static async Task CheckGenericItemProject (MSBuildFileFormat format)
 		{
 			Solution sol = new Solution ();
-			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
-			string dir = Util.CreateTmpDir ("generic-item-" + fileFormat);
+			sol.ConvertToFormat (format);
+			string dir = Util.CreateTmpDir ("generic-item-" + format.Name);
 			sol.FileName = Path.Combine (dir, "TestGenericItem");
 			sol.Name = "TheItem";
 
@@ -273,13 +273,13 @@ namespace Foo {
 			Assert.AreEqual ("hi", it.SomeValue);
 		}
 		
-		public static async Task TestLoadSaveSolutionFolders (string fileFormat)
+		public static async Task TestLoadSaveSolutionFolders (MSBuildFileFormat fileFormat)
 		{
 			List<string> ids = new List<string> ();
 			
 			Solution sol = new Solution ();
-			sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
-			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat);
+			sol.ConvertToFormat (fileFormat);
+			string dir = Util.CreateTmpDir ("solution-folders-" + fileFormat.Name);
 			sol.FileName = Path.Combine (dir, "TestSolutionFolders");
 			sol.Name = "TheSolution";
 			
@@ -362,10 +362,10 @@ namespace Foo {
 			Assert.AreEqual (idp4, f2.Items [1].ItemId, "idp4");
 		}
 		
-		public static async Task TestCreateLoadSaveConsoleProject (string fileFormat)
+		public static async Task TestCreateLoadSaveConsoleProject (MSBuildFileFormat fileFormat)
 		{
 			Solution sol = CreateConsoleSolution ("TestCreateLoadSaveConsoleProject");
-			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			sol.ConvertToFormat (fileFormat);
 			
 			await sol.SaveAsync (Util.GetMonitor ());
 			string solFile = sol.FileName;
@@ -379,11 +379,11 @@ namespace Foo {
 			CheckConsoleProject (sol);
 		}
 		
-		public static async Task TestLoadSaveResources (string fileFormat)
+		public static async Task TestLoadSaveResources (MSBuildFileFormat fileFormat)
 		{
 			string solFile = Util.GetSampleProject ("resources-tester", "ResourcesTester.sln");
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-			await sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat (fileFormat), true);
+			sol.ConvertToFormat (fileFormat);
 			ProjectTests.CheckResourcesSolution (sol);
 			
 			await sol.SaveAsync (Util.GetMonitor ());

@@ -60,11 +60,6 @@ namespace MonoDevelop.Projects
 			set { unloaded = value; }
 		}
 		
-		protected internal override Task OnSave (ProgressMonitor monitor)
-		{
-			return Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
-		}
-
 		public override FilePath FileName {
 			get {
 				return base.FileName;

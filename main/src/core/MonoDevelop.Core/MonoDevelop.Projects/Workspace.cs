@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Projects
 {
@@ -47,6 +48,11 @@ namespace MonoDevelop.Projects
 		{
 			Initialize (this);
 			items = new WorkspaceItemCollection (this);
+		}
+
+		internal protected override Task OnSave (ProgressMonitor monitor)
+		{
+			return MD1FileFormat.Instance.WriteFile (FileName, this, monitor);
 		}
 
 		protected override void SetShared ()
@@ -146,16 +152,6 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		
-		public async override Task ConvertToFormat (FileFormat format, bool convertChildren)
-		{
-			await base.ConvertToFormat (format, convertChildren);
-			if (convertChildren) {
-				foreach (WorkspaceItem it in Items)
-					await it.ConvertToFormat (format, true);
-			}
-		}
-
 		[ThreadSafe]
 		public Task<WorkspaceItem> ReloadItem (ProgressMonitor monitor, WorkspaceItem item)
 		{

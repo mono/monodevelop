@@ -77,5 +77,14 @@ namespace MonoDevelop.DesignerSupport.Projects
 					entry.BaseDirectory = value;
 			}
 		}
+
+		[LocalizedCategory ("Misc")]
+		[LocalizedDisplayName ("File Format")]
+		[LocalizedDescription ("File format of the project file.")]
+		public string FileFormat {
+			get {
+				return entry.ParentSolution.FileFormat.ProductDescription;
+			}
+		}
 	}
 }

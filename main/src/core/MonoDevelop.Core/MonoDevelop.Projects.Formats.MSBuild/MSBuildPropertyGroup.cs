@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			object ob;
 			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
 				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, parent.Format);
+				((IMSBuildDataObject)ob).Read (this, parent.ToolsVersion);
 			}
 			return (T)ob;
 		}
@@ -191,7 +191,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void WriteDataObjects ()
 		{
 			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, parent.Format);
+				ob.Write (this, parent.ToolsVersion);
 		}
 
 		MSBuildProperty AddProperty (string name, string condition = null)

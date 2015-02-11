@@ -125,9 +125,9 @@ namespace MonoDevelop.Projects
 			Link = buildItem.Metadata.GetPathValue ("Link", relativeToProject:false);
 		}
 
-		internal protected override void Write (MSBuildFileFormat fmt, MSBuildItem buildItem)
+		internal protected override void Write (Project project, MSBuildItem buildItem)
 		{
-			base.Write (fmt, buildItem);
+			base.Write (project, buildItem);
 
 			buildItem.Metadata.SetValue ("DependentUpon", DependsOn, FilePath.Empty, relativeToPath:FilePath.ParentDirectory);
 			buildItem.Metadata.SetValue ("SubType", ContentType, "");

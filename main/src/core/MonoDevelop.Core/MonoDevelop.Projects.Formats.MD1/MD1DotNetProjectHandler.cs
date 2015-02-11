@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 	
 namespace MonoDevelop.Projects.Formats.MD1
 {
-	internal class MD1DotNetProjectHandler: MD1SolutionEntityItemHandler
+	internal class MD1DotNetProjectHandler: SolutionItemHandler
 	{
 		public MD1DotNetProjectHandler (DotNetProject entry): base (entry)
 		{

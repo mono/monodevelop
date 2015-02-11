@@ -29,6 +29,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -98,9 +99,9 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultTargetFrameworkId ();
 		}
 
-		internal protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+		internal protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (string toolsVersion)
 		{
-			return next.OnGetDefaultTargetFrameworkForFormat (format);
+			return next.OnGetDefaultTargetFrameworkForFormat (toolsVersion);
 		}
 
 		internal protected virtual bool OnGetSupportsFramework (TargetFramework framework)

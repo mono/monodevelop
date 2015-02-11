@@ -458,7 +458,7 @@ namespace MonoDevelop.Ide.Projects
 					var eitem = currentEntry as SolutionItem;
 					if (eitem != null) {
 						// Inherit the file format from the solution
-						eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
+						eitem.ConvertToFormat (ParentFolder.ParentSolution.FileFormat);
 
 						var project = eitem as Project;
 						if (project != null) {

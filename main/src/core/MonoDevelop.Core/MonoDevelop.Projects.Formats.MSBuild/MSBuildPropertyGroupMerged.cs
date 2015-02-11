@@ -38,11 +38,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildPropertyGroupMerged: IMSBuildPropertySet
 	{
 		List<IMSBuildPropertySet> groups = new List<IMSBuildPropertySet> ();
-		MSBuildFileFormat format;
+		string toolsVersion;
 
-		public MSBuildPropertyGroupMerged (MSBuildProject project, MSBuildFileFormat format)
+		public MSBuildPropertyGroupMerged (MSBuildProject project, string toolsVersion)
 		{
-			this.format = format;
+			this.toolsVersion = toolsVersion;
 			Project = project;
 		}
 
@@ -102,7 +102,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			object ob;
 			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
 				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, format);
+				((IMSBuildDataObject)ob).Read (this, toolsVersion);
 			}
 			return (T)ob;
 		}
@@ -115,7 +115,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void WriteDataObjects ()
 		{
 			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, format);
+				ob.Write (this, toolsVersion);
 		}
 
 		public void SetPropertyValue (string name, string value, bool preserveExistingCase)

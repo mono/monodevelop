@@ -7,6 +7,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Deployment.Targets
 {
@@ -18,7 +19,7 @@ namespace MonoDevelop.Deployment.Targets
 		[ItemProperty]
 		string format;
 		
-		FileFormat fileFormat;
+		MSBuildFileFormat fileFormat;
 		
 		public override string Description {
 			get { return "Archive of Sources"; }
@@ -30,12 +31,12 @@ namespace MonoDevelop.Deployment.Targets
 		}
 
 		
-		public FileFormat FileFormat {
+		public MSBuildFileFormat FileFormat {
 			get {
 				if (fileFormat == null) {
 					if (string.IsNullOrEmpty (format))
 						return null;
-					foreach (FileFormat f in Services.ProjectService.FileFormats.GetAllFileFormats ()) {
+					foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
 						if (f.GetType ().FullName == format) {
 							fileFormat = f;
 							break;
@@ -146,14 +147,15 @@ namespace MonoDevelop.Deployment.Targets
 		public override PackageBuilder[] CreateDefaultBuilders ()
 		{
 			List<PackageBuilder> list = new List<PackageBuilder> ();
-			
-			foreach (FileFormat format in Services.ProjectService.FileFormats.GetFileFormatsForObject (RootSolutionItem)) {
+
+			IMSBuildFileObject root = RootSolutionItem is SolutionItem ? (IMSBuildFileObject)RootSolutionItem : (IMSBuildFileObject) RootSolutionItem.ParentSolution;
+			foreach (MSBuildFileFormat format in MSBuildFileFormat.GetSupportedFormats (root)) {
 				SourcesZipPackageBuilder pb = (SourcesZipPackageBuilder) Clone ();
 				pb.FileFormat = format;
 				
 				// The suffix for the archive will be the extension of the file format.
 				// If there is no extension, use the whole file name.
-				string fname = format.GetValidFileName (RootSolutionItem, RootSolutionItem.ParentSolution.FileName);
+				string fname = format.GetValidFormatName (RootSolutionItem, RootSolutionItem.ParentSolution.FileName);
 				string suffix = Path.GetExtension (fname);
 				if (suffix.Length > 0)
 					suffix = suffix.Substring (1).ToLower (); // Remove the initial dot

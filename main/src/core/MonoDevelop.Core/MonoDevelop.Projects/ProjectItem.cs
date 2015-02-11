@@ -81,21 +81,21 @@ namespace MonoDevelop.Projects
 				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
 					if (!knownProps.Contains (prop.Name)) {
 						if (metadata == null)
-							metadata = new ProjectItemMetadata (project.SolutionFormat);
+							metadata = new ProjectItemMetadata (project.ToolsVersion);
 						Metadata.SetValue (prop.Name, prop.Value);
 					}
 				}
 			}
 		}
 
-		internal protected virtual void Write (MSBuildFileFormat fmt, MSBuildItem buildItem)
+		internal protected virtual void Write (Project project, MSBuildItem buildItem)
 		{
 			buildItem.Condition = Condition;
 
 			if (metadata != null) {
 				foreach (var prop in metadata.GetProperties ())
 					buildItem.Metadata.SetValue (prop.Name, prop.Value);
-				metadata.WriteDataObjects (fmt);
+				metadata.WriteDataObjects (project.ToolsVersion);
 			}
 		}
 

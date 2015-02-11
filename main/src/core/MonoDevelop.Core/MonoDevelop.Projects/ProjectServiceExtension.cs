@@ -52,15 +52,10 @@ namespace MonoDevelop.Projects
 		{
 			return true;
 		}
-		
-		public virtual bool IsSolutionItemFile (string fileName)
+
+		public virtual bool FileIsObjectOfType (string file, Type type)
 		{
-			return GetNext (UnknownItem.Instance).IsSolutionItemFile (fileName);
-		}
-		
-		public virtual bool IsWorkspaceItemFile (string fileName)
-		{
-			return GetNext (UnknownItem.Instance).IsWorkspaceItemFile (fileName);
+			return GetNext (UnknownItem.Instance).FileIsObjectOfType (file, type);
 		}
 		
 		public virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)

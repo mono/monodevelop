@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects.Formats.MD1
 {
 	class MD1FileFormat: IFileFormat
 	{
+		public static readonly MD1FileFormat Instance = new MD1FileFormat ();
+
 		public bool SupportsMixedFormats {
 			get { return true; }
 		}
@@ -136,12 +138,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 			if (ext != ".mdw")
 				throw new ArgumentException ();
 
-			object readObject = await ReadWorkspaceItemFile (fileName, monitor);
-
-			IWorkspaceFileObject fo = readObject as IWorkspaceFileObject;
-			if (fo != null)
-				await fo.ConvertToFormat (MD1ProjectService.FileFormat, false);
-			return readObject;
+			return await ReadWorkspaceItemFile (fileName, monitor);
 		}
 
 		Task<object> ReadWorkspaceItemFile (FilePath fileName, ProgressMonitor monitor)
@@ -155,7 +152,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 					ser.SerializationContext.BaseFile = fileName;
 					ser.SerializationContext.ProgressMonitor = monitor;
 					WorkspaceItem entry = (WorkspaceItem)ser.Deserialize (reader, typeof(WorkspaceItem));
-					entry.ConvertToFormat (MD1ProjectService.FileFormat, false).Wait ();
 					entry.FileName = fileName;
 					return entry;
 				} catch (Exception ex) {
@@ -168,11 +164,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 			});
 		}
 		
-		public Task ConvertToFormat (object obj)
-		{
-			return Task.FromResult (0);
-		}
-
 		public IEnumerable<string> GetCompatibilityWarnings (object obj)
 		{
 			yield break;

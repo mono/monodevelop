@@ -36,11 +36,11 @@ namespace MonoDevelop.Projects
 	{
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		MSBuildFileFormat format;
+		string toolsVersion;
 
-		public ProjectItemMetadata (MSBuildFileFormat format)
+		public ProjectItemMetadata (string toolsVersion)
 		{
-			this.format = format;
+			this.toolsVersion = toolsVersion;
 		}
 
 		internal void LoadProperties (XmlElement element)
@@ -140,7 +140,7 @@ namespace MonoDevelop.Projects
 			object ob;
 			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
 				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, format);
+				((IMSBuildDataObject)ob).Read (this, toolsVersion);
 			}
 			return (T)ob;
 		}
@@ -150,10 +150,10 @@ namespace MonoDevelop.Projects
 			customDataObjects [typeof(T)] = t;
 		}
 
-		public void WriteDataObjects (MSBuildFileFormat format)
+		public void WriteDataObjects (string toolsVersion)
 		{
 			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, this.format ?? format);
+				ob.Write (this, this.toolsVersion ?? toolsVersion);
 		}
 
 		MSBuildProperty AddProperty (string name, string condition = null)

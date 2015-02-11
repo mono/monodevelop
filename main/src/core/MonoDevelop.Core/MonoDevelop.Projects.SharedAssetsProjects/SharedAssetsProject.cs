@@ -153,7 +153,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 			configGrp.SetValue ("Import_RootNamespace", DefaultNamespace);
 
-			SaveProjectItems (monitor, new MSBuildFileFormatVS12 (), projitemsProject, "$(MSBuildThisFileDirectory)");
+			SaveProjectItems (monitor, projitemsProject, "$(MSBuildThisFileDirectory)");
 
 			// Remove all items of this project, since items are saved in the projitems file
 

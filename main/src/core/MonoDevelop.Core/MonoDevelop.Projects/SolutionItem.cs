@@ -52,7 +52,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionItem : SolutionFolderItem, IWorkspaceFileObject, IConfigurationTarget, IBuildTarget
+	public abstract class SolutionItem : SolutionFolderItem, IWorkspaceFileObject, IConfigurationTarget, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.ItemsInMemory.CreateMemoryProbe ();
 
@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects
 		FilePath fileName;
 		string name;
 		SolutionItemExtension itemExtension;
-		FileFormat fileFormat;
+		MSBuildFileFormat fileFormat;
 		
 		SolutionItemConfiguration activeConfiguration;
 		SolutionItemConfigurationCollection configurations;
@@ -80,10 +80,9 @@ namespace MonoDevelop.Projects
 		
 		public SolutionItem ()
 		{
-			var fmt = Services.ProjectService.FileFormats.GetFileFormat (MSBuildProjectService.DefaultFormat);
 			TypeGuid = MSBuildProjectService.GetTypeGuidForItem (this);
 
-			SetSolutionFormat ((MSBuildFileFormat)fmt.Format, true);
+			fileFormat = MSBuildFileFormat.DefaultFormat;
 			thisItemArgs = new SolutionItemEventArgs (this);
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += OnConfigurationAddedToCollection;
@@ -263,7 +262,7 @@ namespace MonoDevelop.Projects
 			}
 			set {
 				if (FileFormat != null)
-					value = FileFormat.GetValidFileName (this, value);
+					value = FileFormat.GetValidFormatName (this, value);
 				if (value != fileName) {
 					fileName = value;
 					Name = fileName.FileNameWithoutExtension;
@@ -280,25 +279,52 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public FileFormat FileFormat {
+		public MSBuildFileFormat FileFormat {
 			get {
-				if (ParentSolution != null) {
-					if (ParentSolution.FileFormat.Format.SupportsMixedFormats && fileFormat != null)
-						return fileFormat;
+				if (ParentSolution != null)
 					return ParentSolution.FileFormat;
-				}
-				if (fileFormat == null)
-					fileFormat = Services.ProjectService.GetDefaultFormat (this);
 				return fileFormat; 
 			}
-			set {
-				if (ParentSolution != null && !ParentSolution.FileFormat.Format.SupportsMixedFormats)
-					throw new InvalidOperationException ("The file format can't be changed when the item belongs to a solution.");
-				InstallFormat (value);
-				fileFormat.Format.ConvertToFormat (this);
-				NeedsReload = false;
-				NotifyModified ("FileFormat");
+			internal set {
+				fileFormat = value;
 			}
+		}
+
+		/// <summary>
+		/// Changes the format of this item. This method doesn't save the item, it only does in memory-changes.
+		/// </summary>
+		public void ConvertToFormat (MSBuildFileFormat format)
+		{
+			if (format == FileFormat)
+				return;
+
+			if (ParentSolution != null)
+				throw new InvalidOperationException ("The file format can't be changed when the item belongs to a solution.");
+			InternalConvertToFormat (format);
+		}
+
+		internal void InternalConvertToFormat (MSBuildFileFormat format)
+		{
+			ItemExtension.OnSetFormat (format);
+			NeedsReload = false;
+			NotifyModified ("FileFormat");
+		}
+
+		protected virtual void OnSetFormat (MSBuildFileFormat format)
+		{
+			fileFormat = format;
+			if (fileName != FilePath.Null)
+				fileName = fileFormat.GetValidFormatName (this, fileName);
+		}
+
+		public bool SupportsFormat (MSBuildFileFormat format)
+		{
+			return ItemExtension.OnGetSupportsFormat (format);
+		}
+
+		protected virtual bool OnGetSupportsFormat (MSBuildFileFormat format)
+		{
+			return true;
 		}
 			
 		protected override object OnGetService (Type t)
@@ -354,29 +380,6 @@ namespace MonoDevelop.Projects
 			return dependencies;
 		}
 
-		Task IWorkspaceFileObject.ConvertToFormat (FileFormat format, bool convertChildren)
-		{
-			this.FileFormat = format;
-			return Task.FromResult (0);
-		}
-		
-		public bool SupportsFormat (FileFormat format)
-		{
-			return ItemExtension.OnGetSupportsFormat (format);
-		}
-		
-		protected virtual bool OnGetSupportsFormat (FileFormat format)
-		{
-			return true;
-		}
-
-		internal void InstallFormat (FileFormat format)
-		{
-			fileFormat = format;
-			if (fileName != FilePath.Null)
-				fileName = fileFormat.GetValidFileName (this, fileName);
-		}
-		
 		/// <summary>
 		/// Initializes a new instance of this item, using an xml element as template
 		/// </summary>
@@ -401,9 +404,9 @@ namespace MonoDevelop.Projects
 
 		internal Task LoadAsync (ProgressMonitor monitor, FilePath fileName, MSBuildFileFormat format)
 		{
+			fileFormat = format;
 			FileName = fileName;
 			Name = Path.GetFileNameWithoutExtension (fileName);
-			SetSolutionFormat (format ?? MSBuildFileFormat.DefaultFormat, false);
 			return ItemExtension.OnLoad (monitor);
 		}
 
@@ -934,10 +937,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
-			if (!string.IsNullOrEmpty (FileName) && !col.Contains (FileName))
-				col.Add (FileName);
-			return col;
+			yield return FileName;
 		}
 
 		protected override void OnNameChanged (SolutionItemRenamedEventArgs e)
@@ -1255,7 +1255,12 @@ namespace MonoDevelop.Projects
 				return Item.OnGetReferencedItems (configuration);
 			}
 
-			internal protected override bool OnGetSupportsFormat (FileFormat format)
+			internal protected override void OnSetFormat (MSBuildFileFormat format)
+			{
+				Item.OnSetFormat (format);
+			}
+
+			internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)
 			{
 				return Item.OnGetSupportsFormat (format);
 			}

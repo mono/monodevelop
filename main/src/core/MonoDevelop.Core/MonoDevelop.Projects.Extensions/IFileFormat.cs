@@ -47,10 +47,6 @@ namespace MonoDevelop.Projects.Extensions
 		// Returns true if this file format can write the provided object
 		bool CanWriteFile (object obj);
 		
-		// Makes the required changes in the object to support this file format.
-		// It usually means setting the ISolutionItemHandler of the item.
-		Task ConvertToFormat (object obj);
-
 		Task WriteFile (FilePath file, object obj, ProgressMonitor monitor);
 		Task<object> ReadFile (FilePath file, Type expectedType, ProgressMonitor monitor);
 		

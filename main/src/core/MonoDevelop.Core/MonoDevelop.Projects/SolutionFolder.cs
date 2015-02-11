@@ -949,7 +949,7 @@ namespace MonoDevelop.Projects
 //		public event EventHandler<SolutionItemEventArgs> ItemReloadRequired;
 	}
 	
-	class DummySolutionFolderHandler: ISolutionItemHandler
+	class DummySolutionFolderHandler
 	{
 		SolutionFolder folder;
 		

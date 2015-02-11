@@ -550,15 +550,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		SolutionFolder LoadSolution (Solution sol, string fileName, ProgressMonitor monitor)
 		{
-			FileFormat projectFormat = Services.ProjectService.FileFormats.GetFileFormat (format);
-
 			monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", fileName), 1);
 
 			var sln = new SlnFile ();
 			sln.Read (fileName);
 
 			sol.FileName = fileName;
-			sol.ConvertToFormat (projectFormat, false);
+			sol.FileFormat = format;
 
 			sol.ReadSolution (monitor, sln);
 			return sol.RootFolder;

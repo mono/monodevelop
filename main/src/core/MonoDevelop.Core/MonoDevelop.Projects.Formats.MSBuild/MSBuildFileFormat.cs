@@ -34,17 +34,36 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public abstract class MSBuildFileFormat: IFileFormat
 	{
 		readonly SlnFileFormat slnFileFormat;
-		static MSBuildFileFormat defaultFormat = new MSBuildFileFormatVS12 ();
+		static MSBuildFileFormat defaultFormat = VS2012;
 
 		protected MSBuildFileFormat ()
 		{
 			slnFileFormat = new SlnFileFormat (this);
+		}
+
+		public static readonly MSBuildFileFormat VS2005 = new MSBuildFileFormatVS05 ();
+		public static readonly MSBuildFileFormat VS2008 = new MSBuildFileFormatVS08 ();
+		public static readonly MSBuildFileFormat VS2010 = new MSBuildFileFormatVS10 ();
+		public static readonly MSBuildFileFormat VS2012 = new MSBuildFileFormatVS12 ();
+
+		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats ()
+		{
+			yield return VS2012;
+			yield return VS2010;
+			yield return VS2008;
+			yield return VS2005;
+		}
+
+		public static IEnumerable<MSBuildFileFormat> GetSupportedFormats (IMSBuildFileObject targetItem)
+		{
+			return GetSupportedFormats ().Where (f => f.CanWriteFile (targetItem));
 		}
 
 		public static MSBuildFileFormat DefaultFormat {
@@ -60,6 +79,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		public bool SupportsMonikers { get { return SupportedFrameworks == null; } }
+
+		public static bool ToolsSupportMonikers (string toolsVersion)
+		{
+			return new Version (toolsVersion) >= new Version ("4.0");
+		}
 		
 		public bool SupportsFramework (TargetFramework fx)
 		{
@@ -168,19 +192,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new List<FilePath> ();
 		}
 
-		public Task ConvertToFormat (object obj)
-		{
-			if (obj == null)
-				return Task.FromResult(0);
-			
-			SolutionFolderItem item = obj as SolutionFolderItem;
-			if (item != null) {
-				item.SetSolutionFormat (this, true);
-				return Task.FromResult(0);
-			}
-			return Task.FromResult (0);
-		}
-		
 		public bool SupportsMixedFormats {
 			get { return false; }
 		}

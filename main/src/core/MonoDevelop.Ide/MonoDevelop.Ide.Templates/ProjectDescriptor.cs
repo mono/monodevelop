@@ -34,6 +34,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 
 namespace MonoDevelop.Ide.Templates
@@ -198,7 +199,7 @@ namespace MonoDevelop.Ide.Templates
 			return projectCreateInformation.SolutionName;
 		}
 		
-		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
+		static void SetClosestSupportedTargetFramework (MSBuildFileFormat format, DotNetProject project)
 		{
 			// If the solution format can't write this project due to an unsupported framework, try finding the
 			// closest valid framework. DOn't worry about whether it's installed, that's up to the user to correct.

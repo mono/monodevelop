@@ -30,8 +30,8 @@ namespace MonoDevelop.Projects
 {
 	public interface IMSBuildDataObject
 	{
-		void Read (IPropertySet pset, MSBuildFileFormat format);
-		void Write (IPropertySet pset, MSBuildFileFormat format);
+		void Read (IPropertySet pset, string toolsVersion);
+		void Write (IPropertySet pset, string toolsVersion);
 	}
 }
 

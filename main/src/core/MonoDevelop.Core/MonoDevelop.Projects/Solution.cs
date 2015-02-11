@@ -43,12 +43,13 @@ using MonoDevelop.Projects.Formats.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget
+	public sealed class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
-		
+		MSBuildFileFormat format;
+
 		SolutionItem startupItem;
 		List<SolutionItem> startupItems; 
 		bool singleStartup = true;
@@ -77,9 +78,22 @@ namespace MonoDevelop.Projects
 		{
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
+			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
 			if (!loading)
 				NotifyItemReady ();
+		}
+
+		public override FilePath FileName {
+			[ThreadSafe] get {
+				return base.FileName;
+			}
+			set {
+				AssertMainThread ();
+				if (FileFormat != null)
+					value = FileFormat.GetValidFormatName (this, value);
+				base.FileName = value;
+			}
 		}
 
 		internal HashSet<string> LoadedProjects {
@@ -726,18 +740,39 @@ namespace MonoDevelop.Projects
 			if (StartupItemChanged != null)
 				StartupItemChanged (this, e);
 		}
-		
-		public async override Task ConvertToFormat (FileFormat format, bool convertChildren)
-		{
-			await base.ConvertToFormat (format, convertChildren);
-			foreach (SolutionFolderItem item in GetAllItems<SolutionFolderItem> ())
-				await ConvertToSolutionFormat (item, convertChildren);
+
+		[ThreadSafe]
+		public MSBuildFileFormat FileFormat {
+			get {
+				return format;
+			}
+			internal set {
+				format = value;
+			}
 		}
-		
-		public override bool SupportsFormat (FileFormat format)
+
+		public void ConvertToFormat (MSBuildFileFormat format)
 		{
-			if (!base.SupportsFormat (format))
-				return false;
+			SolutionExtension.OnSetFormat (format);
+		}
+
+		[ThreadSafe]
+		public bool SupportsFormat (MSBuildFileFormat format)
+		{
+			return true;
+		}
+
+		void OnSetFormat (MSBuildFileFormat format)
+		{
+			this.format = format;
+			if (!string.IsNullOrEmpty (FileName))
+				FileName = format.GetValidFormatName (this, FileName);
+			foreach (SolutionItem item in GetAllItems<SolutionItem> ())
+				item.ConvertToFormat (format);
+		}
+
+		bool OnGetSupportsFormat (MSBuildFileFormat format)
+		{
 			return GetAllItems<SolutionItem> ().All (p => p.SupportsFormat (format));
 		}
 
@@ -772,10 +807,9 @@ namespace MonoDevelop.Projects
 		
 		void SetupNewItem (SolutionFolderItem item, SolutionFolderItem replacedItem)
 		{
-			ConvertToSolutionFormat (item, false).Wait ();
-			
 			SolutionItem eitem = item as SolutionItem;
 			if (eitem != null) {
+				eitem.FileFormat = FileFormat;
 				eitem.NeedsReload = false;
 				if (eitem.SupportsConfigurations () || replacedItem != null) {
 					if (replacedItem == null) {
@@ -798,16 +832,6 @@ namespace MonoDevelop.Projects
 						}
 					}
 				}
-			}
-		}
-		
-		async Task ConvertToSolutionFormat (SolutionFolderItem item, bool force)
-		{
-			SolutionItem eitem = item as SolutionItem;
-			if (force || !FileFormat.Format.SupportsMixedFormats || eitem == null || !eitem.IsSaved) {
-				await this.FileFormat.Format.ConvertToFormat (item);
-				if (eitem != null)
-					eitem.InstallFormat (this.FileFormat);
 			}
 		}
 		
@@ -879,7 +903,7 @@ namespace MonoDevelop.Projects
 		/*protected virtual*/ void OnReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			using (var ctx = new SolutionLoadContext (this))
-				((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.LoadSolution (this, file, monitor, ctx);
+				FileFormat.SlnFileFormat.LoadSolution (this, file, monitor, ctx);
 		}
 
 		internal void ReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
@@ -910,7 +934,7 @@ namespace MonoDevelop.Projects
 		
 		/*protected virtual*/ void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
-			((MSBuildFileFormat)FileFormat.Format).SlnFileFormat.WriteFileInternal (file, this, monitor);
+			FileFormat.SlnFileFormat.WriteFileInternal (file, this, monitor);
 		}
 
 		internal void WriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
@@ -1087,6 +1111,16 @@ namespace MonoDevelop.Projects
 			internal protected override IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)
 			{
 				yield break;
+			}
+
+			internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)
+			{
+				return Solution.OnGetSupportsFormat (format);
+			}
+
+			internal protected override void OnSetFormat (MSBuildFileFormat value)
+			{
+				Solution.OnSetFormat (value);
 			}
 		}
 	}

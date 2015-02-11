@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (Path.Combine (tmp, "test4.sln"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
-			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
 			Assert.AreEqual ("test4", sol.Name);
 			Assert.AreEqual (Path.Combine (tmp, "test4.sln"), (string) sol.FileName);
 			Assert.AreEqual (4, nameChanges);
@@ -199,7 +199,7 @@ namespace MonoDevelop.Projects
 			int nameChanges = 0;
 			
 			var prj = Services.ProjectService.CreateDotNetProject ("C#");
-			prj.FileFormat = Util.FileFormatMSBuild05;
+			prj.FileFormat = MSBuildFileFormat.VS2005;
 			prj.NameChanged += delegate {
 				nameChanges++;
 			};
@@ -225,7 +225,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
 			
-			prj.FileFormat = Util.FileFormatMSBuild12;
+			prj.FileFormat = MSBuildFileFormat.VS2012;
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
 			Assert.AreEqual (4, nameChanges);
@@ -233,7 +233,7 @@ namespace MonoDevelop.Projects
 			
 			// Projects inherit the file format from the parent solution
 			Solution sol = new Solution ();
-			sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2005);
 			sol.RootFolder.Items.Add (prj);
 			Assert.AreEqual ("test4", prj.Name);
 			Assert.AreEqual (Path.Combine (Path.GetTempPath (), "test4.csproj"), (string) prj.FileName);
@@ -259,22 +259,22 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (p.NeedsReload);
 			
 			// Changing format must reset the reload flag (it's like we just created a new solution in memory)
-			sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
 			Assert.IsFalse (sol.NeedsReload);
 			Assert.IsFalse (p.NeedsReload);
-			sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2012);
 			Assert.IsFalse (sol.NeedsReload);
 			Assert.IsFalse (p.NeedsReload);
 			
 			sol.RootFolder.Items.Remove (p);
 			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = Util.FileFormatMSBuild12;
+			p.FileFormat = MSBuildFileFormat.VS2012;
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Add (p);
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Remove (p);
 			Assert.IsFalse (p.NeedsReload);
-			p.FileFormat = Util.FileFormatMSBuild05;
+			p.FileFormat = MSBuildFileFormat.VS2005;
 			Assert.IsFalse (p.NeedsReload);
 			sol.RootFolder.Items.Add (p);
 			Assert.IsFalse (p.NeedsReload);
@@ -513,19 +513,19 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("reloading");
 			Project p = (Project) sol.Items [0];
 			
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, sol.FileFormat.Id);
-			Assert.AreEqual (Services.ProjectService.DefaultFileFormat.Id, p.FileFormat.Id);
+			Assert.AreEqual (MSBuildFileFormat.DefaultFormat.Id, sol.FileFormat.Id);
+			Assert.AreEqual (MSBuildFileFormat.DefaultFormat.Id, p.FileFormat.Id);
 			Assert.AreEqual ("4.0", p.ToolsVersion);
 			
 			// Change solution format of unsaved solution
 			
-			await sol.ConvertToFormat (Util.FileFormatMSBuild08, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2008);
 			
 			Assert.AreEqual ("MSBuild08", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild08", p.FileFormat.Id);
 			Assert.AreEqual ("3.5", p.ToolsVersion);
 
-			await sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
 			
 			Assert.AreEqual ("MSBuild10", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild10", p.FileFormat.Id);
@@ -535,7 +535,7 @@ namespace MonoDevelop.Projects
 			
 			await sol.SaveAsync (Util.GetMonitor ());
 
-			await sol.ConvertToFormat (Util.FileFormatMSBuild05, false);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2005);
 
 			Assert.AreEqual ("MSBuild05", sol.FileFormat.Id);
 			Assert.AreEqual ("MSBuild05", p.FileFormat.Id);

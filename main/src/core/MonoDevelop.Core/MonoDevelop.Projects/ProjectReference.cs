@@ -261,14 +261,14 @@ namespace MonoDevelop.Projects
 			Init (ReferenceType.Project, name, null);
 		}
 
-		internal protected override void Write (MSBuildFileFormat fmt, MSBuildItem buildItem)
+		internal protected override void Write (Project project, MSBuildItem buildItem)
 		{
 			// If the project is not supported, don't try to update any metadata of the property,
 			// just leave what was read
 			if (OwnerProject.IsUnsupportedProject)
 				return;
 
-			base.Write (fmt, buildItem);
+			base.Write (project, buildItem);
 
 			if (ReferenceType == ReferenceType.Assembly) {
 				if (originalMSBuildReferenceHintPath != null)
@@ -283,7 +283,7 @@ namespace MonoDevelop.Projects
 
 				//RequiredTargetFramework is undocumented, maybe only a hint for VS. Only seems to be used for .NETFramework
 				var dnp = OwnerProject as DotNetProject;
-				IList supportedFrameworks = fmt.SupportedFrameworks;
+				IList supportedFrameworks = project.FileFormat.SupportedFrameworks;
 				if (supportedFrameworks != null && dnp != null && Package != null
 					&& dnp.TargetFramework.Id.Identifier == TargetFrameworkMoniker.ID_NET_FRAMEWORK
 					&& Package.IsFrameworkPackage && supportedFrameworks.Contains (Package.TargetFramework)

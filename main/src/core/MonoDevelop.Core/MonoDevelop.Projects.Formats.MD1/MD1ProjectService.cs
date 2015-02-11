@@ -43,11 +43,5 @@ namespace MonoDevelop.Projects.Formats.MD1
 				return dataContext;
 			}
 		}
-		
-		public static FileFormat FileFormat {
-			get {
-				return Services.ProjectService.FileFormats.GetFileFormat ("MD1");
-			}
-		}
 	}
 }

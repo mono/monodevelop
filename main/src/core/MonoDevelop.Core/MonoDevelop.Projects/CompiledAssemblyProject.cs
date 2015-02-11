@@ -205,11 +205,11 @@ namespace MonoDevelop.Projects
 	
 	public class CompiledAssemblyExtension: ProjectServiceExtension
 	{
-		public override bool IsSolutionItemFile (string fileName)
+		public override bool FileIsObjectOfType (string fileName, Type type)
 		{
-			if (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll"))
+			if ((type.IsAssignableFrom (typeof(SolutionItem))|| type.IsAssignableFrom (typeof(Solution))) && (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll")))
 				return true;
-			return base.IsSolutionItemFile (fileName);
+			return base.FileIsObjectOfType (fileName, type);
 		}
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)

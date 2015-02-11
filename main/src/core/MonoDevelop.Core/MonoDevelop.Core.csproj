@@ -224,7 +224,6 @@
     <Compile Include="Mono.Options.cs" />
     <Compile Include="MonoDevelop.Core.Logging\InstrumentationLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimerCounter.cs" />
-    <Compile Include="MonoDevelop.Projects\FileFormatManager.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectPathItemPropertyAttribute.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfiguration.cs" />
@@ -272,7 +271,6 @@
     <Compile Include="MonoDevelop.Projects\ItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionFolderItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemReference.cs" />
-    <Compile Include="MonoDevelop.Projects\FileFormat.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownWorkspaceItem.cs" />
     <Compile Include="MonoDevelop.Projects\BuildResult.cs" />
     <Compile Include="MonoDevelop.Projects\BuildAction.cs" />
@@ -298,7 +296,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\ISolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicySetNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicyNode.cs" />
@@ -309,8 +306,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1FileFormat.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionEntityItemHandler.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFileFormat.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectService.cs" />
@@ -489,6 +484,9 @@
     <Compile Include="MonoDevelop.Projects\ProjectFeature.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildSupport.cs" />
     <Compile Include="MonoDevelop.Projects\ThreadSafeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\MSBuildSerializationExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceSerializationExtension.cs" />
+    <Compile Include="MonoDevelop.Projects\IMSBuildFileObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

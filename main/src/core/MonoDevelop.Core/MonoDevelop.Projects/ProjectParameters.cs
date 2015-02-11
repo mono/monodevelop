@@ -50,21 +50,21 @@ namespace MonoDevelop.Projects
 			internal set { parentProject = value; }
 		}
 		
-		void IMSBuildDataObject.Read (IPropertySet pset, MSBuildFileFormat format)
+		void IMSBuildDataObject.Read (IPropertySet pset, string toolsVersion)
 		{
-			Read (pset, format);
+			Read (pset, toolsVersion);
 		}
 
-		void IMSBuildDataObject.Write (IPropertySet pset, MSBuildFileFormat format)
+		void IMSBuildDataObject.Write (IPropertySet pset, string toolsVersion)
 		{
-			Write (pset, format);
+			Write (pset, toolsVersion);
 		}
 
-		protected virtual void Read (IPropertySet pset, MSBuildFileFormat format)
+		protected virtual void Read (IPropertySet pset, string toolsVersion)
 		{
 		}
 
-		protected virtual void Write (IPropertySet pset, MSBuildFileFormat format)
+		protected virtual void Write (IPropertySet pset, string toolsVersion)
 		{
 		}
 	}

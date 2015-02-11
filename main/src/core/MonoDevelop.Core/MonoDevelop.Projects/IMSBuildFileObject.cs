@@ -1,9 +1,10 @@
-// MD1SolutionItemHandler.cs
+﻿//
+// IMSBuildItem.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.CodeDom.Compiler;
-using MonoDevelop.Core;
-using MonoDevelop.Projects.Extensions;
-using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
-namespace MonoDevelop.Projects.Formats.MD1
+namespace MonoDevelop.Projects
 {
-	internal class MD1SolutionItemHandler: SolutionItemHandler
+	public interface IMSBuildFileObject: IWorkspaceFileObject
 	{
-		public MD1SolutionItemHandler (SolutionFolderItem item): base (item)
-		{
-		}
-
-		public override Task Save (ProgressMonitor monitor)
-		{
-			throw new NotSupportedException ();
-		}
-		
-		public override bool SyncFileName {
-			get { return false; }
-		}
-		
-		public override string ItemId {
-			get {
-				if (Item.ParentFolder != null)
-					return Item.ParentFolder.ItemId + "/" + Item.Name;
-				else
-					return Item.Name;
-			}
-		}
+		MSBuildFileFormat FileFormat { get; }
+		void ConvertToFormat (MSBuildFileFormat format);
 	}
 }
+

@@ -77,13 +77,6 @@
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/FileFormats" name = "Solution file format handlers">
-		<Description>File format handlers for workspaces, solutions and projects</Description>
-		<ExtensionNode name="FileFormat" type="MonoDevelop.Projects.Extensions.FileFormatNode">
-			<Description>A file format handler. The specified class must implement MonoDevelop.Projects.IFileFormat.</Description>
-		</ExtensionNode>	
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/SerializableClasses" name = "Serializable classes">
 		<Description>Classes to be registered for serialization.</Description>
 		<ExtensionNode name="DataType" type="MonoDevelop.Projects.Extensions.DataTypeCodon" customAttributeType="MonoDevelop.Projects.ProjectModelDataItemAttribute">
@@ -225,28 +218,6 @@
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
-		<FileFormat id = "MSBuild08" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS08"
-			name = "MSBuild (Visual Studio 2008)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild05" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS05"
-			name = "MSBuild (Visual Studio 2005)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild10" 
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS10"
-			name = "MSBuild (Visual Studio 2010)"
-			canDefault = "true" />
-		<FileFormat id = "MSBuild12"
-			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS12"
-			name = "MSBuild (Visual Studio 2012)"
-			canDefault = "true" />
-		<FileFormat id = "MD1" 
-			class = "MonoDevelop.Projects.Formats.MD1.MD1FileFormat"
-			name = "MonoDevelop 1.0 (deprecated)" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
 	</Extension>
 

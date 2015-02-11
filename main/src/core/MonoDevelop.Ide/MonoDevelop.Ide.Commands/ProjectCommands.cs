@@ -446,12 +446,12 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			WorkspaceItem workspace;
+			Solution workspace;
 			
 			if (!(IdeApp.ProjectOperations.CurrentSelectedItem is WorkspaceItem))
 				workspace = ((SolutionItem) IdeApp.ProjectOperations.CurrentSelectedItem).ParentSolution;
 			else
-				workspace = (WorkspaceItem) IdeApp.ProjectOperations.CurrentSelectedItem;
+				workspace = (Solution) IdeApp.ProjectOperations.CurrentSelectedItem;
 			
 			IdeApp.ProjectOperations.Export (workspace, null);
 		}

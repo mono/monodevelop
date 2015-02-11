@@ -56,6 +56,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Ide
 {
@@ -322,23 +323,23 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.OpenDocument (fileName, null, entity.Region.BeginLine, entity.Region.BeginColumn);
 		}
 
-		public void RenameItem (IWorkspaceFileObject item, string newName)
+		public async Task RenameItem (IWorkspaceFileObject item, string newName)
 		{
 			ProjectOptionsDialog.RenameItem (item, newName);
 			if (item is SolutionFolderItem) {
-				SaveAsync (((SolutionFolderItem)item).ParentSolution);
+				await SaveAsync (((SolutionFolderItem)item).ParentSolution);
 			} else {
-				IdeApp.Workspace.SaveAsync ();
+				await IdeApp.Workspace.SaveAsync ();
 				IdeApp.Workspace.SavePreferences ();
 			}
 		}
 		
-		public void Export (WorkspaceItem item)
+		public void Export (Solution item)
 		{
 			Export (item, null);
 		}
 		
-		public void Export (WorkspaceItem item, FileFormat format)
+		public void Export (IMSBuildFileObject item, MSBuildFileFormat format)
 		{
 			ExportSolutionDialog dlg = new ExportSolutionDialog (item, format);
 			
@@ -363,8 +364,8 @@ namespace MonoDevelop.Ide
 		
 		public async Task SaveAsync (SolutionItem entry)
 		{
-			if (!entry.FileFormat.CanWrite (entry)) {
-				IWorkspaceFileObject itemContainer = GetContainer (entry);
+			if (!entry.FileFormat.CanWriteFile (entry)) {
+				var itemContainer = (IMSBuildFileObject) GetContainer (entry);
 				if (SelectValidFileFormat (itemContainer))
 					await SaveAsync (itemContainer);
 				return;
@@ -386,7 +387,7 @@ namespace MonoDevelop.Ide
 		
 		public async Task SaveAsync (Solution item)
 		{
-			if (!item.FileFormat.CanWrite (item)) {
+			if (!item.FileFormat.CanWriteFile (item)) {
 				if (!SelectValidFileFormat (item))
 					return;
 			}
@@ -420,9 +421,10 @@ namespace MonoDevelop.Ide
 				IWorkspaceFileObject itemContainer = GetContainer (entry);
 				if (fixedItems.Contains (itemContainer) || failedItems.Contains (itemContainer))
 					continue;
-				if (!entry.FileFormat.CanWrite (entry)) {
+				var msf = entry as IMSBuildFileObject;
+				if (msf != null && !msf.FileFormat.CanWriteFile (entry) && (itemContainer is IMSBuildFileObject)) {
 					// Can't save the project using this format. Try to find a valid format for the whole solution
-					if (SelectValidFileFormat (itemContainer))
+					if (SelectValidFileFormat ((IMSBuildFileObject) itemContainer))
 						fixedItems.Add (itemContainer);
 					else
 						failedItems.Add (itemContainer);
@@ -478,9 +480,10 @@ namespace MonoDevelop.Ide
 				await SaveAsync ((SolutionItem) item);
 			else if (item is Solution)
 				await SaveAsync ((Solution)item);
-			
-			if (!item.FileFormat.CanWrite (item)) {
-				IWorkspaceFileObject ci = GetContainer (item);
+
+			var msf = item as IMSBuildFileObject;
+			if (msf != null && !msf.FileFormat.CanWriteFile (item)) {
+				var ci = (IMSBuildFileObject) GetContainer (item);
 				if (SelectValidFileFormat (ci))
 					await SaveAsync (ci);
 				return;
@@ -533,18 +536,18 @@ namespace MonoDevelop.Ide
 		IWorkspaceFileObject GetContainer (IWorkspaceFileObject item)
 		{
 			SolutionItem si = item as SolutionItem;
-			if (si != null && si.ParentSolution != null && !si.ParentSolution.FileFormat.SupportsMixedFormats)
+			if (si != null && si.ParentSolution != null)
 				return si.ParentSolution;
 			else
 				return item;
 		}
 		
-		bool SelectValidFileFormat (IWorkspaceFileObject item)
+		bool SelectValidFileFormat (IMSBuildFileObject item)
 		{
 			var dlg = new SelectFileFormatDialog (item);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Format != null) {
-					item.ConvertToFormat (dlg.Format, true);
+					item.ConvertToFormat (dlg.Format);
 					return true;
 				}
 				return false;

@@ -110,6 +110,16 @@ namespace MonoDevelop.Projects
 		{
 			next.OnWriteConfigurationData (monitor, properties, configuration);
 		}
+
+		internal protected virtual void OnSetFormat (MSBuildFileFormat value)
+		{
+			next.OnSetFormat (value);
+		}
+
+		internal protected virtual bool OnGetSupportsFormat (MSBuildFileFormat format)
+		{
+			return OnGetSupportsFormat (format);
+		}
 	}
 }
 

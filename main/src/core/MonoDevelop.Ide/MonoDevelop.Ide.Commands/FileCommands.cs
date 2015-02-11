@@ -336,8 +336,8 @@ namespace MonoDevelop.Ide.Commands
 				try {
 					if (!File.Exists (ri.FileName))
 						continue;
-					icon = IdeApp.Services.ProjectService.FileFormats.GetFileFormats
-						(ri.FileName, typeof(Solution)).Length > 0? "md-solution": "md-workspace";
+
+					icon = IdeApp.Services.ProjectService.FileIsObjectOfType (ri.FileName, typeof(Solution)) ? "md-solution": "md-workspace";
 				}
 				catch (UnauthorizedAccessException exAccess) {
 					LoggingService.LogWarning ("Error building recent solutions list (Permissions)", exAccess);

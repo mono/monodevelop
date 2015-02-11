@@ -44,14 +44,13 @@ using MonoDevelop.Projects.Extensions;
 using Mono.Addins;
 using System.Linq;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Projects
 {
 	public abstract class WorkspaceItem : WorkspaceObject, IWorkspaceFileObject
 	{
 		Workspace parentWorkspace;
-		FileFormat format;
-		internal bool FormatSet;
 		FilePath fileName;
 		PropertyBag userProperties;
 		FileStatusTracker<WorkspaceItemEventArgs> fileStatusTracker;
@@ -63,7 +62,6 @@ namespace MonoDevelop.Projects
 		{
 			userProperties = new PropertyBag ();
 			fileStatusTracker = new FileStatusTracker<WorkspaceItemEventArgs> (this, OnReloadRequired, new WorkspaceItemEventArgs (this));
-			format = Services.ProjectService.GetDefaultFormat (this);
 		}
 
 		public Workspace ParentWorkspace {
@@ -115,8 +113,6 @@ namespace MonoDevelop.Projects
 				AssertMainThread ();
 				string oldName = Name;
 				fileName = value;
-				if (FileFormat != null)
-					fileName = FileFormat.GetValidFileName (this, fileName);
 				if (oldName != Name)
 					OnNameChanged (new WorkspaceItemRenamedEventArgs (this, oldName, Name));
 				NotifyModified ();
@@ -194,11 +190,7 @@ namespace MonoDevelop.Projects
 		[ThreadSafe]
 		protected virtual IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> col = FileFormat.Format.GetItemFiles (this);
-			var file = FileName;
-			if (!string.IsNullOrEmpty (file) && !col.Contains (file))
-				col.Add (file);
-			return col;
+			yield return FileName;
 		}
 
 		[ThreadSafe]
@@ -225,31 +217,6 @@ namespace MonoDevelop.Projects
 			parentWorkspace = workspace;
 		}
 
-		[ThreadSafe]
-		public virtual FileFormat FileFormat {
-			get {
-				return format;
-			}
-		}
-		
-		[ThreadSafe]
-		public virtual bool SupportsFormat (FileFormat format)
-		{
-			return true;
-		}
-		
-		[ThreadSafe]
-		public virtual Task ConvertToFormat (FileFormat format, bool convertChildren)
-		{
-			return Runtime.RunInMainThread (delegate {
-				FormatSet = true;
-				this.format = format;
-				if (!string.IsNullOrEmpty (FileName))
-					FileName = format.GetValidFileName (this, FileName);
-				return Task.FromResult (0);
-			});
-		}
-		
 		protected virtual void OnConfigurationsChanged ()
 		{
 			if (ConfigurationsChanged != null)
@@ -270,6 +237,8 @@ namespace MonoDevelop.Projects
 		{
 			return Runtime.RunInMainThread (async delegate {
 				using (await WriteLock ()) {
+					foreach (var f in GetItemFiles (false))
+						FileService.RequestFileEdit (f);
 					try {
 						fileStatusTracker.BeginSave ();
 						await ItemExtension.Save (monitor);
@@ -287,7 +256,7 @@ namespace MonoDevelop.Projects
 
 		protected internal virtual Task OnSave (ProgressMonitor monitor)
 		{
-			return Services.ProjectService.InternalWriteWorkspaceItem (monitor, FileName, this);
+			return Task.FromResult (0);
 		}
 
 		public virtual bool NeedsReload {

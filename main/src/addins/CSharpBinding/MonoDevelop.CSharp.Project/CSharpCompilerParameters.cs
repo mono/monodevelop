@@ -93,16 +93,16 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("DebugType", DefaultValue="")]
 		string debugType = "";
 		
-		protected override void Write (IPropertySet pset, MSBuildFileFormat format)
+		protected override void Write (IPropertySet pset, string toolsVersion)
 		{
-			base.Write (pset, format);
+			base.Write (pset, toolsVersion);
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 			pset.WriteObjectProperties (this, typeof(CSharpCompilerParameters));
 		}
 
-		protected override void Read (IPropertySet pset, MSBuildFileFormat format)
+		protected override void Read (IPropertySet pset, string toolsVersion)
 		{
-			base.Read (pset, format);
+			base.Read (pset, toolsVersion);
 			pset.ReadObjectProperties (this, typeof(CSharpCompilerParameters));
 
 			var prop = pset.GetProperty ("GenerateDocumentation");

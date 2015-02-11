@@ -31,6 +31,8 @@ using System.IO;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -130,14 +132,14 @@ namespace MonoDevelop.Projects
 				item = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
 			}
 			
-			FileFormat[] formats = Services.ProjectService.FileFormats.GetFileFormatsForObject (item);
+			var formats = MSBuildFileFormat.GetSupportedFormats ().ToArray ();
 			
 			if (formats.Length == 0) {
 				Console.WriteLine ("Can't convert file to any format: " + projectFile);
 				return 1;
 			}
 			
-			FileFormat format = null;
+			MSBuildFileFormat format = null;
 			
 			if (formatName == null || formatList) {
 				Console.WriteLine ();
@@ -163,7 +165,7 @@ namespace MonoDevelop.Projects
 				format = formats [op - 1];
 			}
 			else {
-				foreach (FileFormat f in formats) {
+				foreach (var f in formats) {
 					if (f.Name == formatName)
 						format = f;
 				}

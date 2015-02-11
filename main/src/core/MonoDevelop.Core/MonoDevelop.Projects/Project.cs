@@ -1801,7 +1801,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
 		{
-			config.Read (grp, GetToolsFormat ());
+			config.Read (grp, ToolsVersion);
 		}
 
 		void RemoveDuplicateItems (MSBuildProject msproject)
@@ -1863,7 +1863,7 @@ namespace MonoDevelop.Projects
 					else if (merged is MSBuildPropertyGroupMerged)
 						((MSBuildPropertyGroupMerged)merged).Add (grp.Group);
 					else {
-						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged (merged.Project, GetToolsFormat());
+						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged (merged.Project, ToolsVersion);
 						m.Add (merged);
 						m.Add (grp.Group);
 						merged = m;
@@ -1871,26 +1871,6 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return merged;
-		}
-
-		//HACK: the solution's format is irrelevant to MSBuild projects, what matters is the ToolsVersion
-		// but other parts of the MD API expect a FileFormat
-		internal MSBuildFileFormat GetToolsFormat ()
-		{
-			switch (ToolsVersion) {
-			case "2.0":
-				return new MSBuildFileFormatVS05 ();
-			case "3.5":
-				return new MSBuildFileFormatVS08 ();
-			case "4.0":
-				if (SolutionFormat != null && SolutionFormat.Id == "MSBuild10")
-					return SolutionFormat;
-				return new MSBuildFileFormatVS12 ();
-			case "12.0":
-				return new MSBuildFileFormatVS12 ();
-			default:
-				throw new Exception ("Unknown ToolsVersion '" + ToolsVersion + "'");
-			}
 		}
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags)
@@ -2060,8 +2040,6 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
-			var toolsFormat = GetToolsFormat ();
-
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
 			// Configurations
@@ -2128,7 +2106,7 @@ namespace MonoDevelop.Projects
 						msproject.RemoveGroup ((MSBuildPropertyGroup)cd.Group);
 				}
 			}
-			SaveProjectItems (monitor, toolsFormat, msproject);
+			SaveProjectItems (monitor, msproject);
 
 			if (msproject.IsNewProject) {
 				foreach (var im in DefaultImports)
@@ -2152,14 +2130,14 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
 
 			config.Platform = platform;
-			config.Read (grp, GetToolsFormat ());
+			config.Read (grp, ToolsVersion);
 			Configurations.Add (config);
-			projectExtension.OnReadConfiguration (monitor, config, grp);
+			projectExtension.OnWriteConfiguration (monitor, config, grp);
 		}
 
 		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
 		{
-			config.Write (pset, SolutionFormat);
+			config.Write (pset, ToolsVersion);
 		}
 
 		IEnumerable<MergedProperty> GetMergeToProjectProperties (List<ConfigData> configData)
@@ -2210,7 +2188,7 @@ namespace MonoDevelop.Projects
 			public bool Added;
 		}
 
-		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildFileFormat toolsFormat, MSBuildProject msproject, string pathPrefix = null)
+		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, string pathPrefix = null)
 		{
 			// Remove old items
 			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
@@ -2220,21 +2198,21 @@ namespace MonoDevelop.Projects
 			};
 			// Add the new items
 			foreach (ProjectItem ob in Items.Concat (WildcardItems).Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
-				SaveProjectItem (monitor, toolsFormat, msproject, ob, oldItems, pathPrefix);
+				SaveProjectItem (monitor, msproject, ob, oldItems, pathPrefix);
 			foreach (ItemInfo itemInfo in oldItems.Values) {
 				if (!itemInfo.Added)
 					msproject.RemoveItem (itemInfo.Item);
 			}
 		}
 
-		void SaveProjectItem (ProgressMonitor monitor, MSBuildFileFormat fmt, MSBuildProject msproject, ProjectItem item, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
+		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
 		{
 			var include = item.UnevaluatedInclude ?? item.Include;
 			if (pathPrefix != null && !include.StartsWith (pathPrefix))
 				include = pathPrefix + include;
 
 			MSBuildItem buildItem = AddOrGetBuildItem (msproject, oldItems, item.ItemName, include, item.Condition);
-			item.Write (fmt, buildItem);
+			item.Write (this, buildItem);
 			if (pathPrefix != null)
 				buildItem.Include = include;
 		}

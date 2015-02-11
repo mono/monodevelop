@@ -29,6 +29,7 @@ using UnitTests;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using System.IO;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -161,7 +162,7 @@ namespace MonoDevelop.Projects
 		public async Task SaveSharedProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("shared-project");
-			await sol.ConvertToFormat (Util.FileFormatMSBuild12, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2012);
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			var pc = (DotNetProject) sol.Items [0];

@@ -114,7 +114,12 @@ namespace MonoDevelop.Projects
 			return next.OnGetReferencedItems (configuration);
 		}
 
-		internal protected virtual bool OnGetSupportsFormat (FileFormat format)
+		internal protected virtual void OnSetFormat (MSBuildFileFormat format)
+		{
+			next.OnSetFormat (format);
+		}
+
+		internal protected virtual bool OnGetSupportsFormat (MSBuildFileFormat format)
 		{
 			return next.OnGetSupportsFormat (format);
 		}

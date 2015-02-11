@@ -132,7 +132,6 @@ namespace MonoDeveloper
 							SolutionFolder folder;
 							if (!hasParentSolution) {
 								Solution sol = new Solution ();
-								sol.ConvertToFormat (Services.ProjectService.FileFormats.GetFileFormat ("MonoMakefile"), false);
 								sol.FileName = fileName;
 								folder = sol.RootFolder;
 								retObject = sol;
@@ -176,11 +175,6 @@ namespace MonoDeveloper
 				}
 				return null;
 			});
-		}
-		
-		public Task ConvertToFormat (object obj)
-		{
-			return Task.FromResult (0);
 		}
 		
 		public bool SupportsMixedFormats {

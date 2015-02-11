@@ -56,22 +56,6 @@ namespace UnitTests
 			get { return Path.Combine (TestsRootDir, "tmp"); }
 		}
 		
-		public static FileFormat FileFormatMSBuild05 {
-			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild05"); }
-		}
-		
-		public static FileFormat FileFormatMSBuild08 {
-			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild08"); }
-		}
-
-		public static FileFormat FileFormatMSBuild10 {
-			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild10"); }
-		}
-
-		public static FileFormat FileFormatMSBuild12 {
-			get { return Services.ProjectService.FileFormats.GetFileFormat ("MSBuild12"); }
-		}
-		
 		public static ProgressMonitor GetMonitor ()
 		{
 			return GetMonitor (true);

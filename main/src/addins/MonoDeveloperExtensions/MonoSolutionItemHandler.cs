@@ -40,7 +40,7 @@ using System.Threading.Tasks;
 
 namespace MonoDeveloper
 {
-	public class MonoSolutionItemHandler: ISolutionItemHandler
+	public class MonoSolutionItemHandler
 	{
 		DotNetProject project;
 		string outFile;

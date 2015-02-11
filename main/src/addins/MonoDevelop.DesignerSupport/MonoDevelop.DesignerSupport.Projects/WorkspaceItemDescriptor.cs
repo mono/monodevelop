@@ -77,7 +77,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 		[LocalizedDescription ("File format of the project file.")]
 		public string FileFormat {
 			get {
-				return item.FileFormat.Name;
+				return item is Solution ? ((Solution)item).FileFormat.ProductDescription : "";
 			}
 		}
 	}

@@ -434,7 +434,7 @@ namespace MonoDevelop.Projects
 				if (!SupportsFramework (value))
 					throw new ArgumentException ("Project does not support framework '" + value.Id.ToString () +"'");
 				if (value == null)
-					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
+					value = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (ToolsVersion));
 				if (targetFramework != null && value.Id == targetFramework.Id)
 					return;
 				bool updateReferences = targetFramework != null;
@@ -471,27 +471,24 @@ namespace MonoDevelop.Projects
 		/// <returns>
 		/// The default target framework for the format.
 		/// </returns>
-		/// <param name='format'>
-		/// A format
+		/// <param name='toolsVersion'>
+		/// MSBuild tools version for which to get the default format
 		/// </param>
 		/// <remarks>
 		/// This method is used to determine what's the correct target framework for a project
 		/// deserialized using a specific format.
 		/// </remarks>
-		public TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (FileFormat format)
+		public TargetFrameworkMoniker GetDefaultTargetFrameworkForFormat (string toolsVersion)
 		{
-			return ProjectExtension.OnGetDefaultTargetFrameworkForFormat (format);
+			return ProjectExtension.OnGetDefaultTargetFrameworkForFormat (toolsVersion);
 		}
 
-		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (string toolsVersion)
 		{
-			switch (format.Id) {
-			case "MSBuild05":
+			switch (toolsVersion) {
+			case "2.0":
 				return TargetFrameworkMoniker.NET_2_0;
-			case "MSBuild08":
-				return TargetFrameworkMoniker.NET_2_0;
-			case "MSBuild10":
-			case "MSBuild12":
+			case "4.0":
 				return TargetFrameworkMoniker.NET_4_0;
 			}
 			return GetDefaultTargetFrameworkId ();
@@ -908,7 +905,7 @@ namespace MonoDevelop.Projects
 			// Make sure the fx version is sorted out before saving
 			// to avoid changes in project references while saving
 			if (targetFramework == null)
-				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (FileFormat));
+				targetFramework = Runtime.SystemAssemblyService.GetTargetFramework (GetDefaultTargetFrameworkForFormat (ToolsVersion));
 			return base.OnSave (monitor);
 		}
 
@@ -1385,7 +1382,7 @@ namespace MonoDevelop.Projects
 
 			//determine the default target framework from the project type's default
 			//overridden by the components in the project
-			var def = GetDefaultTargetFrameworkForFormat (GetFileFormat (GetToolsFormat ()));
+			var def = GetDefaultTargetFrameworkForFormat (ToolsVersion);
 			var targetFx = new TargetFrameworkMoniker (
 				string.IsNullOrEmpty (frameworkIdentifier)? def.Identifier : frameworkIdentifier,
 				string.IsNullOrEmpty (frameworkVersion)? def.Version : frameworkVersion,
@@ -1416,10 +1413,9 @@ namespace MonoDevelop.Projects
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			var toolsFormat = GetToolsFormat ();
 			var moniker = TargetFramework.Id;
-			bool supportsMultipleFrameworks = toolsFormat.SupportsMonikers || toolsFormat.SupportedFrameworks.Length > 0;
-			var def = GetDefaultTargetFrameworkForFormat (GetFileFormat (toolsFormat));
+			bool supportsMultipleFrameworks = true; // All supported formats support multiple frameworks. // toolsFormat.SupportsMonikers || toolsFormat.SupportedFrameworks.Length > 0;
+			var def = GetDefaultTargetFrameworkForFormat (ToolsVersion);
 
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
@@ -1429,7 +1425,7 @@ namespace MonoDevelop.Projects
 				globalGroup.SetValue ("TargetFrameworkVersion", "v" + moniker.Version, "v" + def.Version, true);
 			}
 
-			if (toolsFormat.SupportsMonikers) {
+			if (MSBuildFileFormat.ToolsSupportMonikers (ToolsVersion)) {
 				globalGroup.SetValue ("TargetFrameworkIdentifier", moniker.Identifier, def.Identifier, true);
 				globalGroup.SetValue ("TargetFrameworkProfile", moniker.Profile, def.Profile, true);
 			}
@@ -1441,11 +1437,6 @@ namespace MonoDevelop.Projects
 			if (pset.Project.IsNewProject)
 				pset.SetValue ("ErrorReport", "prompt");
 			
-		}
-
-		FileFormat GetFileFormat (MSBuildFileFormat fmt)
-		{
-			return new FileFormat (fmt, fmt.Id, fmt.Name);
 		}
 
 		internal class DefaultDotNetProjectExtension: DotNetProjectExtension
@@ -1497,9 +1488,9 @@ namespace MonoDevelop.Projects
 				return Project.OnGetDefaultTargetFrameworkId ();
 			}
 
-			internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+			internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (string toolsVersion)
 			{
-				return Project.OnGetDefaultTargetFrameworkForFormat (format);
+				return Project.OnGetDefaultTargetFrameworkForFormat (toolsVersion);
 			}
 
 			internal protected override bool OnGetSupportsFramework (TargetFramework framework)

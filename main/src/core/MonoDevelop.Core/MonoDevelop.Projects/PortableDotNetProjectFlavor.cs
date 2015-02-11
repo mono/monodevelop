@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.Projects
 			return base.OnGetProjectTypes ().Add ("PortableDotNet");
 		}
 
-		internal protected override bool OnGetSupportsFormat (FileFormat format)
+		internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)
 		{
 			int version;
 
@@ -55,7 +56,7 @@ namespace MonoDevelop.Projects
 			return framework.Id.Identifier == TargetFrameworkMoniker.ID_PORTABLE;
 		}
 
-		internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (FileFormat format)
+		internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (string toolsVersion)
 		{
 			// Note: This value is used only when serializing the TargetFramework to the .csproj file.
 			// Any component of the TargetFramework that is different from this base TargetFramework

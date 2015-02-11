@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects
 		public async Task CreateConsoleProject ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
-			await sol.ConvertToFormat (Util.FileFormatMSBuild10, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
 			await sol.SaveAsync (Util.GetMonitor ());
 			
 			// msbuild format
@@ -116,25 +116,25 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task TestCreateLoadSaveConsoleProject ()
 		{
-			await TestProjectsChecks.TestCreateLoadSaveConsoleProject ("MSBuild05");
+			await TestProjectsChecks.TestCreateLoadSaveConsoleProject (MSBuildFileFormat.VS2005);
 		}
 		
 		[Test]
 		public async Task GenericProject ()
 		{
-			await TestProjectsChecks.CheckGenericItemProject ("MSBuild05");
+			await TestProjectsChecks.CheckGenericItemProject (MSBuildFileFormat.VS2005);
 		}
 		
 		[Test]
 		public async Task TestLoadSaveSolutionFolders ()
 		{
-			await TestProjectsChecks.TestLoadSaveSolutionFolders ("MSBuild05");
+			await TestProjectsChecks.TestLoadSaveSolutionFolders (MSBuildFileFormat.VS2005);
 		}
 		
 		[Test]
 		public async Task TestLoadSaveResources ()
 		{
-			await TestProjectsChecks.TestLoadSaveResources ("MSBuild05");
+			await TestProjectsChecks.TestLoadSaveResources (MSBuildFileFormat.VS2005);
 		}
 		
 		[Test]
@@ -336,7 +336,7 @@ namespace MonoDevelop.Projects
 		public async Task RoundtripPropertyWithXmlCharacters ()
 		{
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("roundtrip-property-with-xml");
-			await sol.ConvertToFormat (Util.FileFormatMSBuild05, true);
+			sol.ConvertToFormat (MSBuildFileFormat.VS2005);
 
 			var value = "Hello<foo>&.exe";
 

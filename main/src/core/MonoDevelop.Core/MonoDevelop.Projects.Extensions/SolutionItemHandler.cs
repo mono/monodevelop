@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	public abstract class SolutionItemHandler: ISolutionItemHandler
+	public abstract class SolutionItemHandler
 	{
 		SolutionFolderItem item;
 		
@@ -76,10 +76,6 @@ namespace MonoDevelop.Projects.Extensions
 		{
 		}
 		
-		public abstract string ItemId { get; }
-		
-		public abstract Task Save (ProgressMonitor monitor);
-
 		public virtual void OnModified (string hint)
 		{
 		}
