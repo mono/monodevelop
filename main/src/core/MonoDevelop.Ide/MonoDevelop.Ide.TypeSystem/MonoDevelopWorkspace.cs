@@ -267,13 +267,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					Content = StringTextSource.ReadFrom (f.FilePath),
 				};
 				var projection = node.Parser.GenerateProjection (options);
-				var projectedFileName = f.FilePath.ChangeExtension (".g" + f.FilePath.Extension);
 				yield return DocumentInfo.Create (
 					id.GetOrCreateDocumentId (f.Name),
-					projectedFileName, 
+					projection.Result.Document.FileName, 
 					null, 
 					SourceCodeKind.Regular,
-					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Result.Document), VersionStamp.Create (), projectedFileName)), 
+					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Result.Document), VersionStamp.Create (), projection.Result.Document.FileName)), 
 					f.Name, 
 					System.Text.Encoding.Default, 
 					false
