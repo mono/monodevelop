@@ -40,11 +40,6 @@ namespace MonoDevelop.AspNet.Projects
 			return conf;
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
-		{
-			types.Add ("AspNetMvc");
-		}
-
 		protected override bool OnGetSupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
 		{
 			return framework.CanReferenceAssembliesTargetingFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_3_5);

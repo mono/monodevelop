@@ -64,11 +64,6 @@ namespace MonoDevelop.AspNet.Projects
 
 		#region properties
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
-		{
-			types.Add ("AspNetApp");
-		}
-
 		protected override MSBuildSupport OnGetMSBuildSupport ()
 		{
 			return MSBuildSupport.NotSupported;

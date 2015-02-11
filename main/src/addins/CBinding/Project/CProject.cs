@@ -178,11 +178,6 @@ namespace CBinding
 			}			
 		}
 
-		protected override void OnGetProjectTypes (HashSet<string> types)
-		{
-			types.Add ("Native");
-		}
-
 		public override string[] SupportedLanguages {
 			get { return new string[] { "C", "CPP", "Objective C", "Objective C++" }; }
 		}
@@ -191,8 +186,8 @@ namespace CBinding
 			get { return target; }
 			set { target = value; }
 		}
-		
-		public override bool IsCompileable (string fileName)
+
+		protected override bool OnGetIsCompileable (string fileName)
 		{
 			string ext = Path.GetExtension (fileName.ToUpper ());
 			
@@ -386,8 +381,8 @@ namespace CBinding
 				console.Dispose ();
 			}
 		}
-		
-		public override FilePath GetOutputFileName (ConfigurationSelector configuration)
+
+		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
