@@ -67,13 +67,6 @@ namespace MonoDevelop.Projects
 
 		internal event EventHandler DataContextChanged;
 		
-		class ExtensionChainInfo
-		{
-			public ExtensionContext ExtensionContext;
-			public ItemTypeCondition ItemTypeCondition;
-			public ProjectLanguageCondition ProjectLanguageCondition;
-		}
-		
 		internal ProjectService ()
 		{
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
@@ -85,48 +78,13 @@ namespace MonoDevelop.Projects
 			get { return dataContext; }
 		}
 		
-		internal ProjectServiceExtension GetExtensionChain (WorkspaceObject target)
+		internal ProjectServiceExtension GetExtensionChain ()
 		{
-			ProjectServiceExtension chain;
-			if (target != null) {
-				lock (target) {
-					ExtensionChainInfo einfo = (ExtensionChainInfo)target.ExtendedProperties [typeof(ExtensionChainInfo)];
-					if (einfo == null) {
-						einfo = new ExtensionChainInfo ();
-						ExtensionContext ctx = AddinManager.CreateExtensionContext ();
-						einfo.ExtensionContext = ctx;
-						einfo.ItemTypeCondition = new ItemTypeCondition (target.GetType ());
-						einfo.ProjectLanguageCondition = new ProjectLanguageCondition (target);
-						ctx.RegisterCondition ("ItemType", einfo.ItemTypeCondition);
-						ctx.RegisterCondition ("ProjectLanguage", einfo.ProjectLanguageCondition);
-						target.ExtendedProperties [typeof(ExtensionChainInfo)] = einfo;
-					} else {
-						einfo.ItemTypeCondition.ObjType = target.GetType ();
-						einfo.ProjectLanguageCondition.TargetProject = target;
-					}
-					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
-					chain = CreateExtensionChain (extensions);
-				
-					// After creating the chain there is no need to keep the reference to the target
-					einfo.ProjectLanguageCondition.TargetProject = null;
-				}
+			if (defaultExtensionChain == null) {
+				ProjectServiceExtension[] extensions = AddinManager.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
+				defaultExtensionChain = CreateExtensionChain (extensions);
 			}
-			else {
-				if (defaultExtensionChain == null) {
-					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
-					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
-					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
-					defaultExtensionChain = CreateExtensionChain (extensions);
-				}
-				chain = defaultExtensionChain;
-				target = UnknownItem.Instance;
-			}
-			
-			if (chain.SupportsItem (target))
-				return chain;
-			else
-				return chain.GetNext (target);
+			return defaultExtensionChain;
 		}
 		
 		ProjectServiceExtension CreateExtensionChain (ProjectServiceExtension[] extensions)
@@ -169,7 +127,7 @@ namespace MonoDevelop.Projects
 				file = Path.GetFullPath (file);
 				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 					file = GetTargetFile (file);
-					SolutionItem loadedItem = await GetExtensionChain (null).LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
+					SolutionItem loadedItem = await GetExtensionChain ().LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
 					loadedItem.NeedsReload = false;
 					return loadedItem;
 				}
@@ -219,7 +177,7 @@ namespace MonoDevelop.Projects
 				file = Path.GetFullPath (file);
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 					file = GetTargetFile (file);
-					WorkspaceItem item = await GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+					WorkspaceItem item = await GetExtensionChain ().LoadWorkspaceItem (monitor, file) as WorkspaceItem;
 					if (item != null)
 						item.NeedsReload = false;
 					else
@@ -420,7 +378,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 			filename = GetTargetFile (filename);
-			return GetExtensionChain (null).FileIsObjectOfType (filename, type);
+			return GetExtensionChain ().FileIsObjectOfType (filename, type);
 		}
 
 		public bool IsSolutionItemFile (string filename)
@@ -428,7 +386,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 			filename = GetTargetFile (filename);
-			return GetExtensionChain (null).FileIsObjectOfType (filename, typeof(SolutionItem));
+			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(SolutionItem));
 		}
 		
 		public bool IsWorkspaceItemFile (string filename)
@@ -436,7 +394,7 @@ namespace MonoDevelop.Projects
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
 			filename = GetTargetFile (filename);
-			return GetExtensionChain (null).FileIsObjectOfType (filename, typeof(WorkspaceItem));
+			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(WorkspaceItem));
 		}
 		
 		internal void InitializeDataContext (DataContext ctx)

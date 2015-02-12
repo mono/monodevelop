@@ -41,10 +41,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 	{
 		public static readonly MD1FileFormat Instance = new MD1FileFormat ();
 
-		public bool SupportsMixedFormats {
-			get { return true; }
-		}
-
 		public FilePath GetValidFormatName (object obj, FilePath fileName)
 		{
 			if (obj is WorkspaceItem && !(obj is Solution))
@@ -61,11 +57,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 		public bool CanWriteFile (object obj)
 		{
 			return (obj is WorkspaceItem && !(obj is Solution));
-		}
-
-		public List<FilePath> GetItemFiles (object obj)
-		{
-			return new List<FilePath> ();
 		}
 
 		async public Task WriteFile (FilePath file, object node, ProgressMonitor monitor)
@@ -162,16 +153,6 @@ namespace MonoDevelop.Projects.Formats.MD1
 					reader.Close ();
 				}
 			});
-		}
-		
-		public IEnumerable<string> GetCompatibilityWarnings (object obj)
-		{
-			yield break;
-		}
-		
-		public bool SupportsFramework (MonoDevelop.Core.Assemblies.TargetFramework framework)
-		{
-			return true;
 		}
 	}
 }

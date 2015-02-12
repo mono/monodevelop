@@ -140,11 +140,6 @@ namespace MonoDevelop.Projects
 			return next.OnCreateConfiguration (name);
 		}
 
-		internal protected virtual ImmutableList<string> OnGetSupportedPlatforms ()
-		{
-			return next.OnGetSupportedPlatforms ();
-		}
-
 		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()
 		{
 			return next.OnGetSupportedFeatures ();

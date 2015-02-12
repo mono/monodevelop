@@ -963,15 +963,6 @@ namespace MonoDevelop.Projects
 				Saved (this, args);
 		}
 		
-		public string[] SupportedPlatforms {
-			get { return ItemExtension.OnGetSupportedPlatforms ().ToArray () ; }
-		}
-
-		protected virtual ImmutableList<string> OnGetSupportedPlatforms ()
-		{
-			return ImmutableList<string>.Empty;
-		}
-
 		public SolutionItemConfiguration GetConfiguration (ConfigurationSelector configuration)
 		{
 			return (SolutionItemConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
@@ -1274,11 +1265,6 @@ namespace MonoDevelop.Projects
 			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 			{
 				return Item.OnCreateConfiguration (name);
-			}
-
-			internal protected override ImmutableList<string> OnGetSupportedPlatforms ()
-			{
-				return Item.OnGetSupportedPlatforms ();
 			}
 
 			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

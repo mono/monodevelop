@@ -188,7 +188,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var list = new List<SolutionItemExtensionNode> ();
 			foreach (var fid in flavorGuids) {
-				foreach (var node in WorkspaceObject.GetModelExtensions ().OfType<SolutionItemExtensionNode> ()) {
+				foreach (var node in WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ()) {
 					if (node.SupportsMigration && node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))
 						list.Add (node);
 				}
@@ -287,7 +287,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static string GetTypeGuidFromAlias (string alias)
 		{
 			foreach (var node in GetItemTypeNodes ()) {
-				if (node.Alias.Equals (alias, StringComparison.OrdinalIgnoreCase))
+				if (node.TypeTag.Equals (alias, StringComparison.OrdinalIgnoreCase))
 					return node.Guid;
 			}
 			return null;

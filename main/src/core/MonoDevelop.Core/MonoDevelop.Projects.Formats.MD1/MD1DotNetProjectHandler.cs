@@ -39,25 +39,34 @@ using System.Threading.Tasks;
 	
 namespace MonoDevelop.Projects.Formats.MD1
 {
-	internal class MD1DotNetProjectHandler: SolutionItemHandler
+	class MD1DotNetProjectHandler
 	{
-		public MD1DotNetProjectHandler (DotNetProject entry): base (entry)
+		DotNetProject project;
+
+		public MD1DotNetProjectHandler (DotNetProject entry)
 		{
+			project = entry;
 		}
 		
-		DotNetProject Project {
-			get { return (DotNetProject) Item; }
+		public async Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			switch (target)
+			{
+			case "Build":
+				return await OnBuild (monitor, configuration);
+			case "Clean":
+				return await OnClean (monitor, configuration);
+			}
+			return new BuildResult (new CompilerResults (null), "");
 		}
 
-		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			if (!Project.OnGetNeedsBuilding (configuration)) {
+			if (!project.OnGetNeedsBuilding (configuration)) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Skipping project since output files are up to date"));
 				return new BuildResult ();
 			}
 
-			DotNetProject project = Project;
-			
 			if (!project.TargetRuntime.IsInstalled (project.TargetFramework)) {
 				BuildResult res = new BuildResult ();
 				res.AddError (GettextCatalog.GetString ("Framework '{0}' not installed.", project.TargetFramework.Name));
@@ -316,6 +325,11 @@ namespace MonoDevelop.Projects.Formats.MD1
 			}
 
 			return null;
+		}
+
+		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (BuildResult.Success);
 		}
 
 		// true if the resx file or any file referenced
