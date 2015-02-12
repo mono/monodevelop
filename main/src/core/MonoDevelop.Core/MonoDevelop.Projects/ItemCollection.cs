@@ -73,6 +73,13 @@ namespace MonoDevelop.Projects
 			OnItemsAdded (items);
 		}
 
+		public void Insert (int index, T item)
+		{
+			list = list.Insert (index, item);
+			singleItem [0] = item;
+			OnItemsAdded (singleItem);
+		}
+
 		public void RemoveRange (IEnumerable<T> items)
 		{
 			AssertCanWrite ();

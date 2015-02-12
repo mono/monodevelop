@@ -8,7 +8,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
-		<Condition id="ActiveLanguage" value = "IL">
+		<Condition id="TypeTag" value = "IL">
 			<Section id = "ILAsmCompilerParametersPanel" _label = "Compiler" class = "ILAsmBinding.CompilerParametersPanel"/>
 		</Condition>
 	</Extension>
@@ -22,7 +22,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProjectType  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}"/>
+		<DotNetProjectType  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}" tag="IL" />
 	</Extension>
 	
 </ExtensionModel>

@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.Extensions
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			foreach (string type in conditionNode.GetAttribute ("value").Split ('|')) {
-				if (MatchesType (type))
+				if (MatchesType (type.Trim ()))
 					return true;
 			}
 			return false;

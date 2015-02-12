@@ -215,9 +215,11 @@ namespace MonoDevelop.Projects
 			return MSBuildSupport.Supported;
 		}
 
-		protected override ImmutableHashSet<string> OnGetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			return base.OnGetProjectTypes ().Add ("DotNet").Add ("DotNetAssembly");
+			base.OnGetTypeTags (types);
+			types.Add ("DotNet");
+			types.Add ("DotNetAssembly");
 		}
 
 		DotNetProjectExtension projectExtension;
@@ -563,11 +565,6 @@ namespace MonoDevelop.Projects
 
 		public bool SupportsPartialTypes {
 			get { return (flags & DotNetProjectFlags.SupportsPartialTypes) != 0; }
-		}
-
-		protected override System.Collections.Immutable.ImmutableList<string> OnGetSupportedPlatforms ()
-		{
-			return base.OnGetSupportedPlatforms ().Add ("AnyCPU");
 		}
 
 		void CheckReferenceChange (FilePath updatedFile)
@@ -1090,7 +1087,7 @@ namespace MonoDevelop.Projects
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
-		public virtual string GetDefaultNamespace (string fileName)
+		public string GetDefaultNamespace (string fileName)
 		{
 			return OnGetDefaultNamespace (fileName);
 		}

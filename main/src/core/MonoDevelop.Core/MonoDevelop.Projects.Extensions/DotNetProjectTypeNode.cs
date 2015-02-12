@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public DotNetProjectTypeNode ()
 		{
-			Alias = "DotNet";
+			TypeTag = "DotNet";
 		}
 
 		public override bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)

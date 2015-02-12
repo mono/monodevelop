@@ -51,9 +51,10 @@ namespace MonoDevelop.Projects
 			StockIcon = "md-assembly-project";
 		}
 
-		protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			return base.OnGetProjectTypes ().Add ("CompiledAssembly");
+			base.OnGetTypeTags (types);
+			types.Add ("CompiledAssembly");
 		}
 
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name)

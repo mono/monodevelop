@@ -187,9 +187,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 		}
 
-		protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			return base.OnGetProjectTypes ().Add ("SharedAssets").Add ("DotNet");
+			types.Add ("SharedAssets");
+			types.Add ("DotNet");
 		}
 
 		public override string[] SupportedLanguages {

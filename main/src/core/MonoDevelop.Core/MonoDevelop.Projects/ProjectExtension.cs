@@ -75,12 +75,11 @@ namespace MonoDevelop.Projects
 			next.OnGetDefaultImports (imports);
 		}
 
-		internal protected virtual ImmutableHashSet<string> OnGetProjectTypes ()
+		internal protected virtual void OnGetTypeTags (HashSet<string> types)
 		{
-			var res = next.OnGetProjectTypes ();
+			next.OnGetTypeTags (types);
 			if (TypeAlias != null)
-				res = res.Add (TypeAlias);
-			return res;
+				types.Add (TypeAlias);
 		}
 
 		/// <summary>

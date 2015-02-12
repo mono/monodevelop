@@ -189,24 +189,24 @@
 		<ProjectFlavor
 			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
 			type="MonoDevelop.AspNet.Projects.AspMvc1ProjectFlavor"
-			alias="AspNetMvc1" />
+			tag="AspNetMvc1" />
 		<ProjectFlavor
 			guid="{F85E285D-A4E0-4152-9332-AB1D724D3325}"
 			type="MonoDevelop.AspNet.Projects.AspMvc2ProjectFlavor"
-			alias="AspNetMvc2" />
+			tag="AspNetMvc2" />
 		<ProjectFlavor
 			guid="{E53F8FEA-EAE0-44A6-8774-FFD645390401}"
 			type="MonoDevelop.AspNet.Projects.AspMvc3ProjectFlavor"
-			alias="AspNetMvc3" />
+			tag="AspNetMvc3" />
 		<ProjectFlavor
 			guid="{E3E379DF-F4C6-4180-9B81-6769533ABE47}"
 			type="MonoDevelop.AspNet.Projects.AspMvc4ProjectFlavor" 
-			alias="AspNetMvc4" />
+			tag="AspNetMvc4" />
 		<ProjectFlavor
 			id="MonoDevelop.AspNet.Projects.AspNetAppProjectFlavor"
 			guid="{349C5851-65DF-11DA-9384-00065B846F21}"
 			type="MonoDevelop.AspNet.Projects.AspNetAppProjectFlavor" 
-			alias="AspNetApp" />
+			tag="AspNetApp" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">

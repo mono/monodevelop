@@ -52,8 +52,8 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string type = null;
 
-		[NodeAttribute ("alias")]
-		public string Alias { get; protected set; }
+		[NodeAttribute ("tag")]
+		public string TypeTag { get; protected set; }
 
 		public SolutionItemTypeNode ()
 		{
@@ -125,7 +125,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		public virtual bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			return type.Equals (Guid, StringComparison.OrdinalIgnoreCase) || type == Alias;
+			return type.Equals (Guid, StringComparison.OrdinalIgnoreCase) || type == TypeTag;
 		}
 
 		public virtual SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)

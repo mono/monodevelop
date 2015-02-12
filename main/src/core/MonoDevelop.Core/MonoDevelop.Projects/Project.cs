@@ -361,14 +361,15 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the project type and its base types.
 		/// </summary>
-		public IEnumerable<string> GetProjectTypes ()
+		public IEnumerable<string> GetTypeTags ()
 		{
-			return ProjectExtension.OnGetProjectTypes ();
+			HashSet<string> sset = new HashSet<string> ();
+			ProjectExtension.OnGetTypeTags (sset);
+			return sset;
 		}
 
-		protected virtual ImmutableHashSet<string> OnGetProjectTypes ()
+		protected virtual void OnGetTypeTags (HashSet<string> types)
 		{
-			return ImmutableHashSet<string>.Empty;
 		}
 
 		public bool HasFlavor<T> ()
@@ -2401,9 +2402,9 @@ namespace MonoDevelop.Projects
 				return Project.OnGetIsCompileable (fileName);
 			}
 
-			internal protected override ImmutableHashSet<string> OnGetProjectTypes ()
+			internal protected override void OnGetTypeTags (HashSet<string> types)
 			{
-				return Project.OnGetProjectTypes ();
+				Project.OnGetTypeTags (types);
 			}
 
 			internal protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)

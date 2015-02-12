@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static bool IsOutputTracked (DotNetProject project)
 		{
-			foreach (var projectType in project.GetProjectTypes ()) {
+			foreach (var projectType in project.GetTypeTags ()) {
 				if (outputTrackedProjects.Any (otp => otp.ProjectType != null && string.Equals (otp.ProjectType, projectType, StringComparison.OrdinalIgnoreCase))) {
 					return true;
 				}

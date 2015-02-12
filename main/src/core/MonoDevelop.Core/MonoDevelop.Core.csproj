@@ -295,7 +295,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\DataTypeCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicySetNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\PolicyNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemTypeCondition.cs" />
@@ -486,6 +485,7 @@
     <Compile Include="MonoDevelop.Projects\MSBuildSerializationExtension.cs" />
     <Compile Include="MonoDevelop.Projects\WorkspaceSerializationExtension.cs" />
     <Compile Include="MonoDevelop.Projects\IMSBuildFileObject.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\TypeTagCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

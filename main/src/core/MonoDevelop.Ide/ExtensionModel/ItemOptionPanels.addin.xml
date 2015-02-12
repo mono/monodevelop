@@ -9,8 +9,8 @@
 	<ConditionType id="FlavorType" type="MonoDevelop.Projects.Extensions.FlavorTypeCondition">
 		<Description>Type of a flavor that a project must have. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 	</ConditionType>
-	<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
-		<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
+	<ConditionType id="TypeTag" type="MonoDevelop.Projects.Extensions.TypeTagCondition">
+		<Description>Tag or tags that a project must have.</Description>
 	</ConditionType>
 </ExtensionPoint>
 	
@@ -38,7 +38,7 @@
 	</Section>
 	<Section id="Build" _label="Build">
 		<Section id="General" _label="General" icon="md-prefs-build">
-			<Condition id="ItemType" value="DotNetAssemblyProject">
+			<Condition id="ItemType" value="DotNetProject">
 				<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
 			</Condition>
 			<Condition id="FlavorType" value="PortableDotNetProjectFlavor">
@@ -76,7 +76,7 @@
 		<Condition id="ItemType" value="Solution">
 			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
 		</Condition>
-		<Condition id="ItemType" value="SolutionEntityItem">
+		<Condition id="ItemType" value="SolutionItem">
 			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />
 		</Condition>
 	</Section>
@@ -85,7 +85,7 @@
 			<Condition id="ItemType" value="Solution">
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 			</Condition>
-			<Condition id="ItemType" value="SolutionItem">
+			<Condition id="ItemType" value="SolutionFolderItem">
 				<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 			</Condition>
 		</Section>
@@ -93,7 +93,7 @@
 			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
 			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class= "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
 		</Condition>
-		<Condition id="ItemType" value="SolutionItem">
+		<Condition id="ItemType" value="SolutionFolderItem">
 			<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
 			<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
 		</Condition>

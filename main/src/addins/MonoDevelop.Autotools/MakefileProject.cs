@@ -2,7 +2,6 @@
 using System;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace MonoDevelop.Autotools
 {
@@ -19,9 +18,10 @@ namespace MonoDevelop.Autotools
 			return conf;
 		}
 
-		protected override ImmutableHashSet<string> OnGetProjectTypes ()
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			return base.OnGetProjectTypes ().Add ("MakefileProject");
+			base.OnGetTypeTags (types);
+			types.Add ("MakefileProject");
 		}
 	}
 	

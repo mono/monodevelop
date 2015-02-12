@@ -46,6 +46,7 @@ namespace MonoDevelop.Projects
 		bool initializeCalled;
 		bool isShared;
 		object localLock = new object ();
+		ExtensionContext extensionContext;
 
 		internal protected void Initialize<T> (T instance)
 		{
@@ -61,6 +62,10 @@ namespace MonoDevelop.Projects
 		{
 			if (!initializeCalled) {
 				initializeCalled = true;
+
+				extensionContext = AddinManager.CreateExtensionContext ();
+				extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (GetType ()));
+
 				OnInitialize ();
 				InitializeExtensionChain ();
 				OnExtensionChainInitialized ();
@@ -246,6 +251,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public ExtensionContext ExtensionContext {
+			get {
+				return this.extensionContext;
+			}
+		}
+
 		WorkspaceObjectExtension itemExtension;
 
 		WorkspaceObjectExtension ItemExtension {
@@ -270,7 +281,7 @@ namespace MonoDevelop.Projects
 			// Collect extensions that support this object
 
 			var extensions = new List<WorkspaceObjectExtension> ();
-			foreach (ProjectModelExtensionNode node in GetModelExtensions ()) {
+			foreach (ProjectModelExtensionNode node in GetModelExtensions (extensionContext)) {
 				if (node.CanHandleObject (this)) {
 					var ext = node.CreateExtension ();
 					if (ext.SupportsObject (this))
@@ -294,9 +305,12 @@ namespace MonoDevelop.Projects
 				e.OnExtensionChainCreated ();
 		}
 
-		internal static IEnumerable<ProjectModelExtensionNode> GetModelExtensions ()
+		internal static IEnumerable<ProjectModelExtensionNode> GetModelExtensions (ExtensionContext ctx)
 		{
-			return AddinManager.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
+			if (ctx != null)
+				return ctx.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
+			else
+				return AddinManager.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
 		}
 
 		static List<ProjectModelExtensionNode> customNodes = new List<ProjectModelExtensionNode> ();

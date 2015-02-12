@@ -33,9 +33,10 @@ namespace MonoDevelop.Projects
 {
 	public class PortableDotNetProjectFlavor: DotNetProjectExtension
 	{
-		internal protected override System.Collections.Immutable.ImmutableHashSet<string> OnGetProjectTypes ()
+		internal protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			return base.OnGetProjectTypes ().Add ("PortableDotNet");
+			base.OnGetTypeTags (types);
+			types.Add ("PortableDotNet");
 		}
 
 		internal protected override bool OnGetSupportsFormat (MSBuildFileFormat format)

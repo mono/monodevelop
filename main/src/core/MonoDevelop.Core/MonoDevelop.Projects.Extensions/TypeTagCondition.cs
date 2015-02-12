@@ -1,9 +1,10 @@
-// GenericProject.cs
+﻿//
+// TypeTagCondition.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,50 +23,47 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
+using System;
+using System.Linq;
+using Mono.Addins;
 
-
-using System.Xml;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Projects.Extensions
 {
-	[ProjectModelDataItem]
-	public class GenericProject: Project
+	public class TypeTagCondition: ConditionType
 	{
-		public GenericProject ()
+		string[] tags;
+
+		public TypeTagCondition (Project project)
 		{
-		}
-		
-		public GenericProject (ProjectCreateInformation info, XmlElement projectOptions)
-		{
-			Configurations.Add (CreateConfiguration ("Default"));
+			tags = project.GetTypeTags ().ToArray (); 
 		}
 
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);
-			return conf;
+			var val = conditionNode.GetAttribute ("value");
+			if (val.IndexOf ('|') != -1) {
+				string[] ors = val.Split ('|');
+				foreach (var cond in ors) {
+					if (EvalAnd (cond))
+						return true;
+				}
+				return false;
+			}
+			return EvalAnd (val);
 		}
 
-		protected override void OnGetTypeTags (HashSet<string> types)
+		bool EvalAnd (string val)
 		{
-			base.OnGetTypeTags (types);
-			types.Add ("GenericProject");
-		}
-	}
-	
-	[ProjectModelDataItem]
-	public class GenericProjectConfiguration: ProjectConfiguration
-	{
-		public GenericProjectConfiguration ()
-		{
-		}
-		
-		public GenericProjectConfiguration (string name): base (name)
-		{
+			if (val.IndexOf ('&') != -1) {
+				var ands = val.Split ('&');
+				foreach (var tag in ands) {
+					if (!tags.Contains (tag.Trim ()))
+						return false;
+				}
+				return true;
+			}
+			return tags.Contains (val.Trim ());
 		}
 	}
 }
+

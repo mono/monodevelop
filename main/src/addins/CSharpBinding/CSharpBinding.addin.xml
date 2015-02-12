@@ -49,7 +49,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
-		<Condition id="ActiveLanguage" value="C#">
+		<Condition id="TypeTag" value="C#">
 			<Panel id = "CSharpCompilerOptionsPanel"
 			             _label = "C#"
 			             class = "MonoDevelop.CSharp.Project.CompilerOptionsPanel"/>
@@ -57,7 +57,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
-		<Condition id="ActiveLanguage" value="C#">
+		<Condition id="TypeTag" value="C#">
 			<Panel id = "CSharpCodeGenerationPanel"
 			             _label = "Compiler"
 			             class = "MonoDevelop.CSharp.Project.CodeGenerationPanel"/>
