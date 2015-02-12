@@ -410,8 +410,13 @@ namespace MonoDevelop.Projects
 		/// <value>
 		/// The identifiers of the supported languages.
 		/// </value>
-		public virtual string[] SupportedLanguages {
+		public string[] SupportedLanguages {
 			get { return ProjectExtension.SupportedLanguages; }
+		}
+
+		protected virtual string[] OnGetSupportedLanguages ()
+		{
+			return new String[] { "" };
 		}
 
 		/// <summary>
@@ -2459,7 +2464,7 @@ namespace MonoDevelop.Projects
 
 			internal protected override string[] SupportedLanguages {
 				get {
-					return new String[] { "" };
+					return Project.OnGetSupportedLanguages ();
 				}
 			}
 

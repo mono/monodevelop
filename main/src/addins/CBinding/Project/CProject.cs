@@ -178,8 +178,9 @@ namespace CBinding
 			}			
 		}
 
-		public override string[] SupportedLanguages {
-			get { return new string[] { "C", "CPP", "Objective C", "Objective C++" }; }
+		protected override string[] OnGetSupportedLanguages ()
+		{
+			return new string[] { "C", "CPP", "Objective C", "Objective C++" };
 		}
 		
 		public CompileTarget CompileTarget {

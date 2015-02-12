@@ -249,8 +249,9 @@ namespace MonoDevelop.Projects
 			get { return languageName; }
 		}
 
-		public override string[] SupportedLanguages {
-			get { return ProjectExtension.SupportedLanguages; }
+		protected override string[] OnGetSupportedLanguages ()
+		{
+			return new [] { "", languageName };
 		}
 
 		public bool IsLibraryBasedProjectType {

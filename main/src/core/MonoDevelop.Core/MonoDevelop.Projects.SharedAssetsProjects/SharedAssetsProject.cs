@@ -193,10 +193,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			types.Add ("DotNet");
 		}
 
-		public override string[] SupportedLanguages {
-			get {
-				return new [] { "", languageName };
-			}
+		protected override string[] OnGetSupportedLanguages ()
+		{
+			return new [] { "", languageName };
 		}
 
 		public IDotNetLanguageBinding LanguageBinding {
