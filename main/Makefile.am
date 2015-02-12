@@ -13,11 +13,14 @@ buildinfo = $(top_builddir)/build/bin/buildinfo
 
 all: vcrevision
 
-all-local: vcrevision sln_build
+all-local: vcrevision restore-packages sln_build
 
 clean: clean-local
 
 clean-local: sln_clean
+
+restore-packages:
+	nuget restore
 
 vcrevision:
 	touch vcrevision
