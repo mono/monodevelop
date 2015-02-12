@@ -29,12 +29,13 @@ using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core;
 using MonoDevelop.Core.AddIns;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core
 {
 	public class ApplicationService
 	{
-		public int StartApplication (string appId, string[] parameters)
+		public Task<int> StartApplication (string appId, string[] parameters)
 		{
 			var app = GetApplication (appId);
 			if (app == null)

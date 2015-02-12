@@ -33,12 +33,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Formats.MSBuild;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
 	class ProjectConvertTool: IApplication
 	{
-		public int Run (string[] arguments)
+		public async Task<int> Run (string[] arguments)
 		{
 			if (arguments.Length == 0 || arguments [0] == "--help") {
 				Console.WriteLine ("");
@@ -101,7 +102,7 @@ namespace MonoDevelop.Projects
 			
 			object item;
 			if (Services.ProjectService.IsWorkspaceItemFile (projectFile)) {
-				item = Services.ProjectService.ReadWorkspaceItem (monitor, projectFile);
+				item = await Services.ProjectService.ReadWorkspaceItem (monitor, projectFile);
 				if (projects.Count > 0) {
 					Solution sol = item as Solution;
 					if (sol == null) {
@@ -129,7 +130,7 @@ namespace MonoDevelop.Projects
 					Console.WriteLine ("The -p option can't be used when exporting a single project");
 					return 1;
 				}
-				item = Services.ProjectService.ReadSolutionItem (monitor, projectFile);
+				item = await Services.ProjectService.ReadSolutionItem (monitor, projectFile);
 			}
 			
 			var formats = MSBuildFileFormat.GetSupportedFormats ().ToArray ();
@@ -179,9 +180,7 @@ namespace MonoDevelop.Projects
 				destPath = Path.GetDirectoryName (projectFile);
 			destPath = FileService.GetFullPath (destPath);
 			
-			var t = Services.ProjectService.Export (monitor, projectFile, itemsToExport, destPath, format);
-			t.Wait ();
-			string ofile = t.Result;
+			string ofile = await Services.ProjectService.Export (monitor, projectFile, itemsToExport, destPath, format);
 
 			if (ofile != null) {
 				Console.WriteLine ("Saved file: " + ofile);

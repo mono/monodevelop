@@ -47,14 +47,7 @@ namespace MonoDevelop.Projects
 		string command = ProjectService.BuildTarget;
 		string runtime;
 		
-		public int Run (string[] arguments)
-		{
-			var t = RunAsync (arguments);
-			t.Wait ();
-			return t.Result;
-		}
-
-		public async Task<int> RunAsync (string[] arguments)
+		public async Task<int> Run (string[] arguments)
 		{
 			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Build Tool"));
 			foreach (string s in arguments)

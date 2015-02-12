@@ -52,6 +52,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Desktop;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -63,12 +64,12 @@ namespace MonoDevelop.Ide
 		internal static string DefaultTheme;
 		static readonly int ipcBasePort = 40000;
 		
-		int IApplication.Run (string[] args)
+		Task<int> IApplication.Run (string[] args)
 		{
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.Error != null || options.ShowHelp)
-				return options.Error != null? -1 : 0;
-			return Run (options);
+				return Task.FromResult (options.Error != null? -1 : 0);
+			return Task.FromResult (Run (options));
 		}
 		
 		int Run (MonoDevelopOptions options)

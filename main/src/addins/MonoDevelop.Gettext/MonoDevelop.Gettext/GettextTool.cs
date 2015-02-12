@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Gettext
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Gettext
 		string file;
 		string project;
 		
-		public int Run (string[] arguments)
+		public async Task<int> Run (string[] arguments)
 		{
 			Console.WriteLine (BrandingService.BrandApplicationName ("MonoDevelop Gettext Update Tool"));
 			foreach (string s in arguments)
@@ -74,7 +75,7 @@ namespace MonoDevelop.Gettext
 			ConsoleProgressMonitor monitor = new ConsoleProgressMonitor ();
 			monitor.IgnoreLogMessages = true;
 			
-			WorkspaceItem centry = Services.ProjectService.ReadWorkspaceItem (monitor, file).Result;
+			WorkspaceItem centry = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
 			monitor.IgnoreLogMessages = false;
 			
 			Solution solution = centry as Solution;
