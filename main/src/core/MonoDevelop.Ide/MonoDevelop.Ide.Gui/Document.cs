@@ -749,10 +749,11 @@ namespace MonoDevelop.Ide.Gui
 				if (TypeSystemService.CanParseProjections (Project, Editor.MimeType, FileName)) {
 					var task = TypeSystemService.ParseProjection (Project, currentParseFile, editor.MimeType, currentParseText);
 					if (task.Result != null) {
-						this.parsedDocument = task.Result.ParsedDocument;
-						var projection = task.Result.Projection;
+						var p = task.Result;
+						this.parsedDocument = p.ParsedDocument;
+						var projection = p.Projection;
 						projection.CreateProjectedEditor (this);
-						Editor.SetOrUpdateProjections (this, new [] { projection });
+						Editor.SetOrUpdateProjections (this, new [] { projection }, p.SupportedProjectionFeatures);
 					}
 				} else { 
 					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
@@ -808,12 +809,13 @@ namespace MonoDevelop.Ide.Gui
 						TypeSystemService.ParseProjection (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
 							Application.Invoke (delegate {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-								if (isClosed || task.Result == null)
+								var taskResult = task.Result;
+								if (isClosed || taskResult == null)
 									return;
-								this.parsedDocument = task.Result.ParsedDocument;
-								var projection = task.Result.Projection;
+								this.parsedDocument = taskResult.ParsedDocument;
+								var projection = taskResult.Projection;
 								projection.CreateProjectedEditor (this);
-								Editor.SetOrUpdateProjections (this, new [] { projection });
+								Editor.SetOrUpdateProjections (this, new [] { projection }, taskResult.SupportedProjectionFeatures);
 								OnDocumentParsed (EventArgs.Empty);
 							});
 						});

@@ -46,10 +46,30 @@ namespace MonoDevelop.Ide.TypeSystem
 		public Document RoslynDocument { get; set; }
 	}
 
+	[Flags]
+	public enum SupportedProjectionFeatures {
+		Completion,
+		SemanticHighlighting,
+		Tooltips,
+
+		All = Completion | SemanticHighlighting | Tooltips
+	}
+
 	public class ParsedDocumentProjection 
 	{
 		public ParsedDocument ParsedDocument { get; private set; }
+
 		public Projection Projection { get; private set;}
+
+		SupportedProjectionFeatures supportedProjectionFeatures = SupportedProjectionFeatures.All;
+		public SupportedProjectionFeatures SupportedProjectionFeatures {
+			get {
+				return supportedProjectionFeatures;
+			}
+			private set {
+				supportedProjectionFeatures = value;
+			}
+		} 
 
 		public ParsedDocumentProjection (ParsedDocument parsedDocument, Projection projection)
 		{
@@ -82,34 +102,38 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </param>
 		public abstract Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken));
 
-//		/// <summary>
-//		/// Parse the specified file. The file content should be read by the type system parser.
-//		/// </summary>
-//		/// <param name='storeAst'>
-//		/// If set to <c>true</c> the ast should be stored in the parsed document.
-//		/// </param>
-//		/// <param name='fileName'>
-//		/// The name of the file.
-//		/// </param>
-//		/// <param name='project'>
-//		/// The project the file belongs to.
-//		/// </param>
-//		public virtual Task<ParsedDocument> Parse (bool storeAst, string fileName, MonoDevelop.Projects.Project project = null, CancellationToken cancellationToken = default(CancellationToken))
-//		{
-//			var src = StringTextSource.ReadFrom (fileName);
-//			return Parse (storeAst, fileName, src, project, cancellationToken);
-//		}
-//
+		/// <summary>
+		/// If true projections are possible. A projection transforms a source to a target language and maps certain parts of the file to parts in the projected file.
+		/// That's used for embedded languages for example.
+		/// </summary>
+		/// <returns><c>true</c> if this instance can generate projection the specified mimeType buildAction supportedLanguages;
+		/// otherwise, <c>false</c>.</returns>
+		/// <param name="mimeType">MIME type.</param>
+		/// <param name="buildAction">Build action.</param>
+		/// <param name="supportedLanguages">Supported languages.</param>
 		public virtual bool CanGenerateProjection (string mimeType, string buildAction, string[] supportedLanguages)
 		{
 			return false;
 		}
 
+		/// <summary>
+		/// Generates the plain projection. This is used for type system services.
+		/// </summary>
+		/// <returns>The projection.</returns>
+		/// <param name="options">Options.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
 		public virtual Task<Projection> GenerateProjection (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException ();
 		}
 
+		/// <summary>
+		/// Generates the parsed document projection. That contains the parsed document and the projection. This is used inside the IDE for the editor.
+		/// That's usually more efficient than calling Parse/GenerateProjection separately.
+		/// </summary>
+		/// <returns>The parsed document projection.</returns>
+		/// <param name="options">Options.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
 		public virtual Task<ParsedDocumentProjection> GenerateParsedDocumentProjection (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException ();

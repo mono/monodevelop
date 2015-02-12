@@ -1116,29 +1116,34 @@ namespace MonoDevelop.Ide.Editor
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
 		IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections = null;
 
-		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections)
+		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections, SupportedProjectionFeatures features = SupportedProjectionFeatures.All)
 		{
 			if (ctx == null)
 				throw new ArgumentNullException ("ctx");
 			this.projections = projections;
-			if (SemanticHighlighting is ProjectedSemanticHighlighting) {
-				((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
-			} else {
-				SemanticHighlighting = new ProjectedSemanticHighlighting (this, ctx, projections);
-			}
-			projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
-			projectedProviders = new List<ProjectedTooltipProvider> ();
-			foreach (var projection in projections) {
-				foreach (var tp in projection.ProjectedEditor.textEditorImpl.TooltipProvider) {
-					var newProvider = new ProjectedTooltipProvider (this, ctx, projection, tp);
-					projectedProviders.Add (newProvider);
-					textEditorImpl.AddTooltipProvider (newProvider);
+			if ((features & SupportedProjectionFeatures.SemanticHighlighting) == SupportedProjectionFeatures.SemanticHighlighting) {
+					if (SemanticHighlighting is ProjectedSemanticHighlighting) {
+					((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
+				} else {
+					SemanticHighlighting = new ProjectedSemanticHighlighting (this, ctx, projections);
 				}
 			}
-			InitializeProjectionExtensions ();
+
+			if ((features & SupportedProjectionFeatures.Tooltips) == SupportedProjectionFeatures.Tooltips) {
+					projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
+				projectedProviders = new List<ProjectedTooltipProvider> ();
+				foreach (var projection in projections) {
+					foreach (var tp in projection.ProjectedEditor.textEditorImpl.TooltipProvider) {
+						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, tp);
+						projectedProviders.Add (newProvider);
+						textEditorImpl.AddTooltipProvider (newProvider);
+					}
+				}
+			}
+			InitializeProjectionExtensions (features);
 		}
 
-		void InitializeProjectionExtensions ()
+		void InitializeProjectionExtensions (SupportedProjectionFeatures features)
 		{
 			if (projections.Count == 0)
 				return;
@@ -1150,11 +1155,14 @@ namespace MonoDevelop.Ide.Editor
 			if (textEditorImpl.EditorExtension == null)
 				return;
 
-			var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
-			projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
+			if ((features & SupportedProjectionFeatures.Tooltips) == SupportedProjectionFeatures.Tooltips) {
+				
+				var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
+				projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
 
-			textEditorImpl.EditorExtension = projectedCompletionExtension;
-			projectedCompletionExtension.Initialize (this, DocumentContext);
+				textEditorImpl.EditorExtension = projectedCompletionExtension;
+				projectedCompletionExtension.Initialize (this, DocumentContext);
+			}
 		}
 	}
 }
