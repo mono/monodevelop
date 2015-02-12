@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		readonly SlnFileFormat slnFileFormat;
 
-		protected MSBuildFileFormat ()
+		internal MSBuildFileFormat ()
 		{
 			slnFileFormat = new SlnFileFormat (this);
 		}
@@ -72,7 +72,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string Name {
 			get { return "MSBuild"; }
 		}
-		
+
+		public abstract Version Version { get; }
+
 		internal SlnFileFormat SlnFileFormat {
 			get { return slnFileFormat; }
 		}
@@ -233,6 +235,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild05"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2005"); }
+		}
+
 		public override string DefaultProductVersion {
 			get { return "8.0.50727"; }
 		}
@@ -273,6 +279,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild08"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2008"); }
+		}
+
 		public override string DefaultProductVersion {
 			get { return "9.0.21022"; }
 		}
@@ -304,6 +314,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return "MSBuild10"; }
 		}
 
+		public override Version Version {
+			get { return new Version ("2010"); }
+		}
+
 		//WTF VS
 		public override string DefaultProductVersion {
 			get { return "8.0.30703"; }
@@ -331,6 +345,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		public override string Id {
 			get { return "MSBuild12"; }
+		}
+
+		public override Version Version {
+			get { return new Version ("2012"); }
 		}
 
 		public override string DefaultToolsVersion {
