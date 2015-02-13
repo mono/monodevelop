@@ -113,6 +113,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
+		static List<ICompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()
 		{
@@ -121,6 +122,26 @@ namespace MonoDevelop.CSharp.Completion
 				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
 			
 			WithFrozenPartialSemanticsAsync = (doc, token) => (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object[] { token });
+
+
+			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
+				if (snippets != null)
+					return Task.FromResult ((IEnumerable<ICompletionData>)snippets);
+				var newSnippets = new List<ICompletionData> ();
+				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
+					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
+						continue;
+					newSnippets.Add (new RoslynCompletionData (null) {
+						CompletionText = ct.Shortcut,
+						DisplayText = ct.Shortcut,
+						Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
+						Icon = ct.Icon
+					});
+				}
+				snippets = newSnippets;
+				return Task.FromResult ((IEnumerable<ICompletionData>)newSnippets);
+			};
+
 		}
 
 		public CSharpCompletionTextEditorExtension ()
@@ -296,8 +317,6 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var symbol in completionResult) {
 					list.Add ((CompletionData)symbol); 
 				}
-				if (completionResult.Count > 0 && completionResult.InsertTemplatesInList)
-					MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", list);
 				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
 				list.AutoSelect = completionResult.AutoSelect;
