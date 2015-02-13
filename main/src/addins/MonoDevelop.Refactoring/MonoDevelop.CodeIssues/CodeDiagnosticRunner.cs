@@ -60,23 +60,30 @@ namespace MonoDevelop.CodeIssues
 				var options = new AnalyzerOptions(System.Collections.Immutable.ImmutableArray<AdditionalStream>.Empty, System.Collections.Immutable.ImmutableDictionary<string, string>.Empty);
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				foreach (var issue in CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language).Result) {
+				var codeIssues = CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language);
+				foreach (var issue in codeIssues.Result) {
 					if (alreadyAdded.Contains (issue.CodeIssueType))
 						continue;
 					alreadyAdded.Add (issue.CodeIssueType);
 					var provider = issue.GetProvider ();
 					providers.Add (provider);
 				}
-			
-				var driver = AnalyzerDriver<SyntaxKind>.Create(
+
+				if (providers.Count == 0)
+					return Enumerable.Empty<Result> ();
+				
+				var driver = AnalyzerDriver.Create(
 					compilation,
 					System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers),
 					options,
 					out compilation,
 					CancellationToken.None
 				);
+
+
 				if (input.ParsedDocument == null)
 					return Enumerable.Empty<Result> ();
+				model = compilation.GetSemanticModel (model.SyntaxTree);
 
 				var tree = model.SyntaxTree;
 				if (tree == null)
@@ -91,8 +98,8 @@ namespace MonoDevelop.CodeIssues
 					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
-						var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
-//						Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
+						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
+						// Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
 						return res;
 					});
 			} catch (OperationCanceledException) {
