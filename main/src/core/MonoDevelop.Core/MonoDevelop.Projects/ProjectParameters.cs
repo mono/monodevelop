@@ -62,10 +62,12 @@ namespace MonoDevelop.Projects
 
 		protected virtual void Read (IPropertySet pset, string toolsVersion)
 		{
+			pset.ReadObjectProperties (this, GetType (), true);
 		}
 
 		protected virtual void Write (IPropertySet pset, string toolsVersion)
 		{
+			pset.WriteObjectProperties (this, GetType (), true);
 		}
 	}
 }

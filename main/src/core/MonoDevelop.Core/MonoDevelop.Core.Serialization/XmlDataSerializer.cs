@@ -115,6 +115,8 @@ namespace MonoDevelop.Core.Serialization
 		public bool StoreAllInElements = false;
 		
 		public string[] StoreInElementExceptions { get; set; }
+
+		public string Namespace { get; set; }
 		
 		public void Write (XmlWriter writer, DataNode data)
 		{
@@ -130,7 +132,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		public XmlElement Write (XmlDocument doc, DataNode data)
 		{
-			XmlElement elem = doc.CreateElement (data.Name);
+			XmlElement elem = doc.CreateElement (data.Name, Namespace);
 			if (data is DataValue) {
 				elem.InnerText = ((DataValue)data).Value;
 			}

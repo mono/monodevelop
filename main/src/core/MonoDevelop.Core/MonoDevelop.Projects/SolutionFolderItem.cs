@@ -58,7 +58,6 @@ namespace MonoDevelop.Projects
 
 		internal List<string> UnresolvedProjectDependencies { get; set; }
 
-		[ItemProperty ("name")]
 		public new string Name {
 			get {
 				return base.Name;

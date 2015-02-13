@@ -81,6 +81,7 @@ namespace MonoDevelop.Projects
 						environmentVariables [name] = (string)val.Attribute ("value");
 				}
 			}
+			pset.ReadObjectProperties (this, GetType (), true);
 		}
 
 		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
@@ -104,6 +105,8 @@ namespace MonoDevelop.Projects
 				pset.SetValue ("EnvironmentVariables", e.ToString ());
 			} else
 				pset.RemoveProperty ("EnvironmentVariables");
+
+			pset.WriteObjectProperties (this, GetType (), true);
 		}
 
 		FilePath intermediateOutputDirectory = FilePath.Empty;

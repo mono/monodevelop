@@ -102,18 +102,6 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnWriteProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(CSharpProject));
-		}
-
-		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnReadProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(CSharpProject));
-		}
-
 		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
 		{
 			base.OnReadConfiguration (monitor, config, pset);

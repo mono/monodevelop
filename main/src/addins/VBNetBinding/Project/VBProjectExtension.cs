@@ -104,18 +104,6 @@ namespace MonoDevelop.VBNetBinding
 			DefaultNamespaceIsImplicit = true;
 			DefaultResourceHandler = resourceBuilder;
 		}
-
-		protected override void OnReadProject (MonoDevelop.Core.ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnReadProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(VBProject));
-		}
-
-		protected override void OnWriteProject (MonoDevelop.Core.ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnWriteProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(VBProject));
-		}
 	}
 }
 

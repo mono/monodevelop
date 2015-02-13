@@ -1009,8 +1009,6 @@ namespace MonoDevelop.Projects
 			return configs.AsReadOnly ();
 		}
 		
-		[ItemProperty ("Configurations")]
-		[ItemProperty ("Configuration", ValueType=typeof(SolutionItemConfiguration), Scope="*")]
 		public SolutionItemConfigurationCollection Configurations {
 			get {
 				return configurations;

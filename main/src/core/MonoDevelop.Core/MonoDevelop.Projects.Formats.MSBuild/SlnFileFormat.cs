@@ -652,11 +652,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						item = ta.Result;
 						if (item == null)
 							throw new UnknownSolutionItemTypeException (projTypeGuid);
-					} catch (Exception e) {
-						// If we get a TargetInvocationException from using Activator.CreateInstance we
-						// need to unwrap the real exception
-						while (e is TargetInvocationException)
-							e = e.InnerException;
+					} catch (Exception cex) {
+						var e = UnwrapException (cex).First ();
 
 						bool loadAsProject = false;
 
@@ -767,6 +764,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			monitor.EndTask ();
+		}
+
+		IEnumerable<Exception> UnwrapException (Exception ex)
+		{
+			var a = ex as AggregateException;
+			if (a != null) {
+				foreach (var e in a.InnerExceptions) {
+					foreach (var u in UnwrapException (e))
+						yield return u;
+				}
+			} else if (ex is TargetInvocationException) {
+				// If we get a TargetInvocationException from using Activator.CreateInstance we
+				// need to unwrap the real exception
+				ex = ex.InnerException;
+				foreach (var e in UnwrapException (ex))
+					yield return e;
+			}
+			else
+				yield return ex;
 		}
 
 		void LoadProjectConfigurationMappings (SlnPropertySetCollection sets, Solution sln, Dictionary<string, SolutionFolderItem> items, ProgressMonitor monitor)

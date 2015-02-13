@@ -52,38 +52,38 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string type = null;
 
-		[NodeAttribute ("tag")]
-		public string TypeTag { get; protected set; }
-
-		public SolutionItemTypeNode ()
+		protected SolutionItemTypeNode ()
 		{
 		}
 		
-		public SolutionItemTypeNode (string guid, string extension, string import)
+		protected SolutionItemTypeNode (string guid, string extension, string import)
 		{
 			this.guid = guid;
 			this.extension = extension;
 			this.import = import;
 		}
 		
+		[NodeAttribute ("tag")]
+		public string TypeTag { get; set; }
+
 		public string Guid {
 			get { return guid; }
+			set { guid = value; }
 		}
 
 		public string Extension {
-			get {
-				return extension;
-			}
+			get { return extension; }
+			set { extension = value; }
 		}
 
 		public string Import {
-			get {
-				return import;
-			}
+			get { return import; }
+			set { import = value; }
 		}
 
 		internal string ItemTypeName {
 			get { return type; }
+			set { type = value; }
 		}
 
 		public virtual Type ItemType {

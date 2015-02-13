@@ -95,15 +95,13 @@ namespace MonoDevelop.CSharp.Project
 		
 		protected override void Write (IPropertySet pset, string toolsVersion)
 		{
-			base.Write (pset, toolsVersion);
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
-			pset.WriteObjectProperties (this, typeof(CSharpCompilerParameters));
+			base.Write (pset, toolsVersion);
 		}
 
 		protected override void Read (IPropertySet pset, string toolsVersion)
 		{
 			base.Read (pset, toolsVersion);
-			pset.ReadObjectProperties (this, typeof(CSharpCompilerParameters));
 
 			var prop = pset.GetProperty ("GenerateDocumentation");
 			if (prop != null && documentationFile != null) {

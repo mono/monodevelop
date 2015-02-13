@@ -99,6 +99,8 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			next.OnReadProject (monitor, msproject);
+			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, GetType (), true);
+			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
 		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
@@ -109,6 +111,8 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			next.OnWriteProject (monitor, msproject);
+			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, GetType (), true);
+			msproject.WriteExternalProjectProperties (this, GetType (), true);
 		}
 
 		internal protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)

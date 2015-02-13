@@ -426,7 +426,8 @@ namespace CBinding
 				}
 			}
 		}
-		
+
+		// TODO NPM: not supported
 		[Browsable(false)]
 		[ItemProperty ("Packages")]
 		public ProjectPackageCollection Packages {

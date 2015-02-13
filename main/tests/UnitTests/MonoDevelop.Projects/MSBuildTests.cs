@@ -30,16 +30,14 @@ using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Projects.Extensions;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
-using Mono.CSharp;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Formats.MSBuild;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -511,5 +509,337 @@ namespace MonoDevelop.Projects
 			string projectXml2 = Util.GetXmlFileInfoset (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
 		}
+
+		[Test]
+		public async Task WriteExtendedProperties ()
+		{
+			var tn = new MyProjectTypeNode ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			try {
+				var p = Services.ProjectService.CreateProject (tn.Guid);
+				Assert.IsInstanceOf<MyProject> (p);
+				var mp = (MyProject) p;
+				mp.ItemId = "{74FADC4E-C9A8-456E-9A2C-DB933220E073}";
+				string dir = Util.CreateTmpDir ("WriteExtendedProperties");
+				mp.FileName = Path.Combine (dir, "test.sln");
+				mp.Data = new MyProjectData { Foo = "bar" };
+				mp.SimpleData = "Test";
+				await p.SaveAsync (Util.GetMonitor ());
+
+				string referenceFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+				string projectXml1 = Util.GetXmlFileInfoset (referenceFile);
+				string projectXml2 = Util.GetXmlFileInfoset (mp.FileName);
+				Assert.AreEqual (projectXml1, projectXml2);
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+			}
+		}
+
+		[Test]
+		public async Task LoadExtendedProperties ()
+		{
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+			var tn = new MyProjectTypeNode ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyProject> (p);
+				var mp = (MyProject) p;
+
+				Assert.NotNull (mp.Data);
+				Assert.AreEqual (mp.Data.Foo, "bar");
+				Assert.AreEqual (mp.SimpleData, "Test");
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+			}
+		}
+
+		[Test]
+		public async Task LoadSaveExtendedPropertiesWithUnknownProperty ()
+		{
+			// Unknown data should be kept in the file
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
+			string projectXml1 = Util.GetXmlFileInfoset (projFile);
+
+			var tn = new MyProjectTypeNode ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyProject> (p);
+				var mp = (MyProject) p;
+
+				Assert.NotNull (mp.Data);
+				Assert.AreEqual (mp.Data.Foo, "bar");
+				Assert.AreEqual (mp.SimpleData, "Test");
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveExtendedProperties ()
+		{
+			// Whole ProjectExtensions section should be removed
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+			var tn = new MyProjectTypeNode ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyProject> (p);
+				var mp = (MyProject) p;
+
+				Assert.NotNull (mp.Data);
+				Assert.AreEqual (mp.Data.Foo, "bar");
+				Assert.AreEqual (mp.SimpleData, "Test");
+
+				mp.Data = null;
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveExtendedPropertiesWithUnknownProperty ()
+		{
+			// Unknown data should be kept in the file
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
+
+			var tn = new MyProjectTypeNode ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyProject> (p);
+				var mp = (MyProject) p;
+
+				Assert.NotNull (mp.Data);
+				Assert.AreEqual (mp.Data.Foo, "bar");
+				Assert.AreEqual (mp.SimpleData, "Test");
+
+				mp.Data = null;
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+			}
+		}
+
+		[Test]
+		public async Task SerializeFlavorProperties ()
+		{
+		}
+
+
+		[Test]
+		public async Task FlavorLoadExtendedProperties ()
+		{
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject) p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task FlavorLoadSaveExtendedPropertiesWithUnknownProperty ()
+		{
+			// Unknown data should be kept in the file
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
+			string projectXml1 = Util.GetXmlFileInfoset (projFile);
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject) p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task FlavorRemoveExtendedProperties ()
+		{
+			// Whole ProjectExtensions section should be removed
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject) p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+
+				f.Data = null;
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task FlavorRemoveExtendedPropertiesWithUnknownProperty ()
+		{
+			// Unknown data should be kept in the file
+
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject) p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+
+				f.Data = null;
+
+				await mp.SaveAsync (Util.GetMonitor ());
+
+				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
+
+				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				Assert.AreEqual (projectXml1, projectXml2);
+
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+	}
+
+	class MyProjectTypeNode: ProjectTypeNode
+	{
+		public MyProjectTypeNode ()
+		{
+			Guid = "{52136883-B1F9-4238-BAAA-0FB243663676}";
+			Extension = "myproj";
+		}
+
+		public override Type ItemType {
+			get {
+				return typeof(MyProject);
+			}
+		}
+	}
+
+	class MyEmptyProjectTypeNode: ProjectTypeNode
+	{
+		public MyEmptyProjectTypeNode ()
+		{
+			Guid = "{52136883-B1F9-4238-BAAA-0FB243663676}";
+			Extension = "myproj";
+		}
+
+		public override Type ItemType {
+			get {
+				return typeof(MyEmptyProject);
+			}
+		}
+	}
+
+	class MyProject: Project
+	{
+		[ItemProperty]
+		public string SimpleData { get; set; }
+
+		[ItemProperty (IsExternal = true)]
+		public MyProjectData Data;
+	}
+
+	class MyProjectData
+	{
+		[ItemProperty]
+		public string Foo { get; set; }
+	}
+
+	class MyEmptyProject: Project
+	{
+	}
+
+	class FlavorWithData: ProjectExtension
+	{
+		[ItemProperty]
+		public string SimpleData { get; set; }
+
+		[ItemProperty (IsExternal = true)]
+		public MyProjectData Data;
 	}
 }

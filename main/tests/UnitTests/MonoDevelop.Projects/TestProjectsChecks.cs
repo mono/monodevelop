@@ -415,17 +415,5 @@ namespace Foo {
 		{
 			Initialize (this);
 		}
-
-		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnWriteProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(GenericItem));
-		}
-
-		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
-		{
-			base.OnReadProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(GenericItem));
-		}
 	}
 }

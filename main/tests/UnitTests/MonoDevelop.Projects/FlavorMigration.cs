@@ -272,6 +272,11 @@ namespace MonoDevelop.Projects
 	{
 		public MigrationType ShouldMigrateValue { get; set; }
 
+		public CustomProjectLoadProgressMonitor ()
+		{
+			AddSlaveMonitor (new ConsoleProgressMonitor ());
+		}
+
 		public override MigrationType ShouldMigrateProject ()
 		{
 			return ShouldMigrateValue;

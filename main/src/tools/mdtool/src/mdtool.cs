@@ -117,7 +117,6 @@ class MonoDevelopProcessHost
 			logger.EnabledLevel = verbosity;
 
 			Runtime.Initialize (regUpdate);
-			Runtime.MainSynchronizationContext = sc;
 
 			if (showHelp || badInput) {
 				ShowHelp (badInput);

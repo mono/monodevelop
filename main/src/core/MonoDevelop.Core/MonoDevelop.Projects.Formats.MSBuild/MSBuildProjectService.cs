@@ -324,12 +324,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static List<SolutionItemTypeNode> customNodes = new List<SolutionItemTypeNode> ();
 
-		internal static void RegisterCustomItemExtension (SolutionItemTypeNode node)
+		internal static void RegisterCustomItemType (SolutionItemTypeNode node)
 		{
 			customNodes.Add (node);
 		}
 		
-		internal static void UnregisterCustomItemExtension (SolutionItemTypeNode node)
+		internal static void UnregisterCustomItemType (SolutionItemTypeNode node)
 		{
 			customNodes.Remove (node);
 		}

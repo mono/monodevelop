@@ -1649,6 +1649,8 @@ namespace MonoDevelop.Projects
 			baseIntermediateOutputPath = msproject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
 			disableFastUpToDateCheck = msproject.EvaluatedProperties.GetValue ("DisableFastUpToDateCheck", false);
 
+			globalGroup.ReadObjectProperties (this, GetType (), true);
+
 			RemoveDuplicateItems (msproject);
 		}
 
@@ -1734,6 +1736,8 @@ namespace MonoDevelop.Projects
 			// Read extended properties
 
 			timer.Trace ("Read extended properties");
+
+			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
 		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeGlobalGroups)
@@ -2042,6 +2046,8 @@ namespace MonoDevelop.Projects
 			msproject.GetGlobalPropertyGroup ().SetValue ("Description", Description, "");
 			msproject.GetGlobalPropertyGroup ().SetValue ("BaseIntermediateOutputPath", BaseIntermediateOutputPath, defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
 			msproject.GetGlobalPropertyGroup ().SetValue ("DisableFastUpToDateCheck", disableFastUpToDateCheck, false);
+
+			globalGroup.WriteObjectProperties (this, GetType (), true);
 		}
 
 		protected virtual void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
@@ -2128,6 +2134,7 @@ namespace MonoDevelop.Projects
 				if (i != null)
 					msproject.RemoveImport (i);
 			}
+			msproject.WriteExternalProjectProperties (this, GetType (), true);
 		}
 
 		void WriteConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)

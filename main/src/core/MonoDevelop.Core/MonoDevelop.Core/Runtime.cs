@@ -83,11 +83,13 @@ namespace MonoDevelop.Core
 
 			Platform.Initialize ();
 
-			defaultSynchronizationContext = new SynchronizationContext ();
-			
 			// Set a default sync context
-			if (SynchronizationContext.Current == null)
+			if (SynchronizationContext.Current == null) {
+				defaultSynchronizationContext = new SynchronizationContext ();
 				SynchronizationContext.SetSynchronizationContext (defaultSynchronizationContext);
+			} else
+				defaultSynchronizationContext = SynchronizationContext.Current;
+
 
 			// Hook up the SSL certificate validation codepath
 			ServicePointManager.ServerCertificateValidationCallback += delegate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {

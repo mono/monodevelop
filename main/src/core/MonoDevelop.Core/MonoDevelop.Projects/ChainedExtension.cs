@@ -74,6 +74,10 @@ namespace MonoDevelop.Projects
 				}
 			}
 
+			// Serializable fields and properties
+			if (next.GetType ().GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Any (m => m.IsDefined (typeof(MonoDevelop.Core.Serialization.ItemPropertyAttribute))))
+				return next;
+
 			return FindNextImplementation (type, next.nextInChain);
 		}
 
