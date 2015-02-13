@@ -111,7 +111,7 @@ namespace MonoDevelop.MacIntegration
 		public StatusBar ()
 		{
 			Cell.PlaceholderAttributedString = GetAttributedString (BrandingService.ApplicationName, Stock.StatusSteady,
-				new CGSize (350, 25), NSColor.DisabledControlText);
+				new CGSize (360, 23), NSColor.DisabledControlText);
 
 			AllowsEditingTextAttributes = WantsLayer = true;
 			Editable = Selectable = false;
@@ -310,7 +310,13 @@ namespace MonoDevelop.MacIntegration
 			progress.BackgroundColor = xamBlue;
 			progress.BorderColor = xamBlue;
 			progress.FillMode = CAFillMode.Forwards;
-			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 7 - barHeight, (nfloat)width, barHeight);
+			nfloat y;
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+				y = Frame.Bottom - 7 - barHeight;
+			else
+				y = Frame.Top + 2;
+
+			progress.Frame = new CGRect (Frame.Left - 4, y, (nfloat)width, barHeight);
 			return progress;
 		}
 
