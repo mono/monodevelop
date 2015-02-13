@@ -50,25 +50,20 @@ namespace MonoDevelop.CodeIssues
 			public List<CodeFixDescriptor> Fixes;
 		}
 
-		static readonly object loadingLock = new object();
-
 		static CodeDiagnosticService ()
-		{
-			
+		{	
 			builtInDiagnostics = Task.Run (() => {
-				lock (loadingLock) {
-					var result = new BuiltInDiagnostics ();
-					result.Analyzers = new List<CodeDiagnosticDescriptor> ();
-					result.Fixes = new List<CodeFixDescriptor> ();
-					foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
-						try {
-							CheckAddins (result.Analyzers, result.Fixes, asm);
-						} catch (Exception e) {
-							LoggingService.LogError ("error while loading diagnostics in " + asm.FullName, e);
-						}
+				var result = new BuiltInDiagnostics ();
+				result.Analyzers = new List<CodeDiagnosticDescriptor> ();
+				result.Fixes = new List<CodeFixDescriptor> ();
+				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
+					try {
+						CheckAddins (result.Analyzers, result.Fixes, asm);
+					} catch (Exception e) {
+						LoggingService.LogError ("error while loading diagnostics in " + asm.FullName, e);
 					}
-					return result;
 				}
+				return result;
 			});
 		}
 
