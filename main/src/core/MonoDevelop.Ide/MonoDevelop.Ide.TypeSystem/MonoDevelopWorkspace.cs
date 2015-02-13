@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				};
 				var projection = node.Parser.GenerateProjection (options);
 				yield return DocumentInfo.Create (
-					id.GetOrCreateDocumentId (f.Name),
+					id.GetOrCreateDocumentId (projection.Result.Document.FileName),
 					projection.Result.Document.FileName, 
 					null, 
 					SourceCodeKind.Regular,
