@@ -3028,6 +3028,7 @@
     <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IMainToolbarView.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarController.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarCommandHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -116,6 +116,8 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The search category.</value>
 		string SearchCategory { set; }
+
+		void FocusSearchBar ();
 		#endregion
 
 		#region StatusBar

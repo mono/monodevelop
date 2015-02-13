@@ -124,15 +124,6 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
-		void SetSearchCategory (string category)
-		{
-			IdeApp.Workbench.RootWindow.Present ();
-			matchEntry.Entry.Text = category + ":";
-			matchEntry.Entry.GrabFocus ();
-			var pos = matchEntry.Entry.Text.Length;
-			matchEntry.Entry.SelectRegion (pos, pos);
-		}
-
 		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
 		{
 			return model.GetValue (iter, RuntimeExecutionTarget) == null && model.GetValue (iter, RuntimeCommand) == null;
@@ -911,24 +902,6 @@ namespace MonoDevelop.Components.MainToolbar
 			return base.OnExposeEvent (evnt);
 		}
 
-		[CommandHandler(Commands.NavigateTo)]
-		public void NavigateToCommand ()
-		{
-			matchEntry.Entry.GrabFocus ();
-		}
-
-		[CommandHandler(SearchCommands.GotoFile)]
-		public void GotoFileCommand ()
-		{
-			SetSearchCategory ("file");
-		}
-
-		[CommandHandler(SearchCommands.GotoType)]
-		public void GotoTypeCommand ()
-		{
-			SetSearchCategory ("type");
-		}
-
 		void HandleStartButtonClicked (object sender, EventArgs e)
 		{
 			if (RunButtonClicked != null)
@@ -988,6 +961,11 @@ namespace MonoDevelop.Components.MainToolbar
 				var pos = matchEntry.Entry.Text.Length;
 				matchEntry.Entry.SelectRegion (pos, pos);
 			}
+		}
+
+		public void FocusSearchBar ()
+		{
+			matchEntry.Entry.GrabFocus ();
 		}
 		#endregion
 	}

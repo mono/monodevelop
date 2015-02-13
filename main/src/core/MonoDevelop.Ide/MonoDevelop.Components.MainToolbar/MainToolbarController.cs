@@ -47,21 +47,29 @@ namespace MonoDevelop.Components.MainToolbar
 			// Attach run button click handler.
 			toolbarView.RunButtonClicked += HandleStartButtonClicked;
 			var items = new[] {
-				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file:"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type:"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member:"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member"),
 			};
 
 			// Attach menu category handlers.
 			foreach (var item in items)
-				item.Activated += delegate {
-					IdeApp.Workbench.Present ();
-					ToolbarView.SearchCategory = item.Category;
-				};
+				item.Activated += (o, e) => SetSearchCategory (item.Category);
 			ToolbarView.SearchMenuItems = items;
 
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+
+		public void FocusSearchBar ()
+		{
+			ToolbarView.FocusSearchBar ();
+		}
+
+		public void SetSearchCategory (string category)
+		{
+			IdeApp.Workbench.Present ();
+			ToolbarView.SearchCategory = category + ":";
 		}
 
 		public void ShowCommandBar (string barId)
