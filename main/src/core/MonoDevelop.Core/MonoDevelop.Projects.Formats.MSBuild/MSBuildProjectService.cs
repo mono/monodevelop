@@ -114,7 +114,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
 				if (node.CanHandleFile (fileName, typeGuid))
-					return await LoadProjectAsync (monitor, fileName, expectedFormat, typeGuid, null, node, ctx);
+					return await LoadProjectAsync (monitor, fileName, expectedFormat, null, node, ctx);
 			}
 			
 			// If it is a known unsupported project, load it as UnknownProject
@@ -122,21 +122,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectInfo != null && projectInfo.LoadFiles) {
 				if (typeGuid == null)
 					typeGuid = projectInfo.Guid;
-				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, "", typeof(UnknownProject), null, ctx);
+				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, typeof(UnknownProject), null, ctx);
 				p.UnsupportedProjectMessage = projectInfo.GetInstructions ();
 				return p;
 			}
 			return null;
 		}
 
-		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, string typeGuid, Type itemType, SolutionItemTypeNode node, SolutionLoadContext ctx)
+		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, Type itemType, SolutionItemTypeNode node, SolutionLoadContext ctx)
 		{
 			SolutionItem item;
 
 			if (itemType != null)
 				item = (SolutionItem)Activator.CreateInstance (itemType);
 			else {
-				item = await node.CreateSolutionItem (monitor, fileName, typeGuid ?? node.Guid);
+				item = await node.CreateSolutionItem (monitor, fileName);
 				item.EnsureInitialized ();
 			}
 
@@ -163,7 +163,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
-					var p = node.CreateProject (typeGuid, flavorGuids);
+					var p = node.CreateProject (flavorGuids);
 					p.EnsureInitialized ();
 					p.NotifyItemReady ();
 					return p;

@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Extensions
 	[ExtensionNode (ExtensionAttributeType=typeof(ExportProjectTypeAttribute))]
 	public class ProjectTypeNode: SolutionItemTypeNode
 	{
-		public override async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid)
+		public override async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName)
 		{
 			MSBuildProject p = null;
 
@@ -43,21 +43,21 @@ namespace MonoDevelop.Projects.Extensions
 				p = await MSBuildProject.LoadAsync (fileName);
 				var migrators = MSBuildProjectService.GetMigrableFlavors (p.ProjectTypeGuids);
 				if (migrators.Count > 0)
-					await MSBuildProjectService.MigrateFlavors (monitor, fileName, typeGuid, p, migrators);
+					await MSBuildProjectService.MigrateFlavors (monitor, fileName, Guid, p, migrators);
 			}
 
-			var project = await base.CreateSolutionItem (monitor, fileName, typeGuid) as Project;
+			var project = await base.CreateSolutionItem (monitor, fileName) as Project;
 			if (project == null)
 				throw new InvalidOperationException ("Project node type is not a subclass of MonoDevelop.Projects.Project");
 			if (p != null)
-				project.SetCreationContext (Project.CreationContext.Create (p, typeGuid));
+				project.SetCreationContext (Project.CreationContext.Create (p, Guid));
 			return project;
 		}	
 
-		public virtual Project CreateProject (string typeGuid, params string[] flavorGuids)
+		public virtual Project CreateProject (params string[] flavorGuids)
 		{
-			var p = (Project) CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
-			p.SetCreationContext (Project.CreationContext.Create (typeGuid, flavorGuids));
+			var p = (Project) CreateSolutionItem (new ProgressMonitor (), null).Result;
+			p.SetCreationContext (Project.CreationContext.Create (Guid, flavorGuids));
 			return p;
 		}
 	}

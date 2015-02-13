@@ -101,26 +101,31 @@ namespace MonoDevelop.Projects.Extensions
 
 		SolutionItemFactory factory;
 		
-		public virtual async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid)
+		public virtual async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName)
 		{
+			SolutionItem item;
+
 			if (typeof(SolutionItemFactory).IsAssignableFrom (ItemType)) {
 				if (factory == null)
-					factory = (SolutionItemFactory) Activator.CreateInstance (ItemType);
-				return await factory.CreateItem (fileName, typeGuid);
+					factory = (SolutionItemFactory)Activator.CreateInstance (ItemType);
+				item = await factory.CreateItem (fileName, Guid);
+			} else {
+				try {
+					// Some subclasses (such as ProjectTypeNode) need to assign some data to
+					// the object before it is initialized. However, by default initialization
+					// is automatically made by the constructor, so to support this scenario
+					// the initialization has to be delayed. This is done by setting the
+					// MonoDevelop.DelayItemInitialization logical context property.
+					// When this property is set, the object is not initialized, and it has
+					// to be manually initialized by calling EnsureInitialized.
+					CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
+					item = (SolutionItem)Activator.CreateInstance (ItemType, true);
+				} finally {
+					CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
+				}
 			}
-			try {
-				// Some subclasses (such as ProjectTypeNode) need to assign some data to
-				// the object before it is initialized. However, by default initialization
-				// is automatically made by the constructor, so to support this scenario
-				// the initialization has to be delayed. This is done by setting the
-				// MonoDevelop.DelayItemInitialization logical context property.
-				// When this property is set, the object is not initialized, and it has
-				// to be manually initialized by calling EnsureInitialized.
-				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
-				return (SolutionItem) Activator.CreateInstance (ItemType, true);
-			} finally {
-				CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
-			}
+			item.TypeGuid = Guid;
+			return item;
 		}
 
 		public virtual bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -130,7 +135,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		public virtual SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			var item = CreateSolutionItem (new ProgressMonitor (), null, Guid).Result;
+			var item = CreateSolutionItem (new ProgressMonitor (), null).Result;
 			item.EnsureInitialized ();
 			item.InitializeFromTemplate (info, projectOptions);
 			return item;
