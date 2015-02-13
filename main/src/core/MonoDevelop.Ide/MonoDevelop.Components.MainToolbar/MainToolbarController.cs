@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using Gtk;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -39,6 +40,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal StatusBar StatusBar {
 			get { return ToolbarView.StatusBar; }
+		}
+
+		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
+		bool SearchForMembers {
+			get { return searchForMembers; }
+			set { searchForMembers.Value = value; }
 		}
 
 		public MainToolbarController (IMainToolbarView toolbarView)
@@ -57,8 +64,100 @@ namespace MonoDevelop.Components.MainToolbar
 				item.Activated += (o, e) => SetSearchCategory (item.Category);
 			ToolbarView.SearchMenuItems = items;
 
+			// Register Search Entry handlers.
+			ToolbarView.SearchEntryChanged += HandleSearchEntryChanged;
+			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
+			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
+			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
+
+			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
+				if (args.Event is Gdk.EventConfigure)
+					PositionPopup ();
+			};
+
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+
+		SearchPopupWindow popup = null;
+		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
+		void PositionPopup ()
+		{
+			if (popup == null)
+				return;
+			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+		}
+
+		void DestroyPopup ()
+		{
+			if (popup != null) {
+				popup.Destroy ();
+				popup = null;
+			}
+		}
+
+		void HandleSearchEntryChanged (object sender, EventArgs e)
+		{
+			if (string.IsNullOrEmpty (ToolbarView.SearchText)){
+				DestroyPopup ();
+				return;
+			}
+			var pattern = SearchPopupSearchPattern.ParsePattern (ToolbarView.SearchText);
+			if (pattern.Pattern == null && pattern.LineNumber > 0 || pattern == emptyColonPattern) {
+				if (popup != null) {
+					popup.Hide ();
+				}
+				return;
+			} else {
+				if (popup != null && !popup.Visible)
+					popup.Show ();
+			}
+
+			if (popup == null) {
+				popup = new SearchPopupWindow ();
+				popup.SearchForMembers = SearchForMembers;
+				popup.Destroyed += delegate {
+					popup = null;
+					ToolbarView.SearchText = "";
+				};
+				PositionPopup ();
+				popup.ShowAll ();
+			}
+
+			popup.Update (pattern);
+		}
+
+		void HandleSearchEntryActivated (object sender, EventArgs e)
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern (ToolbarView.SearchText);
+			if (pattern.Pattern == null && pattern.LineNumber > 0) {
+				DestroyPopup ();
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null && doc.Editor != null) {
+					doc.Select ();
+					doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+					doc.Editor.CenterToCaret ();
+					doc.Editor.Parent.StartCaretPulseAnimation ();
+				}
+				return;
+			}
+			if (popup != null)
+				popup.OpenFile ();
+		}
+
+		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
+		{
+			if (e.Key == Xwt.Key.Escape) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc != null) {
+					DestroyPopup ();
+					doc.Select ();
+				}
+				return;
+			}
+			if (popup != null) {
+				e.Handled = popup.ProcessKey (e.Key, e.Modifiers);
+			}
 		}
 
 		public void FocusSearchBar ()

@@ -117,7 +117,42 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <value>The search category.</value>
 		string SearchCategory { set; }
 
+		/// <summary>
+		/// Gets or sets the search text.
+		/// </summary>
+		/// <value>The search text.</value>
+		string SearchText { get; set; }
+
+		/// <summary>
+		/// Focuses the search entry.
+		/// </summary>
 		void FocusSearchBar ();
+
+		/// <summary>
+		/// Occurs when the search entry contents changed.
+		/// </summary>
+		event EventHandler SearchEntryChanged;
+
+		/// <summary>
+		/// Occurs when the search entry is activated.
+		/// </summary>
+		event EventHandler SearchEntryActivated;
+
+		/// <summary>
+		/// Occurs when a key is pressed in the search entry.
+		/// </summary>
+		event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+
+		/// <summary>
+		/// Occurs when the search entry is resized.
+		/// </summary>
+		event EventHandler SearchEntryResized;
+
+		/// <summary>
+		/// Gets the UI widget for the popup window to use as an anchor.
+		/// </summary>
+		/// <value>The popup anchor.</value>
+		Gtk.Widget PopupAnchor { get; }
 		#endregion
 
 		#region StatusBar

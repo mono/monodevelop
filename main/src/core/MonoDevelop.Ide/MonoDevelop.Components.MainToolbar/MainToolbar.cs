@@ -104,16 +104,6 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
-		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
-		bool SearchForMembers {
-			get {
-				return searchForMembers;
-			}
-			set {
-				searchForMembers.Value = value;
-			}
-		}
-
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
 				return statusArea;
@@ -191,14 +181,6 @@ namespace MonoDevelop.Components.MainToolbar
 				sb.Append (s [i]);
 			}
 			return sb.ToString ();
-		}
-
-		void DestroyPopup ()
-		{
-			if (popup != null) {
-				popup.Destroy ();
-				popup = null;
-			}
 		}
 
 		public MainToolbar ()
@@ -301,41 +283,11 @@ namespace MonoDevelop.Components.MainToolbar
 				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
-			matchEntry.Activated += (sender, e) => {
-				var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
-				if (pattern.Pattern == null && pattern.LineNumber > 0) {
-					DestroyPopup ();
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null && doc.Editor != null) {
-						doc.Select ();
-						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
-						doc.Editor.CenterToCaret ();
-						doc.Editor.Parent.StartCaretPulseAnimation ();
-					}
-					return;
-				}
-				if (popup != null)
-					popup.OpenFile ();
-			};
-			matchEntry.Entry.KeyPressEvent += (o, args) => {
-				if (args.Event.Key == Gdk.Key.Escape) {
-					var doc = IdeApp.Workbench.ActiveDocument;
-					if (doc != null) {
-						DestroyPopup ();
-						doc.Select ();
-					}
-					return;
-				}
-				if (popup != null) {
-					args.RetVal = popup.ProcessKey (args.Event.Key, args.Event.State);
-				}
-			};
-			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
-				if (args.Event is Gdk.EventConfigure)
-					PositionPopup ();
-			};
-			SizeAllocated += delegate {
-				PositionPopup ();
+			matchEntry.Activated += HandleSearchEntryActivated;
+			matchEntry.Entry.KeyPressEvent += HandleSearchEntryKeyPressed;
+			SizeAllocated += (o, e) => {
+				if (SearchEntryResized != null)
+					SearchEntryResized (o, e);
 			};
 
 			BuildToolbar ();
@@ -503,47 +455,37 @@ namespace MonoDevelop.Components.MainToolbar
 			BuildToolbar ();
 		}
 
-		SearchPopupWindow popup = null;
-	
-		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
-
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
-			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
-				DestroyPopup ();
-				return;
-			}
-			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
-			if (pattern.Pattern == null && pattern.LineNumber > 0 || pattern == emptyColonPattern) {
-				if (popup != null) {
-					popup.Hide ();
-				}
-				return;
-			} else {
-				if (popup != null && !popup.Visible)
-					popup.Show ();
-			}
-
-			if (popup == null) {
-				popup = new SearchPopupWindow ();
-				popup.SearchForMembers = SearchForMembers;
-				popup.Destroyed += delegate {
-					popup = null;
-					matchEntry.Entry.Text = "";
-				};
-				PositionPopup ();
-				popup.ShowAll ();
-			}
-
-			popup.Update (pattern);
-
+			if (SearchEntryActivated != null)
+				SearchEntryChanged (sender, e);
 		}
 
-		void PositionPopup ()
+		void HandleSearchEntryActivated (object sender, EventArgs e)
 		{
-			if (popup == null)
-				return;
-			popup.ShowPopup (matchEntry, PopupPosition.TopRight);
+			if (SearchEntryActivated != null)
+				SearchEntryActivated (sender, e);
+		}
+
+		void HandleSearchEntryKeyPressed (object sender, KeyPressEventArgs e)
+		{
+			if (SearchEntryKeyPressed != null) {
+				// TODO: Refactor this in Xwt as an extension method.
+				var k = (Xwt.Key)e.Event.KeyValue;
+				var m = Xwt.ModifierKeys.None;
+				if ((e.Event.State & Gdk.ModifierType.ShiftMask) != 0)
+					m |= Xwt.ModifierKeys.Shift;
+				if ((e.Event.State & Gdk.ModifierType.ControlMask) != 0)
+					m |= Xwt.ModifierKeys.Control;
+				if ((e.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
+					m |= Xwt.ModifierKeys.Alt;
+				// TODO: Backport this one.
+				if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
+					m |= Xwt.ModifierKeys.Command;
+				var kargs = new Xwt.KeyEventArgs (k, m, false, (long)e.Event.Time);
+				SearchEntryKeyPressed (sender, kargs);
+				e.RetVal = kargs.Handled;
+			}
 		}
 
 		string GetActiveConfiguration ()
@@ -960,6 +902,20 @@ namespace MonoDevelop.Components.MainToolbar
 		public void FocusSearchBar ()
 		{
 			matchEntry.Entry.GrabFocus ();
+		}
+
+		public event EventHandler SearchEntryChanged;
+		public event EventHandler SearchEntryActivated;
+		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
+		public event EventHandler SearchEntryResized;
+
+		public Widget PopupAnchor {
+			get { return matchEntry; }
+		}
+
+		public string SearchText {
+			get { return matchEntry.Entry.Text; }
+			set { matchEntry.Entry.Text = value; }
 		}
 		#endregion
 	}
