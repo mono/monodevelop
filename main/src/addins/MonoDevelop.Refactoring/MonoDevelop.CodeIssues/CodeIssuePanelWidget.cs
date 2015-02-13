@@ -79,7 +79,7 @@ namespace MonoDevelop.CodeIssues
 
 		void GetAllSeverities ()
 		{
-			foreach (var node in CodeDiagnosticService.GetCodeIssues (CodeRefactoringService.MimeTypeToLanguage (mimeType), true)) {
+			foreach (var node in CodeDiagnosticService.GetBuiltInCodeIssuesAsync (CodeRefactoringService.MimeTypeToLanguage (mimeType), true).Result) {
 				var root = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, null);
 				severities [root] = node.DiagnosticSeverity;
 				enableState [root] = node.IsEnabled;

@@ -60,7 +60,7 @@ namespace MonoDevelop.CodeIssues
 				var options = new AnalyzerOptions(System.Collections.Immutable.ImmutableArray<AdditionalStream>.Empty, System.Collections.Immutable.ImmutableDictionary<string, string>.Empty);
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				foreach (var issue in CodeDiagnosticService.GetCodeIssues (language)) {
+				foreach (var issue in CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language).Result) {
 					if (alreadyAdded.Contains (issue.CodeIssueType))
 						continue;
 					alreadyAdded.Add (issue.CodeIssueType);
