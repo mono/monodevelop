@@ -47,10 +47,11 @@ namespace MonoDevelop.Ide.TypeSystem
 	}
 
 	[Flags]
-	public enum SupportedProjectionFeatures {
-		Completion,
-		SemanticHighlighting,
-		Tooltips,
+	public enum DisabledProjectionFeatures {
+		None                     = 0,
+		Completion               = 1 << 0,
+		SemanticHighlighting     = 1 << 1,
+		Tooltips                 = 1 << 2,
 
 		All = Completion | SemanticHighlighting | Tooltips
 	}
@@ -61,20 +62,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public Projection Projection { get; private set;}
 
-		SupportedProjectionFeatures supportedProjectionFeatures = SupportedProjectionFeatures.All;
-		public SupportedProjectionFeatures SupportedProjectionFeatures {
-			get {
-				return supportedProjectionFeatures;
-			}
-			private set {
-				supportedProjectionFeatures = value;
-			}
-		} 
+		public DisabledProjectionFeatures DisabledProjectionFeatures { get; private set;}
 
-		public ParsedDocumentProjection (ParsedDocument parsedDocument, Projection projection)
+		public ParsedDocumentProjection (ParsedDocument parsedDocument, Projection projection, DisabledProjectionFeatures disabledProjectionFeatures = DisabledProjectionFeatures.None)
 		{
 			this.ParsedDocument = parsedDocument;
 			this.Projection = projection;
+			this.DisabledProjectionFeatures = disabledProjectionFeatures;
 		}
 	}
 

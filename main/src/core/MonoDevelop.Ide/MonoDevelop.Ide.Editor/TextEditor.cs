@@ -1116,12 +1116,12 @@ namespace MonoDevelop.Ide.Editor
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
 		IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections = null;
 
-		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections, SupportedProjectionFeatures features = SupportedProjectionFeatures.All)
+		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections, DisabledProjectionFeatures disabledFeatures = DisabledProjectionFeatures.None)
 		{
 			if (ctx == null)
 				throw new ArgumentNullException ("ctx");
 			this.projections = projections;
-			if ((features & SupportedProjectionFeatures.SemanticHighlighting) == SupportedProjectionFeatures.SemanticHighlighting) {
+			if ((disabledFeatures & DisabledProjectionFeatures.SemanticHighlighting) != DisabledProjectionFeatures.SemanticHighlighting) {
 					if (SemanticHighlighting is ProjectedSemanticHighlighting) {
 					((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
 				} else {
@@ -1129,7 +1129,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
-			if ((features & SupportedProjectionFeatures.Tooltips) == SupportedProjectionFeatures.Tooltips) {
+			if ((disabledFeatures & DisabledProjectionFeatures.Tooltips) != DisabledProjectionFeatures.Tooltips) {
 					projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
 				projectedProviders = new List<ProjectedTooltipProvider> ();
 				foreach (var projection in projections) {
@@ -1140,10 +1140,10 @@ namespace MonoDevelop.Ide.Editor
 					}
 				}
 			}
-			InitializeProjectionExtensions (features);
+			InitializeProjectionExtensions (disabledFeatures);
 		}
 
-		void InitializeProjectionExtensions (SupportedProjectionFeatures features)
+		void InitializeProjectionExtensions (DisabledProjectionFeatures disabledFeatures)
 		{
 			if (projections.Count == 0)
 				return;
@@ -1155,7 +1155,7 @@ namespace MonoDevelop.Ide.Editor
 			if (textEditorImpl.EditorExtension == null)
 				return;
 
-			if ((features & SupportedProjectionFeatures.Completion) == SupportedProjectionFeatures.Completion) {
+			if ((disabledFeatures & DisabledProjectionFeatures.Completion) != DisabledProjectionFeatures.Completion) {
 				
 				var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
 				projectedCompletionExtension.Next = textEditorImpl.EditorExtension;

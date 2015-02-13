@@ -753,7 +753,7 @@ namespace MonoDevelop.Ide.Gui
 						this.parsedDocument = p.ParsedDocument;
 						var projection = p.Projection;
 						projection.CreateProjectedEditor (this);
-						Editor.SetOrUpdateProjections (this, new [] { projection }, p.SupportedProjectionFeatures);
+						Editor.SetOrUpdateProjections (this, new [] { projection }, p.DisabledProjectionFeatures);
 					}
 				} else { 
 					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
@@ -815,7 +815,7 @@ namespace MonoDevelop.Ide.Gui
 								this.parsedDocument = taskResult.ParsedDocument;
 								var projection = taskResult.Projection;
 								projection.CreateProjectedEditor (this);
-								Editor.SetOrUpdateProjections (this, new [] { projection }, taskResult.SupportedProjectionFeatures);
+								Editor.SetOrUpdateProjections (this, new [] { projection }, taskResult.DisabledProjectionFeatures);
 								OnDocumentParsed (EventArgs.Empty);
 							});
 						});
