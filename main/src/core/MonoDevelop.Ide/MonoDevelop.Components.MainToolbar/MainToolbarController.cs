@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -43,7 +44,23 @@ namespace MonoDevelop.Components.MainToolbar
 		public MainToolbarController (IMainToolbarView toolbarView)
 		{
 			ToolbarView = toolbarView;
+			// Attach run button click handler.
 			toolbarView.RunButtonClicked += HandleStartButtonClicked;
+			var items = new[] {
+				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file:"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type:"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member:"),
+			};
+
+			// Attach menu category handlers.
+			foreach (var item in items)
+				item.Activated += delegate {
+					IdeApp.Workbench.Present ();
+					ToolbarView.SearchCategory = item.Category;
+				};
+			ToolbarView.SearchMenuItems = items;
+
+			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
 		}
 

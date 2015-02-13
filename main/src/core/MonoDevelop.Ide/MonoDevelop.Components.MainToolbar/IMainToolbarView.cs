@@ -34,6 +34,41 @@ namespace MonoDevelop.Components.MainToolbar
 		Stop
 	}
 
+	public class SearchMenuItem
+	{
+		internal SearchMenuItem (string displayString, string category)
+		{
+			DisplayString = displayString;
+			Category = category;
+		}
+
+		/// <summary>
+		/// Notifies the activated.
+		/// </summary>
+		public void NotifyActivated ()
+		{
+			if (Activated != null)
+				Activated (null, null);
+		}
+
+		/// <summary>
+		/// Gets or sets the display string.
+		/// </summary>
+		/// <value>The display string.</value>
+		public string DisplayString { get; private set; }
+
+		/// <summary>
+		/// Gets or sets the category.
+		/// </summary>
+		/// <value>The category.</value>
+		internal string Category { get; set; }
+
+		/// <summary>
+		/// Occurs when the menu item is activated.
+		/// </summary>
+		internal event EventHandler Activated;
+	}
+
 	public interface IMainToolbarView
 	{
 		#region RunButton
@@ -69,6 +104,18 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value><c>true</c> if search entry is interactible; otherwise, <c>false</c>.</value>
 		bool SearchSensivitity { set; }
+
+		/// <summary>
+		/// Sets the search menu items.
+		/// </summary>
+		/// <value>The search menu items.</value>
+		SearchMenuItem[] SearchMenuItems { set; }
+
+		/// <summary>
+		/// Sets the search category.
+		/// </summary>
+		/// <value>The search category.</value>
+		string SearchCategory { set; }
 		#endregion
 
 		#region StatusBar

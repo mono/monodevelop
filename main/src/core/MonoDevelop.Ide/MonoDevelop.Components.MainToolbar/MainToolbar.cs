@@ -291,19 +291,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			matchEntry = new SearchEntry ();
 
-			var searchFiles = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Files"));
-			searchFiles.Activated += delegate {
-				SetSearchCategory ("files");
-			};
-			var searchTypes = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Types"));
-			searchTypes.Activated += delegate {
-				SetSearchCategory ("type");
-			};
-			var searchMembers = this.matchEntry.AddMenuItem (GettextCatalog.GetString ("Search Members"));
-			searchMembers.Activated += delegate {
-				SetSearchCategory ("member");
-			};
-
 			matchEntry.ForceFilterButtonVisible = true;
 			matchEntry.Entry.FocusOutEvent += delegate {
 				matchEntry.Entry.Text = "";
@@ -981,6 +968,26 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public bool SearchSensivitity {
 			set { matchEntry.Sensitive = value; }
+		}
+
+		public SearchMenuItem[] SearchMenuItems {
+			set {
+				foreach (var item in value) {
+					var menuItem = matchEntry.AddMenuItem (item.DisplayString);
+					menuItem.Activated += delegate {
+						item.NotifyActivated ();
+					};
+				}
+			}
+		}
+
+		public string SearchCategory {
+			set {
+				matchEntry.Entry.Text = value;
+				matchEntry.Entry.GrabFocus ();
+				var pos = matchEntry.Entry.Text.Length;
+				matchEntry.Entry.SelectRegion (pos, pos);
+			}
 		}
 		#endregion
 	}
