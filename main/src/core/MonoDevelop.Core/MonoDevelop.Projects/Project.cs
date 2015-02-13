@@ -245,7 +245,7 @@ namespace MonoDevelop.Projects
 			MSBuildProject p = sourceProject;
 			sourceProject = null;
 
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				if (p == null)
 					p = MSBuildProject.LoadAsync (FileName).Result;
 
@@ -279,7 +279,7 @@ namespace MonoDevelop.Projects
 			SetFastBuildCheckDirty ();
 			modifiedInMemory = false;
 
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				var msproject = WriteProject (monitor);
 				if (msproject == null)
 					return;
@@ -696,7 +696,7 @@ namespace MonoDevelop.Projects
 				var configs = GetConfigurations (configuration);
 
 				MSBuildResult result = null;
-				await Task.Factory.StartNew (delegate {
+				await Task.Run (delegate {
 					result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 				});
@@ -1256,7 +1256,7 @@ namespace MonoDevelop.Projects
 
 			var filesToDelete = GetOutputFiles (configuration).ToArray ();
 
-			await Task.Factory.StartNew (delegate {
+			await Task.Run (delegate {
 				// Delete generated files
 				foreach (FilePath file in filesToDelete) {
 					if (File.Exists (file)) {

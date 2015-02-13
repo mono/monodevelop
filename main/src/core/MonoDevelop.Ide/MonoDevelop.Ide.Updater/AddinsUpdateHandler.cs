@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Updater
 				if (UpdateService.UpdateLevel == UpdateLevel.Test)
 					Runtime.AddinSetupService.RegisterMainRepository (UpdateLevel.Test, true);
 
-				currentTask = Task.Factory.StartNew (delegate {
+				currentTask = Task.Run (delegate {
 					using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {
 						Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
 						updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();

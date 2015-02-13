@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				Solution sol = (Solution)obj;
 
 				string tmpfilename = String.Empty;

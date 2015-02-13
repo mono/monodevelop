@@ -454,7 +454,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (!canGenerateInProcess) {
 					timer.Trace ("Generating out of process");
 				
-					await Task.Factory.StartNew (delegate {
+					await Task.Run (delegate {
 						try {
 							// Generate the code in another process if stetic is not isolated
 							CodeGeneratorProcess cob = (CodeGeneratorProcess)Runtime.ProcessService.CreateExternalProcessObject (typeof(CodeGeneratorProcess), false);

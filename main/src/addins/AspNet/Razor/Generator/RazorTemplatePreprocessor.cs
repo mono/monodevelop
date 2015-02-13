@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 	{
 		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				try {
 					GenerateInternal (monitor, file, result);
 				} catch (Exception ex) {

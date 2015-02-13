@@ -37,7 +37,7 @@ namespace MonoDevelop.TextTemplating
 	{
 		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
 					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat

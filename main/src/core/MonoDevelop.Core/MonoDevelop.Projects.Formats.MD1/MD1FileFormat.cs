@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				}
 			}
 
-			await Task.Factory.StartNew (delegate {
+			await Task.Run (delegate {
 				StreamWriter sw = new StreamWriter (outFile);
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Saving item: {0}", actualFile), 1);

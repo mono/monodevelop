@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.CustomTools
 			var filePath = file.FilePath;
 			var targetsPcl2Framework = TargetsPcl2Framework (dnp);
 
-			await Task.Factory.StartNew (() => {
+			await Task.Run (() => {
 				using (var r = new ResXResourceReader (filePath)) {
 					r.BasePath = filePath.ParentDirectory;
 					foreach (DictionaryEntry e in r) {

@@ -67,7 +67,7 @@ namespace MonoDevelop.NUnit.External
 
 			TcpListener = new TcpListener (new IPEndPoint (IPAddress.Loopback, 0));
 			TcpListener.Start ();
-			Task.Factory.StartNew (() => {
+			Task.Run (() => {
 				try {
 					using (var client = TcpListener.AcceptTcpClient ())
 					using (var socketStream = client.GetStream ())

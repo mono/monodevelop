@@ -40,7 +40,7 @@ namespace MonoDevelop.TextTemplating
 	{
 		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
 
 					string outputFile;

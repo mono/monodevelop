@@ -148,7 +148,7 @@ namespace MonoDevelop.NUnit
 
 		public override Task Refresh (CancellationToken ct)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				lock (locker) {
 					try {
 						while (Status == TestStatus.Loading) {

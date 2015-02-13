@@ -122,7 +122,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
-				await Task.Factory.StartNew (delegate {
+				await Task.Run (delegate {
 					try {
 						repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
-			var t = Task.Factory.StartNew (delegate {
+			var t = Task.Run (delegate {
 				try {
 					MergeCommandResult result;
 					using (var gm = new GitMonitor (monitor))

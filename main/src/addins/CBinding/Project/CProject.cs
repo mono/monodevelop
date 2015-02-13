@@ -323,7 +323,7 @@ namespace CBinding
 			if (res.HasErrors)
 				return res;
 
-			await Task.Factory.StartNew (() => Compiler.Clean (Files, conf, monitor));
+			await Task.Run (() => Compiler.Clean (Files, conf, monitor));
 
 			return res;
 		}

@@ -178,7 +178,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				if (currentUpdateTranslationOperation != null && !currentUpdateTranslationOperation.IsCompleted) 
 					return;
 				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
-				currentUpdateTranslationOperation = Task.Factory.StartNew (() => UpdateTranslationsAsync (monitor, project));
+				currentUpdateTranslationOperation = Task.Run (() => UpdateTranslationsAsync (monitor, project));
 			}
 			
 			[CommandHandler (Commands.UpdateTranslations)]

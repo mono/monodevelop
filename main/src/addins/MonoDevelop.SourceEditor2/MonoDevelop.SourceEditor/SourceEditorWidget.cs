@@ -589,7 +589,7 @@ namespace MonoDevelop.SourceEditor
 			StopParseInfoThread ();
 			if (runInThread) {
 				var token = parserInformationUpdateSrc.Token;
-				System.Threading.Tasks.Task.Factory.StartNew (delegate {
+				System.Threading.Tasks.Task.Run (delegate {
 					HandleParseInformationUpdaterWorkerThreadDoWork (false, parsedDocument, token);
 				}); 
 			} else {

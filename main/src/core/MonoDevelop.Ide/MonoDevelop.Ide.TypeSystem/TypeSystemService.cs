@@ -862,7 +862,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (solution != null) {
 					Parallel.ForEach (solution.GetAllProjects (), project => LoadProject (project));
 					var list = projectContents.Values.ToList ();
-					Task.Factory.StartNew (delegate {
+					Task.Run (delegate {
 						foreach (var wrapper in list) {
 							CheckModifiedFiles (wrapper.Project, wrapper.Project.Files.ToArray (), wrapper, loadCancellationSource.Token);
 						}
@@ -1851,7 +1851,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var wrapper = LoadProject (project);
 				if (wrapper != null) {
 					var files = wrapper.Project.Files.ToArray ();
-					Task.Factory.StartNew (delegate {
+					Task.Run (delegate {
 						CheckModifiedFiles (wrapper.Project, files, wrapper);
 						wrapper.RequestLoad ();
 					});

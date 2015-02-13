@@ -341,7 +341,7 @@ namespace MonoDevelop.NUnit
 		
 		public Task Start ()
 		{
-			return Task = Task.Factory.StartNew (RunTests);
+			return Task = Task.Run ((Action)RunTests);
 		}
 		
 		void RunTests ()

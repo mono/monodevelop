@@ -352,7 +352,7 @@ namespace MonoDevelop.Gettext
 			BuildResult results = new BuildResult ("", 1, 0);
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (!string.IsNullOrEmpty (outputDirectory)) {
-				await Task.Factory.StartNew (delegate {
+				await Task.Run (delegate {
 					foreach (Translation translation in toBuild) {
 						if (translation.NeedsBuilding (configuration)) {
 							BuildResult res = translation.Build (monitor, configuration);
@@ -374,7 +374,7 @@ namespace MonoDevelop.Gettext
 				return BuildResult.Success;
 
 			var toClean = Translations.Select (t => t.GetOutFile (configuration)).ToArray ();
-			await Task.Factory.StartNew (delegate {
+			await Task.Run (delegate {
 				foreach (string moFileName in toClean) {
 					if (File.Exists (moFileName))
 						File.Delete (moFileName);

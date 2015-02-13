@@ -156,7 +156,7 @@ namespace MonoDevelop.Core
 		
 		public Task DeleteAsync ()
 		{
-			return Task.Factory.StartNew (Delete);
+			return Task.Run ((System.Action)Delete);
 		}
 
 		public void Delete ()
