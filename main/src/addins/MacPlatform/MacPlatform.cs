@@ -750,7 +750,7 @@ namespace MonoDevelop.MacIntegration
 			w.HasShadow = false;
 		}
 
-		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal override IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;

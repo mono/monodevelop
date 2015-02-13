@@ -49,7 +49,7 @@ using System.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class MainToolbar: Gtk.EventBox, ICommandBar
+	class MainToolbar: Gtk.EventBox, ICommandBar, IMainToolbarView
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
