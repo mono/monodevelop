@@ -2351,6 +2351,14 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
+			get {
+				return keyHandler;
+			}
+		}
+
 		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
 		{
 			base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);

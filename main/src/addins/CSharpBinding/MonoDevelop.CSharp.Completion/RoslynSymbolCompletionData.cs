@@ -51,10 +51,6 @@ namespace MonoDevelop.CSharp.Completion
 				overloads = new List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
 			overloads.Add (data);
 			sorted = null;
-//			//if any of the overloads is obsolete, we should not mark the item obsolete
-//			if (!(overload.Entity as IMember).IsObsolete ())
-//				DisplayFlags &= ~DisplayFlags.Obsolete;
-
 		}
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
@@ -75,7 +71,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-
 		List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> sorted;
 
 		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
@@ -90,6 +85,39 @@ namespace MonoDevelop.CSharp.Completion
 				}
 				return sorted;
 			}
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
+			get {
+				return keyHandler;
+			}
+		}
+
+		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler)
+		{
+			this.keyHandler = keyHandler;
+		}
+
+		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text) : base (text)
+		{
+			this.keyHandler = keyHandler;
+		}
+
+		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon) : base (text, icon)
+		{
+			this.keyHandler = keyHandler;
+		}
+
+		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon, string description) : base (text, icon, description)
+		{
+			this.keyHandler = keyHandler;
+		}
+		
+		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
+		{
+			this.keyHandler = keyHandler;
 		}
 		
 //		class OverloadSorter : IComparer<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>
@@ -162,7 +190,7 @@ namespace MonoDevelop.CSharp.Completion
 		readonly string text;
 		CSharpCompletionTextEditorExtension ext;
 
-		public RoslynSymbolCompletionData (CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base ()
+		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base (keyHandler)
 		{
 			this.ext = ext;
 			this.text = text;

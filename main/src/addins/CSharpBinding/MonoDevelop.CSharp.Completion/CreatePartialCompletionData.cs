@@ -36,7 +36,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		public CreatePartialCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (ext, member)
+		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (keyHandler, ext, member)
 		{
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;

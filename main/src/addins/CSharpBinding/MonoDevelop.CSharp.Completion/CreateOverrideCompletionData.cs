@@ -41,11 +41,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		public CreateOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member) : base (ext, member)
+		public CreateOverrideCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member) : base (keyHandler, ext, member)
 		{
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
 		}
+
 
 
 		/*

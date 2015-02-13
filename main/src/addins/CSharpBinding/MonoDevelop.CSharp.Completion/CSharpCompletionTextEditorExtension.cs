@@ -288,13 +288,15 @@ namespace MonoDevelop.CSharp.Completion
 				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
 
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
-				var completionResult = engine.GetCompletionData (partialDoc, semanticModel, offset, ctrlSpace, token);
+				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
+				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
+				var completionResult = engine.GetCompletionDataAsync (ctx, triggerInfo, token).Result;
 				if (completionResult == CompletionResult.Empty)
 					return null;
 				foreach (var symbol in completionResult) {
 					list.Add ((CompletionData)symbol); 
 				}
-				if (completionResult.InsertTemplatesInList)
+				if (completionResult.Count > 0 && completionResult.InsertTemplatesInList)
 					MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", list);
 				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
