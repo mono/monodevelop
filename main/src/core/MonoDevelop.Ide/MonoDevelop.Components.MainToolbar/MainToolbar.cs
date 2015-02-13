@@ -504,12 +504,6 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		SearchPopupWindow popup = null;
-
-		public SearchPopupWindow SearchPopupWindow {
-			get {
-				return popup;
-			}
-		}
 	
 		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
 
