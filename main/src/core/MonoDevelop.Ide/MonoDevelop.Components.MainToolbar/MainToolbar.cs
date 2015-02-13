@@ -49,7 +49,7 @@ using System.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	class MainToolbar: Gtk.EventBox, ICommandBar, IMainToolbarView
+	class MainToolbar: Gtk.EventBox, IMainToolbarView
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
@@ -383,7 +383,6 @@ namespace MonoDevelop.Components.MainToolbar
 			UpdateCombos ();
 
 			button.Clicked += HandleStartButtonClicked;
-			IdeApp.CommandService.RegisterCommandBar (this);
 
 			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
 				lastCommandTarget = new WeakReference (e.OldActiveWidget);
@@ -943,64 +942,11 @@ namespace MonoDevelop.Components.MainToolbar
 			SetSearchCategory ("type");
 		}
 
-		CommandInfo GetStartButtonCommandInfo (out RoundButton.OperationIcon operation)
-		{
-			if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) {
-				operation = RoundButton.OperationIcon.Stop;
-				return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Stop);
-			}
-			else {
-				operation = RoundButton.OperationIcon.Run;
-				var ci = IdeApp.CommandService.GetCommandInfo ("MonoDevelop.Debugger.DebugCommands.Debug");
-				if (!ci.Enabled || !ci.Visible) {
-					// If debug is not enabled, try Run
-					ci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.Run);
-					if (!ci.Enabled || !ci.Visible) {
-						// Running is not possible, then allow building
-						var bci = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution);
-						if (bci.Enabled && bci.Visible) {
-							operation = RoundButton.OperationIcon.Build;
-							ci = bci;
-						}
-					}
-				}
-				return ci;
-			}
-		}
-		
 		void HandleStartButtonClicked (object sender, EventArgs e)
 		{
-			RoundButton.OperationIcon operation;
-			var ci = GetStartButtonCommandInfo (out operation);
-			if (ci.Enabled)
-				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
+			if (RunButtonClicked != null)
+				RunButtonClicked (sender, e);
 		}
-
-		#region ICommandBar implementation
-		bool toolbarEnabled = true;
-
-		void ICommandBar.Update (object activeTarget)
-		{
-			if (!toolbarEnabled)
-				return;
-			RoundButton.OperationIcon operation;
-			var ci = GetStartButtonCommandInfo (out operation);
-			if (ci.Enabled != button.Sensitive)
-				button.Sensitive = ci.Enabled;
-
-			button.Icon = operation;
-			var stopped = operation != RoundButton.OperationIcon.Stop;
-			if (configurationCombosBox.Sensitive != stopped)
-				configurationCombosBox.Sensitive = stopped;
-		}
-
-		void ICommandBar.SetEnabled (bool enabled)
-		{
-			toolbarEnabled = enabled;
-			button.Sensitive = enabled;
-			matchEntry.Sensitive = enabled;
-		}
-		#endregion
 
 		protected override void OnDestroyed ()
 		{
@@ -1015,6 +961,28 @@ namespace MonoDevelop.Components.MainToolbar
 				Background = null;
 			}
 		}
+
+		#region IMainToolbarView implementation
+		public event EventHandler RunButtonClicked;
+
+		public bool RunButtonSensitivity {
+			get { return button.Sensitive; }
+			set { button.Sensitive = value; }
+		}
+
+		public OperationIcon RunButtonIcon {
+			set { button.Icon = value; }
+		}
+
+		public bool ConfigurationPlatformSensitivity {
+			get { return configurationCombosBox.Sensitive; }
+			set { configurationCombosBox.Sensitive = value; }
+		}
+
+		public bool SearchSensivitity {
+			set { matchEntry.Sensitive = value; }
+		}
+		#endregion
 	}
 }
 

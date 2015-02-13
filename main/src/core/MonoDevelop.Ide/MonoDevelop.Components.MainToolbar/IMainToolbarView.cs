@@ -28,9 +28,54 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	public enum OperationIcon {
+		Run,
+		Build,
+		Stop
+	}
+
 	public interface IMainToolbarView
 	{
+		#region RunButton
+		/// <summary>
+		/// Gets or sets a value indicating whether the run button is interactible.
+		/// </summary>
+		/// <value><c>true</c> if run button is interactible; otherwise, <c>false</c>.</value>
+		bool RunButtonSensitivity { get; set; }
+
+		/// <summary>
+		/// Sets the run button icon type.
+		/// </summary>
+		/// <value>The run button icon type.</value>
+		OperationIcon RunButtonIcon { set; }
+		#endregion
+
+		#region Configuration/Platform Selector
+		/// <summary>
+		/// Gets or sets a value indicating whether the configuration/platform selector is interactible.
+		/// </summary>
+		/// <value><c>true</c> if configuration/platform selector is interactible; otherwise, <c>false</c>.</value>
+		bool ConfigurationPlatformSensitivity { get; set; }
+
+		/// <summary>
+		/// Occurs when run button clicked.
+		/// </summary>
+		event EventHandler RunButtonClicked;
+		#endregion
+
+		#region SearchEntry
+		/// <summary>
+		/// Gets or sets a value indicating whether the search entry is interactible.
+		/// </summary>
+		/// <value><c>true</c> if search entry is interactible; otherwise, <c>false</c>.</value>
+		bool SearchSensivitity { set; }
+		#endregion
+
 		#region StatusBar
+		/// <summary>
+		/// Gets the native status bar.
+		/// </summary>
+		/// <value>The native status bar.</value>
 		StatusBar StatusBar { get; }
 		#endregion
 
