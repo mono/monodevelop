@@ -1155,7 +1155,7 @@ namespace MonoDevelop.Ide.Editor
 			if (textEditorImpl.EditorExtension == null)
 				return;
 
-			if ((features & SupportedProjectionFeatures.Tooltips) == SupportedProjectionFeatures.Tooltips) {
+			if ((features & SupportedProjectionFeatures.Completion) == SupportedProjectionFeatures.Completion) {
 				
 				var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
 				projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
