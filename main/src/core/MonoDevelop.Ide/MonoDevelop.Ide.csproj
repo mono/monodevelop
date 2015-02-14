@@ -3029,6 +3029,7 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\IMainToolbarView.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarController.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarCommandHandlers.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\StatusBarContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
