@@ -57,10 +57,10 @@ namespace MonoDevelop.Core.AddIns
 
 			Version version;
 			if (Version.TryParse (conditionNode.GetAttribute ("minVersion"), out version))
-				result |= (Platform.IsMac ? MacSystemInformation.OsVersion : Environment.OSVersion.Version) >= version;
+				result &= (Platform.IsMac ? MacSystemInformation.OsVersion : Environment.OSVersion.Version) >= version;
 
 			if (Version.TryParse (conditionNode.GetAttribute ("maxVersion"), out version))
-				result |= (Platform.IsMac ? MacSystemInformation.OsVersion : Environment.OSVersion.Version) <= version;
+				result &= (Platform.IsMac ? MacSystemInformation.OsVersion : Environment.OSVersion.Version) <= version;
 
 			return negate ? !result : result;
 		}
