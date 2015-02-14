@@ -26,23 +26,58 @@
 using System;
 using MonoDevelop.Components.MainToolbar;
 using AppKit;
+using CoreGraphics;
+using Foundation;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	class MainToolbar : IMainToolbarView
 	{
 		const string MainToolbarId = "XSMainToolbar";
+		const string RunButtonId = "RunToolbarItem";
+
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
+
+		RunButton runButton {
+			get { return (RunButton)widget.Items[0].View; }
+		}
+
+		NSToolbarItem CreateRunToolbarItem ()
+		{
+			var button = new RunButton ();
+			button.Activated += (o, e) => {
+				if (RunButtonClicked != null)
+					RunButtonClicked (o, e);
+			};
+
+			var item = new NSToolbarItem (RunButtonId) {
+				View = button,
+				MinSize = new CGSize (button.FittingSize.Width + 12, button.FittingSize.Height),
+			};
+			return item;
+		}
 
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
-			widget = new NSToolbar (MainToolbarId);
+			widget = new NSToolbar (MainToolbarId) {
+				DisplayMode = NSToolbarDisplayMode.Icon,
+			};
+
+			widget.WillInsertItem = (tool, id, send) => {
+				switch (id) {
+				case RunButtonId:
+					return CreateRunToolbarItem ();
+				}
+				throw new NotImplementedException ();
+			};
 		}
 
 		internal void Initialize ()
 		{
+			int total = -1;
+			widget.InsertItem (RunButtonId, ++total);
 		}
 
 		#region IMainToolbarView implementation
@@ -64,19 +99,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public bool RunButtonSensitivity {
-			get {
-				return true;
-//				throw new NotImplementedException ();
-			}
-			set {
-//				throw new NotImplementedException ();
-			}
+			get { return runButton.Enabled; }
+			set { runButton.Enabled = value; }
 		}
 
 		public OperationIcon RunButtonIcon {
-			set {
-//				throw new NotImplementedException ();
-			}
+			set { runButton.Icon = value; }
 		}
 
 		public bool ConfigurationPlatformSensitivity {

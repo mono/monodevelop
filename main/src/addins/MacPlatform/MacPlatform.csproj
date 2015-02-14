@@ -130,6 +130,7 @@
     <Compile Include="ExtendedTitleBarWindowBackend.cs" />
     <Compile Include="ExtendedTitleBarDialogBackend.cs" />
     <Compile Include="MainToolbar\MainToolbar.cs" />
+    <Compile Include="MainToolbar\RunButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
