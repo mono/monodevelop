@@ -74,14 +74,14 @@ namespace MonoDevelop.Ide
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (StockIcons.StatusError, error);
+			ShowMessage (StockIcons.StatusError, error, false, (icon, message, markup) => statusBar.ShowError (message));
 		}
 		
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (StockIcons.StatusWarning, warning);
+			ShowMessage (StockIcons.StatusWarning, warning, false, (icon, message, markup) => statusBar.ShowWarning (message));
 		}
-		
+
 		public void ShowMessage (string message)
 		{
 			ShowMessage (null, message, false);
@@ -109,6 +109,11 @@ namespace MonoDevelop.Ide
 		
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
+			ShowMessage (image, message, isMarkup, statusBar.ShowMessage);
+		}
+
+		void ShowMessage (IconId image, string message, bool isMarkup, Action<IconId, string, bool> action)
+		{
 			if (!showProgress)
 				messageShownAfterProgress = true;
 			this.image = image;
@@ -119,7 +124,7 @@ namespace MonoDevelop.Ide
 			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
 				globalLastChangeTime = DateTime.Now;
-				statusBar.ShowMessage (image, message, isMarkup);
+				action (image, message, isMarkup);
 				statusBar.SetMessageSourcePad (sourcePad);
 				if (showProgress)
 					lastMessageIsTransient = true;
