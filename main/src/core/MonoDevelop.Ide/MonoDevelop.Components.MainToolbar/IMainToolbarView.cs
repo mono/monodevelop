@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.MainToolbar
@@ -175,8 +177,11 @@ namespace MonoDevelop.Components.MainToolbar
 		#endregion
 
 		#region CommandBar
-		void ShowCommandBar (string barId);
-		void HideCommandBar (string barId);
+		/// <summary>
+		/// Rebuilds the toolbar.
+		/// </summary>
+		/// <param name="bars">A list of command id lists.</param>
+		void RebuildToolbar (IEnumerable<IEnumerable<string>> bars);
 		#endregion
 	}
 }

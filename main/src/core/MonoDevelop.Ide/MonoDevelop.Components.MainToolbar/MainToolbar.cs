@@ -51,7 +51,6 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class MainToolbar: Gtk.EventBox, IMainToolbarView
 	{
-		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
 		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
 
 		const int RuntimeExecutionTarget = 0;
@@ -286,10 +285,7 @@ namespace MonoDevelop.Components.MainToolbar
 					SearchEntryResized (o, e);
 			};
 
-			BuildToolbar ();
 			IdeApp.CommandService.RegisterCommandBar (buttonBar);
-
-			AddinManager.ExtensionChanged += OnExtensionChanged;
 
 			contentBox.PackStart (matchEntry, false, false, 0);
 
@@ -318,11 +314,6 @@ namespace MonoDevelop.Components.MainToolbar
 			this.statusArea.statusIconBox.HideAll ();
 		}
 			
-		void OnExtensionChanged (object sender, ExtensionEventArgs args)
-		{
-			if (args.PathChanged (ToolbarExtensionPath))
-				BuildToolbar ();
-		}
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
@@ -409,36 +400,6 @@ namespace MonoDevelop.Components.MainToolbar
 			la.WidthRequest = w;
 			la.Show ();
 			contentBox.PackStart (la, false, false, 0);
-		}
-
-		void BuildToolbar ()
-		{
-			buttonBar.Clear ();
-			var bars = AddinManager.GetExtensionNodes (ToolbarExtensionPath).Cast<ItemSetCodon> ().Where (n => visibleBars.Contains (n.Id)).ToList ();
-			if (!bars.Any ()) {
-				buttonBarBox.Hide ();
-				return;
-			}
-
-			buttonBarBox.Show ();
-			buttonBar.ShowAll ();
-			foreach (var bar in bars) {
-				foreach (CommandItemCodon node in bar.ChildNodes.OfType<CommandItemCodon> ())
-					buttonBar.Add (node.Id);
-				buttonBar.AddSeparator ();
-			}
-		}
-
-		public void ShowCommandBar (string barId)
-		{
-			visibleBars.Add (barId);
-			BuildToolbar ();
-		}
-
-		public void HideCommandBar (string barId)
-		{
-			visibleBars.Remove (barId);
-			BuildToolbar ();
 		}
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
@@ -834,7 +795,6 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			base.OnDestroyed ();
 
-			AddinManager.ExtensionChanged -= OnExtensionChanged;
 			if (button != null)
 				button.Clicked -= HandleStartButtonClicked;
 
@@ -907,6 +867,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public string SearchPlaceholderMessage {
 			set { matchEntry.EmptyMessage = value; }
+		}
+
+		public void RebuildToolbar (IEnumerable<IEnumerable<string>> bars)
+		{
+			buttonBar.Clear ();
+			if (!bars.Any ()) {
+				buttonBarBox.Hide ();
+				return;
+			}
+
+			buttonBarBox.Show ();
+			buttonBar.ShowAll ();
+			foreach (var bar in bars) {
+				foreach (string commandId in bar)
+					buttonBar.Add (commandId);
+				buttonBar.AddSeparator ();
+			}
 		}
 		#endregion
 	}

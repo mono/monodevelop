@@ -24,15 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Core;
 using Gtk;
+using Mono.Addins;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class MainToolbarController : ICommandBar
 	{
+		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+
 		internal IMainToolbarView ToolbarView {
 			get;
 			private set;
@@ -85,6 +91,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
+
+			RebuildToolbar ();
+
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+		}
+
+		void OnExtensionChanged (object sender, ExtensionEventArgs args)
+		{
+			if (args.PathChanged (ToolbarExtensionPath))
+				RebuildToolbar ();
 		}
 
 		void UpdateSearchEntryLabel ()
@@ -187,14 +203,25 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchCategory = category + ":";
 		}
 
+		HashSet<string> visibleBars = new HashSet<string> ();
 		public void ShowCommandBar (string barId)
 		{
-			ToolbarView.ShowCommandBar (barId);
+			visibleBars.Add (barId);
+			RebuildToolbar ();
 		}
 
 		public void HideCommandBar (string barId)
 		{
-			ToolbarView.HideCommandBar (barId);
+			visibleBars.Remove (barId);
+			RebuildToolbar ();
+		}
+
+		void RebuildToolbar ()
+		{
+			var bars = AddinManager.GetExtensionNodes<ItemSetCodon> (ToolbarExtensionPath)
+				.Where (n => visibleBars.Contains (n.Id))
+				.Select (b => b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id));
+			ToolbarView.RebuildToolbar (bars);
 		}
 
 		static void HandleStartButtonClicked (object sender, EventArgs e)
