@@ -149,10 +149,21 @@ namespace MonoDevelop.Components.MainToolbar
 		event EventHandler SearchEntryResized;
 
 		/// <summary>
+		/// Occurs when the search entry lost focus.
+		/// </summary>
+		event EventHandler SearchEntryLostFocus;
+
+		/// <summary>
 		/// Gets the UI widget for the popup window to use as an anchor.
 		/// </summary>
 		/// <value>The popup anchor.</value>
 		Gtk.Widget PopupAnchor { get; }
+
+		/// <summary>
+		/// Sets the search entry placeholder message.
+		/// </summary>
+		/// <value>The placeholder message.</value>
+		string SearchPlaceholderMessage { set; }
 		#endregion
 
 		#region StatusBar

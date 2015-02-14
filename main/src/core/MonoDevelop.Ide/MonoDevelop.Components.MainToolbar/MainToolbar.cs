@@ -265,14 +265,10 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry = new SearchEntry ();
 
 			matchEntry.ForceFilterButtonVisible = true;
-			matchEntry.Entry.FocusOutEvent += delegate {
-				matchEntry.Entry.Text = "";
+			matchEntry.Entry.FocusOutEvent += (o, e) => {
+				if (SearchEntryLostFocus != null)
+					SearchEntryLostFocus (o, e);
 			};
-			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-			cmd.KeyBindingChanged += delegate {
-				UpdateSearchEntryLabel ();
-			};
-			UpdateSearchEntryLabel ();
 
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
@@ -396,16 +392,6 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			TrackStartupProject ();
 			UpdateCombos ();
-		}
-
-		void UpdateSearchEntryLabel ()
-		{
-			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-			if (!string.IsNullOrEmpty (info.AccelKey)) {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
-			} else {
-				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
-			}
 		}
 
 		void SetDefaultSizes (int comboHeight, int height)
@@ -908,6 +894,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
 		public event EventHandler SearchEntryResized;
+		public event EventHandler SearchEntryLostFocus;
 
 		public Widget PopupAnchor {
 			get { return matchEntry; }
@@ -916,6 +903,10 @@ namespace MonoDevelop.Components.MainToolbar
 		public string SearchText {
 			get { return matchEntry.Entry.Text; }
 			set { matchEntry.Entry.Text = value; }
+		}
+
+		public string SearchPlaceholderMessage {
+			set { matchEntry.EmptyMessage = value; }
 		}
 		#endregion
 	}

@@ -69,14 +69,30 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
 			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
+			ToolbarView.SearchEntryLostFocus += (o, e) => ToolbarView.SearchText = "";
 
 			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
 				if (args.Event is Gdk.EventConfigure)
 					PositionPopup ();
 			};
 
+			// Update Search Entry label initially and on keybinding change.
+			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
+			cmd.KeyBindingChanged += delegate {
+				UpdateSearchEntryLabel ();
+			};
+			UpdateSearchEntryLabel ();
+
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+
+		void UpdateSearchEntryLabel ()
+		{
+			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
+			ToolbarView.SearchPlaceholderMessage = !string.IsNullOrEmpty (info.AccelKey) ?
+				GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false)) :
+				GettextCatalog.GetString ("Search solution");
 		}
 
 		SearchPopupWindow popup = null;
