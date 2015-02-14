@@ -609,7 +609,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowWarning (string warning)
 		{
-			DispatchService.AssertGuiThread ();
 			ShowMessage (StockIcons.StatusWarning, warning);
 		}
 
