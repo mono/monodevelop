@@ -321,6 +321,7 @@ namespace MonoDevelop.Ide
 		internal static void AttachMainToolbar (Gtk.VBox parent, MainToolbarController toolbar)
 		{
 			PlatformService.AttachMainToolbar (parent, toolbar.ToolbarView);
+			toolbar.Initialize ();
 		}
 
 		public static bool GetIsFullscreen (Gtk.Window window)

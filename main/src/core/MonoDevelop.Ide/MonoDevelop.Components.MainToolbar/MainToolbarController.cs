@@ -59,16 +59,6 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView = toolbarView;
 			// Attach run button click handler.
 			toolbarView.RunButtonClicked += HandleStartButtonClicked;
-			var items = new[] {
-				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member"),
-			};
-
-			// Attach menu category handlers.
-			foreach (var item in items)
-				item.Activated += (o, e) => SetSearchCategory (item.Category);
-			ToolbarView.SearchMenuItems = items;
 
 			// Register Search Entry handlers.
 			ToolbarView.SearchEntryChanged += HandleSearchEntryChanged;
@@ -82,19 +72,36 @@ namespace MonoDevelop.Components.MainToolbar
 					PositionPopup ();
 			};
 
-			// Update Search Entry label initially and on keybinding change.
+			// Update Search Entry on keybinding change.
 			var cmd = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
 			cmd.KeyBindingChanged += delegate {
 				UpdateSearchEntryLabel ();
 			};
+
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+		}
+
+		public void Initialize ()
+		{
+			var items = new[] {
+				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type"),
+				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member"),
+			};
+
+			// Attach menu category handlers.
+			foreach (var item in items)
+				item.Activated += (o, e) => SetSearchCategory (item.Category);
+			ToolbarView.SearchMenuItems = items;
+
+			// Update Search Entry label initially.
 			UpdateSearchEntryLabel ();
+
+			// Rebuild the button bars.
+			RebuildToolbar ();
 
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
-
-			RebuildToolbar ();
-
-			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 
 		void OnExtensionChanged (object sender, ExtensionEventArgs args)
