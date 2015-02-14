@@ -320,6 +320,36 @@
     <EmbeddedResource Include="icons\stack-pointer-16%402x.png">
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-continue.png">
+      <LogicalName>mac-yosemite-continue.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-continue%402x.png">
+      <LogicalName>mac-yosemite-continue@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-pause.png">
+      <LogicalName>mac-yosemite-pause.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-pause%402x.png">
+      <LogicalName>mac-yosemite-pause@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-in.png">
+      <LogicalName>mac-yosemite-step-in.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-in%402x.png">
+      <LogicalName>mac-yosemite-step-in@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-out.png">
+      <LogicalName>mac-yosemite-step-out.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-out%402x.png">
+      <LogicalName>mac-yosemite-step-out@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-over.png">
+      <LogicalName>mac-yosemite-step-over.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac-yosemite-step-over%402x.png">
+      <LogicalName>mac-yosemite-step-over@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

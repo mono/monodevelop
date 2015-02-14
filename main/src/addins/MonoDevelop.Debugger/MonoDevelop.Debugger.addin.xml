@@ -233,11 +233,27 @@
 		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/>
 		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-24.png" size = "LargeToolbar"/>
-		<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
+		<Condition id="Platform" value="mac" minVersion="10.10.0">
+			<StockIcon stockid = "md-continue-debug" resource = "mac-yosemite-continue.png" size = "Menu"/>
+			<StockIcon stockid = "md-pause-debug" resource = "mac-yosemite-pause.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-into-debug" resource = "mac-yosemite-step-in.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-out-debug" resource = "mac-yosemite-step-out.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-over-debug" resource = "mac-yosemite-step-over.png" size = "Menu"/>
+		</Condition>
+		<Condition id="Platform" value="mac" maxVersion="10.9.9999">
+			<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
+		</Condition>
+		<Condition id="Platform" value="!mac">
+			<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
+			<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
+		</Condition>
 		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-16.png" size="Menu" />
