@@ -124,7 +124,18 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (popup == null)
 				return;
+
 			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+
+			var window = ToolbarView.PopupAnchor.GdkWindow;
+			if (window == null) {
+				if (popup.IsRealized) {
+					popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
+				} else {
+					popup.Realized += (sender, e) =>
+						popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
+				}
+			}
 		}
 
 		void DestroyPopup ()
