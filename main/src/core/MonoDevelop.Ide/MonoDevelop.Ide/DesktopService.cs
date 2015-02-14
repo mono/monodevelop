@@ -134,9 +134,9 @@ namespace MonoDevelop.Ide
 			PlatformService.OpenFile (filename);
 		}
 
-		public static void OpenFolder (FilePath folderPath)
+		public static void OpenFolder (FilePath folderPath, params FilePath[] selectFiles)
 		{
-			PlatformService.OpenFolder (folderPath);
+			PlatformService.OpenFolder (folderPath, selectFiles);
 		}
 
 		public static string GetMimeTypeForUri (string uri)
