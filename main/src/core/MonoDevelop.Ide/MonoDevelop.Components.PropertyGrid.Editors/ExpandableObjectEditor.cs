@@ -32,11 +32,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-using System;
 using Gtk;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Collections;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {

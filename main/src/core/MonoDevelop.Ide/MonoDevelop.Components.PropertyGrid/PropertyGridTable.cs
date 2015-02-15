@@ -70,7 +70,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			public bool IsCategory;
 			public string Label;
-			public object Instace;
+			public object Instance;
 			public PropertyDescriptor Property;
 			public List<TableRow> ChildRows;
 			public bool Expanded;
@@ -206,7 +206,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		bool UpdateProperty (PropertyDescriptor pd, object instance, IEnumerable<TableRow> rowList)
 		{
 			foreach (var row in rowList) {
-				if (row.Property != null && row.Property.Name == pd.Name && row.Instace == instance) {
+				if (row.Property != null && row.Property.Name == pd.Name && row.Instance == instance) {
 					row.Property = pd;
 					return true;
 				}
@@ -229,7 +229,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				IsCategory = false,
 				Property = prop,
 				Label = prop.DisplayName,
-				Instace = instance
+				Instance = instance
 			};
 			rowList.Add (row);
 
@@ -246,7 +246,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		PropertyEditorCell GetCell (TableRow row)
 		{
 			var e = editorManager.GetEditor (row.Property);
-			e.Initialize (this, editorManager, row.Property, row.Instace);
+			e.Initialize (this, editorManager, row.Property, row.Instance);
 			return e;
 		}
 
@@ -585,7 +585,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				s.AppendLine ();
 				s.Append (GLib.Markup.EscapeText (row.Property.Description));
 				if (row.Property.Converter.CanConvertTo (typeof(string))) {
-					var value = Convert.ToString (row.Property.GetValue (row.Instace));
+					var value = Convert.ToString (row.Property.GetValue (row.Instance));
 					if (!string.IsNullOrEmpty (value)) {
 						const int chunkLength = 200;
 						var multiLineValue = string.Join (Environment.NewLine, Enumerable.Range (0, (int)Math.Ceiling ((double)value.Length / chunkLength)).Select (n => string.Concat (value.Skip (n * chunkLength).Take (chunkLength))));
