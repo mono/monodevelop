@@ -188,7 +188,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		readonly string text;
-		CSharpCompletionTextEditorExtension ext;
+		protected readonly CSharpCompletionTextEditorExtension ext;
 
 		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base (keyHandler)
 		{

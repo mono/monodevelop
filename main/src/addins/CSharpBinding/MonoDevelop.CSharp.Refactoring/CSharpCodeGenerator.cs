@@ -1,55 +1,43 @@
-//// 
-//// CSharpCodecs
-////  
-//// Author:
-////       Mike Krüger <mkrueger@novell.com>
-//// 
-//// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-//// 
-//// Permission is hereby granted, free of charge, to any person obtaining a copy
-//// of this software and associated documentation files (the "Software"), to deal
-//// in the Software without restriction, including without limitation the rights
-//// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//// copies of the Software, and to permit persons to whom the Software is
-//// furnished to do so, subject to the following conditions:
-//// 
-//// The above copyright notice and this permission notice shall be included in
-//// all copies or substantial portions of the Software.
-//// 
-//// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//// THE SOFTWARE.
-//using System;
-//using ICSharpCode.NRefactory.CSharp;
-//using System.Text;
-//using MonoDevelop.CSharp.Formatting;
-//using System.Collections.Generic;
-//using System.Linq;
-//using MonoDevelop.Ide;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using MonoDevelop.Ide.TypeSystem;
-//using ICSharpCode.NRefactory.CSharp.Resolver;
-//using ICSharpCode.NRefactory;
-//using ICSharpCode.NRefactory.CSharp.TypeSystem;
-//using MonoDevelop.Projects.Policies;
-//using Mono.Cecil;
-//using Mono.Cecil.Cil;
-//using ICSharpCode.Decompiler;
-//using ICSharpCode.Decompiler.Ast;
-//using ICSharpCode.NRefactory.PatternMatching;
-//using ICSharpCode.NRefactory.TypeSystem.Implementation;
-//using MonoDevelop.Ide.Editor;
-//using MonoDevelop.CSharp.NRefactoryWrapper;
-//
-//
-//namespace MonoDevelop.CSharp.Refactoring
-//{
-//	class CSharpCodeGenerator : CodeGenerator
-//	{
+// 
+// CSharpCodeGenerator.cs
+//  
+// Author:
+//       Mike Krüger <mkrueger@novell.com>
+// 
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
+using System.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide;
+using System.Collections.Generic;
+using MonoDevelop.CSharp.Formatting;
+
+namespace MonoDevelop.CSharp.Refactoring
+{
+	class CSharpCodeGenerator // : CodeGenerator
+	{
 //		static CSharpAmbience ambience = new CSharpAmbience ();
 //		
 //		CSharpFormattingPolicy policy;
@@ -81,27 +69,39 @@
 //		}
 //		
 //		
-//		class CodeGenerationOptions
-//		{
-//			public bool ExplicitDeclaration { get; set; }
-//			public ITypeDefinition ImplementingType { get; set; }
-//			public IUnresolvedTypeDefinition Part { get; set; }
-//
-//			public TextEditor Editor { get; set; }
-//			public DocumentContext DocumentContext { get; set; }
-//
-//			public string GetShortType (string ns, string name, int typeArguments = 0)
-//			{
-//				if (DocumentContext == null || DocumentContext.ParsedDocument == null)
-//					return ns + "." + name;
-//				
-//				var type = DocumentContext.GetCompilationAsync ().Result.GetTypeByMetadataName (ns + "." + name);
-//				if (type == null)
-//					return ns + "." + name;
-//				return type.ToMinimalDisplayString (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result, Editor.CaretOffset); 
-//			}
-//		}
-//		
+		class CodeGenerationOptions
+		{
+			public bool ExplicitDeclaration { get; set; }
+			public ITypeSymbol ImplementingType { get; set; }
+			public Location Part { get; set; }
+
+			public TextEditor Editor { get; set; }
+			public DocumentContext DocumentContext { get; set; }
+
+			public SemanticModel SemanticModel {
+				get {
+					var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+					return model;
+				}
+			}
+
+			public string GetShortType (string ns, string name, int typeArguments = 0)
+			{
+				if (DocumentContext == null || SemanticModel == null)
+					return ns + "." + name;
+				
+				var type = SemanticModel.Compilation.GetTypeByMetadataName (ns + "." + name);
+				if (type == null)
+					return ns + "." + name;
+				return type.ToMinimalDisplayString (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result, Editor.CaretOffset); 
+			}
+		}
+
+		static void AppendLine (StringBuilder sb)
+		{
+			sb.AppendLine ();
+		}
+
 //		public override string WrapInRegions (string regionName, string text)
 //		{
 //			StringBuilder result = new StringBuilder ();
@@ -115,9 +115,10 @@
 //			result.Append ("#endregion");
 //			return result.ToString ();
 //		}
-//
-//		void AppendObsoleteAttribute (StringBuilder result, CodeGenerationOptions options, IEntity entity)
-//		{
+
+		static void AppendObsoleteAttribute (StringBuilder result, CodeGenerationOptions options, ISymbol entity)
+		{
+			// TODO: Roslyn port
 //			string reason;
 //			if (!entity.IsObsolete (out reason))
 //				return;
@@ -143,7 +144,7 @@
 //			}
 //			result.Append ("]");
 //			result.AppendLine ();
-//		}
+		}
 //		
 ////		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
 ////		                                                                      IUnresolvedTypeDefinition part,
@@ -172,30 +173,26 @@
 ////				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
 ////			throw new NotSupportedException ("member " +  member + " is not supported.");
 ////		}
-////		
-////		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
-////		                                                                      IUnresolvedTypeDefinition part,
-////		                                                                      IMember member,
-////		                                                                      bool explicitDeclaration)
-////		{
-////			SetIndentTo (part);
-////			var options = new CodeGenerationOptions () {
-////				ExplicitDeclaration = explicitDeclaration,
-////				ImplementingType = implementingType,
-////				Part = part,
-////				Document = IdeApp.Workbench.GetDocument (part.Region.FileName)
-////			};
-////			if (member is IMethod)
-////				return GenerateCode ((IMethod)member, options);
-////			if (member is IProperty)
-////				return GenerateCode ((IProperty)member, options);
-////			if (member is IField)
-////				return GenerateCode ((IField)member, options);
-////			if (member is IEvent)
-////				return GenerateCode ((IEvent)member, options);
-////			throw new NotSupportedException ("member " +  member + " is not supported.");
-////		}
-////		
+		
+		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		{
+//			SetIndentTo (part);
+			var options = new CodeGenerationOptions () {
+				ExplicitDeclaration = explicitDeclaration,
+				ImplementingType = implementingType,
+				Part = part,
+				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
+			};
+			if (member is IMethodSymbol)
+				return GenerateCode ((IMethodSymbol)member, options);
+			if (member is IPropertySymbol)
+				return GenerateCode ((IPropertySymbol)member, options);
+			if (member is IFieldSymbol)
+				return GenerateCode ((IFieldSymbol)member, options);
+			if (member is IEventSymbol)
+				return GenerateCode ((IEventSymbol)member, options);
+			throw new NotSupportedException ("member " +  member + " is not supported.");
+		}
 //
 //		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
 //		{
@@ -266,10 +263,12 @@
 //			result.Append (GetIndent (IndentLevel));
 //		}
 //		
-//		void AppendReturnType (StringBuilder result, CodeGenerationOptions options, IType type)
-//		{
-//			if (type == null)
-//				throw new ArgumentNullException ("type");
+		static void AppendReturnType (StringBuilder result, CodeGenerationOptions options, ITypeSymbol type)
+		{
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			result.Append (type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start));
+
 //			var implementingType = options.Part;
 //			var loc = implementingType.Region.End;
 //			
@@ -297,7 +296,7 @@
 //			} else {
 //				result.Append (new ICSharpCode.NRefactory.CSharp.CSharpAmbience ().ConvertType (type));
 //			}
-//		}
+		}
 //		
 //		/*
 //		void ResolveReturnTypes ()
@@ -314,130 +313,124 @@
 //		}*/
 //
 //		
-//		CodeGeneratorMemberResult GenerateCode (IField field, CodeGenerationOptions options)
-//		{
-//			StringBuilder result = new StringBuilder ();
-//			AppendIndent (result);
-//			AppendModifiers (result, options, field);
-//			result.Append (" ");
-//			AppendReturnType (result, options, field.ReturnType);
-//			result.Append (" ");
-//			result.Append (CSharpAmbience.FilterName (field.Name));
-//			result.Append (";");
-//			return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
-//		}
-//		
-//		CodeGeneratorMemberResult GenerateCode (IEvent evt, CodeGenerationOptions options)
-//		{
-//			StringBuilder result = new StringBuilder ();
-//			AppendObsoleteAttribute (result, options, evt);
-//			AppendModifiers (result, options, evt);
-//			
-//			result.Append ("event ");
-//			AppendReturnType (result, options, evt.ReturnType);
-//			result.Append (" ");
-//			if (options.ExplicitDeclaration) {
-//				result.Append (ambience.GetString (evt.DeclaringTypeDefinition, OutputFlags.IncludeGenerics));
-//				result.Append (".");
-//			}
-//			result.Append (CSharpAmbience.FilterName (evt.Name));
-//			if (options.ExplicitDeclaration) {
-//				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventBraceStyle*/);
-//				AppendIndent (result);
-//				result.Append ("add");
-//				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventAddBraceStyle */);
-//				AppendIndent (result);
-//				result.Append ("// TODO");
-//				AppendLine (result);
-//				AppendBraceEnd (result, BraceStyle.EndOfLine  /*Policy.EventAddBraceStyle */);
-//				
-//				AppendIndent (result);
-//				result.Append ("remove");
-//				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventRemoveBraceStyle */);
-//				AppendIndent (result);
-//				result.Append ("// TODO");
-//				AppendLine (result);
-//				
-//				AppendBraceEnd (result, BraceStyle.EndOfLine  /* Policy.EventRemoveBraceStyle*/);
-//				AppendBraceEnd (result, BraceStyle.EndOfLine  /* Policy.EventBraceStyle */);
-//			} else {
-//				result.Append (";");
-//			}
-//			return new CodeGeneratorMemberResult (result.ToString ());
-//		}
-//		
-//		void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options,
-//		                                           out int bodyStartOffset, out int bodyEndOffset)
-//		{
-//			AppendIndent (result);
-//			bodyStartOffset = result.Length;
-//			result.Append ("throw new ");
-//			result.Append (options.GetShortType ("System", "NotImplementedException"));
-//			if (Policy.SpaceAfterMethodCallName)
-//				result.Append (" ");
-//			result.Append ("();");
-//			bodyEndOffset = result.Length;
-//			AppendLine (result);
-//		}
-//
-//		internal static string[] MonoTouchComments = {
-//			" NOTE: Don't call the base implementation on a Model class",
-//			" see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events"
-//		};
-//
-//		void AppendMonoTouchTodo (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
-//		{
-//			AppendIndent (result);
-//			bodyStartOffset = result.Length;
-//			foreach (var cmt in MonoTouchComments) {
-//				result.AppendLine ("//" + cmt);
-//				AppendIndent (result);
-//			}
-//			result.Append ("throw new ");
-//			result.Append (options.GetShortType ("System", "NotImplementedException"));
-//
-//			if (Policy.SpaceAfterMethodCallName)
-//				result.Append (" ");
-//			result.Append ("();");
-//
-//			bodyEndOffset = result.Length;
-//			AppendLine (result);
-//		}
-//		
-//		CodeGeneratorMemberResult GenerateCode (IMethod method, CodeGenerationOptions options)
-//		{
-//			int bodyStartOffset = -1, bodyEndOffset = -1;
-//			StringBuilder result = new StringBuilder ();
-//			AppendObsoleteAttribute (result, options, method);
-//			AppendModifiers (result, options, method);
+		static CodeGeneratorMemberResult GenerateCode (IFieldSymbol field, CodeGenerationOptions options)
+		{
+			StringBuilder result = new StringBuilder ();
+			AppendIndent (result);
+			AppendModifiers (result, options, field);
+			result.Append (" ");
+			AppendReturnType (result, options, field.Type);
+			result.Append (" ");
+			result.Append (CSharpAmbience.FilterName (field.Name));
+			result.Append (";");
+			return new CodeGeneratorMemberResult (result.ToString (), -1, -1);
+		}
+
+		static void AppendIndent (StringBuilder result)
+		{
+			
+		}
+		
+		static CodeGeneratorMemberResult GenerateCode (IEventSymbol evt, CodeGenerationOptions options)
+		{
+			StringBuilder result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, evt);
+			AppendModifiers (result, options, evt);
+			
+			result.Append ("event ");
+			AppendReturnType (result, options, evt.Type);
+			result.Append (" ");
+			if (options.ExplicitDeclaration) {
+				AppendReturnType (result, options, evt.ContainingType);
+				result.Append (".");
+			}
+
+			result.Append (CSharpAmbience.FilterName (evt.Name));
+			if (options.ExplicitDeclaration) {
+				result.Append ("{");
+				AppendIndent (result);
+				result.Append ("add {");
+				AppendIndent (result);
+				result.Append ("// TODO");
+				AppendLine (result);
+				result.Append ("}");
+
+				AppendIndent (result);
+				result.Append ("remove {");
+				AppendIndent (result);
+				result.Append ("// TODO");
+				AppendLine (result);
+				result.Append ("}}");
+			} else {
+				result.Append (";");
+			}
+			return new CodeGeneratorMemberResult (result.ToString ());
+		}
+		
+		static void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
+		{
+			AppendIndent (result);
+			bodyStartOffset = result.Length;
+			result.Append ("throw new ");
+			result.Append (options.GetShortType ("System", "NotImplementedException"));
+			result.Append ("();");
+			bodyEndOffset = result.Length;
+			AppendLine (result);
+		}
+
+		internal static string[] MonoTouchComments = {
+			" NOTE: Don't call the base implementation on a Model class",
+			" see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events"
+		};
+
+		static void AppendMonoTouchTodo (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
+		{
+			AppendIndent (result);
+			bodyStartOffset = result.Length;
+			foreach (var cmt in MonoTouchComments) {
+				result.AppendLine ("//" + cmt);
+				AppendIndent (result);
+			}
+			result.Append ("throw new ");
+			result.Append (options.GetShortType ("System", "NotImplementedException"));
+			result.Append ("();");
+
+			bodyEndOffset = result.Length;
+			AppendLine (result);
+		}
+		
+		static CodeGeneratorMemberResult GenerateCode (IMethodSymbol method, CodeGenerationOptions options)
+		{
+			int bodyStartOffset = -1, bodyEndOffset = -1;
+			var result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, method);
+			AppendModifiers (result, options, method);
 //			if (method.IsPartial)
 //				result.Append ("partial ");
-//			AppendReturnType (result, options, method.ReturnType);
-//			result.Append (" ");
-//			if (options.ExplicitDeclaration) {
-//				AppendReturnType (result, options, method.DeclaringType);
-//				result.Append (".");
-//			}
-//
-//			result.Append (CSharpAmbience.FilterName (method.Name));
-//			if (method.TypeParameters.Count > 0) {
-//				result.Append ("<");
-//				for (int i = 0; i < method.TypeParameters.Count; i++) {
-//					if (i > 0)
-//						result.Append (", ");
-//					var p = method.TypeParameters [i];
-//					result.Append (CSharpAmbience.FilterName (p.Name));
-//				}
-//				result.Append (">");
-//			}
-//			if (Policy.SpacingAfterMethodDeclarationName)
-//				result.Append (" ");
-//			result.Append ("(");
-//			AppendParameterList (result, options, method.Parameters);
-//			result.Append (")");
-//			
-//			var typeParameters = method.TypeParameters;
-//			
+			AppendReturnType (result, options, method.ReturnType);
+			result.Append (" ");
+			if (options.ExplicitDeclaration) {
+				AppendReturnType (result, options, method.ContainingType);
+				result.Append (".");
+			}
+
+			result.Append (CSharpAmbience.FilterName (method.Name));
+			if (method.TypeParameters.Length > 0) {
+				result.Append ("<");
+				for (int i = 0; i < method.TypeParameters.Length; i++) {
+					if (i > 0)
+						result.Append (", ");
+					var p = method.TypeParameters [i];
+					result.Append (CSharpAmbience.FilterName (p.Name));
+				}
+				result.Append (">");
+			}
+			result.Append ("(");
+			AppendParameterList (result, options, method.Parameters);
+			result.Append (")");
+			
+			var typeParameters = method.TypeParameters;
+			
 //			// This should also check the types are in the correct mscorlib
 //			Func<IType, bool> validBaseType = t => t.FullName != "System.Object" && t.FullName != "System.ValueType";
 //
@@ -484,59 +477,57 @@
 //					}
 //				}
 //			}
-//			
-//			if (options.ImplementingType.Kind == TypeKind.Interface) {
-//				result.Append (";");
-//			} else {
-//				AppendBraceStart (result, BraceStyle.EndOfLine /*  Policy.MethodBraceStyle*/);
-//				if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null/* && method.ReturnType.FullName == "System.String"*/) {
-//					AppendIndent (result);
-//					bodyStartOffset = result.Length;
-//					result.Append ("return string.Format");
-//					if (Policy.SpaceAfterMethodCallName)
-//						result.Append (" ");
-//					result.Append ("(\"[");
-//					result.Append (options.ImplementingType.Name);
-//					if (options.ImplementingType.Properties.Any ()) 
-//						result.Append (": ");
-//					int i = 0;
-//					var properties = new List<IProperty> ();
-//
-//					foreach (IProperty property in options.ImplementingType.Properties) {
-//						if (properties.Any (p => p.Name == property.Name))
-//							continue;
-//						properties.Add (property); 
-//					}
-//
-//					foreach (IProperty property in properties) {
-//						if (property.IsStatic || !property.IsPublic)
-//							continue;
-//						if (i > 0)
-//							result.Append (", ");
-//						result.Append (property.Name);
-//						result.Append ("={");
-//						result.Append (i++);
-//						result.Append ("}");
-//					}
-//					result.Append ("]\"");
-//					foreach (IProperty property in properties) {
-//						if (property.IsStatic || !property.IsPublic)
-//							continue;
-//						result.Append (", ");
-//						result.Append (property.Name);
-//					}
-//					result.Append (");");
-//					bodyEndOffset = result.Length;
-//					AppendLine (result);
-//				} else if (IsMonoTouchModelMember (method)) {
-//					AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
-//				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-//					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
-//				} else {
-//					bool skipBody = false;
-//					// Analyze if the body consists just of a single throw instruction
-//					// See: Bug 1373 - overriding [Model] class methods shouldn't insert base.Methods
-//					// TODO: Extend this to user defined code.
+			
+			if (options.ImplementingType.TypeKind == TypeKind.Interface) {
+				result.Append (";");
+			} else {
+				result.Append ("{");
+				if (method.Name == "ToString" && method.Parameters.Length == 0 && method.ReturnType != null/* && method.ReturnType.FullName == "System.String"*/) {
+					AppendIndent (result);
+					bodyStartOffset = result.Length;
+					result.Append ("return string.Format");
+					result.Append ("(\"[");
+					result.Append (options.ImplementingType.Name);
+					if (options.ImplementingType.GetMembers ().OfType<IPropertySymbol> ().Any ()) 
+						result.Append (": ");
+					int i = 0;
+					var properties = new List<IPropertySymbol> ();
+
+					foreach (var property in options.ImplementingType.GetMembers ().OfType<IPropertySymbol> ()) {
+						if (properties.Any (p => p.Name == property.Name))
+							continue;
+						properties.Add (property); 
+					}
+
+					foreach (var property in properties) {
+						if (property.IsStatic || property.DeclaredAccessibility != Accessibility.Public)
+							continue;
+						if (i > 0)
+							result.Append (", ");
+						result.Append (property.Name);
+						result.Append ("={");
+						result.Append (i++);
+						result.Append ("}");
+					}
+					result.Append ("]\"");
+					foreach (var property in properties) {
+						if (property.IsStatic || property.DeclaredAccessibility != Accessibility.Public)
+							continue;
+						result.Append (", ");
+						result.Append (property.Name);
+					}
+					result.Append (");");
+					bodyEndOffset = result.Length;
+					AppendLine (result);
+				} else if (IsMonoTouchModelMember (method)) {
+					AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
+				} else if (method.IsAbstract || !(method.IsVirtual || method.IsOverride) || method.ContainingType.TypeKind == TypeKind.Interface) {
+					AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
+				} else {
+					bool skipBody = false;
+					// Analyze if the body consists just of a single throw instruction
+					// See: Bug 1373 - overriding [Model] class methods shouldn't insert base.Methods
+					// TODO: Extend this to user defined code.
 //					try {
 //						if (method.Region.FileName == null) {
 //							var asm = AssemblyDefinition.ReadAssembly (method.ParentAssembly.UnresolvedAssembly.Location);
@@ -575,39 +566,27 @@
 //						}
 //					} catch (Exception) {
 //					}
-//					AppendIndent (result);
-//					bodyStartOffset = result.Length;
-//					if (!skipBody) {
-//						if (method.ReturnType.ReflectionName != typeof(void).FullName)
-//							result.Append ("return ");
-//						result.Append ("base.");
-//						result.Append (CSharpAmbience.FilterName (method.Name));
-//						if (Policy.SpaceAfterMethodCallName)
-//							result.Append (" ");
-//						result.Append ("(");
-//						for (int i = 0; i < method.Parameters.Count; i++) {
-//							if (i > 0)
-//								result.Append (", ");
-//							
-//							var p = method.Parameters [i];
-//							if (p.IsOut)
-//								result.Append ("out ");
-//							if (p.IsRef)
-//								result.Append ("ref ");
-//							result.Append (CSharpAmbience.FilterName (p.Name));
-//						}
-//						result.Append (");");
-//					} else {
-//						result.Append ("throw new System.NotImplementedException ();");
-//					}
-//					bodyEndOffset = result.Length;
-//					AppendLine (result);
-//				}
-//				AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.MethodBraceStyle*/);
-//			}
-//			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
-//		}
-//		
+					AppendIndent (result);
+					bodyStartOffset = result.Length;
+					if (!skipBody) {
+						if (method.ReturnType.MetadataName != typeof(void).FullName)
+							result.Append ("return ");
+						result.Append ("base.");
+						result.Append (CSharpAmbience.FilterName (method.Name));
+						result.Append ("(");
+						AppendParameterList (result, options, method.Parameters);
+						result.Append (");");
+					} else {
+						result.Append ("throw new System.NotImplementedException ();");
+					}
+					bodyEndOffset = result.Length;
+					AppendLine (result);
+				}
+				result.Append ("}");
+			}
+			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
+		}
+
 //		class ThrowsExceptionVisitor : DepthFirstAstVisitor
 //		{
 //			public bool Throws = false;
@@ -618,217 +597,209 @@
 //					Throws = true;
 //			}
 //		}
-//		
-//		void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameter> parameters)
-//		{
-//			for (int i = 0; i < parameters.Count; i++) {
-//				if (i > 0)
-//					result.Append (", ");
-//				
-//				var p = parameters[i];
-//				if (p.IsOut)
-//					result.Append ("out ");
-//				if (p.IsRef)
-//					result.Append ("ref ");
-//				if (p.IsParams)
-//					result.Append ("params ");
-//				AppendReturnType (result, options, p.Type);
-//				result.Append (" ");
-//				result.Append (CSharpAmbience.FilterName (p.Name));
-//				if (p.ConstantValue != null) {
-//					result.Append (" = ");
-//					if (p.Type.Kind == TypeKind.Enum) {
-//						bool found = false;
-//						foreach (var literal in GetEnumLiterals(p.Type)) {
-//							if (literal.ConstantValue.Equals (p.ConstantValue)) {
-//								AppendReturnType (result, options, p.Type);
-//								result.Append ("."+ literal.Name);
-//								found = true;
-//								break;
-//							}
+
+		static void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameterSymbol> parameters)
+		{
+			for (int i = 0; i < parameters.Count; i++) {
+				if (i > 0)
+					result.Append (", ");
+				
+				var p = parameters[i];
+				if (p.RefKind == RefKind.Out)
+					result.Append ("out ");
+				if (p.RefKind == RefKind.Ref)
+					result.Append ("ref ");
+				if (p.IsParams)
+					result.Append ("params ");
+				AppendReturnType (result, options, p.Type);
+				result.Append (" ");
+				result.Append (CSharpAmbience.FilterName (p.Name));
+				if (p.HasExplicitDefaultValue) {
+					result.Append (" = ");
+					if (p.ExplicitDefaultValue is Enum) {
+						var name = Enum.GetName (p.ExplicitDefaultValue.GetType (), p.ExplicitDefaultValue);
+						if (name != null)
+						{
+							AppendReturnType (result, options, p.Type);
+							result.Append ("."+ name);
+						} else {
+							result.Append ("(");
+							AppendReturnType (result, options, p.Type);
+							result.Append (")" + p.ExplicitDefaultValue); 
+						}
+					} else if (p.ExplicitDefaultValue is char) {
+						result.Append ("'" + p.ExplicitDefaultValue + "'");
+					} else if (p.ExplicitDefaultValue is string)  {
+						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue) + "\"");
+					} else if (p.ExplicitDefaultValue is bool)  {
+						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
+					} else {
+						result.Append (p.ExplicitDefaultValue);
+					}
+				} 
+			}
+		}
+
+		public static IEnumerable<string> GetEnumLiterals(Type type)
+		{
+			return Enum.GetNames (type);
+		}
+		
+		static string GetModifiers (ITypeSymbol implementingType, Location implementingPart, ISymbol member)
+		{
+			StringBuilder result = new StringBuilder ();
+
+			if (member.DeclaredAccessibility == Accessibility.Public || (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface)) {
+				result.Append ("public ");
+			} else if (member.DeclaredAccessibility == Accessibility.ProtectedOrInternal) {
+				if (IdeApp.Workbench.ActiveDocument != null && member.ContainingAssembly != implementingType.ContainingAssembly) {
+					result.Append ("protected ");
+				} else {
+					result.Append ("internal protected ");
+				}
+			} else if (member.DeclaredAccessibility == Accessibility.Protected) {
+				result.Append ("protected ");
+			} else if (member.DeclaredAccessibility == Accessibility.Internal) {
+				result.Append ("internal ");
+			}
+
+			if (member.IsStatic) 
+				result.Append ("static ");
+
+			return result.ToString ();
+		}
+		
+		static void AppendModifiers (StringBuilder result, CodeGenerationOptions options, ISymbol member)
+		{
+			//AppendIndent (result);
+			//if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
+			//	return;
+			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
+			bool isFromInterface = false;
+			if (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface) {
+				isFromInterface = true;
+// TODO: Type system conversion.
+//				if (options.ImplementingType != null) {
+//					foreach (var type in options.ImplementingType.BaseTypes) {
+//						if (type.Kind == TypeKind.Interface)
+//							continue;
+//						if (type.Members.Any (m => m.Name == member.Name && member.SymbolKind == m.SymbolKind /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
+//							isFromInterface = false;
+//							break;
 //						}
-//						if (!found) {
-//							result.Append ("(");
-//							AppendReturnType (result, options, p.Type);
-//							result.Append (")" + p.ConstantValue); 
-//						}
-//					} else if (p.ConstantValue is char) {
-//						result.Append ("'" + p.ConstantValue + "'");
-//					} else if (p.ConstantValue is string)  {
-//						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ConstantValue) + "\"");
-//					} else if (p.ConstantValue is bool)  {
-//						result.Append ((bool)p.ConstantValue ? "true" : "false");
-//					} else {
-//						result.Append (p.ConstantValue);
 //					}
-//				} 
-//			}
-//		}
-//
-//		public IEnumerable<IField> GetEnumLiterals(IType type)
-//		{
-//			if (type.Kind != TypeKind.Enum)
-//				throw new ArgumentException ("Type is no enum.");
-//			foreach (var field in type.GetFields (f => f.IsConst && f.IsPublic))
-//				yield return field;
-//		}
-//		
-//		static string GetModifiers (ITypeDefinition implementingType, IUnresolvedTypeDefinition implementingPart, IMember member)
-//		{
-//			StringBuilder result = new StringBuilder ();
-//
-//			if (member.IsPublic || (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface)) {
-//				result.Append ("public ");
-//			} else if (member.IsProtectedOrInternal) {
-//				if (IdeApp.Workbench.ActiveDocument != null && member.DeclaringTypeDefinition.ParentAssembly != implementingType.ParentAssembly) {
-//					result.Append ("protected ");
-//				} else {
-//					result.Append ("internal protected ");
 //				}
-//			} else if (member.IsProtectedAndInternal) {
-//				if (IdeApp.Workbench.ActiveDocument != null && member.DeclaringTypeDefinition.ParentAssembly != implementingType.ParentAssembly) {
-//					result.Append ("protected ");
-//				} else {
-//					result.Append ("protected internal ");
-//				}
-//			} else if (member.IsProtected) {
-//				result.Append ("protected ");
-//			} else if (member.IsInternal) {
-//				result.Append ("internal ");
-//			}
-//				
-//			if (member.IsStatic) 
-//				result.Append ("static ");
-//			
-//			return result.ToString ();
-//		}
-//		
-//		void AppendModifiers (StringBuilder result, CodeGenerationOptions options, IMember member)
-//		{
-//			AppendIndent (result);
-//			if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
-//				return;
-//			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
-//			bool isFromInterface = false;
-//			if (member.DeclaringType != null && member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-//				isFromInterface = true;
-//// TODO: Type system conversion.
-////				if (options.ImplementingType != null) {
-////					foreach (var type in options.ImplementingType.BaseTypes) {
-////						if (type.Kind == TypeKind.Interface)
-////							continue;
-////						if (type.Members.Any (m => m.Name == member.Name && member.SymbolKind == m.SymbolKind /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
-////							isFromInterface = false;
-////							break;
-////						}
-////					}
-////				}
-//			}
-//
-//			if (!isFromInterface && member.IsOverridable)
-//				result.Append ("override ");
-//			if (member is IMethod && ((IMethod)member).IsAsync)
-//				result.Append ("async ");
-//		}
-//		
-//		CodeGeneratorMemberResult GenerateCode (IProperty property, CodeGenerationOptions options)
-//		{
-//			var regions = new List<CodeGeneratorBodyRegion> ();
-//			var result = new StringBuilder ();
-//			AppendObsoleteAttribute (result, options, property);
-//			AppendModifiers (result, options, property);
-//			AppendReturnType (result, options, property.ReturnType);
-//			result.Append (" ");
-//			if (property.IsIndexer) {
-//				result.Append ("this[");
-//				AppendParameterList (result, options, property.Parameters);
-//				result.Append ("]");
-//			} else {
+			}
+			if (member is IMethodSymbol) {
+				var method = (IMethodSymbol)member;
+				result.Append ("override ");
+				if (method.IsAsync)
+					result.Append ("async ");
+			}
+
+			if (member is IPropertySymbol) {
+				result.Append ("override ");
+			}
+		}
+		
+		static CodeGeneratorMemberResult GenerateCode (IPropertySymbol property, CodeGenerationOptions options)
+		{
+			var regions = new List<CodeGeneratorBodyRegion> ();
+			var result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, property);
+			AppendModifiers (result, options, property);
+			AppendReturnType (result, options, property.Type);
+			result.Append (" ");
+			if (property.IsIndexer) {
+				result.Append ("this[");
+				AppendParameterList (result, options, property.Parameters);
+				result.Append ("]");
+			} else {
 //				if (options.ExplicitDeclaration) {
 //					result.Append (ambience.GetString (property.DeclaringType, OutputFlags.IncludeGenerics));
 //					result.Append (".");
 //				}
-//				result.Append (CSharpAmbience.FilterName (property.Name));
-//			}
-//			AppendBraceStart (result, BraceStyle.EndOfLine /*Policy.PropertyBraceStyle*/);
-//			if (property.CanGet) {
-//				int bodyStartOffset, bodyEndOffset;
-//				AppendIndent (result);
-//				result.Append ("get");
-//				if (options.ImplementingType.Kind == TypeKind.Interface) {
-//					result.AppendLine (";");
-//				} else {
-//					AppendBraceStart (result, BraceStyle.EndOfLine /*Policy.PropertyGetBraceStyle */);
-//					if (IsMonoTouchModelMember (property)) {
-//						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
-//					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-//						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
-//					} else {
-//						AppendIndent (result);
-//						bodyStartOffset = result.Length;
-//						if (property.SymbolKind == SymbolKind.Indexer) {
-//							result.Append ("return base[");
-//							if (property.Parameters.Count > 0)
-//								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
-//							result.Append ("];");
-//						} else {
-//							result.Append ("return base.");
-//							result.Append (CSharpAmbience.FilterName (property.Name));
-//							result.Append (";");
-//						}
-//						bodyEndOffset = result.Length;
-//						AppendLine (result);
-//					}
-//					AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
-//					AppendLine (result);
-//					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
-//				}
-//			}
-//			
-//			if (property.CanSet) {
-//				int bodyStartOffset, bodyEndOffset;
-//				AppendIndent (result);
-//				result.Append ("set");
-//				if (options.ImplementingType.Kind == TypeKind.Interface) {
-//					result.AppendLine (";");
-//				} else {
-//					AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
-//					if (IsMonoTouchModelMember (property)) {
-//						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
-//					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-//						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
-//					} else {
-//						AppendIndent (result);
-//						bodyStartOffset = result.Length;
-//						if (property.SymbolKind == SymbolKind.Indexer) {
-//							result.Append ("base[");
-//							if (property.Parameters.Count > 0)
-//								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
-//							result.Append ("] = value;");
-//						} else { 
-//							result.Append ("base.");
-//							result.Append (CSharpAmbience.FilterName (property.Name));
-//							result.Append (" = value;");
-//						}
-//						bodyEndOffset = result.Length;
-//						AppendLine (result);
-//					}
-//					AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
-//					AppendLine (result);
-//					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
-//				}
-//			}
-//			AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyBraceStyle */);
-//			return new CodeGeneratorMemberResult (result.ToString (), regions);
-//		}
-//		
-//		internal static bool IsMonoTouchModelMember (IMember member)
-//		{
-//			if (member == null || member.DeclaringType == null)
-//				return false;
-//			return member.DeclaringTypeDefinition.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.ReflectionName == "MonoTouch.Foundation.ModelAttribute");
-//		}
-//		
+				result.Append (CSharpAmbience.FilterName (property.Name));
+			}
+			result.AppendLine (" {");
+			if (property.GetMethod != null) {
+				int bodyStartOffset, bodyEndOffset;
+				AppendIndent (result);
+				result.Append ("get");
+				if (options.ImplementingType.TypeKind == TypeKind.Interface) {
+					result.AppendLine (";");
+				} else {
+					result.AppendLine (" {");
+					if (IsMonoTouchModelMember (property)) {
+						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
+					} else if (property.IsAbstract || property.ContainingType.TypeKind == TypeKind.Interface) {
+						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
+					} else {
+						AppendIndent (result);
+						bodyStartOffset = result.Length;
+						if (property.IsIndexer) {
+							result.Append ("return base[");
+							if (property.Parameters.Length > 0)
+								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
+							result.Append ("];");
+						} else {
+							result.Append ("return base.");
+							result.Append (CSharpAmbience.FilterName (property.Name));
+							result.Append (";");
+						}
+						bodyEndOffset = result.Length;
+						AppendLine (result);
+					}
+					result.Append ("}");
+					AppendLine (result);
+					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
+				}
+			}
+			
+			if (property.SetMethod != null) {
+				int bodyStartOffset, bodyEndOffset;
+				AppendIndent (result);
+				result.Append ("set");
+				if (options.ImplementingType.TypeKind == TypeKind.Interface) {
+					result.AppendLine (";");
+				} else {
+					result.AppendLine (" {");
+					if (IsMonoTouchModelMember (property)) {
+						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
+					} else if (property.IsAbstract || property.ContainingType.TypeKind == TypeKind.Interface) {
+						AppendNotImplementedException (result, options, out bodyStartOffset, out bodyEndOffset);
+					} else {
+						AppendIndent (result);
+						bodyStartOffset = result.Length;
+						if (property.IsIndexer) {
+							result.Append ("base[");
+							if (property.Parameters.Length > 0)
+								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
+							result.Append ("] = value;");
+						} else { 
+							result.Append ("base.");
+							result.Append (CSharpAmbience.FilterName (property.Name));
+							result.Append (" = value;");
+						}
+						bodyEndOffset = result.Length;
+						AppendLine (result);
+					}
+					result.Append ("}");
+					AppendLine (result);
+					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
+				}
+			}
+			result.Append ("}");
+			return new CodeGeneratorMemberResult (result.ToString (), regions);
+		}
+
+		internal static bool IsMonoTouchModelMember (ISymbol member)
+		{
+			if (member == null || member.ContainingType == null)
+				return false;
+			return member.ContainingType.GetAttributes().Any (attr => attr.AttributeClass.MetadataName == "MonoTouch.Foundation.ModelAttribute");
+		}
+		
 ////		public override string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly)
 ////		{
 ////			SetIndentTo (implementingType);
@@ -934,5 +905,5 @@
 ////				doc.Editor.CaretOffset = newOffset;
 ////			}
 //		}
-//	}
-//}
+	}
+}
