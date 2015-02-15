@@ -66,8 +66,17 @@ namespace MonoDevelop.Components.PropertyGrid
 		Gdk.Cursor resizeCursor;
 		Gdk.Cursor handCursor;
 
-		class TableRow
+		readonly PropertyGrid parentGrid;
+
+		class TableRow : ITypeDescriptorContext
 		{
+			PropertyGrid parentGrid;
+
+			public TableRow (PropertyGrid parentGrid)
+			{
+				this.parentGrid = parentGrid;
+			}
+
 			public bool IsCategory;
 			public string Label;
 			public object Instance;
@@ -80,12 +89,45 @@ namespace MonoDevelop.Components.PropertyGrid
 			public int AnimationHeight;
 			public int ChildrenHeight;
 			public uint AnimationHandle;
+
+			bool ITypeDescriptorContext.OnComponentChanging ()
+			{
+				//TODO ITypeDescriptorContext.OnComponentChanging
+				return true;
+			}
+
+			void ITypeDescriptorContext.OnComponentChanged ()
+			{
+				//TODO ITypeDescriptorContext.OnComponentChanged
+			}
+
+			IContainer ITypeDescriptorContext.Container {
+				get {
+					var site = parentGrid.Site;
+					return site != null ? site.Container : null;
+				}
+			}
+
+			object ITypeDescriptorContext.Instance {
+				get { return Instance; }
+			}
+
+			PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
+				get { return Property; }
+			}
+
+			object IServiceProvider.GetService (Type serviceType)
+			{
+				var site = parentGrid.Site;
+				return site != null ? site.GetService (serviceType) : null;
+			}
 		}
 
 		public PropertyGridTable (EditorManager editorManager, PropertyGrid parentGrid)
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 
+			this.parentGrid = parentGrid;
 			this.editorManager = editorManager;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= Gdk.EventMask.PointerMotionMask;
@@ -179,7 +221,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 				foreach (PropertyDescriptor pd in sorted) {
 					if (!string.IsNullOrEmpty (pd.Category) && (lastCat == null || pd.Category != lastCat.Label)) {
-						TableRow row = new TableRow ();
+						TableRow row = new TableRow (parentGrid);
 						row.IsCategory = true;
 						row.Expanded = true;
 						row.Label = pd.Category;
@@ -225,7 +267,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		void AppendProperty (List<TableRow> rowList, PropertyDescriptor prop, object instance)
 		{
-			TableRow row = new TableRow () {
+			TableRow row = new TableRow (parentGrid) {
 				IsCategory = false,
 				Property = prop,
 				Label = prop.DisplayName,
@@ -234,11 +276,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			rowList.Add (row);
 
 			TypeConverter tc = prop.Converter;
-			if (tc.GetPropertiesSupported ()) {
+			if (tc.GetPropertiesSupported (row)) {
 				object cob = prop.GetValue (instance);
 				row.ChildRows = new List<TableRow> ();
 				//TODO: should we support TypeDescriptor extensibility? how to merge with TypeConverter?
-				foreach (PropertyDescriptor cprop in tc.GetProperties (cob))
+				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob))
 					AppendProperty (row.ChildRows, cprop, cob);
 			}
 		}
@@ -246,7 +288,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		PropertyEditorCell GetCell (TableRow row)
 		{
 			var e = editorManager.GetEditor (row.Property);
-			e.Initialize (this, editorManager, row.Property, row.Instance);
+			e.Initialize (this, editorManager, row);
 			return e;
 		}
 

@@ -41,8 +41,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		protected override string GetValueMarkup ()
 		{
 			string val;
-			if (Property.Converter.CanConvertTo (typeof(string)))
-				val = Property.Converter.ConvertToString (Value);
+			if (Property.Converter.CanConvertTo (Context, typeof(string)))
+				val = Property.Converter.ConvertToString (Context, Value);
 			else
 				val = Value != null ? Value.ToString () : "";
 			
@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, StateType state)
 		{
-			if (Property.Converter.CanConvertTo (typeof(string)) && Property.Converter.CanConvertFrom (typeof(string)))
+			if (Property.Converter.CanConvertTo (Context, typeof(string)) && Property.Converter.CanConvertFrom (Context, typeof(string)))
 				return new TextEditor ();
 			else
 				return null;
