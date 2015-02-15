@@ -731,7 +731,7 @@ namespace MonoDevelop.Components.MainToolbar
 				OnItemActivated (EventArgs.Empty);
 				return true;
 			}
-			return true;
+			return false;
 		}
 
 		public event EventHandler ItemActivated;

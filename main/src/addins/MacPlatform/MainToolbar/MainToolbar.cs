@@ -24,10 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
+using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
 using AppKit;
 using CoreGraphics;
-using Foundation;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -35,12 +36,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		const string MainToolbarId = "XSMainToolbar";
 		const string RunButtonId = "RunToolbarItem";
+		const string SearchBarId = "SearchBarToolbarItem";
 
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
 
+		int runButtonIdx;
 		RunButton runButton {
-			get { return (RunButton)widget.Items[0].View; }
+			get { return (RunButton)widget.Items[runButtonIdx].View; }
+		}
+
+		int searchEntryIdx;
+		SearchBar searchEntry {
+			get { return (SearchBar)widget.Items[searchEntryIdx].View; }
 		}
 
 		NSToolbarItem CreateRunToolbarItem ()
@@ -58,6 +66,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return item;
 		}
 
+		NSToolbarItem CreateSearchBarToolbarItem ()
+		{
+			var bar = new SearchBar ();
+			var item = new NSToolbarItem (SearchBarId) {
+				View = bar,
+				MinSize = new CGSize (180, bar.FittingSize.Height),
+			};
+
+			bar.Changed += (o, e) => {
+				if (SearchEntryChanged != null)
+					SearchEntryChanged (o, e);
+			};
+			bar.KeyPressed += (o, e) => {
+				if (SearchEntryKeyPressed != null)
+					SearchEntryKeyPressed (o, e);
+			};
+			bar.LostFocus += (o, e) => {
+				if (SearchEntryLostFocus != null)
+					SearchEntryLostFocus (o, e);
+			};
+			return item;
+		}
+
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
@@ -69,6 +100,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				switch (id) {
 				case RunButtonId:
 					return CreateRunToolbarItem ();
+				case SearchBarId:
+					return CreateSearchBarToolbarItem ();
 				}
 				throw new NotImplementedException ();
 			};
@@ -77,20 +110,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal void Initialize ()
 		{
 			int total = -1;
-			widget.InsertItem (RunButtonId, ++total);
+			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
+			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
+			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
 		}
 
 		#region IMainToolbarView implementation
 		public event EventHandler RunButtonClicked;
 		public event EventHandler SearchEntryChanged;
-		public event EventHandler SearchEntryActivated;
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
-		public event EventHandler SearchEntryResized;
 		public event EventHandler SearchEntryLostFocus;
+
+		#pragma warning disable 0169
+		public event EventHandler SearchEntryActivated;
+		public event EventHandler SearchEntryResized;
+		#pragma warning restore 0169
 
 		public void FocusSearchBar ()
 		{
-//			throw new NotImplementedException ();
+			var entry = searchEntry;
+			entry.Window.MakeFirstResponder (entry);
 		}
 
 		public void RebuildToolbar (System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<string>> bars)
@@ -118,44 +157,63 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public bool SearchSensivitity {
-			set {
-//				throw new NotImplementedException ();
-			}
+			set { searchEntry.Enabled = value; }
 		}
 
 		public SearchMenuItem[] SearchMenuItems {
 			set {
-//				throw new NotImplementedException ();
+				var menu = new NSMenu {
+					AutoEnablesItems = false,
+				};
+				foreach (var item in value)
+					menu.AddItem (new NSMenuItem (item.DisplayString, (o, e) => item.NotifyActivated ()));
+
+				searchEntry.SearchMenuTemplate = menu;
 			}
 		}
 
 		public string SearchCategory {
 			set {
-//				throw new NotImplementedException ();
+				var entry = searchEntry;
+				entry.StringValue = value;
+				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (entry.StringValue.Length, entry.StringValue.Length);
 			}
 		}
 
 		public string SearchText {
-			get {
-				return "";
-//				throw new NotImplementedException ();
-			}
-			set {
-//				throw new NotImplementedException ();
-			}
+			get { return searchEntry.StringValue; }
+			set { searchEntry.StringValue = value; }
 		}
 
 		public Gtk.Widget PopupAnchor {
 			get {
-				return null;
-//				throw new NotImplementedException ();
+				var entry = searchEntry;
+				var widget = entry.gtkWidget;
+				var window = GtkMacInterop.GetGtkWindow (entry.Window);
+				if (window != null) {
+					widget.GdkWindow = window.GdkWindow;
+					widget.Allocation = new Gdk.Rectangle ((int)entry.Superview.Frame.X, (int)entry.Superview.Frame.Y, (int)entry.Superview.Frame.Width, 0);
+				} else {
+					// Reset the Gtk Widget each time since we can't set the GdkWindow to null.
+					widget.Dispose ();
+					widget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
+
+					var nsWindows = NSApplication.SharedApplication.Windows;
+					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
+						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
+					var workbenchNsWindow = nsWindows.FirstOrDefault (nswin =>
+						GtkMacInterop.GetGtkWindow (nswin) is MonoDevelop.Ide.Gui.DefaultWorkbench);
+
+					widget.Allocation = new Gdk.Rectangle (0, (int)(fullscreenToolbarNsWindow.Frame.Bottom - workbenchNsWindow.Frame.Height),
+						(int)fullscreenToolbarNsWindow.Frame.Width, 0);
+				}
+				return widget;
 			}
 		}
 
 		public string SearchPlaceholderMessage {
-			set {
-//				throw new NotImplementedException ();
-			}
+			// Analysis disable once ValueParameterNotUsed
+			set { }
 		}
 
 		public MonoDevelop.Ide.StatusBar StatusBar {
