@@ -85,10 +85,17 @@ namespace MonoDevelop.Components.PropertyGrid
 			public bool Expanded;
 			public bool Enabled = true;
 			public Gdk.Rectangle EditorBounds;
+			public Gdk.Rectangle Bounds;
 			public bool AnimatingExpand;
 			public int AnimationHeight;
 			public int ChildrenHeight;
 			public uint AnimationHandle;
+
+			public bool IsExpandable {
+				get {
+					return IsCategory || (ChildRows != null && ChildRows.Count > 0);
+				}
+			}
 
 			bool ITypeDescriptorContext.OnComponentChanging ()
 			{
@@ -358,16 +365,18 @@ namespace MonoDevelop.Components.PropertyGrid
 				layout.SetText (r.Label);
 				int w,h;
 				layout.GetPixelSize (out w, out h);
+				var width = Allocation.Width;
 				if (r.IsCategory) {
-					r.EditorBounds = new Gdk.Rectangle (0, y, Allocation.Width, h + CategoryTopBottomPadding * 2);
+					r.Bounds = new Gdk.Rectangle (0, y, width, h + CategoryTopBottomPadding * 2);
 					y += h + CategoryTopBottomPadding * 2;
 				}
 				else {
 					int eh;
-					int dividerX = (int)((double)Allocation.Width * dividerPosition);
+					int dividerX = (int)((double)width * dividerPosition);
 					var cell = GetCell (r);
 					cell.GetSize (Allocation.Width - dividerX, out w, out eh);
 					eh = Math.Max (h + PropertyTopBottomPadding * 2, eh);
+					r.Bounds = new Gdk.Rectangle (0, y, Allocation.Width, eh);
 					r.EditorBounds = new Gdk.Rectangle (dividerX + PropertyContentLeftPadding, y, Allocation.Width - dividerX - PropertyContentLeftPadding, eh);
 					y += eh;
 				}
@@ -515,17 +524,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (evnt.Type != EventType.ButtonPress)
 				return base.OnButtonPressEvent (evnt);
 
-			var cat = rows.FirstOrDefault (r => r.IsCategory && r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y));
-			if (cat != null) {
-				cat.Expanded = !cat.Expanded;
-				if (cat.Expanded)
-					StartExpandAnimation (cat);
-				else
-					StartCollapseAnimation (cat);
-				QueueResize ();
-				return true;
-			}
-
 			int dx = (int)((double)Allocation.Width * dividerPosition);
 			if (Math.Abs (dx - evnt.X) < 4) {
 				draggingDivider = true;
@@ -533,19 +531,26 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			TableRow clickedEditor = null;
-			foreach (var r in GetAllRows (true).Where (r => !r.IsCategory)) {
-				if (r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y)) {
-					clickedEditor = r;
-					break;
+			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+
+			if (row != null && editSession == null) {
+				if (!row.EditorBounds.IsEmpty && row.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y) && row.Enabled) {
+					StartEditing (row);
+					return true;
+				}
+				if (row.IsExpandable) {
+					row.Expanded = !row.Expanded;
+					if (row.Expanded)
+						StartExpandAnimation (row);
+					else
+						StartCollapseAnimation (row);
+					QueueResize ();
+					return true;
 				}
 			}
-			if (clickedEditor != null && clickedEditor.Enabled)
-				StartEditing (clickedEditor);
-			else {
-				EndEditing ();
-				GrabFocus ();
-			}
+
+			EndEditing ();
+			GrabFocus ();
 
 			return base.OnButtonPressEvent (evnt);
 		}
