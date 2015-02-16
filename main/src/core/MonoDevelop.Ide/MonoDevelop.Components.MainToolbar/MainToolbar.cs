@@ -51,23 +51,15 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class MainToolbar: Gtk.EventBox, IMainToolbarView
 	{
-		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
-
-		const int RuntimeExecutionTarget = 0;
-		const int RuntimeIsIndented = 1;
-		const int RuntimeCommand = 2;
-
-		EventHandler executionTargetsChanged;
-
 		HBox contentBox = new HBox (false, 0);
 
 		HBox configurationCombosBox;
 
 		ComboBox configurationCombo;
-		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
+		TreeStore configurationStore = new TreeStore (typeof(string), typeof(IConfigurationModel));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool), typeof(ActionCommand));
+		TreeStore runtimeStore = new TreeStore (typeof(IRuntimeModel));
 
 		StatusArea statusArea;
 
@@ -77,15 +69,6 @@ namespace MonoDevelop.Components.MainToolbar
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
 		Alignment buttonBarBox;
-
-		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
-
-		Solution currentSolution;
-		bool settingGlobalConfig;
-		SolutionEntityItem currentStartupProject;
-
-		int ignoreConfigurationChangedCount;
-		int ignoreRuntimeChangedCount;
 
 		// attributes for the runtime combo (bold / normal)
 		readonly Pango.AttrList boldAttributes = new Pango.AttrList ();
@@ -113,85 +96,36 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
 		{
-			return model.GetValue (iter, RuntimeExecutionTarget) == null && model.GetValue (iter, RuntimeCommand) == null;
+			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
+			return runtime == null || runtime.IsSeparator;
 		}
 
 		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
-			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
-			var cmd = (ActionCommand) model.GetValue (iter, RuntimeCommand);
+			var runtime = (IRuntimeModel)model.GetValue (iter, 0);
 			var renderer = (CellRendererText) cell;
-			TreeIter parent;
 
-			if (cmd != null) {
-				var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
-				renderer.Text = RemoveUnderline (ci.Text);
-				renderer.Visible = ci.Visible;
-				renderer.Sensitive = ci.Enabled;
-				renderer.Xpad = 3;
-
-				// it seems that once we add the ExecutionTargetGroups to the drop down then the width
-				// calculation for items needs some help in calculating the correct width
-				// doing this helps.
-				if (Platform.IsMac)
-					renderer.WidthChars = renderer.Text != null ? renderer.Text.Length : 0;
+			if (runtime == null || runtime.IsSeparator) {
+				renderer.Xpad = (uint)0;
 				return;
 			}
-			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 
-			if (target == null) {
-				renderer.Xpad = (uint) 0;
-				return;
-			}
+			renderer.Visible = runtime.Visible;
+			renderer.Sensitive = runtime.Enabled;
+			renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
 
 			if (!runtimeCombo.PopupShown) {
-				renderer.Text = target.FullName;
-				renderer.Xpad = 3;
+				renderer.Text = runtime.FullDisplayString;
 				renderer.Attributes = normalAttributes;
 			} else {
-				renderer.Xpad = indent ? (uint) 18 : (uint) 3;
-				renderer.Attributes = target.Notable ? boldAttributes : normalAttributes;
-
-				if (!runtimeStore.IterParent (out parent, iter))
-					renderer.Text = target.FullName;
-				else
-					renderer.Text = target.Name;
+				renderer.Text = runtime.DisplayString;
+				renderer.Attributes = runtime.Notable ? boldAttributes : normalAttributes;
 			}
-
-			if (Platform.IsMac)
-				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
 		}
 
-		string RemoveUnderline (string s)
-		{
-			int i = s.IndexOf ('_');
-			if (i == -1)
-				return s;
-			var sb = new StringBuilder (s.Substring (0, i));
-			for (; i < s.Length; i++) {
-				if (s [i] == '_') {
-					i++;
-					if (i >= s.Length)
-						break;
-				}
-				sb.Append (s [i]);
-			}
-			return sb.ToString ();
-		}
-
+		TreeIter lastSelection = TreeIter.Zero;
 		public MainToolbar ()
 		{
-			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler (HandleExecutionTargetsChanged));
-
-			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
-
-			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
-			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
-
-			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
-
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 
 			AddWidget (button);
@@ -296,9 +230,24 @@ namespace MonoDevelop.Components.MainToolbar
 			Add (align);
 			SetDefaultSizes (-1, (int)(21 * GtkWorkarounds.GetPixelScale ()));
 
-			configurationCombo.Changed += HandleConfigurationChanged;
-			runtimeCombo.Changed += HandleRuntimeChanged;
-			UpdateCombos ();
+			configurationCombo.Changed += (o, e) => {
+				if (ConfigurationChanged != null)
+					ConfigurationChanged (o, e);
+			};
+			runtimeCombo.Changed += (o, e) => {
+				var ea = new HandledEventArgs ();
+				if (RuntimeChanged != null)
+					RuntimeChanged (o, ea);
+
+				TreeIter it;
+				if (runtimeCombo.GetActiveIter (out it)) {
+					if (ea.Handled) {
+						runtimeCombo.SetActiveIter (lastSelection);
+						return;
+					}
+					lastSelection = it;
+				}
+			};
 
 			button.Clicked += HandleStartButtonClicked;
 
@@ -309,7 +258,6 @@ namespace MonoDevelop.Components.MainToolbar
 			this.ShowAll ();
 			this.statusArea.statusIconBox.HideAll ();
 		}
-			
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
@@ -321,64 +269,6 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 			return base.OnButtonPressEvent (evnt);
-		}
-
-		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
-		{
-			if (currentSolution != null) {
-				currentSolution.StartupItemChanged -= HandleStartupItemChanged;
-				currentSolution.Saved -= HandleSolutionSaved;
-			}
-
-			currentSolution = e.Solution;
-
-			if (currentSolution != null) {
-				currentSolution.StartupItemChanged += HandleStartupItemChanged;
-				currentSolution.Saved += HandleSolutionSaved;
-			}
-
-			TrackStartupProject ();
-
-			UpdateCombos ();
-		}
-
-		void TrackStartupProject ()
-		{
-			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
-				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
-				currentStartupProject.Saved -= HandleProjectSaved;
-			}
-
-			if (currentSolution != null) {
-				currentStartupProject = currentSolution.StartupItem;
-				if (currentStartupProject != null) {
-					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
-					currentStartupProject.Saved += HandleProjectSaved;
-				}
-			}
-			else
-				currentStartupProject = null;
-		}
-
-		void HandleProjectSaved (object sender, SolutionItemEventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleSolutionSaved (object sender, WorkspaceItemEventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleExecutionTargetsChanged (object sender, EventArgs e)
-		{
-			UpdateCombos ();
-		}
-
-		void HandleStartupItemChanged (object sender, EventArgs e)
-		{
-			TrackStartupProject ();
-			UpdateCombos ();
 		}
 
 		void SetDefaultSizes (int comboHeight, int height)
@@ -429,312 +319,6 @@ namespace MonoDevelop.Components.MainToolbar
 				SearchEntryKeyPressed (sender, kargs);
 				e.RetVal = kargs.Handled;
 			}
-		}
-
-		string GetActiveConfiguration ()
-		{
-			TreeIter iter;
-
-			if (!configurationCombo.GetActiveIter (out iter))
-				return null;
-
-			return (string) configurationStore.GetValue (iter, 1);
-		}
-
-		ExecutionTarget GetActiveTarget ()
-		{
-			TreeIter iter;
-
-			if (!runtimeCombo.GetActiveIter (out iter))
-				return null;
-
-			return (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
-		}
-
-		Gtk.TreeIter lastRuntimeSelection = Gtk.TreeIter.Zero;
-
-		void HandleRuntimeChanged (object sender, EventArgs e)
-		{
-			if (ignoreRuntimeChangedCount == 0) {
-				Gtk.TreeIter it;
-				if (runtimeCombo.GetActiveIter (out it)) {
-					var cm = (ActionCommand) runtimeStore.GetValue (it, RuntimeCommand);
-					if (cm != null) {
-						runtimeCombo.SetActiveIter (lastRuntimeSelection);
-						IdeApp.CommandService.DispatchCommand (cm.Id, CommandSource.ContextMenu);
-						return;
-					}
-					lastRuntimeSelection = it;
-				}
-				NotifyConfigurationChange ();
-			}
-		}
-
-		void HandleConfigurationChanged (object sender, EventArgs e)
-		{
-			if (ignoreConfigurationChangedCount == 0)
-				NotifyConfigurationChange ();
-		}
-
-		void UpdateBuildConfiguration ()
-		{
-			var currentConfig = GetActiveConfiguration ();
-			if (currentConfig == null)
-				return;
-
-			ExecutionTarget newTarget;
-			string fullConfig;
-
-			configurationMerger.ResolveConfiguration (currentConfig, GetActiveTarget (), out fullConfig, out newTarget);
-			settingGlobalConfig = true;
-			try {
-				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
-				IdeApp.Workspace.ActiveConfigurationId = fullConfig;
-			} finally {
-				settingGlobalConfig = false;
-			}
-		}
-
-		void NotifyConfigurationChange ()
-		{
-			if (GetActiveConfiguration () == null)
-				return;
-
-			UpdateBuildConfiguration ();
-
-			FillRuntimes ();
-			SelectActiveRuntime ();
-		}
-
-		void SelectActiveConfiguration ()
-		{
-			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
-
-			ignoreConfigurationChangedCount++;
-			try {
-				TreeIter iter;
-
-				if (configurationStore.GetIterFirst (out iter)) {
-					var defaultConfig = (string) configurationStore.GetValue (iter, 1);
-					bool selected = false;
-					int i = 0;
-
-					do {
-						string config = (string) configurationStore.GetValue (iter, 1);
-						if (config == name) {
-							IdeApp.Workspace.ActiveConfigurationId = config;
-							configurationCombo.Active = i;
-							selected = true;
-							break;
-						}
-						i++;
-					} while (configurationStore.IterNext (ref iter));
-
-					if (!selected) {
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
-						configurationCombo.Active = 0;
-					}
-				}
-			} finally {
-				ignoreConfigurationChangedCount--;
-			}
-
-			SelectActiveRuntime ();
-		}
-
-		bool SelectActiveRuntime (TreeIter iter, ref bool selected, ref ExecutionTarget defaultTarget, ref TreeIter defaultIter)
-		{
-			do {
-				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
-
-				if (target == null || !target.Enabled)
-					continue;
-
-				if (target is ExecutionTargetGroup) {
-					TreeIter child;
-
-					if (runtimeStore.IterHasChild (iter) && runtimeStore.IterChildren (out child, iter)) {
-						if (SelectActiveRuntime (child, ref selected, ref defaultTarget, ref defaultIter))
-							return true;
-					}
-
-					continue;
-				}
-
-				if (defaultTarget == null) {
-					defaultTarget = target;
-					defaultIter = iter;
-				}
-
-				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
-					IdeApp.Workspace.ActiveExecutionTarget = target;
-					runtimeCombo.SetActiveIter (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
-					return true;
-				}
-
-				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
-					runtimeCombo.SetActiveIter (iter);
-					UpdateBuildConfiguration ();
-					selected = true;
-				}
-			} while (runtimeStore.IterNext (ref iter));
-
-			return false;
-		}
-
-		void SelectActiveRuntime ()
-		{
-			ignoreRuntimeChangedCount++;
-
-			try {
-				TreeIter iter;
-
-				if (runtimeStore.GetIterFirst (out iter)) {
-					ExecutionTarget defaultTarget = null;
-					TreeIter defaultIter = TreeIter.Zero;
-					bool selected = false;
-
-					if (!SelectActiveRuntime (iter, ref selected, ref defaultTarget, ref defaultIter) && !selected) {
-						if (defaultTarget != null) {
-							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
-							runtimeCombo.SetActiveIter (defaultIter);
-						}
-						UpdateBuildConfiguration ();
-					}
-				}
-			} finally {
-				ignoreRuntimeChangedCount--;
-			}
-		}
-
-		void UpdateCombos ()
-		{
-			if (settingGlobalConfig)
-				return;
-
-			configurationMerger.Load (currentSolution);
-
-			ignoreConfigurationChangedCount++;
-			try {
-				configurationStore.Clear ();
-				if (!IdeApp.Workspace.IsOpen) {
-					runtimeStore.Clear ();
-					return;
-				}
-				var values = new HashSet<string> ();
-				foreach (var conf in configurationMerger.SolutionConfigurations) {
-					if (!values.Add (conf))
-						continue;
-					values.Add (conf);
-					configurationStore.AppendValues (conf.Replace ("|", " | "), conf);
-				}
-			} finally {
-				ignoreConfigurationChangedCount--;
-			}
-
-			FillRuntimes ();
-			SelectActiveConfiguration ();
-		}
-
-		void FillRuntimes ()
-		{
-			ignoreRuntimeChangedCount++;
-			try {
-				runtimeStore.Clear ();
-				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
-					return;
-
-				// Check that the current startup project is enabled for the current configuration
-				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
-				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
-					return;
-
-				ExecutionTarget previous = null;
-				int runtimes = 0;
-
-				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
-					if (target is ExecutionTargetGroup) {
-						var devices = (ExecutionTargetGroup) target;
-
-						if (previous != null)
-							runtimeStore.AppendValues (null, false);
-
-						runtimeStore.AppendValues (target, false);
-						foreach (var device in devices) {
-							if (device is ExecutionTargetGroup) {
-								var versions = (ExecutionTargetGroup) device;
-
-								if (versions.Count > 1) {
-									var iter = runtimeStore.AppendValues (device, true);
-
-									foreach (var version in versions) {
-										runtimeStore.AppendValues (iter, version, false);
-										runtimes++;
-									}
-								} else {
-									runtimeStore.AppendValues (versions[0], true);
-									runtimes++;
-								}
-							} else {
-								runtimeStore.AppendValues (device, true);
-								runtimes++;
-							}
-						}
-					} else {
-						if (previous is ExecutionTargetGroup)
-							runtimeStore.AppendValues (null, false);
-
-						runtimeStore.AppendValues (target, false);
-						runtimes++;
-					}
-
-					previous = target;
-				}
-
-				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
-				if (cmds.Count > 0) {
-					bool needsSeparator = runtimes > 0;
-					foreach (CommandEntry ce in cmds) {
-						if (ce.CommandId == Command.Separator) {
-							needsSeparator = true;
-							continue;
-						}
-						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
-						if (cmd != null) {
-							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
-							if (ci.Visible) {
-								if (needsSeparator) {
-									runtimeStore.AppendValues (null, false);
-									needsSeparator = false;
-								}
-								runtimeStore.AppendValues (null, false, cmd);
-								runtimes++;
-							}
-						}
-					}
-				}
-
-				runtimeCombo.Sensitive = runtimes > 1;
-			} finally {
-				ignoreRuntimeChangedCount--;
-			}
-		}
-
-		IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
-		{
-			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
-				return new ExecutionTarget [0];
-			var conf = sol.Configurations[configuration];
-			if (conf == null)
-				return new ExecutionTarget [0];
-
-			var project = sol.StartupItem;
-			var confSelector = conf.Selector;
-
-			return project.GetExecutionTargets (confSelector);
 		}
 
 		public void AddWidget (Gtk.Widget widget)
@@ -817,6 +401,86 @@ namespace MonoDevelop.Components.MainToolbar
 			set { configurationCombosBox.Sensitive = value; }
 		}
 
+		public IConfigurationModel ActiveConfiguration {
+			get {
+				TreeIter iter;
+				if (!configurationCombo.GetActiveIter (out iter))
+					return null;
+
+				return (IConfigurationModel) configurationStore.GetValue (iter, 1);
+			}
+			set {
+				TreeIter iter;
+				bool found = false;
+				if (configurationStore.GetIterFirst (out iter)) {
+					do {
+						if (value == configurationStore.GetValue (iter, 1)) {
+							found = true;
+							break;
+						}
+					} while (configurationStore.IterNext (ref iter));
+				}
+				if (found)
+					configurationCombo.SetActiveIter (iter);
+				else
+					configurationCombo.Active = 0;
+			}
+		}
+
+		public IRuntimeModel ActiveRuntime {
+			get {
+				TreeIter iter;
+				if (!runtimeCombo.GetActiveIter (out iter))
+					return null;
+
+				return (IRuntimeModel)runtimeStore.GetValue (iter, 0);
+			}
+			set {
+				TreeIter iter;
+				bool found = false;
+				if (runtimeStore.GetIterFirst (out iter)) {
+					do {
+						if (value == runtimeStore.GetValue (iter, 0)) {
+							found = true;
+							break;
+						}
+					} while (runtimeStore.IterNext (ref iter));
+				}
+				if (found)
+					runtimeCombo.SetActiveIter (iter);
+				else
+					runtimeCombo.Active = 0;
+			}
+		}
+
+		public bool PlatformSensitivity {
+			set { runtimeCombo.Sensitive = value; }
+		}
+
+		IEnumerable<IConfigurationModel> configurationModel;
+		public IEnumerable<IConfigurationModel> ConfigurationModel {
+			get { return configurationModel; }
+			set {
+				configurationModel = value;
+				configurationStore.Clear ();
+				foreach (var item in value) {
+					configurationStore.AppendValues (item.DisplayString, item);
+				}
+			}
+		}
+
+		IEnumerable<IRuntimeModel> runtimeModel;
+		public IEnumerable<IRuntimeModel> RuntimeModel {
+			get { return runtimeModel; }
+			set {
+				runtimeModel = value;
+				runtimeStore.Clear ();
+				foreach (var item in value) {
+					runtimeStore.AppendValues (item);
+				}
+			}
+		}
+
 		public bool SearchSensivitity {
 			set { matchEntry.Sensitive = value; }
 		}
@@ -880,6 +544,9 @@ namespace MonoDevelop.Components.MainToolbar
 		public bool ButtonBarSensitivity {
 			set { buttonBar.Sensitive = value; }
 		}
+
+		public event EventHandler ConfigurationChanged;
+		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
 		#endregion
 	}

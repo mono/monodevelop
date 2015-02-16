@@ -32,12 +32,16 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Core;
 using Gtk;
 using Mono.Addins;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Execution;
+using System.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class MainToolbarController : ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
 
 		internal IMainToolbarView ToolbarView {
 			get;
@@ -54,6 +58,13 @@ namespace MonoDevelop.Components.MainToolbar
 			set { searchForMembers.Value = value; }
 		}
 
+		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
+		int ignoreConfigurationChangedCount, ignoreRuntimeChangedCount;
+		Solution currentSolution;
+		bool settingGlobalConfig;
+		SolutionEntityItem currentStartupProject;
+		EventHandler executionTargetsChanged;
+
 		public MainToolbarController (IMainToolbarView toolbarView)
 		{
 			ToolbarView = toolbarView;
@@ -67,6 +78,9 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
 			ToolbarView.SearchEntryLostFocus += (o, e) => ToolbarView.SearchText = "";
 
+			toolbarView.ConfigurationChanged += HandleConfigurationChanged;
+			toolbarView.RuntimeChanged += HandleRuntimeChanged;
+
 			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
 				if (args.Event is Gdk.EventConfigure)
 					PositionPopup ();
@@ -77,6 +91,16 @@ namespace MonoDevelop.Components.MainToolbar
 			cmd.KeyBindingChanged += delegate {
 				UpdateSearchEntryLabel ();
 			};
+
+			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
+
+			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
+			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
+
+			IdeApp.Workspace.SolutionLoaded += (sender, e) => UpdateCombos ();
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => UpdateCombos ();
+
+			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
@@ -100,8 +124,340 @@ namespace MonoDevelop.Components.MainToolbar
 			// Rebuild the button bars.
 			RebuildToolbar ();
 
+			UpdateCombos ();
+
 			// Register this controller as a commandbar.
 			IdeApp.CommandService.RegisterCommandBar (this);
+		}
+
+		void UpdateCombos ()
+		{
+			if (settingGlobalConfig)
+				return;
+
+			configurationMerger.Load (currentSolution);
+
+			ignoreConfigurationChangedCount++;
+			try {
+				ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
+				if (!IdeApp.Workspace.IsOpen) {
+					ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
+					return;
+				}
+
+				ToolbarView.ConfigurationModel = configurationMerger
+					.SolutionConfigurations
+					.Distinct ()
+					.Select (conf => new ConfigurationModel (conf));
+			} finally {
+				ignoreConfigurationChangedCount--;
+			}
+
+			FillRuntimes ();
+			SelectActiveConfiguration ();
+		}
+
+		void FillRuntimes ()
+		{
+			ignoreRuntimeChangedCount++;
+			try {
+				ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
+				if (!IdeApp.Workspace.IsOpen || currentSolution == null || !currentSolution.SingleStartup || currentSolution.StartupItem == null)
+					return;
+
+				// Check that the current startup project is enabled for the current configuration
+				var solConf = currentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (solConf == null || !solConf.BuildEnabledForItem (currentSolution.StartupItem))
+					return;
+
+				ExecutionTarget previous = null;
+				int runtimes = 0;
+
+				var list = new List<RuntimeModel> ();
+				foreach (var target in configurationMerger.GetTargetsForConfiguration (IdeApp.Workspace.ActiveConfigurationId, true)) {
+					if (target is ExecutionTargetGroup) {
+						var devices = (ExecutionTargetGroup) target;
+
+						if (previous != null)
+							list.Add (new RuntimeModel (this, target: null));
+
+						list.Add (new RuntimeModel (this, target));
+						foreach (var device in devices) {
+							if (device is ExecutionTargetGroup) {
+								var versions = (ExecutionTargetGroup) device;
+
+								if (versions.Count > 1) {
+									var parent = new RuntimeModel (this, device) {
+										IsIndented = true,
+									};
+									list.Add (parent);
+
+									foreach (var version in versions) {
+										list.Add (new RuntimeModel (this, version, parent));
+										runtimes++;
+									}
+								} else {
+									list.Add (new RuntimeModel (this, versions[0]) {
+										IsIndented = true,
+									});
+									runtimes++;
+								}
+							} else {
+								list.Add (new RuntimeModel (this, device) {
+									IsIndented = true,
+								});
+								runtimes++;
+							}
+						}
+					} else {
+						if (previous is ExecutionTargetGroup) {
+							list.Add (new RuntimeModel (this, target: null));
+						}
+
+						list.Add (new RuntimeModel (this, target));
+						runtimes++;
+					}
+
+					previous = target;
+				}
+
+				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
+				if (cmds.Count > 0) {
+					bool needsSeparator = runtimes > 0;
+					foreach (CommandEntry ce in cmds) {
+						if (ce.CommandId == Command.Separator) {
+							needsSeparator = true;
+							continue;
+						}
+						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
+						if (cmd != null) {
+							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (lastCommandTarget));
+							if (ci.Visible) {
+								if (needsSeparator) {
+									list.Add (new RuntimeModel (this, target: null));
+									needsSeparator = false;
+								}
+								list.Add (new RuntimeModel (this, cmd));
+								runtimes++;
+							}
+						}
+					}
+				}
+
+				ToolbarView.PlatformSensitivity = runtimes > 1;
+				ToolbarView.RuntimeModel = list;
+			} finally {
+				ignoreRuntimeChangedCount--;
+			}
+		}
+
+		void HandleRuntimeChanged (object sender, HandledEventArgs e)
+		{
+			if (ignoreRuntimeChangedCount == 0) {
+				var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
+				if (runtime != null && runtime.Command != null) {
+					e.Handled = runtime.NotifyActivated ();
+					return;
+				}
+
+				NotifyConfigurationChange ();
+			}
+		}
+
+		void HandleConfigurationChanged (object sender, EventArgs e)
+		{
+			if (ignoreConfigurationChangedCount == 0)
+				NotifyConfigurationChange ();
+		}
+
+		void UpdateBuildConfiguration ()
+		{
+			var config = ToolbarView.ActiveConfiguration;
+			if (config == null)
+				return;
+
+			ExecutionTarget newTarget;
+			string fullConfig;
+
+			configurationMerger.ResolveConfiguration (config.OriginalId, ((RuntimeModel)ToolbarView.ActiveRuntime).ExecutionTarget, out fullConfig, out newTarget);
+			settingGlobalConfig = true;
+			try {
+				IdeApp.Workspace.ActiveExecutionTarget = newTarget;
+				IdeApp.Workspace.ActiveConfigurationId = fullConfig;
+			} finally {
+				settingGlobalConfig = false;
+			}
+		}
+
+		void NotifyConfigurationChange ()
+		{
+			if (ToolbarView.ActiveConfiguration == null)
+				return;
+
+			UpdateBuildConfiguration ();
+
+			FillRuntimes ();
+			SelectActiveRuntime ();
+		}
+
+		void SelectActiveConfiguration ()
+		{
+			string name = configurationMerger.GetUnresolvedConfiguration (IdeApp.Workspace.ActiveConfigurationId);
+
+			ignoreConfigurationChangedCount++;
+			try {
+				var confs = ToolbarView.ConfigurationModel.ToList ();
+				if (confs.Count > 0) {
+					string defaultConfig = confs[0].OriginalId;
+					bool selected = false;
+					int i = 0;
+
+					foreach (var item in confs) {
+						string config = item.OriginalId;
+						if (config == name) {
+							IdeApp.Workspace.ActiveConfigurationId = config;
+							ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.ElementAt (i);
+							selected = true;
+							break;
+						}
+					}
+
+					if (!selected) {
+						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
+						ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.First ();
+					}
+				}
+			} finally {
+				ignoreConfigurationChangedCount--;
+			}
+
+			SelectActiveRuntime ();
+		}
+
+		bool SelectActiveRuntime (ref bool selected, ref ExecutionTarget defaultTarget, ref int defaultIter)
+		{
+			var runtimes = ToolbarView.RuntimeModel.Cast<RuntimeModel> ().ToList ();
+			for (int iter = 0; iter < runtimes.Count; ++iter) {
+				var item = runtimes [iter];
+				if (!item.Enabled)
+					continue;
+
+				var target = item.ExecutionTarget;
+				if (target == null || !target.Enabled)
+					continue;
+
+				if (target is ExecutionTargetGroup)
+					if (item.HasChildren)
+						continue;
+
+				if (defaultTarget == null) {
+					defaultTarget = target;
+					defaultIter = iter;
+				}
+
+				if (target.Id == IdeApp.Workspace.PreferredActiveExecutionTarget) {
+					IdeApp.Workspace.ActiveExecutionTarget = target;
+					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
+					UpdateBuildConfiguration ();
+					selected = true;
+					return true;
+				}
+
+				if (target.Equals (IdeApp.Workspace.ActiveExecutionTarget)) {
+					ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (iter);
+					UpdateBuildConfiguration ();
+					selected = true;
+				}
+			}
+
+			return false;
+		}
+
+		void SelectActiveRuntime ()
+		{
+			ignoreRuntimeChangedCount++;
+
+			try {
+				if (ToolbarView.RuntimeModel.Any ()) {
+					ExecutionTarget defaultTarget = null;
+					bool selected = false;
+					int defaultIter = 0;
+
+					if (!SelectActiveRuntime (ref selected, ref defaultTarget, ref defaultIter) && !selected) {
+						if (defaultTarget != null) {
+							IdeApp.Workspace.ActiveExecutionTarget = defaultTarget;
+							ToolbarView.ActiveRuntime = ToolbarView.RuntimeModel.ElementAt (defaultIter);
+						}
+						UpdateBuildConfiguration ();
+					}
+				}
+
+			} finally {
+				ignoreRuntimeChangedCount--;
+			}
+		}
+
+		static IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
+		{
+			var sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol == null || !sol.SingleStartup || sol.StartupItem == null)
+				return new ExecutionTarget [0];
+			var conf = sol.Configurations[configuration];
+			if (conf == null)
+				return new ExecutionTarget [0];
+
+			var project = sol.StartupItem;
+			var confSelector = conf.Selector;
+
+			return project.GetExecutionTargets (confSelector);
+		}
+
+		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
+		{
+			if (currentSolution != null) {
+				currentSolution.StartupItemChanged -= HandleStartupItemChanged;
+				currentSolution.Saved -= HandleUpdateCombos;
+			}
+
+			currentSolution = e.Solution;
+
+			if (currentSolution != null) {
+				currentSolution.StartupItemChanged += HandleStartupItemChanged;
+				currentSolution.Saved += HandleUpdateCombos;
+			}
+
+			TrackStartupProject ();
+
+			UpdateCombos ();
+		}
+
+		void TrackStartupProject ()
+		{
+			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
+				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
+				currentStartupProject.Saved -= HandleUpdateCombos;
+			}
+
+			if (currentSolution != null) {
+				currentStartupProject = currentSolution.StartupItem;
+				if (currentStartupProject != null) {
+					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
+					currentStartupProject.Saved += HandleUpdateCombos;
+				}
+			}
+			else
+				currentStartupProject = null;
+		}
+
+		void HandleUpdateCombos (object sender, EventArgs e)
+		{
+			UpdateCombos ();
+		}
+
+		void HandleStartupItemChanged (object sender, EventArgs e)
+		{
+			TrackStartupProject ();
+			UpdateCombos ();
 		}
 
 		void OnExtensionChanged (object sender, ExtensionEventArgs args)
@@ -379,6 +735,141 @@ namespace MonoDevelop.Components.MainToolbar
 			public event EventHandler ImageChanged;
 			public event EventHandler VisibleChanged;
 			public event EventHandler TooltipChanged;
+		}
+
+		class RuntimeModel : IRuntimeModel
+		{
+			MainToolbarController Controller { get; set; }
+			public object Command { get; private set; }
+			public ExecutionTarget ExecutionTarget { get; private set; }
+
+			RuntimeModel (MainToolbarController controller)
+			{
+				Controller = controller;
+			}
+
+			public RuntimeModel (MainToolbarController controller, ActionCommand command) : this (controller)
+			{
+				Command = command.Id;
+			}
+
+			public RuntimeModel (MainToolbarController controller, ExecutionTarget target) : this (controller)
+			{
+				ExecutionTarget = target;
+				Enabled = !(ExecutionTarget is ExecutionTargetGroup);
+				Visible = true;
+			}
+
+			public RuntimeModel (MainToolbarController controller, ExecutionTarget target, RuntimeModel parent) : this (controller, target)
+			{
+				if (parent == null)
+					HasParent = false;
+				else {
+					HasParent = true;
+					parent.HasChildren = true;
+				}
+			}
+
+			public bool Notable {
+				get { return ExecutionTarget != null && ExecutionTarget.Notable; }
+			}
+
+			public bool HasChildren {
+				get;
+				private set;
+			}
+
+			bool HasParent {
+				get;
+				set;
+			}
+
+			public bool Visible {
+				get;
+				private set;
+			}
+
+			public bool Enabled {
+				get;
+				private set;
+			}
+
+			public bool IsSeparator {
+				get { return Command == null && ExecutionTarget == null; }
+			}
+
+			public bool IsIndented {
+				get;
+				set;
+			}
+
+			public string DisplayString {
+				get {
+					if (Command != null) {
+						var ci = IdeApp.CommandService.GetCommandInfo (Command, new CommandTargetRoute (Controller.lastCommandTarget));
+						Visible = ci.Visible;
+						Enabled = ci.Enabled;
+						return RemoveUnderline (ci.Text);
+					}
+
+					if (ExecutionTarget == null)
+						return "";
+
+					return !HasParent ? ExecutionTarget.FullName : ExecutionTarget.Name;
+				}
+			}
+
+			public string FullDisplayString {
+				get {
+					if (Command != null) {
+						var ci = IdeApp.CommandService.GetCommandInfo (Command, new CommandTargetRoute (Controller.lastCommandTarget));
+						Visible = ci.Visible;
+						Enabled = ci.Enabled;
+						return RemoveUnderline (ci.Text);
+					}
+
+					if (ExecutionTarget == null)
+						return "";
+
+					return ExecutionTarget.FullName;
+				}
+			}
+
+			public bool NotifyActivated ()
+			{
+				if (Command != null && IdeApp.CommandService.DispatchCommand (Command, CommandSource.ContextMenu))
+					return true;
+				return false;
+			}
+
+			static string RemoveUnderline (string s)
+			{
+				int i = s.IndexOf ('_');
+				if (i == -1)
+					return s;
+				var sb = new StringBuilder (s.Substring (0, i));
+				for (; i < s.Length; i++) {
+					if (s [i] == '_') {
+						i++;
+						if (i >= s.Length)
+							break;
+					}
+					sb.Append (s [i]);
+				}
+				return sb.ToString ();
+			}
+		}
+
+		class ConfigurationModel : IConfigurationModel
+		{
+			public ConfigurationModel (string originalId)
+			{
+				OriginalId = originalId;
+				DisplayString = originalId.Replace ("|", " | ");
+			}
+
+			public string OriginalId { get; private set; }
+			public string DisplayString { get; private set; }
 		}
 	}
 }

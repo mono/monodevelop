@@ -36,6 +36,11 @@ namespace MonoDevelop.Components.MainToolbar
 		Stop
 	}
 
+	public class HandledEventArgs : EventArgs
+	{
+		public bool Handled { get; set; }
+	}
+
 	public class SearchMenuItem
 	{
 		internal SearchMenuItem (string displayString, string category)
@@ -85,6 +90,11 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The run button icon type.</value>
 		OperationIcon RunButtonIcon { set; }
+
+		/// <summary>
+		/// Occurs when run button clicked.
+		/// </summary>
+		event EventHandler RunButtonClicked;
 		#endregion
 
 		#region Configuration/Platform Selector
@@ -95,9 +105,35 @@ namespace MonoDevelop.Components.MainToolbar
 		bool ConfigurationPlatformSensitivity { get; set; }
 
 		/// <summary>
-		/// Occurs when run button clicked.
+		/// Sets a value indicating whether the platform selector is interactible.
 		/// </summary>
-		event EventHandler RunButtonClicked;
+		/// <value><c>true</c> if the platform selector is interactible; otherwise, <c>false</c>.</value>
+		bool PlatformSensitivity { set; }
+
+		/// <summary>
+		/// Gets the active configuration.
+		/// </summary>
+		/// <value>The active configuration.</value>
+		IConfigurationModel ActiveConfiguration { get; set; }
+
+		/// <summary>
+		/// Gets the active runtime.
+		/// </summary>
+		/// <value>The active runtime.</value>
+		IRuntimeModel ActiveRuntime { get; set; }
+
+		IEnumerable<IConfigurationModel> ConfigurationModel { get; set; }
+		IEnumerable<IRuntimeModel> RuntimeModel { get; set; }
+
+		/// <summary>
+		/// Occurs when the configuration changed.
+		/// </summary>
+		event EventHandler ConfigurationChanged;
+
+		/// <summary>
+		/// Occurs when the runtime changed.
+		/// </summary>
+		event EventHandler<HandledEventArgs> RuntimeChanged;
 		#endregion
 
 		#region SearchEntry

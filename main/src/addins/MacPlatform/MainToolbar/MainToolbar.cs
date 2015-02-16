@@ -186,6 +186,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		public event EventHandler<HandledEventArgs> ConfigurationChanged;
+		public event EventHandler RuntimeChanged;
+
+		public bool PlatformSensitivity {
+			set {
+//				throw new NotImplementedException ();
+			}
+		}
+
+		public IConfigurationModel ActiveConfiguration {
+			get;
+			set;
+		}
+
+		public IRuntimeModel ActiveRuntime {
+			get;
+			set;
+		}
+
+		public IEnumerable<IConfigurationModel> ConfigurationModel {
+			get;
+			set;
+		}
+
+		public IEnumerable<IRuntimeModel> RuntimeModel {
+			get;
+			set;
+		}
+
 		public bool SearchSensivitity {
 			set { searchEntry.Enabled = value; }
 		}
