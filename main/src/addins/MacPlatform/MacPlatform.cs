@@ -734,7 +734,7 @@ namespace MonoDevelop.MacIntegration
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
-			w.IsOpaque = false;
+			w.IsOpaque = true;
 			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
 		}
 
