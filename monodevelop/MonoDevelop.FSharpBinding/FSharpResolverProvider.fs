@@ -10,11 +10,53 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Gui.Content
 open ICSharpCode.NRefactory
-open ICSharpCode.NRefactory.Semantics
-open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 open ExtCore.Control
+open System.Collections.Immutable
+
+///Barebones symbol
+type FsharpSymbol (symbolUse:FSharpSymbolUse, editor:TextEditor) =
+    interface Microsoft.CodeAnalysis.ISymbol with
+        member x.Kind = Microsoft.CodeAnalysis.SymbolKind.Local
+        member x.Language = "F#"
+        member x.Name = symbolUse.Symbol.DisplayName
+        member x.MetadataName = symbolUse.Symbol.FullName
+        member x.ContainingSymbol = null //TODO
+        member x.ContainingAssembly = null //TODO
+        member x.ContainingModule = null //TODO
+        member x.ContainingType = null ////TODO for entities or functions this will be available
+        member x.ContainingNamespace = null //TODO
+        member x.IsDefinition = symbolUse.IsFromDefinition
+        member x.IsStatic = false //TODO
+        member x.IsVirtual = false //TODO
+        member x.IsOverride = false //TODO 
+        member x.IsAbstract = false //TODO
+        member x.IsSealed = false //TODO
+        member x.IsExtern = false //TODO
+        member x.IsImplicitlyDeclared = false //TODO
+        member x.CanBeReferencedByName = true //TODO
+        member x.Locations =
+            let start = symbolUse.RangeAlternate.Start
+            let finish = symbolUse.RangeAlternate.End
+            let startOffset = editor.LocationToOffset (DocumentLocation (start.Line, start.Column))
+            let endOffset = editor.LocationToOffset (DocumentLocation (finish.Line, finish.Column))
+            ImmutableArray.ToImmutableArray
+                [Microsoft.CodeAnalysis.Location.Create (null, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset))]
+        member x.DeclaringSyntaxReferences = ImmutableArray.Empty //TODO
+        member x.GetAttributes () = ImmutableArray.Empty //TODO 
+        member x.DeclaredAccessibility = Microsoft.CodeAnalysis.Accessibility.NotApplicable //TOdo
+        member x.OriginalDefinition = null //TODO
+        member x.Accept (visitor:Microsoft.CodeAnalysis.SymbolVisitor) = () //TODO
+        member x.Accept<'a> (visitor: Microsoft.CodeAnalysis.SymbolVisitor<'a>) = Unchecked.defaultof<'a> 
+        member x.GetDocumentationCommentId () = "" //TODO
+        member x.GetDocumentationCommentXml (culture, expand, token) = "" //TODO
+        member x.ToDisplayString format = symbolUse.Symbol.DisplayName //TODO format?
+        member x.ToDisplayParts format = ImmutableArray.Empty //TODO
+        member x.ToMinimalDisplayString (semanticModel, position, format) = "" //TODO
+        member x.ToMinimalDisplayParts (semanticModel, position, format) = ImmutableArray.Empty //TODO
+        member x.HasUnsupportedMetadata = false //TODO
+        member x.Equals (other:Microsoft.CodeAnalysis.ISymbol) = x.Equals(other) 
 
 /// Resolves locations to NRefactory symbols and ResolveResult objects.
 type FSharpResolverProvider() =
@@ -55,13 +97,13 @@ type FSharpResolverProvider() =
 
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
                 let lastIdent = Symbols.lastIdent col lineStr
-                let resolveResult = ""//TODO NRefactory.createResolveResult(doc, fsSymbolUse.Symbol, lastIdent, domRegion)
-                return resolveResult, domRegion }
+
+                return fsSymbolUse, lastIdent, domRegion }
         match Async.RunSynchronously (results, ServiceSettings.blockingTimeout) with
-        | Some (res, dom) ->
+        | Some (symbolUse, lastIdent, dom) ->
             region <- dom
-            //res
-            null
+            let iSymbol = FsharpSymbol (symbolUse, doc.Editor)
+            iSymbol :> _
         | _ -> null
 
       with exn ->
