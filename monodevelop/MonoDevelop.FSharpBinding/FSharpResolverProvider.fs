@@ -38,7 +38,7 @@ type FSharpResolverProvider() =
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor)
-                let! fsSymbolUse = tyRes.GetSymbol(line, col, lineStr)
+                let! fsSymbolUse = tyRes.GetSymbolAtLocation(line, col, lineStr)
                 let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
                 let domRegion =
                     match findDeclarationResult with

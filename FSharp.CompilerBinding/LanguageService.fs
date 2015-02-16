@@ -109,7 +109,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             return Some (res.MethodName, res.Methods) 
       }
 
-    member x.GetSymbol(line, col, lineStr) =
+    member x.GetSymbolAtLocation(line, col, lineStr) =
       async {
         match infoOpt with 
         | None -> return None
@@ -120,13 +120,17 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             return! checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
       }
 
-    member x.GetSymbolAtLocation(line, col, lineStr, identIsland) =
-      async {
-        match infoOpt with 
-        | None -> return None
-        | Some (checkResults, _parseResults) -> 
-            return! checkResults.GetSymbolUseAtLocation (line, col, lineStr, identIsland)
-      }
+//TODO: uncomment when available in FCS
+//    member x.GetMethodsAsSymbols(line, col, lineStr) =
+//      async {
+//        match infoOpt with 
+//        | None -> return None
+//        | Some (checkResults, _parseResults) -> 
+//        match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+//        | None -> return None
+//        | Some(colu, identIsland) ->
+//            return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland)
+//      }
 
     member x.GetUsesOfSymbolInFile(symbol) =
       async {
@@ -408,11 +412,11 @@ type LanguageService(dirtyNotify) =
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, files, line:int, col, lineStr, args) =
    async { 
-    match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
+    match Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
 
         let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource)
-        let! symbolResults = checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+        let! symbolResults = checkResults.GetSymbolAtLocation(line, colu, lineStr)
         match symbolResults with
         | Some symbolUse -> 
             let lastIdent = Seq.last identIsland

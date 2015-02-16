@@ -44,7 +44,9 @@ type HighlightUsagesExtension() =
         if token.IsCancellationRequested then Seq.empty else
             try
                 match resolveResult with
-                | Some(fsSymbolName, references) -> 
+                | Some(fsSymbolName, references) ->
+                    //TODO: Can we use the DisplayName from the symbol rather than the last element in ident islands?
+                    // If we could then we could remove the Parsing.findLongIdents in  GetUsesOfSymbolAtLocationInFile.
                     references
                     |> Seq.map (fun symbolUse -> NRefactory.createMemberReference(x.Editor, x.DocumentContext, symbolUse, fsSymbolName))
                 | _ -> Seq.empty

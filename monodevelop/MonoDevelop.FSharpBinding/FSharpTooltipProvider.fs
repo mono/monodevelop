@@ -65,7 +65,7 @@ type FSharpTooltipProvider() =
                 async {
                     try
                         LoggingService.LogInfo "TooltipProvider: Getting tool tip"
-                        let! symbol = parseAndCheckResults.GetSymbol(line, col, lineStr)
+                        let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
                         //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
                         // to extract the signature, this is only limited in that it deals with only a single tooltip in a group/list
                         // This should be fine as there are issues with generic tooltip xmldocs anyway
