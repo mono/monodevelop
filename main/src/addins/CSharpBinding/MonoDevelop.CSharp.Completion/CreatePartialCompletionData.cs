@@ -27,63 +27,72 @@
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	class CreatePartialCompletionData : RoslynSymbolCompletionData
 	{
+		readonly ITypeSymbol currentType;
 		readonly int declarationBegin;
 
 		public bool GenerateBody { get; set; }
 
+		string displayText;
+		public override string DisplayText {
+			get {
+				if (displayText == null) {
+					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, CreateOverrideCompletionData.overrideNameFormat);
+				}
+				return displayText;
+			}
+		}
+
 		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (keyHandler, ext, member)
 		{
+			this.currentType = currentType;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
 		}
 
-		/*
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = ext.Editor;
-			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
 			bool isExplicit = false;
-			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-				foreach (var m in type.Members) {
-					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
-						isExplicit = true;
-						break;
-					}
-				}
-			}
-			var resolvedType = type.Resolve (ext.Project).GetDefinition ();
-			if (ext.Project != null)
-				generator.PolicyParent = ext.Project.Policies;
-			var result = generator.CreateMemberImplementation (resolvedType, type, member, isExplicit);
+			//			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+			//				foreach (var m in type.Members) {
+			//					if (m.Name == member.Name && !m.ReturnType.Equals (member.ReturnType)) {
+			//						isExplicit = true;
+			//						break;
+			//					}
+			//				}
+			//			}
+			//			var resolvedType = type.Resolve (ext.Project).GetDefinition ();
+			//			if (ext.Project != null)
+			//				generator.PolicyParent = ext.Project.Policies;
+
+			var result = CSharpCodeGenerator.CreatePartialMemberImplementation (currentType, currentType.Locations.First (), Symbol, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();
-			
+
 			var lastRegion = result.BodyRegions.LastOrDefault ();
 			var region = lastRegion == null? null
 				: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
-			
+
 			int targetCaretPosition;
 			int selectionEndPosition = -1;
 			if (region != null && region.IsValid) {
-				targetCaretPosition = declarationBegin + region.StartOffset;
-				if (region.Length > 0) {
-					if (GenerateBody) {
-						selectionEndPosition = declarationBegin + region.EndOffset;
-					} else {
-						//FIXME: if there are multiple regions, remove all of them
-						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset); 
-					}
-				}
+				targetCaretPosition = declarationBegin + region.EndOffset;
+
 			} else {
 				targetCaretPosition = declarationBegin + sb.Length;
 			}
-			
+
 			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
 			if (selectionEndPosition > 0) {
 				editor.CaretOffset = selectionEndPosition;
@@ -91,6 +100,9 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				editor.CaretOffset = targetCaretPosition;
 			}
-		}*/
+
+			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
+			editor.CaretLine--;
+		}
 	}
 }

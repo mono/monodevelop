@@ -176,13 +176,14 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
-//			SetIndentTo (part);
-			var options = new CodeGenerationOptions () {
+			//			SetIndentTo (part);
+			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
 			};
+
 			if (member is IMethodSymbol)
 				return GenerateCode ((IMethodSymbol)member, options);
 			if (member is IPropertySymbol)
@@ -191,6 +192,21 @@ namespace MonoDevelop.CSharp.Refactoring
 				return GenerateCode ((IFieldSymbol)member, options);
 			if (member is IEventSymbol)
 				return GenerateCode ((IEventSymbol)member, options);
+			throw new NotSupportedException ("member " +  member + " is not supported.");
+		}
+
+		public static CodeGeneratorMemberResult CreatePartialMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		{
+			//			SetIndentTo (part);
+			var options = new CodeGenerationOptions {
+				ExplicitDeclaration = explicitDeclaration,
+				ImplementingType = implementingType,
+				Part = part,
+				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
+			};
+
+			if (member is IMethodSymbol)
+				return GeneratePartialCode ((IMethodSymbol)member, options);
 			throw new NotSupportedException ("member " +  member + " is not supported.");
 		}
 //
@@ -405,8 +421,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			var result = new StringBuilder ();
 			AppendObsoleteAttribute (result, options, method);
 			AppendModifiers (result, options, method);
-//			if (method.IsPartial)
-//				result.Append ("partial ");
+			//			if (method.IsPartial)
+			//				result.Append ("partial ");
 			AppendReturnType (result, options, method.ReturnType);
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
@@ -428,56 +444,56 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append ("(");
 			AppendParameterList (result, options, method.Parameters);
 			result.Append (")");
-			
+
 			var typeParameters = method.TypeParameters;
-			
-//			// This should also check the types are in the correct mscorlib
-//			Func<IType, bool> validBaseType = t => t.FullName != "System.Object" && t.FullName != "System.ValueType";
-//
-//			bool isFromInterface = method.DeclaringType != null && method.DeclaringTypeDefinition.Kind == TypeKind.Interface;
-//
-//			if (!options.ExplicitDeclaration && isFromInterface && typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any (validBaseType))) {
-//				result.Append (" where ");
-//				int typeParameterCount = 0;
-//				foreach (var p in typeParameters) {
-//					if (typeParameterCount != 0)
-//						result.Append (", ");
-//					
-//					typeParameterCount++;
-//					result.Append (CSharpAmbience.FilterName (p.Name));
-//					result.Append (" : ");
-//					int constraintCount = 0;
-//					
-//					if (p.HasDefaultConstructorConstraint) {
-//						result.Append ("new ()");
-//						constraintCount++;
-//					}
-//					
-//					if (p.HasValueTypeConstraint) {
-//						if (constraintCount != 0)
-//							result.Append (", ");
-//						result.Append ("struct");
-//						constraintCount++;
-//					}
-//					
-//					if (p.HasReferenceTypeConstraint) {
-//						if (constraintCount != 0)
-//							result.Append (", ");
-//						result.Append ("class");
-//						constraintCount++;
-//					}
-//					//					bool hadInterfaces = false;
-//					foreach (var c in p.DirectBaseTypes.Where (validBaseType)) {
-//						if (constraintCount != 0)
-//							result.Append (", ");
-//						constraintCount++;
-//						AppendReturnType (result, options, c);
-//						//						if (c.Kind == TypeKind.Interface)
-//						//							hadInterfaces = true;
-//					}
-//				}
-//			}
-			
+
+			//			// This should also check the types are in the correct mscorlib
+			//			Func<IType, bool> validBaseType = t => t.FullName != "System.Object" && t.FullName != "System.ValueType";
+			//
+			//			bool isFromInterface = method.DeclaringType != null && method.DeclaringTypeDefinition.Kind == TypeKind.Interface;
+			//
+			//			if (!options.ExplicitDeclaration && isFromInterface && typeParameters.Any (p => p.HasDefaultConstructorConstraint || p.HasReferenceTypeConstraint || p.HasValueTypeConstraint || p.DirectBaseTypes.Any (validBaseType))) {
+			//				result.Append (" where ");
+			//				int typeParameterCount = 0;
+			//				foreach (var p in typeParameters) {
+			//					if (typeParameterCount != 0)
+			//						result.Append (", ");
+			//					
+			//					typeParameterCount++;
+			//					result.Append (CSharpAmbience.FilterName (p.Name));
+			//					result.Append (" : ");
+			//					int constraintCount = 0;
+			//					
+			//					if (p.HasDefaultConstructorConstraint) {
+			//						result.Append ("new ()");
+			//						constraintCount++;
+			//					}
+			//					
+			//					if (p.HasValueTypeConstraint) {
+			//						if (constraintCount != 0)
+			//							result.Append (", ");
+			//						result.Append ("struct");
+			//						constraintCount++;
+			//					}
+			//					
+			//					if (p.HasReferenceTypeConstraint) {
+			//						if (constraintCount != 0)
+			//							result.Append (", ");
+			//						result.Append ("class");
+			//						constraintCount++;
+			//					}
+			//					//					bool hadInterfaces = false;
+			//					foreach (var c in p.DirectBaseTypes.Where (validBaseType)) {
+			//						if (constraintCount != 0)
+			//							result.Append (", ");
+			//						constraintCount++;
+			//						AppendReturnType (result, options, c);
+			//						//						if (c.Kind == TypeKind.Interface)
+			//						//							hadInterfaces = true;
+			//					}
+			//				}
+			//			}
+
 			if (options.ImplementingType.TypeKind == TypeKind.Interface) {
 				result.Append (";");
 			} else {
@@ -528,44 +544,44 @@ namespace MonoDevelop.CSharp.Refactoring
 					// Analyze if the body consists just of a single throw instruction
 					// See: Bug 1373 - overriding [Model] class methods shouldn't insert base.Methods
 					// TODO: Extend this to user defined code.
-//					try {
-//						if (method.Region.FileName == null) {
-//							var asm = AssemblyDefinition.ReadAssembly (method.ParentAssembly.UnresolvedAssembly.Location);
-//							foreach (var type in asm.MainModule.Types) {
-//								if (type.FullName != method.DeclaringType.FullName)
-//									continue;
-//								foreach (var m  in type.Resolve ().Methods) {
-//									if (m.HasBody && m.Name == method.Name) {
-//										var context = new DecompilerContext (asm.MainModule);
-//										
-//										context.CurrentType = type;
-//				
-//										context.Settings = new DecompilerSettings () {
-//											AnonymousMethods = true,
-//											AutomaticEvents  = true,
-//											AutomaticProperties = true,
-//											ForEachStatement = true,
-//											LockStatement = true
-//										};
-//				
-//										var astBuilder = new AstBuilder (context);
-//										astBuilder.AddMethod (m);
-//										
-//										astBuilder.RunTransformations (o => false);
-//
-//										var visitor = new ThrowsExceptionVisitor ();
-//										astBuilder.SyntaxTree.AcceptVisitor (visitor);
-//										skipBody = visitor.Throws;
-//										if (skipBody)
-//											break;
-//									}
-//								}
-//								if (skipBody)
-//									break;
-//							}
-//						}
-//					} catch (Exception) {
-//					}
+					//					try {
+					//						if (method.Region.FileName == null) {
+					//							var asm = AssemblyDefinition.ReadAssembly (method.ParentAssembly.UnresolvedAssembly.Location);
+					//							foreach (var type in asm.MainModule.Types) {
+					//								if (type.FullName != method.DeclaringType.FullName)
+					//									continue;
+					//								foreach (var m  in type.Resolve ().Methods) {
+					//									if (m.HasBody && m.Name == method.Name) {
+					//										var context = new DecompilerContext (asm.MainModule);
+					//										
+					//										context.CurrentType = type;
+					//				
+					//										context.Settings = new DecompilerSettings () {
+					//											AnonymousMethods = true,
+					//											AutomaticEvents  = true,
+					//											AutomaticProperties = true,
+					//											ForEachStatement = true,
+					//											LockStatement = true
+					//										};
+					//				
+					//										var astBuilder = new AstBuilder (context);
+					//										astBuilder.AddMethod (m);
+					//										
+					//										astBuilder.RunTransformations (o => false);
+					//
+					//										var visitor = new ThrowsExceptionVisitor ();
+					//										astBuilder.SyntaxTree.AcceptVisitor (visitor);
+					//										skipBody = visitor.Throws;
+					//										if (skipBody)
+					//											break;
+					//									}
+					//								}
+					//								if (skipBody)
+					//									break;
+					//							}
+					//						}
+					//					} catch (Exception) {
+					//					}
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
 					if (!skipBody) {
@@ -584,6 +600,44 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append ("}");
 			}
+			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
+		}
+
+
+		static CodeGeneratorMemberResult GeneratePartialCode (IMethodSymbol method, CodeGenerationOptions options)
+		{
+			int bodyStartOffset = -1, bodyEndOffset = -1;
+			var result = new StringBuilder ();
+			AppendObsoleteAttribute (result, options, method);
+			result.Append ("partial ");
+			AppendReturnType (result, options, method.ReturnType);
+			result.Append (" ");
+			if (options.ExplicitDeclaration) {
+				AppendReturnType (result, options, method.ContainingType);
+				result.Append (".");
+			}
+
+			result.Append (CSharpAmbience.FilterName (method.Name));
+			if (method.TypeParameters.Length > 0) {
+				result.Append ("<");
+				for (int i = 0; i < method.TypeParameters.Length; i++) {
+					if (i > 0)
+						result.Append (", ");
+					var p = method.TypeParameters [i];
+					result.Append (CSharpAmbience.FilterName (p.Name));
+				}
+				result.Append (">");
+			}
+			result.Append ("(");
+			AppendParameterList (result, options, method.Parameters);
+			result.Append (")");
+
+			var typeParameters = method.TypeParameters;
+			result.AppendLine ("{");
+			bodyStartOffset = result.Length;
+			AppendLine (result);
+			bodyEndOffset = result.Length;
+			result.AppendLine ("}");
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
 
