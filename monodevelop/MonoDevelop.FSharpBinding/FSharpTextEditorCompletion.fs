@@ -64,15 +64,26 @@ type Category(category) =
     override x.CompareTo other =
         if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
 
-type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem ) =
+//TODO: finish porting symbol version once it hit FCS
+type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FSharpSymbolUse*) ) =
     inherit ParameterHintingData (null)
 
     override x.ParameterCount =
+//        match symbol.Symbol with
+//        | :? FSharpMemberOrFunctionOrValue as fsm ->
+//            let cpg = fsm.CurriedParameterGroups
+//            cpg.Count
+//        | _ -> 
         meth.Parameters.Length
 
     override x.IsParameterListAllowed = false
 
-    override x.GetParameterName i = 
+    override x.GetParameterName i =
+//        match symbol.Symbol with
+//        | :? FSharpMemberOrFunctionOrValue as fsm ->
+//            let p = fsm.CurriedParameterGroups.[i]
+//            ""
+//        | _ -> ""
         meth.Parameters.[i].ParameterName
 
     /// Returns the markup to use to represent the specified method overload
@@ -303,17 +314,16 @@ type FSharpTextEditorCompletion() =
         
         // Try to get typed result - within the specified timeout
         let! methsOpt =
-            async {let! tyRes =
-                       MDLanguageService.Instance.GetTypedParseResultAsync
-                           (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
+            async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
                    let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, x.Editor)
                    let! methsOpt = tyRes.GetMethods(line, col, lineStr)
+                   //TODO: Use the symbol version when available
+                   //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
                    return methsOpt }
         
         match methsOpt with
         | Some(name, meths) when meths.Length > 0 -> 
             LoggingService.LogInfo ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
-            //TODO Convert meths to ParameterHintingData
             let hintingData =
                 meths
                 |> Array.map (fun meth -> FSharpParameterHintingData (name, meth) :> ParameterHintingData)
@@ -328,6 +338,36 @@ type FSharpTextEditorCompletion() =
     | ex ->
         LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
         return ParameterHintingResult.Empty})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   override x.KeyPress (descriptor:KeyDescriptor) =
       // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
