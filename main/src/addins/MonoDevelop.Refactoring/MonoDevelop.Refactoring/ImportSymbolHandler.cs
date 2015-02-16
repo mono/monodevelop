@@ -158,11 +158,11 @@ namespace MonoDevelop.Refactoring
 		#endregion
 		
 		#region ICompletionData implementation
-//		public override IconId Icon {
-//			get {
-//				return type.GetStockIcon ();
-//			}
-//		}
+		//		public override IconId Icon {
+		//			get {
+		//				return type.GetStockIcon ();
+		//			}
+		//		}
 //		string displayText = null;
 //		public override string DisplayText {
 //			get {
@@ -171,7 +171,7 @@ namespace MonoDevelop.Refactoring
 //				return displayText;
 //			}
 //		}
-		
+
 		static string GetDefaultDisplaySelection (string description, bool isSelected)
 		{
 			if (!isSelected)

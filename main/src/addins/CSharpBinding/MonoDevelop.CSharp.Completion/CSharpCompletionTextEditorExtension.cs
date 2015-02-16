@@ -49,6 +49,10 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Xml;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Refactoring;
+using System.Diagnostics;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -286,7 +290,51 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CSharpCompletionDataList List { get; set; }
 		}
-		
+
+
+		void AddImportCompletionData (CSharpCompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (result.Count == 0)
+				return;
+			var root = semanticModel.SyntaxTree.GetRoot ();
+			var node = root.FindNode (TextSpan.FromBounds (position, position));
+			var syntaxTree = root.SyntaxTree;
+
+			if (syntaxTree.IsInNonUserCode(position, cancellationToken) || 
+				syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken) || 
+				syntaxTree.GetContainingTypeOrEnumDeclaration(position, cancellationToken) is EnumDeclarationSyntax ||
+				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
+				return;
+
+			var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
+
+			if (syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
+			    syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
+			    syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
+			    syntaxTree.IsTypeContext (position, cancellationToken) ||
+			    syntaxTree.IsTypeDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+			    syntaxTree.IsNamespaceContext (position, cancellationToken) ||
+			    syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
+			    syntaxTree.IsLabelContext (position, cancellationToken)) {
+				var usedNamespaces = semanticModel.GetUsingNamespacesInScope (node);
+			
+				foreach (var type in semanticModel.Compilation.GlobalNamespace.GetAllTypes (cancellationToken)) {
+					if (usedNamespaces.Contains (type.ContainingNamespace))
+						continue;
+					if (type.IsImplicitClass || type.IsScriptClass)
+						continue;
+					if (type.DeclaredAccessibility != Accessibility.Public) {
+						if (type.DeclaredAccessibility != Accessibility.Internal)
+							continue;
+						if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
+							continue;
+					}
+					result.Add (new ImportSymbolCompletionData (this, type, false));
+				}
+			}
+		}
+
+
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
@@ -305,7 +353,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 				
-				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).Result;
+				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
 				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
 
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
@@ -314,9 +362,15 @@ namespace MonoDevelop.CSharp.Completion
 				var completionResult = engine.GetCompletionDataAsync (ctx, triggerInfo, token).Result;
 				if (completionResult == CompletionResult.Empty)
 					return null;
+
 				foreach (var symbol in completionResult) {
 					list.Add ((CompletionData)symbol); 
 				}
+
+				if (AddImportedItemsToCompletionList.Value) {
+					AddImportCompletionData (list, semanticModel, offset, token);
+				}
+
 				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
 				list.AutoSelect = completionResult.AutoSelect;
@@ -350,7 +404,7 @@ namespace MonoDevelop.CSharp.Completion
 //				ctx
 //			);
 //			completionDataFactory.Engine = engine;
-//			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
+			//			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
 //			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
 //			engine.CompletionEngineCache = cache;
 //			if (FilterCompletionListByEditorBrowsable) {
@@ -1031,156 +1085,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 
-			class ImportSymbolCompletionData : CompletionData, IEntityCompletionData
-			{
-				readonly IType type;
-				readonly bool useFullName;
-				readonly CSharpCompletionTextEditorExtension ext;
-				public IType Type {
-					get { return this.type; }
-				}
-
-				public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, bool useFullName, IType type, bool addConstructors)
-				{
-					this.ext = ext;
-					this.useFullName = useFullName;
-					this.type = type;
-					this.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.IsImportCompletion;
-				}
-
-				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
-				{
-					return MemberCompletionData.CreateTooltipInformation (ext, null, type.GetDefinition (), smartWrap);
-				}
-
-				bool initialized = false;
-				bool generateUsing, insertNamespace;
-
-				void Initialize ()
-				{
-					if (initialized)
-						return;
-					initialized = true;
-					if (string.IsNullOrEmpty (type.Namespace)) 
-						return;
-					generateUsing = !useFullName;
-					insertNamespace = useFullName;
-				}
-
-				#region IActionCompletionData implementation
-				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
-				{
-					Initialize ();
-					var doc = ext.DocumentContext;
-					using (var undo = ext.Editor.OpenUndoGroup ()) {
-						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
-						if (text != GetCurrentWord (window)) {
-							if (window.WasShiftPressed && generateUsing) 
-								text = type.Namespace + "." + text;
-							window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window), text);
-						}
-					
-						if (!window.WasShiftPressed && generateUsing) {
-							var generator = CodeGenerator.CreateGenerator (ext.Editor, doc);
-							if (generator != null) {
-								generator.AddGlobalNamespaceImport (ext.Editor, doc, type.Namespace);
-							}
-						}
-					}
-					ka |= KeyActions.Ignore;
-				}
-				#endregion
-
-				#region ICompletionData implementation
-				public override IconId Icon {
-					get {
-						return type.GetStockIcon ();
-					}
-				}
-				
-				public override string DisplayText {
-					get {
-						return type.Name;
-					}
-				}
-
-				static string GetDefaultDisplaySelection (string description, bool isSelected)
-				{
-					if (!isSelected)
-						return "<span foreground=\"darkgray\">" + description + "</span>";
-					return description;
-				}
-
-				string displayDescription = null;
-				public override string GetDisplayDescription (bool isSelected)
-				{
-					if (displayDescription == null) {
-						Initialize ();
-						if (generateUsing || insertNamespace) {
-							displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.Namespace);
-						} else {
-							displayDescription = "";
-						}
-					}
-					return GetDefaultDisplaySelection (displayDescription, isSelected);
-				}
-
-				public override string Description {
-					get {
-						return type.Namespace;
-					}
-				}
-
-				public override string CompletionText {
-					get {
-						return type.Name;
-					}
-				}
-				#endregion
-
-
-				List<CompletionData> overloads;
-
-				public override IEnumerable<ICompletionData> OverloadedData {
-					get {
-						yield return this;
-						if (overloads == null)
-							yield break;
-						foreach (var overload in overloads)
-							yield return overload;
-					}
-				}
-
-				public override bool HasOverloads {
-					get { return overloads != null && overloads.Count > 0; }
-				}
-
-				public override void AddOverload (ICSharpCode.NRefactory.Completion.ICompletionData data)
-				{
-					AddOverload ((ImportSymbolCompletionData)data);
-				}
-
-				void AddOverload (ImportSymbolCompletionData overload)
-				{
-					if (overloads == null)
-						overloads = new List<CompletionData> ();
-					overloads.Add (overload);
-				}
-
-				IEntity IEntityCompletionData.Entity {
-					get {
-						return type.GetDefinition ();
-					}
-				}
-			}
-
-
-			ICompletionData ICompletionDataFactory.CreateImportCompletionData(IType type, bool useFullName, bool addConstructors)
-			{
-				return new ImportSymbolCompletionData (ext, useFullName, type, addConstructors);
-			}
-
-		}
+			
 		#endregion
 */
 		

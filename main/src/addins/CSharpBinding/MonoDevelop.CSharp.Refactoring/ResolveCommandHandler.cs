@@ -677,7 +677,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				return;
 
 			int offset = SearchUsingInsertionPoint (unit.SyntaxTree.GetRoot ());
-			
+
 			var text = new StringBuilder ();
 			text.Append ("using ");
 			text.Append (nsName);
