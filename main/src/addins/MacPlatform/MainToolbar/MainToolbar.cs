@@ -41,6 +41,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string ButtonBarId = "ButtonBarToolbarItem";
 		const string SelectorId = "SelectorToolbarItem";
 		const string SearchBarId = "SearchBarToolbarItem";
+		const string StatusBarId = "StatusBarToolbarItem";
 
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
@@ -51,6 +52,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		int buttonBarStartIdx, buttonBarCount;
+
+		int statusBarIdx;
+		StatusBar statusBar {
+			get { return (StatusBar)widget.Items[statusBarIdx + buttonBarCount].View; }
+		}
 
 		int selectorIdx;
 		SelectorView.PathSelectorView selectorView {
@@ -101,6 +107,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateButtonBarToolbarItem ()
 		{
 			var bar = new ButtonBar (barItems);
+			// By default, Cocoa doesn't want to duplicate items in the toolbar.
+			// Use different Ids to prevent this and not have to subclass.
 			var item = new NSToolbarItem (ButtonBarId + buttonBarCount) {
 				View = bar,
 				MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
@@ -132,6 +140,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return item;
 		}
 
+		NSToolbarItem CreateStatusBarToolbarItem ()
+		{
+			return new NSToolbarItem (StatusBarId) {
+				View = new StatusBar (),
+				MinSize = new CGSize (350, 25),
+			};
+		}
+
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
@@ -149,6 +165,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return CreateSearchBarToolbarItem ();
 				case SelectorId:
 					return CreateSelectorToolbarItem ();
+				case StatusBarId:
+					return CreateStatusBarToolbarItem ();
 				}
 				throw new NotImplementedException ();
 			};
@@ -160,6 +178,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
 			widget.InsertItem (SelectorId, selectorIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, buttonBarStartIdx = ++total);
+			widget.InsertItem (StatusBarId, statusBarIdx = ++total);
+			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
 		}
 
@@ -310,10 +330,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public MonoDevelop.Ide.StatusBar StatusBar {
-			get {
-				return null;
-//				throw new NotImplementedException ();
-			}
+			get { return statusBar; }
 		}
 		#endregion
 	}
