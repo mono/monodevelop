@@ -121,10 +121,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
 		public event EventHandler SearchEntryLostFocus;
 
-		#pragma warning disable 0169
+		#pragma warning disable 0067
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler SearchEntryResized;
-		#pragma warning restore 0169
+		#pragma warning restore 0067
 
 		public void FocusSearchBar ()
 		{
