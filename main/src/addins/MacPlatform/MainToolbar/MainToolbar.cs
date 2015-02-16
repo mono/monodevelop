@@ -37,6 +37,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		const string MainToolbarId = "XSMainToolbar";
 		const string RunButtonId = "RunToolbarItem";
+		const string ButtonBarId = "ButtonBarToolbarItem";
 		const string SearchBarId = "SearchBarToolbarItem";
 
 		internal NSToolbar widget;
@@ -46,6 +47,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		RunButton runButton {
 			get { return (RunButton)widget.Items[runButtonIdx].View; }
 		}
+
+		int buttonBarStartIdx, buttonBarCount;
 
 		int searchEntryIdx;
 		SearchBar searchEntry {
@@ -64,6 +67,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				View = button,
 				MinSize = new CGSize (button.FittingSize.Width + 12, button.FittingSize.Height),
 			};
+			return item;
+		}
+
+		NSToolbarItem CreateButtonBarToolbarItem ()
+		{
+			var bar = new ButtonBar (barItems);
+			var item = new NSToolbarItem (ButtonBarId + buttonBarCount) {
+				View = bar,
+				MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
+			};
+			bar.ResizeRequested += (o, e) => item.MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
 			return item;
 		}
 
@@ -101,6 +115,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				switch (id) {
 				case RunButtonId:
 					return CreateRunToolbarItem ();
+				case ButtonBarId:
+					return CreateButtonBarToolbarItem ();
 				case SearchBarId:
 					return CreateSearchBarToolbarItem ();
 				}
@@ -112,7 +128,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			int total = -1;
 			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
-			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
+			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, buttonBarStartIdx = ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
 		}
 
@@ -133,9 +149,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			entry.Window.MakeFirstResponder (entry);
 		}
 
+		List<IButtonBarButton> barItems = new List<IButtonBarButton> ();
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
 		{
-//			throw new NotImplementedException ();
+			while (buttonBarCount > 0) {
+				widget.RemoveItem (buttonBarStartIdx);
+				--buttonBarCount;
+			}
+
+			foreach (var item in buttons) {
+				if (item.IsSeparator) {
+					widget.InsertItem (ButtonBarId, buttonBarStartIdx + buttonBarCount++);
+					barItems.Clear ();
+				} else {
+					barItems.Add (item);
+				}
+			}
 		}
 
 		public bool RunButtonSensitivity {
@@ -162,7 +191,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public bool ButtonBarSensitivity {
-			set { }
+			set {
+				for (int start = buttonBarStartIdx; start < buttonBarStartIdx + buttonBarCount; ++start)
+					((ButtonBar)widget.Items [start].View).Enabled = value;
+			}
 		}
 
 		public SearchMenuItem[] SearchMenuItems {
