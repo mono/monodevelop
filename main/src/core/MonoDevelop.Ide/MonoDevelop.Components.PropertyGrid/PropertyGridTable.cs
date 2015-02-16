@@ -468,8 +468,20 @@ namespace MonoDevelop.Components.PropertyGrid
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 					ctx.Restore ();
 
-					if (r != currentEditorRow)
-						cell.Render (GdkWindow, ctx, r.EditorBounds, state);
+					if (r != currentEditorRow) {
+						var bounds = GetInactiveEditorBounds (r);
+
+						cell.Render (GdkWindow, ctx, bounds, state);
+
+						if (r.IsExpandable) {
+							var img = r.Expanded ? discloseUp : discloseDown;
+							ctx.DrawImage (
+								this, img,
+								Allocation.Width - img.Width - PropertyTopBottomPadding,
+								y + Math.Round ((h + PropertyTopBottomPadding * 2 - img.Height) / 2)
+							);
+						}
+					}
 
 					y += r.EditorBounds.Height;
 					indent = PropertyIndent;
@@ -503,6 +515,16 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
+		//when inactive, the editor bounds may be shrunk to make room for an expander
+		Gdk.Rectangle GetInactiveEditorBounds (TableRow row)
+		{
+			var bounds = row.EditorBounds;
+			if (row.IsExpandable) {
+				bounds.Width -= (int) discloseUp.Width + PropertyTopBottomPadding;
+			}
+			return bounds;
+		}
+
 		IEnumerable<TableRow> GetAllRows (bool onlyVisible)
 		{
 			return GetAllRows (rows, onlyVisible);
@@ -534,7 +556,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
 
 			if (row != null && editSession == null) {
-				if (!row.EditorBounds.IsEmpty && row.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y) && row.Enabled) {
+				var bounds = GetInactiveEditorBounds (row);
+				if (!bounds.IsEmpty && bounds.Contains ((int)evnt.X, (int)evnt.Y) && row.Enabled) {
 					StartEditing (row);
 					return true;
 				}
@@ -577,10 +600,13 @@ namespace MonoDevelop.Components.PropertyGrid
 				return true;
 			}
 
-			var cat = rows.FirstOrDefault (r => r.IsCategory && r.EditorBounds.Contains ((int)evnt.X, (int)evnt.Y));
-			if (cat != null) {
-				GdkWindow.Cursor = handCursor;
-				return true;
+			var row = GetAllRows (true).FirstOrDefault (r => r.Bounds.Contains ((int)evnt.X, (int)evnt.Y));
+			if (row != null && row.IsExpandable) {
+				var bounds = GetInactiveEditorBounds (row);
+				if (bounds.IsEmpty || !bounds.Contains ((int)evnt.X, (int)evnt.Y)) {
+					GdkWindow.Cursor = handCursor;
+					return true;
+				}
 			}
 
 			int dx = (int)((double)Allocation.Width * dividerPosition);
