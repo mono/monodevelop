@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Core;
 using AppKit;
 using CoreGraphics;
 
@@ -38,6 +39,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string MainToolbarId = "XSMainToolbar";
 		const string RunButtonId = "RunToolbarItem";
 		const string ButtonBarId = "ButtonBarToolbarItem";
+		const string SelectorId = "SelectorToolbarItem";
 		const string SearchBarId = "SearchBarToolbarItem";
 
 		internal NSToolbar widget;
@@ -49,6 +51,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		int buttonBarStartIdx, buttonBarCount;
+
+		int selectorIdx;
+		SelectorView.PathSelectorView selectorView {
+			get { return (SelectorView.PathSelectorView)widget.Items[selectorIdx].View.Subviews [0]; }
+		}
 
 		int searchEntryIdx;
 		SearchBar searchEntry {
@@ -66,6 +73,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var item = new NSToolbarItem (RunButtonId) {
 				View = button,
 				MinSize = new CGSize (button.FittingSize.Width + 12, button.FittingSize.Height),
+			};
+			return item;
+		}
+
+		NSToolbarItem CreateSelectorToolbarItem ()
+		{
+			var selector = new SelectorView ();
+			var item = new NSToolbarItem (SelectorId) {
+				View = selector,
+				MinSize = new CGSize (150, 25),
+			};
+			selector.ResizeRequested += (o, e) => item.MinSize = e.Size;
+
+			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
+			pathSelector.ConfigurationChanged += (sender, e) => {
+				if (ConfigurationChanged != null)
+					ConfigurationChanged (sender, e);
+			};
+			pathSelector.RuntimeChanged += (sender, ea) => {
+				if (RuntimeChanged != null)
+					RuntimeChanged (sender, ea);
 			};
 			return item;
 		}
@@ -119,6 +147,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return CreateButtonBarToolbarItem ();
 				case SearchBarId:
 					return CreateSearchBarToolbarItem ();
+				case SelectorId:
+					return CreateSelectorToolbarItem ();
 				}
 				throw new NotImplementedException ();
 			};
@@ -128,6 +158,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			int total = -1;
 			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
+			widget.InsertItem (SelectorId, selectorIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, buttonBarStartIdx = ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
 		}
@@ -177,42 +208,38 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public bool ConfigurationPlatformSensitivity {
-			get {
-				return true;
-//				throw new NotImplementedException ();
-			}
-			set {
-//				throw new NotImplementedException ();
-			}
+			get { return selectorView.Enabled; }
+			set { selectorView.Enabled = value; }
 		}
 
-		public event EventHandler<HandledEventArgs> ConfigurationChanged;
-		public event EventHandler RuntimeChanged;
+		public event EventHandler ConfigurationChanged;
+		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
 		public bool PlatformSensitivity {
 			set {
-//				throw new NotImplementedException ();
+				var cell = (NSPathCell)selectorView.Cell;
+				cell.PathComponentCells [SelectorView.RuntimeIdx].Enabled = value;
 			}
 		}
 
 		public IConfigurationModel ActiveConfiguration {
-			get;
-			set;
+			get { return selectorView.ActiveConfiguration; }
+			set { selectorView.ActiveConfiguration = value; }
 		}
 
 		public IRuntimeModel ActiveRuntime {
-			get;
-			set;
+			get { return selectorView.ActiveRuntime; }
+			set { selectorView.ActiveRuntime = value; }
 		}
 
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
-			get;
-			set;
+			get { return selectorView.ConfigurationModel; }
+			set { selectorView.ConfigurationModel = value; }
 		}
 
 		public IEnumerable<IRuntimeModel> RuntimeModel {
-			get;
-			set;
+			get { return selectorView.RuntimeModel; }
+			set { selectorView.RuntimeModel = value; }
 		}
 
 		public bool SearchSensivitity {
