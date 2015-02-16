@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Components.MainToolbar;
@@ -132,7 +133,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			entry.Window.MakeFirstResponder (entry);
 		}
 
-		public void RebuildToolbar (System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<string>> bars)
+		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
 		{
 //			throw new NotImplementedException ();
 		}
@@ -158,6 +159,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public bool SearchSensivitity {
 			set { searchEntry.Enabled = value; }
+		}
+
+		public bool ButtonBarSensitivity {
+			set { }
 		}
 
 		public SearchMenuItem[] SearchMenuItems {

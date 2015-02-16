@@ -234,12 +234,21 @@ namespace MonoDevelop.Components.MainToolbar
 			RebuildToolbar ();
 		}
 
+		List<ButtonBarButton> buttonBarButtons = new List<ButtonBarButton> ();
 		void RebuildToolbar ()
 		{
 			var bars = AddinManager.GetExtensionNodes<ItemSetCodon> (ToolbarExtensionPath)
 				.Where (n => visibleBars.Contains (n.Id))
 				.Select (b => b.ChildNodes.OfType<CommandItemCodon> ().Select (n => n.Id));
-			ToolbarView.RebuildToolbar (bars);
+
+			buttonBarButtons.Clear ();
+			foreach (var bar in bars) {
+				foreach (string commandId in bar)
+					buttonBarButtons.Add (new ButtonBarButton (this, commandId));
+				buttonBarButtons.Add (new ButtonBarButton (this));
+			}
+
+			ToolbarView.RebuildToolbar (buttonBarButtons);
 		}
 
 		static void HandleStartButtonClicked (object sender, EventArgs e)
@@ -277,9 +286,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region ICommandBar implementation
 		bool toolbarEnabled = true;
+		object lastCommandTarget;
 
 		void ICommandBar.Update (object activeTarget)
 		{
+			lastCommandTarget = activeTarget;
 			if (!toolbarEnabled)
 				return;
 			OperationIcon operation;
@@ -291,6 +302,9 @@ namespace MonoDevelop.Components.MainToolbar
 			var stopped = operation != OperationIcon.Stop;
 			if (ToolbarView.ConfigurationPlatformSensitivity != stopped)
 				ToolbarView.ConfigurationPlatformSensitivity = stopped;
+
+			foreach (var item in buttonBarButtons)
+				item.Update ();
 		}
 
 		void ICommandBar.SetEnabled (bool enabled)
@@ -298,8 +312,74 @@ namespace MonoDevelop.Components.MainToolbar
 			toolbarEnabled = enabled;
 			ToolbarView.RunButtonSensitivity = enabled;
 			ToolbarView.SearchSensivitity = enabled;
+			ToolbarView.ButtonBarSensitivity = enabled;
 		}
 		#endregion
+
+		class ButtonBarButton : IButtonBarButton
+		{
+			MainToolbarController Controller { get; set; }
+			string CommandId { get; set; }
+
+			public ButtonBarButton (MainToolbarController controller, string commandId) : this (controller)
+			{
+				CommandId = commandId;
+			}
+
+			public ButtonBarButton (MainToolbarController controller)
+			{
+				Controller = controller;
+			}
+
+			public IconId Image { get; set; }
+			public bool Enabled { get; set; }
+			public bool Visible { get; set; }
+			public string Tooltip { get; set; }
+			public bool IsSeparator {
+				get { return CommandId == null; }
+			}
+
+			public void NotifyPushed ()
+			{
+				IdeApp.CommandService.DispatchCommand (CommandId, null, Controller.lastCommandTarget, CommandSource.MainToolbar);
+			}
+
+			public void Update ()
+			{
+				if (IsSeparator)
+					return;
+
+				var ci = IdeApp.CommandService.GetCommandInfo (CommandId, new CommandTargetRoute (Controller.lastCommandTarget));
+				if (ci == null)
+					return;
+
+				if (ci.Icon != Image) {
+					Image = ci.Icon;
+					if (ImageChanged != null)
+						ImageChanged (this, null);
+				}
+				if (ci.Enabled != Enabled) {
+					Enabled = ci.Enabled;
+					if (EnabledChanged != null)
+						EnabledChanged (this, null);
+				}
+				if (ci.Description != Tooltip) {
+					Tooltip = ci.Description;
+					if (TooltipChanged != null)
+						TooltipChanged (this, null);
+				}
+				if (ci.Visible != Visible) {
+					Visible = ci.Visible;
+					if (VisibleChanged != null)
+						VisibleChanged (this, null);
+				}
+			}
+
+			public event EventHandler EnabledChanged;
+			public event EventHandler ImageChanged;
+			public event EventHandler VisibleChanged;
+			public event EventHandler TooltipChanged;
+		}
 	}
 }
 

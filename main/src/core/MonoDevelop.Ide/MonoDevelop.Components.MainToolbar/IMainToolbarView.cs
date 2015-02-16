@@ -25,8 +25,8 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -102,7 +102,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region SearchEntry
 		/// <summary>
-		/// Gets or sets a value indicating whether the search entry is interactible.
+		/// Sets a value indicating whether the search entry is interactible.
 		/// </summary>
 		/// <value><c>true</c> if search entry is interactible; otherwise, <c>false</c>.</value>
 		bool SearchSensivitity { set; }
@@ -180,8 +180,14 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <summary>
 		/// Rebuilds the toolbar.
 		/// </summary>
-		/// <param name="bars">A list of command id lists.</param>
-		void RebuildToolbar (IEnumerable<IEnumerable<string>> bars);
+		/// <param name="buttons">A list of buttons.</param>
+		void RebuildToolbar (IEnumerable<IButtonBarButton> buttons);
+
+		/// <summary>
+		/// Sets a value indicating whether the button bar is interactible.
+		/// </summary>
+		/// <value><c>true</c> if button bar is interactible; otherwise, <c>false</c>.</value>
+		bool ButtonBarSensitivity { set; }
 		#endregion
 	}
 }

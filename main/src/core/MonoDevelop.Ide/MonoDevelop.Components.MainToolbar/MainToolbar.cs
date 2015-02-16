@@ -78,8 +78,6 @@ namespace MonoDevelop.Components.MainToolbar
 		RoundButton button = new RoundButton ();
 		Alignment buttonBarBox;
 
-		HashSet<string> visibleBars = new HashSet<string> ();
-
 		ConfigurationMerger configurationMerger = new ConfigurationMerger ();
 
 		Solution currentSolution;
@@ -284,8 +282,6 @@ namespace MonoDevelop.Components.MainToolbar
 				if (SearchEntryResized != null)
 					SearchEntryResized (o, e);
 			};
-
-			IdeApp.CommandService.RegisterCommandBar (buttonBar);
 
 			contentBox.PackStart (matchEntry, false, false, 0);
 
@@ -869,22 +865,22 @@ namespace MonoDevelop.Components.MainToolbar
 			set { matchEntry.EmptyMessage = value; }
 		}
 
-		public void RebuildToolbar (IEnumerable<IEnumerable<string>> bars)
+		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
 		{
-			buttonBar.Clear ();
-			if (!bars.Any ()) {
+			if (!buttons.Any ()) {
 				buttonBarBox.Hide ();
 				return;
 			}
 
 			buttonBarBox.Show ();
 			buttonBar.ShowAll ();
-			foreach (var bar in bars) {
-				foreach (string commandId in bar)
-					buttonBar.Add (commandId);
-				buttonBar.AddSeparator ();
-			}
+			buttonBar.Buttons = buttons;
 		}
+
+		public bool ButtonBarSensitivity {
+			set { buttonBar.Sensitive = value; }
+		}
+
 		#endregion
 	}
 }
