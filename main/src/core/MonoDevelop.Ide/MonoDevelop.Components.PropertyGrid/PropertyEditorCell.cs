@@ -27,12 +27,9 @@
 //
 
 using System;
-using System.Reflection;
-using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Components.PropertyGrid.PropertyEditors;
-using Gtk;
 using Gdk;
+using Gtk;
 using Mono.TextEditor;
 
 namespace MonoDevelop.Components.PropertyGrid
@@ -41,7 +38,7 @@ namespace MonoDevelop.Components.PropertyGrid
 	{
 		Pango.Layout layout;
 		ITypeDescriptorContext context;
-		Gtk.Widget container;
+		Widget container;
 		EditorManager editorManager;
 		
 		public object Instance {
@@ -56,7 +53,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return context; }
 		}
 		
-		public Gtk.Widget Container {
+		public Widget Container {
 			get { return container; }
 		}
 		
@@ -79,9 +76,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			Initialize ();
 		}
 
-		public EditSession StartEditing (Gdk.Rectangle cell_area, StateType state)
+		public EditSession StartEditing (Rectangle cellArea, StateType state)
 		{
-			IPropertyEditor ed = CreateEditor (cell_area, state);
+			IPropertyEditor ed = CreateEditor (cellArea, state);
 			if (ed == null)
 				return null;
 			return new EditSession (container, context, ed);
@@ -109,12 +106,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (i == -1)
 				return s;
 			
-			s = s.TrimStart ('\n',' ','\t');
+			s = s.TrimStart ('\n', ' ', '\t');
 			i = s.IndexOf ('\n');
 			if (i != -1)
 				return s.Substring (0, i) + "...";
-			else
-				return s;
+			return s;
 		}
 		
 		public object Value {
@@ -135,7 +131,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			layout.GetPixelSize (out width, out height);
 		}
 
-		public virtual void Render (Gdk.Drawable window, Cairo.Context ctx, Gdk.Rectangle bounds, StateType state)
+		public virtual void Render (Drawable window, Cairo.Context ctx, Rectangle bounds, StateType state)
 		{
 			int w, h;
 			layout.GetPixelSize (out w, out h);
@@ -148,7 +144,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			ctx.Restore ();
 		}
 		
-		protected virtual IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, StateType state)
+		protected virtual IPropertyEditor CreateEditor (Rectangle cellArea, StateType state)
 		{
 			if (DialogueEdit && (!Property.IsReadOnly || EditsReadOnlyObject)) {
 				return new PropertyDialogueEditor (this, context);
@@ -158,7 +154,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				if (editorType == null)
 					return null;
 				
-				IPropertyEditor editor = Activator.CreateInstance (editorType) as IPropertyEditor;
+				var editor = Activator.CreateInstance (editorType) as IPropertyEditor;
 				if (editor == null)
 					throw new Exception ("The property editor '" + editorType + "' must implement the interface IPropertyEditor");
 				return editor;
@@ -185,18 +181,18 @@ namespace MonoDevelop.Components.PropertyGrid
 		public virtual void LaunchDialogue ()
 		{
 			if (DialogueEdit)
-				throw new NotImplementedException();
+				throw new NotImplementedException ();
 		}
 	}
 	
 	
-	class DefaultPropertyEditor: Gtk.Entry, IPropertyEditor
+	class DefaultPropertyEditor: Entry, IPropertyEditor
 	{
 		PropertyDescriptor property;
 		
 		public void Initialize (EditSession session)
 		{
-			this.property = session.Property;
+			property = session.Property;
 		}
 		
 		public object Value {
@@ -223,14 +219,14 @@ namespace MonoDevelop.Components.PropertyGrid
 	
 	public class EditSession : ITypeDescriptorContext
 	{
-		Gtk.Widget container;
+		Widget container;
 		IPropertyEditor currentEditor;
 		bool syncing;
-		ITypeDescriptorContext context; 
+		readonly ITypeDescriptorContext context;
 		
 		public event EventHandler Changed;
 		
-		internal EditSession (Gtk.Widget container, ITypeDescriptorContext context, IPropertyEditor currentEditor)
+		internal EditSession (Widget container, ITypeDescriptorContext context, IPropertyEditor currentEditor)
 		{
 			this.context = context;
 			this.container = container;
@@ -260,7 +256,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return context.PropertyDescriptor; }
 		}
 		
-		public Gtk.Widget Container {
+		public Widget Container {
 			get { return container; }
 		}
 		
@@ -324,7 +320,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		IContainer ITypeDescriptorContext.Container { get { return context.Container; } }
 	}
 	
-	class CellRendererWidget: Gtk.DrawingArea
+	class CellRendererWidget: DrawingArea
 	{
 		readonly PropertyEditorCell cell;
 		readonly ITypeDescriptorContext context;
@@ -335,7 +331,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			this.cell = cell;
 			this.context = context;
 			em = cell.EditorManager;
-			this.ModifyBg (Gtk.StateType.Normal, this.Style.White);
+			this.ModifyBg (StateType.Normal, this.Style.White);
 		}
 		
 		protected override bool OnExposeEvent (EventExpose evnt)
@@ -343,11 +339,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			bool res = base.OnExposeEvent (evnt);
 			cell.Initialize (this, em, context);
 			
-			Gdk.Rectangle rect = Allocation;
+			Rectangle rect = Allocation;
 			rect.Inflate (-3, 0);// Add some margin
 
-			using (Cairo.Context ctx = Gdk.CairoHelper.Create (this.GdkWindow)) {
-				cell.Render (this.GdkWindow, ctx, rect, StateType.Normal);
+			using (Cairo.Context ctx = CairoHelper.Create (GdkWindow)) {
+				cell.Render (GdkWindow, ctx, rect, StateType.Normal);
 			}
 			return res;
 		}
@@ -367,9 +363,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			buttonLabel.Xpad = 0; buttonLabel.Ypad = 0;
 			buttonLabel.Markup = "<span size=\"small\">...</span>";
 			Button dialogueButton = new Button (buttonLabel);
-			dialogueButton.Clicked += new EventHandler (DialogueButtonClicked);
+			dialogueButton.Clicked += DialogueButtonClicked;
 			PackStart (dialogueButton, false, false, 0);
-			this.ModifyBg (Gtk.StateType.Normal, this.Style.White);
+			this.ModifyBg (StateType.Normal, this.Style.White);
 			ShowAll ();
 		}
 		

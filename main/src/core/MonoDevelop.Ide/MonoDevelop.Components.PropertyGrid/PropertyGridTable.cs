@@ -70,7 +70,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		class TableRow : ITypeDescriptorContext
 		{
-			PropertyGrid parentGrid;
+			readonly PropertyGrid parentGrid;
 
 			public TableRow (PropertyGrid parentGrid)
 			{
@@ -657,7 +657,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				s.AppendLine ();
 				s.AppendLine ();
 				s.Append (GLib.Markup.EscapeText (row.Property.Description));
-				if (row.Property.Converter.CanConvertTo (typeof(string))) {
+				if (row.Property.Converter.CanConvertTo (row, typeof(string))) {
 					var value = Convert.ToString (row.Property.GetValue (row.Instance));
 					if (!string.IsNullOrEmpty (value)) {
 						const int chunkLength = 200;
