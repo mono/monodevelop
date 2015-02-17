@@ -52,11 +52,10 @@ namespace MonoDevelop.Components.MainToolbar
 	}
 
 	/// <summary>
-	/// Interface which specificies the minimum working base of a MainToolbar.
+	/// Interface which specificies the minimum working base of a Run Button.
 	/// </summary>
-	public interface IMainToolbarView
+	public interface IRunButtonView
 	{
-		#region RunButton
 		/// <summary>
 		/// Gets or sets a value indicating whether the run button is interactible.
 		/// </summary>
@@ -73,9 +72,13 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Occurs when run button clicked.
 		/// </summary>
 		event EventHandler RunButtonClicked;
-		#endregion
+	}
 
-		#region Configuration/Platform Selector
+	/// <summary>
+	/// Interface which specificies the minimum working base of a Configuration/Platform Selector.
+	/// </summary>
+	public interface ISelectorView
+	{
 		/// <summary>
 		/// Gets or sets a value indicating whether the configuration/platform selector is interactible.
 		/// </summary>
@@ -121,9 +124,13 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Occurs when the runtime changed.
 		/// </summary>
 		event EventHandler<HandledEventArgs> RuntimeChanged;
-		#endregion
+	}
 
-		#region SearchEntry
+	/// <summary>
+	/// Interface which specificies the minimum working base of a Search Bar.
+	/// </summary>
+	public interface ISearchEntryView
+	{
 		/// <summary>
 		/// Sets a value indicating whether the search entry is interactible.
 		/// </summary>
@@ -189,17 +196,25 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The placeholder message.</value>
 		string SearchPlaceholderMessage { set; }
-		#endregion
+	}
 
-		#region StatusBar
+	/// <summary>
+	/// Interface which specificies the minimum working base of a Status Bar.
+	/// </summary>
+	public interface IStatusBarView
+	{
 		/// <summary>
 		/// Gets the native status bar.
 		/// </summary>
 		/// <value>The native status bar.</value>
 		StatusBar StatusBar { get; }
-		#endregion
+	}
 
-		#region CommandBar
+	/// <summary>
+	/// Interface which specificies the minimum working base of a Button Bar.
+	/// </summary>
+	public interface IButtonBarView
+	{
 		/// <summary>
 		/// Rebuilds the toolbar.
 		/// </summary>
@@ -211,7 +226,13 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value><c>true</c> if button bar is interactible; otherwise, <c>false</c>.</value>
 		bool ButtonBarSensitivity { set; }
-		#endregion
+	}
+
+	/// <summary>
+	/// Interface which specificies the minimum working base of a MainToolbar.
+	/// </summary>
+	public interface IMainToolbarView : IRunButtonView, ISelectorView, ISearchEntryView, IStatusBarView, IButtonBarView
+	{
 	}
 }
 
