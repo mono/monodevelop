@@ -52,44 +52,6 @@ namespace MonoDevelop.Components.MainToolbar
 	}
 
 	/// <summary>
-	/// Search MenuItem model for setting search categories.
-	/// </summary>
-	public class SearchMenuItem
-	{
-		internal SearchMenuItem (string displayString, string category)
-		{
-			DisplayString = displayString;
-			Category = category;
-		}
-
-		/// <summary>
-		/// Notifies the activated.
-		/// </summary>
-		public void NotifyActivated ()
-		{
-			if (Activated != null)
-				Activated (null, null);
-		}
-
-		/// <summary>
-		/// Gets or sets the display string.
-		/// </summary>
-		/// <value>The display string.</value>
-		public string DisplayString { get; private set; }
-
-		/// <summary>
-		/// Gets or sets the category.
-		/// </summary>
-		/// <value>The category.</value>
-		internal string Category { get; set; }
-
-		/// <summary>
-		/// Occurs when the menu item is activated.
-		/// </summary>
-		internal event EventHandler Activated;
-	}
-
-	/// <summary>
 	/// Interface which specificies the minimum working base of a MainToolbar.
 	/// </summary>
 	public interface IMainToolbarView
@@ -172,7 +134,7 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Sets the search menu items.
 		/// </summary>
 		/// <value>The search menu items.</value>
-		SearchMenuItem[] SearchMenuItems { set; }
+		IEnumerable<ISearchMenuModel> SearchMenuItems { set; }
 
 		/// <summary>
 		/// Sets the search category.

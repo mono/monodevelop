@@ -485,7 +485,7 @@ namespace MonoDevelop.Components.MainToolbar
 			set { matchEntry.Sensitive = value; }
 		}
 
-		public SearchMenuItem[] SearchMenuItems {
+		public IEnumerable<ISearchMenuModel> SearchMenuItems {
 			set {
 				foreach (var item in value) {
 					var menuItem = matchEntry.AddMenuItem (item.DisplayString);

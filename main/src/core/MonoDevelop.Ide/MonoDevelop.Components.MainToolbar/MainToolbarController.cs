@@ -108,9 +108,9 @@ namespace MonoDevelop.Components.MainToolbar
 		public void Initialize ()
 		{
 			var items = new[] {
-				new SearchMenuItem (GettextCatalog.GetString ("Search Files"), "file"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Types"), "type"),
-				new SearchMenuItem (GettextCatalog.GetString ("Search Members"), "member"),
+				new SearchMenuModel (GettextCatalog.GetString ("Search Files"), "file"),
+				new SearchMenuModel (GettextCatalog.GetString ("Search Types"), "type"),
+				new SearchMenuModel (GettextCatalog.GetString ("Search Members"), "member"),
 			};
 
 			// Attach menu category handlers.
@@ -870,6 +870,25 @@ namespace MonoDevelop.Components.MainToolbar
 
 			public string OriginalId { get; private set; }
 			public string DisplayString { get; private set; }
+		}
+
+		class SearchMenuModel : ISearchMenuModel
+		{
+			public SearchMenuModel (string displayString, string category)
+			{
+				DisplayString = displayString;
+				Category = category;
+			}
+
+			public void NotifyActivated ()
+			{
+				if (Activated != null)
+					Activated (null, null);
+			}
+
+			public string DisplayString { get; private set; }
+			public string Category { get; set; }
+			public event EventHandler Activated;
 		}
 	}
 }

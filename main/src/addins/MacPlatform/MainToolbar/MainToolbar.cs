@@ -273,7 +273,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public SearchMenuItem[] SearchMenuItems {
+		public IEnumerable<ISearchMenuModel> SearchMenuItems {
 			set {
 				var menu = new NSMenu {
 					AutoEnablesItems = false,

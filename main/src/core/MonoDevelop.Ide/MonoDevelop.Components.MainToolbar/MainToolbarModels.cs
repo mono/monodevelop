@@ -86,5 +86,19 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <value><c>true</c> if notable; otherwise, <c>false</c>.</value>
 		bool Notable { get; }
 	}
+
+	public interface ISearchMenuModel
+	{
+		/// <summary>
+		/// Notifies that the item has been activated.
+		/// </summary>
+		void NotifyActivated ();
+
+		/// <summary>
+		/// Gets the display string to be used in the menu.
+		/// </summary>
+		/// <value>The display string.</value>
+		string DisplayString { get; }
+	}
 }
 
