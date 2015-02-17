@@ -111,7 +111,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						AutoEnablesItems = false,
 						ShowsStateColumn = false,
 					};
-					if (object.ReferenceEquals (item.Image, PathComponentCells [ConfigurationIdx].Image)) {
+					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
 						foreach (var configuration in ConfigurationModel) {
 							if (idx == -1 && configuration.OriginalId == ActiveConfiguration.OriginalId)
 								idx = i;
@@ -127,7 +127,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							});
 							++i;
 						}
-					} else if (object.ReferenceEquals (item.Image, PathComponentCells [RuntimeIdx].Image)) {
+					} else if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [RuntimeIdx])) {
 						foreach (var runtime in RuntimeModel) {
 							if (idx == -1 && runtime.DisplayString == ActiveRuntime.DisplayString)
 								idx = i;
