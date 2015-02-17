@@ -263,10 +263,8 @@
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
@@ -292,7 +290,6 @@
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />

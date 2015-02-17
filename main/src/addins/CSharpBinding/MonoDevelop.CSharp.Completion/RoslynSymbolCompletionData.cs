@@ -32,6 +32,9 @@ using GLib;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor.Extension;
+using Xwt;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -241,7 +244,240 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return tooltipInfo;
 		}
-		
+
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+		{
+			string text = CompletionText;
+			string partialWord = GetCurrentWord (window);
+			int skipChars = 0;
+			bool runParameterCompletionCommand = false;
+			bool runCompletionCompletionCommand = false;
+			var method = Symbol as IMethodSymbol;
+			bool addParens = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
+			bool addOpeningOnly = CompletionTextEditorExtension.AddOpeningOnly;
+			bool IsDelegateExpected = false;
+			var Editor = ext.Editor;
+			var Policy = ext.FormattingPolicy;
+			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (method)) {
+				var line = Editor.GetLine (Editor.CaretLine);
+				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
+				//var end = line.Offset + line.Length;
+				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
+				bool addSpace = Policy.SpaceAfterMethodCallName && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
+
+				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
+				while (exprStart > line.Offset) {
+					char ch = Editor.GetCharAt (exprStart);
+					if (ch != '.' && ch != '_' && !char.IsLetterOrDigit (ch))
+						break;
+					exprStart--;
+				}
+				bool insertSemicolon = InsertSemicolon(exprStart);
+				if (Symbol is IMethodSymbol && ((IMethodSymbol)Symbol).MethodKind == MethodKind.Constructor)
+					insertSemicolon = false;
+				//int pos;
+
+				var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
+				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.') {
+					if (HasAnyOverloadWithParameters (method)) {
+						if (addOpeningOnly) {
+							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+							skipChars = 0;
+						} else {
+							if (descriptor.KeyChar == '.') {
+								if (RequireGenerics (method)) {
+									text += addSpace ? "<> ()" : "<>()";
+								} else {
+									text += addSpace ? " ()" : "()";
+								}
+								skipChars = 0;
+							} else {
+								if (insertSemicolon) {
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ();" : "<|>();";
+										skipChars = addSpace ? 5 : 4;
+									} else {
+										text += addSpace ? " (|);" : "(|);";
+										skipChars = 2;
+									}
+								} else {
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ()" :  "<|>()";
+										skipChars = addSpace ? 4 : 3;
+									} else {
+										text += addSpace ? " (|)" : "(|)";
+										skipChars = 1;
+									}
+								}
+							}
+						}
+						runParameterCompletionCommand = true;
+					} else {
+						if (addOpeningOnly) {
+							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+							skipChars = 0;
+						} else {
+							if (descriptor.KeyChar == '.') {
+								if (RequireGenerics (method)) {
+									text += addSpace ? "<> ().|" : "<>().|";
+								} else {
+									text += addSpace ? " ().|" : "().|";
+								}
+								skipChars = 0;
+							} else {
+								if (insertSemicolon) {
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ();" : "<|>();";
+									} else {
+										text += addSpace ? " ();|" : "();|";
+									}
+
+								} else {
+									if (RequireGenerics (method)) {
+										text += addSpace ? "<|> ()" : "<|>()";
+									} else {
+										text += addSpace ? " ()|" : "()|";
+									}
+
+								}
+							}
+						}
+					}
+					if (descriptor.KeyChar == '(') {
+						var skipCharList = Editor.SkipChars;
+						if (skipCharList.Count > 0) {
+							var lastSkipChar = skipCharList[skipCharList.Count - 1];
+							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
+								Editor.RemoveText (lastSkipChar.Offset, 1);
+						}
+					}
+				}
+				ka |= KeyActions.Ignore;
+			}
+			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
+				CompletionTextEditorExtension.AddParenthesesAfterCompletion &&
+				(descriptor.SpecialKey == SpecialKey.Tab ||
+					descriptor.SpecialKey == SpecialKey.Return ||
+					descriptor.SpecialKey == SpecialKey.Space)) {
+				if (true/*Policy.AroundAssignmentParentheses */)
+					text += " ";
+				text += "=";
+				if (/*Policy.AroundAssignmentParentheses && */descriptor.SpecialKey != SpecialKey.Space)
+					text += " ";
+				runCompletionCompletionCommand = true;
+			}
+			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
+			int offset = Editor.CaretOffset;
+			for (int i = 0; i < skipChars; i++) {
+				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
+				offset++;
+			}
+
+			if (runParameterCompletionCommand && IdeApp.Workbench != null) {
+				Application.Invoke (delegate {
+					ext.RunParameterCompletionCommand ();
+				});
+			}
+			
+			if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
+				Application.Invoke (delegate {
+					ext.RunCompletionCommand ();
+				});
+			}
+		}
+
+		bool IsBracketAlreadyInserted (IMethodSymbol method)
+		{
+			var Editor = ext.Editor;
+			int offset = Editor.CaretOffset;
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsLetterOrDigit (ch))
+					break;
+				offset++;
+			}
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch))
+					return ch == '(' || ch == '<' && RequireGenerics (method);
+				offset++;
+			}
+			return false;
+		}
+
+
+
+		bool InsertSemicolon (int exprStart)
+		{
+			var Editor = ext.Editor;
+			int offset = exprStart;
+			while (offset > 0) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch)) {
+					if (ch != '{' && ch != '}' && ch != ';')
+						return false;
+					break;
+				}
+				offset--;
+			}
+
+			offset = Editor.CaretOffset;
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsLetterOrDigit (ch))
+					break;
+				offset++;
+			}
+			while (offset < Editor.Length) {
+				char ch = Editor.GetCharAt (offset);
+				if (!char.IsWhiteSpace (ch))
+					return char.IsLetter (ch) || ch == '}';
+				offset++;
+			}
+			return true;
+		}
+
+		static bool HasAnyOverloadWithParameters (IMethodSymbol method)
+		{
+			if (method.MethodKind == MethodKind.Constructor) 
+				return method.ContainingType.GetMembers()
+					.OfType<IMethodSymbol>()
+					.Where(m => m.MethodKind == MethodKind.Constructor)
+					.Any (m => m.Parameters.Length > 0);
+			return method.ContainingType
+				.GetMembers()
+				.OfType<IMethodSymbol>()
+				.Any (m => m.Name == method.Name && m.Parameters.Length > 0);
+		}
+
+		static bool HasNonMethodMembersWithSameName (ISymbol member)
+		{
+			return member.ContainingType
+				.GetMembers ()
+				.Any (e => e.Kind != member.Kind && e.Name == member.Name);
+		}
+
+		bool RequireGenerics (IMethodSymbol method)
+		{
+			if (method.MethodKind == MethodKind.Constructor)
+				return method.ContainingType.TypeParameters.Length  > 0;
+			var testMethod = method.ReducedFrom ?? method;
+			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type as INamedTypeSymbol, t)));
+		}
+
+		bool ContainsType (INamedTypeSymbol testType, ITypeSymbol searchType)
+		{
+			if (testType == null)
+				return false;
+			if (testType == searchType)
+				return true;
+			foreach (var arg in testType.TypeParameters)
+				if (ContainsType (arg as INamedTypeSymbol, searchType))
+					return true;
+			return false;
+		}
+
+
 //		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
 //		{
 //			var tooltipInfo = new TooltipInformation ();
