@@ -151,18 +151,14 @@ type FSharpFormatter()  =
         let mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (FSharpFormatter.MimeType)
         let input = editor.Text
         if fromOffset = 0 && toOffset = String.length input then 
-            LoggingService.LogInfo("**Fantomas**: OnTheFly Formatting document")
             formatText (Some editor) policyParent mimeTypeChain input Document
             |> ignore
         else 
-            LoggingService.LogInfo("**Fantomas**: OnTheFly Formatting selection")
             formatText (Some editor) policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
             |> ignore
 
     override x.FormatText(policyParent, mimeTypeChain, input, fromOffset, toOffset) = 
         if fromOffset = 0 && toOffset = String.length input then 
-            LoggingService.LogInfo("**Fantomas**: Formatting document")
             formatText None policyParent mimeTypeChain input Document
         else 
-            LoggingService.LogInfo("**Fantomas**: Formatting selection")
             formatText None policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
