@@ -164,14 +164,45 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 		}
 
-		HashSet<string> expandedStatus;
+		Dictionary<object,List<string>> expandedStatus;
+
+		class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+		{
+			public bool Equals (T x, T y)
+			{
+				return object.ReferenceEquals (x, y);
+			}
+			public int GetHashCode (T obj)
+			{
+				return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode (obj);
+			}
+		}
 
 		public void SaveStatus ()
 		{
-			expandedStatus = new HashSet<string> ();
-			foreach (var r in rows.Where (r => r.IsCategory))
-				if (!r.Expanded)
-					expandedStatus.Add (r.Label);
+			//when the tree is rebuilt, there isn't a reliable way to match up new nodes to existing nodes
+			//since the tree can be built dynamically, and there can be multiple instances of each type.
+			//make a best attempt using reference equality to match objects and the name to match their properties.
+			expandedStatus = new Dictionary<object,List<string>>(new ReferenceEqualityComparer<object> ());
+			foreach (var r in rows.Where (r => r.IsExpandable && r.Expanded)) {
+				object key;
+				string val;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+				}
+				if (key == null) {
+					continue;
+				}
+				List<string> list;
+				if (!expandedStatus.TryGetValue (key, out list)) {
+					expandedStatus [key] = list = new List<string> ();
+				}
+				list.Add (val);
+			}
 		}
 
 		public void RestoreStatus ()
@@ -179,8 +210,19 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (expandedStatus == null)
 				return;
 
-			foreach (var row in rows.Where (r => r.IsCategory))
-				row.Expanded = !expandedStatus.Contains (row.Label);
+			foreach (var r in rows.Where (r => r.IsExpandable)) {
+				object key;
+				string val;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+				}
+				List<string> list;
+				r.Expanded = expandedStatus.TryGetValue (key, out list) && list.Any (l => string.Equals (l, val));
+			}
 
 			expandedStatus = null;
 
