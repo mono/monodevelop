@@ -287,8 +287,11 @@ namespace MonoDevelop.Components.PropertyGrid
 				object cob = prop.GetValue (instance);
 				row.ChildRows = new List<TableRow> ();
 				//TODO: should we support TypeDescriptor extensibility? how to merge with TypeConverter?
-				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob))
-					AppendProperty (row.ChildRows, cprop, cob);
+				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob)) {
+					if (cprop.IsBrowsable) {
+						AppendProperty (row.ChildRows, cprop, cob);
+					}
+				}
 			}
 		}
 
