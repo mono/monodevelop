@@ -118,6 +118,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 							var _configuration = configuration;
 							menu.AddItem (new NSMenuItem (configuration.DisplayString, (o2, e2) => {
+								ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
 								if (ConfigurationChanged != null)
 									ConfigurationChanged (o2, e2);
 								UpdatePathText (ConfigurationIdx, _configuration.DisplayString);
