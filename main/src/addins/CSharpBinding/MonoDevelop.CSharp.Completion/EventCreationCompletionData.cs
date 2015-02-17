@@ -41,6 +41,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -79,12 +80,17 @@ namespace MonoDevelop.CSharp.Completion
 
 
 			var document = IdeApp.Workbench.ActiveDocument;
-			var semanticModel = document.UpdateParseDocument ().GetAst<SemanticModel> ();
+			var parsedDocument = document.UpdateParseDocument ();
+			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+
+			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));
+			var enclosingSymbol = semanticModel.GetEnclosingSymbol<ISymbol> (position, default(CancellationToken));
+
 			var insertionPoints = InsertionPointService.GetInsertionPoints (
 				document.Editor,
-				document.ParsedDocument,
-				curType,
-				curType.Locations.First()
+				parsedDocument,
+				declaringType,
+				declaringType.Locations.First()
 			);
 
 			var options = new InsertionModeOptions (
@@ -95,11 +101,8 @@ namespace MonoDevelop.CSharp.Completion
 						return;
 					var indent = "\t";
 					var sb = new StringBuilder ();
-					sb.Append (editor.EolMarker);
-					sb.Append (editor.EolMarker);
-					sb.Append (indent);
-//					if (callingMember != null && callingMember.IsStatic)
-//						sb.Append ("static ");
+					if (enclosingSymbol != null && enclosingSymbol.IsStatic)
+						sb.Append ("static ");
 					sb.Append ("void ");
 					int pos2 = sb.Length;
 					sb.Append (this.DisplayText);
