@@ -210,8 +210,7 @@ end tell", tabId, windowId);
 		
 		public bool IsCompleted {
 			get {
-				//FIXME: get the status of the process, not the whole script
-				return !TabExists (tabId, windowId);
+				return AppleScript.Run ("tell app \"Terminal\" to get busy of {0} of {1}", tabId, windowId) == "false";
 			}
 		}
 		
