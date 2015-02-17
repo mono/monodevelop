@@ -29,21 +29,6 @@ type FSharpTooltipProvider() =
     let killTooltipWindow() =
        enterNotify |> Option.iter (fun en -> en.Dispose ())
 
-
-    //let getTooltipFromLanguageService (editor:TextEditor) line col lineStr offset (parseAndCheckResults: ParseAndCheckResults) =
-    //    async {
-    //       // Get tool-tip from the language service
-    //       let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
-    //       match tip with
-    //       | None -> return NoToolTipText
-    //       | Some (FSharpToolTipText(elems),_) when elems |> List.forall (function FSharpToolTipElement.None -> true | _ -> false) -> return NoToolTipData
-    //       | Some(tiptext,(col1,col2)) -> 
-    //           LoggingService.LogInfo "TooltipProvider: Got data"
-    //           let line = editor.OffsetToLineNumber offset
-    //           let segment = MonoDevelop.Core.Text.TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1)
-    //           let tooltipItem = TooltipItem(tiptext, segment)
-    //           return tooltipItem }
-
     override x.GetItem (editor, context, offset) =
       try
         let activeDoc = IdeApp.Workbench.ActiveDocument
@@ -159,28 +144,6 @@ type FSharpTooltipProvider() =
 
         | _ -> LoggingService.LogError "TooltipProvider: Type mismatch, not a FSharpLocalResolveResult"
                null
-    
-               //(TextEditor editor, Control tipWindow, TooltipItem item, ModifierType modifierState, int mouseX, int mouseY);
-
-    //override x.ShowTooltipWindow (editor, tipWindow, item, modifierState, _mouseX, _mouseY) =
-    //     killTooltipWindow()
-    //     match x.CreateTooltipWindow(editor, context , item, offset, modifierState) with
-    //     | :? TooltipInformationWindow as tipWindow ->
-    //        let positionWidget = editor.TextArea
-    //        let region = item.ItemSegment.GetRegion(editor.Document)
-    //        let p1, p2 = editor.LocationToPoint(region.Begin), editor.LocationToPoint(region.End)
-    //        let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X, 
-    //                                   int p2.Y - positionWidget.Allocation.Y, 
-    //                                   int (p2.X - p1.X), 
-    //                                   int editor.LineHeight)
-    //         //For debug this is usful for visualising the tooltip location
-    //         // editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
-    //           
-    //        tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
-    //        enterNotify <- Some (tipWindow.EnterNotifyEvent.Subscribe(fun _ -> editor.HideTooltip (false)))
-    //        tipWindow :> _
-    //      | _ -> LoggingService.LogError "TooltipProvider: Type mismatch, not a TooltipInformationWindow"
-    //             null
             
     interface IDisposable with
         member x.Dispose() = killTooltipWindow()
