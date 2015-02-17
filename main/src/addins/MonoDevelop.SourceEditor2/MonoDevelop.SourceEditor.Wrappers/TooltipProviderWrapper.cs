@@ -78,7 +78,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			return (Gtk.Window)provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState);
+			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState);
+			if (control == null)
+				return null;
+			return (Gtk.Window)control;
 		}
 
 		protected override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)

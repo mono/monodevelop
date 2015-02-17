@@ -320,6 +320,7 @@
     <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolMemberContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\AnonymousMethodCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

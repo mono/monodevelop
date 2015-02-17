@@ -181,6 +181,19 @@ namespace MonoDevelop.CSharp.Completion
 			return new CreatePartialCompletionData (keyHandler, ext, declarationBegin, currentType, method);
 		}
 
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateAnonymousMethod(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
+		{
+			return new AnonymousMethodCompletionData (keyHandler) {
+				CompletionText = textBeforeCaret + "|" + textAfterCaret,
+				DisplayText = displayText,
+				Description = description
+			};
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewMethodDelegate(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType)
+		{
+			return new EventCreationCompletionData (keyHandler, ext, delegateType, varName, curType);
+		}
 		#endregion
 	}
 }

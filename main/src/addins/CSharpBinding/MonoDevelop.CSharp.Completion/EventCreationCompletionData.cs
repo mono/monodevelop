@@ -24,115 +24,123 @@
 // THE SOFTWARE.
 //
 
-//using System;
-//using System.Text;
-//using System.Linq;
-//using MonoDevelop.Ide.CodeCompletion;
-//using MonoDevelop.Ide.Gui;
-//using MonoDevelop.Ide.Gui.Content;
-//using MonoDevelop.CSharp.Formatting;
-//using MonoDevelop.CSharp.Parser;
-//using System.Collections.Generic;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using MonoDevelop.Ide.Editor;
-//using MonoDevelop.Core.Text;
-//using MonoDevelop.Ide.Editor.Util;
-//using MonoDevelop.Ide.Editor.Extension;
-//
-//namespace MonoDevelop.CSharp.Completion
-//{
-//	class EventCreationCompletionData : CompletionData
-//	{
-//		string parameterList;
-//		IUnresolvedMember callingMember;
-//		int initialOffset;
-//		public bool AddSemicolon = true;
-//		TextEditor editor;
-//		 
-//		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
-//		{
-//			var tooltipInfo = new TooltipInformation ();
-//			return tooltipInfo;
-//		}
-//
-//		public EventCreationCompletionData (CSharpCompletionTextEditorExtension ext, string methodName, IType delegateType, IEvent evt, string parameterList, IUnresolvedMember callingMember, IUnresolvedTypeDefinition declaringType) : base (null)
-//		{
-//			if (string.IsNullOrEmpty (methodName)) {
-//				this.DisplayText   = (evt != null ? evt.Name : "");
-//			} else {
-//				this.DisplayText   = Char.ToUpper (methodName[0]) + methodName.Substring (1) + (evt != null ? evt.Name : "");
-//			}
-//			
-//			if (declaringType != null && declaringType.Members.Any (m => m.Name == this.DisplayText)) {
-//				for (int i = 1; i < 10000; i++) {
-//					if (!declaringType.Members.Any (m => m.Name == this.DisplayText + i)) {
-//						this.DisplayText = this.DisplayText + i.ToString ();
-//						break;
-//					}
-//				}
-//			}
-//			this.editor        = ext.Editor;
-//			this.parameterList = parameterList;
-//			this.callingMember = callingMember;
-//			this.Icon          = "md-newmethod";
-//			this.initialOffset = editor.CaretOffset;
-//		}
-//
-//		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
-//		{
-//			// insert add/remove event handler code after +=/-=
-//			editor.ReplaceText (initialOffset, editor.CaretOffset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
-//			
-//			// Search opening bracket of member
-//			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
-//			while (pos < editor.Length && editor.GetCharAt (pos) != '{') {
-//				pos++;
-//			}
-//			
-//			// Search closing bracket of member
-//			pos = SimpleBracketMatcher.GetMatchingBracketOffset (editor, pos) + 1;
-//			
-//			pos = Math.Max (0, Math.Min (pos, editor.Length - 1));
-//			
-//			// Insert new event handler after closing bracket
-//			var line = callingMember != null ? editor.GetLine (callingMember.Region.BeginLine) : editor.GetLineByOffset (initialOffset);
-//			string indent = line.GetIndentation (editor);
-//			
-//			StringBuilder sb = new StringBuilder ();
-//			sb.Append (editor.EolMarker);
-//			sb.Append (editor.EolMarker);
-//			sb.Append (indent);
-//			if (callingMember != null && callingMember.IsStatic)
-//				sb.Append ("static ");
-//			sb.Append ("void ");
-//			int pos2 = sb.Length;
-//			sb.Append (this.DisplayText);
-//			sb.Append (' ');
-//			sb.Append (this.parameterList);
-//			sb.Append (editor.EolMarker);
-//			sb.Append (indent);
-//			sb.Append ("{");
-//			sb.Append (editor.EolMarker);
-//			sb.Append (indent);
-//			sb.Append (editor.Options.GetIndentationString ());
-//			int cursorPos = pos + sb.Length;
-//			sb.Append (editor.EolMarker);
-//			sb.Append (indent);
-//			sb.Append ("}");
-//			editor.InsertText (pos, sb.ToString ());
-//			editor.CaretOffset = cursorPos;
-//			
-//			// start text link mode after insert
-//			var links = new List<TextLink> ();
-//			var link = new TextLink ("name");
-//			
-//			link.AddLink (new TextSegment (initialOffset, this.DisplayText.Length));
-//			link.AddLink (new TextSegment (initialOffset + pos + pos2, this.DisplayText.Length));
-//			links.Add (link);
-//			editor.StartTextLinkMode (new TextLinkModeOptions (links));
-//			
-//		}
-//	}
-//	
-//
-//}
+using System;
+using System.Text;
+using System.Linq;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.CSharp.Parser;
+using System.Collections.Generic;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Util;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
+using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
+
+namespace MonoDevelop.CSharp.Completion
+{
+	class EventCreationCompletionData : AnonymousMethodCompletionData
+	{
+		readonly CSharpCompletionTextEditorExtension ext;
+		readonly ITypeSymbol delegateType;
+		readonly INamedTypeSymbol curType;
+		readonly string varName;
+		
+		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		{
+			var tooltipInfo = new TooltipInformation ();
+			return tooltipInfo;
+		}
+
+		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		{
+			this.curType = curType;
+			this.varName = varName;
+			this.DisplayText = varName;
+			this.delegateType = delegateType;
+			this.ext = ext;
+			this.Icon = "md-newmethod";
+		}
+
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		{
+			// insert add/remove event handler code after +=/-=
+			var editor = ext.Editor;
+
+
+			bool AddSemicolon = true;
+			var position = window.CodeCompletionContext.TriggerOffset;
+			editor.ReplaceText (position, editor.CaretOffset - position, this.DisplayText + (AddSemicolon ? ";" : ""));
+
+
+			var document = IdeApp.Workbench.ActiveDocument;
+			var semanticModel = document.UpdateParseDocument ().GetAst<SemanticModel> ();
+			var insertionPoints = InsertionPointService.GetInsertionPoints (
+				document.Editor,
+				document.ParsedDocument,
+				curType,
+				curType.Locations.First()
+			);
+
+			var options = new InsertionModeOptions (
+				"Create new method",
+				insertionPoints,
+				async point => {
+					if (!point.Success) 
+						return;
+					var indent = "\t";
+					var sb = new StringBuilder ();
+					sb.Append (editor.EolMarker);
+					sb.Append (editor.EolMarker);
+					sb.Append (indent);
+//					if (callingMember != null && callingMember.IsStatic)
+//						sb.Append ("static ");
+					sb.Append ("void ");
+					int pos2 = sb.Length;
+					sb.Append (this.DisplayText);
+					sb.Append (' ');
+					sb.Append("(");
+
+					var delegateMethod = delegateType.GetDelegateInvokeMethod();
+					for (int k = 0; k < delegateMethod.Parameters.Length; k++) {
+						if (k > 0) {
+							sb.Append(", ");
+						}
+						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, CreateOverrideCompletionData.overrideNameFormat)); 
+					}
+					sb.Append(")");
+
+					sb.Append (editor.EolMarker);
+					sb.Append (indent);
+					sb.Append ("{");
+					sb.Append (editor.EolMarker);
+					sb.Append (indent);
+					sb.Append (editor.Options.GetIndentationString ());
+					//int cursorPos = pos + sb.Length;
+					sb.Append (editor.EolMarker);
+					sb.Append (indent);
+					sb.Append ("}");
+					point.InsertionPoint.Insert (document.Editor, document, sb.ToString ());
+					//			// start text link mode after insert
+					//			var links = new List<TextLink> ();
+					//			var link = new TextLink ("name");
+					//			
+					//			link.AddLink (new TextSegment (initialOffset, this.DisplayText.Length));
+					//			link.AddLink (new TextSegment (initialOffset + pos + pos2, this.DisplayText.Length));
+					//			links.Add (link);
+					//			editor.StartTextLinkMode (new TextLinkModeOptions (links));
+				}
+			);
+
+			editor.StartInsertionMode (options);
+
+		}
+	}
+	
+
+}

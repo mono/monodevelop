@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharp.Completion
 				return text ?? symbol.Name;
 			}
 			set {
-				throw new NotSupportedException ();
+				text = value;
 			}
 		}
 
@@ -190,7 +190,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		readonly string text;
+		string text;
 		protected readonly CSharpCompletionTextEditorExtension ext;
 
 		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base (keyHandler)
@@ -475,6 +475,14 @@ namespace MonoDevelop.CSharp.Completion
 				if (ContainsType (arg as INamedTypeSymbol, searchType))
 					return true;
 			return false;
+		}
+
+		public override int CompareTo (object obj)
+		{
+			var anonymousMethodCompletionData = obj as AnonymousMethodCompletionData;
+			if (anonymousMethodCompletionData == null)
+				return 1;
+			return base.CompareTo (obj);
 		}
 
 
