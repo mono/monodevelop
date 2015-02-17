@@ -168,6 +168,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			base.Initialize ();
 //			DocumentContext.DocumentParsed += HandleDocumentParsed;
+			additionalContextHandlers = new [] {
+				new ProtocolMemberContextHandler (this)
+			};
+
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument != null) {
 //				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
@@ -334,6 +338,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		IEnumerable<CompletionContextHandler> additionalContextHandlers;
 
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
@@ -358,6 +363,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
+				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
 				var completionResult = engine.GetCompletionDataAsync (ctx, triggerInfo, token).Result;
 				if (completionResult == CompletionResult.Empty)

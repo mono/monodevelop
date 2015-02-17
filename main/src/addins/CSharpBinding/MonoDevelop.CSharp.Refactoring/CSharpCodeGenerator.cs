@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.CSharp.Formatting;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -77,6 +78,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			public TextEditor Editor { get; set; }
 			public DocumentContext DocumentContext { get; set; }
+
+			public bool CreateProtocolMember { get; set; }
 
 			public SemanticModel SemanticModel {
 				get {
@@ -182,6 +185,28 @@ namespace MonoDevelop.CSharp.Refactoring
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
+			};
+
+			if (member is IMethodSymbol)
+				return GenerateCode ((IMethodSymbol)member, options);
+			if (member is IPropertySymbol)
+				return GenerateCode ((IPropertySymbol)member, options);
+			if (member is IFieldSymbol)
+				return GenerateCode ((IFieldSymbol)member, options);
+			if (member is IEventSymbol)
+				return GenerateCode ((IEventSymbol)member, options);
+			throw new NotSupportedException ("member " +  member + " is not supported.");
+		}
+
+		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		{
+			//			SetIndentTo (part);
+			var options = new CodeGenerationOptions {
+				ExplicitDeclaration = explicitDeclaration,
+				ImplementingType = implementingType,
+				Part = part,
+				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath),
+				CreateProtocolMember = true
 			};
 
 			if (member is IMethodSymbol)
@@ -746,13 +771,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			if (member is IMethodSymbol) {
 				var method = (IMethodSymbol)member;
-				result.Append ("override ");
+				if (!options.CreateProtocolMember)
+					result.Append ("override ");
 				if (method.IsAsync)
 					result.Append ("async ");
 			}
 
 			if (member is IPropertySymbol) {
-				result.Append ("override ");
+				if (!options.CreateProtocolMember)
+					result.Append ("override ");
 			}
 		}
 		

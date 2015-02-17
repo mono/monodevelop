@@ -69,22 +69,6 @@
 //
 //		#endregion
 //
-//		public static bool HasProtocolAttribute (IType type, out string name)
-//		{
-//			foreach (var attrs in type.GetDefinition ().GetAttributes ()) {
-//				if (attrs.AttributeType.Name == "ProtocolAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (attrs.AttributeType.Namespace)) {
-//					foreach (var na in attrs.NamedArguments) {
-//						if (na.Key.Name != "Name")
-//							continue;
-//						name = na.Value.ConstantValue as string;
-//						if (name != null)
-//							return true;
-//					}
-//				}
-//			}
-//			name = null;
-//			return false;
-//		}
 //
 //		public static Attribute GenerateExportAttribute (RefactoringContext ctx, IMember member)
 //		{

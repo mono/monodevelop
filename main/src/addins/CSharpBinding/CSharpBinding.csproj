@@ -295,7 +295,6 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
@@ -309,7 +308,9 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs">
+      <DependentUpon>ProtocolMemberContextHandler.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
     <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolMemberContextHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -330,7 +332,6 @@
     <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml" />
     <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
-    <None Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
