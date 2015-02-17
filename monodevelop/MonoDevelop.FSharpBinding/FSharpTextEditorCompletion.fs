@@ -489,16 +489,64 @@ type FSharpTextEditorCompletion() =
           let res = loop 0 i 1
           res
 
-//TODO interface IDebuggerExpressionResolver with
-//  member x.ResolveExpression(editor, doc, offset, startOffset) =
-//      let resolver = TextEditorResolverService.GetProvider(editor.MimeType)
-//      let resolveResult, dom = resolver.GetLanguageItem(doc,offset)
-//      match resolveResult.GetSymbol() with
-//      //we are only going to process FSharpResolvedVariable types all other types will not be resolved.
-//      //This will cause the tooltip to be displayed as usual for member lookups etc.  
-//      | :? FSharpResolvedVariable as resolvedVariable ->
-//          startOffset <- dom.BeginColumn
-//          (resolvedVariable :> IVariable).Name
-//      | _ -> startOffset <- -1
-//             null
-//
+  interface IDebuggerExpressionResolver with
+    member x.ResolveExpression(editor, doc, offset, startOffset: byref<int>) =
+      let ast = doc.ParsedDocument.Ast
+      match ast with
+      | null -> null
+      | :? ParseAndCheckResults as pcr ->
+          let location = editor.OffsetToLocation(offset)
+          let line = editor.GetLine location.Line
+          let lineTxt = editor.GetTextAt (line.Offset, line.Length)
+          let symbol = pcr.GetSymbolAtLocation (location.Line, location.Column, lineTxt) |> Async.RunSynchronously
+          match symbol with
+          | Some symbolUse when not symbolUse.IsFromDefinition ->
+              match symbolUse with
+              | CorePatterns.ActivePatternCase apc ->
+                  let loc = apc.DeclarationLocation
+                  startOffset <- loc.StartColumn
+                  apc.DisplayName
+              | CorePatterns.Entity ent ->
+                  let loc = ent.DeclarationLocation
+                  startOffset <- loc.StartColumn
+                  ent.DisplayName
+              | CorePatterns.Field field ->
+                  let loc = field.DeclarationLocation
+                  startOffset <- loc.StartColumn
+                  field.DisplayName
+              | CorePatterns.GenericParameter gp -> null
+              //| CorePatterns.MemberFunctionOrValue
+              | CorePatterns.Parameter p -> null
+              | CorePatterns.StaticParameter sp -> null
+              | CorePatterns.UnionCase uc -> null
+              | ExtendedPatterns.Class c -> null
+              | ExtendedPatterns.ClosureOrNestedFunction cl -> null
+              | ExtendedPatterns.Constructor ctor -> null
+              | ExtendedPatterns.Delegate del -> null
+              | ExtendedPatterns.Enum enum -> null
+              | ExtendedPatterns.Event ev -> null
+              | ExtendedPatterns.Function f -> null
+              | ExtendedPatterns.Interface i -> null
+              | ExtendedPatterns.Module m -> null
+              | ExtendedPatterns.Namespace ns -> null
+              | ExtendedPatterns.Operator op -> null
+              | ExtendedPatterns.Pattern p -> null
+              | ExtendedPatterns.Property pr ->
+                  let loc = symbolUse.RangeAlternate
+                  //startOffset <- loc.StartColumn
+                  let fullName = lineTxt.[loc.StartColumn..loc.EndColumn]
+                  fullName
+              | ExtendedPatterns.Record r ->
+                  let loc = r.DeclarationLocation
+                  startOffset <- loc.StartColumn
+                  r.DisplayName
+              | ExtendedPatterns.TypeAbbreviation ta -> null
+              | ExtendedPatterns.Union un -> null
+              | ExtendedPatterns.Val v ->
+                  let loc = v.DeclarationLocation
+                  startOffset <- loc.StartColumn
+                  v.DisplayName
+              | ExtendedPatterns.ValueType vt -> null
+              | _ -> null
+          | _ -> null
+      | _ -> null
