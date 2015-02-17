@@ -69,60 +69,62 @@ type FSharpParser() =
             else ErrorType.Warning
         Error(errorType, wrapText error.Message 80, Editor.DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
 
+    let tryGetFilePath fileName (project: MonoDevelop.Projects.Project) = 
+        // TriggerParse will work only for full paths
+        if IO.Path.IsPathRooted(fileName) then Some(fileName)
+        else 
+            let workBench = IdeApp.Workbench
+            if (workBench <> null) then
+                
+                let doc = workBench.ActiveDocument
+                if doc <> null then 
+                    let file = doc.FileName.FullPath.ToString()
+                    if file = "" then None else Some file
+                else None
+            else 
+                let filePaths = project.GetItemFiles(true)
+                let res = filePaths |> Seq.find(fun t -> t.FileName = fileName)
+                Some(res.FullPath.ToString())
+
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
         let content = parseOptions.Content
         let proj = parseOptions.Project
-        Async.StartAsTask (
+        if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null
+        else
+
+        Async.StartAsTask(
+            cancellationToken = cancellationToken,
             computation = async {
-        if fileName = null || not (MDLanguageService.SupportedFileName (fileName))
-        then return null
-        else 
             let shortFilename = Path.GetFileName fileName
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            // Not sure if these are needed yet. 
-            //TODO Check...
+            //TODO Check if these are needed
             //doc.CreateRefactoringContext <- Func<_, _, _>(fun doc token -> FSharpRefactoringContext() :> _)
             //doc.CreateRefactoringContextWithEditor <- Func<_, _, _, _> (fun data resolver token -> FSharpRefactoringContext() :> _)
             LoggingService.LogInfo ("FSharpParser: [Thread {0}] Parse {1}, ", Thread.CurrentThread.ManagedThreadId, shortFilename)
-
-            let filePathOpt = 
-                // TriggerParse will work only for full paths
-                if IO.Path.IsPathRooted(fileName) then Some(fileName)
-                else 
-                    let workBench = IdeApp.Workbench
-                    if (workBench <> null) then
-                        
-                        let doc = workBench.ActiveDocument
-                        if doc <> null then 
-                            let file = doc.FileName.FullPath.ToString()
-                            if file = "" then None else Some file
-                        else None
-                    else 
-                        let filePaths = proj.GetItemFiles(true)
-                        let res = filePaths |> Seq.find(fun t -> t.FileName = fileName)
-                        Some(res.FullPath.ToString())
-                        
-            match filePathOpt with
+                                   
+            match tryGetFilePath fileName proj with
             | None -> ()
             | Some filePath -> 
                 let projFile, files, args = MonoDevelop.getCheckerArgs (proj, filePath)
 
-                let results =
+                let! results =
                     try
                         LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        Async.RunSynchronously (
-                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, content.Text, files, args, false), 
-                            timeout = ServiceSettings.maximumTimeout)
+                        languageService.ParseAndCheckFileInProject(projFile, filePath, content.Text, files, args, false)
                     with
                     | :? TimeoutException ->
                         doc.IsInvalid <- true
                         LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        ParseAndCheckResults.Empty
+                        async.Return ParseAndCheckResults.Empty
+                    | :? Tasks.TaskCanceledException ->
+                        doc.IsInvalid <- true
+                        LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject was cancelled for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                        async.Return ParseAndCheckResults.Empty
                     | ex -> doc.IsInvalid <- true
                             LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename, ex)
-                            ParseAndCheckResults.Empty
+                            async.Return ParseAndCheckResults.Empty
                                                                                      
                 results.GetErrors()
                 |> Option.iter (Array.map formatError >> Array.iter doc.Add)
@@ -143,5 +145,5 @@ type FSharpParser() =
                 //Is there any reason not to store the AST? The navigation extension depends on it
                 doc.Ast <- results
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
-            return doc :> _}, cancellationToken = cancellationToken)
+            return doc :> _})
 
