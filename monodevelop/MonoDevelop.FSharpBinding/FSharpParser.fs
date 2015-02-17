@@ -99,9 +99,6 @@ type FSharpParser() =
             let shortFilename = Path.GetFileName fileName
 
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            //TODO Check if these are needed
-            //doc.CreateRefactoringContext <- Func<_, _, _>(fun doc token -> FSharpRefactoringContext() :> _)
-            //doc.CreateRefactoringContextWithEditor <- Func<_, _, _, _> (fun data resolver token -> FSharpRefactoringContext() :> _)
             LoggingService.LogInfo ("FSharpParser: [Thread {0}] Parse {1}, ", Thread.CurrentThread.ManagedThreadId, shortFilename)
                                    
             match tryGetFilePath fileName proj with
@@ -142,7 +139,6 @@ type FSharpParser() =
                     regions |> Seq.iter doc.Add
                 with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
                 //also store the AST of active results if applicable 
-                //Is there any reason not to store the AST? The navigation extension depends on it
                 doc.Ast <- results
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})
