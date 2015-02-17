@@ -37,8 +37,6 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
 
 // TODO:
-// Autopulse - Smaller bar moving.
-// Hook logic.
 // Status Icon CALayer.
 namespace MonoDevelop.MacIntegration
 {
@@ -251,18 +249,27 @@ namespace MonoDevelop.MacIntegration
 			EndProgress ();
 			ShowMessage (name);
 			oldFraction = 0;
+
+			if (AutoPulse)
+				StartProgressAutoPulse ();
 		}
 
 		public void BeginProgress (IconId image, string name)
 		{
 			ShowMessage (image, name);
 			oldFraction = 0;
+
+			if (AutoPulse)
+				StartProgressAutoPulse ();
 		}
 
 		bool inProgress;
 		double oldFraction;
 		public void SetProgressFraction (double work)
 		{
+			if (AutoPulse)
+				return;
+
 			progressMarks.Enqueue (work);
 			if (!inProgress) {
 				inProgress = true;
@@ -280,7 +287,7 @@ namespace MonoDevelop.MacIntegration
 
 		public void Pulse ()
 		{
-			// TODO: Hook in animation.
+			// Nothing to do here.
 		}
 
 		public MonoDevelop.Ide.StatusBar MainContext {
@@ -295,16 +302,19 @@ namespace MonoDevelop.MacIntegration
 		}
 
 		static CGColor xamBlue = new CGColor ((nfloat)52 / 255, (nfloat)152 / 255, (nfloat)219.0 / 255);
-		const int barHeight = 4;
-		void StartProgress (double newFraction)
+		CALayer CreateProgressBarLayer (double width)
 		{
 			var progress = CALayer.Create ();
 			progress.BackgroundColor = xamBlue;
 			progress.BorderColor = xamBlue;
 			progress.BorderWidth = 2;
 			progress.FillMode = CAFillMode.Forwards;
-			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 5 - barHeight, Frame.Width, barHeight);
+			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 5 - barHeight, (nfloat)width, barHeight);
+			return progress;
+		}
 
+		CAAnimation CreateMoveAndGrowAnimation (CALayer progress, double growToFraction)
+		{
 			CAAnimationGroup grp = CAAnimationGroup.CreateAnimation ();
 			grp.Duration = 0.2;
 			grp.FillMode = CAFillMode.Forwards;
@@ -312,33 +322,36 @@ namespace MonoDevelop.MacIntegration
 
 			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
 			double oldOffset = (progress.Frame.Width / 2) * oldFraction;
-			double newOffset = (progress.Frame.Width / 2) * newFraction;
+			double newOffset = (progress.Frame.Width / 2) * growToFraction;
 			move.From = NSNumber.FromDouble (oldOffset);
 			move.To = NSNumber.FromDouble (newOffset);
 
 			CABasicAnimation grow = CABasicAnimation.FromKeyPath ("bounds");
 			grow.From = NSValue.FromCGRect (new CGRect (0, 0, progress.Frame.Width * (nfloat)oldFraction, barHeight));
-			grow.To = NSValue.FromCGRect (new CGRect (0, 0, progress.Frame.Width * (nfloat)newFraction, barHeight));
-
-			oldFraction = newFraction;
-
+			grow.To = NSValue.FromCGRect (new CGRect (0, 0, progress.Frame.Width * (nfloat)growToFraction, barHeight));
 			grp.Animations = new [] {
 				move,
 				grow,
 			};
-			grp.AnimationStopped += (sender, e) => {
-				if (oldFraction < 1 && inProgress) {
-					if (progressMarks.Count != 0)
-						StartProgress (progressMarks.Dequeue ());
-					else {
-						inProgress = false;
-					}
-					return;
-				}
+			return grp;
+		}
 
-				AutoPulse = false;
-				inProgress = false;
-				ShowReady ();
+		CAAnimation CreateAutoPulseAnimation ()
+		{
+			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
+			move.From = NSNumber.FromDouble (-frameAutoPulseWidth);
+			move.To = NSNumber.FromDouble (Frame.Width + frameAutoPulseWidth);
+			move.RepeatCount = float.PositiveInfinity;
+			move.RemovedOnCompletion = false;
+			move.Duration = 4;
+			return move;
+		}
+
+		void AttachFadeoutAnimation (CALayer progress, CAAnimation animation, Func<bool> fadeoutVerifier)
+		{
+			animation.AnimationStopped += (sender, e) => {
+				if (!fadeoutVerifier ())
+					return;
 
 				CABasicAnimation fadeout = CABasicAnimation.FromKeyPath ("opacity");
 				fadeout.From = NSNumber.FromDouble (1);
@@ -350,19 +363,48 @@ namespace MonoDevelop.MacIntegration
 					if (!e2.Finished)
 						return;
 
+					inProgress = false;
+					ShowReady ();
 					progress.Opacity = 0;
 					progress.RemoveFromSuperLayer ();
 				};
 				progress.AddAnimation (fadeout, "opacity");
 			};
-			progress.AddAnimation (grp, growthAnimationKey);
-
+			progress.AddAnimation (animation, growthAnimationKey);
 			if (Layer.Sublayers.Length == 2)
 				Layer.ReplaceSublayer (Layer.Sublayers [1], progress);
 			else
 				Layer.AddSublayer (progress);
 
 			UpdateLayer ();
+		}
+
+		const int barHeight = 4;
+		void StartProgress (double newFraction)
+		{
+			var progress = CreateProgressBarLayer (Frame.Width);
+			var grp = CreateMoveAndGrowAnimation (progress, newFraction);
+			oldFraction = newFraction;
+
+			AttachFadeoutAnimation (progress, grp, () => {
+				if (oldFraction < 1 && inProgress) {
+					if (progressMarks.Count != 0)
+						StartProgress (progressMarks.Dequeue ());
+					else {
+						inProgress = false;
+					}
+					return false;
+				}
+				return true;
+			});
+		}
+
+		const double frameAutoPulseWidth = 100;
+		void StartProgressAutoPulse ()
+		{
+			var progress = CreateProgressBarLayer (frameAutoPulseWidth);
+			var move = CreateAutoPulseAnimation ();
+			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
