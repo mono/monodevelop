@@ -29,26 +29,61 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public interface IConfigurationModel
 	{
+		/// <summary>
+		/// Gets the original identifier for the configuration.
+		/// </summary>
+		/// <value>The original identifier.</value>
 		string OriginalId { get; }
+
+		/// <summary>
+		/// Gest the display string to be used inside a context menu.
+		/// </summary>
+		/// <value>The display string.</value>
 		string DisplayString { get; }
 	}
 
 	public interface IRuntimeModel
 	{
 		/// <summary>
-		/// Notifies that the menu item for this model is activated.
+		/// Gets the display string to be used inside a context menu.
 		/// </summary>
-		/// <returns><c>true</c>, if it should change the menu item, <c>false</c> otherwise.</returns>
-		bool NotifyActivated ();
-
+		/// <value>The display string.</value>
 		string DisplayString { get; }
 
+		/// <summary>
+		/// Gets the display string to be for selected items.
+		/// </summary>
+		/// <value>The full display string.</value>
 		string FullDisplayString { get; }
 
+		/// <summary>
+		/// Gets whether the menu item is visible.
+		/// </summary>
+		/// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
 		bool Visible { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is enabled.
+		/// </summary>
+		/// <value><c>true</c> if enabled; otherwise, <c>false</c>.</value>
 		bool Enabled { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is a separator.
+		/// </summary>
+		/// <value><c>true</c> if this instance is separator; otherwise, <c>false</c>.</value>
 		bool IsSeparator { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is indented.
+		/// </summary>
+		/// <value><c>true</c> if this instance is indented; otherwise, <c>false</c>.</value>
 		bool IsIndented { get; }
+
+		/// <summary>
+		/// Gets whether the menu item is notable (bold text).
+		/// </summary>
+		/// <value><c>true</c> if notable; otherwise, <c>false</c>.</value>
 		bool Notable { get; }
 	}
 }

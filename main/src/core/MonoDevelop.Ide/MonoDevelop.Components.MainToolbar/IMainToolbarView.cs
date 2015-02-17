@@ -30,17 +30,30 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	/// <summary>
+	/// Operation icon corresponding to the Run toolbar button.
+	/// </summary>
 	public enum OperationIcon {
 		Run,
 		Build,
 		Stop
 	}
 
+	/// <summary>
+	/// Event arguments which specify if the event succeeded in at least one handler.
+	/// </summary>
 	public class HandledEventArgs : EventArgs
 	{
+		/// <summary>
+		/// Accumulator for the Handled value.
+		/// </summary>
+		/// <value><c>true</c> if handled by at least one handler; otherwise, <c>false</c>.</value>
 		public bool Handled { get; set; }
 	}
 
+	/// <summary>
+	/// Search MenuItem model for setting search categories.
+	/// </summary>
 	public class SearchMenuItem
 	{
 		internal SearchMenuItem (string displayString, string category)
@@ -76,6 +89,9 @@ namespace MonoDevelop.Components.MainToolbar
 		internal event EventHandler Activated;
 	}
 
+	/// <summary>
+	/// Interface which specificies the minimum working base of a MainToolbar.
+	/// </summary>
 	public interface IMainToolbarView
 	{
 		#region RunButton
@@ -122,7 +138,16 @@ namespace MonoDevelop.Components.MainToolbar
 		/// <value>The active runtime.</value>
 		IRuntimeModel ActiveRuntime { get; set; }
 
+		/// <summary>
+		/// Gets or sets the Configuration model which contains all the usable configurations.
+		/// </summary>
+		/// <value>The configuration model.</value>
 		IEnumerable<IConfigurationModel> ConfigurationModel { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Runtime model which contains all usable runtimes.
+		/// </summary>
+		/// <value>The runtime model.</value>
 		IEnumerable<IRuntimeModel> RuntimeModel { get; set; }
 
 		/// <summary>
