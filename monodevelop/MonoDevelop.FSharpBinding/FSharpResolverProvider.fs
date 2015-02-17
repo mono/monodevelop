@@ -112,8 +112,4 @@ type FSharpResolverProvider() =
 
     member x.GetLanguageItem(doc:Document, offset:int, _identifier:string): Microsoft.CodeAnalysis.ISymbol =
       let (result, _region) = (x :> ITextEditorResolverProvider).GetLanguageItem(doc, offset)
-      //TODO result to ISymbol??
-      null
-
-    /// Returns string with tool-tip from 'FSharpLocalResolveResult'
-    //member x.CreateTooltip(_document, _offset, _result, _errorInformation, _modifierState) = null
+      result
