@@ -294,7 +294,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		PropertyEditorCell GetCell (TableRow row)
 		{
-			var e = editorManager.GetEditor (row.Property);
+			var e = editorManager.GetEditor (row);
 			e.Initialize (this, editorManager, row);
 			return e;
 		}

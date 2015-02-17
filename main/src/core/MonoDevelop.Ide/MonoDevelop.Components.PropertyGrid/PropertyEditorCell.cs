@@ -150,7 +150,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				return new PropertyDialogueEditor (this, context);
 			}
 			else {
-				Type editorType = editorManager.GetEditorType (Property);
+				Type editorType = editorManager.GetEditorType (context);
 				if (editorType == null)
 					return null;
 				

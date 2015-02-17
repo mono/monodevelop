@@ -74,13 +74,13 @@ namespace MonoDevelop.Components.PropertyGrid
 			}
 		}
 
-		public PropertyEditorCell GetEditor (PropertyDescriptor pd)
+		public PropertyEditorCell GetEditor (ITypeDescriptorContext context)
 		{
-			var cell = pd.GetEditor (typeof(PropertyEditorCell)) as PropertyEditorCell;
+			var cell = context.PropertyDescriptor.GetEditor (typeof(PropertyEditorCell)) as PropertyEditorCell;
 			if (cell != null)
 				return cell;
 			
-			Type editorType = GetEditorType (pd);
+			Type editorType = GetEditorType (context);
 			if (editorType == null)
 				return Default;
 			
@@ -89,7 +89,6 @@ namespace MonoDevelop.Components.PropertyGrid
 					throw new Exception ("The property editor '" + editorType + "' must be a Gtk Widget");
 				return Default;
 			}
-
 
 			if (cellCache.TryGetValue (editorType, out cell)) {
 				return cell;
@@ -102,9 +101,11 @@ namespace MonoDevelop.Components.PropertyGrid
 			cellCache [editorType] = cell;
 			return cell;
 		}
-		
-		public Type GetEditorType (PropertyDescriptor pd)
+
+		public Type GetEditorType (ITypeDescriptorContext context)
 		{
+			var pd = context.PropertyDescriptor;
+
 			//try to find a custom editor
 			//TODO: Find a way to provide a IWindowsFormsEditorService so this can work directly
 			//for now, substitute GTK#-based editors
@@ -125,7 +126,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			foreach (var kvp in inheritingEditors)
 				if (editType.IsSubclassOf (kvp.Key))
 					return kvp.Value;
-			
+
 			if (pd.PropertyType.IsEnum) {
 				if (pd.PropertyType.IsDefined (typeof(FlagsAttribute), true))
 					return typeof(FlagsEditorCell);
@@ -147,16 +148,6 @@ namespace MonoDevelop.Components.PropertyGrid
 			//can we use a type converter with a built-in editor?
 			TypeConverter tc = pd.Converter;
 
-			//TODO: support expandable objects with custom editors
-			if (tc is ExpandableObjectConverter)
-				return typeof(ExpandableObjectEditor);
-
-			//This is a temporary workaround *and* and optimisation
-			//First, most unknown types will be most likely to convert to/from strings
-			//Second, System.Web.UI.WebControls/UnitConverter.cs dies on non-strings
-			if (tc.CanConvertFrom (typeof (string)) && tc.CanConvertTo (typeof(string)))
-				return typeof(TextEditor);
-
 			//TODO: find best match, not first
 			foreach (var kvp in editors)
 				if (tc.CanConvertFrom (kvp.Key) && tc.CanConvertTo (kvp.Key))
@@ -165,6 +156,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			foreach (var kvp in inheritingEditors)
 				if (tc.CanConvertFrom (kvp.Key) && tc.CanConvertTo (kvp.Key))
 					return kvp.Value;
+
+			if (tc.CanConvertTo (typeof(string)) || tc.GetStandardValuesSupported (context)) {
+				return typeof(TextEditor);
+			}
 
 			//nothing found - just display type
 			return null;
