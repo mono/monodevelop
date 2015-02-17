@@ -533,7 +533,7 @@ type FSharpTextEditorCompletion() =
               | ExtendedPatterns.Pattern p -> null
               | ExtendedPatterns.Property pr ->
                   let loc = symbolUse.RangeAlternate
-                  //startOffset <- loc.StartColumn
+                  startOffset <- loc.StartColumn
                   let fullName = lineTxt.[loc.StartColumn..loc.EndColumn]
                   fullName
               | ExtendedPatterns.Record r ->
