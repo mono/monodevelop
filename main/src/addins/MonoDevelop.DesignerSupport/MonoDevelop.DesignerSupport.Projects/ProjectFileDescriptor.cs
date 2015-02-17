@@ -173,11 +173,7 @@ namespace MonoDevelop.DesignerSupport
 			}
 			public override bool GetStandardValuesExclusive (ITypeDescriptorContext context)
 			{
-				//only make the list exclusive if we managed to get a list from the parent project
-				ProjectFileDescriptor descriptor = context != null?
-					context.Instance as ProjectFileDescriptor : null;
-				
-				return (descriptor != null && descriptor.file != null && descriptor.file.Project != null);
+				return false;
 			}
 		}
 		
