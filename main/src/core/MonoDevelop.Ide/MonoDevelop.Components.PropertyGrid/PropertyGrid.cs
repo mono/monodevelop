@@ -279,7 +279,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueDraw ();
 		}
 		
-		void Populate ()
+		internal void Populate ()
 		{
 			PropertyDescriptorCollection properties;
 			

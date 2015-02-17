@@ -770,10 +770,21 @@ namespace MonoDevelop.Components.PropertyGrid
 			currentEditor.CanFocus = true;
 			currentEditor.GrabFocus ();
 			ConnectTabEvent (currentEditor);
+
+			var refreshAtt = row.Property.Attributes.OfType<RefreshPropertiesAttribute> ().FirstOrDefault ();
+			var refresh = refreshAtt == null ? RefreshProperties.None : refreshAtt.RefreshProperties;
 			editSession.Changed += delegate {
+				if (refresh == RefreshProperties.Repaint) {
+					parentGrid.Refresh ();
+				} else if (refresh == RefreshProperties.All) {
+					parentGrid.Populate();
+				}
+
 				if (Changed != null)
 					Changed (this, EventArgs.Empty);
+
 			};
+
 			var vs = ((Gtk.Viewport)Parent).Vadjustment;
 			if (row.EditorBounds.Top < vs.Value)
 				vs.Value = row.EditorBounds.Top;
