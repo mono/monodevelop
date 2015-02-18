@@ -311,7 +311,7 @@ namespace MonoDevelop.MacIntegration
 			progress.BorderColor = xamBlue;
 			progress.BorderWidth = 2;
 			progress.FillMode = CAFillMode.Forwards;
-			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 5 - barHeight, (nfloat)width, barHeight);
+			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 7 - barHeight, (nfloat)width, barHeight);
 			return progress;
 		}
 
@@ -381,7 +381,7 @@ namespace MonoDevelop.MacIntegration
 			UpdateLayer ();
 		}
 
-		const int barHeight = 4;
+		const int barHeight = 2;
 		void StartProgress (double newFraction)
 		{
 			var progress = CreateProgressBarLayer (Frame.Width);
