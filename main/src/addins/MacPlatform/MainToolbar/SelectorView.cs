@@ -110,6 +110,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var menu = new NSMenu {
 						AutoEnablesItems = false,
 						ShowsStateColumn = false,
+						Font = NSFont.MenuFontOfSize (0),
 					};
 					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
 						foreach (var configuration in ConfigurationModel) {
