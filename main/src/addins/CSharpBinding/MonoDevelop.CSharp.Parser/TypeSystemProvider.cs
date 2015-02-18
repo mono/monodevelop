@@ -90,9 +90,12 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
+				} catch (AggregateException ae) {
+					ae.Handle (x => x is TaskCanceledException); 
+					return Task.FromResult ((ParsedDocument)result);
 				} catch (TaskCanceledException) {
 					return Task.FromResult ((ParsedDocument)result);
-				}catch (Exception e) {
+				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
 				}
 			}
