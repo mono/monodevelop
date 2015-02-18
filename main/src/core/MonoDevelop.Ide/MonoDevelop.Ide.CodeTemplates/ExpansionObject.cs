@@ -51,10 +51,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				var analysisDocument = DocumentContext.AnalysisDocument;
+				var analysisDocument = DocumentContext.ParsedDocument;
 				if (analysisDocument == null)
 					return null;
-				return analysisDocument.GetSemanticModelAsync ().Result;
+				return analysisDocument.GetAst<SemanticModel> ();
 			}
 		}
 

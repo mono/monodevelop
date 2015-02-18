@@ -310,8 +310,84 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (hashSet.Contains (fileName))
 					continue;
 				hashSet.Add (fileName);
+
 				yield return MetadataReferenceCache.LoadReference (GetProjectId (p), fileName);
 			}
+/*			// Portable profile insertion test code
+			string[] portableDlls = {
+//				@"Microsoft.CSharp.dll",
+//				@"Microsoft.VisualBasic.dll",
+				@"mscorlib.dll",
+				@"System.Collections.Concurrent.dll",
+				@"System.Collections.dll",
+				@"System.ComponentModel.Annotations.dll",
+				@"System.ComponentModel.DataAnnotations.dll",
+				@"System.ComponentModel.dll",
+//				@"System.ComponentModel.EventBasedAsync.dll",
+				@"System.Core.dll",
+				@"System.Diagnostics.Contracts.dll",
+				@"System.Diagnostics.Debug.dll",
+				@"System.Diagnostics.Tools.dll",
+				@"System.Diagnostics.Tracing.dll",
+				@"System.dll",
+				@"System.Dynamic.Runtime.dll",
+				@"System.Globalization.dll",
+				@"System.IO.Compression.dll",
+				@"System.IO.dll",
+				@"System.Linq.dll",
+				@"System.Linq.Expressions.dll",
+				@"System.Linq.Parallel.dll",
+				@"System.Linq.Queryable.dll",
+//				@"System.Net.dll",
+//				@"System.Net.Http.dll",
+//				@"System.Net.NetworkInformation.dll",
+//				@"System.Net.Primitives.dll",
+//				@"System.Net.Requests.dll",
+//				@"System.Numerics.dll",
+//				@"System.ObjectModel.dll",
+				@"System.Reflection.Context.dll",
+				@"System.Reflection.dll",
+				@"System.Reflection.Extensions.dll",
+				@"System.Reflection.Primitives.dll",
+//				@"System.Resources.ResourceManager.dll",
+				@"System.Runtime.dll",
+				@"System.Runtime.Extensions.dll",
+				@"System.Runtime.InteropServices.dll",
+				@"System.Runtime.InteropServices.WindowsRuntime.dll",
+				@"System.Runtime.Numerics.dll",
+				@"System.Runtime.Serialization.dll",
+				@"System.Runtime.Serialization.Json.dll",
+				@"System.Runtime.Serialization.Primitives.dll",
+				@"System.Runtime.Serialization.Xml.dll",
+//				@"System.Security.Principal.dll",
+//				@"System.ServiceModel.dll",
+//				@"System.ServiceModel.Duplex.dll",
+//				@"System.ServiceModel.Http.dll",
+//				@"System.ServiceModel.NetTcp.dll",
+//				@"System.ServiceModel.Primitives.dll",
+//				@"System.ServiceModel.Security.dll",
+//				@"System.ServiceModel.Web.dll",
+				@"System.Text.Encoding.dll",
+				@"System.Text.Encoding.Extensions.dll",
+				@"System.Text.RegularExpressions.dll",
+				@"System.Threading.dll",
+				@"System.Threading.Tasks.dll",
+				@"System.Threading.Tasks.Parallel.dll",
+//				@"System.Windows.dll",
+				@"System.Xml.dll",
+				@"System.Xml.Linq.dll",
+				@"System.Xml.ReaderWriter.dll",
+				@"System.Xml.Serialization.dll",
+				@"System.Xml.XDocument.dll",
+				@"System.Xml.XmlSerializer.dll"
+			};
+			const string portableProfiles = "/opt/mono/lib/mono/xbuild-frameworks/.NETPortable/v4.5/";
+			foreach (var dll in portableDlls) {
+				var metadataReference = MetadataReferenceCache.LoadReference (GetProjectId (p), portableProfiles + dll);
+				if (metadataReference != null)
+					yield return metadataReference;
+			}
+			*/
 
 			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				var referencedProject = pr as MonoDevelop.Projects.DotNetProject;

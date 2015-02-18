@@ -44,10 +44,10 @@ namespace MonoDevelop.CSharp.Parser
 	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
 		static readonly List<Error> emptyList = new List<Error> ();
-		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
 		{
-			var fileName = parseOptions.FileName;
-			var project = parseOptions.Project;
+			var fileName = options.FileName;
+			var project = options.Project;
 			var result = new CSharpParsedDocument (fileName);
 
 			if (project != null) {
@@ -74,11 +74,11 @@ namespace MonoDevelop.CSharp.Parser
 //				}
 //			};
 			
-			var options = GetCompilerArguments (project);
+			var compilerArguments = GetCompilerArguments (project);
 			SyntaxTree unit = null;
 
 			if (project != null) {
-				var curDoc = parseOptions.RoslynDocument;
+				var curDoc = options.RoslynDocument;
 				if (curDoc == null) {
 					var projectId = TypeSystemService.Workspace.GetProjectId (project);
 					var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
@@ -90,13 +90,15 @@ namespace MonoDevelop.CSharp.Parser
 					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
 					unit = model.SyntaxTree;
 					result.Ast = model;
-				} catch (AggregateException) {
+				} catch (TaskCanceledException) {
 					return Task.FromResult ((ParsedDocument)result);
+				}catch (Exception e) {
+					LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
 				}
 			}
 
 			if (unit == null) {
-				unit = CSharpSyntaxTree.ParseText (SourceText.From (parseOptions.Content.Text), options, fileName);
+				unit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
 			} 
 
 			result.Unit = unit;
