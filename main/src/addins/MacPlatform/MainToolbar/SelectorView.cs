@@ -124,6 +124,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 								UpdatePathText (ConfigurationIdx, _configuration.DisplayString);
 							}) {
 								Enabled = true,
+								IndentationLevel = 1,
 							});
 							++i;
 						}
@@ -146,7 +147,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 									if (ea.Handled)
 										ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == old);
 								}) {
-									IndentationLevel = runtime.IsIndented ? 1 : 0,
+									IndentationLevel = runtime.IsIndented ? 2 : 1,
 									Enabled = runtime.Enabled,
 									Hidden = !runtime.Visible,
 								});
