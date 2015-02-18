@@ -101,7 +101,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					}
 				} catch (TaskCanceledException) {
 				} catch (AggregateException ae) {
-					ae.Handle (x => x is TaskCanceledException); 
+					ae.Flatten ().Handle (x => x is TaskCanceledException); 
 				}
 			}, token);
 		}

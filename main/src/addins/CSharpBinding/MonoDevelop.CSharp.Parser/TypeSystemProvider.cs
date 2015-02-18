@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Parser
 					unit = model.SyntaxTree;
 					result.Ast = model;
 				} catch (AggregateException ae) {
-					ae.Handle (x => x is TaskCanceledException); 
+					ae.Flatten ().Handle (x => x is TaskCanceledException); 
 					return Task.FromResult ((ParsedDocument)result);
 				} catch (TaskCanceledException) {
 					return Task.FromResult ((ParsedDocument)result);
