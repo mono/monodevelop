@@ -157,9 +157,13 @@ namespace MonoDevelop.Ide.Editor
 			src = new CancellationTokenSource ();
 			var token = src.Token;
 			Task.Run (() => {
-				UpdateErrorUndelines (ctx.ParsedDocument, token);
-				UpdateQuickTasks (ctx.ParsedDocument, token);
-				UpdateFoldings (ctx.ParsedDocument, false, token);
+				try {
+					UpdateErrorUndelines (ctx.ParsedDocument, token);
+					UpdateQuickTasks (ctx.ParsedDocument, token);
+					UpdateFoldings (ctx.ParsedDocument, false, token);
+				} catch (OperationCanceledException) {
+					// ignore
+				}
 			}, token);
 		}
 
@@ -192,28 +196,32 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
 				return;
-			var errors = await parsedDocument.GetErrorsAsync(token);
-			Application.Invoke (delegate {
-				if (token.IsCancellationRequested)
-					return;
-				RemoveErrorUndelinesResetTimerId ();
-				const uint timeout = 500;
-				resetTimerId = GLib.Timeout.Add (timeout, delegate {
-					if (token.IsCancellationRequested) {
+			try {
+				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
+				Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
+					RemoveErrorUndelinesResetTimerId ();
+					const uint timeout = 500;
+					resetTimerId = GLib.Timeout.Add (timeout, delegate {
+						if (token.IsCancellationRequested) {
+							resetTimerId = 0;
+							return false;
+						}
+						RemoveErrorUnderlines ();
+						// Else we underline the error
+						if (errors != null) {
+							foreach (var error in errors) {
+								UnderLineError (error);
+							}
+						}
 						resetTimerId = 0;
 						return false;
-					}
-					RemoveErrorUnderlines ();
-					// Else we underline the error
-					if (errors != null) {
-						foreach (var error in errors) {
-							UnderLineError (error);
-						}
-					}
-					resetTimerId = 0;
-					return false;
+					});
 				});
-			});
+			} catch (OperationCanceledException) {
+				// ignore
+			}
 		}
 		#endregion
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -797,12 +805,12 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var newTasks = new List<QuickTask> ();
 			if (doc != null) {
-				foreach (var cmt in await doc.GetTagCommentsAsync(token)) {
+				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
 					newTasks.Add (newTask);
 				}
 
-				foreach (var error in await doc.GetErrorsAsync(token)) {
+				foreach (var error in await doc.GetErrorsAsync(token).ConfigureAwait (false)) {
 					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
 					newTasks.Add (newTask);
 				}

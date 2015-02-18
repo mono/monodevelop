@@ -220,14 +220,18 @@ namespace MonoDevelop.CSharp.Parser
 			
 			IReadOnlyList<Error> result;
 			if (weakErrors == null || !weakErrors.TryGetTarget (out result)) {
-				result = model
-					.GetDiagnostics (null, cancellationToken)
-					.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-					.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.GetMessage (), GetRegion (diag)))
-					.ToList ();
-				var newRef = new WeakReference<IReadOnlyList<Error>> (result);
-				var oldRef = weakErrors;
-				while (Interlocked.CompareExchange (ref weakErrors, newRef, oldRef) == oldRef) {
+				try {
+					result = model
+						.GetDiagnostics (null, cancellationToken)
+						.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.GetMessage (), GetRegion (diag)))
+						.ToList ();
+					var newRef = new WeakReference<IReadOnlyList<Error>> (result);
+					var oldRef = weakErrors;
+					while (Interlocked.CompareExchange (ref weakErrors, newRef, oldRef) == oldRef) {
+					}
+				} catch (OperationCanceledException) {
+					return Task.FromResult (emptyErrors);
 				}
 			}
 			return Task.FromResult (result);

@@ -72,12 +72,12 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes)
+		public static void AcceptChanges (IProgressMonitor monitor, IList<Change> changes)
 		{
 			AcceptChanges (monitor, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Ide.ITextFileProvider fileProvider)
+		public static void AcceptChanges (IProgressMonitor monitor, IList<Change> changes, MonoDevelop.Ide.ITextFileProvider fileProvider)
 		{
 			var rctx = new RefactoringOptions (null, null);
 			var handler = new RenameHandler (changes);

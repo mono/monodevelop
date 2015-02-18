@@ -40,24 +40,24 @@ namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		readonly ISymbol symbol;
-		readonly RenameRefactoring rename;
-		readonly List<Tuple<string, TextSpan>> locations;
-		
+		Func<RenameRefactoring.RenameProperties, IList<Change>> rename;
+
+		public RenameItemDialog (string title, string currentName, Func<RenameRefactoring.RenameProperties, IList<Change>> renameOperation)
+		{
+			this.Build ();
+			Init (title, currentName, renameOperation);
+		}
+
 		public RenameItemDialog (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameRefactoring rename)
 		{
-			this.symbol = symbol;
-			this.rename = rename;
-			this.locations = locations;
-			
 			this.Build ();
-			includeOverloadsCheckbox.Active = true;
-			includeOverloadsCheckbox.Visible = false;
+
+			string title;
 			if (symbol is ITypeSymbol) {
 
 				var t = (ITypeSymbol)symbol;
 				if (t.TypeKind == TypeKind.TypeParameter) {
-					this.Title = GettextCatalog.GetString ("Rename Type Parameter");
+					title = GettextCatalog.GetString ("Rename Type Parameter");
 					entry.Text = t.Name;
 
 				} else {
@@ -70,58 +70,72 @@ namespace MonoDevelop.Refactoring.Rename
 						this.renameFileFlag.Active = false;
 					}
 					if (typeDefinition.TypeKind == TypeKind.Interface)
-						this.Title = GettextCatalog.GetString ("Rename Interface");
+						title = GettextCatalog.GetString ("Rename Interface");
 					else if (typeDefinition.TypeKind == TypeKind.Delegate)
-						this.Title = GettextCatalog.GetString ("Rename Delegate");
+						title = GettextCatalog.GetString ("Rename Delegate");
 					else if (typeDefinition.TypeKind == TypeKind.Enum)
-						this.Title = GettextCatalog.GetString ("Rename Enum");
+						title = GettextCatalog.GetString ("Rename Enum");
 					else if (typeDefinition.TypeKind == TypeKind.Struct)
-						this.Title = GettextCatalog.GetString ("Rename Struct");
+						title = GettextCatalog.GetString ("Rename Struct");
 					else
-						this.Title = GettextCatalog.GetString ("Rename Class");
+						title = GettextCatalog.GetString ("Rename Class");
 				}
 				//				this.fileName = type.GetDefinition ().Region.FileName;
 			} else if (symbol.Kind == SymbolKind.Field) {
-				this.Title = GettextCatalog.GetString ("Rename Field");
+				title = GettextCatalog.GetString ("Rename Field");
 			} else if (symbol.Kind == SymbolKind.Property) {
-				this.Title = GettextCatalog.GetString ("Rename Property");
+				title = GettextCatalog.GetString ("Rename Property");
 			} else if (symbol.Kind == SymbolKind.Event) {
-				this.Title = GettextCatalog.GetString ("Rename Event");
+				title = GettextCatalog.GetString ("Rename Event");
 			} else if (symbol.Kind == SymbolKind.Method) { 
 				var m = (IMethodSymbol)symbol;
 				if (m.MethodKind == MethodKind.Constructor ||
 					m.MethodKind == MethodKind.StaticConstructor ||
 					m.MethodKind == MethodKind.Destructor) {
-					this.Title = GettextCatalog.GetString ("Rename Class");
+					title = GettextCatalog.GetString ("Rename Class");
 				} else {
-					this.Title = GettextCatalog.GetString ("Rename Method");
-					includeOverloadsCheckbox.Visible = m.ContainingType.GetMembers (m.Name).Count () > 1;
+					title = GettextCatalog.GetString ("Rename Method");
+					includeOverloadsCheckbox.Visible = m.ContainingType.GetMembers (m.Name).Length > 1;
 				}
 			} else if (symbol.Kind == SymbolKind.Parameter) {
-				this.Title = GettextCatalog.GetString ("Rename Parameter");
+				title = GettextCatalog.GetString ("Rename Parameter");
 			} else if (symbol.Kind == SymbolKind.Local) {
-				this.Title = GettextCatalog.GetString ("Rename Variable");
+				title = GettextCatalog.GetString ("Rename Variable");
 			} else if (symbol.Kind == SymbolKind.TypeParameter) {
-				this.Title = GettextCatalog.GetString ("Rename Type Parameter");
+				title = GettextCatalog.GetString ("Rename Type Parameter");
 			} else if (symbol.Kind == SymbolKind.Namespace) {
-				this.Title = GettextCatalog.GetString ("Rename Namespace");
-			} if (symbol.Kind == SymbolKind.Label) {
-				this.Title = GettextCatalog.GetString ("Rename Label");
+				title = GettextCatalog.GetString ("Rename Namespace");
+			} else if (symbol.Kind == SymbolKind.Label) {
+				title = GettextCatalog.GetString ("Rename Label");
 			} else {
-				this.Title = GettextCatalog.GetString ("Rename Item");
+				title = GettextCatalog.GetString ("Rename Item");
 			}
-			entry.Text = symbol.Name;
+
+
+			Init (title, symbol.Name, prop => rename.PerformChanges (symbol, locations, prop));
+
+		}
+
+		void Init (string title, string currenName, Func<RenameRefactoring.RenameProperties, IList<Change>> rename)
+		{
+			this.Title = title;
+			this.rename = rename;
+
+			includeOverloadsCheckbox.Active = true;
+			includeOverloadsCheckbox.Visible = false;
+			entry.Text = currenName;
 			entry.SelectRegion (0, -1);
-			
+
 			buttonPreview.Sensitive = buttonOk.Sensitive = false;
 			entry.Changed += OnEntryChanged;
 			entry.Activated += OnEntryActivated;
-			
+
 			buttonOk.Clicked += OnOKClicked;
 			buttonPreview.Clicked += OnPreviewClicked;
 			entry.Changed += delegate { buttonPreview.Sensitive = buttonOk.Sensitive = ValidateName (); };
 			ValidateName ();
 		}
+
 
 		bool ValidateName ()
 		{
@@ -167,8 +181,8 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			List<Change> changes = rename.PerformChanges (symbol, locations, properties);
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
+			var changes = this.rename (properties);
+			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (Title, null);
 			RefactoringService.AcceptChanges (monitor, changes);
 		}
 		
@@ -176,7 +190,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			List<Change> changes = rename.PerformChanges (symbol, locations, properties);
+			var changes = this.rename (properties);
 			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 		}
 	}

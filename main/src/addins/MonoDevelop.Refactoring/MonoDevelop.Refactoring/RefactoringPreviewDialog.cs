@@ -48,9 +48,9 @@ namespace MonoDevelop.Refactoring
 		const int objColumn = 2;
 		const int statusVisibleColumn = 3;
 
-		List<Change> changes;
+		IList<Change> changes;
 
-		public RefactoringPreviewDialog (List<Change> changes)
+		public RefactoringPreviewDialog (IList<Change> changes)
 		{
 			this.Build ();
 			this.changes = changes;
