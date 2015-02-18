@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+using Gdk;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -152,9 +153,14 @@ namespace MonoDevelop.Ide.Editor
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			var ctx = (DocumentContext)sender;
-			UpdateErrorUndelines (ctx.ParsedDocument);
-			UpdateQuickTasks (ctx.ParsedDocument);
-			UpdateFoldings (ctx.ParsedDocument);
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			var token = src.Token;
+			Task.Run (() => {
+				UpdateErrorUndelines (ctx.ParsedDocument, token);
+				UpdateQuickTasks (ctx.ParsedDocument, token);
+				UpdateFoldings (ctx.ParsedDocument, false, token);
+			}, token);
 		}
 
 		#region Error handling
@@ -182,19 +188,23 @@ namespace MonoDevelop.Ide.Editor
 			errors.Add (error);
 		}
 
-		void UpdateErrorUndelines (ParsedDocument parsedDocument)
+		async void UpdateErrorUndelines (ParsedDocument parsedDocument, CancellationToken token)
 		{
 			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
 				return;
-
+			var errors = await parsedDocument.GetErrorsAsync(token);
 			Application.Invoke (delegate {
+				if (token.IsCancellationRequested)
+					return;
 				RemoveErrorUndelinesResetTimerId ();
 				const uint timeout = 500;
 				resetTimerId = GLib.Timeout.Add (timeout, delegate {
+					if (token.IsCancellationRequested) {
+						resetTimerId = 0;
+						return false;
+					}
 					RemoveErrorUnderlines ();
-
 					// Else we underline the error
-					var errors = parsedDocument.GetErrorsAsync().Result;
 					if (errors != null) {
 						foreach (var error in errors) {
 							UnderLineError (error);
@@ -207,89 +217,77 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		CancellationTokenSource src = new CancellationTokenSource ();
-		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false)
+		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
 			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
 				return;
-			src.Cancel ();
-			src = new CancellationTokenSource ();
-			var token = src.Token;
 			var caretLocation = textEditor.CaretLocation;
-			System.Action action = delegate {
-				try {
-					var foldSegments = new List<IFoldSegment> ();
+			try {
+				var foldSegments = new List<IFoldSegment> ();
 
-					foreach (FoldingRegion region in parsedDocument.GetFoldingsAsync(token).Result) {
-						if (token.IsCancellationRequested)
-							return;
-						var type = FoldingType.Unknown;
-						bool setFolded = false;
-						bool folded = false;
-						//decide whether the regions should be folded by default
-						switch (region.Type) {
-						case FoldType.Member:
-							type = FoldingType.TypeMember;
-							break;
-						case FoldType.Type:
-							type = FoldingType.TypeDefinition;
-							break;
-						case FoldType.UserRegion:
-							type = FoldingType.Region;
-							setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
-							folded = true;
-							break;
-						case FoldType.Comment:
-							type = FoldingType.Comment;
-							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-							folded = true;
-							break;
-						case FoldType.CommentInsideMember:
-							type = FoldingType.Comment;
-							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-							folded = false;
-							break;
-						case FoldType.Undefined:
-							setFolded = true;
-							folded = region.IsFoldedByDefault;
-							break;
-						}
-						var start = textEditor.LocationToOffset (region.Region.Begin);
-						var end = textEditor.LocationToOffset (region.Region.End);
-						var marker = textEditor.CreateFoldSegment (start, end - start);
-						foldSegments.Add (marker);
-						marker.CollapsedText = region.Name;
-						marker.FoldingType = type;
-						//and, if necessary, set its fold state
-						if (marker != null && setFolded && firstTime) {
-							// only fold on document open, later added folds are NOT folded by default.
-							marker.IsCollapsed = folded;
-							continue;
-						}
-						if (marker != null && region.Region.Contains (caretLocation.Line, caretLocation.Column))
-							marker.IsCollapsed = false;
+				foreach (FoldingRegion region in parsedDocument.GetFoldingsAsync(token).Result) {
+					if (token.IsCancellationRequested)
+						return;
+					var type = FoldingType.Unknown;
+					bool setFolded = false;
+					bool folded = false;
+					//decide whether the regions should be folded by default
+					switch (region.Type) {
+					case FoldType.Member:
+						type = FoldingType.TypeMember;
+						break;
+					case FoldType.Type:
+						type = FoldingType.TypeDefinition;
+						break;
+					case FoldType.UserRegion:
+						type = FoldingType.Region;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+						folded = true;
+						break;
+					case FoldType.Comment:
+						type = FoldingType.Comment;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+						folded = true;
+						break;
+					case FoldType.CommentInsideMember:
+						type = FoldingType.Comment;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+						folded = false;
+						break;
+					case FoldType.Undefined:
+						setFolded = true;
+						folded = region.IsFoldedByDefault;
+						break;
 					}
-					if (firstTime) {
-						textEditor.SetFoldings (foldSegments);
-					} else {
-						Application.Invoke (delegate {
-							if (!token.IsCancellationRequested)
-								textEditor.SetFoldings (foldSegments);
-						});
+					var start = textEditor.LocationToOffset (region.Region.Begin);
+					var end = textEditor.LocationToOffset (region.Region.End);
+					var marker = textEditor.CreateFoldSegment (start, end - start);
+					foldSegments.Add (marker);
+					marker.CollapsedText = region.Name;
+					marker.FoldingType = type;
+					//and, if necessary, set its fold state
+					if (marker != null && setFolded && firstTime) {
+						// only fold on document open, later added folds are NOT folded by default.
+						marker.IsCollapsed = folded;
+						continue;
 					}
+					if (marker != null && region.Region.Contains (caretLocation.Line, caretLocation.Column))
+						marker.IsCollapsed = false;
 				}
-				catch (Exception ex) {
-					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+				if (firstTime) {
+					textEditor.SetFoldings (foldSegments);
+				} else {
+					Application.Invoke (delegate {
+						if (!token.IsCancellationRequested)
+							textEditor.SetFoldings (foldSegments);
+					});
 				}
-			};
-			if (firstTime) {
-				action ();
-				return;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 			}
-
-			Task.Factory.StartNew (action);
 		}
 
 		void RunFirstTimeFoldUpdate (string text)
@@ -778,7 +776,7 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 	
 		#region IQuickTaskProvider implementation
-		readonly List<QuickTask> tasks = new List<QuickTask> ();
+		List<QuickTask> tasks = new List<QuickTask> ();
 
 		public event EventHandler TasksUpdated;
 
@@ -795,21 +793,26 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		async void UpdateQuickTasks (ParsedDocument doc)
+		async void UpdateQuickTasks (ParsedDocument doc, CancellationToken token)
 		{
-			tasks.Clear ();
+			var newTasks = new List<QuickTask> ();
 			if (doc != null) {
-				foreach (var cmt in await doc.GetTagCommentsAsync()) {
+				foreach (var cmt in await doc.GetTagCommentsAsync(token)) {
 					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), DiagnosticSeverity.Info);
-					tasks.Add (newTask);
+					newTasks.Add (newTask);
 				}
 
-				foreach (var error in await doc.GetErrorsAsync()) {
+				foreach (var error in await doc.GetErrorsAsync(token)) {
 					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == MonoDevelop.Ide.TypeSystem.ErrorType.Error ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning);
-					tasks.Add (newTask);
+					newTasks.Add (newTask);
 				}
 			}
-			OnTasksUpdated (EventArgs.Empty);
+			Application.Invoke (delegate {
+				if (token.IsCancellationRequested)
+					return;
+				tasks = newTasks;
+				OnTasksUpdated (EventArgs.Empty);
+			});
 		}
 		#endregion
 
