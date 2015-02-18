@@ -173,7 +173,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				// fix the icon alignment, move it slightly up
 				// 1px on retina and non-retina, resulting in 0.5pt on retina
-				var alignFix = new CGRect (0, -1 /* Window.BackingScaleFactor */, 16, 16);
+				var alignFix = new CGRect (0, -1 * Window.BackingScaleFactor, 16, 16);
 				// Retina flag should be in Screen.ScaleFactor, but Screen needs to be an active screen
 				// Also it needs to refresh on screen change, it seems you currently don't have an even listener for this event.
 				// (I might be wrong :) )
