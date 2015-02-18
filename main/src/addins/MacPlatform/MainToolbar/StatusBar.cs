@@ -82,23 +82,23 @@ namespace MonoDevelop.MacIntegration
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
+		static NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
 		{
 			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), size, color);
 		}
 
-		NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
+		static NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
 		{
 			var attrString = new NSMutableAttributedString ("");
 			if (image != null) {
 				// FIXME: Use the size parameter.
 				// Center image with frame.
 				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (0, -3, image.Size.Width, image.Size.Height);
+					image.AlignmentRect = new CGRect (-2, -3, image.Size.Width, image.Size.Height);
 					attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image) }));
 				}
 
-			attrString.Append (new NSAttributedString (" "));
+			attrString.Append (new NSAttributedString ("  "));
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = 6,
 				ForegroundColor = color,
