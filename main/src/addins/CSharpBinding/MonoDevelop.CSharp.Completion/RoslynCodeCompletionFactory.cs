@@ -57,7 +57,8 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, IFieldSymbol field)
 		{
-			return new RoslynSymbolCompletionData (keyHandler, ext, field, field.Type.Name + "." + field.Name);
+			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+			return new RoslynSymbolCompletionData (keyHandler, ext, field, field.Type.ToMinimalDisplayString (model, ext.Editor.CaretOffset, SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + field.Name);
 		}
 		
 		class FormatItemCompletionData : RoslynCompletionData
