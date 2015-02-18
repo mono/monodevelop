@@ -309,7 +309,6 @@ namespace MonoDevelop.MacIntegration
 			var progress = CALayer.Create ();
 			progress.BackgroundColor = xamBlue;
 			progress.BorderColor = xamBlue;
-			progress.BorderWidth = 2;
 			progress.FillMode = CAFillMode.Forwards;
 			progress.Frame = new CGRect (Frame.Left - 4, Frame.Bottom - 7 - barHeight, (nfloat)width, barHeight);
 			return progress;
