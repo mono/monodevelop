@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -78,23 +79,30 @@ namespace MonoDevelop.CSharp.Highlighting
 			src = new CancellationTokenSource ();
 			var token = src.Token;
 
-			System.Threading.Tasks.Task.Factory.StartNew(delegate {
-				var root = resolver.SyntaxTree.GetRoot (token);
-				var newTree = new HighlightingSegmentTree ();
+			Task.Run (async delegate {
+				try {
+					var root = await resolver.SyntaxTree.GetRootAsync (token);
+					var newTree = new HighlightingSegmentTree ();
 
-				var visitor = new HighlightingVisitior (resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
-				visitor.Visit (root);
+					var visitor = new HighlightingVisitior (resolver, newTree.Add, token, TextSegment.FromBounds(0, root.FullSpan.Length));
+					visitor.Visit (root);
 
-				Gtk.Application.Invoke (delegate {
-					if (token.IsCancellationRequested)
-						return;
-					if (highlightTree != null) {
-						highlightTree.RemoveListener ();
+					if (!token.IsCancellationRequested) {
+						Gtk.Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
+							if (highlightTree != null) {
+								highlightTree.RemoveListener ();
+							}
+							highlightTree = newTree;
+							highlightTree.InstallListener (editor);
+							UpdateSemanticHighlighting ();
+						});
 					}
-					highlightTree = newTree;
-					highlightTree.InstallListener (editor);
-					UpdateSemanticHighlighting ();
-				});
+				} catch (TaskCanceledException) {
+				} catch (AggregateException ae) {
+					ae.Handle (x => x is TaskCanceledException); 
+				}
 			}, token);
 		}
 
