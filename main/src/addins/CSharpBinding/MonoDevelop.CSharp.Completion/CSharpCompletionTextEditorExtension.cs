@@ -629,15 +629,15 @@ namespace MonoDevelop.CSharp.Completion
 
 			if (completionChar != '(' && completionChar != ',')
 				return null;
-
 			try {
-				var parsedDocument = DocumentContext.ParsedDocument;
-				if (parsedDocument == null)
-					return null;
-				var semanticModel = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
-				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				var result = engine.GetParameterDataProvider (DocumentContext.AnalysisDocument, semanticModel, offset, token);
 
+				var analysisDocument = DocumentContext.AnalysisDocument;
+				if (analysisDocument == null)
+					return null;
+				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
+				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
+					var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var result = engine.GetParameterDataProviderAsync (DocumentContext.AnalysisDocument, semanticModel, offset, token).Result;
 				return Task.FromResult (new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
