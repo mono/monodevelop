@@ -25,7 +25,6 @@
     </Execution>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,7 +39,6 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -56,7 +54,6 @@
     </Execution>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,7 +68,6 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.xml</DocumentationFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -357,34 +353,34 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-    <EmbeddedResource Include="icons\mac-yosemite-continue.png">
-      <LogicalName>continue-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-continue%402x.png">
-      <LogicalName>continue-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-pause.png">
+    <EmbeddedResource Include="icons\mac\pause.png">
       <LogicalName>pause-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-pause%402x.png">
+    <EmbeddedResource Include="icons\mac\pause%402x.png">
       <LogicalName>pause-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-in.png">
-      <LogicalName>step-in-16.png</LogicalName>
+    <EmbeddedResource Include="icons\mac\continue-16.png">
+      <LogicalName>continue-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-in%402x.png">
+    <EmbeddedResource Include="icons\mac\continue-16%402x.png">
+      <LogicalName>continue-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16%402x.png">
       <LogicalName>step-in-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-out.png">
+    <EmbeddedResource Include="icons\mac\step-in-16.png">
+      <LogicalName>step-in-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16.png">
       <LogicalName>step-out-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-out%402x.png">
+    <EmbeddedResource Include="icons\mac\step-out-16%402x.png">
       <LogicalName>step-out-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-over.png">
+    <EmbeddedResource Include="icons\mac\step-over-16.png">
       <LogicalName>step-over-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac-yosemite-step-over%402x.png">
+    <EmbeddedResource Include="icons\mac\step-over-16%402x.png">
       <LogicalName>step-over-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
@@ -393,5 +389,6 @@
     <Folder Include="MonoDevelop.Debugger.Visualizer\" />
     <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
     <Folder Include="MonoDevelop.Debugger.Converters\" />
+    <Folder Include="icons\mac\" />
   </ItemGroup>
 </Project>
