@@ -1,5 +1,5 @@
 // 
-// Task.cs
+// TaskListEntry.cs
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -37,7 +37,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class Task
+	public class TaskListEntry
 	{
 		[ItemProperty]
 		FilePath file;
@@ -67,22 +67,22 @@ namespace MonoDevelop.Ide.Tasks
 		IWorkspaceObject parentObject;
 		internal int SavedLine;
 
-		public Task (FilePath file, string description, int column, int line, TaskSeverity severity)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity)
 			: this (file, description, column, line, severity, TaskPriority.Normal, null, null)
 		{
 		}
 
-		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority)
 			: this (file, description, column, line, severity, priority, null, null)
 		{
 		}
 		
-		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent)
 			: this (file, description, column, line, severity, priority, parent, null)
 		{
 		}
 		
-		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner)
 		{
 			this.file = file;
 			this.description = description;
@@ -94,17 +94,17 @@ namespace MonoDevelop.Ide.Tasks
 			this.parentObject = parent;
 		}
 		
-		public Task ()
+		public TaskListEntry ()
 		{
 			
 		}
 		
-		public Task (BuildError error)
+		public TaskListEntry (BuildError error)
 			: this (error, null)
 		{
 		}
 		
-		public Task (BuildError error, object owner)
+		public TaskListEntry (BuildError error, object owner)
 		{
 			parentObject = error.SourceTarget;
 			file = error.FileName;

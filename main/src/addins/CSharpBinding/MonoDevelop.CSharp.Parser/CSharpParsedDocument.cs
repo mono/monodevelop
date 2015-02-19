@@ -74,9 +74,32 @@ namespace MonoDevelop.CSharp.Parser
 			return Task.FromResult (result);
 		}
 
-		public class SemanticTagVisitor : CSharpSyntaxVisitor
+		public class SemanticTagVisitor : CSharpSyntaxWalker
 		{
+			string[] tagComments;
 			public List<Tag> Tags =  new List<Tag> ();
+
+			public SemanticTagVisitor () : base (SyntaxWalkerDepth.Trivia)
+			{
+				tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
+
+			}
+
+			public override void VisitTrivia (SyntaxTrivia trivia)
+			{
+				if (trivia.IsKind (SyntaxKind.SingleLineCommentTrivia) || 
+					trivia.IsKind (SyntaxKind.MultiLineCommentTrivia) || 
+					trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+					foreach (string tag in tagComments) {
+						var trimmedContent = trivia.ToString ().TrimStart ('/', ' ', '*');
+						if (!trimmedContent.StartsWith (tag))
+							continue;
+						var loc = trivia.GetLocation ().GetLineSpan ();
+						Tags.Add (new Tag (tag, trimmedContent, new DocumentRegion (loc.StartLinePosition, loc.EndLinePosition)));
+						break;
+					}
+				}
+			}
 
 			public override void VisitThrowStatement (Microsoft.CodeAnalysis.CSharp.Syntax.ThrowStatementSyntax node)
 			{

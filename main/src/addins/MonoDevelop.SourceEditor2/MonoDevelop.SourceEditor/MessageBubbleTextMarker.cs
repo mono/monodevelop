@@ -62,8 +62,8 @@ namespace MonoDevelop.SourceEditor
 			get { return errors; }
 		}
 
-		Task task;
-		Task primaryTask;
+		TaskListEntry task;
+		TaskListEntry primaryTask;
 		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
@@ -98,7 +98,7 @@ namespace MonoDevelop.SourceEditor
 			return height;*/
 		}
 
-		public void SetPrimaryError (Task task)
+		public void SetPrimaryError (TaskListEntry task)
 		{
 			this.primaryTask = task;
 			var text = task.Description;
@@ -156,7 +156,7 @@ namespace MonoDevelop.SourceEditor
 			this.IsVisible = true;
 		}
 
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, TaskListEntry task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			if (cache == null)
 				throw new ArgumentNullException ("cache");
@@ -171,7 +171,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		static System.Text.RegularExpressions.Regex mcsErrorFormat = new System.Text.RegularExpressions.Regex ("(.+)\\(CS\\d+\\)\\Z");
-		public void AddError (Task task, bool isError, string errorMessage)
+		public void AddError (TaskListEntry task, bool isError, string errorMessage)
 		{
 			if (this.task == null) {
 				this.task = task;
@@ -676,12 +676,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		void MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.AddTask (Task task)
+		void MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.AddTask (TaskListEntry task)
 		{
 			AddError (task, task.Severity == TaskSeverity.Error, task.Description);
 		}
 
-		Task MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.PrimaryTask {
+		TaskListEntry MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.PrimaryTask {
 			get {
 				return primaryTask;
 			}
@@ -696,7 +696,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		IEnumerable<Task> MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.Tasks {
+		IEnumerable<TaskListEntry> MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.Tasks {
 			get {
 				return errors.Select (e => e.Task);
 			}

@@ -71,10 +71,10 @@ namespace MonoDevelop.Ide.Editor
 	{
 		int TaskCount { get; }
 
-		MonoDevelop.Ide.Tasks.Task PrimaryTask { get; set; }
+		MonoDevelop.Ide.Tasks.TaskListEntry PrimaryTask { get; set; }
 
-		IEnumerable<MonoDevelop.Ide.Tasks.Task> Tasks { get; }
+		IEnumerable<MonoDevelop.Ide.Tasks.TaskListEntry> Tasks { get; }
 
-		void AddTask (MonoDevelop.Ide.Tasks.Task task);
+		void AddTask (MonoDevelop.Ide.Tasks.TaskListEntry task);
 	}
 }

@@ -1309,7 +1309,7 @@ namespace MonoDevelop.Ide
 		/// once for the workspace, and once for each solution.
 		/// </remarks>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
-		
+
 		/// <summary>
 		/// Fired when a workspace item (a solution or workspace) is unloaded
 		/// </summary>

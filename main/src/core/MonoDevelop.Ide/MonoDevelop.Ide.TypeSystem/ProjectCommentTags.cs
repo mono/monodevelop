@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void UpdateTags (Project project, string fileName, IList<Tag> tagComments)
+		public void UpdateTags (Project project, string fileName, IReadOnlyList<Tag> tagComments)
 		{
 			var list = tagComments == null || tagComments.Count == 0 ? null : new List<Tag> (tagComments);
 			lock (tags) {
@@ -67,14 +68,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
 		}
 
-		internal void Update (Project project)
+		internal async void UpdateAsync (Project project, CancellationToken token = default (CancellationToken))
 		{
 			foreach (var file in project.Files) {
 				if (file.BuildAction == BuildAction.None)
 					continue;
-				TypeSystemService.ParseFile (project, file.FilePath);
+				var pd = await TypeSystemService.ParseFile (project, file.FilePath, token).ConfigureAwait (false);
+				if (pd != null)
+					UpdateTags (project, file.FilePath, await pd.GetTagCommentsAsync (token));
 			}
 		}
 	}
 }
-

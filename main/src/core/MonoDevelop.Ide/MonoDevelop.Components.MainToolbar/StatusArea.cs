@@ -319,7 +319,7 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (Task t in TaskService.Errors) {
+				foreach (TaskListEntry t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)

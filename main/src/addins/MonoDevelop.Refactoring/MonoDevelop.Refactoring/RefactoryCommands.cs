@@ -127,6 +127,12 @@ namespace MonoDevelop.Refactoring
 
 		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
 		{
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
+			if (ctx == null)
+				throw new ArgumentNullException ("ctx");
+			if (container == null)
+				throw new ArgumentNullException ("container");
 			var result = new CommandInfoSet ();
 			result.Text = GettextCatalog.GetString ("Fix");
 			foreach (var diagnostic in container.CodeDiagnosticActions) {
@@ -197,7 +203,7 @@ namespace MonoDevelop.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			if (ext != null) {
+			if (ext != null && ext.Fixes != null) {
 				var fixMenu = CreateFixMenu (doc.Editor, doc, ext.Fixes);
 				if (fixMenu.CommandInfos.Count > 0) {
 					ainfo.Add (fixMenu, null);

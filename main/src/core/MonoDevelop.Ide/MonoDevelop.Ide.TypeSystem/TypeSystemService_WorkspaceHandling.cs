@@ -109,7 +109,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				InternalLoad (item, progressMonitor);
+				OnWorkspaceItemLoaded (new WorkspaceItemEventArgs (item));
 			}
+		}
+		public static event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
+
+		static void OnWorkspaceItemLoaded (WorkspaceItemEventArgs e)
+		{
+			var handler = WorkspaceItemLoaded;
+			if (handler != null)
+				handler (null, e);
 		}
 
 		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)

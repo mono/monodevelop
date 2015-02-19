@@ -63,7 +63,7 @@ namespace MonoDevelop.Xml.Editor
 			error.IsWarning = false;
 			
 			//Task task = new Task(fileName, message, column, line);
-			Task task = new Task (error);
+			TaskListEntry task = new TaskListEntry (error);
 			TaskService.Errors.Add(task);
 		}
 		#endregion
