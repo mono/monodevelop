@@ -130,7 +130,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				},
 				MinSize = new CGSize (180, bar.FittingSize.Height),
 			};
-
 			bar.Changed += (o, e) => {
 				if (SearchEntryChanged != null)
 					SearchEntryChanged (o, e);
@@ -219,18 +218,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var menu = clipItem.Menu;
 				var searchItem = menu.ItemAt (0);
 				var searchView = (SearchBar)searchItem.View;
-				searchView.Changed += (o, e) => {
-					if (SearchEntryChanged != null)
-						SearchEntryChanged (o, e);
-				};
-				searchView.KeyPressed += (o, e) => {
-					if (SearchEntryKeyPressed != null)
-						SearchEntryKeyPressed (o, e);
-				};
-				searchView.LostFocus += (o, e) => {
-					if (SearchEntryLostFocus != null)
-						SearchEntryLostFocus (o, e);
-				};
+				if (!searchView.EventsAttached) {
+						searchView.Changed += (o, e) => {
+						if (SearchEntryChanged != null)
+							SearchEntryChanged (o, e);
+					};
+					searchView.KeyPressed += (o, e) => {
+						if (SearchEntryKeyPressed != null)
+							SearchEntryKeyPressed (o, e);
+					};
+					searchView.LostFocus += (o, e) => {
+						if (SearchEntryLostFocus != null)
+							SearchEntryLostFocus (o, e);
+					};
+					searchView.EventsAttached = true;
+				}
 				menu.PopUpMenu (menu.ItemAt (0), new CGPoint (0, -5), clipItem);
 				entry.Window.MakeFirstResponder (searchView);
 			}

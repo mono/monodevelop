@@ -38,12 +38,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
 
+		/// <summary>
+		/// This tells whether events have been attached when created from the menu.
+		/// </summary>
+		internal bool EventsAttached;
+
 		public SearchBar ()
 		{
 		}
 
 		public SearchBar (IntPtr ptr) : base (ptr)
 		{
+			EventsAttached = false;
 		}
 
 		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)
