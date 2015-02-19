@@ -389,54 +389,6 @@ namespace MonoDevelop.CSharp.Completion
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
-
-
-//			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
-//			var ctx = CreateTypeResolveContext ();
-//			if (ctx == null)
-//				return null;
-			//			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
-//			if (MDRefactoringCtx == null) {
-//				src.Cancel ();
-//				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
-//			}
-//
-//			var engine = new MonoCSharpCompletionEngine (
-//				this,
-//				data.Document,
-//				CreateContextProvider (),
-//				completionDataFactory,
-//				Document.GetProjectContext (),
-//				ctx
-//			);
-//			completionDataFactory.Engine = engine;
-			//			engine.AutomaticallyAddImports = AddImportedItemsToCompletionList.Value;
-//			engine.IncludeKeywordsInCompletionList = EnableAutoCodeCompletion || IncludeKeywordsInCompletionList.Value;
-//			engine.CompletionEngineCache = cache;
-//			if (FilterCompletionListByEditorBrowsable) {
-//				engine.EditorBrowsableBehavior = IncludeEditorBrowsableAdvancedMembers ? EditorBrowsableBehavior.IncludeAdvanced : EditorBrowsableBehavior.Normal;
-//			} else {
-//				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
-//			}
-//			if (Document.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
-//				var configuration = Document.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
-//				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
-//				if (par != null)
-//					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
-//			}
-//
-//			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
-//			engine.EolMarker = data.EolMarker;
-//			engine.IndentString = data.Options.IndentationString;
-//			try {
-//				foreach (var cd in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
-//					list.Add (cd);
-//					if (cd is IListData)
-//						((IListData)cd).List = list;
-//				}
-//			} catch (Exception e) {
-//				LoggingService.LogError ("Error while getting completion data.", e);
-//			}
 			return Task.FromResult ((ICompletionDataList)list);
 		}
 		
@@ -1238,5 +1190,41 @@ namespace MonoDevelop.CSharp.Completion
 			return member;
 		}
 		#endregion
+	
+	
+
+		[CommandHandler(RefactoryCommands.ImportSymbol)]
+		void ImportSymbolCommand ()
+		{
+			if (Editor.SelectionMode == SelectionMode.Block)
+				return;
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var offset = Editor.CaretOffset;
+
+			ICompletionDataList completionList = null;
+			int cpos, wlen;
+			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
+				cpos = Editor.CaretOffset;
+				wlen = 0;
+			}
+			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
+			currentCompletionContext.TriggerWordLength = wlen;
+
+			var list = new CSharpCompletionDataList ();
+			list.TriggerWordLength = wlen;
+			var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, default (CancellationToken)).Result;
+			var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
+
+			AddImportCompletionData (list, semanticModel, offset);
+				
+			completionList = CodeCompletionCommand (currentCompletionContext);
+			if (completionList != null)
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
+			else
+				currentCompletionContext = null;
+		}
+
 	}
 }

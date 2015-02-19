@@ -157,7 +157,6 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />

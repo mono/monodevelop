@@ -90,7 +90,6 @@
 					macShortcut = "Alt|Return" />
 		
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol"
-					defaultHandler = "MonoDevelop.Refactoring.ImportSymbolHandler"
 					_label = "Import Symbol..."
 					shortcut = "Control|Alt|space"
 					macShortcut = "Control|Alt|space" />

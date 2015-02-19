@@ -307,7 +307,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			internal static PossibleNamespace Create (INamespaceSymbol containingNamespace, bool isAccessibleWithGlobalUsing = true, MonoDevelop.Projects.ProjectReference reference = null)
 			{
-				return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (containingNamespace), isAccessibleWithGlobalUsing, reference);
+				return new PossibleNamespace (containingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat), isAccessibleWithGlobalUsing, reference);
 			}
 		}
 
@@ -421,13 +421,13 @@ namespace MonoDevelop.CSharp.Refactoring
 					foreach (var type in curNs.GetTypeMembers (name, tc)) {
 						if (!semanticModel.IsAccessible (location, type))
 							continue;
-						yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
+						yield return new PossibleNamespace (curNs.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat), true, requiredReference);
 					} 
 					if (possibleAttributeName != null) {
 						foreach (var type in curNs.GetTypeMembers (possibleAttributeName, tc)) {
 							if (!semanticModel.IsAccessible (location, type))
 								continue;
-							yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
+							yield return new PossibleNamespace (curNs.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat), true, requiredReference);
 						}
 					}
 
@@ -443,7 +443,7 @@ namespace MonoDevelop.CSharp.Refactoring
 									continue;
 								if (childType.Arity == tc && (childType.Name == name || childType.Name == possibleAttributeName)) {
 									if (CanReference(doc, requiredReference))
-										yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs) + "." + GetNestedTypeString(nested), false, requiredReference);
+										yield return new PossibleNamespace (curNs.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + GetNestedTypeString(nested), false, requiredReference);
 								}
 								typeStack.Push (childType);
 							}

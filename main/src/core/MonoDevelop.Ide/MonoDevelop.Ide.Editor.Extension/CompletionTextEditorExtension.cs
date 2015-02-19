@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public class CompletionTextEditorExtension : TextEditorExtension
 	{
-		CodeCompletionContext currentCompletionContext;
+		protected CodeCompletionContext currentCompletionContext;
 
 		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
 
