@@ -2749,9 +2749,10 @@ namespace Mono.TextEditor
 				Gtk.Window tw = null;
 				try {
 					tw = provider.CreateTooltipWindow (editor, nextTipOffset, nextTipModifierState, item);
-					provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
+					if (tw != null)
+						provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
 				} catch (Exception e) {
-					Console.WriteLine ("-------- Exception while creating tooltip:");
+					Console.WriteLine ("-------- Exception while creating tooltip: " + provider);
 					Console.WriteLine (e);
 				}
 				if (tw == tipWindow)

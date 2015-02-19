@@ -43,6 +43,8 @@ namespace MonoDevelop.Components
 
 		public Control (object widget)
 		{
+			if (widget == null)
+				throw new ArgumentNullException ("widget");
 			this.nativeWidget = widget;
 		}
 
