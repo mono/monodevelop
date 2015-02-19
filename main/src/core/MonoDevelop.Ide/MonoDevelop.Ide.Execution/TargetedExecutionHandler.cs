@@ -1,10 +1,10 @@
-//
-// FindDerivedSymbolsHandler.cs
+﻿//
+// TargetedExecutionHandler.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
 //
-// Copyright (c) 2013 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,45 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.FindInFiles;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.Analysis;
-using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
-using System.Threading;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.Refactoring
+using MonoDevelop.Core.Execution;
+
+namespace MonoDevelop.Ide.Execution
 {
-	class FindDerivedSymbolsHandler 
+	class TargetedExecutionHandler : ITargetedExecutionHandler
 	{
-		readonly IMember member;
+		public ExecutionTarget Target { get; set; }
+		public IExecutionHandler Handler { get; set; }
 
-		public FindDerivedSymbolsHandler (IMember member)
+		public TargetedExecutionHandler (IExecutionHandler handler, ExecutionTarget target)
 		{
-			this.member = member;
+			Target = target;
+			Handler = handler;
 		}
 
-		public bool IsValid {
-			get {
-				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-					return false;
-				if (TypeSystemService.GetProject (member) == null)
-					return false;
-				return member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface;
-			}
+		public bool CanExecute (ExecutionCommand command)
+		{
+			return Handler.CanExecute (command);
 		}
 
-		public void Run ()
+		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
 		{
-			FindDerivedClassesHandler.FindDerivedMembers (member);
+			return Handler.Execute (command, console);
 		}
 	}
 }
-

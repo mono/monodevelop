@@ -1631,17 +1631,28 @@ namespace Mono.TextEditor
 			var hasZoomModifier = (evnt.State & modifier) != 0;
 			if (hasZoomModifier && lastScrollTime != 0 && (evnt.Time - lastScrollTime) < 100)
 				hasZoomModifier = false;
-
+			
 			if (hasZoomModifier) {
 				if (evnt.Direction == ScrollDirection.Up)
 					Options.ZoomIn ();
 				else if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomOut ();
-				
+
 				this.QueueDraw ();
 				if (isMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
+			}
+
+			if (!Platform.IsMac) {
+				if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+					if (evnt.Direction == ScrollDirection.Up)
+						HAdjustment.Value = System.Math.Min (HAdjustment.Upper - HAdjustment.PageSize, HAdjustment.Value + HAdjustment.StepIncrement * 3);
+					else if (evnt.Direction == ScrollDirection.Down)
+						HAdjustment.Value -= HAdjustment.StepIncrement * 3;
+					
+					return true;
+				}
 			}
 			lastScrollTime = evnt.Time;
 			return base.OnScrollEvent (evnt); 

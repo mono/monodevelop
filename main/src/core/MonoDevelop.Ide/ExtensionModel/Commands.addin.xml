@@ -126,6 +126,9 @@
 			shortcut = "Control|Shift|J"
 			_description = "Join the current line with the next line"
 			_label = "_Join Lines" />
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines"
+			_description = "Sort the selected lines"
+			_label = "_Sort Lines" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
 			_label = "_Word Count..."
 			description = "Count words in a text file"/>
