@@ -48,6 +48,8 @@ namespace MonoDevelop.Refactoring
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var loc in symbol.Locations) {
+						if (!loc.IsInSource)
+							continue;
 						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 						monitor.ReportResult (sr);
 					}

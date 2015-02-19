@@ -803,10 +803,11 @@ namespace MonoDevelop.Ide.Gui
 				string mimeType = Editor.MimeType;
 				CancelOldParsing();
 				var token = parseTokenSource.Token;
+				var project = Project;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
-					if (TypeSystemService.CanParseProjections (Project, mimeType, FileName)) {
-						TypeSystemService.ParseProjection (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, FileName)) {
+						TypeSystemService.ParseProjection (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
 							Application.Invoke (delegate {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 								var taskResult = task.Result;
@@ -820,7 +821,7 @@ namespace MonoDevelop.Ide.Gui
 							});
 						});
 					} else {
-						TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+						TypeSystemService.ParseFile (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
 							Application.Invoke (delegate {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 								if (isClosed || task.Result == null)
