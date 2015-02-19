@@ -45,6 +45,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
@@ -284,14 +285,13 @@ namespace MonoDevelop.Refactoring
 			var loc = doc.Editor.Caret.Location;
 			bool first = true;
 			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-
-				if (QuickTaskStrip.EnableFancyFeatures) {
-					var ext = doc.GetContent <CodeActionEditorExtension> ();
-					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
-				} else {
-					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc);
+				try {
+					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc, new CancellationTokenSource (500).Token);
+				} catch (TaskCanceledException) {
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (x => x is TaskCanceledException); 
 				}
-
+	
 				lastLocation = loc;
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
