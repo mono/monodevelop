@@ -756,7 +756,7 @@ namespace MonoDevelop.Ide.Gui
 						Editor.SetOrUpdateProjections (this, new [] { projection }, p.DisabledProjectionFeatures);
 					}
 				} else { 
-					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText, parseTokenSource.Token).Result;
+					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText).Result ?? this.parsedDocument;
 				}
 			} finally {
 
@@ -829,7 +829,7 @@ namespace MonoDevelop.Ide.Gui
 								this.parsedDocument = task.Result;
 								OnDocumentParsed (EventArgs.Empty);
 							});
-						});
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
 					}
 					parseTimeout = 0;
 				});
