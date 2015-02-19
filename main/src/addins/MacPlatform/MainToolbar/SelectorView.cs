@@ -158,7 +158,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						throw new NotSupportedException ();
 
 					if (menu.Count > 1)
-						menu.PopUpMenu (menu.ItemAt (idx), new CGPoint (componentRect.Left, componentRect.Top + 5), this);
+						menu.PopUpMenu (menu.ItemAt (idx), new CGPoint (componentRect.Left, componentRect.Top), this);
 				};
 			}
 

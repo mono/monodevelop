@@ -38,6 +38,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
 
+		public SearchBar ()
+		{
+		}
+
+		public SearchBar (IntPtr ptr) : base (ptr)
+		{
+		}
+
 		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)
 		{
 			Xwt.ModifierKeys xwtMask = Xwt.ModifierKeys.None;

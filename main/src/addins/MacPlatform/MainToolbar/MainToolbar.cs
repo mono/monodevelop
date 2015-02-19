@@ -120,8 +120,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateSearchBarToolbarItem ()
 		{
 			var bar = new SearchBar ();
+			var menuBar = new SearchBar {
+				Frame = new CGRect (0, 0, 180, bar.FittingSize.Height),
+			};
 			var item = new NSToolbarItem (SearchBarId) {
 				View = bar,
+				MenuFormRepresentation = new NSMenuItem {
+					View = menuBar,
+				},
 				MinSize = new CGSize (180, bar.FittingSize.Height),
 			};
 
@@ -152,9 +158,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			gtkWindow = window;
 			widget = new NSToolbar (MainToolbarId) {
-				DisplayMode = NSToolbarDisplayMode.Icon,
+				DisplayMode = NSToolbarDisplayMode.IconAndLabel,
 			};
-
 			widget.WillInsertItem = (tool, id, send) => {
 				switch (id) {
 				case RunButtonId:
@@ -194,10 +199,41 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public event EventHandler SearchEntryResized;
 		#pragma warning restore 0067
 
+		bool IsSearchEntryInOverflow {
+			get { return widget.Items.Length != widget.VisibleItems.Length; }
+		}
+
 		public void FocusSearchBar ()
 		{
 			var entry = searchEntry;
-			entry.Window.MakeFirstResponder (entry);
+			if (!IsSearchEntryInOverflow)
+				entry.Window.MakeFirstResponder (entry);
+			else {
+				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
+				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
+				if (!clipItem.RespondsToSelector (sel))
+					throw new Exception ("Cocoa selector changed for clipped items menu.");
+
+				clipItem.PerformSelector (sel);
+				var menu = clipItem.Menu;
+				var searchItem = menu.ItemAt (0);
+				var searchView = (SearchBar)searchItem.View;
+				searchView.Changed += (o, e) => {
+					if (SearchEntryChanged != null)
+						SearchEntryChanged (o, e);
+				};
+				searchView.KeyPressed += (o, e) => {
+					if (SearchEntryKeyPressed != null)
+						SearchEntryKeyPressed (o, e);
+				};
+				searchView.LostFocus += (o, e) => {
+					if (SearchEntryLostFocus != null)
+						SearchEntryLostFocus (o, e);
+				};
+				menu.PopUpMenu (menu.ItemAt (0), new CGPoint (0, -5), clipItem);
+				entry.Window.MakeFirstResponder (searchView);
+			}
 		}
 
 		List<IButtonBarButton> barItems = new List<IButtonBarButton> ();
@@ -294,8 +330,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public string SearchText {
-			get { return searchEntry.StringValue; }
-			set { searchEntry.StringValue = value; }
+			get {
+				if (!IsSearchEntryInOverflow) {
+					return searchEntry.StringValue;
+				}
+
+				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
+				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				return menuBar.StringValue;
+			}
+			set {
+				if (!IsSearchEntryInOverflow) {
+					searchEntry.StringValue = value;
+					return;
+				}
+
+				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
+				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				menuBar.StringValue = value;
+			}
 		}
 
 		public Gtk.Widget PopupAnchor {
