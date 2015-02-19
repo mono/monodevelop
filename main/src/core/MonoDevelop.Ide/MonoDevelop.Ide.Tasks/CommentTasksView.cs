@@ -248,12 +248,15 @@ namespace MonoDevelop.Ide.Tasks
 				tags = new ProjectCommentTags ();
 				projectTags [project] = tags;
 			}
+			var files = project.Files.ToArray ();
 			Task.Run (() => {
 				try {
-					tags.UpdateAsync (project, token);
+					tags.UpdateAsync (project, files, token);
 				} catch (TaskCanceledException) {
 				} catch (AggregateException ae) {
 					ae.Flatten ().Handle (x => x is TaskCanceledException);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while updating comment tags.", e); 
 				}
 			});
 		}
