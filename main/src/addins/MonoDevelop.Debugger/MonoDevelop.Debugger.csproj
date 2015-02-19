@@ -218,36 +218,6 @@
     <EmbeddedResource Include="icons\pad-watch-16%402x.png">
       <LogicalName>pad-watch-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\pause-16.png">
-      <LogicalName>pause-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\pause-16%402x.png">
-      <LogicalName>pause-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-in-16.png">
-      <LogicalName>step-in-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-in-16%402x.png">
-      <LogicalName>step-in-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-16.png">
-      <LogicalName>step-out-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-out-16%402x.png">
-      <LogicalName>step-out-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-16.png">
-      <LogicalName>step-over-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\step-over-16%402x.png">
-      <LogicalName>step-over-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue-16.png">
-      <LogicalName>continue-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\continue-16%402x.png">
-      <LogicalName>continue-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-debugger-16.png">
       <LogicalName>prefs-debugger-16.png</LogicalName>
     </EmbeddedResource>
@@ -320,6 +290,40 @@
     <EmbeddedResource Include="icons\stack-pointer-16%402x.png">
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' ">
+    <EmbeddedResource Include="icons\pause-16.png">
+      <LogicalName>pause-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pause-16%402x.png">
+      <LogicalName>pause-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16.png">
+      <LogicalName>step-in-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16%402x.png">
+      <LogicalName>step-in-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16.png">
+      <LogicalName>step-out-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16%402x.png">
+      <LogicalName>step-out-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16.png">
+      <LogicalName>step-over-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16%402x.png">
+      <LogicalName>step-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16.png">
+      <LogicalName>continue-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16%402x.png">
+      <LogicalName>continue-16@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' ">
     <EmbeddedResource Include="icons\mac-yosemite-continue.png">
       <LogicalName>mac-yosemite-continue.png</LogicalName>
     </EmbeddedResource>
