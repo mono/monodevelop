@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		class ProjectData
 		{
 			readonly ProjectId projectId;
-			readonly Dictionary<string, DocumentId> documentIdMap = new Dictionary<string, DocumentId> ();
+			readonly Dictionary<string, DocumentId> documentIdMap;
 
 			public ProjectInfo Info {
 				get;
@@ -165,6 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public ProjectData (ProjectId projectId)
 			{
 				this.projectId = projectId;
+				documentIdMap = new Dictionary<string, DocumentId> (MonoDevelop.Core.Platform.IsWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 			}
 
 			public DocumentId GetOrCreateDocumentId (string name)
