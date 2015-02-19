@@ -221,13 +221,15 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			bool first = true;
-			foreach (var fix in ext.Fixes.CodeRefactoringActions) {
-				if (added & first)
-					ciset.CommandInfos.AddSeparator ();
-				var info2 = new CommandInfo (fix.Item2.Title);
-				ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.Item2, doc.Editor, doc).Run));
-				added = true;
-				first = false;
+			if (ext != null && ext.Fixes != null) {
+				foreach (var fix in ext.Fixes.CodeRefactoringActions) {
+					if (added & first)
+						ciset.CommandInfos.AddSeparator ();
+					var info2 = new CommandInfo (fix.Item2.Title);
+					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.Item2, doc.Editor, doc).Run));
+					added = true;
+					first = false;
+				}
 			}
 
 			if (ciset.CommandInfos.Count > 0) {
