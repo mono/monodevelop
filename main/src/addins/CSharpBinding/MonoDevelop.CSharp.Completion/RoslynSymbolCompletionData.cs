@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 	{
-		List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
+		List<CompletionData> overloads;
 		
 		public override bool HasOverloads {
 			get {
@@ -51,8 +51,8 @@ namespace MonoDevelop.CSharp.Completion
 		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
 		{
 			if (overloads == null)
-				overloads = new List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
-			overloads.Add (data);
+				overloads = new List<CompletionData> ();
+			overloads.Add ((CompletionData)data);
 			sorted = null;
 		}
 
@@ -74,15 +74,22 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> sorted;
+		List<CompletionData> sorted;
 
 		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
 			get {
+				return (IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>)OverloadedData;
+			}
+		}
+
+
+		public override IEnumerable<CompletionData> OverloadedData {
+			get {
 				if (overloads == null)
-					return new ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData[] { this };
-				
+					return new CompletionData[] { this };
+
 				if (sorted == null) {
-					sorted = new List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> (overloads);
+					sorted = new List<CompletionData> (overloads);
 					sorted.Add (this);
 					// sorted.Sort (new OverloadSorter ());
 				}
