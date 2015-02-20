@@ -42,7 +42,6 @@ namespace MonoDevelop.SourceEditor
 	{
 		readonly static List<SourceEditorView> openFiles = new List<SourceEditorView> ();
 		readonly static FileSystemWatcher fileSystemWatcher;
-		readonly static StringComparison fileNameComparer = Platform.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
 		public static bool SuspendFileWatch {
 			get;
@@ -85,7 +84,7 @@ namespace MonoDevelop.SourceEditor
 			bool foundOneChange = false;
 			foreach (var file in e) {
 				foreach (var view in openFiles) {
-					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
+					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, FilePath.PathComparison))
 						continue;
 					if (!view.IsDirty/* && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload)*/)
 						view.SourceEditorWidget.Reload ();
@@ -130,7 +129,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in openFiles) {
 				if (SkipView (view))
 					continue;
-				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
+				if (string.Equals (view.ContentName, fileName, FilePath.PathComparison)) {
 					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
 						continue;
 					if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)

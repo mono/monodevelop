@@ -612,7 +612,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (warnOverwrite) {
-				if (fileName == ContentName) {
+				if (string.Compare (fileName, ContentName, FilePath.PathComparison)) {
 					string question = GettextCatalog.GetString (
 						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
 						fileName, BrandingService.ApplicationName

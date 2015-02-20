@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			public ProjectData (ProjectId projectId)
 			{
 				this.projectId = projectId;
-				documentIdMap = new Dictionary<string, DocumentId> (MonoDevelop.Core.Platform.IsWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
 			public DocumentId GetOrCreateDocumentId (string name)
