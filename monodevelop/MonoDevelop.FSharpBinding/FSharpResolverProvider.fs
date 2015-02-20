@@ -14,6 +14,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 open ExtCore.Control
 open System.Collections.Immutable
+open MonoDevelop.FSharp.TextEditor
 
 ///Barebones symbol
 type FsharpSymbol (symbolUse:FSharpSymbolUse, editor:TextEditor) =
@@ -79,7 +80,7 @@ type FSharpResolverProvider() =
                 let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource) |> AsyncMaybe.liftAsync
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
-                let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor)
+                let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
                 let! fsSymbolUse = tyRes.GetSymbolAtLocation(line, col, lineStr)
                 let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
                 let domRegion =

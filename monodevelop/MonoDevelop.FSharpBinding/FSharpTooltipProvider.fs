@@ -18,6 +18,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp.Symbols
 open ExtCore.Control
 open Symbols
+open MonoDevelop.FSharp.TextEditor
 
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() = 
@@ -41,7 +42,7 @@ type FSharpTooltipProvider() =
 
         let projFile, files, args = MonoDevelop.getCheckerArgs(context.Project, fileName)
 
-        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor)
+        let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
         let result =
             //operate on available results no async gettypeparse results is available quick enough

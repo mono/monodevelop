@@ -12,6 +12,7 @@ open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
+open MonoDevelop.FSharp.TextEditor
 
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() =
@@ -27,7 +28,7 @@ type HighlightUsagesExtension() =
             cancellationToken = token,
             computation = async {
             try
-                let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(x.Editor.CaretOffset, x.Editor)
+                let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
                 let currentFile = x.DocumentContext.Name
                 let source = x.Editor.Text
 

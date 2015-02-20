@@ -19,13 +19,19 @@ open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 
+module TextEditor =
+    type TextEditor with
+        member x.GetLineInfoFromOffset (offset) =
+            let loc  = x.OffsetToLocation(offset)
+            let line, col = max loc.Line 1, loc.Column-1
+            let currentLine = x.GetLineByOffset(offset)
+            let lineStr = x.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
+            line, col, lineStr
+
+        member x.GetLineInfoByCaretOffset () =
+            x.GetLineInfoFromOffset x.CaretOffset
+
 module internal MonoDevelop =
-    let getLineInfoFromOffset (offset, doc:TextEditor) =
-        let loc  = doc.OffsetToLocation(offset)
-        let line, col = max loc.Line 1, loc.Column-1
-        let currentLine = doc.GetLineByOffset(offset)
-        let lineStr = doc.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
-        (line, col, lineStr)
 
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
     let getCheckerArgsFromProject(project:DotNetProject, config) =

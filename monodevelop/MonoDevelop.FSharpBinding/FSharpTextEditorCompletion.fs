@@ -21,6 +21,7 @@ open FSharp.CompilerBinding
 open MonoDevelop.FSharp.NRefactory
 open ICSharpCode.NRefactory.TypeSystem
 open ExtCore.Control
+open MonoDevelop.FSharp.TextEditor
 
 type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 
@@ -315,7 +316,7 @@ type FSharpTextEditorCompletion() =
         // Try to get typed result - within the specified timeout
         let! methsOpt =
             async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
-                   let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, x.Editor)
+                   let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
                    let! methsOpt = tyRes.GetMethods(line, col, lineStr)
                    //TODO: Use the symbol version when available
                    //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
@@ -439,7 +440,7 @@ type FSharpTextEditorCompletion() =
       | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
       | Some tyRes ->
         // Get declarations and generate list for MonoDevelop
-        let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, x.Editor)
+        let line, col, lineStr = x.Editor.GetLineInfoFromOffset context.TriggerOffset
         match tyRes.GetDeclarationSymbols(line, col, lineStr) with
         | Some (symbols, _residue) ->
             let data = getCompletionData symbols
