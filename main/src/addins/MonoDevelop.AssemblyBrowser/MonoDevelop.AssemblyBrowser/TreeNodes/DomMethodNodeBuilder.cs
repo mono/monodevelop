@@ -79,8 +79,9 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
+			var ambience = new CSharpAmbience ();
 			try {
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = ambience.ConvertSymbol (resolved);
 			} catch (Exception) {
 				nodeInfo.Label = method.Name;
 			}
@@ -195,13 +196,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 
-		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
+		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
 		{
 			StringBuilder result = new StringBuilder ();
+			var ambience = new CSharpAmbience ();
+
 			foreach (var attr in attributes) {
 				if (result.Length > 0)
 					result.AppendLine ();
-	//			result.Append (ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
+				// result.Append (ambience.ConvertSymbol (attr));
 			}
 			if (result.Length > 0)
 				result.AppendLine ();
@@ -281,16 +284,10 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+			result.Append (Ambience.ConvertSymbol (resolved));
 			result.Append ("</big>");
 			result.AppendLine ();
-			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
-			result.AppendLine ();
-			
+
 			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();

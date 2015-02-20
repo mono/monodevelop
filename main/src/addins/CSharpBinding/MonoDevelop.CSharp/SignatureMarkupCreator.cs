@@ -114,7 +114,7 @@ namespace MonoDevelop.CSharp
 				displayString = type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 			}
 
-			var text = AmbienceService.EscapeText (displayString);
+			var text = Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
@@ -570,7 +570,7 @@ namespace MonoDevelop.CSharp
 
 		static string FilterEntityName (string name)
 		{
-			return AmbienceService.EscapeText (CSharpAmbience.FilterName (name));
+			return Ambience.EscapeText (CSharpAmbience.FilterName (name));
 		}
 
 		public string GetDelegateInfo (ITypeSymbol type)
@@ -1499,7 +1499,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 			if (resolveResult == null) {
-				result.SignatureMarkup = AmbienceService.EscapeText (typeOfExpression.Type.ToString ());
+				result.SignatureMarkup = Ambience.EscapeText (typeOfExpression.Type.ToString ());
 			} else {
 				result.SignatureMarkup = GetTypeMarkup (resolveResult, true);
 			}
@@ -1807,8 +1807,8 @@ namespace MonoDevelop.CSharp
 //							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
 //					}
 				}
-				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (type.ContainingAssembly.Name)) + "</small>";
+				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", Ambience.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
 			} 
 
 			if (entity.ContainingType != null) {
@@ -1824,8 +1824,8 @@ namespace MonoDevelop.CSharp
 //								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
 //					}
 				}
-				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
-					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", AmbienceService.EscapeText (entity.ContainingAssembly.Name)) + "</small>";
+				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", Ambience.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</small>";
 			}
 			return null;
 		}

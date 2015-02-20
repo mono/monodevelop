@@ -40,6 +40,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -64,7 +65,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var evt = (IUnresolvedEvent)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, evt);
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = Ambience.ConvertSymbol (resolved);
 			} catch (Exception) {
 				nodeInfo.Label = evt.Name;
 			}
@@ -120,16 +121,11 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, evt);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.ConvertSymbol (resolved));
 			result.Append ("</big>");
 			result.AppendLine ();
-			
-			var options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
 			result.AppendLine ();
-			
+
 			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();

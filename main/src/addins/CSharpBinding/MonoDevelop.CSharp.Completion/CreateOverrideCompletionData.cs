@@ -44,35 +44,12 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		static readonly SymbolDisplayFormat NameFormat =
-			new SymbolDisplayFormat(
-				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
-				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
-				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
-				genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
-				memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
-				parameterOptions:
-				SymbolDisplayParameterOptions.IncludeParamsRefOut |
-				SymbolDisplayParameterOptions.IncludeExtensionThis |
-				SymbolDisplayParameterOptions.IncludeType |
-				SymbolDisplayParameterOptions.IncludeName,
-				miscellaneousOptions:
-				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
-				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
-		
-		internal static readonly SymbolDisplayFormat overrideNameFormat = NameFormat.WithParameterOptions(
-			SymbolDisplayParameterOptions.IncludeDefaultValue |
-			SymbolDisplayParameterOptions.IncludeExtensionThis |
-			SymbolDisplayParameterOptions.IncludeType |
-			SymbolDisplayParameterOptions.IncludeName |
-			SymbolDisplayParameterOptions.IncludeParamsRefOut);
-
 		string displayText;
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, overrideNameFormat);
+					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat);
 				}
 
 				return displayText;

@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -78,17 +79,16 @@ namespace MonoDevelop.CodeGeneration
 			column.Expand = true;
 
 			treeView.AppendColumn (column);
-			Ambience ambience = AmbienceService.GetAmbienceForFile (options.DocumentContext.Name);
 			foreach (object obj in GetValidMembers ()) {
 				var member = obj as ISymbol;
 				if (member != null) {
-					Store.AppendValues (false, ImageService.GetIcon (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
+					Store.AppendValues (false, ImageService.GetIcon (member.GetStockIcon (), IconSize.Menu), member.ToDisplayString (Ambience.LabelFormat), member);
 					continue;
 				}
 
 				var tuple = obj as Tuple<ISymbol, bool>;
 				if (tuple != null) {
-					Store.AppendValues (false, ImageService.GetIcon (tuple.Item1.GetStockIcon (), IconSize.Menu), ambience.GetString (tuple.Item1, OutputFlags.ClassBrowserEntries), tuple);
+					Store.AppendValues (false, ImageService.GetIcon (tuple.Item1.GetStockIcon (), IconSize.Menu), tuple.Item1.ToDisplayString (Ambience.LabelFormat), tuple);
 					continue;
 				}
 			}

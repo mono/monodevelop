@@ -49,8 +49,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			IEvent data = dataObject as IEvent;
-			nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+			// IEvent data = dataObject as IEvent;
+			// nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
 			// nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 

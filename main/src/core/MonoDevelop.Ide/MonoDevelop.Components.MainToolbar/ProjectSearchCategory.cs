@@ -124,7 +124,6 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					var allTypes = GetTypes (token);
 					var firstType = allTypes.FirstOrDefault ();
-					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Locations.First ().SourceTree.FilePath) : AmbienceService.DefaultAmbience;
 					
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
@@ -279,7 +278,6 @@ namespace MonoDevelop.Components.MainToolbar
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
-			public Ambience ambience;
 			public StringMatcher matcher;
 
 			public WorkerResult (Widget widget)
@@ -309,14 +307,14 @@ namespace MonoDevelop.Components.MainToolbar
 				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank)) {
 					if (type.ContainingType != null)
 						rank--;
-					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false) { Ambience = ambience };
+					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false);
 				}
 				if (!FullSearch)
 					return null;
 				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank)) {
 					if (type.ContainingType != null)
 						rank--;
-					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true) { Ambience = ambience };
+					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true);
 				}
 				return null;
 			}
@@ -327,7 +325,7 @@ namespace MonoDevelop.Components.MainToolbar
 				bool useDeclaringTypeName = member.Kind == SymbolKind.Method && (((IMethodSymbol)member).MethodKind == MethodKind.Constructor || ((IMethodSymbol)member).MethodKind == MethodKind.Destructor);
 				string memberName = useDeclaringTypeName ? member.ContainingType.Name : member.Name;
 				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, declaringType, member, false) { Ambience = ambience };
+					return new MemberSearchResult (pattern, memberName, rank, declaringType, member, false);
 				return null;
 			}
 

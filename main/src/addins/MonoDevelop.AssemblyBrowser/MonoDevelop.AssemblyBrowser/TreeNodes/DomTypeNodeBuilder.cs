@@ -63,7 +63,6 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		}
 		
-		internal static OutputSettings settings;
 		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
 		internal static string MarkupKeyword (string text)
@@ -77,34 +76,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return text;
 		}
-		
-		static DomTypeNodeBuilder ()
-		{
-			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
-			
-			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
-				return "<span style=\"text\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitModifiersCallback = delegate (string text) {
-				return "<span style=\"keyword.modifier\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
-				return MarkupKeyword (text);
-			};
-//			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IEntity domVisitable, ref string outString) {
-//				if (domVisitable is IType) {
-//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-//				} else {
-//					outString = "<span style=\"text\">" + outString + "</span>";
-//				}
-//			};
-//			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IEntity domVisitable, ref string outString) {
-//				if (domVisitable is IReturnType) {
-//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IReturnType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-//				}
-//			};
-		}
-		
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
@@ -116,7 +88,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, type);
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
+				nodeInfo.Label = Ambience.ConvertType (resolved);
 			} catch (Exception) {
 				nodeInfo.Label = type.Name;
 			}
@@ -163,7 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, type);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.ConvertType (resolved));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
@@ -236,14 +208,8 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, type);
 			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.ConvertType (resolved));
 			result.Append ("</big>");
-			result.AppendLine ();
-			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
 			result.AppendLine ();
 			
 			//result.Append (AmbienceService.GetDocumentationMarkup (resolved.GetDefinition (), AmbienceService.GetDocumentation (resolved.GetDefinition ()), options));

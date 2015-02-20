@@ -95,13 +95,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public Ambience Ambience {
-			get {
-				string fileName = view.IsUntitled ? view.UntitledName : view.ContentName;
-				return AmbienceService.GetAmbienceForFile (fileName);
-			}
-		}
-		
 		List<IQuickTaskProvider> quickTaskProvider = new List<IQuickTaskProvider> ();
 		public void AddQuickTaskProvider (IQuickTaskProvider provider)
 		{

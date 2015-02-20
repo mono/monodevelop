@@ -75,11 +75,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		Ambience ambience = AmbienceService.GetAmbience ("text/x-csharp");
-		public Ambience Ambience {
-			get { return ambience; }
-		}
-		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();
 		readonly TextEditor inspectEditor;
 

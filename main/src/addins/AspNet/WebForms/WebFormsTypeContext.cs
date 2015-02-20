@@ -631,7 +631,7 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			var tt = base.CreateTooltipInformation (smartWrap);
 			tt.SignatureMarkup = cls.GetFullName ();
-			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (cls);
+			tt.SummaryMarkup = Ambience.GetSummaryMarkup (cls);
 			return tt;
 		}
 	}
@@ -650,7 +650,7 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			var tt = base.CreateTooltipInformation (smartWrap);
 			tt.SignatureMarkup = member.Name;
-			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (member);
+			tt.SummaryMarkup = Ambience.GetSummaryMarkup (member);
 			return tt;
 		}
 	}

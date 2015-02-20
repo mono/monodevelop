@@ -469,16 +469,14 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			public List<INamedTypeSymbol> TypesList { get; private set; }
 			public List<string> TypeNamesList { get; private set; }
-			Ambience ambience;
 
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
 				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
 				TypesList = new List<INamedTypeSymbol> (ctx.Assembly.GlobalNamespace.GetTypeMembers ());
-				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
 				foreach (var typeDef in TypesList) {
-					TypeNamesList.Add (AmbienceService.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
+					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				}
 			}
 		}

@@ -95,12 +95,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			return Next;
 		}
-
-		protected Ambience GetAmbience ()
-		{
-			CheckInitialized ();
-			return AmbienceService.GetAmbienceForFile (DocumentContext.Name);
-		}
 	}
 
 	class TextEditorExtensionMarker : TextEditorExtension

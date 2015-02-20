@@ -130,10 +130,10 @@ namespace MonoDevelop.AssemblyBrowser
 		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
-			result.Append (Ambience.SingleLineComment (
+			result.Append ("// " +
                                String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
-			                                  assemblyDefinition.Name.Version)));
+			                                  assemblyDefinition.Name.Version));
 			result.Append ("</span>");
 			result.AppendLine ();
 		}

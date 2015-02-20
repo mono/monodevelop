@@ -136,8 +136,6 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			
-			public Ambience ambience;
-			
 			public StringMatcher matcher = null;
 			
 			public WorkerResult (Widget widget)

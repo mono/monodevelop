@@ -66,7 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var property = (IUnresolvedProperty)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, property);
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = Ambience.ConvertSymbol (resolved);
 			} catch (Exception) {
 				nodeInfo.Label = property.Name;
 			}
@@ -129,16 +129,10 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, property);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (Ambience.ConvertSymbol (resolved));
 			result.Append ("</big>");
 			result.AppendLine ();
-			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
-			result.AppendLine ();
-			
+
 			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();

@@ -103,7 +103,7 @@ namespace MonoDevelop.CSharp.Completion
 					LoggingService.LogError ("Got exception while creating markup for :" + sym, e);
 					return new TooltipInformation ();
 				}
-				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (sym) ?? "";
+				tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (sym) ?? "";
 
 				if (sym is IMethodSymbol) {
 					var method = (IMethodSymbol)sym;
@@ -121,14 +121,14 @@ namespace MonoDevelop.CSharp.Completion
 				var curParameter = paramIndex >= 0  && paramIndex < list.Length ? list [paramIndex] : null;
 				if (curParameter != null) {
 
-					string docText = AmbienceService.GetDocumentation (sym);
+					string docText = Ambience.GetDocumentation (sym);
 					if (!string.IsNullOrEmpty (docText)) {
 						string text = docText;
 						Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
 						Match match = paramRegex.Match (docText);
 						
 						if (match.Success) {
-							text = AmbienceService.GetDocumentationMarkup (sym, match.Groups [1].Value);
+							text = Ambience.GetDocumentationMarkup (sym, match.Groups [1].Value);
 							if (!string.IsNullOrWhiteSpace (text))
 								tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
 						}

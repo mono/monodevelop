@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public virtual string GetDescriptionMarkupText (Widget widget)
 		{
-			return AmbienceService.EscapeText (Description);
+			return Ambience.EscapeText (Description);
 		}
 
 
@@ -272,13 +272,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override SearchResultType SearchResultType { get { return SearchResultType.Member; } }
 
-		protected virtual OutputFlags Flags {
-			get {
-				return OutputFlags.IncludeParameters | OutputFlags.IncludeGenerics
-					| (useFullName  ? OutputFlags.UseFullName : OutputFlags.None);
-			}
-		}
-		
 		public override string PlainText {
 			get {
 				return member.Name;
@@ -353,11 +346,6 @@ namespace MonoDevelop.Components.MainToolbar
 			if (useFullName)
 				return HighlightMatch (widget, member.IsAnyConstructor () ? member.ContainingType.GetFullName () :  member.ToDisplayString (SymbolDisplayFormat.FullyQualifiedFormat), match);
 			return HighlightMatch (widget, member.IsAnyConstructor ()  ? member.ContainingType.Name : member.Name, match);
-		}
-		
-		internal Ambience Ambience { 
-			get;
-			set;
 		}
 	}
 

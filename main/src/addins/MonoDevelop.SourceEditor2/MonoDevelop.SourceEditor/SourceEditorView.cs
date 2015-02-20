@@ -612,7 +612,7 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			if (warnOverwrite) {
-				if (string.Compare (fileName, ContentName, FilePath.PathComparison)) {
+				if (string.Equals (fileName, ContentName, FilePath.PathComparison)) {
 					string question = GettextCatalog.GetString (
 						"This file {0} has been changed outside of {1}. Are you sure you want to overwrite the file?",
 						fileName, BrandingService.ApplicationName
@@ -991,13 +991,6 @@ namespace MonoDevelop.SourceEditor
 
 			RemoveMarkerQueue ();
 		}
-		
-		public Ambience GetAmbience ()
-		{
-			string file = IsUntitled ? UntitledName : ContentName;
-			return AmbienceService.GetAmbienceForFile (file);
-		}
-		
 
 		bool CheckReadOnly (int line)
 		{

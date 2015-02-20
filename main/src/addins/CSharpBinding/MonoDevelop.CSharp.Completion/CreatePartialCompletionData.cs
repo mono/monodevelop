@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, CreateOverrideCompletionData.overrideNameFormat);
+					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat);
 				}
 				return displayText;
 			}

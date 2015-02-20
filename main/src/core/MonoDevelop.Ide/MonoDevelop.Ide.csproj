@@ -2679,7 +2679,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectContentEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\AmbienceService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NetAmbience.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\OutputFlags.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\OutputSettings.cs" />

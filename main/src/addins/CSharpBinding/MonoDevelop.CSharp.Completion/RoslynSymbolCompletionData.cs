@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Completion
 				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
 				return new TooltipInformation ();
 			}
-			tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (entity) ?? "";
+			tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (entity) ?? "";
 			
 //			if (entity is IMember) {
 //				var evt = (IMember)entity;

@@ -32,6 +32,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -41,10 +42,11 @@ namespace MonoDevelop.AssemblyBrowser
 			get; 
 			private set; 
 		}
-		
-		protected MonoDevelop.Ide.TypeSystem.Ambience Ambience {
+		readonly static CSharpAmbience ambience = new CSharpAmbience ();
+
+		protected CSharpAmbience Ambience {
 			get {
-				return Widget.Ambience; 
+				return ambience; 
 			}
 		}
 		
