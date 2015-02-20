@@ -82,7 +82,7 @@ namespace MonoDevelop.Components.MainToolbar
 					taskList.Add(p.GetCompilationAsync (token).ContinueWith (task => {
 						var tList = new List<INamedTypeSymbol> ();
 						foreach (var type in task.Result.GetAllTypes (token)) {
-							if (type.Locations.First ().IsInSource)
+							if (type.IsDefinedInSource ())
 								tList.Add (type);
 						}
 						return tList;
@@ -226,7 +226,7 @@ namespace MonoDevelop.Components.MainToolbar
 								continue;
 							//							foreach (var p in type.Parts) {
 							foreach (ISymbol member in type.GetMembers ().Where (mPred)) {
-								if (member is INamedTypeSymbol || member.IsImplicitlyDeclared || !(member.Locations.First ().IsInSource))
+								if (member is INamedTypeSymbol || member.IsImplicitlyDeclared || member.IsDefinedInMetadata ())
 									continue;
 								if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
 									return;

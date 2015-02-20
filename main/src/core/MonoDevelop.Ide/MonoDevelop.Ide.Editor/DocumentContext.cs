@@ -84,15 +84,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		/// <summary>
-		/// If true, then ProjectContent and Compilation are invalid/outdated.
-		/// </summary>
-		public virtual bool IsProjectContextInUpdate {
-			get {
-				return false;
-			}
-		}
-
-		/// <summary>
 		/// If true, the document is part of the ProjectContent.
 		/// </summary>
 		public virtual bool IsCompileableInProject {

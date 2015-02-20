@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		internal static bool CanRename (ISymbol symbol)
 		{
-			if (symbol == null || !symbol.Locations.First().IsInSource)
+			if (symbol == null || symbol.IsDefinedInMetadata ())
 				return false;
 			switch (symbol.Kind) {
 			case SymbolKind.Local:

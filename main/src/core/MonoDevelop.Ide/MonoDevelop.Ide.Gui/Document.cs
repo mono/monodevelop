@@ -795,9 +795,6 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
-				if (IsProjectContextInUpdate) {
-					return;
-				}
 
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
@@ -808,10 +805,12 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, FileName)) {
 						TypeSystemService.ParseProjection (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
+								return;
 							Application.Invoke (delegate {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 								var taskResult = task.Result;
-								if (isClosed || taskResult == null)
+								if (isClosed || taskResult == null || token.IsCancellationRequested)
 									return;
 								this.parsedDocument = taskResult.ParsedDocument;
 								var projection = taskResult.Projection;
@@ -819,12 +818,14 @@ namespace MonoDevelop.Ide.Gui
 								Editor.SetOrUpdateProjections (this, new [] { projection }, taskResult.DisabledProjectionFeatures);
 								OnDocumentParsed (EventArgs.Empty);
 							});
-						});
+						}, TaskContinuationOptions.OnlyOnRanToCompletion);
 					} else {
 						TypeSystemService.ParseFile (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
+								return;
 							Application.Invoke (delegate {
 								// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-								if (isClosed || task.Result == null)
+								if (isClosed || task.Result == null || token.IsCancellationRequested)
 									return;
 								this.parsedDocument = task.Result;
 								OnDocumentParsed (EventArgs.Empty);

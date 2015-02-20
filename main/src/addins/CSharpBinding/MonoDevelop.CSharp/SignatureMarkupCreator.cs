@@ -855,7 +855,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (entity.DeclaredAccessibility == Accessibility.Public)
 				return true;	
-			return entity.Locations.First ().IsInSource;
+			return entity.IsDefinedInSource ();
 //			if (!entity.Region.Begin.IsEmpty)
 //				return true;
 //			var lookup = new MemberLookup (resolver.CurrentTypeDefinition, resolver.Compilation.MainAssembly);
