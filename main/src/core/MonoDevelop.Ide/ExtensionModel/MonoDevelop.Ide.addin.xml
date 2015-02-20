@@ -164,10 +164,6 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeTranslator" name = "Code translators">
-		<ExtensionNode name="Type" />
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
 		<Description>Syntax modes</Description>
 		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
