@@ -137,8 +137,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							var _runtime = runtime;
 							if (runtime.IsSeparator)
 								menu.AddItem (NSMenuItem.SeparatorItem);
-							else
-								menu.AddItem (new NSMenuItem (runtime.DisplayString, (o2, e2) => {
+							else {
+								var menuItem = new NSMenuItem {
+									IndentationLevel = runtime.IsIndented ? 2 : 1,
+									Enabled = runtime.Enabled,
+									Hidden = !runtime.Visible,
+									AttributedTitle = new NSAttributedString (runtime.DisplayString, new NSStringAttributes {
+										Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
+									}),
+								};
+								menuItem.Activated += (o2, e2) => {
 									string old = ActiveRuntime.FullDisplayString;
 									ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == _runtime.FullDisplayString);
 									var ea = new HandledEventArgs ();
@@ -147,11 +155,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 									if (ea.Handled)
 										ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == old);
-								}) {
-									IndentationLevel = runtime.IsIndented ? 2 : 1,
-									Enabled = runtime.Enabled,
-									Hidden = !runtime.Visible,
-								});
+								};
+								menu.AddItem (menuItem);
+							}
 							++i;
 						}
 					} else
