@@ -1647,7 +1647,9 @@ namespace MonoDevelop.Debugger.Win32
 				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
 					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
 					var returnType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, new CorType[0]);
-					yield return returnType;
+					if (!IsGeneratedType (returnType.GetTypeInfo (wctx.Session))) {
+						yield return returnType;
+					}
 				}
 			}
 		}
