@@ -249,9 +249,9 @@ namespace MonoDevelop.Ide.Tasks
 				projectTags [project] = tags;
 			}
 			var files = project.Files.ToArray ();
-			Task.Run (() => {
+			Task.Run (async () => {
 				try {
-					tags.UpdateAsync (project, files, token);
+					await tags.UpdateAsync (project, files, token);
 				} catch (TaskCanceledException) {
 				} catch (AggregateException ae) {
 					ae.Flatten ().Handle (x => x is TaskCanceledException);

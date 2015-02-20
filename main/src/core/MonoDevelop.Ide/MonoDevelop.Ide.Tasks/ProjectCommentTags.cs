@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Tasks;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.InformCommentTasks (new CommentTasksChangedEventArgs (fileName, null, project));
 		}
 
-		internal async void UpdateAsync (Project project, ProjectFile[] files, CancellationToken token = default (CancellationToken))
+		internal async Task UpdateAsync (Project project, ProjectFile[] files, CancellationToken token = default (CancellationToken))
 		{
 			foreach (var file in files) {
 				if (file.BuildAction == BuildAction.None)
