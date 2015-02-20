@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.projectedEditor = projectedEditor;
 			this.originalContext = originalContext;
 
-			var originalProjectId = TypeSystemService.Workspace.GetProjectId (originalContext.Project);
+			var originalProjectId = TypeSystemService.GetProjectId (originalContext.Project);
 			var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
 
 			projectedDocument = originalProject.AddDocument (

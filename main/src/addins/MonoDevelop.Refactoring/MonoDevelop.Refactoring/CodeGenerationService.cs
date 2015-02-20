@@ -199,8 +199,8 @@ namespace MonoDevelop.Refactoring
 				sw.WriteLine (ns.ToString ());
 			}
 			FileService.NotifyFileChanged (fileName); 
-			var roslynProject = TypeSystemService.GetProject (project); 
-			var id = TypeSystemService.Workspace.GetDocumentId (roslynProject.Id, fileName); 
+			var roslynProject = TypeSystemService.GetCodeAnalysisProject (project); 
+			var id = TypeSystemService.GetDocumentId (roslynProject.Id, fileName); 
 			if (id == null)
 				return null;
 			var model = roslynProject.GetDocument (id).GetSemanticModelAsync ().Result;

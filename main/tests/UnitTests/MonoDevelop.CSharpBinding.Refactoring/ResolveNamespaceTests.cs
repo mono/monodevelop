@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 //			doc.TryResolveAt (location, out resolveResult, out node);
 			var result = MonoDevelop.CSharp.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, doc.Editor.SelectionRange);
 			
-			TypeSystemService.Workspace.UnloadSolution ();
+		//	TypeSystemService.Workspace.UnloadSolution ();
 
 			return result;
 		}

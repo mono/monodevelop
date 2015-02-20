@@ -33,6 +33,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using System.IO;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -80,6 +81,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
 
+		static ImmutableArray<MonoDevelopWorkspace> Workspaces {
+			get {
+				return workspaces.Values.ToImmutableArray ();
+			}
+		}
+
 		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
@@ -90,7 +97,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return emptyWorkspace;
 		}
 
-		public static MonoDevelopWorkspace Workspace {
+		public static Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
 				var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (solution == null)
@@ -102,7 +109,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static void NotifyFileChange (string fileName, string text)
 		{
-			Workspace.UpdateFileContent (fileName, text);
+			foreach (var ws in Workspaces)
+				ws.UpdateFileContent (fileName, text);
 		}
 
 		public static void Load (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)
@@ -166,34 +174,59 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static DocumentId GetDocument (MonoDevelop.Projects.Project project, string fileName)
+		public static DocumentId GetDocumentId (MonoDevelop.Projects.Project project, string fileName)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			var w = Workspace;
-			var projectId = w.GetProjectId (project);
-			return w.GetDocumentId (projectId, fileName);
+			foreach (var w in Workspaces) {
+				var projectId = w.GetProjectId (project);
+				if (projectId != null)
+					return w.GetDocumentId (projectId, fileName);
+			}
+			return null;
 		}
 
-		public static Microsoft.CodeAnalysis.Project GetProject (MonoDevelop.Projects.Project project)
+		public static DocumentId GetDocumentId (ProjectId projectId, string fileName)
+		{
+			if (projectId == null)
+				throw new ArgumentNullException ("projectId");
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			foreach (var w in Workspaces) {
+				if (w.Contains (projectId))
+					return w.GetDocumentId (projectId, fileName);
+			}
+			return null;
+		}
+
+		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var w = Workspace;
-			var projectId = w.GetProjectId (project); 
-			return w.CurrentSolution.GetProject (projectId);
+			foreach (var w in Workspaces) {
+				var projectId = w.GetProjectId (project); 
+				if (projectId != null)
+					return w.CurrentSolution.GetProject (projectId);
+			}
+			return null;
 		}
 
 		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var w = Workspace;
-			var projectId = w.GetProjectId (project); 
-			var roslynProject = w.CurrentSolution.GetProject (projectId);
-			return await roslynProject.GetCompilationAsync (cancellationToken).ConfigureAwait (false);
+			foreach (var w in Workspaces) {
+				var projectId = w.GetProjectId (project); 
+				if (projectId == null)
+					continue;
+				var roslynProject = w.CurrentSolution.GetProject (projectId);
+				if (roslynProject == null)
+					continue;
+				return await roslynProject.GetCompilationAsync (cancellationToken).ConfigureAwait (false);
+			}
+			return null;
 		}
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)

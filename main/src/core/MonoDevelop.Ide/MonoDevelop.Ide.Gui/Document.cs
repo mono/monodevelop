@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (analysisDocument == null)
 					return null;
-				return TypeSystemService.Workspace.GetDocument (analysisDocument);
+				return TypeSystemService.GetCodeAnalysisDocument (analysisDocument);
 			}
 		}
  		
@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = TypeSystemService.GetProject (Project); 
+			var project = TypeSystemService.GetCodeAnalysisProject (Project); 
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -548,7 +548,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			if (analysisDocument != null) {
-				TypeSystemService.Workspace.InformDocumentClose (analysisDocument, FileName);
+				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
 				analysisDocument = null;
 			}
 			if (Editor != null) {
@@ -770,9 +770,9 @@ namespace MonoDevelop.Ide.Gui
 		void EnsureAnalysisDocumentIsOpen ()
 		{
 			if (analysisDocument == null && Project != null) {
-				analysisDocument = TypeSystemService.GetDocument (this.Project, this.FileName);
+				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
-					TypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
+					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			}
 		}

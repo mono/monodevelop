@@ -30,11 +30,11 @@ using System.Collections.Concurrent;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
 
-namespace MonoDevelop.Ide.TypeSystem
+namespace MonoDevelop.Ide.Tasks
 {
-	[Serializable]
-	public class ProjectCommentTags
+	class ProjectCommentTags
 	{
 		readonly Dictionary<string, List<Tag>> tags = new Dictionary<string, List<Tag>> ();
 

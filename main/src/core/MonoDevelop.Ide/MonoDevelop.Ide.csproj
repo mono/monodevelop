@@ -2675,11 +2675,8 @@
     <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollector.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollector.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectContentEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\OutputFlags.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\OutputSettings.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\StockIcons.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\FoldingRegion.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\ParsedDocument.cs" />
@@ -2697,7 +2694,6 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCommentTags.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ProjectSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
@@ -2773,7 +2769,6 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacters.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\CompletionCharacterCodon.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\IRefactoringContext.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ImplicitFrameworkAssemblyReferenceNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\PortableFrameworkSubsetNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchInSolutionSearchCategory.cs" />
@@ -2796,7 +2791,6 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\CompletionHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -2918,6 +2912,7 @@
     <Compile Include="MonoDevelop.Ide.Tasks\TaskListEntry.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\AmbienceTooltipProvider.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\PropertyTextEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Tasks\ProjectCommentTags.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

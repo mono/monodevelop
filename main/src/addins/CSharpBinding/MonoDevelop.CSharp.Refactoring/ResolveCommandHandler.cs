@@ -386,7 +386,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 					
-					tuples.Add (Tuple.Create (TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken), new MonoDevelop.Projects.ProjectReference (curProject)));
+					tuples.Add (Tuple.Create (TypeSystemService.GetCodeAnalysisProject (curProject).GetCompilationAsync (cancellationToken), new MonoDevelop.Projects.ProjectReference (curProject)));
 				}
 				foreach (var tuple in tuples) {
 					compilations.Add (Tuple.Create (tuple.Item1.Result, tuple.Item2));
@@ -545,7 +545,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (otherRefes.Contains (netProject))
 						continue;
 
-					var comp = TypeSystemService.GetProject (curProject).GetCompilationAsync (cancellationToken).Result;
+					var comp = TypeSystemService.GetCodeAnalysisProject (curProject).GetCompilationAsync (cancellationToken).Result;
 					if (comp == null)
 						continue;
 					if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (curProject)))

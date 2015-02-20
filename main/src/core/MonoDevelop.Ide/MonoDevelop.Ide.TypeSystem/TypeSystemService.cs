@@ -28,29 +28,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Threading;
-using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
 using ICSharpCode.NRefactory.Utils;
-using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Core.Assemblies;
 using System.Text;
-using ICSharpCode.NRefactory.Completion;
-using System.Diagnostics;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-using MonoDevelop.Projects.SharedAssetsProjects;
-using Mono.CSharp.Nullable;
-using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -110,7 +99,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
 					var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
-					Workspace.UpdateFileContent (file.FileName, text);
+					foreach (var w in Workspaces)
+						w.UpdateFileContent (file.FileName, text);
 				}
 			};
 
@@ -241,6 +231,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
+					var Workspace = Workspaces.First () ;
 					var projectId = Workspace.GetProjectId (options.Project);
 					if (projectId != null) {
 						var docId = Workspace.GetDocumentId (projectId, result.Result.Projection.Document.FileName);
@@ -629,5 +620,54 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 	
+		internal static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId analysisDocument, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			foreach (var w in Workspaces) {
+				var doc = w.GetDocument (analysisDocument, cancellationToken);
+				if (doc != null)
+					return doc;
+			}
+			return null;
+		}
+
+		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
+		{
+			foreach (var w in Workspaces) {
+				if (w.GetOpenDocumentIds ().Contains (analysisDocument) )
+					w.InformDocumentClose (analysisDocument, fileName); 
+
+			}
+		}
+
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
+		{
+			foreach (var w in Workspaces) {
+				if (w.Contains (analysisDocument.ProjectId)) {
+					w.InformDocumentOpen (analysisDocument, editor); 
+				}
+			}
+		}
+
+		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
+		{
+			foreach (var w in Workspaces) {
+				var projectId = w.GetProjectId (project);
+				if (projectId != null) {
+					return projectId;
+				}
+			}
+			return null;
+		}
+
+		public static Microsoft.CodeAnalysis.Document GetCodeAnysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			foreach (var w in Workspaces) {
+				var documentId = w.GetDocument (docId, cancellationToken);
+				if (documentId != null) {
+					return documentId;
+				}
+			}
+			return null;
+		}
 	}
 }

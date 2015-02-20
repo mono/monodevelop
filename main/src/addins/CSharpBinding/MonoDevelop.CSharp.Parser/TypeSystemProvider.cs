@@ -80,9 +80,8 @@ namespace MonoDevelop.CSharp.Parser
 			if (project != null) {
 				var curDoc = options.RoslynDocument;
 				if (curDoc == null) {
-					var projectId = TypeSystemService.Workspace.GetProjectId (project);
-					var curProject = TypeSystemService.Workspace.CurrentSolution.GetProject (projectId);
-					var documentId = TypeSystemService.GetDocument (project, fileName);
+					var curProject = TypeSystemService.GetCodeAnalysisProject (project);
+					var documentId = TypeSystemService.GetDocumentId (project, fileName);
 					curDoc = curProject.GetDocument (documentId);
 				}
 

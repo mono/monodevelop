@@ -43,7 +43,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopWorkspace : Workspace
+	class MonoDevelopWorkspace : Workspace
 	{
 		readonly static HostServices services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost;
 
@@ -127,6 +127,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		Dictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new Dictionary<MonoDevelop.Projects.Project, ProjectId> ();
 		Dictionary<ProjectId, ProjectData> projectDataMap = new Dictionary<ProjectId, ProjectData> ();
+
+		public bool Contains (ProjectId projectId) 
+		{
+			return projectDataMap.ContainsKey (projectId);
+		}
 
 		internal ProjectId GetProjectId (MonoDevelop.Projects.Project p)
 		{
