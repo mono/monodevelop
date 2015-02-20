@@ -74,13 +74,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.DynamicAbbrev"
-				defaultHandler = "MonoDevelop.SourceEditor.DynamicAbbrevHandler"
-				_label = "Dynamic abbrev"
-				_description = "Cycles completing the current word from matching words in all open files"
-				macShortcut = "Ctrl|/"
-				shortcut = "Alt|/" />
-		
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"
 				_label = "_Top"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom"
