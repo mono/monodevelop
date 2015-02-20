@@ -320,20 +320,40 @@ namespace MonoDevelop.CSharp.Completion
 			    syntaxTree.IsNamespaceContext (position, cancellationToken) ||
 			    syntaxTree.IsMemberDeclarationContext (position, tokenLeftOfPosition, cancellationToken) ||
 			    syntaxTree.IsLabelContext (position, cancellationToken)) {
-				var usedNamespaces = semanticModel.GetUsingNamespacesInScope (node);
-			
-				foreach (var type in semanticModel.Compilation.GlobalNamespace.GetAllTypes (cancellationToken)) {
-					if (usedNamespaces.Contains (type.ContainingNamespace))
-						continue;
-					if (type.IsImplicitClass || type.IsScriptClass)
-						continue;
-					if (type.DeclaredAccessibility != Accessibility.Public) {
-						if (type.DeclaredAccessibility != Accessibility.Internal)
+				var usedNamespaces = new HashSet<string> ();
+				foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
+					usedNamespaces.Add (un.GetFullName ()); 
+				}
+
+				var stack = new Stack<INamespaceOrTypeSymbol>();
+
+				stack.Push(semanticModel.Compilation.GlobalNamespace);
+
+				while (stack.Count > 0) {
+					if (cancellationToken.IsCancellationRequested)
+						break;
+					var current = stack.Pop();
+					var currentNs = current as INamespaceSymbol;
+					if (currentNs != null) {
+						if (usedNamespaces.Contains (currentNs.GetFullName ())) {
+							foreach (var member in currentNs.GetNamespaceMembers ())
+								stack.Push (member);
+						} else {
+							foreach (var member in currentNs.GetMembers())
+								stack.Push (member);
+						}
+					} else {
+						var type = (INamedTypeSymbol)current;
+						if (type.IsImplicitClass || type.IsScriptClass)
 							continue;
-						if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
-							continue;
+						if (type.DeclaredAccessibility != Accessibility.Public) {
+							if (type.DeclaredAccessibility != Accessibility.Internal)
+								continue;
+							if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
+								continue;
+						}
+						result.Add (new ImportSymbolCompletionData (this, type, false));
 					}
-					result.Add (new ImportSymbolCompletionData (this, type, false));
 				}
 			}
 		}
