@@ -918,6 +918,10 @@ namespace Mono.TextEditor
 		
 		public void SetSelection (int anchorOffset, int leadOffset)
 		{
+			if (anchorOffset == leadOffset) {
+				MainSelection = Selection.Empty;
+				return;
+			}
 			var anchor = document.OffsetToLocation (anchorOffset);
 			var lead = document.OffsetToLocation (leadOffset);
 			MainSelection = new Selection (anchor, lead);
@@ -925,7 +929,7 @@ namespace Mono.TextEditor
 
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
-			MainSelection = new Selection (anchor, lead);
+			MainSelection = anchor == lead ? Selection.Empty : new Selection (anchor, lead);
 		}
 
 		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
