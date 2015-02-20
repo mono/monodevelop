@@ -51,8 +51,7 @@ namespace MonoDevelop.CSharp
 	class SignatureMarkupCreator
 	{
 		const double optionalAlpha = 0.7;
-		readonly MonoDevelop.Ide.Editor.TextEditor editor;
-		readonly MonoDevelop.Ide.Editor.DocumentContext ctx;
+		readonly DocumentContext ctx;
 		readonly OptionSet options;
 		readonly ColorScheme colorStyle;
 		readonly int offset;
@@ -73,20 +72,19 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public SignatureMarkupCreator (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int offset)
+		public SignatureMarkupCreator (DocumentContext ctx, int offset)
 		{
-			if (editor == null)
-				throw new ArgumentNullException ("editor");
-			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
 			this.offset = offset;
 			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
-			this.editor = editor;
 			this.ctx = ctx;
-			if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
-				LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
+			if (ctx != null) {
+				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
+					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
+				}
+				this.options = ctx.GetOptionSet ();
+			} else {
+				this.options = TypeSystemService.Workspace.Options;
 			}
-			this.options = ctx.GetOptionSet ();
 		}
 
 		public string GetTypeReferenceString (ITypeSymbol type, bool highlight = true)

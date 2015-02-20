@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Completion
 			internal static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol sym, int currentParameter, bool smartWrap)
 			{
 				var tooltipInfo = new TooltipInformation ();
-				var sig = new SignatureMarkupCreator (editor, ctx, editor.CaretOffset);
+				var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
 				sig.HighlightParameter = currentParameter;
 				sig.BreakLineAfterReturnType = smartWrap;
 				try {
@@ -238,7 +238,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
 			{
-				var sig = new SignatureMarkupCreator (editor, ctx, editor.CaretOffset) {
+				var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0) {
 					HighlightParameter = currentParameter
 				};
 				return new TooltipInformation {

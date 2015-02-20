@@ -130,8 +130,8 @@
 		<Formatter mimeType="text/x-csharp" class="MonoDevelop.CSharp.Formatting.CSharpFormatter" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/TypeSystem/Ambiences">
-		<Ambience mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
+	<Extension path = "/MonoDevelop/TypeSystem/AmbienceTooltipProviders">
+		<Provider mimeType="text/x-csharp" class = "MonoDevelop.CSharp.CSharpAmbience" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/TypeSystem/Parser">

@@ -36,7 +36,7 @@ using System.IO;
 
 namespace MonoDevelop.CSharp
 {
-	class CSharpAmbience// : Ambience
+	class CSharpAmbience : AmbienceTooltipProvider
 	{
 		static Dictionary<string, string> netToCSharpTypes = new Dictionary<string, string> ();
 		static HashSet<string> keywords = new HashSet<string> (new [] {
@@ -194,13 +194,13 @@ namespace MonoDevelop.CSharp
 //		
 //		static Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
 //
-//		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (Microsoft.CodeAnalysis.ISymbol entity)
-//		{
-//			if (entity == null)
-//				throw new ArgumentNullException ("entity");
-//			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, null, entity, false, true);
-//		}
-//
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (Microsoft.CodeAnalysis.ISymbol entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException ("entity");
+			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, null, entity, false, true);
+		}
+
 //		static string GetString (TypeKind classType)
 //		{
 //			string res;

@@ -36,9 +36,12 @@ using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
 using System.Threading;
 using System.Xml;
+using Mono.Addins;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+
 	public static class Ambience
 	{
 		public static readonly SymbolDisplayFormat LabelFormat =
@@ -58,7 +61,25 @@ namespace MonoDevelop.Ide.TypeSystem
 				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
 				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
 			);
-		
+
+		static Ambience ()
+		{
+			// may not have been initialized in testing environment.
+			if (AddinManager.IsInitialized) {
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/AmbienceTooltipProviders", delegate(object sender, ExtensionNodeEventArgs args) {
+					var node = args.ExtensionNode as MimeTypeExtensionNode;
+					switch (args.Change) {
+					case ExtensionChange.Add:
+						tooltipProviders.Add ((AmbienceTooltipProvider)node.CreateInstance ());
+						break;
+					case ExtensionChange.Remove:
+						tooltipProviders.Remove ((AmbienceTooltipProvider)node.CreateInstance ());
+						break;
+					}
+				});
+			}
+		}
+
 		public static string Format (string str)
 		{
 			if (String.IsNullOrEmpty (str))
@@ -540,9 +561,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		#endregion
 
-		public static TooltipInformation GetTooltip(ISymbol type)
+		#region Tooltips
+		static List<AmbienceTooltipProvider> tooltipProviders = new List<AmbienceTooltipProvider>();
+
+		public static TooltipInformation GetTooltip(ISymbol symbol)
 		{
+			foreach (var tp in tooltipProviders) {
+				var result = tp.GetTooltip (symbol);
+				if (result != null)
+					return result;
+			}
 			return null;
 		}
+		#endregion
 	}
 }

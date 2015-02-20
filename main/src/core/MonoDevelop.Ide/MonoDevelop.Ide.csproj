@@ -2679,7 +2679,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectContentEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
-    <Compile Include="MonoDevelop.Ide.TypeSystem\NetAmbience.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\OutputFlags.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\OutputSettings.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\StockIcons.cs" />
@@ -2919,6 +2918,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\DisplayFlags.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingResult.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskListEntry.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\AmbienceTooltipProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

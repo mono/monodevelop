@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
 				TooltipInformation result;
-				var sig = new SignatureMarkupCreator (editor, doc, offset);
+				var sig = new SignatureMarkupCreator (doc, offset);
 				sig.BreakLineAfterReturnType = false;
 				
 				var typeOfExpression = data.Token.Parent as TypeOfExpressionSyntax;
