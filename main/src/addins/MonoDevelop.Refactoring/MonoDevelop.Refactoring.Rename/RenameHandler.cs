@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -42,6 +43,9 @@ namespace MonoDevelop.Refactoring.Rename
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
+			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
+				ci.Enabled = false;
+			}
 			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.DeclaredSymbol ?? info.Symbol;
 			if (!CanRename (sym))
@@ -50,7 +54,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		internal static bool CanRename (ISymbol symbol)
 		{
-			if (symbol == null)
+			if (symbol == null || !symbol.Locations.First().IsInSource)
 				return false;
 			switch (symbol.Kind) {
 			case SymbolKind.Local:
