@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Views
 		DiffScrollbar rightDiffScrollBar, leftDiffScrollBar;
 		MiddleArea[] middleAreas;
 
-		protected TextEditor[] editors;
+		protected MonoTextEditor[] editors;
 		protected Widget[] headerWidgets;
 
 		
@@ -86,13 +86,13 @@ namespace MonoDevelop.VersionControl.Views
 		static readonly Cairo.Color lightBlue = new Cairo.Color (190 / 255.0, 190 / 255.0, 240 / 255.0);
 		static readonly Cairo.Color darkBlue = new Cairo.Color (133 / 255.0, 133 / 255.0, 168 / 255.0);
 		
-		protected abstract TextEditor MainEditor {
+		protected abstract MonoTextEditor MainEditor {
 			get;
 		}
 		
-		public TextEditor FocusedEditor {
+		public MonoTextEditor FocusedEditor {
 			get {
-				foreach (TextEditor editor in editors) {
+				foreach (MonoTextEditor editor in editors) {
 					
 					if (editor.HasFocus)
 						return editor;
@@ -204,7 +204,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.MainEditor.EditorOptionsChanged += HandleMainEditorhandleEditorOptionsChanged;
 		}
 		
-		void ShowPopup (TextEditor editor, EventButton evt)
+		void ShowPopup (MonoTextEditor editor, EventButton evt)
 		{
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/VersionControl/DiffView/ContextMenu");
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
@@ -254,7 +254,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected abstract void CreateComponents ();
 		
-		public static ICollection<Cairo.Rectangle> GetDiffRectangles (TextEditor editor, int startOffset, int endOffset)
+		public static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
 		{
 			ICollection<Cairo.Rectangle> rectangles = new List<Cairo.Rectangle> ();
 			var startLine = editor.GetLineByOffset (startOffset);
@@ -277,12 +277,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<TextSegment> BreakTextInWords (TextEditor editor, int start, int count)
+		static List<TextSegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		static List<Cairo.Rectangle> CalculateChunkPath (TextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
+		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;
@@ -305,7 +305,7 @@ namespace MonoDevelop.VersionControl.Views
 			return result;
 		}
 		
-		Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> GetDiffPaths (List<Hunk> diff, TextEditor editor, Hunk hunk)
+		Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>> GetDiffPaths (List<Hunk> diff, MonoTextEditor editor, Hunk hunk)
 		{
 			if (!diffCache.ContainsKey (diff))
 				diffCache[diff] = new Dictionary<Hunk, Tuple<List<Cairo.Rectangle>, List<Cairo.Rectangle>>> ();
@@ -376,7 +376,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		internal static void EditorFocusIn (object sender, FocusInEventArgs args)
 		{
-			TextEditor editor = (TextEditor)sender;
+			MonoTextEditor editor = (MonoTextEditor)sender;
 			UpdateCaretPosition (editor.Caret);
 		}
 
@@ -638,7 +638,7 @@ namespace MonoDevelop.VersionControl.Views
 			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
 		}
 
-		protected virtual void UndoChange (TextEditor fromEditor, TextEditor toEditor, Hunk hunk)
+		protected virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
@@ -669,7 +669,7 @@ namespace MonoDevelop.VersionControl.Views
 		class MiddleArea : DrawingArea
 		{
 			EditorCompareWidgetBase widget;
-			TextEditor fromEditor, toEditor;
+			MonoTextEditor fromEditor, toEditor;
 			bool useLeft;
 
 			IEnumerable<Hunk> Diff {
@@ -678,7 +678,7 @@ namespace MonoDevelop.VersionControl.Views
 				}
 			}
 
-			public MiddleArea (EditorCompareWidgetBase widget, TextEditor fromEditor, TextEditor toEditor, bool useLeft)
+			public MiddleArea (EditorCompareWidgetBase widget, MonoTextEditor fromEditor, MonoTextEditor toEditor, bool useLeft)
 			{
 				this.widget = widget;
 				this.Events |= EventMask.PointerMotionMask | EventMask.ButtonPressMask;
@@ -931,13 +931,13 @@ namespace MonoDevelop.VersionControl.Views
 
 		class DiffScrollbar : DrawingArea
 		{
-			TextEditor editor;
+			MonoTextEditor editor;
 			EditorCompareWidgetBase widget;
 			bool useLeftDiff;
 			bool paintInsert;
 			Adjustment vAdjustment;
 			
-			public DiffScrollbar (EditorCompareWidgetBase widget, TextEditor editor, bool useLeftDiff, bool paintInsert)
+			public DiffScrollbar (EditorCompareWidgetBase widget, MonoTextEditor editor, bool useLeftDiff, bool paintInsert)
 			{
 				this.editor = editor;
 				this.useLeftDiff = useLeftDiff;

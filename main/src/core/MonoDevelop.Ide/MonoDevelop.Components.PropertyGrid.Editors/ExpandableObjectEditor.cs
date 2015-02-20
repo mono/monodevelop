@@ -56,7 +56,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, StateType state)
 		{
 			if (Property.Converter.CanConvertTo (typeof(string)) && Property.Converter.CanConvertFrom (typeof(string)))
-				return new TextEditor ();
+				return new PropertyTextEditor ();
 			else
 				return null;
 		}

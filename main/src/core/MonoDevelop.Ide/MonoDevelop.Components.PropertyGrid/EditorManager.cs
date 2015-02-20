@@ -154,7 +154,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			//First, most unknown types will be most likely to convert to/from strings
 			//Second, System.Web.UI.WebControls/UnitConverter.cs dies on non-strings
 			if (tc.CanConvertFrom (typeof (string)) && tc.CanConvertTo (typeof(string)))
-				return typeof(TextEditor);
+				return typeof(PropertyTextEditor);
 			
 			foreach (DictionaryEntry editor in editors)
 				if (tc.CanConvertFrom((Type) editor.Key) && tc.CanConvertTo((Type) editor.Key))

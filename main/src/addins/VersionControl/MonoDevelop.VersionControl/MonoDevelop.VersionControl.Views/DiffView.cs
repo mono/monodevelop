@@ -83,7 +83,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		#region IAttachableViewContent implementation
 
-		public int GetLineInCenter (Mono.TextEditor.TextEditor editor)
+		public int GetLineInCenter (Mono.TextEditor.MonoTextEditor editor)
 		{
 			double midY = editor.VAdjustment.Value + editor.Allocation.Height / 2;
 			return editor.YToLine (midY);

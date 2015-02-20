@@ -37,7 +37,7 @@ namespace MonoDevelop.SourceEditor
 		{
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			// nothing (is drawn using chunk marker)
 		}
@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		void IChunkMarker.ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color)
+		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color)
 		{
 			if (Debugger.DebuggingService.IsDebugging)
 				return;

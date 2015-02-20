@@ -30,7 +30,7 @@ namespace Mono.TextEditor
 {
 	public class ActionMargin : Margin
 	{
-		readonly TextEditor editor;
+		readonly MonoTextEditor editor;
 
 		double marginWidth;
 		public override double Width {
@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ActionMargin (TextEditor editor)
+		public ActionMargin (MonoTextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");

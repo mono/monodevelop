@@ -52,7 +52,7 @@ using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
+	public class ExtensibleTextEditor : Mono.TextEditor.MonoTextEditor
 	{
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-15.png");
 
-			BookmarkMarker.DrawBookmarkFunc = delegate(Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
+			BookmarkMarker.DrawBookmarkFunc = delegate(Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
 				if (!lineSegment.IsBookmarked)
 					return;
 				cr.DrawImage (

@@ -64,8 +64,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 		
-		Mono.TextEditor.TextEditor textEditor;
-		public Mono.TextEditor.TextEditor TextEditor {
+		Mono.TextEditor.MonoTextEditor textEditor;
+		public Mono.TextEditor.MonoTextEditor TextEditor {
 			get {
 				return textEditor;
 			}

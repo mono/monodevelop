@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		BlameRenderer overview;
 		
-		TextEditor editor;
+		MonoTextEditor editor;
 		List<ContainerChild> children = new List<ContainerChild> ();
 		
 		public Adjustment Vadjustment {
@@ -75,7 +75,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public TextEditor Editor {
+		public MonoTextEditor Editor {
 			get {
 				return this.editor;
 			}
@@ -124,7 +124,7 @@ namespace MonoDevelop.VersionControl.Views
 			hScrollBar = new HScrollbar (hAdjustment);
 			AddChild (hScrollBar);
 			
-			editor = new TextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
+			editor = new MonoTextEditor (sourceEditor.TextEditor.Document, sourceEditor.TextEditor.Options);
 			AddChild (editor);
 			editor.SetScrollAdjustments (hAdjustment, vAdjustment);
 			

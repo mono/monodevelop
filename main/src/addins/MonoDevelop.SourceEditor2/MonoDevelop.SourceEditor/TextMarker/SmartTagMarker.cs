@@ -35,14 +35,14 @@ namespace MonoDevelop.SourceEditor
 		const double tagMarkerWidth = 8;
 		const double tagMarkerHeight = 2;
 		MonoDevelop.Ide.Editor.DocumentLocation loc;
-		Mono.TextEditor.TextEditor editor;
+		Mono.TextEditor.MonoTextEditor editor;
 
 		public SmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation) : base (offset, 0)
 		{
 			this.loc = realLocation;
 		}
 
-		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		public override void Draw (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			this.editor = editor;
 			var line = editor.GetLine (loc.Line);
@@ -100,7 +100,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		bool IActionTextLineMarker.MousePressed (Mono.TextEditor.TextEditor editor, MarginMouseEventArgs args)
+		bool IActionTextLineMarker.MousePressed (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			var handler = MousePressed;
 			if (handler != null)
@@ -108,7 +108,7 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 
-		void IActionTextLineMarker.MouseHover (Mono.TextEditor.TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
+		void IActionTextLineMarker.MouseHover (Mono.TextEditor.MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (args.Button != 0)
 				return;

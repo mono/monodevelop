@@ -2390,7 +2390,6 @@
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FlagsSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\FloatRange.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\IntRange.cs" />
-    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditor.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TextEditorDialog.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\TimeSpanEditor.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\BooleanEditorCell.cs" />
@@ -2919,6 +2918,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingResult.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskListEntry.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\AmbienceTooltipProvider.cs" />
+    <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\PropertyTextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

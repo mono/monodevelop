@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 {
 	public class TextViewMargin : Margin
 	{
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
 		Pango.Layout[] eolMarkerLayout;
@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 		}
 
 
-		public TextViewMargin (TextEditor textEditor)
+		public TextViewMargin (MonoTextEditor textEditor)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");

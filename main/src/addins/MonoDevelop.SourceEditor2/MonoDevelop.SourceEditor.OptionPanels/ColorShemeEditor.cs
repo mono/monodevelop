@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class ColorShemeEditor : Gtk.Dialog
 	{
-		TextEditor textEditor;
+		MonoTextEditor textEditor;
 		ColorScheme colorSheme;
 		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDescription), typeof(object));
 		string fileName;
@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.panel = panel;
 			this.Build ();
-			textEditor = new TextEditor ();
+			textEditor = new MonoTextEditor ();
 			textEditor.Options = new StyledSourceEditorOptions (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance);
 			this.scrolledwindowTextEditor.Child = textEditor;
 			textEditor.ShowAll ();

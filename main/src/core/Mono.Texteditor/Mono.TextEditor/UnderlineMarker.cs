@@ -57,7 +57,7 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			var startOffset = metrics.TextStartOffset;
 			int endOffset = metrics.TextEndOffset;
@@ -96,7 +96,7 @@ namespace Mono.TextEditor
 			InternalDraw (markerStart, markerEnd, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
 		}
 		
-		void InternalDraw (int markerStart, int markerEnd, TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		void InternalDraw (int markerStart, int markerEnd, MonoTextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			if (markerStart >= markerEnd)
 				return;

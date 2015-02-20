@@ -203,7 +203,6 @@
     <Compile Include="Mono.TextEditor\TextSegmentMarker.cs" />
     <Compile Include="Mono.TextEditor\Gui\FoldMarkerMargin.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextArea.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TextEditor.cs" />
     <Compile Include="Mono.TextEditor\Standalone\StringTextSource.cs" />
     <Compile Include="Mono.TextEditor.Utils\HtmlWriter.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
@@ -238,6 +237,7 @@
     <Compile Include="Mono.TextEditor.Utils\CharRope.cs" />
     <Compile Include="Mono.TextEditor.Utils\RopeTextReader.cs" />
     <Compile Include="Mono.TextEditor\Document\ImmutableLineSplitter.cs" />
+    <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 			this.effect = effect;
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics layout, int startOffset, int endOffset)
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics layout, int startOffset, int endOffset)
 		{
 			if (DebuggingService.IsDebugging)
 				return;

@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 
-		public override void DrawBackground (Mono.TextEditor.TextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		public override void DrawBackground (Mono.TextEditor.MonoTextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			int markerStart = usage.Offset;
 			int markerEnd = usage.EndOffset;

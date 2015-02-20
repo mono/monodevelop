@@ -299,8 +299,8 @@ namespace Mono.TextEditor
 			ResizeMode = ResizeMode.Queue;
 		}
 
-		TextEditor editor;
-		internal void Initialize (TextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
+		MonoTextEditor editor;
+		internal void Initialize (MonoTextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -2272,7 +2272,7 @@ namespace Mono.TextEditor
 		
 		class CaretPulseAnimation : IAnimationDrawer
 		{
-			TextEditor editor;
+			MonoTextEditor editor;
 			
 			public double Percent { get; set; }
 			
@@ -2289,7 +2289,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public CaretPulseAnimation (TextEditor editor)
+			public CaretPulseAnimation (MonoTextEditor editor)
 			{
 				this.editor = editor;
 			}
@@ -2326,7 +2326,7 @@ namespace Mono.TextEditor
 		
 		public class RegionPulseAnimation : IAnimationDrawer
 		{
-			TextEditor editor;
+			MonoTextEditor editor;
 			
 			public PulseKind Kind { get; set; }
 			public double Percent { get; set; }
@@ -2347,10 +2347,10 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public RegionPulseAnimation (TextEditor editor, Gdk.Point position, Gdk.Size size)
+			public RegionPulseAnimation (MonoTextEditor editor, Gdk.Point position, Gdk.Size size)
 				: this (editor, new Gdk.Rectangle (position, size)) {}
 			
-			public RegionPulseAnimation (TextEditor editor, Gdk.Rectangle region)
+			public RegionPulseAnimation (MonoTextEditor editor, Gdk.Rectangle region)
 			{
 				if (region.X < 0 || region.Y < 0 || region.Width < 0 || region.Height < 0)
 					throw new ArgumentException ("region is invalid");
@@ -2473,7 +2473,7 @@ namespace Mono.TextEditor
 				set;
 			}
 			
-			public SearchHighlightPopupWindow (TextEditor editor) : base (editor)
+			public SearchHighlightPopupWindow (MonoTextEditor editor) : base (editor)
 			{
 			}
 			
@@ -3044,12 +3044,12 @@ namespace Mono.TextEditor
 
 		class SetCaret 
 		{
-			TextEditor view;
+			MonoTextEditor view;
 			int line, column;
 			bool highlightCaretLine;
 			bool centerCaret;
 			
-			public SetCaret (TextEditor view, int line, int column, bool highlightCaretLine, bool centerCaret)
+			public SetCaret (MonoTextEditor view, int line, int column, bool highlightCaretLine, bool centerCaret)
 			{
 				this.view = view;
 				this.line = line;
@@ -3119,12 +3119,12 @@ namespace Mono.TextEditor
 			return Gtk.Widget.GType;
 		}
 		
-		internal List<TextEditor.EditorContainerChild> containerChildren = new List<TextEditor.EditorContainerChild> ();
+		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
 		
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
 			widget.Parent = this;
-			TextEditor.EditorContainerChild info = new TextEditor.EditorContainerChild (this, widget);
+			MonoTextEditor.EditorContainerChild info = new MonoTextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
@@ -3215,7 +3215,7 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (child => child.Child.Unmap ());
 		}
 
-		void ResizeChild (Rectangle allocation, TextEditor.EditorContainerChild child)
+		void ResizeChild (Rectangle allocation, MonoTextEditor.EditorContainerChild child)
 		{
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);

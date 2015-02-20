@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 			line = null;
 		}
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			var startOffset = metrics.TextStartOffset;
 			int endOffset = metrics.TextEndOffset;

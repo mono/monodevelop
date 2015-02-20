@@ -330,7 +330,7 @@ namespace MonoDevelop.SourceEditor
 				args.RetVal = true;
 			}
 		
-			public void SetTextEditor (Mono.TextEditor.TextEditor container)
+			public void SetTextEditor (Mono.TextEditor.MonoTextEditor container)
 			{
 				scrolledWindow.Child = container;
 				this.strip.TextEditor = container;
@@ -342,13 +342,13 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				var editor = (Mono.TextEditor.TextEditor)sender;
+				var editor = (Mono.TextEditor.MonoTextEditor)sender;
 				scrolledWindow.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
 			}
 			
 			void RemoveEvents ()
 			{
-				var container = scrolledWindow.Child as Mono.TextEditor.TextEditor;
+				var container = scrolledWindow.Child as Mono.TextEditor.MonoTextEditor;
 				if (container == null) {
 
 					LoggingService.LogError ("can't remove events from text editor container.");
@@ -360,9 +360,9 @@ namespace MonoDevelop.SourceEditor
 				container.SelectionChanged -= parent.UpdateLineColOnEventHandler;
 			}
 			
-			public Mono.TextEditor.TextEditor RemoveTextEditor ()
+			public Mono.TextEditor.MonoTextEditor RemoveTextEditor ()
 			{
-				var child = scrolledWindow.Child as Mono.TextEditor.TextEditor;
+				var child = scrolledWindow.Child as Mono.TextEditor.MonoTextEditor;
 				if (child == null)
 					return null;
 				RemoveEvents ();

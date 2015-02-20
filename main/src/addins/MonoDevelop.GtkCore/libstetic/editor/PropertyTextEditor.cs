@@ -5,14 +5,14 @@ using Gdk;
 
 namespace Stetic.Editor
 {
-	public class TextEditor: Gtk.HBox, IPropertyEditor
+	public class PropertyTextEditor: Gtk.HBox, IPropertyEditor
 	{
 		protected Gtk.Entry entry;
 		protected Gtk.Button button;
 		PropertyDescriptor prop;
 		object obj;
 		
-		public TextEditor()
+		public PropertyTextEditor()
 		{
 			Spacing = 3;
 			entry = new Entry ();

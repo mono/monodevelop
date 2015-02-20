@@ -41,7 +41,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class TextEditor : Container
+	public class MonoTextEditor : Container
 	{
 		readonly TextArea textArea;
 
@@ -60,21 +60,21 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public TextEditor () : this(new TextDocument ())
+		public MonoTextEditor () : this(new TextDocument ())
 		{
 		}
 
-		public TextEditor (TextDocument doc)
+		public MonoTextEditor (TextDocument doc)
 			: this (doc, null)
 		{
 		}
 		
-		public TextEditor (TextDocument doc, ITextEditorOptions options)
+		public MonoTextEditor (TextDocument doc, ITextEditorOptions options)
 			: this (doc, options, new SimpleEditMode ())
 		{
 		}
 
-		public TextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
+		public MonoTextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			WidgetFlags |= WidgetFlags.NoWindow;

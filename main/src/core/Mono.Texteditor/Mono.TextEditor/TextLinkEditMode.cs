@@ -188,7 +188,7 @@ namespace Mono.TextEditor
 
 		TextLinkTooltipProvider tooltipProvider;
 
-		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
+		public TextLinkEditMode (MonoTextEditor editor, int baseOffset, List<TextLink> links)
 		{
 			this.editor = editor;
 			this.links = links;
@@ -547,7 +547,7 @@ namespace Mono.TextEditor
 			this.mode = mode;
 		}
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor Editor, int offset)
+		public override TooltipItem GetItem (MonoTextEditor Editor, int offset)
 		{
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
@@ -559,7 +559,7 @@ namespace Mono.TextEditor
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 
-		public override Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Gtk.Window CreateTooltipWindow (MonoTextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			TextLink link = item.Item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))
@@ -570,7 +570,7 @@ namespace Mono.TextEditor
 			return window;
 		}
 
-		protected override void GetRequiredPosition (TextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (MonoTextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			TooltipWindow win = (TooltipWindow)tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
@@ -594,7 +594,7 @@ namespace Mono.TextEditor
 			IsVisible = true;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			int caretOffset = editor.Caret.Offset - BaseOffset;
 
@@ -649,7 +649,7 @@ namespace Mono.TextEditor
 			return margin is GutterMargin;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
 
@@ -661,7 +661,7 @@ namespace Mono.TextEditor
 			return true;
 		}
 
-		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
 			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;

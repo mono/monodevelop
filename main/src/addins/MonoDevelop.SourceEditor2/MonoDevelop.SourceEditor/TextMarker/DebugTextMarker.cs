@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 {
 	abstract class DebugTextMarker : MarginMarker
 	{
-		protected DebugTextMarker (TextEditor editor)
+		protected DebugTextMarker (MonoTextEditor editor)
 		{
 			Editor = editor;
 		}
@@ -60,7 +60,7 @@ namespace MonoDevelop.SourceEditor
 			return color.Color;
 		}
 
-		protected TextEditor Editor {
+		protected MonoTextEditor Editor {
 			get; private set;
 		}
 
@@ -74,7 +74,7 @@ namespace MonoDevelop.SourceEditor
 			return margin is IconMargin;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			// check, if a message bubble is active in that line.
 			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
@@ -96,7 +96,7 @@ namespace MonoDevelop.SourceEditor
 			return base.DrawBackground (editor, cr, metrics);
 		}
 
-		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			double size = metrics.Margin.Width;
 			double borderLineWidth = cr.LineWidth;
@@ -141,7 +141,7 @@ namespace MonoDevelop.SourceEditor
 		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-15.png");
 
-		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
+		public BreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
 		}
@@ -174,7 +174,7 @@ namespace MonoDevelop.SourceEditor
 		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-disabled-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-disabled-15.png");
 
-		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
+		public DisabledBreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
 		}
@@ -202,7 +202,7 @@ namespace MonoDevelop.SourceEditor
 		static readonly Image breakpoint = Image.FromResource (typeof(BreakpointPad), "gutter-breakpoint-invalid-15.png");
 		static readonly Image tracepoint = Image.FromResource (typeof(BreakpointPad), "gutter-tracepoint-invalid-15.png");
 
-		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
+		public InvalidBreakpointTextMarker (MonoTextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
 		}
@@ -229,7 +229,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static readonly Image currentLine = Image.FromResource (typeof(BreakpointPad), "gutter-execution-15.png");
 
-		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
+		public CurrentDebugLineTextMarker (MonoTextEditor editor) : base (editor)
 		{
 		}
 
@@ -262,7 +262,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		static readonly Image stackLine = Image.FromResource (typeof(BreakpointPad), "gutter-stack-15.png");
 
-		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
+		public DebugStackLineTextMarker (MonoTextEditor editor) : base (editor)
 		{
 		}
 

@@ -85,7 +85,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		int caretLine = -1;
 		
-		public Mono.TextEditor.TextEditor TextEditor {
+		public Mono.TextEditor.MonoTextEditor TextEditor {
 			get;
 			private set;
 		}

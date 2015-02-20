@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor
 			set;
 		}
 
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		readonly Widget frame;
 		bool isReplaceMode = true;
 		Widget[] replaceWidgets;
@@ -101,7 +101,7 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null || textEditor == null)
 				return;
 			int newX = textEditor.Allocation.Width - Allocation.Width - 8;
-			TextEditor.EditorContainerChild containerChild = ((TextEditor.EditorContainerChild)textEditor [frame]);
+			MonoTextEditor.EditorContainerChild containerChild = ((MonoTextEditor.EditorContainerChild)textEditor [frame]);
 			if (newX != containerChild.X) {
 				searchEntry.WidthRequest = textEditor.Allocation.Width / 3;
 				containerChild.X = newX;
@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor
 			return "(" + nextShortcut + ")";
 		}
 		
-		public SearchAndReplaceWidget (TextEditor textEditor, Widget frame)
+		public SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -827,7 +827,7 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.SearchPattern = searchPattern;
 		}
 
-		public static SearchResult FindNext (TextEditor textEditor)
+		public static SearchResult FindNext (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);
@@ -848,7 +848,7 @@ But I leave it in in the case I've missed something. Mike
 			return result;
 		}
 
-		public static SearchResult FindPrevious (TextEditor textEditor)
+		public static SearchResult FindPrevious (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindPrevious (true);

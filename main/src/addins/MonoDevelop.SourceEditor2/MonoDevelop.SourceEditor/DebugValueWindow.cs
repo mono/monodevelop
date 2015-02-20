@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 //		PinWindow pinWindow;
 //		TreeIter currentPinIter;
 		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch): base (Gtk.WindowType.Toplevel)
+		public DebugValueWindow (Mono.TextEditor.MonoTextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch): base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;

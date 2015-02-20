@@ -49,7 +49,7 @@ namespace MonoDevelop.SourceEditor
 			return margin is ActionMargin;
 		}
 
-		public override void InformMouseHover (Mono.TextEditor.TextEditor editor, Margin margin, MarginMouseEventArgs args)
+		public override void InformMouseHover (Mono.TextEditor.MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 			if (!(margin is ActionMargin))
 				return;
@@ -86,7 +86,7 @@ namespace MonoDevelop.SourceEditor
 
 //		static Menu menu;
 
-		public override void InformMousePress (Mono.TextEditor.TextEditor editor, Margin margin, MarginMouseEventArgs args)
+		public override void InformMousePress (Mono.TextEditor.MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 			if (!(margin is ActionMargin))
 				return;
@@ -97,7 +97,7 @@ namespace MonoDevelop.SourceEditor
 		bool isFailed;
 		string failMessage;
 
-		public override void DrawForeground (Mono.TextEditor.TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override void DrawForeground (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			isFailed = false;
 			bool searchCases = false;

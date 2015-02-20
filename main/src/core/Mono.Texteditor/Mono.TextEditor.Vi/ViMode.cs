@@ -187,7 +187,7 @@ namespace Mono.TextEditor.Vi
 		}
 
 		ViStatusArea statusArea;
-		TextEditor viTextEditor;
+		MonoTextEditor viTextEditor;
 
 		void CheckVisualMode ()
 		{
@@ -243,7 +243,7 @@ namespace Mono.TextEditor.Vi
 			}
 		}
 
-		public override void AllocateTextArea (TextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
+		public override void AllocateTextArea (MonoTextEditor textEditor, TextArea textArea, Gdk.Rectangle allocation)
 		{
 			statusArea.AllocateArea (textArea, allocation);
 		}

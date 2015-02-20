@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor
 			this.Wave = true;
 		}
 
-		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		public override void Draw (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			Color = info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 			base.Draw (editor, cr, metrics, startOffset, endOffset);

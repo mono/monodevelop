@@ -29,25 +29,25 @@ namespace Mono.TextEditor
 {
 	public abstract class TooltipProvider
 	{
-		public abstract TooltipItem GetItem (TextEditor editor, int offset);
+		public abstract TooltipItem GetItem (MonoTextEditor editor, int offset);
 
-		public virtual bool IsInteractive (TextEditor editor, Gtk.Window tipWindow)
+		public virtual bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
 		{
 			return false;
 		}
 
-		protected virtual void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected virtual void GetRequiredPosition (MonoTextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			requiredWidth = tipWindow.SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		public virtual Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			return null;
 		}
 
-		public virtual Gtk.Window ShowTooltipWindow (TextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
 			int ox = 0, oy = 0;
 			if (editor.GdkWindow != null)

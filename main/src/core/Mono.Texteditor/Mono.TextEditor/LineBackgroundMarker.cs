@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			if (metrics.SelectionStart > 0)
 				return true;

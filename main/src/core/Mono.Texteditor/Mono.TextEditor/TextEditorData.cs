@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public event EventHandler<EditModeChangedEventArgs> EditModeChanged;
 		
-		public TextEditor Parent {
+		public MonoTextEditor Parent {
 			get;
 			set;
 		}

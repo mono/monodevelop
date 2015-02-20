@@ -36,14 +36,14 @@ using Gdk;
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
 	[PropertyEditorType (typeof (string))]
-	public class TextEditor: Gtk.HBox, IPropertyEditor
+	public class PropertyTextEditor: Gtk.HBox, IPropertyEditor
 	{
 		EditSession session;
 		bool disposed;
 		string initialText;
 		Entry entry;
 		
-		public TextEditor()
+		public PropertyTextEditor()
 		{
 		}
 		
