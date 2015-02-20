@@ -42,6 +42,8 @@ namespace MonoDevelop.CSharp.Completion
 		readonly int declarationBegin;
 		readonly ITypeSymbol currentType;
 
+		bool afterKeyword;
+
 		public bool GenerateBody { get; set; }
 
 		string displayText;
@@ -50,6 +52,8 @@ namespace MonoDevelop.CSharp.Completion
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat);
+					if (!afterKeyword)
+						displayText = "override " + displayText;
 				}
 
 				return displayText;
@@ -57,8 +61,9 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		public CreateOverrideCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member) : base (keyHandler, ext, member, member.ToDisplayString ())
+		public CreateOverrideCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, ext, member, member.ToDisplayString ())
 		{
+			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;

@@ -39,6 +39,8 @@ namespace MonoDevelop.CSharp.Completion
 		readonly ITypeSymbol currentType;
 		readonly int declarationBegin;
 
+		bool afterKeyword;
+
 		public bool GenerateBody { get; set; }
 
 		string displayText;
@@ -47,13 +49,16 @@ namespace MonoDevelop.CSharp.Completion
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat);
+					if (!afterKeyword)
+						displayText = "partial " + displayText;
 				}
 				return displayText;
 			}
 		}
 
-		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (keyHandler, ext, member)
+		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member, bool afterKeyword) : base (keyHandler, ext, member)
 		{
+			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;

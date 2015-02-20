@@ -67,11 +67,16 @@ namespace MonoDevelop.CSharp.Completion
 			SymbolDisplayParameterOptions.IncludeParamsRefOut);
 
 		string displayText;
+
+		bool afterKeyword;
+
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, overrideNameFormat);
+					if (!afterKeyword)
+						displayText = "override " + displayText;
 				}
 
 				return displayText;
@@ -79,8 +84,9 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		public ProtocolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member) : base (keyHandler, ext, member, member.ToDisplayString ())
+		public ProtocolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, ext, member, member.ToDisplayString ())
 		{
+			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;

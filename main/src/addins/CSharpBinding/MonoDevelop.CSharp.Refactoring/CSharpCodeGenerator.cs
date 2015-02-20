@@ -467,7 +467,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (">");
 			}
 			result.Append ("(");
-			AppendParameterList (result, options, method.Parameters);
+			AppendParameterList (result, options, method.Parameters, true);
 			result.Append (")");
 
 			var typeParameters = method.TypeParameters;
@@ -615,7 +615,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("base.");
 						result.Append (CSharpAmbience.FilterName (method.Name));
 						result.Append ("(");
-						AppendParameterList (result, options, method.Parameters);
+						AppendParameterList (result, options, method.Parameters, false);
 						result.Append (");");
 					} else {
 						result.Append ("throw new System.NotImplementedException ();");
@@ -654,7 +654,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append (">");
 			}
 			result.Append ("(");
-			AppendParameterList (result, options, method.Parameters);
+			AppendParameterList (result, options, method.Parameters, true);
 			result.Append (")");
 
 			var typeParameters = method.TypeParameters;
@@ -677,21 +677,23 @@ namespace MonoDevelop.CSharp.Refactoring
 //			}
 //		}
 
-		static void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameterSymbol> parameters)
+		static void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameterSymbol> parameters, bool asParameterList)
 		{
 			for (int i = 0; i < parameters.Count; i++) {
 				if (i > 0)
 					result.Append (", ");
 				
 				var p = parameters[i];
-				if (p.RefKind == RefKind.Out)
-					result.Append ("out ");
-				if (p.RefKind == RefKind.Ref)
-					result.Append ("ref ");
-				if (p.IsParams)
-					result.Append ("params ");
-				AppendReturnType (result, options, p.Type);
-				result.Append (" ");
+				if (asParameterList) {
+					if (p.RefKind == RefKind.Out)
+						result.Append ("out ");
+					if (p.RefKind == RefKind.Ref)
+						result.Append ("ref ");
+					if (p.IsParams)
+						result.Append ("params ");
+						AppendReturnType (result, options, p.Type);
+						result.Append (" ");
+				}
 				result.Append (CSharpAmbience.FilterName (p.Name));
 				if (p.HasExplicitDefaultValue) {
 					result.Append (" = ");
@@ -793,7 +795,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (" ");
 			if (property.IsIndexer) {
 				result.Append ("this[");
-				AppendParameterList (result, options, property.Parameters);
+				AppendParameterList (result, options, property.Parameters, true);
 				result.Append ("]");
 			} else {
 //				if (options.ExplicitDeclaration) {

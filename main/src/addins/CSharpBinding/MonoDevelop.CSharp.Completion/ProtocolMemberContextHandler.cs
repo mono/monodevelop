@@ -42,8 +42,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			this.extension = extension;
 		}
-		
-		protected override IEnumerable<ICompletionData> CreateCompletionData (CompletionEngine engine, Microsoft.CodeAnalysis.SemanticModel semanticModel, Microsoft.CodeAnalysis.ITypeSymbol returnType, Microsoft.CodeAnalysis.Accessibility seenAccessibility, Microsoft.CodeAnalysis.SyntaxToken startToken, Microsoft.CodeAnalysis.SyntaxToken tokenBeforeReturnType, System.Threading.CancellationToken cancellationToken)
+
+		protected override IEnumerable<ICompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
 		{
 			var result = new List<ICompletionData> ();
 			ISet<ISymbol> overridableMembers;
@@ -54,8 +54,9 @@ namespace MonoDevelop.CSharp.Completion
 				overridableMembers = FilterOverrides (overridableMembers, returnType);
 			}
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (startToken.SpanStart, cancellationToken);
+			var declarationBegin = afterKeyword ? startToken.SpanStart : position;
 			foreach (var m in overridableMembers) {
-				var data = new ProtocolCompletionData (this, extension, startToken.SpanStart, curType, m);
+				var data = new ProtocolCompletionData (this, extension, declarationBegin, curType, m, afterKeyword);
 				result.Add (data);
 			}
 			return result;

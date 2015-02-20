@@ -172,14 +172,14 @@ namespace MonoDevelop.CSharp.Completion
 			return new RoslynSymbolCompletionData (keyHandler, ext, symbol, text);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewOverrideCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, ISymbol m)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewOverrideCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, ISymbol m, bool afterKeyword)
 		{
-			return new CreateOverrideCompletionData (keyHandler, ext, declarationBegin, currentType, m);
+			return new CreateOverrideCompletionData (keyHandler, ext, declarationBegin, currentType, m, afterKeyword);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePartialCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, IMethodSymbol method)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePartialCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, IMethodSymbol method, bool afterKeyword)
 		{
-			return new CreatePartialCompletionData (keyHandler, ext, declarationBegin, currentType, method);
+			return new CreatePartialCompletionData (keyHandler, ext, declarationBegin, currentType, method, afterKeyword);
 		}
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateAnonymousMethod(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
