@@ -326,8 +326,8 @@ namespace MonoDevelop.CSharp.Completion
 				}
 
 				var stack = new Stack<INamespaceOrTypeSymbol>();
-
-				stack.Push(semanticModel.Compilation.GlobalNamespace);
+				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
+					stack.Push (member);
 
 				while (stack.Count > 0) {
 					if (cancellationToken.IsCancellationRequested)
