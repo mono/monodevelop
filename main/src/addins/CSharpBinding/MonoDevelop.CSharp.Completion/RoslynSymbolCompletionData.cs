@@ -277,7 +277,7 @@ namespace MonoDevelop.CSharp.Completion
 						break;
 					exprStart--;
 				}
-				bool insertSemicolon = InsertSemicolon(exprStart);
+				bool insertSemicolon = InsertSemicolon(ext, exprStart);
 				if (Symbol is IMethodSymbol && ((IMethodSymbol)Symbol).MethodKind == MethodKind.Constructor)
 					insertSemicolon = false;
 				//int pos;
@@ -383,7 +383,7 @@ namespace MonoDevelop.CSharp.Completion
 					ext.RunParameterCompletionCommand ();
 				});
 			}
-			
+
 			if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
 				Application.Invoke (delegate {
 					ext.RunCompletionCommand ();
@@ -412,7 +412,7 @@ namespace MonoDevelop.CSharp.Completion
 
 
 
-		bool InsertSemicolon (int exprStart)
+		internal static bool InsertSemicolon (CSharpCompletionTextEditorExtension ext, int exprStart)
 		{
 			var Editor = ext.Editor;
 			int offset = exprStart;
@@ -442,7 +442,7 @@ namespace MonoDevelop.CSharp.Completion
 			return true;
 		}
 
-		static bool HasAnyOverloadWithParameters (IMethodSymbol method)
+		internal static bool HasAnyOverloadWithParameters (IMethodSymbol method)
 		{
 			if (method.MethodKind == MethodKind.Constructor) 
 				return method.ContainingType.GetMembers()
@@ -487,6 +487,11 @@ namespace MonoDevelop.CSharp.Completion
 			var anonymousMethodCompletionData = obj as AnonymousMethodCompletionData;
 			if (anonymousMethodCompletionData == null)
 				return 1;
+			var objectCreationData = obj as ObjectCreationCompletionData;
+			if (objectCreationData == null)
+				return 1;
+			
+
 			return base.CompareTo (obj);
 		}
 

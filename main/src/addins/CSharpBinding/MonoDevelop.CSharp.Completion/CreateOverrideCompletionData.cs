@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat);
+					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
 					if (!afterKeyword)
 						displayText = "override " + displayText;
 				}
@@ -60,6 +60,24 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public override string GetDisplayTextMarkup ()
+		{
+			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+
+			var result = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
+			var idx = result.IndexOf (Symbol.Name);
+			if (idx >= 0) {
+				result = 
+					result.Substring(0, idx) +
+					"<b>" + Symbol.Name + "</b>"+
+					result.Substring(idx + Symbol.Name.Length);
+			}
+
+			if (!afterKeyword)
+				result = "override " + result;
+			
+			return ApplyDiplayFlagsFormatting (result);
+		}
 
 		public CreateOverrideCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, ext, member, member.ToDisplayString ())
 		{

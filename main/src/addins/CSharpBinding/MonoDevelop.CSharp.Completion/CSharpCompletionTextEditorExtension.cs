@@ -381,7 +381,7 @@ namespace MonoDevelop.CSharp.Completion
 				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
 				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
 
-				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
+				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this, semanticModel));
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
@@ -406,6 +406,9 @@ namespace MonoDevelop.CSharp.Completion
 					list.AutoCompleteUniqueMatch = true;
 			} catch (TaskCanceledException) {
 				return null;
+			} catch (AggregateException e) {
+				foreach (var inner in e.Flatten ().InnerExceptions)
+					LoggingService.LogError ("Error while getting C# recommendations", inner); 
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}

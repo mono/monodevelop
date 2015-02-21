@@ -321,6 +321,8 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolMemberContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\AnonymousMethodCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ObjectCreationCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CastCompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

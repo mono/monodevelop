@@ -36,11 +36,15 @@ namespace MonoDevelop.CSharp.Completion
 	class RoslynCodeCompletionFactory : ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory
 	{
 		readonly CSharpCompletionTextEditorExtension ext;
+		readonly SemanticModel semanticModel;
 
-		public RoslynCodeCompletionFactory (CSharpCompletionTextEditorExtension ext)
+		public RoslynCodeCompletionFactory (CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel)
 		{
 			if (ext == null)
 				throw new ArgumentNullException ("ext");
+			if (semanticModel == null)
+				throw new ArgumentNullException ("semanticModel");
+			this.semanticModel = semanticModel;
 			this.ext = ext;
 		}
 
@@ -195,6 +199,17 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			return new EventCreationCompletionData (keyHandler, ext, delegateType, varName, curType);
 		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateObjectCreation (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword)
+		{
+			return new ObjectCreationCompletionData (keyHandler, ext, semanticModel, type, symbol, declarationBegin, afterKeyword);
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateCastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType)
+		{
+			return new CastCompletionData (keyHandler, ext, semanticModel, member, nodeToCast, targetType);
+		}
+
 		#endregion
 	}
 }

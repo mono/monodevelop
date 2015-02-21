@@ -673,20 +673,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		bool IListDataProvider.HasMarkup (int n)
 		{
-			return (completionDataList [n].DisplayFlags & (DisplayFlags.Obsolete | DisplayFlags.MarkedBold)) != 0;
+			return true;
 		}
 		
 		//NOTE: we only ever return markup for items marked as obsolete
 		string IListDataProvider.GetMarkup (int n)
 		{
 			var completionData = completionDataList[n];
-			if (!completionData.HasOverloads && (completionData.DisplayFlags & DisplayFlags.Obsolete) != 0 || 
-				completionData.HasOverloads && completionData.OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) != 0))
-				return "<s>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</s>";
-			
-			if ((completionData.DisplayFlags & DisplayFlags.MarkedBold) != 0)
-				return "<b>" + GLib.Markup.EscapeText (completionDataList[n].DisplayText) + "</b>";
-			return GLib.Markup.EscapeText (completionDataList[n].DisplayText);
+			return completionData.GetDisplayTextMarkup ();
 		}
 		
 		string IListDataProvider.GetCompletionText (int n)

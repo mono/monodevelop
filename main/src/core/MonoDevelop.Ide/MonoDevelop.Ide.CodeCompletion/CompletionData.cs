@@ -144,5 +144,19 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		#endregion
+
+		protected string ApplyDiplayFlagsFormatting (string markup)
+		{
+			if (!HasOverloads && (DisplayFlags & DisplayFlags.Obsolete) != 0 || HasOverloads && OverloadedData.All (data => (data.DisplayFlags & DisplayFlags.Obsolete) != 0))
+				return "<s>" + markup + "</s>";
+			if ((DisplayFlags & DisplayFlags.MarkedBold) != 0)
+				return "<b>" + markup + "</b>";
+			return markup;
+		}
+
+		public virtual string GetDisplayTextMarkup ()
+		{
+			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
+		}
 	}
 }
