@@ -242,55 +242,73 @@ namespace MonoDevelop.Ide.Templates
 			Assert.IsFalse (result);
 		}
 
-		[Test]
-		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid ()
+		[TestCase ("a", true)]
+		[TestCase ("a&b", false)]
+		[TestCase ("a<b", false)]
+		[TestCase ("a*b", false)]
+		[TestCase ("a;b", false)]
+		[TestCase ("a?b", false)]
+		[TestCase ("a>b", false)]
+		[TestCase ("a%b", false)]
+		[TestCase ("a:b", false)]
+		[TestCase ("a#b", false)]
+		[TestCase ("a|b", false)]
+		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string solutionName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.CreateSolution = true;
-			config.ProjectName = "b";
+			config.ProjectName = "a";
+			config.SolutionName = solutionName;
 
-			config.SolutionName = "a";
-			Assert.IsTrue (config.IsValid ());
-			config.SolutionName = "a&b";
-			Assert.IsFalse (config.IsValid ());
-			config.SolutionName = "a*b";
-			Assert.IsFalse (config.IsValid ());
-			config.SolutionName = "a;b";
-			Assert.IsFalse (config.IsValid ());
+			bool result = config.IsValid ();
+
+			Assert.AreEqual (valid, result);
 		}
 
-		[Test]
-		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid ()
+		[TestCase ("a", true)]
+		[TestCase ("a&b", false)]
+		[TestCase ("a<b", false)]
+		[TestCase ("a*b", false)]
+		[TestCase ("a;b", false)]
+		[TestCase ("a?b", false)]
+		[TestCase ("a>b", false)]
+		[TestCase ("a%b", false)]
+		[TestCase ("a:b", false)]
+		[TestCase ("a#b", false)]
+		[TestCase ("a|b", false)]
+		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string solutionName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.CreateSolution = true;
 			config.CreateProjectDirectoryInsideSolutionDirectory = false;
-			config.ProjectName = "b";
+			config.ProjectName = "a";
+			config.SolutionName = solutionName;
 
-			config.SolutionName = "a";
-			Assert.IsTrue (config.IsValid ());
-			config.SolutionName = "a&b";
-			Assert.IsFalse (config.IsValid ());
-			config.SolutionName = "a*b";
-			Assert.IsFalse (config.IsValid ());
-			config.SolutionName = "a;b";
-			Assert.IsFalse (config.IsValid ());
+			bool result = config.IsValid ();
+
+			Assert.AreEqual (valid, result);
 		}
 
-		[Test]
-		public void InvalidProjectNameCharactersCauseConfigToBeInvalid ()
+		[TestCase ("a", true)]
+		[TestCase ("a&b", false)]
+		[TestCase ("a<b", false)]
+		[TestCase ("a*b", false)]
+		[TestCase ("a;b", false)]
+		[TestCase ("a?b", false)]
+		[TestCase ("a>b", false)]
+		[TestCase ("a%b", false)]
+		[TestCase ("a:b", false)]
+		[TestCase ("a#b", false)]
+		[TestCase ("a|b", false)]
+		public void InvalidProjectNameCharactersCauseConfigToBeInvalid (string projectName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
+			config.ProjectName = projectName;
 
-			config.ProjectName = "a";
-			Assert.IsTrue (config.IsValid ());
-			config.ProjectName = "a&b";
-			Assert.IsFalse (config.IsValid ());
-			config.ProjectName = "a*b";
-			Assert.IsFalse (config.IsValid ());
-			config.ProjectName = "a;b";
-			Assert.IsFalse (config.IsValid ());
+			bool result = config.IsValid ();
+
+			Assert.AreEqual (valid, result);
 		}
 
 		[Test]
