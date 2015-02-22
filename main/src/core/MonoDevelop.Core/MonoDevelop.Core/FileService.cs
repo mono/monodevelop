@@ -156,6 +156,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			GetFileSystemForPath (dstFile, false).CopyFile (srcFile, dstFile, true);
+			OnFileCopied (new FileCopyEventArgs (srcFile, dstFile, false));
 			OnFileCreated (new FileEventArgs (dstFile, false));
 		}
 
@@ -164,6 +165,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			InternalMoveFile (srcFile, dstFile);
+			OnFileMoved (new FileCopyEventArgs (srcFile, dstFile, false));
 			OnFileCreated (new FileEventArgs (dstFile, false));
 			OnFileRemoved (new FileEventArgs (srcFile, false));
 		}
@@ -217,6 +219,7 @@ namespace MonoDevelop.Core
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
 			Debug.Assert (!String.IsNullOrEmpty (dstPath));
 			InternalMoveDirectory (srcPath, dstPath);
+			OnFileMoved (new FileCopyEventArgs (srcPath, dstPath, true));
 			OnFileCreated (new FileEventArgs (dstPath, true));
 			OnFileRemoved (new FileEventArgs (srcPath, true));
 		}
@@ -650,6 +653,18 @@ namespace MonoDevelop.Core
 			}
 
 			eventQueue.RaiseEvent (() => FileCreated, args);
+		}
+
+		public static event EventHandler<FileCopyEventArgs> FileCopied;
+		static void OnFileCopied (FileCopyEventArgs args)
+		{
+			eventQueue.RaiseEvent (() => FileCopied, args);
+		}
+
+		public static event EventHandler<FileCopyEventArgs> FileMoved;
+		static void OnFileMoved (FileCopyEventArgs args)
+		{
+			eventQueue.RaiseEvent (() => FileMoved, args);
 		}
 		
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
