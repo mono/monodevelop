@@ -2818,9 +2818,12 @@ namespace Mono.TextEditor
 			nextTipOffset = -1;
 		}
 		
-		void OnDocumentStateChanged (object s, EventArgs a)
+		void OnDocumentStateChanged (object s, DocumentChangeEventArgs args)
 		{
 			HideTooltip ();
+			var start = editor.Document.OffsetToLineNumber (args.Offset);
+			var end = editor.Document.OffsetToLineNumber (args.Offset + args.InsertionLength);
+			editor.Document.CommitMultipleLineUpdate (start, end);
 		}
 		
 		void OnTextSet (object sender, EventArgs e)
