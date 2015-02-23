@@ -102,15 +102,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public readonly static PropertyWrapper<bool> EnableCompletionCategoryMode = PropertyService.Wrap("EnableCompletionCategoryMode", false);
 
 		public bool InCategoryMode {
-			get { return EnableCompletionCategoryMode; }
-			set {
-				EnableCompletionCategoryMode.Set(value);
-
-				CalcVisibleRows ();
-				if (value)
-					SelectFirstItemInCategory ();
-			}
+			get { return EnableCompletionCategoryMode && categories.Count > 1; }
 		}
+
+		internal void UpdateCategoryMode ()
+		{
+			CalcVisibleRows ();
+			if (InCategoryMode)
+				SelectFirstItemInCategory ();
+		}
+
 		public int CategoryCount {
 			get { return this.categories.Count; }
 		}

@@ -208,7 +208,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void ToggleCategoryMode ()
 		{
-			List.InCategoryMode = !List.InCategoryMode;
+			ListWidget.EnableCompletionCategoryMode.Set (!ListWidget.EnableCompletionCategoryMode.Value); 
+			List.UpdateCategoryMode ();
 			ResetSizes ();
 			List.QueueDraw ();
 		}

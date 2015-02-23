@@ -345,7 +345,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
-						List.InCategoryMode = true;
+						ListWidget.EnableCompletionCategoryMode.Set (true);
+						List.UpdateCategoryMode ();
 						return KeyActions.Ignore;
 					}
 					List.MoveToCategory (-1);
@@ -375,7 +376,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
-						List.InCategoryMode = true;
+						ListWidget.EnableCompletionCategoryMode.Set (true);
+						List.UpdateCategoryMode ();
 						return KeyActions.Ignore;
 					}
 					List.MoveToCategory (1);
