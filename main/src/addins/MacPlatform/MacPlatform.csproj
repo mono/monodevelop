@@ -135,6 +135,7 @@
     <Compile Include="MainToolbar\ButtonBar.cs" />
     <Compile Include="MainToolbar\SelectorView.cs" />
     <Compile Include="MainToolbar\StatusBar.cs" />
+    <Compile Include="MainToolbar\CenteringSpace.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

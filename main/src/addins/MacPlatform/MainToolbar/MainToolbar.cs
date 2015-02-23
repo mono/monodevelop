@@ -42,6 +42,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string SelectorId = "SelectorToolbarItem";
 		const string SearchBarId = "SearchBarToolbarItem";
 		const string StatusBarId = "StatusBarToolbarItem";
+		const string CenteringSpaceId = "CenteringSpaceToolbarItem";
 
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
@@ -153,6 +154,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 		}
 
+		NSToolbarItem CreateCenteringSpaceItem ()
+		{
+			return new CenteringSpaceToolbarItem (CenteringSpaceId);
+		}
+
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
@@ -171,6 +177,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return CreateSelectorToolbarItem ();
 				case StatusBarId:
 					return CreateStatusBarToolbarItem ();
+				case CenteringSpaceId:
+					return CreateCenteringSpaceItem ();
 				}
 				throw new NotImplementedException ();
 			};
@@ -182,6 +190,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
 			widget.InsertItem (SelectorId, selectorIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, buttonBarStartIdx = ++total);
+			//widget.InsertItem (CenteringSpaceId, buttonBarStartIdx = ++total);
 			widget.InsertItem (StatusBarId, statusBarIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
