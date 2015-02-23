@@ -163,32 +163,32 @@ namespace MonoDevelop.MacIntegration
 
 		public void ShowError (string error)
 		{
-			ShowMessage (Stock.StatusError, error, false, NSColor.Red);
+			ShowMessage (Stock.StatusError, error, false, NSColor.FromDeviceRgba (235 / 255, 161 / 255, 7 / 255, 1));
 		}
 
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (Stock.StatusWarning, warning, false, NSColor.Yellow);
+			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromDeviceRgba (228 / 255, 84 / 255, 55 / 255, 1));
 		}
 
 		public void ShowMessage (string message)
 		{
-			ShowMessage (null, message, false, NSColor.Black);
+			ShowMessage (null, message, false, NSColor.ControlText);
 		}
 
 		public void ShowMessage (string message, bool isMarkup)
 		{
-			ShowMessage (null, message, true, NSColor.Black);
+			ShowMessage (null, message, true, NSColor.ControlText);
 		}
 
 		public void ShowMessage (IconId image, string message)
 		{
-			ShowMessage (image, message, false, NSColor.Black);
+			ShowMessage (image, message, false, NSColor.ControlText);
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			ShowMessage (image, message, isMarkup, NSColor.Black);
+			ShowMessage (image, message, isMarkup, NSColor.ControlText);
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
