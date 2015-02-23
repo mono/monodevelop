@@ -56,13 +56,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Title = "";
 			BezelStyle = NSBezelStyle.TexturedRounded;
-			AddSubview (new PathSelectorView ());
+			AddSubview (new PathSelectorView (new CGRect (6, 0, 1, 1)));
 		}
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			var p = (NSPathControl)Subviews [0];
-			dirtyRect.Width = 10 + 
+			dirtyRect.Width = 16 +
 				p.PathComponentCells [ConfigurationIdx].CellSize.Width +
 				p.PathComponentCells [RuntimeIdx].CellSize.Width;
 
@@ -81,7 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
 
-			public PathSelectorView ()
+			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
