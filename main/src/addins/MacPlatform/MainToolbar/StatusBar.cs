@@ -475,13 +475,7 @@ namespace MonoDevelop.MacIntegration
 			progress.BackgroundColor = xamBlue;
 			progress.BorderColor = xamBlue;
 			progress.FillMode = CAFillMode.Forwards;
-			nfloat y;
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
-				y = Frame.Bottom - 7 - barHeight;
-			else
-				y = Frame.Top + 2;
-
-			progress.Frame = new CGRect (Frame.Left - 4, y, (nfloat)width, barHeight);
+			progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
 			return progress;
 		}
 
