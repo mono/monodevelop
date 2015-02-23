@@ -525,8 +525,19 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
+			return Run (file, null, null, null, console);
+		}
+
+		public static IProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, IConsole console)
+		{
 			var h = new DebugExecutionHandler (null);
 			var cmd = Runtime.ProcessService.CreateCommand (file);
+			if (args != null) 
+				cmd.Arguments = args;
+			if (workingDir != null)
+				cmd.WorkingDirectory = workingDir;
+			if (envVars != null)
+				cmd.EnvironmentVariables = envVars;
 
 			return h.Execute (cmd, console);
 		}
