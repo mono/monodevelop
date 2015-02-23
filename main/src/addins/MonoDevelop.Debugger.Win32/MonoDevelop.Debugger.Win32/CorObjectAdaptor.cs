@@ -1509,7 +1509,7 @@ namespace MonoDevelop.Debugger.Win32
 						return exceptionHandle;
 					});
 					
-					return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
+					return new VariableReference (ctx, vref, ctx.Options.CurrentExceptionTag, ObjectValueFlags.Variable);
 				}
 				return base.GetCurrentException(ctx);
 			} catch (Exception e) {
