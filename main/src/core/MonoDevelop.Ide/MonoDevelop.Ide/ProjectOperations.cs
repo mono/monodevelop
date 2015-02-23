@@ -263,7 +263,7 @@ namespace MonoDevelop.Ide
 					return;
 				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
 					if (assembly.IndexOf (location.MetadataModule.Name) > 0) {
-						fileName = assembly;
+						fileName = dn.GetAbsoluteChildPath (assembly);
 						break;
 					}
 				}
