@@ -454,7 +454,7 @@ namespace MonoDevelop.Debugger
 			DispatchService.GuiSyncDispatch (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
 				if (IdeApp.Workbench.CurrentLayout == "Debug")
-					IdeApp.Workbench.CurrentLayout = layout;
+					IdeApp.Workbench.CurrentLayout = "Solution";
 			});
 		}
 
