@@ -393,7 +393,7 @@ namespace MonoDevelop.CSharp.Completion
 					list.Add ((CompletionData)symbol); 
 				}
 
-				if (AddImportedItemsToCompletionList.Value) {
+				if (AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
 					AddImportCompletionData (list, semanticModel, offset, token);
 				}
 

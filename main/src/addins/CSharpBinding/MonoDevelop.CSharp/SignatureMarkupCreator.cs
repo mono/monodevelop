@@ -484,7 +484,7 @@ namespace MonoDevelop.CSharp
 		
 			sortedTypes.Sort ((x, y) => GetTypeReferenceString (y).Length.CompareTo (GetTypeReferenceString (x).Length));
 			
-			if (t.BaseType.SpecialType != SpecialType.System_Object)
+			if (t.BaseType != null && t.BaseType.SpecialType != SpecialType.System_Object)
 				sortedTypes.Insert (0, t.BaseType);
 			
 			if (t.TypeKind != TypeKind.Enum) {
