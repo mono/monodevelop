@@ -135,6 +135,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		static void SimulateInput (CompletionListWindow listWindow, string input)
 		{
+			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
 			foreach (char ch in input) {
 				switch (ch) {
 				case '8':
@@ -159,7 +160,7 @@ namespace MonoDevelop.Ide.Gui
 					break;
 				case '\b':
 					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
-					((TestCompletionWidget)listWindow.CompletionWidget).Backspace ();
+					testCompletionWidget.Backspace ();
 					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					break;
 				case '\n':
@@ -168,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 					break;
 				default:
 					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
-					((TestCompletionWidget)listWindow.CompletionWidget).AddChar (ch);
+					testCompletionWidget.AddChar (ch);
 					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					break;
 				}
@@ -204,8 +205,9 @@ namespace MonoDevelop.Ide.Gui
 		static string RunSimulation (SimulationSettings settings)
 		{
 			CompletionListWindow listWindow = CreateListWindow (settings);
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 			SimulateInput (listWindow, settings.SimulatedInput);
-			return ((TestCompletionWidget)listWindow.CompletionWidget).CompletedWord;
+			return testCompletionWidget.CompletedWord;
 		}
 
 		static CompletionListWindow CreateListWindow (CompletionListWindowTests.SimulationSettings settings)

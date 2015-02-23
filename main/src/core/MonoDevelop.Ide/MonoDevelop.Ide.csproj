@@ -2911,6 +2911,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\AmbienceTooltipProvider.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid.Editors\PropertyTextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\ProjectCommentTags.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\CustomEditorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

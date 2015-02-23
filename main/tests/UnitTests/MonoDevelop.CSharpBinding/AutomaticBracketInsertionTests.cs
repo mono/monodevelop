@@ -163,7 +163,7 @@ namespace MonoDevelop.CSharpBinding
 			content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			content.Data.MimeType = "text/x-csharp";
 
 			Document doc = new Document (tww);
 

@@ -656,7 +656,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			});
 			categories = newCategories;
 
-			SelectFirstItemInCategory ();
+			//SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			SetAdjustments ();
 

@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
-			if (StartOffset > CompletionWidget.CaretOffset)
+			if (CompletionWidget == null || StartOffset > CompletionWidget.CaretOffset) // CompletionWidget == null may happen in unit tests.
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)

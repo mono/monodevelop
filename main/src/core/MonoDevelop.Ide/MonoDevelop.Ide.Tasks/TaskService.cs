@@ -54,8 +54,10 @@ namespace MonoDevelop.Ide.Tasks
 		
 		static TaskService ()
 		{
-			IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
-			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+				IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
+			}
 			errors.ItemName = GettextCatalog.GetString ("Warning/Error");
 			userTasks.ItemName = GettextCatalog.GetString ("User Task");
 		}

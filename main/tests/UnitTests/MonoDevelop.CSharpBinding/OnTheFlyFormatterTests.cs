@@ -52,12 +52,15 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
-			content.Data.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
+			content.Data.Options = new CustomEditorOptions {
+				IndentStyle = IndentStyle.Auto
+			};
+
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			content.Data.MimeType = "text/x-csharp";
 
-			Document doc = new Document (tww);
+			var doc = new Document (tww);
 
 			var sb = new StringBuilder ();
 			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
@@ -182,7 +185,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			Setup ("@$\"\t\"", out content);
-			content.GetTextEditorData ().Remove (0, 1);
+			content.Data.RemoveText (0, 1);
 			var newText = content.Text;
 			Assert.AreEqual ("\"\\t\"", newText);
 		}
@@ -192,7 +195,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			var ext = Setup ("$\"\\t\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
+			content.Data.InsertText (0, "@");
 			ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\t\"", newText);
@@ -206,7 +209,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			var ext = Setup ("$\"\\\\\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
+			content.Data.InsertText (0, "@");
 			ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\\\"", newText);
@@ -217,13 +220,13 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestViewContent content;
 			var ext = Setup ("$\"\\\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
+			content.Data.InsertText (0, "@");
 			ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\\\"", newText);
 
 			ext = Setup ("$\"\\\"a", out content);
-			content.GetTextEditorData ().Insert (0, "@");
+			content.Data.InsertText (0, "@");
 			ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 			newText = content.Text;
 			Assert.AreEqual ("@\"\\\"a", newText);
@@ -317,7 +320,7 @@ class Foo
 		{
 			TestViewContent content;
 			var ext = Setup ("$\"\\dev\\null {0}\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
+			content.Data.InsertText (0, "@");
 			ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 			var newText = content.Text;
 			Assert.AreEqual ("@\"\\dev\null {0}\"", newText);

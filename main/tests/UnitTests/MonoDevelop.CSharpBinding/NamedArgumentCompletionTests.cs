@@ -48,7 +48,6 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharpBinding
 {
-	[Ignore("Roslyn port!")]
 	[TestFixture]
 	public class NamedArgumentCompletionTests : TestBase
 	{
@@ -165,7 +164,7 @@ namespace MonoDevelop.CSharpBinding
 			content = new TestViewContent ();
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			content.Data.MimeType = "text/x-csharp";
 
 			Document doc = new Document (tww);
 

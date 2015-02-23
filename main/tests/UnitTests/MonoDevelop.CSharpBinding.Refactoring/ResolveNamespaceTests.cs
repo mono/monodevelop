@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			content.Data.MimeType = "text/x-csharp";
 			var doc = new Document (tww);
 			doc.SetProject (project);
 

@@ -191,10 +191,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
-			foreach (var handler in CompletionDataList.KeyHandler) {
-				if (handler.PostProcessKey (this, descriptor, out ka)) {
-					keyHandled = true;
-					break;
+			if (CompletionDataList != null) {
+				foreach (var handler in CompletionDataList.KeyHandler) {
+					if (handler.PostProcessKey (this, descriptor, out ka)) {
+						keyHandled = true;
+						break;
+					}
 				}
 			}
 			
@@ -223,10 +225,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
-			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
-				if (handler.PreProcessKey (this, descriptor, out ka)) {
-					keyHandled = true;
-					break;
+			if (CompletionDataList != null) {
+				foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
+					if (handler.PreProcessKey (this, descriptor, out ka)) {
+						keyHandled = true;
+						break;
+					}
 				}
 			}
 			
