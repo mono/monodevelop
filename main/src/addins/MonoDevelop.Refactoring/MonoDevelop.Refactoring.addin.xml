@@ -51,7 +51,7 @@
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
 	
-        <!-- Extensions -->
+       <!-- Extensions -->
 	
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads">
