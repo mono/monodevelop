@@ -77,14 +77,22 @@ namespace MonoDevelop.MacIntegration
 		public override nint SegmentCount {
 			get { return base.SegmentCount; }
 			set {
+				if (base.SegmentCount == value)
+					return;
+
 				base.SegmentCount = value;
+				if (updating)
+					return;
+
 				if (ResizeRequested != null)
 					ResizeRequested (this, null);
 			}
 		}
 
+		bool updating;
 		void RebuildSegments ()
 		{
+			updating = true;
 			SegmentCount = buttons.Count;
 
 			int j = 0;
@@ -98,6 +106,7 @@ namespace MonoDevelop.MacIntegration
 				++j;
 			}
 
+			updating = false;
 			SegmentCount = j;
 		}
 
