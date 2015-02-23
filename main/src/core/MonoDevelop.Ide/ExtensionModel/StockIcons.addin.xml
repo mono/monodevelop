@@ -300,8 +300,8 @@
 		<StockIcon stockid="md-status-error" icon="res:status-error-16.png" size="Menu" />
 		<StockIcon stockid="md-status-updates-downloading" icon="res:status-updates-downloading-16.png" size="Menu" />
 		<StockIcon stockid="md-status-critical-updates-downloading" icon="res:status-critical-updates-downloading-16.png" size="Menu" />
-		<StockIcon stockid="md-status-status-warning-count" icon="res:status-warning-count-16.png" size="Menu" />
-		<StockIcon stockid="md-status-status-error-count" icon="res:status-error-count-16.png" size="Menu" />
+		<StockIcon stockid="md-status-warning-count" icon="res:status-warning-count-16.png" size="Menu" />
+		<StockIcon stockid="md-status-error-count" icon="res:status-error-count-16.png" size="Menu" />
 	</Condition>
 	<Condition id="Platform" value="!mac">
 		<StockIcon stockid="md-status-build" animation="res:status-building-1-14.png;res:status-building-2-14.png;res:status-building-3-14.png;res:status-building-4-14.png;res:status-building-5-14.png" size="Menu" />
