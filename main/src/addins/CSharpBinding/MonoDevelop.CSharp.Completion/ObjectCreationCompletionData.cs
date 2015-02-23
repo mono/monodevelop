@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -87,6 +88,25 @@ namespace MonoDevelop.CSharp.Completion
 			if (str.StartsWith ("global::"))
 				return str.Substring ("global::".Length);
 			return str;
+		}
+
+		public override bool HasOverloads {
+			get {
+				return true;
+			}
+		}
+
+		List<CompletionData> overloads;
+		public override IReadOnlyList<CompletionData> OverloadedData {
+			get {
+				if (overloads == null) {
+					overloads = new List<CompletionData> ();
+					foreach (var constructor in type.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
+						overloads.Add (new ObjectCreationCompletionData (keyHandler, ext, semanticModel, type, constructor, declarationBegin, afterKeyword)); 
+					}
+				}
+				return overloads;
+			}
 		}
 
 		public ObjectCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword) : base(keyHandler, ext, symbol)

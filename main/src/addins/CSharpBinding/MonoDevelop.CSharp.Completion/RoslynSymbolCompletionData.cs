@@ -38,7 +38,6 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-
 	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
 	{
 		readonly ISymbol symbol;
@@ -78,6 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		string text;
 		protected readonly CSharpCompletionTextEditorExtension ext;
+
 
 		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base (keyHandler)
 		{
@@ -136,17 +136,21 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
+			Console.WriteLine ("---");
+			Console.WriteLine (Environment.StackTrace);
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
 			bool runCompletionCompletionCommand = false;
 			var method = Symbol as IMethodSymbol;
+
 			bool addParens = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
 			bool addOpeningOnly = CompletionTextEditorExtension.AddOpeningOnly;
 			bool IsDelegateExpected = false;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
 			string insertionText = this.GetInsertionText();
+
 			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (ext, method)) {
 				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
@@ -341,9 +345,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool HasNonMethodMembersWithSameName (ISymbol member)
 		{
+			var method = member as IMethodSymbol;
+			if (method != null && method.MethodKind == MethodKind.Constructor)
+				return false;
+			if (member.ContainingType == null)
+				return false;
 			return member.ContainingType
 				.GetMembers ()
-				.Any (e => e.Kind != member.Kind && e.Name == member.Name);
+				.Any (e => e.Kind != SymbolKind.Method && e.Name == member.Name);
 		}
 
 		static bool RequireGenerics (IMethodSymbol method)

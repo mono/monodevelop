@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public override IEnumerable<CompletionData> OverloadedData {
+		public override IReadOnlyList<CompletionData> OverloadedData {
 			get {
 				if (overloads == null)
 					return new CompletionData[] { this };
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
+		protected readonly ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
 			get {

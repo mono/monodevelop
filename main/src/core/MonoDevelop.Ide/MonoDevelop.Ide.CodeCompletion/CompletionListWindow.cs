@@ -463,7 +463,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-				((CompletionData)item).InsertCompletionText (this, ref ka, descriptor);
+
+				if (item.HasOverloads) {
+					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ref ka, descriptor);
+				} else {
+					item.InsertCompletionText (this, ref ka, descriptor);
+				}
+
 				AddWordToHistory (PartialWord, item.DisplayText);
 				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
 			} finally {

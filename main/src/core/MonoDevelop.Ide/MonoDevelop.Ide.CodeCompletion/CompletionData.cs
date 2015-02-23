@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		public virtual IEnumerable<CompletionData> OverloadedData {
+		public virtual IReadOnlyList<CompletionData> OverloadedData {
 			get {
 				throw new InvalidOperationException ();
 			}
