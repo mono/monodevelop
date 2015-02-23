@@ -38,127 +38,6 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
-	{
-		List<CompletionData> overloads;
-		
-		public override bool HasOverloads {
-			get {
-				return overloads != null;
-			}
-		}
-		
-		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
-		{
-			if (overloads == null)
-				overloads = new List<CompletionData> ();
-			overloads.Add ((CompletionData)data);
-			sorted = null;
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
-			} 
-			set {
-				base.CompletionCategory = (CompletionCategory)value;
-			} 
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
-			}
-			set {
-				base.DisplayFlags = (DisplayFlags)value;
-			}
-		}
-
-		List<CompletionData> sorted;
-
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
-			get {
-				return (IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>)OverloadedData;
-			}
-		}
-
-
-		public override IEnumerable<CompletionData> OverloadedData {
-			get {
-				if (overloads == null)
-					return new CompletionData[] { this };
-
-				if (sorted == null) {
-					sorted = new List<CompletionData> (overloads);
-					sorted.Add (this);
-					// sorted.Sort (new OverloadSorter ());
-				}
-				return sorted;
-			}
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
-			get {
-				return keyHandler;
-			}
-		}
-
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler)
-		{
-			this.keyHandler = keyHandler;
-		}
-
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text) : base (text)
-		{
-			this.keyHandler = keyHandler;
-		}
-
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon) : base (text, icon)
-		{
-			this.keyHandler = keyHandler;
-		}
-
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon, string description) : base (text, icon, description)
-		{
-			this.keyHandler = keyHandler;
-		}
-		
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
-		{
-			this.keyHandler = keyHandler;
-		}
-		
-//		class OverloadSorter : IComparer<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>
-//		{
-//			public OverloadSorter ()
-//			{
-//			}
-//
-//			public int Compare (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData x, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData y)
-//			{
-//				var mx = ((RoslynCompletionData)x).Entity as IMember;
-//				var my = ((RoslynCompletionData)y).Entity as IMember;
-//				int result;
-//				
-//				if (mx is ITypeDefinition && my is ITypeDefinition) {
-//					result = ((((ITypeDefinition)mx).TypeParameters.Count).CompareTo (((ITypeDefinition)my).TypeParameters.Count));
-//					if (result != 0)
-//						return result;
-//				}
-//				
-//				if (mx is IMethod && my is IMethod) {
-//					return MethodParameterDataProvider.MethodComparer ((IMethod)mx, (IMethod)my);
-//				}
-//				string sx = mx.ReflectionName;// ambience.GetString (mx, flags);
-//				string sy = my.ReflectionName;// ambience.GetString (my, flags);
-//				result = sx.Length.CompareTo (sy.Length);
-//				return result == 0 ? string.Compare (sx, sy) : result;
-//			}
-//		}
-
-	}
 
 	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
 	{
@@ -206,7 +85,12 @@ namespace MonoDevelop.CSharp.Completion
 			this.text = text;
 			this.symbol = symbol;
 		}
-		
+
+		protected virtual string GetInsertionText ()
+		{
+			return text;
+		}
+
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			return CreateTooltipInformation (ext.Editor, ext.DocumentContext, Symbol, smartWrap);
@@ -252,7 +136,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
-			string text = CompletionText;
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
@@ -263,7 +146,8 @@ namespace MonoDevelop.CSharp.Completion
 			bool IsDelegateExpected = false;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
-			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (method)) {
+			string insertionText = this.GetInsertionText();
+			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (ext, method)) {
 				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
@@ -286,31 +170,31 @@ namespace MonoDevelop.CSharp.Completion
 				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.') {
 					if (HasAnyOverloadWithParameters (method)) {
 						if (addOpeningOnly) {
-							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+							insertionText += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
 							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
-									text += addSpace ? "<> ()" : "<>()";
+									insertionText += addSpace ? "<> ()" : "<>()";
 								} else {
-									text += addSpace ? " ()" : "()";
+									insertionText += addSpace ? " ()" : "()";
 								}
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
 									if (RequireGenerics (method)) {
-										text += addSpace ? "<|> ();" : "<|>();";
+										insertionText += addSpace ? "<|> ();" : "<|>();";
 										skipChars = addSpace ? 5 : 4;
 									} else {
-										text += addSpace ? " (|);" : "(|);";
+										insertionText += addSpace ? " (|);" : "(|);";
 										skipChars = 2;
 									}
 								} else {
 									if (RequireGenerics (method)) {
-										text += addSpace ? "<|> ()" :  "<|>()";
+										insertionText += addSpace ? "<|> ()" :  "<|>()";
 										skipChars = addSpace ? 4 : 3;
 									} else {
-										text += addSpace ? " (|)" : "(|)";
+										insertionText += addSpace ? " (|)" : "(|)";
 										skipChars = 1;
 									}
 								}
@@ -319,29 +203,29 @@ namespace MonoDevelop.CSharp.Completion
 						runParameterCompletionCommand = true;
 					} else {
 						if (addOpeningOnly) {
-							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
+							insertionText += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
 							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
-									text += addSpace ? "<> ().|" : "<>().|";
+									insertionText += addSpace ? "<> ().|" : "<>().|";
 								} else {
-									text += addSpace ? " ().|" : "().|";
+									insertionText += addSpace ? " ().|" : "().|";
 								}
 								skipChars = 0;
 							} else {
 								if (insertSemicolon) {
 									if (RequireGenerics (method)) {
-										text += addSpace ? "<|> ();" : "<|>();";
+										insertionText += addSpace ? "<|> ();" : "<|>();";
 									} else {
-										text += addSpace ? " ();|" : "();|";
+										insertionText += addSpace ? " ();|" : "();|";
 									}
 
 								} else {
 									if (RequireGenerics (method)) {
-										text += addSpace ? "<|> ()" : "<|>()";
+										insertionText += addSpace ? "<|> ()" : "<|>()";
 									} else {
-										text += addSpace ? " ()|" : "()|";
+										insertionText += addSpace ? " ()|" : "()|";
 									}
 
 								}
@@ -365,13 +249,13 @@ namespace MonoDevelop.CSharp.Completion
 					descriptor.SpecialKey == SpecialKey.Return ||
 					descriptor.SpecialKey == SpecialKey.Space)) {
 				if (true/*Policy.AroundAssignmentParentheses */)
-					text += " ";
-				text += "=";
+					insertionText += " ";
+				insertionText += "=";
 				if (/*Policy.AroundAssignmentParentheses && */descriptor.SpecialKey != SpecialKey.Space)
-					text += " ";
+					insertionText += " ";
 				runCompletionCompletionCommand = true;
 			}
-			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
+			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
 			for (int i = 0; i < skipChars; i++) {
 				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
@@ -391,7 +275,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		bool IsBracketAlreadyInserted (IMethodSymbol method)
+		static bool IsBracketAlreadyInserted (CSharpCompletionTextEditorExtension ext, IMethodSymbol method)
 		{
 			var Editor = ext.Editor;
 			int offset = Editor.CaretOffset;
@@ -462,7 +346,7 @@ namespace MonoDevelop.CSharp.Completion
 				.Any (e => e.Kind != member.Kind && e.Name == member.Name);
 		}
 
-		bool RequireGenerics (IMethodSymbol method)
+		static bool RequireGenerics (IMethodSymbol method)
 		{
 			if (method.MethodKind == MethodKind.Constructor)
 				return method.ContainingType.TypeParameters.Length  > 0;
@@ -470,7 +354,7 @@ namespace MonoDevelop.CSharp.Completion
 			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type as INamedTypeSymbol, t)));
 		}
 
-		bool ContainsType (INamedTypeSymbol testType, ITypeSymbol searchType)
+		static bool ContainsType (INamedTypeSymbol testType, ITypeSymbol searchType)
 		{
 			if (testType == null)
 				return false;

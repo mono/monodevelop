@@ -36,7 +36,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ObjectCreationCompletionData : RoslynCompletionData
+	class ObjectCreationCompletionData : RoslynSymbolCompletionData
 	{
 		public static readonly SymbolDisplayFormat HideParameters =
 			new SymbolDisplayFormat(
@@ -51,7 +51,6 @@ namespace MonoDevelop.CSharp.Completion
 				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
 				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
 			);
-		readonly CSharpCompletionTextEditorExtension ext;
 		readonly ITypeSymbol type;
 		readonly ISymbol symbol;
 		readonly int declarationBegin;
@@ -90,14 +89,22 @@ namespace MonoDevelop.CSharp.Completion
 			return str;
 		}
 
-		public ObjectCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword) : base(keyHandler)
+		public ObjectCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword) : base(keyHandler, ext, symbol)
 		{
 			this.type = type;
 			this.semanticModel = semanticModel;
 			this.afterKeyword = afterKeyword;
 			this.declarationBegin = declarationBegin;
 			this.symbol = symbol;
-			this.ext = ext;
+		}
+
+		protected override string GetInsertionText ()
+		{
+			var sb = new StringBuilder ();
+			if (!afterKeyword)
+				sb.Append ("new ");
+			sb.Append (CropGlobal (symbol.ToMinimalDisplayString (semanticModel, declarationBegin, HideParameters)));
+			return sb.ToString () ;
 		}
 
 		public override int CompareTo (object obj)
@@ -115,110 +122,6 @@ namespace MonoDevelop.CSharp.Completion
 				.OfType<IMethodSymbol>()
 				.Where(m => m.MethodKind == MethodKind.Constructor)
 				.Any (m => m.Parameters.Length > 0);
-		}
-
-
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
-		{
-			var editor = ext.Editor;
-			var sb = new StringBuilder ();
-			if (!afterKeyword)
-				sb.Append ("new ");
-			sb.Append (symbol.ToMinimalDisplayString (semanticModel, declarationBegin, HideParameters));
-			string partialWord = GetCurrentWord (window);
-			bool runParameterCompletionCommand = false;
-			bool runCompletionCompletionCommand = false;
-
-			bool addParens = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
-			bool addOpeningOnly = CompletionTextEditorExtension.AddOpeningOnly;
-
-			var Policy = ext.FormattingPolicy;
-			int skipChars = 0;
-
-			if (addParens) {
-				var line = editor.GetLine (editor.CaretLine);
-				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
-				//var end = line.Offset + line.Length;
-				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
-				bool addSpace = Policy.SpaceAfterMethodCallName && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
-
-				int exprStart = window.CodeCompletionContext.TriggerOffset - 1;
-				while (exprStart > line.Offset) {
-					char ch = editor.GetCharAt (exprStart);
-					if (ch != '.' && ch != '_' && !char.IsLetterOrDigit (ch))
-						break;
-					exprStart--;
-				}
-				bool insertSemicolon = RoslynSymbolCompletionData.InsertSemicolon(ext, exprStart);
-//				if (Symbol is IMethodSymbol && ((IMethodSymbol)Symbol).MethodKind == MethodKind.Constructor)
-//					insertSemicolon = false;
-
-				var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
-				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.') {
-					if (HasAnyConstructorWithParameters (type)) {
-						if (addOpeningOnly) {
-							sb.Append (addSpace ? " (|" : "(|");
-						} else {
-							if (descriptor.KeyChar == '.') {
-								sb.Append (addSpace ? " ()" : "()");
-							} else {
-								if (insertSemicolon) {
-									sb.Append (addSpace ? " (|);" : "(|);");
-									skipChars = 2;
-								} else {
-									sb.Append (addSpace ? " (|)" : "(|)");
-									skipChars = 1;
-								}
-							}
-						}
-						runParameterCompletionCommand = true;
-					} else {
-						if (addOpeningOnly) {
-							sb.Append (addSpace ? " (|" : "(|");
-							skipChars = 0;
-						} else {
-							if (descriptor.KeyChar == '.') {
-								sb.Append (addSpace ? " ().|" : "().|");
-								skipChars = 0;
-							} else {
-								if (insertSemicolon) {
-									sb.Append (addSpace ? " ();|" : "();|");
-								} else {
-									sb.Append (addSpace ? " ()|" : "()|");
-								}
-							}
-						}
-					}
-					if (descriptor.KeyChar == '(') {
-						var skipCharList = editor.SkipChars;
-						if (skipCharList.Count > 0) {
-							var lastSkipChar = skipCharList[skipCharList.Count - 1];
-							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
-								editor.RemoveText (lastSkipChar.Offset, 1);
-						}
-					}
-				}
-				ka |= KeyActions.Ignore;
-			}
-			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, sb.ToString ());
-			int offset = editor.CaretOffset;
-			for (int i = 0; i < skipChars; i++) {
-				editor.AddSkipChar (offset, editor.GetCharAt (offset));
-				offset++;
-			}
-
-			if (runParameterCompletionCommand && IdeApp.Workbench != null) {
-				Application.Invoke (delegate {
-					ext.RunParameterCompletionCommand ();
-				});
-			}
-
-			if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
-				Application.Invoke (delegate {
-					ext.RunCompletionCommand ();
-				});
-			}
-
 		}
 	}
 

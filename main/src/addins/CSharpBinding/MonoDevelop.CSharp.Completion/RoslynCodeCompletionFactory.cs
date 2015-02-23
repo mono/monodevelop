@@ -168,7 +168,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol symbol)
 		{
-			return new RoslynSymbolCompletionData (keyHandler, ext, symbol);
+			return new RoslynSymbolCompletionData (keyHandler, ext, symbol, symbol.Name);
 		}
 		
 		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol symbol, string text)

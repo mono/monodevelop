@@ -1760,6 +1760,10 @@ namespace MonoDevelop.SourceEditor
 		
 		public void SetCompletionText (CodeCompletionContext ctx, string partialWord, string completeWord)
 		{
+			if (ctx == null)
+				throw new ArgumentNullException ("ctx");
+			if (completeWord == null)
+				throw new ArgumentNullException ("completeWord");
 			SetCompletionText (ctx, partialWord, completeWord, completeWord.Length);
 		}
 
