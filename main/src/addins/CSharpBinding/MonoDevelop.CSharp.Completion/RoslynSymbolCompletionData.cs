@@ -361,6 +361,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (method.MethodKind == MethodKind.Constructor)
 				return false;
+			if (!method.TypeArguments.Any (ta => ta.TypeKind == TypeKind.TypeParameter))
+				return false;
 			var testMethod = method.ReducedFrom ?? method;
 			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type as INamedTypeSymbol, t)));
 		}
