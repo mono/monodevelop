@@ -55,17 +55,12 @@ namespace MonoDevelop.MacIntegration
 			set;
 		}
 
-		public Gtk.EventBox EventBox {
-			get {
-				return new Gtk.EventBox ();
-				//throw new NotImplementedException ();
-			}
-		}
-
 		public Xwt.Drawing.Image Image {
 			get;
 			set;
 		}
+
+		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 	}
 
 	[Register]

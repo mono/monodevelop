@@ -466,6 +466,24 @@ namespace MonoDevelop.Components.MainToolbar
 				box.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 				box.EnterNotifyEvent += HandleEnterNotifyEvent;
 				box.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+				box.ButtonPressEvent += (o, e) => {
+					// TODO: Refactor this in Xwt as an extension method.
+					var m = Xwt.ModifierKeys.None;
+					if ((e.Event.State & Gdk.ModifierType.ShiftMask) != 0)
+						m |= Xwt.ModifierKeys.Shift;
+					if ((e.Event.State & Gdk.ModifierType.ControlMask) != 0)
+						m |= Xwt.ModifierKeys.Control;
+					if ((e.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
+						m |= Xwt.ModifierKeys.Alt;
+					// TODO: Backport this one.
+					if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
+						m |= Xwt.ModifierKeys.Command;
+
+					Clicked (o, new StatusBarIconClickedEventArgs {
+						Button = (Xwt.PointerButton)e.Event.Button,
+						Modifiers = m,
+					});
+				};
 			}
 			
 			[GLib.ConnectBefore]
@@ -596,6 +614,8 @@ namespace MonoDevelop.Components.MainToolbar
 				astep = (astep + 1) % 20;
 				return true;
 			}
+
+			public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 		}
 		
 		#endregion
