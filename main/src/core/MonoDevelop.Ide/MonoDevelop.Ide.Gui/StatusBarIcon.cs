@@ -41,6 +41,12 @@ namespace MonoDevelop.Ide
 {
 	public class StatusBarIconClickedEventArgs : EventArgs
 	{
+		public StatusBarIconClickedEventArgs ()
+		{
+			Button = Xwt.PointerButton.Left;
+			Modifiers = Xwt.ModifierKeys.None;
+		}
+
 		public Xwt.PointerButton Button { get; set; }
 		public Xwt.ModifierKeys Modifiers { get; set; }
 	}

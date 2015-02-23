@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AppKit;
 using Foundation;
 using CoreAnimation;
@@ -36,18 +37,28 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
 
-// TODO:
-// Status Icon CALayer.
 namespace MonoDevelop.MacIntegration
 {
 	class StatusIcon : StatusBarIcon
 	{
+		StatusBar bar;
+		CALayer layer;
+
+		public StatusIcon (StatusBar bar, CALayer layer)
+		{
+			this.bar = bar;
+			this.layer = layer;
+		}
+
 		public void SetAlertMode (int seconds)
 		{
+			// Create fade-out fade-in animation.
 		}
 
 		public void Dispose ()
 		{
+			layer.RemoveFromSuperLayer ();
+			bar.RemoveStatusLayer (layer);
 		}
 
 		public string ToolTip {
@@ -55,9 +66,21 @@ namespace MonoDevelop.MacIntegration
 			set;
 		}
 
+		Xwt.Drawing.Image image;
 		public Xwt.Drawing.Image Image {
-			get;
-			set;
+			get { return image; }
+			set {
+				image = value;
+				layer.Contents = value.ToNSImage ().CGImage;
+			}
+		}
+
+		internal void NotifyClicked (Xwt.PointerButton button)
+		{
+			if (Clicked != null)
+				Clicked (this, new StatusBarIconClickedEventArgs {
+					Button = button,
+				});
 		}
 
 		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
@@ -66,6 +89,8 @@ namespace MonoDevelop.MacIntegration
 	[Register]
 	class StatusBar : NSTextField, MonoDevelop.Ide.StatusBar
 	{
+		const string ProgressLayerId = "ProgressLayer";
+		const string StatusIconPrefixId = "StatusLayer";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
 		Queue<double> progressMarks = new Queue<double> ();
@@ -127,16 +152,56 @@ namespace MonoDevelop.MacIntegration
 		}
 
 		CALayer ProgressLayer {
-			get {
-				// Ignore the TextLayer.
-				return Layer.Sublayers.Length > 1 ? Layer.Sublayers [1] : null;
-			}
+			get { return Layer.Sublayers.FirstOrDefault (l => l.Name == ProgressLayerId); }
 		}
 
+		readonly Dictionary<CALayer, StatusIcon> layerToStatus = new Dictionary<CALayer, StatusIcon> ();
+		internal void RemoveStatusLayer (CALayer statusLayer)
+		{
+			layerToStatus.Remove (statusLayer);
+			RepositionStatusLayers ();
+		}
+
+		void DrawSeparatorIfNeeded ()
+		{
+		}
+
+		void DrawBuildResults ()
+		{
+
+		}
+
+		void RepositionStatusLayers ()
+		{
+			nfloat right = Frame.Right;
+			foreach (var item in Layer.Sublayers) {
+				if (item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
+					right -= item.Contents.Width + 6;
+					item.Frame = new CGRect (right, 3, item.Contents.Width, item.Contents.Height);
+					item.SetNeedsDisplay ();
+				}
+			}
+
+			DrawSeparatorIfNeeded ();
+
+			DrawBuildResults ();
+		}
+
+		long statusCounter;
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			var statusIcon = new StatusIcon ();
-			// TODO: Add CALayer for update button.
+			nfloat right = layerToStatus.Count == 0 ?
+				Frame.Right :
+				Layer.Sublayers.Last (i => i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
+
+			var layer = CALayer.Create ();
+			layer.Name = StatusIconPrefixId + (++statusCounter);
+			layer.Contents = pixbuf.ToNSImage ().CGImage;
+			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
+			Layer.AddSublayer (layer);
+
+			var statusIcon = new StatusIcon (this, layer);
+			layerToStatus [layer] = statusIcon;
 			return statusIcon;
 		}
 
@@ -278,7 +343,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			progressMarks.Clear ();
 			inProgress = false;
-			ProgressLayer.RemoveAnimation (growthAnimationKey);
+			if (ProgressLayer != null)
+				ProgressLayer.RemoveAnimation (growthAnimationKey);
 			AutoPulse = false;
 		}
 
@@ -302,6 +368,7 @@ namespace MonoDevelop.MacIntegration
 		CALayer CreateProgressBarLayer (double width)
 		{
 			var progress = CALayer.Create ();
+			progress.Name = ProgressLayerId;
 			progress.BackgroundColor = xamBlue;
 			progress.BorderColor = xamBlue;
 			progress.FillMode = CAFillMode.Forwards;
@@ -373,10 +440,12 @@ namespace MonoDevelop.MacIntegration
 				progress.AddAnimation (fadeout, "opacity");
 			};
 			progress.AddAnimation (animation, growthAnimationKey);
-			if (Layer.Sublayers.Length == 2)
-				Layer.ReplaceSublayer (Layer.Sublayers [1], progress);
-			else
+			var oldLayer = ProgressLayer;
+			if (oldLayer != null)
+				Layer.ReplaceSublayer (Layer.Sublayers [Array.IndexOf (Layer.Sublayers, oldLayer)], progress);
+			else {
 				Layer.AddSublayer (progress);
+			}
 
 			UpdateLayer ();
 		}
@@ -409,9 +478,37 @@ namespace MonoDevelop.MacIntegration
 			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
+		CALayer LayerForEvent (NSEvent theEvent)
+		{
+			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+			CALayer layer = Layer.PresentationLayer.HitTest (location);
+			return layer != null ? layer.ModelLayer : null;
+		}
+
+		public override void MouseMoved (NSEvent theEvent)
+		{
+			// Take care of tooltip.
+			base.MouseMoved (theEvent);
+		}
+
 		public override void MouseDown (NSEvent theEvent)
 		{
-			if (sourcePad != null)
+			var layer = LayerForEvent (theEvent);
+			if (layer != null) {
+				Xwt.PointerButton button = Xwt.PointerButton.Left;
+				switch ((NSEventType)(long)theEvent.ButtonNumber) {
+				case NSEventType.LeftMouseDown:
+					button = Xwt.PointerButton.Left;
+					break;
+				case NSEventType.RightMouseDown:
+					button = Xwt.PointerButton.Right;
+					break;
+				case NSEventType.OtherMouseDown:
+					button = Xwt.PointerButton.Middle;
+					break;
+				}
+				layerToStatus [layer].NotifyClicked (button);
+			} else if (sourcePad != null)
 				sourcePad.BringToFront (true);
 			base.MouseDown (theEvent);
 		}
