@@ -52,8 +52,10 @@ namespace MonoDevelop.CSharp.Completion
 				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
 				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
 			);
+
 		readonly ITypeSymbol type;
 		readonly ISymbol symbol;
+		ISymbol insertSymbol;
 		readonly int declarationBegin;
 		readonly bool afterKeyword;
 		readonly SemanticModel semanticModel;
@@ -102,7 +104,7 @@ namespace MonoDevelop.CSharp.Completion
 				if (overloads == null) {
 					overloads = new List<CompletionData> ();
 					foreach (var constructor in type.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
-						overloads.Add (new ObjectCreationCompletionData (keyHandler, ext, semanticModel, type, constructor, declarationBegin, afterKeyword)); 
+						overloads.Add (new ObjectCreationCompletionData (keyHandler, ext, semanticModel, type, constructor, declarationBegin, afterKeyword) { insertSymbol = this.insertSymbol }); 
 					}
 				}
 				return overloads;
@@ -115,7 +117,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.semanticModel = semanticModel;
 			this.afterKeyword = afterKeyword;
 			this.declarationBegin = declarationBegin;
-			this.symbol = symbol;
+			this.symbol = insertSymbol = symbol;
 		}
 
 		protected override string GetInsertionText ()
@@ -123,7 +125,7 @@ namespace MonoDevelop.CSharp.Completion
 			var sb = new StringBuilder ();
 			if (!afterKeyword)
 				sb.Append ("new ");
-			sb.Append (CropGlobal (symbol.ToMinimalDisplayString (semanticModel, declarationBegin, HideParameters)));
+			sb.Append (CropGlobal (insertSymbol.ToMinimalDisplayString (semanticModel, declarationBegin, HideParameters)));
 			return sb.ToString () ;
 		}
 

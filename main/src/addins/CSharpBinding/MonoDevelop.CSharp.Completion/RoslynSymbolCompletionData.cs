@@ -136,8 +136,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
-			Console.WriteLine ("---");
-			Console.WriteLine (Environment.StackTrace);
 			string partialWord = GetCurrentWord (window);
 			int skipChars = 0;
 			bool runParameterCompletionCommand = false;
@@ -244,6 +242,10 @@ namespace MonoDevelop.CSharp.Completion
 								Editor.RemoveText (lastSkipChar.Offset, 1);
 						}
 					}
+				}
+				if (descriptor.KeyChar == ';') {
+					insertionText += addSpace ? " ()" : "()";
+
 				}
 				ka |= KeyActions.Ignore;
 			}
@@ -358,7 +360,7 @@ namespace MonoDevelop.CSharp.Completion
 		static bool RequireGenerics (IMethodSymbol method)
 		{
 			if (method.MethodKind == MethodKind.Constructor)
-				return method.ContainingType.TypeParameters.Length  > 0;
+				return false;
 			var testMethod = method.ReducedFrom ?? method;
 			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type as INamedTypeSymbol, t)));
 		}
