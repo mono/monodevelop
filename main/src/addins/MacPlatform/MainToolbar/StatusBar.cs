@@ -535,10 +535,10 @@ namespace MonoDevelop.MacIntegration
 						return;
 
 					inProgress = false;
-					progress.Name = ProgressLayerFadingId;
 					progress.Opacity = 0;
 					progress.RemoveFromSuperLayer ();
 				};
+				progress.Name = ProgressLayerFadingId;
 				progress.AddAnimation (fadeout, "opacity");
 			};
 			progress.AddAnimation (animation, growthAnimationKey);
