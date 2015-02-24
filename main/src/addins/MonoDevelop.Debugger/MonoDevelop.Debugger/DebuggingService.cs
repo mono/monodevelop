@@ -45,7 +45,6 @@ using MonoDevelop.Debugger.Viewers;
  */
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Debugger
@@ -1056,16 +1055,16 @@ namespace MonoDevelop.Debugger
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {
 					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
-					var ns = rr as INamespaceSymbol;
+					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
 					if (ns != null)
 						return ns.GetFullName ();
-					var result = rr as INamedTypeSymbol;
-					if (result != null && !(result.TypeKind == TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
-						return result.ToDisplayString (new SymbolDisplayFormat (
-							typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+					var result = rr as Microsoft.CodeAnalysis.INamedTypeSymbol;
+					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
+						return result.ToDisplayString (new Microsoft.CodeAnalysis.SymbolDisplayFormat (
+							typeQualificationStyle: Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
 							miscellaneousOptions:
-							SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
-							SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
 					}
 				}
 			}
