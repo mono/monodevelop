@@ -13,12 +13,12 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Range
 open Mono.TextEditor
 
-type FSharpRefactoringContext() = 
-   interface IRefactoringContext with   
-      override x.CreateScript () = { 
-         new System.IDisposable with 
-           member this.Dispose() = ()
-        }
+//type FSharpRefactoringContext() = 
+//   interface IRefactoringContext with   
+//      override x.CreateScript () = { 
+//         new System.IDisposable with 
+//           member this.Dispose() = ()
+//        }
 
 //TODO
 /// <summary>
