@@ -531,7 +531,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
-			foreach (var cls in ctx.GetAllTypes ()) {
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ()) {
 				if (cls.GetFullName() == className) {
 					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui

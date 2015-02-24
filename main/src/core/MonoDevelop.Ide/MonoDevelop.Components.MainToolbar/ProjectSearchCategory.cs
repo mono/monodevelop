@@ -72,7 +72,7 @@ namespace MonoDevelop.Components.MainToolbar
 						var info = doc.ParsedDocument;
 						if (info != null) {
 							var ctx = info.GetAst<SemanticModel> ().Compilation;
-							result.AddRange (ctx.GetAllTypes ());
+							result.AddRange (ctx.GetAllTypesInMainAssembly ());
 						}
 					}
 				}
@@ -81,7 +81,7 @@ namespace MonoDevelop.Components.MainToolbar
 				foreach (var p in TypeSystemService.Workspace.CurrentSolution.Projects) {
 					taskList.Add(p.GetCompilationAsync (token).ContinueWith (task => {
 						var tList = new List<INamedTypeSymbol> ();
-						foreach (var type in task.Result.GetAllTypes (token)) {
+						foreach (var type in task.Result.GetAllTypesInMainAssembly (token)) {
 							if (type.IsDefinedInSource ())
 								tList.Add (type);
 						}

@@ -110,7 +110,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			var ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			foreach (var cls in ctx.GetAllTypes ()) {
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ()) {
 				if (IsValidClass (cls))
 					list.Add (cls.GetFullName ());
 			}

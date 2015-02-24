@@ -71,7 +71,7 @@ namespace MonoDevelop.GtkCore
 		{
 			var tb_items = new Dictionary<string, INamedTypeSymbol> ();
 
-			foreach (var t in ctx.GetAllTypes ()) {
+			foreach (var t in ctx.GetAllTypesInMainAssembly ()) {
 				if (t.IsToolboxItem() && IsWidget(t))
 					tb_items [t.GetFullName ()] = t;
 			}

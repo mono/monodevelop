@@ -112,7 +112,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			ArrayList list = new ArrayList ();
 			var ctx = gproject.GetParserContext ();
-			foreach (var cls in ctx.GetAllTypes ())
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ())
 				if (IsValidClass (cls))
 					list.Add (cls.GetFullName ());
 		
