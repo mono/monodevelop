@@ -80,6 +80,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var item = new NSToolbarItem (RunButtonId) {
 				View = button,
 				MinSize = new CGSize (button.FittingSize.Width + 12, button.FittingSize.Height),
+				MaxSize = new CGSize (button.FittingSize.Width + 12, button.FittingSize.Height),
 			};
 			return item;
 		}
@@ -90,8 +91,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var item = new NSToolbarItem (SelectorId) {
 				View = selector,
 				MinSize = new CGSize (150, 25),
+				MaxSize = new CGSize (150, 25),
 			};
-			selector.ResizeRequested += (o, e) => item.MinSize = e.Size;
+			selector.ResizeRequested += (o, e) => item.MinSize = item.MaxSize = e.Size;
 
 			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
 			pathSelector.ConfigurationChanged += (sender, e) => {
@@ -113,8 +115,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var item = new NSToolbarItem (ButtonBarId + buttonBarCount) {
 				View = bar,
 				MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
+				MaxSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
 			};
-			bar.ResizeRequested += (o, e) => item.MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
+			bar.ResizeRequested += (o, e) => {
+				item.MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
+				item.MaxSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
+			};
 			return item;
 		}
 
@@ -130,6 +136,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					View = menuBar,
 				},
 				MinSize = new CGSize (180, bar.FittingSize.Height),
+				MaxSize = new CGSize (180, bar.FittingSize.Height),
 			};
 			bar.Changed += (o, e) => {
 				if (SearchEntryChanged != null)
@@ -190,8 +197,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			int total = -1;
 			widget.InsertItem (RunButtonId, runButtonIdx = ++total);
 			widget.InsertItem (SelectorId, selectorIdx = ++total);
-			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, buttonBarStartIdx = ++total);
-			//widget.InsertItem (CenteringSpaceId, buttonBarStartIdx = ++total);
+			widget.InsertItem (CenteringSpaceId, buttonBarStartIdx = ++total);
 			widget.InsertItem (StatusBarId, statusBarIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);

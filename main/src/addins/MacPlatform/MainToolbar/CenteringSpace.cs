@@ -98,6 +98,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						}
 
 						base.MinSize = new CGSize (space, base.MinSize.Height);
+						base.MaxSize = new CGSize (space, base.MaxSize.Height);
 					}
 				}
 				return base.MinSize;
@@ -105,19 +106,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set { base.MinSize = value; }
 		}
 
-		public override CGSize MaxSize {
-			get {
-				base.MaxSize = new CGSize (MinSize.Width, base.MaxSize.Height);
-				return base.MaxSize;
-			}
-			set { base.MaxSize = value; }
-		}
-
 		internal void UpdateWidth ()
 		{
 			// Trigger updates.
 			MinSize = MinSize;
-			MaxSize = MaxSize;
 		}
 	}
 }
