@@ -254,11 +254,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			while (buttonBarCount > 0) {
 				widget.RemoveItem (buttonBarStartIdx);
 				--buttonBarCount;
+				--statusBarIdx;
+				--searchEntryIdx;
 			}
 
 			foreach (var item in buttons) {
 				if (item.IsSeparator) {
 					widget.InsertItem (ButtonBarId, buttonBarStartIdx + buttonBarCount++);
+					++statusBarIdx;
+					++searchEntryIdx;
 					barItems.Clear ();
 				} else {
 					barItems.Add (item);
