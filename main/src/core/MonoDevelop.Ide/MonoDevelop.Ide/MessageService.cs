@@ -375,7 +375,7 @@ namespace MonoDevelop.Ide
 			else
 				PlaceDialog (dialog, parent);
 			#endif
-			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
+			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
 		#if MAC

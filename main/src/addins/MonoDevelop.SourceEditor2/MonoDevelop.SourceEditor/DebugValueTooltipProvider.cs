@@ -142,7 +142,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
 		{
-			return new DebugValueWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+			return new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
 		}
 
 		public override void ShowTooltipWindow (TextEditor editor, Control tipWindow, TooltipItem item, Gdk.ModifierType modifierState, int mouseX, int mouseY)

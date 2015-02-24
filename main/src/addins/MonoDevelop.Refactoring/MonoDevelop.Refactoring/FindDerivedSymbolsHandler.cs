@@ -42,16 +42,6 @@ namespace MonoDevelop.Refactoring
 {
 	class FindDerivedSymbolsHandler : CommandHandler
 	{
-		public bool IsValid {
-			get {
-				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-					return false;
-				if (TypeSystemService.GetProject (member) == null)
-					return false;
-				return member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface;
-			}
-		}
-
 		public static bool CanFindDerivedSymbols (ISymbol symbol, out string description)
 		{
 			if (symbol.Kind == SymbolKind.NamedType) {
