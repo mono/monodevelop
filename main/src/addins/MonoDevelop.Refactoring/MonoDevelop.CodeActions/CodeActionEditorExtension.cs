@@ -498,7 +498,8 @@ namespace MonoDevelop.CodeActions
 			bool first = true;
 			foreach (var fix in Fixes.CodeRefactoringActions) {
 				if (first) {
-					menu.Add (FixMenuEntry.Separator);
+					if (items > 0)
+						menu.Add (FixMenuEntry.Separator);
 					first = false;
 				}
 
