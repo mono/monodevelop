@@ -559,6 +559,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var data = GetProjectData (projectId);
 				var id = data.GetDocumentId (fargs.ProjectFile.FilePath); 
 				if (id != null) {
+					ClearDocumentData (id);
 					OnDocumentRemoved (id);
 					data.RemoveDocument (fargs.ProjectFile.FilePath);
 				}
