@@ -155,7 +155,7 @@ type CurrentRefactoringOperationsHandler() =
         | None -> ()
         | Some ast ->
         match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
-        | (line, col, lineTxt), Some symbol ->
+        | (_line, col, lineTxt), Some symbol ->
             let ciset = new CommandInfoSet (Text = GettextCatalog.GetString ("Refactor"))
 
             if Refactoring.canRename symbol doc.Editor doc.Project then
