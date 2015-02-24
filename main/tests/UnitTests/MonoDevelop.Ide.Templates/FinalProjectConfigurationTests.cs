@@ -241,8 +241,9 @@ namespace MonoDevelop.Ide.Templates
 
 			Assert.IsFalse (result);
 		}
-
-	        [TestCase("a&b", false)]
+                
+	        [TestCase("a",true)]
+		[TestCase("a&b", false)]
 		[TestCase("a<b", false)]
 		[TestCase("a*b", false)]
 		[TestCase("a;b", false)]
@@ -260,6 +261,7 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
+		[TestCase("a",true)]
 		[TestCase("a&b", false)]
 		[TestCase("a<b", false)]
 		[TestCase("a*b", false)]
@@ -270,7 +272,7 @@ namespace MonoDevelop.Ide.Templates
 		[TestCase("a:b", false)]
 		[TestCase("a#b", false)]
 		[TestCase("a|b", false)]
-		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)		
+		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
@@ -278,6 +280,7 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
+		[TestCase("a",true)]
 		[TestCase("a&b", false)]
 		[TestCase("a<b", false)]
 		[TestCase("a*b", false)]
