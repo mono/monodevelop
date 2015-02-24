@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -44,6 +45,11 @@ namespace MonoDevelop.Components.MainToolbar
 
 	public interface IRuntimeModel
 	{
+		/// <summary>
+		/// Gets the items to display as submenu items.
+		/// </summary>
+		IEnumerable<IRuntimeModel> Children { get; }
+
 		/// <summary>
 		/// Gets the display string to be used inside a context menu.
 		/// </summary>
@@ -85,6 +91,15 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value><c>true</c> if notable; otherwise, <c>false</c>.</value>
 		bool Notable { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this instance has a parent.
+		/// </summary>
+		/// <remarks>
+		/// If a menu item has a parent, it means it is in this list just for easier traversal and it should not be displayed.
+		/// </remarks>
+		/// <value><c>true</c> if this instance has a parent; otherwise, <c>false</c>.</value>
+		bool HasParent { get; }
 	}
 
 	public interface ISearchMenuModel

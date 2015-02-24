@@ -193,7 +193,7 @@ namespace MonoDevelop.Components.MainToolbar
 									list.Add (parent);
 
 									foreach (var version in versions) {
-										list.Add (new RuntimeModel (this, version, parent));
+										parent.AddChild (new RuntimeModel (this, version, parent));
 										runtimes++;
 									}
 								} else {
@@ -740,6 +740,7 @@ namespace MonoDevelop.Components.MainToolbar
 		class RuntimeModel : IRuntimeModel
 		{
 			MainToolbarController Controller { get; set; }
+			List<IRuntimeModel> children = new List<IRuntimeModel> ();
 			public object Command { get; private set; }
 			public ExecutionTarget ExecutionTarget { get; private set; }
 
@@ -770,6 +771,14 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 
+			public void AddChild (IRuntimeModel child)
+			{
+				children.Add (child);
+			}
+
+			public IEnumerable<IRuntimeModel> Children {
+				get { return children; }
+			}
 			public bool Notable {
 				get { return ExecutionTarget != null && ExecutionTarget.Notable; }
 			}
@@ -779,7 +788,7 @@ namespace MonoDevelop.Components.MainToolbar
 				private set;
 			}
 
-			bool HasParent {
+			public bool HasParent {
 				get;
 				set;
 			}
