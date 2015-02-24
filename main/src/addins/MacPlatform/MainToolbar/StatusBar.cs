@@ -91,6 +91,7 @@ namespace MonoDevelop.MacIntegration
 	class StatusBar : NSTextField, MonoDevelop.Ide.StatusBar
 	{
 		const string ProgressLayerId = "ProgressLayer";
+		const string ProgressLayerFadingId = "ProgressLayerFading";
 		const string StatusIconPrefixId = "StatusLayer";
 		const string BuildIconLayerId = "BuildIconLayer";
 		const string BuildTextLayerId = "BuildTextLayer";
@@ -534,6 +535,7 @@ namespace MonoDevelop.MacIntegration
 						return;
 
 					inProgress = false;
+					progress.Name = ProgressLayerFadingId;
 					progress.Opacity = 0;
 					progress.RemoveFromSuperLayer ();
 				};
@@ -541,11 +543,8 @@ namespace MonoDevelop.MacIntegration
 			};
 			progress.AddAnimation (animation, growthAnimationKey);
 			var oldLayer = ProgressLayer;
-			if (oldLayer != null)
-				Layer.ReplaceSublayer (Layer.Sublayers [Array.IndexOf (Layer.Sublayers, oldLayer)], progress);
-			else {
+			if (oldLayer == null)
 				Layer.AddSublayer (progress);
-			}
 
 			UpdateLayer ();
 		}
