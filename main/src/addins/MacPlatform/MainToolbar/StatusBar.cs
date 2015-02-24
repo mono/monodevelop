@@ -271,7 +271,7 @@ namespace MonoDevelop.MacIntegration
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
-			buildResultIcon.Frame = new CGRect (right - buildResultIcon.Contents.Width, 3, buildResultIcon.Contents.Width, buildResultIcon.Contents.Height);
+			buildResultIcon.Frame = new CGRect (right - 0.5f - buildResultIcon.Contents.Width, 3, buildResultIcon.Contents.Width, buildResultIcon.Contents.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 		}
