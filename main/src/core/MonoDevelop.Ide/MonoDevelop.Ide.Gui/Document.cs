@@ -786,19 +786,19 @@ namespace MonoDevelop.Ide.Gui
 		}
 		internal void StartReparseThread ()
 		{
-			lock (reparseLock) {
+			string currentParseFile = FileName;
+			if (string.IsNullOrEmpty (currentParseFile))
+				return;
+			Application.Invoke (delegate {
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
 				// be parsed at the same time.
-				string currentParseFile = FileName;
-				if (string.IsNullOrEmpty (currentParseFile))
-					return;
 				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
-
+				
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
-				CancelOldParsing();
+				CancelOldParsing ();
 				var token = parseTokenSource.Token;
 				var project = Project;
 				ThreadPool.QueueUserWorkItem (delegate {
@@ -834,7 +834,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 					parseTimeout = 0;
 				});
-			}
+			});
 		}
 		
 		/// <summary>
