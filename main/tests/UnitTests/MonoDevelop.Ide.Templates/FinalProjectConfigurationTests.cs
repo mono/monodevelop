@@ -256,8 +256,10 @@ namespace MonoDevelop.Ide.Templates
 		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
+			config.CreateSolution = true;
 			config.SolutionName = "a";
 			config.ProjectName = projectname;
+			
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
@@ -275,8 +277,10 @@ namespace MonoDevelop.Ide.Templates
 		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
+			config.CreateSolution = true;
 			config.SolutionName = "a";
 			config.ProjectName = projectname;
+			
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
@@ -294,10 +298,10 @@ namespace MonoDevelop.Ide.Templates
 		public void InvalidProjectNameCharactersCauseConfigToBeInvalid(string projectName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
-			config.SolutionName = "a";
-
-			config.ProjectName = "a";
-			Assert.IsTrue (config.IsValid());
+		    	config.SolutionName = "a";
+			
+		        config.ProjectName = "a";
+                        Assert.IsTrue (config.IsValid());
 			config.ProjectName =projectName;
 			Assert.AreEqual (valid, config.IsValid ());
 		}
