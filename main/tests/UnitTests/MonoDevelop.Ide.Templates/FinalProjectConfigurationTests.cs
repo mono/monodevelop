@@ -278,6 +278,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.CreateSolution = true;
+			config.CreateProjectDirectoryInsideSolutionDirectory = false;
 			config.SolutionName = "a";
 			config.ProjectName = projectname;
 			
