@@ -62,15 +62,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			var p = (NSPathControl)Subviews [0];
-			dirtyRect.Width = 16 +
+			var size = new CGSize (16 +
 				p.PathComponentCells [ConfigurationIdx].CellSize.Width +
-				p.PathComponentCells [RuntimeIdx].CellSize.Width;
-
+				p.PathComponentCells [RuntimeIdx].CellSize.Width,
+				Frame.Size.Height);
 			if (ResizeRequested != null)
-				ResizeRequested (this, new SizeRequestedEventArgs (dirtyRect.Size));
+				ResizeRequested (this, new SizeRequestedEventArgs (size));
 
-			SetFrameSize (dirtyRect.Size);
-			p.SetFrameSize (dirtyRect.Size);
+			SetFrameSize (size);
+			p.SetFrameSize (size);
 			base.DrawRect (dirtyRect);
 		}
 
