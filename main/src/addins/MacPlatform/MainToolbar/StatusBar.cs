@@ -204,7 +204,7 @@ namespace MonoDevelop.MacIntegration
 		nfloat LeftMostItemX ()
 		{
 			if (Layer.Sublayers == null)
-				return Frame.Right;
+				return Frame.Width;
 
 			return Layer.Sublayers.Min<CALayer, nfloat> (layer => {
 				if (layer.Name == null)
@@ -278,7 +278,7 @@ namespace MonoDevelop.MacIntegration
 
 		void RepositionStatusLayers ()
 		{
-			nfloat right = Frame.Right;
+			nfloat right = Frame.Width;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					right -= item.Contents.Width + 6;
@@ -294,7 +294,7 @@ namespace MonoDevelop.MacIntegration
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			nfloat right = layerToStatus.Count == 0 ?
-				Frame.Right :
+				Frame.Width :
 				Layer.Sublayers.Last (i => i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
 
 			var layer = CALayer.Create ();
