@@ -134,11 +134,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Image = ImageService.GetIcon ("project").ToNSImage (),
 						Title = ConfigurationPlaceholder,
 						Enabled = false,
+						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
 					},
 					new NSPathComponentCell {
 						Image = ImageService.GetIcon ("device").ToNSImage (),
 						Title = RuntimePlaceholder,
 						Enabled = false,
+						TextColor = NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1),
 					}
 				};
 
