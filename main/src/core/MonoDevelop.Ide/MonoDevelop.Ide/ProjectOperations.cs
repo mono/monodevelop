@@ -1859,9 +1859,20 @@ namespace MonoDevelop.Ide
 			
 			bool sourceIsFolder = Directory.Exists (sourcePath);
 
+			bool containsOnlyProjectFiles = (sourceProject != null);
+
+			var sourceFiles = new List<ProjectFile> ();
+			var projectFileNames = new HashSet<string> (sourceProject.Files.Select (f => sourceProject.BaseDirectory.Combine (f.ProjectVirtualPath).ToString ()));
+			GetAllFilesRecursive (sourcePath, sourceFiles);
+			foreach (ProjectFile file in sourceFiles) {
+				if (!projectFileNames.Contains (file.Name))
+					containsOnlyProjectFiles = false;
+			}
+
 			bool movingFolder = (removeFromSource && sourceIsFolder && (
 					!copyOnlyProjectFiles ||
-					IsDirectoryHierarchyEmpty (sourcePath)));
+					IsDirectoryHierarchyEmpty (sourcePath) ||
+					containsOnlyProjectFiles));
 
 			// We need to remove all files + directories from the source project
 			// but when dealing with the VCS addins we need to process only the
