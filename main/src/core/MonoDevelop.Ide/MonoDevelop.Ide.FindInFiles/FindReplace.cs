@@ -108,33 +108,39 @@ namespace MonoDevelop.Ide.FindInFiles
 				}
 
 				var results = new List<SearchResult>();
-				Parallel.ForEach (contents, content => { 
-					if (monitor.IsCancelRequested)
-						return;
-					try {
-						Interlocked.Increment (ref searchedFilesCount);
-						content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
-						lock (results) {
-							results.AddRange (content.Item3);
-						}
-						FoundMatchesCount += content.Item3.Count;
-						if (searchedFilesCount % step == 0)
-							monitor.Step (1); 
-					} catch (Exception e) {
-						LoggingService.LogError("Exception during search.", e);
-					}
-				});
-
-				if (replacePattern != null) {
+				if (filter.RegexSearch && replacePattern != null) {
 					foreach (var content in contents) {
-						if (content.Item3.Count == 0)
-							continue;
+						results.AddRange (RegexSearch (monitor, content.Item1, content.Item2, replacePattern, filter));
+					}
+				} else {
+					Parallel.ForEach (contents, content => { 
+						if (monitor.IsCancelRequested)
+							return;
 						try {
-							content.Item1.BeginReplace (content.Item2);
-							Replace (content.Item1, content.Item3, replacePattern);
-							content.Item1.EndReplace ();
+							Interlocked.Increment (ref searchedFilesCount);
+							content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
+							lock (results) {
+								results.AddRange (content.Item3);
+							}
+							FoundMatchesCount += content.Item3.Count;
+							if (searchedFilesCount % step == 0)
+								monitor.Step (1); 
 						} catch (Exception e) {
-							LoggingService.LogError("Exception during replace.", e);
+							LoggingService.LogError("Exception during search.", e);
+						}
+					});
+
+					if (replacePattern != null) {
+						foreach (var content in contents) {
+							if (content.Item3.Count == 0)
+								continue;
+							try {
+								content.Item1.BeginReplace (content.Item2);
+								Replace (content.Item1, content.Item3, replacePattern);
+								content.Item1.EndReplace ();
+							} catch (Exception e) {
+								LoggingService.LogError("Exception during replace.", e);
+							}
 						}
 					}
 				}
