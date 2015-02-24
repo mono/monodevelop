@@ -49,65 +49,56 @@ namespace MonoDevelop.CodeIssues
 			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
-			// TODO: Broken due roslyn update.
-//			try {
-//				var model = input.ParsedDocument.GetAst<SemanticModel> ();
-//				if (model == null)
-//					return Enumerable.Empty<Result> ();
-//				var compilation = model.Compilation;
-//				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
-//
-//				var options = new AnalyzerOptions(System.Collections.Immutable.ImmutableArray<AdditionalStream>.Empty, System.Collections.Immutable.ImmutableDictionary<string, string>.Empty);
-//				var providers = new List<DiagnosticAnalyzer> ();
-//				var alreadyAdded = new HashSet<Type>();
-//				var codeIssues = CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language);
-//				foreach (var issue in codeIssues.Result) {
-//					if (alreadyAdded.Contains (issue.CodeIssueType))
-//						continue;
-//					alreadyAdded.Add (issue.CodeIssueType);
-//					var provider = issue.GetProvider ();
-//					providers.Add (provider);
-//				}
-//
-//				if (providers.Count == 0)
-//					return Enumerable.Empty<Result> ();
-//				
-//				var driver = AnalyzerDriver.Create(
-//					compilation,
-//					System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers),
-//					options,
-//					out compilation,
-//					CancellationToken.None
-//				);
-//
-//
-//				if (input.ParsedDocument == null)
-//					return Enumerable.Empty<Result> ();
-//				model = compilation.GetSemanticModel (model.SyntaxTree);
-//
-//				var tree = model.SyntaxTree;
-//				if (tree == null)
-//					return Enumerable.Empty<Result> ();
-//				model.GetDiagnostics (null, cancellationToken);
-//				model.GetSyntaxDiagnostics (null, cancellationToken);
-//				model.GetDeclarationDiagnostics (null, cancellationToken);
-//				model.GetMethodBodyDiagnostics (null, cancellationToken);
-//
-//				var diagnosticList = driver.GetDiagnosticsAsync ().Result;
-//				return diagnosticList
-//					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
-//					.Select (diagnostic => {
-//						var res = new DiagnosticResult(diagnostic);
-//						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
-//						// Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
-//						return res;
-//					});
-//			} catch (OperationCanceledException) {
-//				return Enumerable.Empty<Result> ();
-//			} catch (Exception e) {
-//				LoggingService.LogError ("Error while running diagnostics.", e); 
+			try {
+				var model = input.ParsedDocument.GetAst<SemanticModel> ();
+				if (model == null)
+					return Enumerable.Empty<Result> ();
+				var compilation = model.Compilation;
+				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
+
+				var providers = new List<DiagnosticAnalyzer> ();
+				var alreadyAdded = new HashSet<Type>();
+				var codeIssues = CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language);
+				foreach (var issue in codeIssues.Result) {
+					if (alreadyAdded.Contains (issue.CodeIssueType))
+						continue;
+					alreadyAdded.Add (issue.CodeIssueType);
+					var provider = issue.GetProvider ();
+					providers.Add (provider);
+				}
+
+				if (providers.Count == 0)
+					return Enumerable.Empty<Result> ();
+				
+				var compilationWithAnalyzer = compilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers), null, cancellationToken); 
+
+				if (input.ParsedDocument == null)
+					return Enumerable.Empty<Result> ();
+				model = compilationWithAnalyzer.Compilation.GetSemanticModel (model.SyntaxTree);
+
+				var tree = model.SyntaxTree;
+				if (tree == null)
+					return Enumerable.Empty<Result> ();
+				var diagnosticList = new List<Diagnostic> ();
+				diagnosticList.AddRange (model.GetDiagnostics (null, cancellationToken));
+				diagnosticList.AddRange (model.GetSyntaxDiagnostics (null, cancellationToken));
+				diagnosticList.AddRange (model.GetDeclarationDiagnostics (null, cancellationToken));
+				diagnosticList.AddRange (model.GetMethodBodyDiagnostics (null, cancellationToken));
+
+				return diagnosticList
+					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
+					.Select (diagnostic => {
+						var res = new DiagnosticResult(diagnostic);
+						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
+						// Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
+						return res;
+					});
+			} catch (OperationCanceledException) {
 				return Enumerable.Empty<Result> ();
-//			}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while running diagnostics.", e); 
+				return Enumerable.Empty<Result> ();
+			}
 		}
 	}
 }

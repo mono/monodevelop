@@ -146,21 +146,20 @@ namespace MonoDevelop.CodeActions
 
 		public void CancelQuickFixTimer ()
 		{
-			if (quickFixCancellationTokenSource != null)
-				quickFixCancellationTokenSource.Cancel ();
+			quickFixCancellationTokenSource.Cancel ();
+			quickFixCancellationTokenSource = new CancellationTokenSource ();
 			if (quickFixTimeout != 0) {
 				GLib.Source.Remove (quickFixTimeout);
 				quickFixTimeout = 0;
 			}
 		}
 
-		CancellationTokenSource quickFixCancellationTokenSource;
+		CancellationTokenSource quickFixCancellationTokenSource = new CancellationTokenSource ();
 
 		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
 			CancelQuickFixTimer ();
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
-				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Editor.CaretOffset;
@@ -183,65 +182,39 @@ namespace MonoDevelop.CodeActions
 							.OfType<DiagnosticResult> ()
 							.Select (dr => dr.Diagnostic)
 							.ToList ();
-					// TODO: Broken due roslyn update.
-//					System.Threading.Tasks.Task.Factory.StartNew (async delegate {
-//						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
-//						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
-//						foreach (var cfp in CodeDiagnosticService.GetBuiltInCodeFixDescriptorAsync (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
-//							if (token.IsCancellationRequested)
-//								return;
-//							var provider = cfp.GetCodeFixProvider ();
-//							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
-//								continue;
-//
-//							try {
-//								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
-//									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
-//									token));
-//							} catch (Exception ex) {
-//								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
-//								continue;
-//							}
-//						}
-//						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
-//						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
-//							codeActions.Add (action); 
-//						}
-//						Application.Invoke (delegate {
-//							if (token.IsCancellationRequested)
-//								return;
-//							if (codeIssueFixes.Count == 0 && codeActions.Count == 0) {
-//								RemoveWidget ();
-//								return;
-//							}
-//							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
-//						});
-//					});
+					Task.Run (async delegate {
+						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
+						foreach (var cfp in CodeDiagnosticService.GetBuiltInCodeFixDescriptorAsync (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
+							if (token.IsCancellationRequested)
+								return;
+							var provider = cfp.GetCodeFixProvider ();
+							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
+								continue;
 
-					
-//					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
-//						if (!fixes.Any ()) {
-//							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
-//							AstNode node;
-//							if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node, token)) {
-//								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document, node, ref resolveResult);
-//								if (!possibleNamespaces.Any ()) {
-//									if (currentSmartTag != null)
-//										Application.Invoke (delegate { RemoveWidget (); });
-//									return;
-//								}
-//							} else {
-//								if (currentSmartTag != null)
-//									Application.Invoke (delegate { RemoveWidget (); });
-//								return;
-//							}
-//						}
-//						Application.Invoke (delegate {
-//							if (token.IsCancellationRequested)
-//								return;
-//							CreateSmartTag (fixes, loc);
-//						});
-//					});
+							try {
+								await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
+									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
+									token));
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
+								continue;
+							}
+						}
+						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
+						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+							codeActions.Add (action); 
+						}
+						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
+							if (codeIssueFixes.Count == 0 && codeActions.Count == 0) {
+								RemoveWidget ();
+								return;
+							}
+							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
+						});
+					});
 					quickFixTimeout = 0;
 					return false;
 				});
