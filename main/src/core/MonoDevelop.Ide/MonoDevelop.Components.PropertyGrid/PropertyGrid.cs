@@ -143,6 +143,8 @@ namespace MonoDevelop.Components.PropertyGrid
 			Populate ();
 			UpdateTabs ();
 		}
+
+		public ISite Site { get; set; }
 		
 		public void SetToolbarProvider (IToolbarProvider toolbarProvider)
 		{

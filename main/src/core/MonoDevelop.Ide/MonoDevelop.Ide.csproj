@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\build\AddIns\</OutputPath>
+    <OutputPath>..\..\..\build\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
@@ -59,7 +59,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\build\AddIns\</OutputPath>
+    <OutputPath>..\..\..\build\bin</OutputPath>
     <DefineConstants>MAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -3305,6 +3305,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Components\EventBoxTooltip.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCreateInformation.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParser.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IMainToolbarView.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarController.cs" />

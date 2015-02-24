@@ -40,17 +40,20 @@ namespace MonoDevelop.Components.PropertyGrid
 	public class PropertyEditorCell
 	{
 		Pango.Layout layout;
-		PropertyDescriptor property; 
-		object obj;
+		ITypeDescriptorContext context;
 		Gtk.Widget container;
 		EditorManager editorManager;
 		
 		public object Instance {
-			get { return obj; }
+			get { return context.Instance; }
 		}
 		
 		public PropertyDescriptor Property {
-			get { return property; }
+			get { return context.PropertyDescriptor; }
+		}
+
+		protected ITypeDescriptorContext Context {
+			get { return context; }
 		}
 		
 		public Gtk.Widget Container {
@@ -61,7 +64,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			get { return editorManager; }
 		}
 		
-		internal void Initialize (Widget container, EditorManager editorManager, PropertyDescriptor property, object obj)
+		internal void Initialize (Widget container, EditorManager editorManager, ITypeDescriptorContext context)
 		{
 			this.container = container;
 			this.editorManager = editorManager;
@@ -72,8 +75,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			Pango.FontDescription des = container.Style.FontDescription.Copy();
 			layout.FontDescription = des;
 			
-			this.property = property;
-			this.obj = obj;
+			this.context = context;
 			Initialize ();
 		}
 
@@ -82,15 +84,15 @@ namespace MonoDevelop.Components.PropertyGrid
 			IPropertyEditor ed = CreateEditor (cell_area, state);
 			if (ed == null)
 				return null;
-			return new EditSession (container, obj, property, ed);
+			return new EditSession (container, context, ed);
 		}
 		
 		protected virtual string GetValueText ()
 		{
-			if (obj == null) return "";
-			object val = property.GetValue (obj);
-			if (val == null) return "";
-			else return property.Converter.ConvertToString (val);
+			var val = Value;
+			if (val != null)
+				return Property.Converter.ConvertToString (context, val);
+			return "";
 		}
 		
 		protected virtual string GetValueMarkup ()
@@ -116,7 +118,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 		
 		public object Value {
-			get { return obj != null ? property.GetValue (obj) : null; }
+			get { return Instance != null ? Property.GetValue (Instance) : null; }
 		}
 		
 		protected virtual void Initialize ()
@@ -148,11 +150,11 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		protected virtual IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, StateType state)
 		{
-			if (DialogueEdit && (!property.IsReadOnly || EditsReadOnlyObject)) {
-				return new PropertyDialogueEditor (this);
+			if (DialogueEdit && (!Property.IsReadOnly || EditsReadOnlyObject)) {
+				return new PropertyDialogueEditor (this, context);
 			}
 			else {
-				Type editorType = editorManager.GetEditorType (property);
+				Type editorType = editorManager.GetEditorType (Property);
 				if (editorType == null)
 					return null;
 				
@@ -221,24 +223,22 @@ namespace MonoDevelop.Components.PropertyGrid
 	
 	public class EditSession : ITypeDescriptorContext
 	{
-		PropertyDescriptor property; 
-		object obj;
 		Gtk.Widget container;
 		IPropertyEditor currentEditor;
 		bool syncing;
+		ITypeDescriptorContext context; 
 		
 		public event EventHandler Changed;
 		
-		public EditSession (Gtk.Widget container, object instance, PropertyDescriptor property, IPropertyEditor currentEditor)
+		internal EditSession (Gtk.Widget container, ITypeDescriptorContext context, IPropertyEditor currentEditor)
 		{
-			this.property = property;
-			this.obj = instance;
+			this.context = context;
 			this.container = container;
 			this.currentEditor = currentEditor;
 			
 			currentEditor.Initialize (this);
-			if (instance != null)
-				currentEditor.Value = property.GetValue (instance);
+			if (Instance != null)
+				currentEditor.Value = context.PropertyDescriptor.GetValue (Instance);
 			
 			currentEditor.ValueChanged += OnValueChanged;
 		}
@@ -249,15 +249,15 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 		
 		public object Instance {
-			get { return obj; }
+			get { return context.Instance; }
 		}
 		
 		public PropertyDescriptor Property {
-			get { return property; }
+			get { return context.PropertyDescriptor; }
 		}
 		
 		PropertyDescriptor ITypeDescriptorContext.PropertyDescriptor {
-			get { return property; }
+			get { return context.PropertyDescriptor; }
 		}
 		
 		public Gtk.Widget Container {
@@ -272,8 +272,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			if (!syncing) {
 				syncing = true;
-				if (!property.IsReadOnly) {
-					property.SetValue (obj, currentEditor.Value);
+				if (!context.PropertyDescriptor.IsReadOnly) {
+					context.PropertyDescriptor.SetValue (context.Instance, currentEditor.Value);
 					if (Changed != null)
 						Changed (s, a);
 				}
@@ -301,44 +301,39 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			if (!syncing) {
 				syncing = true;
-				currentEditor.Value = property.GetValue (obj);
+				currentEditor.Value = context.PropertyDescriptor.GetValue (context.Instance);
 				syncing = false;
 			}
 		}
-		
-		#region FIXME Unimplemented ITypeDescriptorContext and IServiceProvider members
-		
+
 		object IServiceProvider.GetService (Type serviceType)
 		{
-			return null;
+			return context.GetService (serviceType);
 		}
 		
 		void ITypeDescriptorContext.OnComponentChanged ()
 		{
+			context.OnComponentChanged ();
 		}
 		
 		bool ITypeDescriptorContext.OnComponentChanging ()
 		{
-			return true;
+			return context.OnComponentChanging ();
 		}
 		
-		IContainer ITypeDescriptorContext.Container { get { return null; } }
-		
-		#endregion
+		IContainer ITypeDescriptorContext.Container { get { return context.Container; } }
 	}
 	
 	class CellRendererWidget: Gtk.DrawingArea
 	{
-		PropertyEditorCell cell;
-		object obj;
-		PropertyDescriptor property;
-		EditorManager em;
+		readonly PropertyEditorCell cell;
+		readonly ITypeDescriptorContext context;
+		readonly EditorManager em;
 		
-		public CellRendererWidget (PropertyEditorCell cell)
+		public CellRendererWidget (PropertyEditorCell cell, ITypeDescriptorContext context)
 		{
 			this.cell = cell;
-			this.obj = cell.Instance;
-			this.property = cell.Property;
+			this.context = context;
 			em = cell.EditorManager;
 			this.ModifyBg (Gtk.StateType.Normal, this.Style.White);
 		}
@@ -346,7 +341,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			bool res = base.OnExposeEvent (evnt);
-			cell.Initialize (this, em, property, obj);
+			cell.Initialize (this, em, context);
 			
 			Gdk.Rectangle rect = Allocation;
 			rect.Inflate (-3, 0);// Add some margin
@@ -362,11 +357,11 @@ namespace MonoDevelop.Components.PropertyGrid
 	{
 		PropertyEditorCell cell;
 		
-		public PropertyDialogueEditor (PropertyEditorCell cell)
+		public PropertyDialogueEditor (PropertyEditorCell cell, ITypeDescriptorContext context)
 		{
 			this.cell = cell;
 			Spacing = 3;
-			PackStart (new CellRendererWidget (cell), true, true, 0);
+			PackStart (new CellRendererWidget (cell, context), true, true, 0);
 			Label buttonLabel = new Label ();
 			buttonLabel.UseMarkup = true;
 			buttonLabel.Xpad = 0; buttonLabel.Ypad = 0;

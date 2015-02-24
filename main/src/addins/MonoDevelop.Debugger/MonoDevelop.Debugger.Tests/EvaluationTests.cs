@@ -161,6 +161,16 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("ClassWithCompilerGeneratedNestedClass");
+			Assert.AreEqual ("ClassWithCompilerGeneratedNestedClass", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+			var children = val.GetAllChildrenSync ();
+			Assert.AreEqual (2, children.Length);
+			Assert.AreEqual ("ClassWithCompilerGeneratedNestedClass.NestedClass", children [0].Value);
+			Assert.AreEqual ("<type>", children [0].TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, children [0].Flags & ObjectValueFlags.OriginMask);
 		}
 
 		[Test]
