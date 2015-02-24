@@ -367,22 +367,22 @@ namespace MonoDevelop.MacIntegration
 
 		public void ShowMessage (string message)
 		{
-			ShowMessage (null, message, false, NSColor.ControlText);
+			ShowMessage (null, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
 		}
 
 		public void ShowMessage (string message, bool isMarkup)
 		{
-			ShowMessage (null, message, true, NSColor.ControlText);
+			ShowMessage (null, message, true, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
 		}
 
 		public void ShowMessage (IconId image, string message)
 		{
-			ShowMessage (image, message, false, NSColor.ControlText);
+			ShowMessage (image, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			ShowMessage (image, message, isMarkup, NSColor.ControlText);
+			ShowMessage (image, message, isMarkup, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
