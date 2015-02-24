@@ -98,7 +98,7 @@ namespace MonoDevelop.MacIntegration
 		const string SeparatorLayerId = "SeparatorLayer";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
-		Queue<double> progressMarks = new Queue<double> ();
+		Stack<double> progressMarks = new Stack<double> ();
 		bool currentTextIsMarkup;
 		string text;
 		NSColor textColor;
@@ -437,10 +437,10 @@ namespace MonoDevelop.MacIntegration
 			if (AutoPulse)
 				return;
 
-			progressMarks.Enqueue (work);
+			progressMarks.Push (work);
 			if (!inProgress) {
 				inProgress = true;
-				StartProgress (progressMarks.Dequeue ());
+				StartProgress (progressMarks.Peek ());
 			}
 		}
 
@@ -552,6 +552,7 @@ namespace MonoDevelop.MacIntegration
 		const int barHeight = 2;
 		void StartProgress (double newFraction)
 		{
+			progressMarks.Clear ();
 			var progress = CreateProgressBarLayer (Frame.Width);
 			var grp = CreateMoveAndGrowAnimation (progress, newFraction);
 			oldFraction = newFraction;
@@ -559,7 +560,7 @@ namespace MonoDevelop.MacIntegration
 			AttachFadeoutAnimation (progress, grp, () => {
 				if (oldFraction < 1 && inProgress) {
 					if (progressMarks.Count != 0) {
-						StartProgress (progressMarks.Dequeue ());
+						StartProgress (progressMarks.Peek ());
 					} else {
 						inProgress = false;
 					}
