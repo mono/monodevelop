@@ -19,7 +19,7 @@ open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 
-module TextEditor =
+module MonoDevelop =
     type TextEditor with
         member x.GetLineInfoFromOffset (offset) =
             let loc  = x.OffsetToLocation(offset)
@@ -31,10 +31,14 @@ module TextEditor =
         member x.GetLineInfoByCaretOffset () =
             x.GetLineInfoFromOffset x.CaretOffset
 
-module internal MonoDevelop =
+    type MonoDevelop.Ide.TypeSystem.ParsedDocument with
+        member x.TryGetAst() =
+            let ast = x.GetAst<FSharp.CompilerBinding.ParseAndCheckResults> ()
+            if ast = Unchecked.defaultof<FSharp.CompilerBinding.ParseAndCheckResults> then None
+            else Some ast
 
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
-    let getCheckerArgsFromProject(project:DotNetProject, config) =
+    let internal getCheckerArgsFromProject(project:DotNetProject, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
@@ -53,12 +57,12 @@ module internal MonoDevelop =
         | None -> LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
                   fileName, files, [||]
 
-    let getConfig () =
+    let internal getConfig () =
         match MonoDevelop.Ide.IdeApp.Workspace with
         | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
         | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
 
-    let getCheckerArgs(project: Project, filename: string) =
+    let internal getCheckerArgs(project: Project, filename: string) =
         match project with
         | :? DotNetProject as dnp when not (FSharp.CompilerBinding.LanguageService.IsAScript filename) ->
             getCheckerArgsFromProject(dnp, getConfig())

@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.Diagnostics
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
 open MonoDevelop.Ide
@@ -21,7 +22,6 @@ open FSharp.CompilerBinding
 open MonoDevelop.FSharp.NRefactory
 open ICSharpCode.NRefactory.TypeSystem
 open ExtCore.Control
-open MonoDevelop.FSharp.TextEditor
 
 type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = Lexhelp.Keywords.QuoteIdentifierIfNeeded name, 

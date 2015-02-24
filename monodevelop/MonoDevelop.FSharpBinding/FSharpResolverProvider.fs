@@ -5,6 +5,7 @@
 namespace MonoDevelop.FSharp
 
 open System
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
@@ -14,7 +15,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 open ExtCore.Control
 open System.Collections.Immutable
-open MonoDevelop.FSharp.TextEditor
 
 ///Barebones symbol
 type FsharpSymbol (symbolUse:FSharpSymbolUse, editor:TextEditor) =

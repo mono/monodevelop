@@ -2,6 +2,7 @@ namespace MonoDevelop.FSharp
 
 open System
 open Mono.TextEditor
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.FindInFiles
@@ -12,7 +13,6 @@ open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
-open MonoDevelop.FSharp.TextEditor
 
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() =

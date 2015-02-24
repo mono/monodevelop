@@ -8,6 +8,7 @@ open System
 open System.IO
 open FSharp.CompilerBinding
 open Mono.TextEditor
+open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Components
 open MonoDevelop.Ide
@@ -18,7 +19,6 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp.Symbols
 open ExtCore.Control
 open Symbols
-open MonoDevelop.FSharp.TextEditor
 
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() = 
