@@ -326,12 +326,12 @@ namespace MonoDevelop.MacIntegration
 
 		public void ShowError (string error)
 		{
-			ShowMessage (Stock.StatusError, error, false, NSColor.FromDeviceRgba (235 / 255, 161 / 255, 7 / 255, 1));
+			ShowMessage (Stock.StatusError, error, false, NSColor.FromDeviceRgba (228f / 255, 84f / 255, 55f / 255, 1));
 		}
 
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromDeviceRgba (228 / 255, 84 / 255, 55 / 255, 1));
+			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromDeviceRgba (235f / 255, 161f / 255, 7f / 255, 1));
 		}
 
 		public void ShowMessage (string message)
@@ -467,7 +467,7 @@ namespace MonoDevelop.MacIntegration
 			set;
 		}
 
-		static CGColor xamBlue = new CGColor ((nfloat)52 / 255, (nfloat)152 / 255, (nfloat)219.0 / 255);
+		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
 		CALayer CreateProgressBarLayer (double width)
 		{
 			var progress = CALayer.Create ();
