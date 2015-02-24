@@ -344,7 +344,7 @@ namespace MonoDevelop.Platform
 
 			//first check for the user's preferred app for this file type and use it as the default
 			using (var key = Registry.CurrentUser.OpenSubKey (@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\" + extension + @"\UserChoice")) {
-				var progid = key.GetValue ("ProgId") as string;
+				var progid = key?.GetValue ("ProgId") as string;
 				if (progid != null)
 					apps[progid] = defaultApp = WindowsAppFromName (progid, true, AssociationFlags.None);
 			}
