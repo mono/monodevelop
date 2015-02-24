@@ -124,7 +124,7 @@ type FSharpParser() =
                             async.Return ParseAndCheckResults.Empty
                                                                                      
                 results.GetErrors()
-                |> Option.iter (Array.map formatError >> Array.iter doc.Add)
+                |> Option.iter (Array.map formatError >> doc.AddRange)
 
                 //Set code folding regions, GetNavigationItems may throw in some situations
                 try 
@@ -136,9 +136,9 @@ type FSharpParser() =
                                 yield processDecl toplevel.Declaration
                                 for next in toplevel.Nested do
                                     yield processDecl next }
-                    regions |> Seq.iter doc.Add
+                    regions |> doc.AddRange
                 with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
-                //also store the AST of active results if applicable 
+                //Store the AST of active results
                 doc.Ast <- results
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})
