@@ -324,6 +324,10 @@
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
     <Compile Include="WebForms\CSharp\CSharpProjector.cs" />
+    <Compile Include="Projects\AspNetProjectTemplateWizard.cs" />
+    <Compile Include="Projects\AspNetProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="Projects\AspNetProjectTemplateWizardPage.cs" />
+    <Compile Include="Projects\AspNetStringTagProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

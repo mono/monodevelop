@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide
 		public WorkspaceItemCollection Items {
 			get {
 				if (items == null)
-					items = new RootWorkspaceItemCollection (this);
+					items = new RootWorkspaceItemCollection (this, 256);
 				return items; 
 			}
 		}
@@ -1406,7 +1406,11 @@ namespace MonoDevelop.Ide
 	{
 		RootWorkspace parent;
 		
-		public RootWorkspaceItemCollection (RootWorkspace parent)
+		public RootWorkspaceItemCollection (RootWorkspace parent) : this(parent, 0)
+		{
+		}
+
+		public RootWorkspaceItemCollection (RootWorkspace parent, int capacity) : base(new List<WorkspaceItem> (capacity))
 		{
 			this.parent = parent;
 		}

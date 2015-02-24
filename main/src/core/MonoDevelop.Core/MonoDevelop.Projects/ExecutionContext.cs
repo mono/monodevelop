@@ -39,14 +39,16 @@ namespace MonoDevelop.Projects
 		ExecutionTarget executionTarget;
 		
 		public ExecutionContext (IExecutionMode executionMode, IConsoleFactory consoleFactory, ExecutionTarget target)
+			: this (executionMode.ExecutionHandler, consoleFactory, target)
 		{
-			this.executionHandler = executionMode.ExecutionHandler;
-			this.consoleFactory = consoleFactory;
-			this.executionTarget = target;
 		}
 		
 		public ExecutionContext (IExecutionHandler executionHandler, IConsoleFactory consoleFactory, ExecutionTarget target)
 		{
+			var targetedHandler = executionHandler as ITargetedExecutionHandler;
+			if (targetedHandler != null)
+				target = targetedHandler.Target ?? target;
+
 			this.executionHandler = executionHandler;
 			this.consoleFactory = consoleFactory;
 			this.executionTarget = target;

@@ -63,10 +63,12 @@ namespace MonoDevelop.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		
 		public ConfigurationSelector ActiveConfiguration { get; set; }
-		
+
+		public ProjectCreateParameters Parameters { get; set; }
 
 		public ProjectCreateInformation ()
 		{
+			Parameters = new ProjectCreateParameters ();
 		}
 
 		public ProjectCreateInformation (ProjectCreateInformation projectCreateInformation)
@@ -77,6 +79,31 @@ namespace MonoDevelop.Projects
 			projectBasePath = projectCreateInformation.ProjectBasePath;
 			ParentFolder = projectCreateInformation.ParentFolder;
 			ActiveConfiguration = projectCreateInformation.ActiveConfiguration;
+			Parameters = projectCreateInformation.Parameters;
+		}
+
+		public bool ShouldCreate (string createCondition)
+		{
+			if (string.IsNullOrWhiteSpace (createCondition))
+				return true;
+
+			createCondition = createCondition.Trim ();
+
+			string parameter = GetNotConditionParameterName (createCondition);
+			if (parameter != null) {
+				return !Parameters.GetBoolean (parameter);
+			}
+
+			return Parameters.GetBoolean (createCondition);
+		}
+
+		static string GetNotConditionParameterName (string createCondition)
+		{
+			if (createCondition.StartsWith ("!")) {
+				return createCondition.Substring (1).TrimStart ();
+			}
+
+			return null;
 		}
 	}
 }

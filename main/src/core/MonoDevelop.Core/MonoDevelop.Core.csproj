@@ -489,6 +489,7 @@
     <Compile Include="MonoDevelop.Core.Text\TextSourceVersionProvider.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
     <Compile Include="MonoDevelop.Projects\BuildError.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
   </ItemGroup>

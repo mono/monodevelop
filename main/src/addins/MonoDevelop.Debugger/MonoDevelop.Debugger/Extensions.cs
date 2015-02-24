@@ -31,6 +31,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.Debugger
 			return opers.ExecuteFile (file, context);
 		}
 
-		public static IAsyncOperation DebugApplication (this ProjectOperations opers, string executableFile)
+		public static IAsyncOperation DebugApplication (this ProjectOperations opers, string executableFile, string args, string workingDir, IDictionary<string,string> envVars)
 		{
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;
@@ -76,7 +77,7 @@ namespace MonoDevelop.Debugger
 
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
-			var oper = DebuggingService.Run (executableFile, (IConsole) monitor);
+			var oper = DebuggingService.Run (executableFile, args, workingDir, envVars, (IConsole) monitor);
 			oper.Completed += delegate {
 				monitor.Dispose ();
 				Gtk.Application.Invoke (delegate {

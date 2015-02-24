@@ -817,10 +817,10 @@ namespace MonoDevelop.Debugger.Win32
 
 				CorReferenceValue refVal = obj.CastToReferenceValue ();
 				if (refVal != null) {
+					cctx.Session.WaitUntilStopped ();
 					if (refVal.IsNull)
 						return refVal;
 					else {
-						cctx.Session.WaitUntilStopped ();
 						return GetRealObject (cctx, refVal.Dereference ());
 					}
 				}
@@ -1509,7 +1509,7 @@ namespace MonoDevelop.Debugger.Win32
 						return exceptionHandle;
 					});
 					
-					return new VariableReference (ctx, vref, "__EXCEPTION_OBJECT__", ObjectValueFlags.Variable);
+					return new VariableReference (ctx, vref, ctx.Options.CurrentExceptionTag, ObjectValueFlags.Variable);
 				}
 				return base.GetCurrentException(ctx);
 			} catch (Exception e) {
@@ -1647,7 +1647,9 @@ namespace MonoDevelop.Debugger.Win32
 				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
 					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
 					var returnType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, new CorType[0]);
-					yield return returnType;
+					if (!IsGeneratedType (returnType.GetTypeInfo (wctx.Session))) {
+						yield return returnType;
+					}
 				}
 			}
 		}

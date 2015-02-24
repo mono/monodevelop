@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide
 						SolutionName = "SolutionName",
 						SolutionPath = dir
 					};
+					cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
+
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {
 					builder.AppendFormat (

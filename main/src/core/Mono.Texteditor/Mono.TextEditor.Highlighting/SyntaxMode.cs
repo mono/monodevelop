@@ -333,8 +333,9 @@ namespace Mono.TextEditor.Highlighting
 			protected virtual bool ScanSpan (ref int i)
 			{
 				int textOffset = i - StartOffset;
-				for (int j = 0; j < CurRule.Spans.Length; j++) {
-					Span span = CurRule.Spans [j];
+				Span[] spans = CurRule.Spans;
+				for (int j = 0; j < spans.Length; j++) {
+					Span span = spans [j];
 
 					if ((span.BeginFlags & SpanBeginFlags.StartsLine) == SpanBeginFlags.StartsLine) {
 						if (textOffset != 0) {

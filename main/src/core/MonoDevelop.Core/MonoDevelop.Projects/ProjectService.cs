@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 						einfo.ItemTypeCondition.ObjType = target.GetType ();
 						einfo.ProjectLanguageCondition.TargetProject = target;
 					}
-					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
+					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
 					chain = CreateExtensionChain (extensions);
 				
 					// After creating the chain there is no need to keep the reference to the target
@@ -132,7 +132,7 @@ namespace MonoDevelop.Projects
 					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
 					ctx.RegisterCondition ("ItemType", new ItemTypeCondition (typeof(UnknownItem)));
 					ctx.RegisterCondition ("ProjectLanguage", new ProjectLanguageCondition (UnknownItem.Instance));
-					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
+					ProjectServiceExtension[] extensions = ctx.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
 					defaultExtensionChain = CreateExtensionChain (extensions);
 				}
 				chain = defaultExtensionChain;

@@ -44,7 +44,11 @@ namespace MonoDevelop.Refactoring
 	{
 		public bool IsValid {
 			get {
-				return true;
+				if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+					return false;
+				if (TypeSystemService.GetProject (member) == null)
+					return false;
+				return member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface;
 			}
 		}
 
@@ -97,7 +101,6 @@ namespace MonoDevelop.Refactoring
 			var info = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
 			if (info.DeclaredSymbol != null)
 				FindDerivedSymbols (info.DeclaredSymbol);
-
 		}
 	}
 }

@@ -230,6 +230,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
+			if (model == null)
+				return;
+
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (ZoomableCellRendererPixbuf)renderer;
 
@@ -244,6 +247,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
+			if (model == null)
+				return;
+
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (CustomCellRendererText)renderer;
 

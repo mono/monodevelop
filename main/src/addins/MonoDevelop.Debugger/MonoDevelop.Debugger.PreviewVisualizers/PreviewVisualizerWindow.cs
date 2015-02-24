@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger
 			var font = headerTitle.Style.FontDescription.Copy ();
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);
-			headerTitle.Text = val.TypeName.Split ('.').LastOrDefault ();
+			headerTitle.Text = val.TypeName;
 			var vbTitle = new VBox ();
 			vbTitle.PackStart (headerTitle, false, false, 3);
 			headerTable.Attach (vbTitle, 1, 2, 0, 1);

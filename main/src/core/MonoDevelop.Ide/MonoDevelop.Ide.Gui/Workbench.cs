@@ -1154,13 +1154,13 @@ namespace MonoDevelop.Ide.Gui
 
 		List<FileData> fileStatus;
 		object fileStatusLock = new object ();
-		
+		// http://msdn.microsoft.com/en-us/library/system.io.file.getlastwritetimeutc(v=vs.110).aspx
+		static DateTime NonExistentFile = new DateTime(1601, 1, 1);
 		internal void SaveFileStatus ()
 		{
-			fileStatus = new List<FileData> ();
-			
 //			DateTime t = DateTime.Now;
 			List<FilePath> files = new List<FilePath> (GetKnownFiles ());
+			fileStatus = new List<FileData> (files.Count);
 //			Console.WriteLine ("SaveFileStatus(0) " + (DateTime.Now - t).TotalMilliseconds + "ms " + files.Count);
 			
 			ThreadPool.QueueUserWorkItem (delegate {
@@ -1168,8 +1168,8 @@ namespace MonoDevelop.Ide.Gui
 				lock (fileStatusLock) {
 					foreach (FilePath file in files) {
 						try {
-							FileInfo fi = new FileInfo (file);
-							FileData fd = new FileData (file, fi.Exists ? fi.LastWriteTimeUtc : DateTime.MinValue);
+							DateTime ft = File.GetLastWriteTimeUtc (file);
+							FileData fd = new FileData (file, ft != NonExistentFile ? ft : DateTime.MinValue);
 							fileStatus.Add (fd);
 						} catch {
 							// Ignore
@@ -1191,12 +1191,12 @@ namespace MonoDevelop.Ide.Gui
 
 					if (fileStatus == null)
 						return;
-					List<FilePath> modified = new List<FilePath> ();
+					List<FilePath> modified = new List<FilePath> (fileStatus.Count);
 					foreach (FileData fd in fileStatus) {
 						try {
-							FileInfo fi = new FileInfo (fd.File);
-							if (fi.Exists) {
-								if (fi.LastWriteTimeUtc != fd.TimeUtc)
+							DateTime ft = File.GetLastWriteTimeUtc (fd.File);
+							if (ft != NonExistentFile) {
+								if (ft != fd.TimeUtc)
 									modified.Add (fd.File);
 							} else if (fd.TimeUtc != DateTime.MinValue) {
 								FileService.NotifyFileRemoved (fd.File);
@@ -1317,7 +1317,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = value.CanonicalPath;
+				fileName = FileService.ResolveFullPath (value.CanonicalPath);
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}

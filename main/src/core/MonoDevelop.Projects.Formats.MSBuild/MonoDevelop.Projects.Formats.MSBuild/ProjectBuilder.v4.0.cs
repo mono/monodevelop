@@ -3,8 +3,10 @@
 //  
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2011-2015 Xamarin Inc. (http://www.xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +38,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class ProjectBuilder: MarshalByRefObject, IProjectBuilder
+	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
 	{
 		readonly ProjectCollection engine;
 		readonly string file;
@@ -51,28 +53,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.buildEngine = buildEngine;
 			consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 			Refresh ();
-		}
-		
-		public void Dispose ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-
-		public void Refresh ()
-		{
-			buildEngine.UnloadProject (file);
-		}
-
-		public void RefreshWithContent (string projectContent)
-		{
-			buildEngine.UnloadProject (file);
-			buildEngine.SetUnsavedProjectContent (file, projectContent);
-		}
-		
-		void LogWriteLine (string txt)
-		{
-			if (currentLogWriter != null)
-				currentLogWriter.WriteLine (txt);
 		}
 
 		public MSBuildResult Run (
@@ -140,29 +120,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return result;
 		}
 		
-		LoggerVerbosity GetVerbosity (MSBuildVerbosity verbosity)
-		{
-			switch (verbosity) {
-			case MSBuildVerbosity.Quiet:
-				return LoggerVerbosity.Quiet;
-			case MSBuildVerbosity.Minimal:
-				return LoggerVerbosity.Minimal;
-			case MSBuildVerbosity.Normal:
-			default:
-				return LoggerVerbosity.Normal;
-			case MSBuildVerbosity.Detailed:
-				return LoggerVerbosity.Detailed;
-			case MSBuildVerbosity.Diagnostic:
-				return LoggerVerbosity.Diagnostic;
-			}
-		}
-		
 		Project SetupProject (ProjectConfigurationInfo[] configurations)
 		{
 			Project project = null;
 
+			var slnConfigContents = GenerateSolutionConfigurationContents (configurations);
+
 			foreach (var pc in configurations) {
-				var p = ConfigureProject (pc.ProjectFile, pc.Configuration, pc.Platform);
+				var p = ConfigureProject (pc.ProjectFile, pc.Configuration, pc.Platform, slnConfigContents);
 				if (pc.ProjectFile == file)
 					project = p;
 			}
@@ -171,7 +136,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return project;
 		}
 
-		Project ConfigureProject (string file, string configuration, string platform)
+		Project ConfigureProject (string file, string configuration, string platform, string slnConfigContents)
 		{			
 			var p = engine.GetLoadedProjects (file).FirstOrDefault ();
 			if (p == null) {
@@ -184,30 +149,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p.FullPath = file;
 				}
 			}
+			p.SetProperty ("CurrentSolutionConfigurationContents", slnConfigContents);
 			p.SetProperty ("Configuration", configuration);
 			if (!string.IsNullOrEmpty (platform))
 				p.SetProperty ("Platform", platform);
 			else
 				p.SetProperty ("Platform", "");
 			return p;
-		}
-
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
-
-		//from MSBuildProjectService
-		static string UnescapeString (string str)
-		{
-			int i = str.IndexOf ('%');
-			while (i != -1 && i < str.Length - 2) {
-				int c;
-				if (int.TryParse (str.Substring (i+1, 2), System.Globalization.NumberStyles.HexNumber, null, out c))
-					str = str.Substring (0, i) + (char) c + str.Substring (i + 3);
-				i = str.IndexOf ('%', i + 1);
-			}
-			return str;
 		}
 	}
 }

@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Projects
 		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionEntityItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+			this.HeightRequest = 620;
 		}
 		
 		public static void RenameItem (IWorkspaceFileObject item, string newName)
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Projects
 			if (newName == item.Name)
 				return;
 			
-			if (!FileService.IsValidFileName (newName)) {
+			if (!NewProjectConfiguration.IsValidSolutionName (newName)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}

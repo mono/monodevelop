@@ -67,7 +67,11 @@ namespace MonoDevelop.Debugger.Viewers
 				button.Show ();
 			}
 
-			defaultVis.Click ();
+			if (defaultVis != null)
+				defaultVis.Click ();
+			else if (buttons.Count > 0)
+				buttons [0].Click ();
+
 			if (val.IsReadOnly || !visualizers.Any (v => v.CanEdit (val))) {
 				buttonCancel.Label = Gtk.Stock.Close;
 				buttonSave.Hide ();

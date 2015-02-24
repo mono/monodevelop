@@ -385,6 +385,7 @@ namespace MonoDevelop.SourceEditor
 				if (this.splittedTextEditor == null || !splittedTextEditor.TextArea.HasFocus)
 					OnLostFocus ();
 			};
+			IdeApp.FocusOut += (sender, e) => textEditor.TextArea.HideTooltip (false);
 			mainsw = new DecoratedScrolledWindow (this);
 			mainsw.SetTextEditor (textEditor);
 			

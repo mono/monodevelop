@@ -63,7 +63,6 @@ namespace MonoDevelop.Debugger
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 		
 		static IConsole console;
-		static string oldLayout;
 
 		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
 		static DebuggerEngine currentEngine;
@@ -407,12 +406,7 @@ namespace MonoDevelop.Debugger
 				pinnedWatches.InvalidateAll ();
 			}
 
-			if (oldLayout != null) {
-				string layout = oldLayout;
-				oldLayout = null;
-
-				UnsetDebugLayout (layout);
-			}
+			UnsetDebugLayout ();
 
 			currentSession.BusyStateChanged -= OnBusyStateChanged;
 			currentSession.TargetEvent -= OnTargetEvent;
@@ -448,13 +442,13 @@ namespace MonoDevelop.Debugger
 			currentSession.Dispose ();
 		}
 
-		static void UnsetDebugLayout (string layout)
+		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
 				if (IdeApp.Workbench.CurrentLayout == "Debug")
-					IdeApp.Workbench.CurrentLayout = layout;
+					IdeApp.Workbench.CurrentLayout = "Solution";
 			});
 		}
 
@@ -462,7 +456,6 @@ namespace MonoDevelop.Debugger
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
-				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
 				IdeApp.Workbench.ShowCommandBar ("Debug");
 			});
@@ -532,8 +525,19 @@ namespace MonoDevelop.Debugger
 
 		public static IProcessAsyncOperation Run (string file, IConsole console)
 		{
+			return Run (file, null, null, null, console);
+		}
+
+		public static IProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, IConsole console)
+		{
 			var h = new DebugExecutionHandler (null);
 			var cmd = Runtime.ProcessService.CreateCommand (file);
+			if (args != null) 
+				cmd.Arguments = args;
+			if (workingDir != null)
+				cmd.WorkingDirectory = workingDir;
+			if (envVars != null)
+				cmd.EnvironmentVariables = envVars;
 
 			return h.Execute (cmd, console);
 		}

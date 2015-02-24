@@ -140,15 +140,14 @@ namespace MonoDevelop.Debugger
 			var renderer = (StackFrameCellRenderer) cr;
 
 			renderer.Markup = (string) model.GetValue (iter, (int) ModelColumn.Markup);
+			renderer.Frame = frame;
 
-			if (!(renderer.IsStackFrame = frame != null)) {
+			if (frame == null) {
 				renderer.IsUserCode = false;
-				renderer.LineNumber = -1;
 				return;
 			}
 
 			renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
-			renderer.LineNumber = !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
 		}
 
 		Widget CreateStackTraceTreeView ()
@@ -336,19 +335,7 @@ namespace MonoDevelop.Debugger
 					continue;
 				}
 
-				var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (frame.DisplayText));
-
-				if (!string.IsNullOrEmpty (frame.File)) {
-					markup += "\n<span size='smaller' foreground='#777777'>" + GLib.Markup.EscapeText (frame.File);
-					if (frame.Line > 0) {
-						markup += ":" + frame.Line;
-						if (frame.Column > 0)
-							markup += "," + frame.Column;
-					}
-					markup += "</span>";
-				}
-
-				model.AppendValues (frame, markup, isUserCode);
+				model.AppendValues (frame, null, isUserCode);
 				external = false;
 			}
 
@@ -427,9 +414,8 @@ namespace MonoDevelop.Debugger
 		const int Padding = 6;
 
 		public readonly Pango.Context Context;
-		public bool IsStackFrame;
+		public ExceptionStackFrame Frame;
 		public bool IsUserCode;
-		public int LineNumber;
 		public string Markup;
 
 		public StackFrameCellRenderer (Pango.Context ctx)
@@ -452,7 +438,7 @@ namespace MonoDevelop.Debugger
 				Pango.Rectangle ink, logical;
 
 				layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
-				layout.SetMarkup (Markup);
+				layout.SetMarkup (GetMarkup (false));
 
 				layout.GetPixelExtents (out ink, out logical);
 
@@ -466,7 +452,7 @@ namespace MonoDevelop.Debugger
 
 		void RenderLineNumberIcon (Widget widget, Cairo.Context cr, Gdk.Rectangle cell_area, int markupHeight, int yOffset)
 		{
-			if (!IsStackFrame)
+			if (Frame == null)
 				return;
 
 			cr.Save ();
@@ -495,7 +481,9 @@ namespace MonoDevelop.Debugger
 			cr.LineWidth = 2;
 			cr.Stroke ();
 
-			using (var layout = PangoUtil.CreateLayout (widget, LineNumber != -1 ? LineNumber.ToString () : "???")) {
+			var lineNumber = !string.IsNullOrEmpty (Frame.File) ? Frame.Line : -1;
+
+			using (var layout = PangoUtil.CreateLayout (widget, lineNumber != -1 ? lineNumber.ToString () : "???")) {
 				layout.Alignment = Pango.Alignment.Left;
 				layout.FontDescription = LineNumberFont;
 
@@ -520,6 +508,29 @@ namespace MonoDevelop.Debugger
 			cr.Restore ();
 		}
 
+		string GetMarkup (bool selected)
+		{
+			if (Markup != null)
+				return Markup;
+
+			var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (Frame.DisplayText));
+
+			if (selected)
+				markup = "<span foreground='#FFFFFF'>" + markup + "</span>";
+
+			if (!string.IsNullOrEmpty (Frame.File)) {
+				markup += string.Format ("\n<span size='smaller' foreground='{0}'>{1}", selected ? "#FFFFFF" : "#777777", GLib.Markup.EscapeText (Frame.File));
+				if (Frame.Line > 0) {
+					markup += ":" + Frame.Line;
+					if (Frame.Column > 0)
+						markup += "," + Frame.Column;
+				}
+				markup += "</span>";
+			}
+
+			return markup;
+		}
+
 		protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 		{
 			using (var cr = Gdk.CairoHelper.Create (window)) {
@@ -527,7 +538,7 @@ namespace MonoDevelop.Debugger
 					Pango.Rectangle ink, logical;
 
 					layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
-					layout.SetMarkup (Markup);
+					layout.SetMarkup (GetMarkup ((flags & CellRendererState.Selected) != 0));
 
 					layout.GetPixelExtents (out ink, out logical);
 

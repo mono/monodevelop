@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		readonly bool writeScope = true;
 		
 		enum SearchScope {
-			WholeSolution,
+			WholeWorkspace,
 			CurrentProject,
 			AllOpenFiles,
 			Directories,
@@ -164,17 +164,23 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonClose.Clicked += (sender, e) => Destroy ();
 			DeleteEvent += (o, args) => Destroy ();
 			buttonSearch.GrabDefault ();
-			
+
 			buttonStop.Clicked += ButtonStopClicked;
 			var scopeStore = new ListStore (typeof(string));
-			scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
+
+			var workspace = IdeApp.Workspace;
+			if (workspace != null && workspace.GetAllSolutions ().Count == 1) {
+				scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
+			} else {
+				scopeStore.AppendValues (GettextCatalog.GetString ("All solutions"));
+			}
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current project"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("All open files"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Directories"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Current document"));
 			scopeStore.AppendValues (GettextCatalog.GetString ("Selection"));
 			comboboxScope.Model = scopeStore;
-		
+
 			comboboxScope.Changed += HandleScopeChanged;
 
 			InitFromProperties ();
@@ -475,7 +481,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		void HandleScopeChanged (object sender, EventArgs e)
 		{
 			switch ((SearchScope) comboboxScope.Active) {
-			case SearchScope.WholeSolution:
+			case SearchScope.WholeWorkspace:
 				HideDirectoryPathUI ();
 				ShowFileMaskUI ();
 				break;
@@ -541,7 +547,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const char historySeparator = '\n';
 		void InitFromProperties ()
 		{
-			comboboxScope.Active = properties.Get ("Scope", (int) SearchScope.WholeSolution);
+			comboboxScope.Active = properties.Get ("Scope", (int) SearchScope.WholeWorkspace);
 
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
 			//checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
@@ -655,11 +661,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			MessageService.PlaceDialog (currentFindDialog, null);
 			currentFindDialog.Present ();
 		}
-		
+
 		Scope GetScope ()
 		{
 			Scope scope = null;
-				
+
 			switch ((SearchScope) comboboxScope.Active) {
 			case SearchScope.CurrentDocument:
 				scope = new DocumentScope ();
@@ -667,9 +673,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			case SearchScope.Selection:
 				scope = new SelectionScope ();
 				break;
-			case SearchScope.WholeSolution:
+			case SearchScope.WholeWorkspace:
 				if (!IdeApp.Workspace.IsOpen) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open solutions."));
 					return null;
 				}
 				scope = new WholeSolutionScope ();

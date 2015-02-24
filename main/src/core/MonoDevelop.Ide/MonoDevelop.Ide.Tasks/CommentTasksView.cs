@@ -285,8 +285,10 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void OnWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
 		{
-			foreach (var sln in e.Item.GetAllSolutions ())
-				loadedSlns.Remove (sln);
+			foreach (var sln in e.Item.GetAllSolutions ()) {
+				if (loadedSlns.Remove (sln))
+					sln.SolutionItemAdded -= HandleSolutionItemAdded;
+			}
 			comments.RemoveItemTasks (e.Item, true);
 		}		
 

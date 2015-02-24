@@ -150,10 +150,7 @@ namespace MonoDevelop.Core
 
 		public FilePath Combine (params string[] paths)
 		{
-			string path = fileName;
-			foreach (string p in paths)
-				path = Path.Combine (path, p);
-			return new FilePath (path);
+			return new FilePath (Path.Combine (fileName, Path.Combine (paths)));
 		}
 		
 		public void Delete ()

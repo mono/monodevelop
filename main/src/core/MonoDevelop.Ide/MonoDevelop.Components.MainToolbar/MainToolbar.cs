@@ -372,7 +372,7 @@ namespace MonoDevelop.Components.MainToolbar
 			align.Add (contentBox);
 
 			Add (align);
-			SetDefaultSizes (-1, 21);
+			SetDefaultSizes (-1, (int)(21 * GtkWorkarounds.GetPixelScale ()));
 
 			configurationCombo.Changed += HandleConfigurationChanged;
 			runtimeCombo.Changed += HandleRuntimeChanged;

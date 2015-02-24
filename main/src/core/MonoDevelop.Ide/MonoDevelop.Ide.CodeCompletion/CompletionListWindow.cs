@@ -152,8 +152,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			CompletionWidget = null;
 			CompletionDataList = null;
-
 			CodeCompletionContext = null;
+			currentData = null;
+			Extension = null;
 		}
 
 		protected override void OnDestroyed ()

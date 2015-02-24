@@ -122,8 +122,13 @@ namespace MonoDevelop.Ide.Editor
 				this.Content = content;
 			}
 		}
-			
 		static readonly AutoResetEvent resetEvent = new AutoResetEvent (false);
+
+		public static bool Running {
+			get {
+				return autoSaveThreadRunning;
+			}
+		}
 		static bool autoSaveThreadRunning = false;
 		static Thread autoSaveThread;
 		static Queue<FileContent> queue = new Queue<FileContent> ();

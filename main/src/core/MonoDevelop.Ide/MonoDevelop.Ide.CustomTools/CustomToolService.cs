@@ -120,21 +120,58 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 
+		static bool ShouldRunGenerator (ProjectFile file, bool force, out ISingleFileCustomTool tool, out ProjectFile genFile)
+		{
+			tool = null;
+			genFile = null;
+
+			//ignore cloned file from shared project in context of referencing project
+			if ((file.Flags & ProjectItemFlags.DontPersist) != 0) {
+				return false;
+			}
+
+			tool = GetGenerator (file.Generator);
+			if (tool == null) {
+				return false;
+			}
+
+			//ignore MSBuild tool for projects that aren't MSBuild or can't build
+			//we could emit a warning but this would get very annoying for Xamarin Forms + SAP
+			//in future we could consider running the MSBuild generator in context of every referencing project
+			if (tool is MSBuildCustomTool) {
+				if (!file.Project.SupportsBuild ()) {
+					return false;
+				}
+				bool byDefault, require;
+				MonoDevelop.Projects.Formats.MSBuild.MSBuildProjectService.CheckHandlerUsesMSBuildEngine (file.Project, out byDefault, out require);
+				var usesMSBuild = require || (file.Project.UseMSBuildEngine ?? byDefault);
+				if (!usesMSBuild) {
+					return false;
+				}
+			}
+
+			if (!string.IsNullOrEmpty (file.LastGenOutput)) {
+				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
+			}
+
+			return force
+				|| genFile == null
+				|| !File.Exists (genFile.FilePath)
+				|| File.GetLastWriteTime (file.FilePath) > File.GetLastWriteTime (genFile.FilePath);
+		}
+
 		static void Update (IProgressMonitor monitor, IEnumerator<ProjectFile> fileEnumerator, bool force, int succeeded, int warnings, int errors)
 		{
 			ProjectFile file = fileEnumerator.Current;
-			ProjectFile genFile = null;
-			ISingleFileCustomTool tool = null;
+			ISingleFileCustomTool tool;
+			ProjectFile genFile;
 
-			//Find the first file in the collection, which has got generator tool
-			//and isn't cloned from a shared project
-			while (((file.Flags & ProjectItemFlags.DontPersist) != 0
-			       || (tool = GetGenerator (file.Generator)) == null
-			       || (genFile = GetGeneratedFile (file, force)) == null
-			       ) && fileEnumerator.MoveNext ());
+			bool shouldRun;
+			while (!(shouldRun = ShouldRunGenerator (file, force, out tool, out genFile)) && fileEnumerator.MoveNext ())
+				continue;
 
 			//no files which can be generated in remaining elements of the collection, nothing to do
-			if (tool == null || genFile == null) {
+			if (!shouldRun) {
 				WriteSummaryResults (monitor, succeeded, warnings, errors);
 				return;
 			}
@@ -198,33 +235,14 @@ namespace MonoDevelop.Ide.CustomTools
 			monitor.Dispose ();
 		}
 
-		static ProjectFile GetGeneratedFile (ProjectFile file, bool force)
-		{
-			ProjectFile genFile = null;
-
-			if (!string.IsNullOrEmpty (file.LastGenOutput))
-				genFile = file.Project.Files.GetFile (file.FilePath.ParentDirectory.Combine (file.LastGenOutput));
-
-			if (!force && genFile != null && File.Exists (genFile.FilePath) &&
-			    File.GetLastWriteTime (file.FilePath) < File.GetLastWriteTime (genFile.FilePath)) {
-				return null;
-			}
-
-			return genFile;
-		}
-
 		public static void Update (ProjectFile file, bool force)
 		{
-			//if file's cloned from a shared project, ignore it
-			if ((file.Flags & ProjectItemFlags.DontPersist) != 0)
+			ISingleFileCustomTool tool;
+			ProjectFile genFile;
+			if (!ShouldRunGenerator (file, force, out tool, out genFile)) {
 				return;
-
-			var tool = GetGenerator (file.Generator);
-			if (tool == null)
-				return;
+			}
 			
-			ProjectFile genFile = GetGeneratedFile(file, force);
-
 			TaskService.Errors.ClearByOwner (file);
 			
 			//if this file is already being run, cancel it
@@ -296,7 +314,7 @@ namespace MonoDevelop.Ide.CustomTools
 					null : result.GeneratedFilePath.ToRelative (file.FilePath.ParentDirectory);
 				
 				if (!string.IsNullOrEmpty (genFileName)) {
-					bool validName = genFileName.IndexOfAny (new char[] { '/', '\\' }) < 0
+					bool validName = genFileName.IndexOfAny (new [] { '/', '\\' }) < 0
 						&& FileService.IsValidFileName (genFileName);
 					
 					if (!broken && !validName) {
@@ -382,12 +400,9 @@ namespace MonoDevelop.Ide.CustomTools
 			string ns = file.CustomToolNamespace;
 			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
 				return ns;
-			var dnp = file.Project as DotNetProject;
-			if (dnp != null)
-				return dnp.GetDefaultNamespace (outputFile);
-			var sap = file.Project as MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject;
-			if (sap != null)
-				return sap.GetDefaultNamespace (outputFile);
+			var dnfc = file.Project as IDotNetFileContainer;
+			if (dnfc != null)
+				return dnfc.GetDefaultNamespace (outputFile);
 			return ns;
 		}
 

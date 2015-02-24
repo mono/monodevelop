@@ -269,6 +269,15 @@
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
     <Compile Include="MonoDevelop.Ide.FindInFiles\ColorizationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizerTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableProjectTemplateCategorizer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FinalProjectConfigurationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableWizardPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParserTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -296,5 +305,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Xml.StateEngine\" />
+    <Folder Include="MonoDevelop.Ide.Templates\" />
   </ItemGroup>
 </Project>

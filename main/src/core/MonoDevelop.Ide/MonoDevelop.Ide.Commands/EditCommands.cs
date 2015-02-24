@@ -72,7 +72,8 @@ namespace MonoDevelop.Ide.Commands
 		/// a file in the solution pad.
 		/// </summary>
 		DeleteKey,
-		InsertGuid
+		InsertGuid,
+		SortSelectedLines
 	}
 	
 	internal class MonodevelopPreferencesHandler: CommandHandler

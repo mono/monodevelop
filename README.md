@@ -1,14 +1,4 @@
-**Roslyn/Editor Branch**
-
-To build this branch, you will need the following:
-
- * Ensure that you use Mono version `master` Mono `b82016bf299af327c943f0e7f1fe2faa0ea3cc3e` or newer.
- 
-Just build as usual.
-
-
-**MonoDevelop** is a full-featured integrated development environment (IDE) for mono
-using Gtk#.
+**MonoDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
 
 See http://www.monodevelop.com for more info.  
 

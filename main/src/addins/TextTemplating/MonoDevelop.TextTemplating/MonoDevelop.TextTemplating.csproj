@@ -54,6 +54,9 @@
     <Compile Include="ProjectFileTemplatingHost.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="GenerateCommandHandler.cs" />
+    <Compile Include="T4FileTemplate.cs" />
+    <Compile Include="FileTemplateDirectiveProcessor.cs" />
+    <Compile Include="FileTemplateHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -85,6 +88,7 @@
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
