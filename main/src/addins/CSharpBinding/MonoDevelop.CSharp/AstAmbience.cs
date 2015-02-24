@@ -155,13 +155,13 @@ namespace MonoDevelop.CSharp
 				AppendTypeParameter (sb, del.TypeParameterList);
 				AppendParameter (sb, del.ParameterList);
 			} else if (e is AccessorDeclarationSyntax) {
-				if (e.CSharpKind () == SyntaxKind.GetAccessorDeclaration) {
+				if (e.Kind () == SyntaxKind.GetAccessorDeclaration) {
 					sb.Append ("get");
-				} else if (e.CSharpKind () == SyntaxKind.SetAccessorDeclaration) {
+				} else if (e.Kind () == SyntaxKind.SetAccessorDeclaration) {
 					sb.Append ("set");
-				} else if (e.CSharpKind () == SyntaxKind.AddAccessorDeclaration) {
+				} else if (e.Kind () == SyntaxKind.AddAccessorDeclaration) {
 					sb.Append ("add");
-				} else if (e.CSharpKind () == SyntaxKind.RemoveAccessorDeclaration) {
+				} else if (e.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
 					sb.Append ("remove");
 				}
 			} else if (e is OperatorDeclarationSyntax) {
@@ -178,9 +178,9 @@ namespace MonoDevelop.CSharp
 				AppendParameter (sb, method.ParameterList);
 				if (method.Body != null && !method.Body.IsMissing) {
 					string tag = null;
-					if (method.Modifiers.Any (m => m.CSharpKind () == SyntaxKind.AbstractKeyword))
+					if (method.Modifiers.Any (m => m.Kind () == SyntaxKind.AbstractKeyword))
 						tag = GettextCatalog.GetString ("(abstract)");
-					if (method.Modifiers.Any (m => m.CSharpKind () == SyntaxKind.PartialKeyword))
+					if (method.Modifiers.Any (m => m.Kind () == SyntaxKind.PartialKeyword))
 						tag = GettextCatalog.GetString ("(partial)");
 					if (tag != null)
 						sb.Append (" <small>" + tag + "</small>");

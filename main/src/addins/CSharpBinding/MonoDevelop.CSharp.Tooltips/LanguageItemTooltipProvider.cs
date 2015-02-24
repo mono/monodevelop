@@ -139,7 +139,7 @@ namespace MonoDevelop.SourceEditor
 				if (typeOfExpression != null && data.Symbol is ITypeSymbol)
 					return sig.GetTypeOfTooltip (typeOfExpression, (ITypeSymbol)data.Symbol);
 				
-//				var parentKind = data.Token.Parent != null ? data.Token.Parent.CSharpKind () : SyntaxKind.None;
+//				var parentKind = data.Token.Parent != null ? data.Token.Parent.Kind () : SyntaxKind.None;
 //				switch (parentKind) {
 //					case SyntaxKind.ConstructorConstraint:
 //					case SyntaxKind.ClassConstraint:
@@ -181,8 +181,8 @@ namespace MonoDevelop.SourceEditor
 				
 //				if (result == null && parentKind == SyntaxKind.IdentifierName) {
 //					if (data.SymbolInfo.CandidateReason == CandidateReason.None) {
-//						if (data.Token.Parent.Parent.CSharpKind () == SyntaxKind.SimpleMemberAccessExpression ||
-//							data.Token.Parent.Parent.CSharpKind () == SyntaxKind.PointerMemberAccessExpression) {
+//						if (data.Token.Parent.Parent.Kind () == SyntaxKind.SimpleMemberAccessExpression ||
+//							data.Token.Parent.Parent.Kind () == SyntaxKind.PointerMemberAccessExpression) {
 //							var ma = (MemberAccessExpressionSyntax)data.Token.Parent.Parent;
 //							return new TooltipInformation {
 //								SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ma.Expression, ma.Name)

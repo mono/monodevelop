@@ -183,39 +183,40 @@ namespace MonoDevelop.CodeActions
 							.OfType<DiagnosticResult> ()
 							.Select (dr => dr.Diagnostic)
 							.ToList ();
-					System.Threading.Tasks.Task.Factory.StartNew (async delegate {
-						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
-						foreach (var cfp in CodeDiagnosticService.GetBuiltInCodeFixDescriptorAsync (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
-							if (token.IsCancellationRequested)
-								return;
-							var provider = cfp.GetCodeFixProvider ();
-							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
-								continue;
-
-							try {
-								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
-									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
-									token));
-							} catch (Exception ex) {
-								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
-								continue;
-							}
-						}
-						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
-						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
-							codeActions.Add (action); 
-						}
-						Application.Invoke (delegate {
-							if (token.IsCancellationRequested)
-								return;
-							if (codeIssueFixes.Count == 0 && codeActions.Count == 0) {
-								RemoveWidget ();
-								return;
-							}
-							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
-						});
-					});
+					// TODO: Broken due roslyn update.
+//					System.Threading.Tasks.Task.Factory.StartNew (async delegate {
+//						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
+//						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
+//						foreach (var cfp in CodeDiagnosticService.GetBuiltInCodeFixDescriptorAsync (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
+//							if (token.IsCancellationRequested)
+//								return;
+//							var provider = cfp.GetCodeFixProvider ();
+//							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
+//								continue;
+//
+//							try {
+//								await provider.ComputeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
+//									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
+//									token));
+//							} catch (Exception ex) {
+//								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
+//								continue;
+//							}
+//						}
+//						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
+//						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+//							codeActions.Add (action); 
+//						}
+//						Application.Invoke (delegate {
+//							if (token.IsCancellationRequested)
+//								return;
+//							if (codeIssueFixes.Count == 0 && codeActions.Count == 0) {
+//								RemoveWidget ();
+//								return;
+//							}
+//							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
+//						});
+//					});
 
 					
 //					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
@@ -473,7 +474,7 @@ namespace MonoDevelop.CodeActions
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.Id)))) {
+			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.Item2))
 					gotImportantFix = true;
@@ -489,7 +490,7 @@ namespace MonoDevelop.CodeActions
 					: "  " + escapedLabel;
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.Item2, Editor, DocumentContext).Run (null, EventArgs.Empty);
-					ConfirmUsage (fix.Item2.Id);
+					ConfirmUsage (fix.Item2.EquivalenceKey);
 				});
 				menu.Add (thisInstanceMenuItem);
 				items++;
@@ -509,7 +510,7 @@ namespace MonoDevelop.CodeActions
 					: "  " + escapedLabel;
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.Item2, Editor, DocumentContext).Run (null, EventArgs.Empty);
-					ConfirmUsage (fix.Item2.Id);
+					ConfirmUsage (fix.Item2.EquivalenceKey);
 				});
 				menu.Add (thisInstanceMenuItem);
 				items++;
@@ -519,7 +520,7 @@ namespace MonoDevelop.CodeActions
 				menu.Add (FixMenuEntry.Separator);
 			}
 
-			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.Id)))) {
+			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.Item2), (int)0, GetUsage (i.Item2.EquivalenceKey)))) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.Item2.Title);
 				var subMenu = new FixMenuDescriptor (label);

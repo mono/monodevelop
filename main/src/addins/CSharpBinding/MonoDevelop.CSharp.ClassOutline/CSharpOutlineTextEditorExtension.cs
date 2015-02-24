@@ -351,7 +351,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 
 			public override void VisitTrivia (SyntaxTrivia trivia)
 			{
-				switch (trivia.CSharpKind ()) {
+				switch (trivia.Kind ()) {
 				case SyntaxKind.RegionDirectiveTrivia:
 					curIter = Append (trivia);
 					break;
@@ -374,7 +374,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 						Visit (syntaxNode);
 					} else {
 						var syntaxToken = syntaxNodeOrToken.AsToken ();
-						if (syntaxToken.CSharpKind () == SyntaxKind.OpenBraceToken)
+						if (syntaxToken.Kind () == SyntaxKind.OpenBraceToken)
 							curIter = Append (node);
 						VisitToken (syntaxToken);
 					}

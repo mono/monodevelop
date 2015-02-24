@@ -36,7 +36,6 @@ using System.ComponentModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Simplification;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using System.Collections.Immutable;
 using MonoDevelop.NUnit;
@@ -45,6 +44,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -943,7 +943,7 @@ namespace MonoDevelop.CSharp
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
-			switch (node.CSharpKind ()) {
+			switch (node.Kind ()) {
 			case SyntaxKind.AbstractKeyword:
 				result.SignatureMarkup = Highlight ("abstract", colorStyle.KeywordModifiers) + keywordSign;
 				result.SummaryMarkup = "The " + Highlight ("abstract", colorStyle.KeywordModifiers) + " modifier can be used with classes, methods, properties, indexers, and events.";
@@ -1478,7 +1478,7 @@ namespace MonoDevelop.CSharp
 
 			result.SignatureMarkup = Highlight (keyword.ToFullString (), colorStyle.KeywordTypes) + keywordSign;
 
-			switch (keyword.Parent.CSharpKind ()) {
+			switch (keyword.Parent.Kind ()) {
 			case SyntaxKind.ClassConstraint:
 				result.AddCategory ("Constraint", "The type argument must be a reference type; this applies also to any class, interface, delegate, or array type.");
 				break;

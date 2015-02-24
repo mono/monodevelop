@@ -68,7 +68,7 @@ namespace MonoDevelop.CodeIssues
 
 		public CodeDiagnosticDescriptor GetCodeDiagnosticDescriptor (string language)
 		{
-			var fixableIds = GetCodeFixProvider ().GetFixableDiagnosticIds ().ToList ();
+			var fixableIds = GetCodeFixProvider ().FixableDiagnosticIds.ToList ();
 
 			foreach (var descriptor in CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language).Result) {
 				if (descriptor.GetProvider ().SupportedDiagnostics.Any (diagnostic => fixableIds.Contains (diagnostic.Id)))

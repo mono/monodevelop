@@ -39,7 +39,6 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -272,13 +271,13 @@ namespace MonoDevelop.CSharp
 				
 				var accessor = node as AccessorDeclarationSyntax;
 				if (accessor != null) {
-					if (accessor.CSharpKind () == SyntaxKind.GetAccessorDeclaration)
+					if (accessor.Kind () == SyntaxKind.GetAccessorDeclaration)
 						return "get";
-					if (accessor.CSharpKind () == SyntaxKind.SetAccessorDeclaration)
+					if (accessor.Kind () == SyntaxKind.SetAccessorDeclaration)
 						return "set";
-					if (accessor.CSharpKind () == SyntaxKind.AddAccessorDeclaration)
+					if (accessor.Kind () == SyntaxKind.AddAccessorDeclaration)
 						return "add";
-					if (accessor.CSharpKind () == SyntaxKind.RemoveAccessorDeclaration)
+					if (accessor.Kind () == SyntaxKind.RemoveAccessorDeclaration)
 						return "remove";
 					return node.ToString ();
 				}
@@ -579,10 +578,10 @@ namespace MonoDevelop.CSharp
 				
 			if (curMember != null) {
 				result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
-				if (curMember.CSharpKind () == SyntaxKind.GetAccessorDeclaration ||
-					curMember.CSharpKind () == SyntaxKind.SetAccessorDeclaration ||
-					curMember.CSharpKind () == SyntaxKind.AddAccessorDeclaration ||
-					curMember.CSharpKind () == SyntaxKind.RemoveAccessorDeclaration) {
+				if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
+					curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
 					var parent = curMember.Parent;
 					if (parent != null)
 						result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });

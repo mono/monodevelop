@@ -27,6 +27,7 @@
 using System;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.CodeActions
 {
@@ -57,7 +58,7 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets the language for this action.
 		/// </summary>
-		public string Language { get { return attr.Language; } }
+		public string Language { get { return attr.Languages.FirstOrDefault (); } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this code action is enabled by the user.

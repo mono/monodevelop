@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
 		{
-			base.ChangedDocumentText (id, text);
+			base.ApplyDocumentTextChanged (id, text);
 		}
 
 		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static DocumentInfo CreateDocumentInfo (ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
-			return DocumentInfo.Create (GetDocumentId (id, f), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, System.Text.Encoding.Default, false);
+			return DocumentInfo.Create (GetDocumentId (id, f), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, false);
 		}
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
@@ -285,8 +285,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					null, 
 					SourceCodeKind.Regular,
 					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Result.Document), VersionStamp.Create (), projection.Result.Document.FileName)), 
-					f.Name, 
-					System.Text.Encoding.Default, 
+					f.Name,
 					false
 				);
 			}
@@ -476,10 +475,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override void CloseDocument (DocumentId documentId)
 		{
 		}
-		
-		protected override void ChangedDocumentText(DocumentId documentId, SourceText text)
+
+		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
-			var document = CurrentSolution.GetDocument (documentId);
+			var document = CurrentSolution.GetDocument (id);
 			
 			if (document == null)
 				return;
@@ -489,7 +488,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
 			}
 			
-			OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);
+			OnDocumentTextChanged (id, text, PreservationMode.PreserveValue);
 		}
 		#endregion
 

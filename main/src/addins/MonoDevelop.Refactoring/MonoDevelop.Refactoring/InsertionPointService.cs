@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring
 
 		internal static InsertionPoint GetSuitableInsertionPoint (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part, SyntaxNode member)
 		{
-			switch (member.CSharpKind ()) {
+			switch (member.Kind ()) {
 			case SyntaxKind.FieldDeclaration:
 				return GetNewFieldPosition (data, points, cls, part);
 			case SyntaxKind.MethodDeclaration:
@@ -223,7 +223,7 @@ namespace MonoDevelop.Refactoring
 			case SyntaxKind.PropertyDeclaration:
 				return GetNewPropertyPosition (data, points, cls, part);
 			}
-			throw new InvalidOperationException ("Invalid member type: " + member.CSharpKind ());
+			throw new InvalidOperationException ("Invalid member type: " + member.Kind ());
 		}
 
 		static InsertionPoint GetNewFieldPosition (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)

@@ -143,10 +143,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		static string GetTypeString (ITypeSymbol t)
 		{
 			switch (t.TypeKind) {
-			case TypeKind.ArrayType:
+			case TypeKind.Array:
 				var arr = (IArrayTypeSymbol)t;
 				return GetTypeString (arr.ElementType) + "[" + new string (',', arr.Rank - 1) + "]";
-			case TypeKind.PointerType:
+			case TypeKind.Pointer:
 				var ptr = (IPointerTypeSymbol)t;
 				return "*" + GetTypeString (ptr.PointedAtType);
 			default:

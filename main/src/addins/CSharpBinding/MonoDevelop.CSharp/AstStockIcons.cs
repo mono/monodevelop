@@ -120,30 +120,30 @@ namespace MonoDevelop.CSharp
 
 		static void AdjustAccessibility (SyntaxTokenList modifiers, ref Accessibility acc, ref bool result)
 		{
-			if (modifiers.Any (mod => mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) &&
-				modifiers.Any (mod => mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword)) {
+			if (modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) &&
+				modifiers.Any (mod => mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword)) {
 				acc = Accessibility.ProtectedOrInternal;
 				result = true;
 				return;
 			}
 
 			foreach (var mod in modifiers) {
-				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword) {
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword) {
 					acc = Accessibility.Public;
 					result = true;
 					return;
 				}
-				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword) {
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword) {
 					acc = Accessibility.Private;
 					result = true;
 					return;
 				}
-					if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) {
+					if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) {
 					acc = Accessibility.Protected;
 					result = true;
 					return;
 				}
-				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword) {
+				if (mod.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword) {
 					acc = Accessibility.Internal;
 					result = true;
 					return;
@@ -191,7 +191,7 @@ namespace MonoDevelop.CSharp
 
 			if (element is TypeDeclarationSyntax) {
 				var type = element as TypeDeclarationSyntax;
-				switch (type.Keyword.CSharpKind ()) {
+				switch (type.Keyword.Kind ()) {
 				case SyntaxKind.ClassKeyword:
 					return typeIconTable [0, (int) (acc)];
 				case SyntaxKind.StructKeyword:

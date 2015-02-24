@@ -179,13 +179,13 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			switch (typeKind) {
 			case Microsoft.CodeAnalysis.TypeKind.Unknown:
-			case Microsoft.CodeAnalysis.TypeKind.ArrayType:
+			case Microsoft.CodeAnalysis.TypeKind.Array:
 				return 0;
 			case Microsoft.CodeAnalysis.TypeKind.Class:
 				return 0;
 			case Microsoft.CodeAnalysis.TypeKind.Delegate:
 				return 4;
-			case Microsoft.CodeAnalysis.TypeKind.DynamicType:
+			case Microsoft.CodeAnalysis.TypeKind.Dynamic:
 				return 0;
 			case Microsoft.CodeAnalysis.TypeKind.Enum:
 				return 1;
@@ -195,7 +195,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return 2;
 			case Microsoft.CodeAnalysis.TypeKind.Module:
 				return 0;
-			case Microsoft.CodeAnalysis.TypeKind.PointerType:
+			case Microsoft.CodeAnalysis.TypeKind.Pointer:
 				return 0;
 			case Microsoft.CodeAnalysis.TypeKind.Struct:
 				return 3;

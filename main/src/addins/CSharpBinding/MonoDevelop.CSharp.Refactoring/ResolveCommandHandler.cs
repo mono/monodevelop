@@ -47,6 +47,7 @@ using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Formatting;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -368,9 +369,9 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			SyntaxToken identifier;
 			int tc = GetTypeParameterCount (node, out identifier);
-			bool isInsideAttributeType = identifier.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken &&
-				identifier.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
-				identifier.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
+			bool isInsideAttributeType = identifier.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken &&
+				identifier.Parent.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
+				identifier.Parent.Parent.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (semanticModel.Compilation, (MonoDevelop.Projects.ProjectReference)null));

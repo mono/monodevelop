@@ -147,7 +147,7 @@ namespace MonoDevelop.Refactoring
 				var cu = node as CompilationUnitSyntax;
 				if (cu != null) {
 					foreach (var u in cu.Usings) {
-						if (u.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective)
+						if (u.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective)
 							result.Add (u.Name.ToString ());
 					}
 				}
@@ -156,7 +156,7 @@ namespace MonoDevelop.Refactoring
 					var name = ns.Name.ToString ();
 					result.Add (name);
 					foreach (var u in ns.Usings) {
-						if (u.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective) 
+						if (u.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective) 
 							result.Add (u.Name.ToString ());
 					}
 				}
