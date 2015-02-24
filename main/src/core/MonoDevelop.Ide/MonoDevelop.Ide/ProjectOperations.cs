@@ -1859,9 +1859,11 @@ namespace MonoDevelop.Ide
 			
 			bool sourceIsFolder = Directory.Exists (sourcePath);
 
-			bool movingFolder = (removeFromSource && sourceIsFolder && (
-					!copyOnlyProjectFiles ||
-					IsDirectoryHierarchyEmpty (sourcePath)));
+			bool copyingFolder = sourceIsFolder && (
+				!copyOnlyProjectFiles ||
+				IsDirectoryHierarchyEmpty (sourcePath));
+
+			bool movingFolder = removeFromSource && copyingFolder;
 
 			// We need to remove all files + directories from the source project
 			// but when dealing with the VCS addins we need to process only the
@@ -2024,12 +2026,12 @@ namespace MonoDevelop.Ide
 				// Remove all files and directories under 'sourcePath'
 				foreach (var v in filesToRemove)
 					sourceProject.Files.Remove (v);
+			}
 
-				// Moving an empty folder. A new folder object has to be added to the project.
-				if (movingFolder && !sourceProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
-					var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
-					sourceProject.Files.Add (folderFile);
-				}
+			// Moving an empty folder. A new folder object has to be added to the project.
+			if ((movingFolder || copyingFolder) && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
+				var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
+				targetProject.Files.Add (folderFile);
 			}
 			
 			var pfolder = sourcePath.ParentDirectory;
