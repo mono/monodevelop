@@ -4,16 +4,12 @@ open System.IO
 open System.Collections.Generic
 open MonoDevelop
 open MonoDevelop.Core
-open MonoDevelop.Core.Text
 open MonoDevelop.Components.Commands
 open MonoDevelop.Ide
-open MonoDevelop.Ide.Commands
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open MonoDevelop.Refactoring
 open FSharp.CompilerBinding
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Roslyn =
@@ -131,6 +127,8 @@ type FSharpRenameRefactoring(editor:TextEditor, project) =
             MessageService.ShowCustomDialog (new Rename.RenameItemDialog ("Rename Item", symbol.Symbol.DisplayName, Refactoring.performChanges symbol locations))
             |> ignore
 
+//We create our own enum of commands as we have to replicate the ones that are now going through the Roslyn services
+//Our commands have the same keyboardshortcuts as defined in the core addin definition e.g. Meta|R for rename refactor
 type FSharpRefactorCommands =
 | Rename = 1
 
