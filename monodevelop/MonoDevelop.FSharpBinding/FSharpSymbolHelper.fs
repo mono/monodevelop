@@ -4,6 +4,7 @@ open System.Collections.Generic
 open System.Reflection
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
+open MonoDevelop
 open MonoDevelop.Ide
 open MonoDevelop.Components
 
@@ -11,17 +12,32 @@ module Symbols =
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
         match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
-        | Some (_, identIsland) -> Seq.last identIsland
+        | Some (_col, identIsland) -> Seq.last identIsland
         | None -> ""
 
     ///Returns a TextSegment that is trimmed to only include the identifier
     let getTextSegment (doc:Editor.TextEditor) (symbolUse:FSharpSymbolUse) column line =
-        let lastIdent = lastIdent  column line
+        let lastIdent = lastIdent column line
         let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
 
         let startOffset = doc.LocationToOffset(start.Line, start.Column+1)
         let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
+
+    let getTextSpan lastIdent (symbolUse:FSharpSymbolUse) =
+        let range = symbolUse.RangeAlternate
+        let editor =
+            match IdeApp.Workbench.GetDocument (range.FileName) with
+            | null ->           
+                let doc = MonoDevelop.Ide.Editor.TextEditorFactory.LoadDocument (range.FileName)
+                MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
+            | doc -> doc.Editor
+
+        let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+
+        let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
+        let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
+        range.FileName, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
 
 [<AutoOpen>]
 module FSharpTypeExt =
