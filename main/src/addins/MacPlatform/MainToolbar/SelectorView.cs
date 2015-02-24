@@ -81,6 +81,52 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
 
+			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
+			{
+				if (!runtime.Children.Any ())
+					return null;
+
+				var menu = new NSMenu {
+					AutoEnablesItems = false,
+					ShowsStateColumn = false,
+					Font = NSFont.MenuFontOfSize (0),
+				};
+				foreach (var item in runtime.Children)
+					CreateMenuItem (menu, item);
+				return menu;
+			}
+
+			void CreateMenuItem (NSMenu menu, IRuntimeModel runtime)
+			{
+				var menuItem = new NSMenuItem {
+					IndentationLevel = runtime.IsIndented ? 2 : 1,
+					Enabled = runtime.Enabled,
+					Hidden = !runtime.Visible,
+					AttributedTitle = new NSAttributedString (runtime.DisplayString, new NSStringAttributes {
+						Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
+					}),
+				};
+
+				var subMenu = CreateSubMenuForRuntime (runtime);
+				if (subMenu != null) {
+					menuItem.Submenu = subMenu;
+					menuItem.Enabled = true;
+				} else {
+					menuItem.Activated += (o2, e2) => {
+						string old = ActiveRuntime.FullDisplayString;
+						ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == runtime.FullDisplayString);
+						var ea = new HandledEventArgs ();
+						if (RuntimeChanged != null)
+							RuntimeChanged (o2, ea);
+
+						if (ea.Handled)
+							ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == old);
+					};
+				}
+				menu.AddItem (menuItem);
+			}
+
+
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				PathComponentCells = new [] {
@@ -134,30 +180,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 							if (idx == -1 && runtime.DisplayString == ActiveRuntime.DisplayString)
 								idx = i;
 
-							var _runtime = runtime;
+							if (runtime.HasParent)
+								continue;
+
 							if (runtime.IsSeparator)
 								menu.AddItem (NSMenuItem.SeparatorItem);
-							else {
-								var menuItem = new NSMenuItem {
-									IndentationLevel = runtime.IsIndented ? 2 : 1,
-									Enabled = runtime.Enabled,
-									Hidden = !runtime.Visible,
-									AttributedTitle = new NSAttributedString (runtime.DisplayString, new NSStringAttributes {
-										Font = runtime.Notable ? NSFontManager.SharedFontManager.ConvertFont (menu.Font, NSFontTraitMask.Bold) : menu.Font,
-									}),
-								};
-								menuItem.Activated += (o2, e2) => {
-									string old = ActiveRuntime.FullDisplayString;
-									ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == _runtime.FullDisplayString);
-									var ea = new HandledEventArgs ();
-									if (RuntimeChanged != null)
-										RuntimeChanged (o2, ea);
-
-									if (ea.Handled)
-										ActiveRuntime = runtimeModel.First (r => r.FullDisplayString == old);
-								};
-								menu.AddItem (menuItem);
-							}
+							else
+								CreateMenuItem (menu, runtime);
 							++i;
 						}
 					} else
