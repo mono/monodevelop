@@ -277,13 +277,41 @@ namespace MonoDevelop.MacIntegration
 				Layer.AddSublayer (buildResultIcon);
 		}
 
+		class TooltipOwner : NSObject
+		{
+			readonly StatusBar bar;
+			readonly CALayer layer;
+
+			public TooltipOwner (StatusBar bar, CALayer layer)
+			{
+				this.bar = bar;
+				this.layer = layer;
+			}
+
+			public override string Description { get { return bar.layerToStatus [layer].ToolTip; } }
+		}
+
+		List<TooltipOwner> tooltips = new List<TooltipOwner> ();
+		void AddTooltip (CALayer layer)
+		{
+			var tooltip = new TooltipOwner (this, layer);
+			tooltips.Add (tooltip);
+			AddToolTip (layer.Frame, tooltip, IntPtr.Zero);
+		}
+
 		void RepositionStatusLayers ()
 		{
+			RemoveAllToolTips ();
+			foreach (var tooltip in tooltips)
+				tooltip.Dispose ();
+			tooltips.Clear ();
+
 			nfloat right = Frame.Width;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					right -= item.Contents.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Contents.Width, item.Contents.Height);
+					AddTooltip (item);
 					item.SetNeedsDisplay ();
 				}
 			}
@@ -302,10 +330,12 @@ namespace MonoDevelop.MacIntegration
 			layer.Name = StatusIconPrefixId + (++statusCounter);
 			layer.Contents = pixbuf.ToNSImage ().CGImage;
 			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 9, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			Layer.AddSublayer (layer);
-
 			var statusIcon = new StatusIcon (this, layer);
 			layerToStatus [layer] = statusIcon;
+			AddTooltip (layer);
+
+			Layer.AddSublayer (layer);
+
 			return statusIcon;
 		}
 
