@@ -79,7 +79,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			Run (doc);
+			Run (doc.Editor, doc);
 		}
 
 		internal void Run (TextEditor editor, DocumentContext ctx)
