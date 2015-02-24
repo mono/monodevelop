@@ -252,12 +252,11 @@ namespace MonoDevelop.Ide.Templates
 		[TestCase("a:b", false)]
 		[TestCase("a#b", false)]
 		[TestCase("a|b", false)]
-		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (bool valid)
+		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
-			config.ProjectName = "b";
-			
+			config.ProjectName = projectname;
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
@@ -271,12 +270,11 @@ namespace MonoDevelop.Ide.Templates
 		[TestCase("a:b", false)]
 		[TestCase("a#b", false)]
 		[TestCase("a|b", false)]
-		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (bool valid)
+		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid (string projectname,bool valid)		
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
-			config.ProjectName = "b";
-			
+			config.ProjectName = projectname;
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
@@ -294,10 +292,13 @@ namespace MonoDevelop.Ide.Templates
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
-			config.ProjectName ="b";
-			
+
+			config.ProjectName = "a";
+			Assert.IsTrue (config.IsValid());
+			config.ProjectName =projectName;
 			Assert.AreEqual (valid, config.IsValid ());
 		}
+		
 		[Test]
 		public void NewProjectOnlyAndCreateProjectDirectory ()
 		{
