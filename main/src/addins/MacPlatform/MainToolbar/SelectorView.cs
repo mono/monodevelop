@@ -89,7 +89,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var menu = new NSMenu {
 					AutoEnablesItems = false,
 					ShowsStateColumn = false,
-					Font = NSFont.MenuFontOfSize (0),
+					Font = NSFont.MenuFontOfSize (12),
 				};
 				foreach (var item in runtime.Children)
 					CreateMenuItem (menu, item);
@@ -156,7 +156,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var menu = new NSMenu {
 						AutoEnablesItems = false,
 						ShowsStateColumn = false,
-						Font = NSFont.MenuFontOfSize (0),
+						Font = NSFont.MenuFontOfSize (12),
 					};
 					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
 						foreach (var configuration in ConfigurationModel) {
@@ -192,8 +192,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					} else
 						throw new NotSupportedException ();
 
-					if (menu.Count > 1)
-						menu.PopUpMenu (menu.ItemAt (idx), new CGPoint (componentRect.Left, componentRect.Top), this);
+					if (menu.Count > 1) {
+						var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
+
+						if (Window.Screen.BackingScaleFactor == 2)
+							offs.Y += 0.5f; // fine tune menu position on retinas
+
+						menu.PopUpMenu (menu.ItemAt (idx), offs, this);
+					}
 				};
 			}
 
