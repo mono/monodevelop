@@ -421,6 +421,7 @@ namespace MonoDevelop.MacIntegration
 
 		public void BeginProgress (IconId image, string name)
 		{
+			EndProgress ();
 			ShowMessage (image, name);
 			oldFraction = 0;
 
@@ -470,12 +471,15 @@ namespace MonoDevelop.MacIntegration
 		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
 		CALayer CreateProgressBarLayer (double width)
 		{
-			var progress = CALayer.Create ();
-			progress.Name = ProgressLayerId;
-			progress.BackgroundColor = xamBlue;
-			progress.BorderColor = xamBlue;
-			progress.FillMode = CAFillMode.Forwards;
-			progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+			CALayer progress = ProgressLayer;
+			if (progress == null) {
+				progress = CALayer.Create ();
+				progress.Name = ProgressLayerId;
+				progress.BackgroundColor = xamBlue;
+				progress.BorderColor = xamBlue;
+				progress.FillMode = CAFillMode.Forwards;
+				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+			}
 			return progress;
 		}
 
@@ -530,7 +534,6 @@ namespace MonoDevelop.MacIntegration
 						return;
 
 					inProgress = false;
-					ShowReady ();
 					progress.Opacity = 0;
 					progress.RemoveFromSuperLayer ();
 				};
@@ -556,9 +559,9 @@ namespace MonoDevelop.MacIntegration
 
 			AttachFadeoutAnimation (progress, grp, () => {
 				if (oldFraction < 1 && inProgress) {
-					if (progressMarks.Count != 0)
+					if (progressMarks.Count != 0) {
 						StartProgress (progressMarks.Dequeue ());
-					else {
+					} else {
 						inProgress = false;
 					}
 					return false;
