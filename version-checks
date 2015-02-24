@@ -17,8 +17,8 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=0a055f98f95554bec5798266ff821fbc55e20e2f
-DEP_BRANCH_AND_REMOTE[0]="master origin/master"
+DEP_NEEDED_VERSION[0]=99e4f16694460940497c412d8ea4d7bf148cded0
+DEP_BRANCH_AND_REMOTE[0]="master origin/new-xm-toolbar"
 
 # heap-shot
 DEP[1]=heap-shot
