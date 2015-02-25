@@ -421,7 +421,7 @@ namespace MonoDevelop.MacIntegration
 
 			// if we have nothing, use the default icon
 			if (iconId == IconId.Null)
-				iconId = "md-status-steady";
+				iconId = Stock.StatusSteady;
 
 			// load image now
 			if (ImageService.IsAnimation (iconId, Gtk.IconSize.Menu)) {
