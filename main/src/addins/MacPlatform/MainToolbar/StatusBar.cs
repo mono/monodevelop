@@ -324,7 +324,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			nfloat right = layerToStatus.Count == 0 ?
 				Frame.Width :
-				Layer.Sublayers.Last (i => i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
+				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
 
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
