@@ -52,7 +52,8 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
-			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;;
+			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;
+			IdeApp.Workspace.ItemAddedToSolution -= HandleProjectChanged;
 
 
 			if (ext != null) {
@@ -93,7 +94,8 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
-			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;;
+			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
+			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
 		}
 
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
