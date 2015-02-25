@@ -125,7 +125,7 @@ namespace MonoDevelop.MacIntegration
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
+			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
