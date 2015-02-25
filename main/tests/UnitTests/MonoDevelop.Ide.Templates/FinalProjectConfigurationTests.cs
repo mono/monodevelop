@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Templates
 			Assert.IsFalse (result);
 		}
                 
-	 	[TestCase("a",true)]
+		[TestCase("a",true)]
 		[TestCase("a&b", false)]
 		[TestCase("a<b", false)]
 		[TestCase("a*b", false)]
@@ -299,12 +299,12 @@ namespace MonoDevelop.Ide.Templates
 		public void InvalidProjectNameCharactersCauseConfigToBeInvalid(string projectName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
-		    	config.SolutionName = "a";
+			config.SolutionName = "a";
 			
-		   	config.ProjectName = "a";
-                       	Assert.IsTrue (config.IsValid());
+			config.ProjectName = "a";
+                	Assert.IsTrue (config.IsValid());
 			config.ProjectName =projectName;
-		     	Assert.AreEqual (valid, config.IsValid ());
+			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
 		[Test]
