@@ -314,6 +314,16 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 		}
+
+		public void SelectPanel (string id, string parentId)
+		{
+			foreach (OptionsDialogSection section in pages.Keys) {
+				if (section.Id == id && section.Parent != null && section.Parent.Id == parentId) {
+					ShowPage (section);
+					return;
+				}
+			}
+		}
 		
 		public void AddChildSection (IOptionsPanel parent, OptionsDialogSection section, object dataObject)
 		{

@@ -543,10 +543,15 @@ namespace MonoDevelop.Ide
 		
 		public void ShowOptions (IWorkspaceObject entry)
 		{
-			ShowOptions (entry, null);
+			ShowOptions (entry, null, null);
+		}
+
+		public void ShowOptions (IWorkspaceObject entry, string panelId)
+		{
+			ShowOptions (entry, panelId, null);
 		}
 		
-		public void ShowOptions (IWorkspaceObject entry, string panelId)
+		public void ShowOptions (IWorkspaceObject entry, string panelId, string parentPanelId)
 		{
 			if (entry is SolutionEntityItem) {
 				var selectedProject = (SolutionEntityItem) entry;
@@ -556,8 +561,13 @@ namespace MonoDevelop.Ide
 				optionsDialog.CurrentConfig = conf != null ? conf.Name : null;
 				optionsDialog.CurrentPlatform = conf != null ? conf.Platform : null;
 				try {
-					if (panelId != null)
-						optionsDialog.SelectPanel (panelId);
+					if (panelId != null) {
+						if (parentPanelId != null) {
+							optionsDialog.SelectPanel (panelId, parentPanelId);
+						} else {
+							optionsDialog.SelectPanel (panelId);
+						}
+					}
 					
 					if (MessageService.RunCustomDialog (optionsDialog) == (int)Gtk.ResponseType.Ok) {
 						foreach (object ob in optionsDialog.ModifiedObjects) {
@@ -689,9 +699,23 @@ namespace MonoDevelop.Ide
 				var item = newProjectDialog.NewItem as SolutionItem;
 				if ((item is Project) && ProjectCreated != null)
 					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
+
+				if (item is DotNetProject)
+					VerifyProjectFramework (item as DotNetProject);
+
 				return item;
 			}
 			return null;
+		}
+
+		void VerifyProjectFramework (DotNetProject project)
+		{
+			if (!project.SupportsFramework (project.TargetFramework)) {
+				MessageService.ShowWarning (GettextCatalog.GetString ("Project '{0}' has been configured for unsupported " +
+				"framework '{1}'.\nFramework should be changed in Project Options window before closing project.", 
+					project.Name, project.TargetFramework.Id));
+				ShowOptions (project, "General", "Build");
+			}
 		}
 
 		public SolutionItem AddSolutionItem (SolutionFolder parentFolder)
