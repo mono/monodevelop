@@ -1329,8 +1329,10 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			// mcs is "<>f__ref"
 			// csc is "CS$<>"
+			// roslyn is "<>8__"
 			return field.Name.StartsWith ("CS$<>", StringComparison.Ordinal) ||
-				field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal);
+			field.Name.StartsWith ("<>f__ref", StringComparison.Ordinal) ||
+			field.Name.StartsWith ("<>8__", StringComparison.Ordinal);
 		}
 
 		static bool IsClosureReferenceLocal (ISymbolVariable local)
@@ -1444,7 +1446,7 @@ namespace MonoDevelop.Debugger.Win32
 			bool isIterator = IsGeneratedType (t);
 
 			var list = new List<ValueReference> ();
-			foreach (FieldInfo field in t.GetFields ()) {
+			foreach (FieldInfo field in t.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				if (IsHoistedThisReference (field))
 					continue;
 				if (IsClosureReferenceField (field)) {
