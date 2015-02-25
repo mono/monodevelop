@@ -69,7 +69,7 @@ namespace MonoDevelop.NUnit
 				return instance;
 			}
 		}
-		
+
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
@@ -166,7 +166,9 @@ namespace MonoDevelop.NUnit
 					resultsPad.Sticky = false;
 				});
 			};
-			
+
+			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
+
 			session.Start ();
 			
 			IdeApp.ProjectOperations.CurrentRunOperation = session;
@@ -332,6 +334,17 @@ namespace MonoDevelop.NUnit
 		}
 
 		public event EventHandler TestSessionCompleted;
+
+		void OnTestSessionStarting (TestSessionEventArgs args)
+		{
+			if (TestSessionStarting != null)
+				TestSessionStarting (this, args);
+		}
+
+		/// <summary>
+		/// Occurs just before a test session is started
+		/// </summary>
+		public event EventHandler<TestSessionEventArgs> TestSessionStarting;
 	}
 	
 
@@ -454,6 +467,12 @@ namespace MonoDevelop.NUnit
 			add { monitor.CancelRequested += value; }
 			remove { monitor.CancelRequested -= value; }
 		}
+	}
+
+	public class TestSessionEventArgs: EventArgs
+	{
+		public IAsyncOperation Session { get; set; }
+		public UnitTest Test { get; set; }
 	}
 }
 
