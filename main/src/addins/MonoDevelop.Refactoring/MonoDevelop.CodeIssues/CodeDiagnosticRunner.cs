@@ -70,20 +70,19 @@ namespace MonoDevelop.CodeIssues
 				if (providers.Count == 0)
 					return Enumerable.Empty<Result> ();
 				
-				var compilationWithAnalyzer = compilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers), null, cancellationToken); 
+				var localCompilation = CSharpCompilation.Create (
+					compilation.AssemblyName, 
+					new[] { model.SyntaxTree }, 
+					compilation.References, 
+					(CSharpCompilationOptions)compilation.Options
+				);
+
+				var compilationWithAnalyzer = localCompilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers), null, cancellationToken); 
 
 				if (input.ParsedDocument == null)
 					return Enumerable.Empty<Result> ();
-				model = compilationWithAnalyzer.Compilation.GetSemanticModel (model.SyntaxTree);
-
-				var tree = model.SyntaxTree;
-				if (tree == null)
-					return Enumerable.Empty<Result> ();
 				var diagnosticList = new List<Diagnostic> ();
-				diagnosticList.AddRange (model.GetDiagnostics (null, cancellationToken));
-				diagnosticList.AddRange (model.GetSyntaxDiagnostics (null, cancellationToken));
-				diagnosticList.AddRange (model.GetDeclarationDiagnostics (null, cancellationToken));
-				diagnosticList.AddRange (model.GetMethodBodyDiagnostics (null, cancellationToken));
+				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
 
 				return diagnosticList
 					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))

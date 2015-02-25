@@ -170,11 +170,12 @@ namespace MonoDevelop.CodeActions
 					}
 
 					TextSpan span;
+
 					if (Editor.IsSomethingSelected)
 						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
 					else
 						span = TextSpan.FromBounds (loc, loc);
-
+					
 					var diagnosticsAtCaret =
 						Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
 							.OfType<IGenericTextSegmentMarker> ()
@@ -182,6 +183,7 @@ namespace MonoDevelop.CodeActions
 							.OfType<DiagnosticResult> ()
 							.Select (dr => dr.Diagnostic)
 							.ToList ();
+
 					Task.Run (async delegate {
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
 						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
@@ -193,9 +195,12 @@ namespace MonoDevelop.CodeActions
 								continue;
 
 							try {
-								await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret.ToImmutableArray (),
-									(ca, diag) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
-									token));
+								foreach (var diag in diagnosticsAtCaret) {
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag,
+										(ca, d) => codeIssueFixes.Add (Tuple.Create (cfp, ca)),
+										token)
+									);
+								}
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
 								continue;
