@@ -65,6 +65,20 @@ namespace MonoDevelop.Debugger.Tests
 			EngineId = engineId;
 		}
 
+		public void IgnoreCorDebugger (string message = "")
+		{
+			if (!(Session is SoftDebuggerSession)) {
+				Assert.Ignore (message);
+			}
+		}
+
+		public void IgnoreSoftDebugger (string message = "")
+		{
+			if (Session is SoftDebuggerSession) {
+				Assert.Ignore (message);
+			}
+		}
+
 		[TestFixtureSetUp]
 		public virtual void SetUp ()
 		{
