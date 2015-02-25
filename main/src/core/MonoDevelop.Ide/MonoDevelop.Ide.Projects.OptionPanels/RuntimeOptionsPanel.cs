@@ -84,16 +84,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				frameworks.Add (project.TargetFramework);
 			}
 
-			//sort by id ascending, version descending, profile ascending
-			frameworks.Sort ((x, y) => {
-				var cmp = string.CompareOrdinal (x.Id.Identifier, y.Id.Identifier);
-				if (cmp != 0)
-					return cmp;
-				cmp = string.CompareOrdinal (y.Id.Version, x.Id.Version);
-				if (cmp != 0)
-					return cmp;
-				return string.CompareOrdinal (x.Id.Profile, y.Id.Profile);
-			});
+			frameworks.Sort (DotNetProject.CompareFrameworks);
 			
 			for (int i = 0; i < frameworks.Count; i++) {
 				var fx = frameworks[i];

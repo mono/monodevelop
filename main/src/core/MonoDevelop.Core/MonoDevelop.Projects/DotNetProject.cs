@@ -359,9 +359,34 @@ namespace MonoDevelop.Projects
 		/// </returns>
 		public virtual TargetFrameworkMoniker GetDefaultTargetFrameworkId ()
 		{
-			return Services.ProjectService.DefaultTargetFramework.Id;
+			var frameworks = Runtime.SystemAssemblyService.GetTargetFrameworks ()
+				.Where (fx => !fx.Hidden && TargetRuntime.IsInstalled (fx) && SupportsFramework (fx))
+				.ToList ();
+			if (!frameworks.Any ())
+				throw new ArgumentException ("Compatible target framework does not exists.");
+
+			frameworks.Sort (CompareFrameworks);
+
+			return frameworks [0].Id;
 		}
-		
+
+		/// <summary>
+		/// Compares two frameworks based on id ascending, version descending, profile ascending.
+		/// </summary>
+		/// <returns>0 if both frameworks are equal, -1 if .</returns>
+		/// <param name="x">The x first framework target to compare.</param>
+		/// <param name="y">A 32-bit signed integer that indicates the relationship between the two target frameworks.</param>
+		public static int CompareFrameworks(TargetFramework x, TargetFramework y)
+		{
+			var cmp = string.CompareOrdinal (x.Id.Identifier, y.Id.Identifier);
+			if (cmp != 0)
+				return cmp;
+			cmp = string.CompareOrdinal (y.Id.Version, x.Id.Version);
+			if (cmp != 0)
+				return cmp;
+			return string.CompareOrdinal (x.Id.Profile, y.Id.Profile);
+		}
+
 		/// <summary>
 		/// Returns the default framework for a given format
 		/// </summary>
