@@ -172,8 +172,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool fullyQualify = true;
 
 			var root = semanticModel.SyntaxTree.GetRoot (cancellationToken);
-
-			var node = root.FindNode (TextSpan.FromBounds (loc.Offset, loc.EndOffset)) as ExpressionSyntax;
+			var token = root.FindToken (loc.Offset);
+			if (!token.IsKind (SyntaxKind.IdentifierToken))
+				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
+			var node = token.Parent;
 			if (node == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var resolveResult = semanticModel.GetSymbolInfo (node, cancellationToken); 
@@ -369,9 +371,10 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			SyntaxToken identifier;
 			int tc = GetTypeParameterCount (node, out identifier);
-			bool isInsideAttributeType = identifier.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken &&
-				identifier.Parent.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
-				identifier.Parent.Parent.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
+
+			bool isInsideAttributeType = identifier.IsKind (SyntaxKind.IdentifierToken) &&
+				identifier.Parent.IsKind (SyntaxKind.IdentifierName) &&
+				identifier.Parent.Parent.IsKind (SyntaxKind.Attribute);
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (semanticModel.Compilation, (MonoDevelop.Projects.ProjectReference)null));
@@ -419,23 +422,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				ns.Push (requiredReference == null ? comp.Item1.GlobalNamespace : comp.Item1.Assembly.GlobalNamespace);
 				while (ns.Count > 0) {
 					var curNs = ns.Pop ();
-					foreach (var type in curNs.GetTypeMembers (name, tc)) {
+					foreach (var type in curNs.GetTypeMembers ()) {
 						if (!semanticModel.IsAccessible (location, type))
 							continue;
-						yield return new PossibleNamespace (curNs.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat), true, requiredReference);
-					} 
-					if (possibleAttributeName != null) {
-						foreach (var type in curNs.GetTypeMembers (possibleAttributeName, tc)) {
-							if (!semanticModel.IsAccessible (location, type))
-								continue;
+						if ((type.Name == name || type.Name == possibleAttributeName) && type.TypeParameters.Length == tc) {
 							yield return new PossibleNamespace (curNs.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat), true, requiredReference);
 						}
-					}
-
-					// Search nested types.
-					foreach (var type in curNs.GetTypeMembers ()) {
-						if (type.DeclaredAccessibility != Accessibility.Public && !semanticModel.IsAccessible (location, type))
-							continue;
+					
+						// Search nested types.
 						typeStack.Push (type);
 						while (typeStack.Count > 0) {
 							var nested = typeStack.Pop ();

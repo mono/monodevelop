@@ -60,6 +60,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			};
 			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 			project.Name = "test";
+			project.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
 
@@ -71,7 +72,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
 				TypeSystemService.Load (solution, monitor);
-			
+
 			content.Project = project;
 
 			tww.ViewContent = content;
@@ -87,6 +88,8 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
+
 			return doc;
 		}
 		
