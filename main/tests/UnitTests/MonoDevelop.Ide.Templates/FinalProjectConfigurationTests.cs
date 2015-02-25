@@ -300,10 +300,8 @@ namespace MonoDevelop.Ide.Templates
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
-			
-			config.ProjectName = "a";
-                	Assert.IsTrue (config.IsValid());
 			config.ProjectName =projectName;
+			
 			Assert.AreEqual (valid, config.IsValid ());
 		}
 		
