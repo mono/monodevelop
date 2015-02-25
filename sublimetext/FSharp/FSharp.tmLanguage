@@ -246,7 +246,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>//.*$</string>
+					<string>\/\/(?:(?!\*\)).)*$</string>
 					<key>name</key>
 					<string>comment.line.double-slash.fsharp</string>
 				</dict>
