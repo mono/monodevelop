@@ -25,11 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections;
 
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
-using Mono.Addins;
 using NUnit.Framework;
 using MonoDevelop.CSharp;
 using System.Threading;
@@ -50,14 +48,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 			tww.ViewContent = content;
 			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
-
+			MonoDevelop.AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
 			var doc = new Document (tww);
 
 			var text = @"namespace NUnit.Framework {
-	using System;
-	class TestFixtureAttribute : Attribute {} 
-	class TestAttribute : Attribute {} 
-} namespace Test { " + input +"}";
+	public class TestFixtureAttribute : System.Attribute {} 
+	public class TestAttribute : System.Attribute {} 
+} namespace TestNs { " + input +"}";
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
@@ -67,8 +64,8 @@ namespace MonoDevelop.CSharpBinding.Tests
 
 			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 			project.Name = "test";
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+//			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+//			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
 
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
@@ -85,6 +82,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
 			return compExt;
 		}
 
@@ -100,7 +98,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			TestViewContent content;
 			var ext = Setup (@"using NUnit.Framework;
 [TestFixture]
-class Test
+class TestClass
 {
 	[Test]
 	public void MyTest () {}
@@ -116,7 +114,7 @@ class Test
 		{
 			TestViewContent content;
 			var ext = Setup (@"using NUnit.Framework;
-class Test
+class TestClass
 {
 	public void MyTest () {}
 }
@@ -151,8 +149,8 @@ public class Derived : MyBase
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 
-			Assert.AreEqual ("Test.Derived", tests [0].UnitTestIdentifier);
-			Assert.AreEqual ("Test.Derived.MyTest", tests [1].UnitTestIdentifier);
+			Assert.AreEqual ("TestNs.Derived", tests [0].UnitTestIdentifier);
+			Assert.AreEqual ("TestNs.Derived.MyTest", tests [1].UnitTestIdentifier);
 		}
 
 
@@ -164,7 +162,7 @@ public class Derived : MyBase
 		{
 			TestViewContent content;
 			var ext = Setup (@"using NUnit.Framework;
-class Test
+class TestClass
 {
 	[Test]
 	public void MyTest () {}
