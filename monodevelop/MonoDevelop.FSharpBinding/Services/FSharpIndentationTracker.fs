@@ -45,6 +45,8 @@ type FSharpIndentationTracker(data:TextEditor) =
         let reIndent = 0 = text.Length + 1 && caretColumn = 1 
         if not reIndent then indentation else
           let indent = getIndentation 0 (line.PreviousLine)
+          let initialWs = initialWhiteSpace text 0
+          if initialWs >= indent.Length then indentation else
           indent.Substring(initialWhiteSpace text 0)
 
     override x.GetIndentationString (lineNumber) =
