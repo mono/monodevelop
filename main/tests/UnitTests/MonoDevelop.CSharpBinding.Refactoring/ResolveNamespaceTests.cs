@@ -219,8 +219,8 @@ namespace My
 		}
 	}
 }");
-			foreach (var a in result)
-				Console.WriteLine (a);
+			Assert.IsFalse (result.AddUsings);
+			Assert.IsTrue (result.AddFullyQualifiedName);
 			Assert.IsTrue (result.Any (t => t.Namespace == "Foo"));
 			Assert.IsTrue (result.Any (t => t.Namespace == "Foo2"));
 		}

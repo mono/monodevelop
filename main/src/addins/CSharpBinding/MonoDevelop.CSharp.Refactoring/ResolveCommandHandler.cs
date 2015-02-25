@@ -187,11 +187,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				foundNamespaces = GetPossibleNamespacesForTypes (editor, doc, semanticModel, node, resolveResult, loc.Offset, cancellationToken).ToList ();
 			}
-
-			//			if (!(resolveResult is AmbiguousTypeResolveResult)) {
-			//				var usedNamespaces = RefactoringOptions.GetUsedNamespacesAsync (doc, doc.Editor.LocationToOffset (location)).Result;
-			//				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Namespace));
-			//			}
+			if (resolveResult.CandidateReason == CandidateReason.Ambiguous)
+				addUsings = false;
 			var result = new List<PossibleNamespace> ();
 			foreach (var ns in foundNamespaces) {
 				if (result.Any (n => n.Namespace == ns.Namespace))
