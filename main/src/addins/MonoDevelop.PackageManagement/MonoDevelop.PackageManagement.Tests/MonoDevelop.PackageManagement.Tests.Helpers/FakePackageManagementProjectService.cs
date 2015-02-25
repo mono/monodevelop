@@ -86,6 +86,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				SolutionUnloaded (this, new EventArgs ());
 			}
 		}
+
+		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
+
+		public void RaiseProjectReloadedEvent (IDotNetProject oldProject, IDotNetProject newProject)
+		{
+			if (ProjectReloaded != null) {
+				ProjectReloaded (this, new ProjectReloadedEventArgs (oldProject, newProject));
+			}
+		}
 	}
 }
 
