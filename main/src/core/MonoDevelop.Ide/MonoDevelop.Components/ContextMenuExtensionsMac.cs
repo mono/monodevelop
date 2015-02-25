@@ -131,7 +131,7 @@ namespace MonoDevelop.Components
 			return result;
 		}
 
-		static readonly Xwt.Toolkit macToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+		static readonly Xwt.Toolkit macToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 		public static NSImage ToNSImage (this Xwt.Drawing.Image image)
 		{

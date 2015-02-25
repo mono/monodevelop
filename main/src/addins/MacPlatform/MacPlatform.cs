@@ -126,7 +126,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.Mac.dll"));
-			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.Cocoa);
+			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			timer.Trace ("Installing App Event Handlers");
