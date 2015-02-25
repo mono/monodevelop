@@ -38,6 +38,8 @@ using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -107,11 +109,42 @@ namespace MonoDevelop.CSharp.Highlighting
 			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
 				foreach (var loc in mref.Locations) {
 					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
-						ReferenceUsageType = ReferenceUsageType.Read	
+						ReferenceUsageType = GetUsage (loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan))
 					};
 				}
 			}
 		}
+
+		static ReferenceUsageType GetUsage (SyntaxNode node)
+		{
+			if (node == null)
+				return ReferenceUsageType.Read;
+
+			var parent = node.Parent;
+			if (parent.IsKind (SyntaxKind.SimpleMemberAccessExpression))
+				parent = parent.Parent;
+
+			if (parent.IsKind (SyntaxKind.PreIncrementExpression) ||
+				parent.IsKind (SyntaxKind.PostIncrementExpression) || 
+				parent.IsKind (SyntaxKind.PreDecrementExpression) || 
+				parent.IsKind (SyntaxKind.PostDecrementExpression))
+				return ReferenceUsageType.ReadWrite;
+			var argumentSyntax = node.Parent as ArgumentSyntax;
+			if (argumentSyntax != null) {
+				if (argumentSyntax.RefOrOutKeyword.IsKind (SyntaxKind.RefKeyword))
+					return ReferenceUsageType.ReadWrite;
+				if (argumentSyntax.RefOrOutKeyword.IsKind (SyntaxKind.OutKeyword))
+					return ReferenceUsageType.Write;
+			} 
+
+			if (parent is AssignmentExpressionSyntax) {
+				var ae = (AssignmentExpressionSyntax)parent;
+				if (ae.Left.Span.Contains (node.Span))
+					return ReferenceUsageType.Write;
+			} 
+			return ReferenceUsageType.Read;
+		}
+
 	}
 }
 

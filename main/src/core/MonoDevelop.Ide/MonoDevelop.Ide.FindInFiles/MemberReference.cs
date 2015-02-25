@@ -82,7 +82,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override AmbientColor GetBackgroundMarkerColor (ColorScheme style)
 		{
-			return (ReferenceUsageType & ReferenceUsageType.Write) != 0 ?
+			return (ReferenceUsageType & ReferenceUsageType.Write) != 0 ||
+				(ReferenceUsageType & ReferenceUsageType.Declariton) != 0?
 				style.ChangingUsagesRectangle :
 				style.UsagesRectangle;
 		}

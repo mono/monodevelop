@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
@@ -116,7 +117,7 @@ namespace MonoDevelop.Refactoring
 					var token = root.FindToken (offset);
 					var symbol = unit.GetSymbolInfo (token.Parent);
 					return new RefactoringSymbolInfo (symbol) {
-						DeclaredSymbol = unit.GetDeclaredSymbol (token.Parent)
+						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
 					};
 				} catch (Exception) {
 					return RefactoringSymbolInfo.Empty;
@@ -144,7 +145,7 @@ namespace MonoDevelop.Refactoring
 			result.CommandInfos.AddSeparator ();
 			foreach (var fix in container.CodeDiagnosticActions) {
 
-				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
+				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null); 
 
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.Item2.Title);
 				var subMenu = new CommandInfoSet ();
