@@ -432,7 +432,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(try|finally|new|in|as|if|then|else|elif|raise|for|begin|end|match|with|when|type|inherit|null|do)\b</string>
+					<string>\b(try|finally|new|in|as|if|then|else|elif|raise|for|begin|end|match|with|when|type|inherit|null|do|while)\b</string>
 					<key>name</key>
 					<string>keyword.other.fsharp</string>
 				</dict>
