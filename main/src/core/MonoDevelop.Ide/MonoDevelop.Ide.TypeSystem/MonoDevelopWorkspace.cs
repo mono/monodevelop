@@ -221,7 +221,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var projectId = GetProjectId (p);
 			var projectData = GetProjectData (projectId); 
-			var config = p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration;
+			var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
 			if (config != null)
 				cp = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
@@ -233,7 +233,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				p.Name,
 				LanguageNames.CSharp,
 				p.FileName,
-				p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration),
+				IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"test.dll",
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions () : null,
 				GetDocuments (projectData, p),

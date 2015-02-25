@@ -746,7 +746,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
-				if (TypeSystemService.CanParseProjections (Project, Editor.MimeType, FileName)) {
+				if (Project != null && TypeSystemService.CanParseProjections (Project, Editor.MimeType, FileName)) {
 					var task = TypeSystemService.ParseProjection (Project, currentParseFile, editor.MimeType, currentParseText);
 					if (task.Result != null) {
 						var p = task.Result;

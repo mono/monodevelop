@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		protected virtual string GetInsertionText ()
 		{
-			return text;
+			return text ?? symbol.Name;
 		}
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)

@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
-				var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				var solution = IdeApp.ProjectOperations?.CurrentSelectedSolution;
 				if (solution == null)
 					return emptyWorkspace;
 				return GetWorkspace (solution);

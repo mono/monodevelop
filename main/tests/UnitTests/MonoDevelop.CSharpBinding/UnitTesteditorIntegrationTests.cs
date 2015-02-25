@@ -64,14 +64,11 @@ namespace MonoDevelop.CSharpBinding.Tests
 
 			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 			project.Name = "test";
-//			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-//			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
-
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
 
-			var solution = new MonoDevelop.Projects.Solution ();
-			var config = solution.AddConfiguration ("", true); 
+			var solution = new Solution ();
+			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
 				TypeSystemService.Load (solution, monitor);

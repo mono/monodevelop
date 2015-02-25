@@ -26,25 +26,18 @@
 using System;
 using NUnit.Framework;
 
-using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.CSharp.Formatting;
 using UnitTests;
-using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -55,7 +48,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			DocumentContext documentContext;
 
-			MonoDevelop.Ide.Editor.TextEditor editor;
+			TextEditor editor;
 
 			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext documentContext)
 			{
@@ -160,13 +153,13 @@ namespace MonoDevelop.CSharpBinding
 
 		static CSharpCompletionTextEditorExtension Setup (string input, out TestViewContent content)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			var tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
 			tww.ViewContent = content;
-			content.ContentName = "a.cs";
+			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
 
-			Document doc = new Document (tww);
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
 
 			var text = input;
 			int endPos = text.IndexOf ('$');
@@ -176,12 +169,25 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			var config = solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor);
+			content.Project = project;
+			doc.SetProject (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
 			return compExt;
 		}
 
@@ -195,14 +201,15 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			//TODO: Roslyn port!
-/*			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
-			var foundMember = t.GetMembers (m => m.Name == member).First ();
-			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
-			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
+			var sm = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+
+			var t = sm.Compilation.GetTypeByMetadataName (type); 
+			var foundMember = t.GetMembers().First (m => m.Name == member);
+			var data = new RoslynSymbolCompletionData (null, ext, foundMember);
+			data.DisplayFlags |= DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None), true, false); 
-			*/
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
+
 			return widget.CompletedWord;
 		}
 
