@@ -623,8 +623,16 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
-			if (!options.UnderlineErrors || parsedDocument == null)
+			if (!options.UnderlineErrors || parsedDocument == null) {
+				Application.Invoke (delegate {
+					var doc = this.TextEditor != null ? this.TextEditor.Document : null;
+					if (doc == null)
+						return;
+					RemoveErrorUnderlines (doc);
+					UpdateQuickTasks (parsedDocument);
+				});
 				return;
+			}
 				
 			Application.Invoke (delegate {
 				if (!quickTaskProvider.Contains (this))
@@ -636,7 +644,7 @@ namespace MonoDevelop.SourceEditor
 						Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
 						if (doc != null) {
 							RemoveErrorUnderlines (doc);
-							
+
 							// Else we underline the error
 							if (parsedDocument.Errors != null) {
 								foreach (var error in parsedDocument.Errors)
@@ -1687,17 +1695,17 @@ namespace MonoDevelop.SourceEditor
 		void UpdateQuickTasks (ParsedDocument doc)
 		{
 			tasks.Clear ();
+			if (doc != null) {
+				foreach (var cmt in doc.TagComments) {
+					var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
+					tasks.Add (newTask);
+				}
 			
-			foreach (var cmt in doc.TagComments) {
-				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
-				tasks.Add (newTask);
+				foreach (var error in doc.Errors) {
+					var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+					tasks.Add (newTask);
+				}
 			}
-			
-			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
-				tasks.Add (newTask);
-			}
-			
 			OnTasksUpdated (EventArgs.Empty);
 		}
 		#endregion
