@@ -65,9 +65,7 @@ The first time you `make install` the AddIn you'll override Xamarin's official o
 
 **Note:**  One thing to check is the the version specified in `configure.fsx` is higher than the pre-installed version, if it's not then the local addin will not be loaded.   
 
-The addin is installed locally at the following location:
-
-```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
+For reference the addin is installed locally at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
 
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
