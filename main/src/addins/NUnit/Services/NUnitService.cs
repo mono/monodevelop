@@ -49,12 +49,8 @@ namespace MonoDevelop.NUnit
 		
 		private NUnitService ()
 		{
-			IdeApp.Workspace.ReferenceAddedToProject += OnWorkspaceChanged;
-			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
