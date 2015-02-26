@@ -308,7 +308,7 @@ namespace MonoDevelop.MacIntegration
 
 			nfloat right = Frame.Width;
 			foreach (var item in Layer.Sublayers) {
-				if (item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
+				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					right -= item.Contents.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Contents.Width, item.Contents.Height);
 					AddTooltip (item);
