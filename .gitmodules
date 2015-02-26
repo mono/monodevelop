@@ -42,7 +42,7 @@
 	branch = xammac-unified
 [submodule "main/external/NRefactory6"]
 	path = main/external/NRefactory6
-	url = git@github.com:icsharpcode/NRefactory.git
+	url = git://github.com/icsharpcode/NRefactory.git
 	branch = roslyn
 [submodule "main/external/monomac"]
 	path = main/external/monomac
