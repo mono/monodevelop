@@ -48,7 +48,6 @@ Normally you should get the binding from the repository. If you want to build an
 
 First get nuget.exe and install the required nuget packages:
 
-
 Now make:
 
 ```bash
@@ -62,8 +61,13 @@ If Monodevelop is installed in an unusual prefix you will need to invoke `config
 
 If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
 
-The first time you `make install` the AddIn you'll overwrite Xamarin's official one, so you need to
-go to the AddIn manager and enable the F# AddIn.
+The first time you `make install` the AddIn you'll override Xamarin's official one and it will initially be set to disabled, so you need to go to the AddIn manager and ensure the F# AddIn is enabled.  
+
+**Note:**  One thing to check is the the version specified in `configure.fsx` is higher than the pre-installed version, if it's not then the local addin will not be loaded.   
+
+The addin is installed locally at the following location:
+
+```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
 
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
