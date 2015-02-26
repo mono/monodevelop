@@ -180,17 +180,22 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			bool checkVisible = IsCheckboxVisible (item);
 			bool selected = activeItems.Contains (item);
+			bool isRoot = iter.Equals (TreeIter.Zero);
 			
-			if (!iter.Equals (TreeIter.Zero))
+			if (!isRoot)
 				iter = store.AppendValues (iter, icon, item.Name, item, selected && checkVisible, checkVisible);
 			else
 				iter = store.AppendValues (icon, item.Name, item, selected && checkVisible, checkVisible);
-			
+
 			if (selected)
 				tree.ExpandToPath (store.GetPath (iter));
 			
 			foreach (IBuildTarget ce in GetChildren (item))
 				AddEntry (iter, ce);
+
+			// Expand all root items by default
+			if (isRoot)
+				tree.ExpandRow (store.GetPath (iter), false);
 		}
 		
 		void SetSelection (IBuildTarget selected, HashSet<IBuildTarget> active)
