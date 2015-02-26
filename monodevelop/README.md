@@ -44,7 +44,7 @@ If not, install the F# Language Binding via the AddIn manager.
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
 
-### Build on Mac:
+### Build on Mac/Linux:
 
 First get nuget.exe and install the required nuget packages:
 
@@ -65,7 +65,7 @@ The first time you `make install` the AddIn you'll override Xamarin's official o
 
 **Note:**  One thing to check is the the version specified in `configure.fsx` is higher than the pre-installed version, if it's not then the local addin will not be loaded.   
 
-For reference the addin is installed locally at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
+For reference on Mac the addin is installed locally at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
 
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
