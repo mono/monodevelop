@@ -165,7 +165,7 @@ namespace MonoDevelop.NUnit
 				DotNetProject project = base.OwnerSolutionItem as DotNetProject;
 				if (project != null) {
 					foreach (var pr in project.References) {
-						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy) {
+						if (pr.ReferenceType != ReferenceType.Package && !pr.LocalCopy && pr.ReferenceOutputAssembly) {
 							foreach (string file in pr.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
 								yield return file;
 						}
