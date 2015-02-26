@@ -298,8 +298,9 @@
 		<StockIcon stockid="md-status-success" resource="status-success-16.png" size="Menu" />
 		<StockIcon stockid="md-status-warning" resource="status-warning-16.png" size="Menu" />
 		<StockIcon stockid="md-status-error" resource="status-error-16.png" size="Menu" />
-		<StockIcon stockid="md-status-updates-downloading" resource="status-updates-downloading-16.png" size="Menu" />
-		<StockIcon stockid="md-status-critical-updates-downloading" resource="status-critical-updates-downloading-16.png" size="Menu" />
+		<StockIcon stockid="md-status-updates-downloading" animation="res:status-updates-downloading-1-16.png;500;res:status-updates-downloading-2-16.png;33;res:status-updates-downloading-3-16.png;33;res:status-updates-downloading-4-16.png;33;res:status-updates-downloading-5-16.png;33;res:status-updates-downloading-6-16.png;33" size="Menu" />
+		<StockIcon stockid="md-status-updates-paused" resource="status-updates-paused-16.png" size="Menu" />
+		<StockIcon stockid="md-status-updates-ready" resource="status-updates-ready-16.png" size="Menu" />
 		<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
 		<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
 	</Condition>

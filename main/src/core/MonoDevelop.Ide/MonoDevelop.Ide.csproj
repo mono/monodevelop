@@ -2244,11 +2244,17 @@
     <EmbeddedResource Include="icons\mac\status-connecting-6-16%402x.png">
       <LogicalName>status-connecting-6-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-critical-updates-downloading-16.png">
-      <LogicalName>status-critical-updates-downloading-16.png</LogicalName>
+    <EmbeddedResource Include="icons\mac\status-updates-paused-16.png">
+      <LogicalName>status-updates-paused-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-critical-updates-downloading-16%402x.png">
-      <LogicalName>status-critical-updates-downloading-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\mac\status-updates-paused-16%402x.png">
+      <LogicalName>status-updates-paused-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-ready-16.png">
+      <LogicalName>status-updates-ready-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-ready-16%402x.png">
+      <LogicalName>status-updates-ready-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-error-16.png">
       <LogicalName>status-error-16.png</LogicalName>
@@ -2406,11 +2412,41 @@
     <EmbeddedResource Include="icons\mac\status-success-16%402x.png">
       <LogicalName>status-success-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-16.png">
-      <LogicalName>status-updates-downloading-16.png</LogicalName>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16.png">
+      <LogicalName>status-updates-downloading-1-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-updates-downloading-16%402x.png">
-      <LogicalName>status-updates-downloading-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-1-16%402x.png">
+      <LogicalName>status-updates-downloading-1-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16.png">
+      <LogicalName>status-updates-downloading-2-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-2-16%402x.png">
+      <LogicalName>status-updates-downloading-2-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16.png">
+      <LogicalName>status-updates-downloading-3-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-3-16%402x.png">
+      <LogicalName>status-updates-downloading-3-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16.png">
+      <LogicalName>status-updates-downloading-4-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-4-16%402x.png">
+      <LogicalName>status-updates-downloading-4-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16.png">
+      <LogicalName>status-updates-downloading-5-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-5-16%402x.png">
+      <LogicalName>status-updates-downloading-5-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16.png">
+      <LogicalName>status-updates-downloading-6-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-updates-downloading-6-16%402x.png">
+      <LogicalName>status-updates-downloading-6-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-waiting-1-16.png">
       <LogicalName>status-waiting-1-16.png</LogicalName>
