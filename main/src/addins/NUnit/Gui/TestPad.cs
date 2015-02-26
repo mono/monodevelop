@@ -518,7 +518,7 @@ namespace MonoDevelop.NUnit
 			base.OnSelectionChanged (sender, args);
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav != null) {
-				UnitTest test = (UnitTest) nav.DataItem;
+				UnitTest test = nav.DataItem as UnitTest;
 				if (test != null)
 					FillDetails (test, false);
 			}
