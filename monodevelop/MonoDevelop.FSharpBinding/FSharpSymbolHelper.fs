@@ -24,14 +24,35 @@ module Symbols =
         let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
         MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
 
+    let getEditorForFileName (fileName:string) =
+        match IdeApp.Workbench.GetDocument (fileName) with
+        | null ->           
+            let doc = MonoDevelop.Ide.Editor.TextEditorFactory.LoadDocument (fileName)
+            MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
+        | doc -> doc.Editor
+
+    let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
+        symbolUse
+        |> Roslyn.getSymbolLocations
+        |> List.map (fun range -> 
+            let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+            range.FileName, start, finish)
+
+    let getTextSpanForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
+        let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
+        trimmedSymbols
+        |> List.map (fun (fileName, start, finish) ->
+            let editor = getEditorForFileName fileName
+            let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
+            let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
+            let ts = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
+            let ls = Microsoft.CodeAnalysis.Text.LinePositionSpan(Microsoft.CodeAnalysis.Text.LinePosition(start.Line, start.Column),
+                                                                  Microsoft.CodeAnalysis.Text.LinePosition(finish.Line, finish.Column))
+            fileName, ts, ls)
+
     let getTextSpan lastIdent (symbolUse:FSharpSymbolUse) =
         let range = symbolUse.RangeAlternate
-        let editor =
-            match IdeApp.Workbench.GetDocument (range.FileName) with
-            | null ->           
-                let doc = MonoDevelop.Ide.Editor.TextEditorFactory.LoadDocument (range.FileName)
-                MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
-            | doc -> doc.Editor
+        let editor = getEditorForFileName symbolUse.RangeAlternate.FileName
 
         let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
 
