@@ -88,8 +88,8 @@ Users of Windows XP wishing to use this project are advised to read the instruct
 
 ### Notes for Developers
 
-Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
-of MonoDevelop and Xamarin Studio. Some of the information below will be obsolete once this is done.
+Note: The MonoDevelop/Xamarin Studio developers have now incorporated the binding into all releases 
+of MonoDevelop and Xamarin Studio. 
 
 To check things are working try a few different things somewhat at random:
   - Check the F# templates are appearing
@@ -139,15 +139,15 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 ### Notes for People Preparing Releases
 
-Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
-of MonoDevelop and Xamarin Studio. The information below will be obsolete once this is done.
+Note the MonoDevelop/Xamarin Studio developers have incorporated the binding into all releases 
+of MonoDevelop and Xamarin Studio. 
 
 The MonoDevelop Addin mechanism can be hard to easily find information for so here are a couple of links to help get a better understanding.  
 
   - The addin.xml installation schema description can be found [here](http://addins.monodevelop.com/Source/AddinProjectHelp?projectId=1)
   - Details about publishing an addin can be found [here](http://monodevelop.com/Developers/Articles/Publishing_an_Addin)
 
-The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @tpetricek or @funnelweb to make an update.
+The addin used to get released to http://addins.monodevelop.com under project 'FSharp' (project index 48).  This is obsolete due to the addin being packaged as part of the Xamarin Studio release cycle.  Manual updates can be done although this is only really relevant for linux.  Raise an issue for more information or to discuss this.  
 
 To build the .mpack files to upload to this site, use:
 
