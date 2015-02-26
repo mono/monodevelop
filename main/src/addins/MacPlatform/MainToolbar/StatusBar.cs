@@ -477,9 +477,12 @@ namespace MonoDevelop.MacIntegration
 		public void EndProgress ()
 		{
 			progressMarks.Clear ();
-			inProgress = false;
-			if (ProgressLayer != null)
+			if (ProgressLayer != null) {
 				ProgressLayer.RemoveAnimation (growthAnimationKey);
+				if (inProgress == false)
+					ProgressLayer.RemoveFromSuperLayer ();
+			}
+			inProgress = false;
 			AutoPulse = false;
 		}
 
@@ -566,6 +569,7 @@ namespace MonoDevelop.MacIntegration
 
 					inProgress = false;
 					progress.Opacity = 0;
+					progress.RemoveAllAnimations ();
 					progress.RemoveFromSuperLayer ();
 				};
 				progress.Name = ProgressLayerFadingId;
