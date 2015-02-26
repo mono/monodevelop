@@ -207,7 +207,7 @@ namespace MonoDevelop.MacIntegration
 			if (Layer.Sublayers == null)
 				return Frame.Width;
 
-			return Layer.Sublayers.Min<CALayer, nfloat> (layer => {
+			var left = Layer.Sublayers.Min<CALayer, nfloat> (layer => {
 				if (layer.Name == null)
 					return nfloat.PositiveInfinity;
 
@@ -215,6 +215,7 @@ namespace MonoDevelop.MacIntegration
 					return layer.Frame.Left;
 				return nfloat.PositiveInfinity;
 			});
+			return left == nfloat.PositiveInfinity ? Frame.Width : left;
 		}
 
 		nfloat DrawSeparatorIfNeeded (nfloat right)
