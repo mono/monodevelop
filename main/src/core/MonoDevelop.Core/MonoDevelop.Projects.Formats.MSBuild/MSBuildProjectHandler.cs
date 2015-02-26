@@ -1640,7 +1640,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (pref.ReferenceOutputAssembly)
 						buildItem.UnsetMetadata ("ReferenceOutputAssembly");
 					else
-						buildItem.SetMetadata ("ReferenceOutputAssembly", true);
+						buildItem.SetMetadata ("ReferenceOutputAssembly", false);
 				} else {
 					monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
 					return;
