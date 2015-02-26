@@ -62,6 +62,9 @@ If Monodevelop is installed in an unusual prefix you will need to invoke `config
 
 If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
 
+The first time you `make install` the AddIn you'll overwrite Xamarin's official one, so you need to
+go to the AddIn manager and enable the F# AddIn.
+
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 ```dos
