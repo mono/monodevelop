@@ -44,7 +44,7 @@ If not, install the F# Language Binding via the AddIn manager.
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
 
-### Build on Linux/Mac:
+### Build on Mac:
 
 First get nuget.exe and install the required nuget packages:
 
@@ -76,14 +76,6 @@ build-and-install-debug.bat
 ```
 
 If you subsequently make changes to the add-in, you will need to `build-and-install-debug.bat` again and restart MonoDevelop/Xamarin Studio. 
-
-
-### Using the ASP.NET MVC 4 Template
-
-On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
-You can then create a project from the template, build it, and run. 
-
-On Mac and Linux the template uses nuget to bring in the ASP.NET MVC 4 core DLLs.
 
 ### Can't get it to work?  
 
