@@ -107,12 +107,12 @@ namespace MonoDevelop.MacIntegration
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		static NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
 		{
 			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), size, color);
 		}
 
-		static NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
 		{
 			var attrString = new NSMutableAttributedString ("");
 			if (image != null) {
@@ -125,9 +125,10 @@ namespace MonoDevelop.MacIntegration
 
 			attrString.Append (new NSAttributedString ("  "));
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
-				BaselineOffset = 6,
+				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
 				ForegroundColor = color,
-				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center }
+				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center },
+				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 1),
 			}));
 
 			return attrString;
@@ -174,6 +175,10 @@ namespace MonoDevelop.MacIntegration
 
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
+				ReconstructString ();
+			});
 		}
 
 		protected override void Dispose (bool disposing)
