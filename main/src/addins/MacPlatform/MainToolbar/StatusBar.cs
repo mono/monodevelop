@@ -119,16 +119,16 @@ namespace MonoDevelop.MacIntegration
 				// FIXME: Use the size parameter.
 				// Center image with frame.
 				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (0, -4, image.Size.Width, image.Size.Height);
+					image.AlignmentRect = new CGRect (0, -2, image.Size.Width, image.Size.Height);
 				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
 			}
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
-				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 7,
+				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center,
-					HeadIndent = 1f, },
-				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 1),
+					HeadIndent = 3f, },
+				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
 			}));
 
 			return attrString;
@@ -172,12 +172,12 @@ namespace MonoDevelop.MacIntegration
 				if (ec > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
+						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
 					SetImageFor (buildResultIcon, "md-status-error-count");
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
+						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
 					SetImageFor (buildResultIcon, "md-status-warning-count");
 				} else
 					buildResultVisible = false;
@@ -242,7 +242,7 @@ namespace MonoDevelop.MacIntegration
 			if (layerToStatus.Count == 0)
 				return right;
 
-			right -= 6;
+			right -= 9;
 			var layer = Layer.Sublayers.FirstOrDefault (l => l.Name == SeparatorLayerId);
 			if (layer != null) {
 				layer.Frame = new CGRect (right, 3, 1, 16);
@@ -288,11 +288,11 @@ namespace MonoDevelop.MacIntegration
 			nfloat right = DrawSeparatorIfNeeded (LeftMostItemX ());
 			CGSize size = buildResultText.AttributedString.Size;
 			right = right - 6 - size.Width;
-			buildResultText.Frame = new CGRect (right - 0.5f, 4f, size.Width, size.Height);
+			buildResultText.Frame = new CGRect (right, 5f, size.Width, size.Height);
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
-			buildResultIcon.Frame = new CGRect (right - 0.5f - buildResultIcon.Bounds.Width, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
+			buildResultIcon.Frame = new CGRect (right - buildResultIcon.Bounds.Width, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 
