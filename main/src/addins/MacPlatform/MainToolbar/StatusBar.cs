@@ -119,15 +119,20 @@ namespace MonoDevelop.MacIntegration
 				// FIXME: Use the size parameter.
 				// Center image with frame.
 				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (0, -2, image.Size.Width, image.Size.Height);
+					image.AlignmentRect = new CGRect (0, 0, image.Size.Width, image.Size.Height);
 				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
 			}
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
-				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
+				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
 				ForegroundColor = color,
-				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center,
-					HeadIndent = 3f, },
+				ParagraphStyle = new NSMutableParagraphStyle {
+					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
+					Alignment = NSTextAlignment.Justified,
+					FirstLineHeadIndent = 3f,
+					HeadIndent = 3f,
+					TailIndent = -3f,
+				},
 				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
 			}));
 
