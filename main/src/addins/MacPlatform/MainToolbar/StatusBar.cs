@@ -120,8 +120,8 @@ namespace MonoDevelop.MacIntegration
 				// Center image with frame.
 				if (!size.IsEmpty)
 					image.AlignmentRect = new CGRect (-2, -3, image.Size.Width, image.Size.Height);
-					attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
-				}
+				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
+			}
 
 			attrString.Append (new NSAttributedString ("  " + text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
