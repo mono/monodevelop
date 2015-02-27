@@ -119,27 +119,33 @@ namespace MonoDevelop.MacIntegration
 				// FIXME: Use the size parameter.
 				// Center image with frame.
 				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (-2, -3, image.Size.Width, image.Size.Height);
+					image.AlignmentRect = new CGRect (0, -4, image.Size.Width, image.Size.Height);
 				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
 			}
 
-			attrString.Append (new NSAttributedString ("  " + text, new NSStringAttributes {
-				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
+			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
+				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 7,
 				ForegroundColor = color,
-				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center },
+				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center,
+					HeadIndent = 1f, },
 				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 1),
 			}));
 
 			return attrString;
 		}
 
-		void SetImageFor (CALayer layer, string resource)
+		void SetImageFor (CALayer layer, Xwt.Drawing.Image xwtImage)
 		{
-			var image = ImageService.GetIcon (resource, Gtk.IconSize.Menu).ToNSImage ();
+			var image = xwtImage.ToNSImage ();
 			var layerContents = image.GetLayerContentsForContentsScale (layer.ContentsScale);
 
 			void_objc_msgSend_IntPtr (layer.Handle, setContentsSelector, layerContents.Handle);
 			layer.Bounds = new CGRect (0, 0, image.Size.Width, image.Size.Height);
+		}
+
+		void SetImageFor (CALayer layer, string resource)
+		{
+			SetImageFor (layer, ImageService.GetIcon (resource, Gtk.IconSize.Menu));
 		}
 
 		TaskEventHandler updateHandler;
@@ -356,9 +362,9 @@ namespace MonoDevelop.MacIntegration
 
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			layer.Contents = pixbuf.ToNSImage ().CGImage;
+			SetImageFor (layer, pixbuf);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 9, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
+			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			var statusIcon = new StatusIcon (this, layer);
 			layerToStatus [layer] = statusIcon;
 			AddTooltip (layer);
