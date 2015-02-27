@@ -133,6 +133,13 @@ namespace MonoDevelop.MacIntegration
 			return attrString;
 		}
 
+		CGImage GetCGImageFor (string resource)
+		{
+			nfloat scale = Window != null && Window.BackingScaleFactor == 2 ? 2 : 1;
+			return ImageService.GetIcon (resource, Gtk.IconSize.Menu).ToNSImage ()
+				.Representations ().First (r => r.Size.Width == 16 * scale).CGImage;
+		}
+
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
@@ -158,12 +165,12 @@ namespace MonoDevelop.MacIntegration
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
-					buildResultIcon.Contents = ImageService.GetIcon ("md-status-error-count", Gtk.IconSize.Menu).ToNSImage ().CGImage;
+					buildResultIcon.Contents = GetCGImageFor ("md-status-error-count");
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
-					buildResultIcon.Contents = ImageService.GetIcon ("md-status-warning-count", Gtk.IconSize.Menu).ToNSImage ().CGImage;
+					buildResultIcon.Contents = GetCGImageFor ("md-status-warning-count");
 				} else
 					buildResultVisible = false;
 
