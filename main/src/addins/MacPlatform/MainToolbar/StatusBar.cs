@@ -120,11 +120,10 @@ namespace MonoDevelop.MacIntegration
 				// Center image with frame.
 				if (!size.IsEmpty)
 					image.AlignmentRect = new CGRect (-2, -3, image.Size.Width, image.Size.Height);
-					attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image) }));
+					attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
 				}
 
-			attrString.Append (new NSAttributedString ("  "));
-			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
+			attrString.Append (new NSAttributedString ("  " + text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 6.5f : 6,
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle { LineBreakMode = NSLineBreakMode.TruncatingMiddle, Alignment = NSTextAlignment.Center },
@@ -281,6 +280,11 @@ namespace MonoDevelop.MacIntegration
 			buildResultIcon.Frame = new CGRect (right - 0.5f - buildResultIcon.Contents.Width, 3, buildResultIcon.Contents.Width, buildResultIcon.Contents.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
+
+			var textLayer = Layer.Sublayers [0];
+			textLayer.Constraints = new [] {
+				new CAConstraint (CAConstraintAttribute.Width, BuildIconLayerId, CAConstraintAttribute.MinX, 1, -6),
+			};
 		}
 
 		class TooltipOwner : NSObject
@@ -313,13 +317,22 @@ namespace MonoDevelop.MacIntegration
 			tooltips.Clear ();
 
 			nfloat right = Frame.Width;
+			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					right -= item.Contents.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Contents.Width, item.Contents.Height);
 					AddTooltip (item);
 					item.SetNeedsDisplay ();
+					last = item;
 				}
+			}
+
+			if (last != null) {
+				var textLayer = Layer.Sublayers [0];
+				textLayer.Constraints = new [] {
+					new CAConstraint (CAConstraintAttribute.Width, last.Name, CAConstraintAttribute.MinX, 1, -6),
+				};
 			}
 
 			DrawBuildResults ();
