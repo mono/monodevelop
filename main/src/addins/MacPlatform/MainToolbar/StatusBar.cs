@@ -457,8 +457,6 @@ namespace MonoDevelop.MacIntegration
 				iconAnimation = ImageService.GetAnimatedIcon (iconId, Gtk.IconSize.Menu);
 				image = iconAnimation.FirstFrame.ToNSImage ();
 				xwtAnimation = iconAnimation.StartAnimation (p => {
-					var dummy = p.ToPixbuf ();
-					dummy.Dispose ();
 					image = p.ToNSImage ();
 					ReconstructString ();
 				});
