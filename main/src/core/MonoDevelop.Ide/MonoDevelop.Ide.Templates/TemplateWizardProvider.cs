@@ -97,6 +97,12 @@ namespace MonoDevelop.Ide.Templates
 			CurrentWizard.UpdateDefaultParameters (template.DefaultParameters);
 			IsFirstPage = true;
 			CurrentPageNumber = 1;
+
+			if (CurrentWizard.TotalPages == 0) {
+				IsLastPage = true;
+				return false;
+			}
+
 			CurrentWizardPage = GetCurrentWizardPage ();
 
 			IsLastPage = CurrentWizard.TotalPages == 1;
@@ -168,6 +174,11 @@ namespace MonoDevelop.Ide.Templates
 			IsLastPage = false;
 
 			return true;
+		}
+
+		public void BeforeProjectIsCreated ()
+		{
+			CurrentWizard.ConfigureWizard ();
 		}
 
 		public void Dispose ()

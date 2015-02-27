@@ -440,6 +440,9 @@ namespace MonoDevelop.Ide.Projects
 
 		public void Create ()
 		{
+			if (wizardProvider.HasWizard)
+				wizardProvider.BeforeProjectIsCreated ();
+
 			if (!CreateProject ())
 				return;
 
