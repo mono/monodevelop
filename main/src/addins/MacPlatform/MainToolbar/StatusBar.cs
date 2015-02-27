@@ -133,11 +133,13 @@ namespace MonoDevelop.MacIntegration
 			return attrString;
 		}
 
-		CGImage GetCGImageFor (string resource)
+		void SetImageFor (CALayer layer, string resource)
 		{
-			nfloat scale = Window != null && Window.BackingScaleFactor == 2 ? 2 : 1;
-			return ImageService.GetIcon (resource, Gtk.IconSize.Menu).ToNSImage ()
-				.Representations ().First (r => r.Size.Width == 16 * scale).CGImage;
+			var image = ImageService.GetIcon (resource, Gtk.IconSize.Menu).ToNSImage ();
+			var layerContents = image.GetLayerContentsForContentsScale (layer.ContentsScale);
+
+			void_objc_msgSend_IntPtr (layer.Handle, setContentsSelector, layerContents.Handle);
+			layer.Bounds = new CGRect (0, 0, image.Size.Width, image.Size.Height);
 		}
 
 		TaskEventHandler updateHandler;
@@ -165,12 +167,12 @@ namespace MonoDevelop.MacIntegration
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
-					buildResultIcon.Contents = GetCGImageFor ("md-status-error-count");
+					SetImageFor (buildResultIcon, "md-status-error-count");
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize));
-					buildResultIcon.Contents = GetCGImageFor ("md-status-warning-count");
+					SetImageFor (buildResultIcon, "md-status-warning-count");
 				} else
 					buildResultVisible = false;
 
@@ -284,7 +286,7 @@ namespace MonoDevelop.MacIntegration
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
-			buildResultIcon.Frame = new CGRect (right - 0.5f - buildResultIcon.Contents.Width, 3, buildResultIcon.Contents.Width, buildResultIcon.Contents.Height);
+			buildResultIcon.Frame = new CGRect (right - 0.5f - buildResultIcon.Bounds.Width, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 
@@ -327,8 +329,8 @@ namespace MonoDevelop.MacIntegration
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
-					right -= item.Contents.Width + 6;
-					item.Frame = new CGRect (right, 3, item.Contents.Width, item.Contents.Height);
+					right -= item.Bounds.Width + 6;
+					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
 					AddTooltip (item);
 					item.SetNeedsDisplay ();
 					last = item;
@@ -355,6 +357,7 @@ namespace MonoDevelop.MacIntegration
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
 			layer.Contents = pixbuf.ToNSImage ().CGImage;
+			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 9, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			var statusIcon = new StatusIcon (this, layer);
 			layerToStatus [layer] = statusIcon;
@@ -683,5 +686,10 @@ namespace MonoDevelop.MacIntegration
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
 		}
+
+		IntPtr setContentsSelector = ObjCRuntime.Selector.GetHandle ("setContents:");
+		const string LIBOBJC_DYLIB = "/usr/lib/libobjc.dylib";
+		[System.Runtime.InteropServices.DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
+		public extern static void void_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg);
 	}
 }
