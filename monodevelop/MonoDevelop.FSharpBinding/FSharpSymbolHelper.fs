@@ -285,10 +285,17 @@ module SymbolTooltips =
             |> Seq.map Seq.toList 
             |> Seq.toList 
 
-        let retType = 
-            try
+        let retType =
+            //This try block will be removed when FCS updates
+            try 
                 asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
-            with _ex -> "Unknown"
+            with _ex ->
+                try
+                    if func.FullType.GenericArguments.Count > 0 then
+                        let lastArg = func.FullType.GenericArguments |> Seq.last
+                        asType UserType (escapeText(lastArg.Format displayContext))
+                    else "Unknown"
+                with _ -> "Unknown"
 
         let padLength = 
             let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
