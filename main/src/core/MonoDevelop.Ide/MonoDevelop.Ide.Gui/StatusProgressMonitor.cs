@@ -115,6 +115,8 @@ namespace MonoDevelop.Ide.Gui
 					statusBar.StatusSourcePad = statusSourcePad;
 					statusBar.Dispose ();
 				}
+			} else {
+				statusBar.Dispose ();
 			}
 
 			DesktopService.SetGlobalProgress (GlobalWork);
