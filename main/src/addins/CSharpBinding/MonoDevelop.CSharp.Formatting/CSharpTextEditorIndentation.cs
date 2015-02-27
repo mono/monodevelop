@@ -44,6 +44,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using ICSharpCode.NRefactory6.CSharp;
+using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -109,11 +112,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void RunFormatter (MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
-
-			if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-				var offset = Editor.LocationToOffset (location);
-				OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset);
-			}
+			if (!OnTheFlyFormatting || Editor == null || Editor.EditMode != EditMode.Edit)
+				return;
+			var offset = Editor.LocationToOffset (location);
+			OnTheFlyFormatter.Format (Editor, DocumentContext, offset, offset);
 		}
 
 		protected override void Initialize ()
@@ -500,16 +502,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-					if (descriptor.KeyChar == ';' || descriptor.KeyChar == '}') {
-						using (var undo = Editor.OpenUndoGroup ()) {
-							if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-								OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation);
-							}
-						}
-					}
-				}
-
+				HandleOnTheFlyFormatting (skipFormatting, descriptor);
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				lastCharInserted = '\0';
 				CheckXmlCommentCloseTag (descriptor.KeyChar);
@@ -533,10 +526,57 @@ namespace MonoDevelop.CSharp.Formatting
 
 			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
-			if (!skipFormatting && descriptor.KeyChar == '}')
-				RunFormatter (new MonoDevelop.Ide.Editor.DocumentLocation (Editor.CaretLine, Editor.CaretColumn));
+			HandleOnTheFlyFormatting (skipFormatting, descriptor);
+			
 			return result;
 		}
+
+		void HandleOnTheFlyFormatting (bool skipFormatting, KeyDescriptor descriptor)
+		{
+			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
+				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (DocumentContext.AnalysisDocument, descriptor.KeyChar)) {
+					var document = DocumentContext.AnalysisDocument;
+					var caretPosition = Editor.CaretOffset;
+					var token = CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default(CancellationToken)).Result;
+					if (token.IsMissing || !service.ValidSingleOrMultiCharactersTokenKind (descriptor.KeyChar, token.Kind ()) || token.IsKind (SyntaxKind.EndOfFileToken, SyntaxKind.None))
+						return;
+					if (CSharpEditorFormattingService.TokenShouldNotFormatOnTypeChar (token))
+						return;
+					using (var undo = Editor.OpenUndoGroup ()) {
+						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
+							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation);
+						}
+					}
+				}
+			}
+			if (OnTheFlyFormatting && descriptor.SpecialKey == SpecialKey.Return)
+				FormatOnReturn ();
+		}
+
+		async void FormatOnReturn (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var document = DocumentContext.AnalysisDocument;
+			var caretPosition = Editor.CaretOffset;
+			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync(document, caretPosition, cancellationToken).ConfigureAwait(false);
+			if (token.IsMissing)
+				return;
+
+			string text = null;
+			if (service.IsInvalidToken(token, ref text))
+				return;
+			// Check to see if the token is ')' and also the parent is a using statement. If not, bail
+			if (CSharpEditorFormattingService.TokenShouldNotFormatOnReturn(token))
+				return;
+			var tokenRange = FormattingRangeHelper.FindAppropriateRange(token);
+			if (tokenRange == null || !tokenRange.HasValue || tokenRange.Value.Item1.Equals(tokenRange.Value.Item2))
+				return;
+			var value = tokenRange.Value;
+			using (var undo = Editor.OpenUndoGroup ()) {
+				OnTheFlyFormatter.Format (Editor, DocumentContext, value.Item1.SpanStart, value.Item2.Span.End);
+			}
+		}
+
+		CSharpEditorFormattingService service = new CSharpEditorFormattingService ();
 
 		static bool IsSemicolonalreadyPlaced (IReadonlyTextDocument data, int caretOffset)
 		{
