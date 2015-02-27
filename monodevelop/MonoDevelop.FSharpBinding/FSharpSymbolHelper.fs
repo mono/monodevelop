@@ -285,7 +285,10 @@ module SymbolTooltips =
             |> Seq.map Seq.toList 
             |> Seq.toList 
 
-        let retType =  asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+        let retType = 
+            try
+                asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+            with _ex -> "Unknown"
 
         let padLength = 
             let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
