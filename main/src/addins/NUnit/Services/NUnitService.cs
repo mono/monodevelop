@@ -53,9 +53,14 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
+
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
-		
+
 		public static NUnitService Instance {
 			get {
 				if (instance == null) {
@@ -259,7 +264,34 @@ namespace MonoDevelop.NUnit
 		{
 			RebuildTests ();
 		}
-		
+
+		void OnReferenceChangedInProject (object sender, ProjectReferenceEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Project.ParentSolution, rootTests))
+				RebuildTests ();
+		}
+
+		void OnItemsChangedInSolution (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Solution, rootTests))
+				RebuildTests ();
+		}
+
+		bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
+		{
+			foreach (var t in tests) {
+				var tg = t as SolutionFolderTestGroup;
+				if (tg != null && ((SolutionFolder)tg.OwnerObject).ParentSolution == sol)
+					return true;
+				var g = t as UnitTestGroup;
+				if (g != null && g.HasTests) {
+					if (IsSolutionGroupPresent (sol, g.Tests))
+						return true;
+				}
+			}
+			return false;
+		}
+
 		void RebuildTests ()
 		{
 			if (rootTests != null) {
