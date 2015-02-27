@@ -996,11 +996,9 @@ namespace MonoDevelop.SourceEditor
 
 			var list = new List<string> ();
 			list.Add (string.Format ("Convert to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
-			if (multiple)
-				list.Add (string.Format ("Convert all files to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
+			list.Add (string.Format ("Convert all files to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
 			list.Add (string.Format ("Keep {0} line endings", GetEolString (DetectedEolMarker)));
-			if (multiple)
-				list.Add (string.Format ("Keep {0} line endings in all files", GetEolString (DetectedEolMarker)));
+			list.Add (string.Format ("Keep {0} line endings in all files", GetEolString (DetectedEolMarker)));
 			var combo = new ComboBox (list.ToArray ());
 			combo.Active = 0;
 			hbox.PackEnd (combo, false, false, 0);
@@ -1024,36 +1022,22 @@ namespace MonoDevelop.SourceEditor
 				RemoveMessageBar ();
 			};
 			okButton.Clicked += delegate {
-				if (multiple) {
-					switch (combo.Active) {
-					case 0:
-						ConvertLineEndings ();
-						view.WorkbenchWindow.ShowNotification = false;
-						view.Save (fileName, view.SourceEncoding);
-						break;
-					case 1:
-						FileRegistry.ConvertLineEndingsInAllFiles ();
-						break;
-					case 2:
-						UseIncorrectMarkers = true;
-						view.WorkbenchWindow.ShowNotification = false;
-						break;
-					case 3:
-						FileRegistry.IgnoreLineEndingsInAllFiles ();
-						break;
-					}
-				} else {
-					switch (combo.Active) {
-					case 0:
-						ConvertLineEndings ();
-						view.WorkbenchWindow.ShowNotification = false;
-						view.Save (fileName, view.SourceEncoding);
-						break;
-					case 1:
-						UseIncorrectMarkers = true;
-						view.WorkbenchWindow.ShowNotification = false;
-						break;
-					}
+				switch (combo.Active) {
+				case 0:
+					ConvertLineEndings ();
+					view.WorkbenchWindow.ShowNotification = false;
+					view.Save (fileName, view.SourceEncoding);
+					break;
+				case 1:
+					FileRegistry.ConvertLineEndingsInAllFiles ();
+					break;
+				case 2:
+					UseIncorrectMarkers = true;
+					view.WorkbenchWindow.ShowNotification = false;
+					break;
+				case 3:
+					FileRegistry.IgnoreLineEndingsInAllFiles ();
+					break;
 				}
 				RemoveMessageBar ();
 			};

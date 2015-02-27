@@ -192,6 +192,7 @@ namespace MonoDevelop.SourceEditor
 
 		public static void ConvertLineEndingsInAllFiles ()
 		{
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.ConvertAlways;
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
@@ -205,6 +206,8 @@ namespace MonoDevelop.SourceEditor
 
 		public static void IgnoreLineEndingsInAllFiles ()
 		{
+			DefaultSourceEditorOptions.Instance.LineEndingConversion = LineEndingConversion.LeaveAsIs;
+
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
