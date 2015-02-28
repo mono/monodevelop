@@ -436,7 +436,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var srcRoot = ofdlg.SelectedFile.CanonicalPath;
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
-			
+
+			if (foundFiles.Length == 0) {
+				MessageService.GenericAlert (Stock.Information,
+					GettextCatalog.GetString ("Empty directory.", srcRoot.FileName), 
+					GettextCatalog.GetString ("Directory {0} is empty, no files has been added."),
+					AlertButton.Close);
+				return;
+			}
+
 			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot);
 			impdlg.AddFiles (foundFiles);
 			if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
