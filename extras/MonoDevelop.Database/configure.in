@@ -18,7 +18,7 @@ fi
 AC_SUBST(PATH)
 AC_SUBST(LD_LIBRARY_PATH)
 
-MONO_REQUIRED_VERSION=2.6.1
+MONO_REQUIRED_VERSION=3.0.4
 PKG_CHECK_MODULES(UNMANAGED_DEPENDENCIES_MONO,mono >= $MONO_REQUIRED_VERSION, has_mono=true, has_mono=false)
 
 if test "x$has_mono" = "xfalse"; then
@@ -80,10 +80,8 @@ dnl *** The following hunk of script-fu is to detect the      ***
 dnl *** available MonoDevelop.Database database providers...  ***
 dnl *************************************************************
 
-test_sqlite=$(gacutil -l | grep "Mono.Data.Sqlite, Version=2")
-test_sqlserver=$(gacutil -l | grep "System.Data, Version=2")
-test_postgres=$(gacutil -l | grep "Npgsql, Version=2")
-test_mysql=$(gacutil -l | grep "MySql.Data")
+test_sqlite=$(gacutil -l | grep "Mono.Data.Sqlite")
+test_sqlserver=$(gacutil -l | grep "System.Data")
 
 if test "x$test_sqlite" != "x"; then
 	## mono 1.2.4 contains some bugs that prevents the sqlite addin from working properly
@@ -105,17 +103,8 @@ else
 	enable_sqlserver="no (missing System.Data, Version 2)"
 fi
 
-if test "x$test_postgres" != "x"; then
-	enable_postgres="yes"
-else
-	enable_postgres="no (missing Npgsql, Version 2)"
-fi
-
-if test "x$test_mysql" != "x"; then
-	enable_mysql="yes"
-else
-	enable_mysql="no (missing MySql.Data)"
-fi
+enable_postgres="yes"
+enable_mysql="yes"
 
 AM_CONDITIONAL(ENABLE_POSTGRES, [test "x$enable_postgres" = "xyes"])
 AM_CONDITIONAL(ENABLE_MYSQL, [test "x$enable_mysql" = "xyes"])

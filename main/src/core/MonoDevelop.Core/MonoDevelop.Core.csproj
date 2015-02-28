@@ -575,7 +575,7 @@
     <Exec Command="$(MonoLauncher)$(MSBuildProjectDirectory)\BuildVariables.gen.exe ." WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Delete Files="BuildVariables.gen.exe" />
     <MakeDir Directories="$(OutputPath)" />
-    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
-    <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(BuildInfo)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
   </Target>
 </Project>

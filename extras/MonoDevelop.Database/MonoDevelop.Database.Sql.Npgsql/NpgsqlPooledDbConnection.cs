@@ -40,8 +40,7 @@ namespace MonoDevelop.Database.Sql.Npgsql
 		public override Version DatabaseVersion {
 			get {
 				NpgsqlConnection connection = DbConnection as NpgsqlConnection;
-				ServerVersion version = connection.ServerVersion;
-				return new Version (version.Major, version.Minor, version.Patch);
+				return new Version (connection.ServerVersion);
 			}
 		}
 		

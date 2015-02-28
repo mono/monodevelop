@@ -1612,8 +1612,9 @@ using Npgsql;
 					
 				using (IPooledDbConnection conn = connectionPool.Request ()) {
 					using (NpgsqlConnection internalConn = conn.DbConnection as NpgsqlConnection) {
-						int major = internalConn.ServerVersion.Major;
-						int minor = internalConn.ServerVersion.Minor;
+						Version version = new Version (internalConn.ServerVersion);
+						int major = version.Major;
+						int minor = version.Minor;
 						try {
 							using (IDbCommand command = conn.CreateCommand (
 																		"SELECT datlastsysoid FROM pg_database Limit 1"))

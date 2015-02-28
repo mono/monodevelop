@@ -7,8 +7,8 @@ REFS =  \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Components.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Designer.dll \
 	-r:$(top_builddir)/build/MonoDevelop.Database.Sql.dll \
+	-r:$(top_builddir)/contrib/Npgsql/Npgsql.dll \
 	-r:Mono.Posix \
-	-r:Npgsql \
 	-r:System \
 	-r:System.Core \
 	-r:System.Data \
@@ -43,6 +43,15 @@ RES =  \
 	MonoDevelop.Database.Sql.Npgsql.addin.xml \
 	NpgsqlSyntaxMode.xml
 
+NPGSQL_FILES = Npgsql.dll
+
+SRC_NPGSQL_FILES = $(addprefix $(top_srcdir)/contrib/Npgsql/, $(NPGSQL_FILES))
+BUILD_NPGSQL_FILES = $(addprefix $(ADDIN_BUILD)/, $(notdir $(NPGSQL_FILES)))
+
+$(BUILD_NPGSQL_FILES): $(SRC_NPGSQL_FILES)
+	mkdir -p $(ADDIN_BUILD)
+	cp $(SRC_NPGSQL_FILES) $(ADDIN_BUILD)/.
+
 if ENABLE_POSTGRES
 all: $(ASSEMBLY)
 else
@@ -56,10 +65,10 @@ $(ASSEMBLY): $(build_sources) $(build_resources)
 
 if ENABLE_POSTGRES
 assemblydir = $(MD_ADDIN_DIR)/MonoDevelop.Database
-assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb
+assembly_DATA = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NPGSQL_FILES)
 endif
 
-CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb
+CLEANFILES = $(ASSEMBLY) $(ASSEMBLY).mdb $(BUILD_NPGSQL_FILES)
 EXTRA_DIST = $(FILES) $(RES)
 
 include $(top_srcdir)/Makefile.include
