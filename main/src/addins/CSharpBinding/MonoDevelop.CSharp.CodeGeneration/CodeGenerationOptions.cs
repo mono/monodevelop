@@ -40,6 +40,7 @@ using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.Formatting;
 using System.Diagnostics;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -117,29 +118,26 @@ namespace MonoDevelop.CodeGeneration
 			if (ctx.ParsedDocument != null)
 				CurrentState = ctx.ParsedDocument.GetAst<SemanticModel> ();
 			offset = editor.CaretOffset;
-			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
-			EnclosingMemberSyntax = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
-			if (EnclosingMemberSyntax is BaseTypeDeclarationSyntax)
-				EnclosingMemberSyntax = null;
-			if (EnclosingMemberSyntax != null)
-				EnclosingMember = CurrentState.GetDeclaredSymbol (EnclosingMemberSyntax);
-
-			EnclosingPart = node.AncestorsAndSelf ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
-			if (EnclosingPart != null)
+			var tree = CurrentState.SyntaxTree;
+			EnclosingPart = tree.GetContainingTypeDeclaration (offset, default(CancellationToken));
+			if (EnclosingPart != null) {
 				EnclosingType = CurrentState.GetDeclaredSymbol (EnclosingPart) as ITypeSymbol;
+
+				foreach (var member in EnclosingPart.Members) {
+					if (member.Span.Contains (offset)) {
+						EnclosingMemberSyntax = member;
+						break;
+					}
+
+				}
+				if (EnclosingMemberSyntax != null)
+					EnclosingMember = CurrentState.GetDeclaredSymbol (EnclosingMemberSyntax);
+			}
 		}
 
 		public string CreateShortType (ITypeSymbol fullType)
 		{
 			return fullType.ToMinimalDisplayString (CurrentState, offset);
-		}
-
-		public CodeGenerator CreateCodeGenerator ()
-		{
-			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
-			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
-			return result;
 		}
 
 		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)

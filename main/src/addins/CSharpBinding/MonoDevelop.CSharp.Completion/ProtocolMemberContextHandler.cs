@@ -128,6 +128,11 @@ namespace MonoDevelop.CSharp.Completion
 			return (ns == "MonoTouch.Foundation" || ns == "Foundation");
 		}
 
+		internal static bool IsFoundationNamespace (INamespaceSymbol ns)
+		{
+			return IsFoundationNamespace (ns.GetFullName ());
+		}
+
 		internal static bool HasProtocolAttribute (INamedTypeSymbol type, out string name)
 		{
 			foreach (var attrs in type.GetAttributes ()) {

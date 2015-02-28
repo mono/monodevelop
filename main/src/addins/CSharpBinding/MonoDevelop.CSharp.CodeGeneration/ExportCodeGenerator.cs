@@ -23,53 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//using Gtk;
-//using System.Collections.Generic;
-//using ICSharpCode.NRefactory.CSharp;
-//using MonoDevelop.Core;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using System.Linq;
-//using ICSharpCode.NRefactory.CSharp.Refactoring;
-//using MonoDevelop.CodeGeneration;
-//using MonoDevelop.CSharp.Completion;
-//
-//namespace MonoDevelop.CodeGeneration
-//{
-//	abstract class BaseExportCodeGenerator : ICodeGenerator
-//	{
-//		public abstract bool IsValidMember (IMember member);
-//
-//		#region ICodeGenerator implementation
-//
-//		bool ICodeGenerator.IsValid (CodeGenerationOptions options)
-//		{
-//			return new ExportMethods (this, options).IsValid ();
-//		}
-//
-//		IGenerateAction ICodeGenerator.InitalizeSelection (CodeGenerationOptions options, TreeView treeView)
-//		{
-//			var exportMethods = new ExportMethods (this, options);
-//			exportMethods.Initialize (treeView);
-//			return exportMethods;
-//		}
-//
-//		string ICodeGenerator.Icon {
-//			get {
-//				return "md-method";
-//			}
-//		}
-//
-//		public abstract string Text {
-//			get;
-//		}
-//
-//		public abstract string GenerateDescription {
-//			get;
-//		}
-//
-//		#endregion
-//
-//
+using Gtk;
+using System.Collections.Generic;
+using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.CodeGeneration;
+using MonoDevelop.CSharp.Completion;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
+
+namespace MonoDevelop.CodeGeneration
+{
+	abstract class BaseExportCodeGenerator : ICodeGenerator
+	{
+		public abstract bool IsValidMember (ISymbol member);
+
+		#region ICodeGenerator implementation
+
+		bool ICodeGenerator.IsValid (CodeGenerationOptions options)
+		{
+			return new ExportMethods (this, options).IsValid ();
+		}
+
+		IGenerateAction ICodeGenerator.InitalizeSelection (CodeGenerationOptions options, TreeView treeView)
+		{
+			var exportMethods = new ExportMethods (this, options);
+			exportMethods.Initialize (treeView);
+			return exportMethods;
+		}
+
+		string ICodeGenerator.Icon {
+			get {
+				return "md-method";
+			}
+		}
+
+		public abstract string Text {
+			get;
+		}
+
+		public abstract string GenerateDescription {
+			get;
+		}
+
+		#endregion
+
+
 //		public static Attribute GenerateExportAttribute (RefactoringContext ctx, IMember member)
 //		{
 //			if (member == null)
@@ -137,132 +137,123 @@
 //			return null;
 //		}
 //
-//		static string GetProtocol (IMember member)
-//		{
-//			var attr = member.Attributes.FirstOrDefault (a => a.AttributeType.Name == "ExportAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace));
-//			if (attr == null || attr.PositionalArguments.Count == 0)
-//				return null;
-//			return attr.PositionalArguments.First ().ConstantValue.ToString ();
-//		}
-//
-//		public static bool IsImplemented (IType type, IMember protocolMember)
-//		{
-//			foreach (var m in type.GetMembers (m => m.SymbolKind == protocolMember.SymbolKind && m.Name == protocolMember.Name)) {
-//				var p = m as IProperty;
-//				if (p != null) {
-//					if (p.CanGet && ((IProperty)protocolMember).CanGet && GetProtocol (p.Getter) == GetProtocol (((IProperty)protocolMember).Getter))
-//						return true;
-//					if (p.CanSet && ((IProperty)protocolMember).CanSet && GetProtocol (p.Setter) == GetProtocol (((IProperty)protocolMember).Setter))
-//						return true;
-//					continue;
-//				}
-//				if (GetProtocol (m) == GetProtocol (protocolMember))
-//					return true;
-//			}
-//			return false;
-//		}
-//
-//		class ExportMethods : AbstractGenerateAction
-//		{
-//			readonly BaseExportCodeGenerator cg;
-//
-//			public ExportMethods (BaseExportCodeGenerator cg, CodeGenerationOptions options) : base (options)
-//			{
-//				this.cg = cg;
-//			}
-//
-//
-//			protected override IEnumerable<object> GetValidMembers ()
-//			{
-//				var type = Options.EnclosingType;
-//				if (type == null || Options.EnclosingMember != null)
-//					yield break;
-///*					
-//				foreach (var t in type.DirectBaseTypes) {
-//					string name;
-//					if (!HasProtocolAttribute (t, out name))
-//						continue;
-//					var protocolType = Options.DocumentContext.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
-//					if (protocolType == null)
-//						break;
-//					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
-//						if (member.ImplementedInterfaceMembers.Any ())
-//							continue;
-//						if (!cg.IsValidMember (member))
-//							continue;
-//						if (IsImplemented (type, member))
-//							continue;
-//						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)))
-//							yield return member;
-//					}
-//					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
-//						if (member.ImplementedInterfaceMembers.Any ())
-//							continue;
-//						if (!cg.IsValidMember (member))
-//							continue;
-//						if (IsImplemented (type, member))
-//							continue;
-//						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)) ||
-//							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)))
-//							yield return member;
-//					}
-//				}
-//				*/
-//			}
-//
-//			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
-//			{
-//				var generator = Options.CreateCodeGenerator ();
-//				generator.AutoIndent = false;
-//
-//				foreach (IMember member in includedMembers) {
-//					yield return "";
-//					//yield return GenerateMemberCode (ctx, builder, member);
-//				}
-//			}
-//		}
-//	
-//	}
-//
-//	class OptionalProtocolMemberGenerator : BaseExportCodeGenerator
-//	{
-//		public override string Text {
-//			get {
-//				return GettextCatalog.GetString ("Implement protocol members");
-//			}
-//		}
-//
-//		public override string GenerateDescription {
-//			get {
-//				return GettextCatalog.GetString ("Select protocol members to implement");
-//			}
-//		}
-//
-//		public override bool IsValidMember (IMember member)
-//		{
-//			return !member.IsAbstract;
-//		}
-//	}
-//
-//	class RequiredProtocolMemberGenerator : BaseExportCodeGenerator
-//	{
-//		public override string Text {
-//			get {
-//				return GettextCatalog.GetString ("Implement required protocol members");
-//			}
-//		}
-//
-//		public override string GenerateDescription {
-//			get {
-//				return GettextCatalog.GetString ("Select protocol members to implement");
-//			}
-//		}
-//
-//		public override bool IsValidMember (IMember member)
-//		{
-//			return member.IsAbstract;
-//		}
-//	}
-//
-//}
-//
+		static string GetProtocol (ISymbol member)
+		{
+			var attr = member.GetAttributes ().FirstOrDefault (a => a.AttributeClass.Name == "ExportAttribute" && ProtocolMemberContextHandler.IsFoundationNamespace (a.AttributeClass.ContainingNamespace));
+			if (attr == null || attr.ConstructorArguments.Length == 0)
+				return null;
+			return attr.ConstructorArguments.First ().Value.ToString ();
+		}
+
+		public static bool IsImplemented (ITypeSymbol type, ISymbol protocolMember)
+		{
+			foreach (var m in type.GetMembers().Where (m => m.Kind == protocolMember.Kind && m.Name == protocolMember.Name)) {
+				var p = m as IPropertySymbol;
+				if (p != null) {
+					if (p.GetMethod != null && ((IPropertySymbol)protocolMember).GetMethod != null && GetProtocol (p.GetMethod) == GetProtocol (((IPropertySymbol)protocolMember).GetMethod))
+						return true;
+					if (p.SetMethod != null && ((IPropertySymbol)protocolMember).SetMethod != null && GetProtocol (p.SetMethod) == GetProtocol (((IPropertySymbol)protocolMember).SetMethod))
+						return true;
+					continue;
+				}
+				if (GetProtocol (m) == GetProtocol (protocolMember))
+					return true;
+			}
+			return false;
+		}
+
+		class ExportMethods : AbstractGenerateAction
+		{
+			readonly BaseExportCodeGenerator cg;
+
+			public ExportMethods (BaseExportCodeGenerator cg, CodeGenerationOptions options) : base (options)
+			{
+				this.cg = cg;
+			}
+
+
+			protected override IEnumerable<object> GetValidMembers ()
+			{
+				var type = Options.EnclosingType;
+				if (type == null || Options.EnclosingMember != null)
+					yield break;
+				foreach (var t in type.GetBaseTypes ()) {
+					string name;
+					if (!ProtocolMemberContextHandler.HasProtocolAttribute (t, out name))
+						continue;
+					var protocolType = Options.CurrentState.Compilation.GetTypeByMetadataName (t.ContainingNamespace.GetFullName () + "." + name);
+					if (protocolType == null)
+						break;
+					foreach (var member in protocolType.GetMembers().OfType<IMethodSymbol>()) {
+						if (member.ExplicitInterfaceImplementations.Length > 0)
+							continue;
+						if (!cg.IsValidMember (member))
+							continue;
+						if (IsImplemented (type, member))
+							continue;
+						if (member.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && ProtocolMemberContextHandler.IsFoundationNamespace (a.AttributeClass.ContainingNamespace)))
+							yield return member;
+					}
+					foreach (var member in protocolType.GetMembers().OfType<IPropertySymbol>()) {
+						if (member.ExplicitInterfaceImplementations.Length > 0)
+							continue;
+						if (!cg.IsValidMember (member))
+							continue;
+						if (IsImplemented (type, member))
+							continue;
+						if (member.GetMethod != null && member.GetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && ProtocolMemberContextHandler.IsFoundationNamespace (a.AttributeClass.ContainingNamespace)) ||
+							member.SetMethod != null && member.SetMethod.GetAttributes ().Any (a => a.AttributeClass.Name == "ExportAttribute" && ProtocolMemberContextHandler.IsFoundationNamespace (a.AttributeClass.ContainingNamespace)))
+							yield return member;
+					}
+				}
+			}
+
+			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
+			{
+				foreach (ISymbol member in includedMembers) {
+					yield return CSharpCodeGenerator.CreateProtocolMemberImplementation (Options.EnclosingType, Options.EnclosingPart.GetLocation (), member, false).Code;
+				}
+			}
+		}
+	}
+
+	class OptionalProtocolMemberGenerator : BaseExportCodeGenerator
+	{
+		public override string Text {
+			get {
+				return GettextCatalog.GetString ("Implement protocol members");
+			}
+		}
+
+		public override string GenerateDescription {
+			get {
+				return GettextCatalog.GetString ("Select protocol members to implement");
+			}
+		}
+
+		public override bool IsValidMember (ISymbol member)
+		{
+			return !member.IsAbstract;
+		}
+	}
+
+	class RequiredProtocolMemberGenerator : BaseExportCodeGenerator
+	{
+		public override string Text {
+			get {
+				return GettextCatalog.GetString ("Implement required protocol members");
+			}
+		}
+
+		public override string GenerateDescription {
+			get {
+				return GettextCatalog.GetString ("Select protocol members to implement");
+			}
+		}
+
+		public override bool IsValidMember (ISymbol member)
+		{
+			return member.IsAbstract;
+		}
+	}
+}

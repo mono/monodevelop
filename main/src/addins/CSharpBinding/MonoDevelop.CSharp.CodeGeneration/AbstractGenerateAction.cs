@@ -37,6 +37,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -150,7 +151,12 @@ namespace MonoDevelop.CodeGeneration
 			if (output.Length > 0) {
 				var data = options.Editor;
 				data.EnsureCaretIsNotVirtual ();
-				data.InsertAtCaret (output.ToString ().TrimStart ());
+				int offset = data.CaretOffset;
+				var text = output.ToString ().TrimStart ();
+				using (var undo = data.OpenUndoGroup ()) {
+					data.InsertAtCaret (text);
+					OnTheFlyFormatter.Format (data, options.DocumentContext, offset, offset + text.Length);
+				}
 			}
 		}
 	}

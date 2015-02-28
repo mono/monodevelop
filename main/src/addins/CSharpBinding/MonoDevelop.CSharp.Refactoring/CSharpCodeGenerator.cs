@@ -149,33 +149,33 @@ namespace MonoDevelop.CSharp.Refactoring
 //			result.AppendLine ();
 		}
 //		
-////		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
-////		                                                                      IUnresolvedTypeDefinition part,
-////		                                                                      IUnresolvedMember member,
-////		                                                                      bool explicitDeclaration)
-////		{
-////			SetIndentTo (part);
-////			var options = new CodeGenerationOptions () {
-////				ExplicitDeclaration = explicitDeclaration,
-////				ImplementingType = implementingType,
-////				Part = part
-////			};
-////			ITypeResolveContext ctx;
-////
-////			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
-////			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-////			options.Document = doc;
-////
-////			if (member is IUnresolvedMethod)
-////				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
-////			if (member is IUnresolvedProperty)
-////				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
-////			if (member is IUnresolvedField)
-////				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
-////			if (member is IUnresolvedEvent)
-////				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
-////			throw new NotSupportedException ("member " +  member + " is not supported.");
-////		}
+//		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+//		                                                                      IUnresolvedTypeDefinition part,
+//		                                                                      IUnresolvedMember member,
+//		                                                                      bool explicitDeclaration)
+//		{
+//			SetIndentTo (part);
+//			var options = new CodeGenerationOptions () {
+//				ExplicitDeclaration = explicitDeclaration,
+//				ImplementingType = implementingType,
+//				Part = part
+//			};
+//			ITypeResolveContext ctx;
+//
+//			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
+//			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
+//			options.Document = doc;
+//
+//			if (member is IUnresolvedMethod)
+//				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedProperty)
+//				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedField)
+//				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedEvent)
+//				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
+//			throw new NotSupportedException ("member " +  member + " is not supported.");
+//		}
 		
 		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{

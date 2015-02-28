@@ -28,34 +28,31 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeGeneration
 {
 	class OverrideMembersGenerator : ICodeGenerator
 	{
-		public string Icon
-		{
-			get
-			{
+		public string Icon {
+			get {
 				return "md-method";
 			}
 		}
 
-		public string Text
-		{
-			get
-			{
+		public string Text {
+			get {
 				return GettextCatalog.GetString ("Override members");
 			}
 		}
 
-		public string GenerateDescription
-		{
-			get
-			{
+		public string GenerateDescription {
+			get {
 				return GettextCatalog.GetString ("Select members to be overridden.");
 			}
 		}
@@ -80,32 +77,72 @@ namespace MonoDevelop.CodeGeneration
 
 			protected override IEnumerable<object> GetValidMembers ()
 			{
-				var type = Options.EnclosingType;
-				if (type == null || Options.EnclosingMember != null)
-					yield break;
-				var memberName = new HashSet<string> ();
+				var encType = Options.EnclosingType as INamedTypeSymbol;
+				if (encType == null || Options.EnclosingMember != null)
+					return Enumerable.Empty<object> ();
 
-				foreach (var member in Options.EnclosingType.GetMembers ()) {
-					if (member.IsImplicitlyDeclared)
-						continue;
-					if (member.IsVirtual || member.IsOverride || member.IsAbstract) {
-						string id = member.MetadataName;
-						if (memberName.Contains (id))
-							continue;
-						memberName.Add (id);
-						yield return member;
+
+				var result = new HashSet<ISymbol> ();
+				var cancellationToken = default(CancellationToken);
+				var baseTypes = encType.GetBaseTypes ().Reverse ();
+				foreach (var type in baseTypes) {
+					RemoveOverriddenMembers (result, type, cancellationToken);
+
+					AddOverridableMembers (result, encType, type, cancellationToken);
+				}
+				RemoveOverriddenMembers (result, encType, cancellationToken);
+				return result;
+			}
+
+			static void AddOverridableMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)
+			{
+				foreach (var member in type.GetMembers()) {
+					if (IsOverridable (member, containingType)) {
+						result.Add (member);
 					}
 				}
 			}
-			
+
+			protected static void RemoveOverriddenMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, CancellationToken cancellationToken)
+			{
+				foreach (var member in containingType.GetMembers()) {
+					var overriddenMember = member.OverriddenMember ();
+					if (overriddenMember != null) {
+						result.Remove (overriddenMember);
+					}
+				}
+			}
+
+			public static bool IsOverridable (ISymbol member, INamedTypeSymbol containingType)
+			{
+				if (member.IsAbstract || member.IsVirtual || member.IsOverride) {
+					if (member.IsSealed) {
+						return false;
+					}
+
+					if (!member.IsAccessibleWithin (containingType)) {
+						return false;
+					}
+
+					switch (member.Kind) {
+					case SymbolKind.Event:
+						return true;
+					case SymbolKind.Method:
+						return ((IMethodSymbol)member).MethodKind == MethodKind.Ordinary;
+					case SymbolKind.Property:
+						return !((IPropertySymbol)member).IsWithEvents;
+					}
+				}
+				return false;
+			}
+
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				var generator = Options.CreateCodeGenerator ();
-				generator.AutoIndent = false;
-				foreach (IMember member in includedMembers)
-					yield return member.Name;
-// TODO: Roslyn port !
-//					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
+				var currentType = Options.EnclosingType as INamedTypeSymbol;
+
+				foreach (ISymbol member in includedMembers) {
+					yield return CSharpCodeGenerator.CreateOverridenMemberImplementation (currentType, currentType.Locations.First (), member, false).Code;
+				}
 			}
 		}
 	}
