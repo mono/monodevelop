@@ -296,7 +296,7 @@ namespace MonoDevelop.Ide.Templates
 		[TestCase("a:b", false)]
 		[TestCase("a#b", false)]
 		[TestCase("a|b", false)]
-		public void InvalidProjectNameCharactersCauseConfigToBeInvalid(string projectName, bool valid)
+		public void InvalidProjectNameCharactersCauseConfigToBeInvalid (string projectName, bool valid)
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a";
