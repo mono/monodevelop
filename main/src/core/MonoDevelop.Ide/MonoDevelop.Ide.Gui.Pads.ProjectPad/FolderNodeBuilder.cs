@@ -443,6 +443,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 				
 			var srcFiles = impdlg.SelectedFiles;
+			if(!srcFiles.Any())
+				MessageService.ShowMessage("No files selected");
+				
 			var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
 
 			var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
