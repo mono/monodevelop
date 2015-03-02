@@ -821,17 +821,20 @@
 			_description = "Search for and replace text in all files of a directory" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoTypeHandler"
 	         _label = "Go to Type..."
 			_description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoFileHandler"
 			_label = "Go to File..."
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
 			_description = "Jump to a file in the current workspace"
 			icon  = "gtk-open" />
 	<Command id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo"
+			defaultHandler = "MonoDevelop.Components.MainToolbar.NavigateToHandler"
 			_label = "Navigate To..."
 			_description = "Jump to a item in the current workspace"
 			shortcut = "Control|,"

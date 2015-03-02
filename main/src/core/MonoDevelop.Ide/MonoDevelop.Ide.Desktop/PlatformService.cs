@@ -445,9 +445,16 @@ namespace MonoDevelop.Ide.Desktop
 		{
 		}
 
-		internal virtual MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal virtual IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
 			return new MainToolbar ();
+		}
+
+		internal virtual void AttachMainToolbar (Gtk.VBox parent, IMainToolbarView toolbar)
+		{
+			var toolbarBox = new Gtk.HBox ();
+			parent.PackStart (toolbarBox, false, false, 0);
+			toolbarBox.PackStart ((MainToolbar)toolbar, true, true, 0);
 		}
 
 		public virtual bool GetIsFullscreen (Gtk.Window window)

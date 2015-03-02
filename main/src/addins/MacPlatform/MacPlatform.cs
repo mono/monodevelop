@@ -734,12 +734,8 @@ namespace MonoDevelop.MacIntegration
 		internal override void SetMainWindowDecorations (Gtk.Window window)
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
-			w.IsOpaque = false;
-
-			var resource = "maintoolbarbg.png";
-			NSImage img = LoadImage (resource);
-			w.BackgroundColor = NSColor.FromPatternImage (img);
-			w.StyleMask |= NSWindowStyle.TexturedBackground;
+			w.IsOpaque = true;
+			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
 		}
 
 		internal override void RemoveWindowShadow (Gtk.Window window)
@@ -750,22 +746,20 @@ namespace MonoDevelop.MacIntegration
 			w.HasShadow = false;
 		}
 
-		internal override MainToolbar CreateMainToolbar (Gtk.Window window)
+		internal override IMainToolbarView CreateMainToolbar (Gtk.Window window)
 		{
-			NSWindow w = GtkQuartz.GetWindow (window);
-			w.IsOpaque = false;
+			return new MonoDevelop.MacIntegration.MainToolbar.MainToolbar (window);
+		}
 
-			var resource = "maintoolbarbg.png";
-			NSImage img = LoadImage (resource);
-			var c = NSColor.FromPatternImage (img);
-			w.BackgroundColor = c;
-			w.StyleMask |= NSWindowStyle.TexturedBackground;
+		internal override void AttachMainToolbar (Gtk.VBox parent, IMainToolbarView toolbar)
+		{
+			var nativeToolbar = (MonoDevelop.MacIntegration.MainToolbar.MainToolbar)toolbar;
+			NSWindow w = GtkQuartz.GetWindow (nativeToolbar.gtkWindow);
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+				w.TitleVisibility = NSWindowTitleVisibility.Hidden;
 
-			var result = new MainToolbar () {
-				Background = CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
-				TitleBarHeight = GetTitleBarHeight ()
-			};
-			return result;
+			w.Toolbar = nativeToolbar.widget;
+			nativeToolbar.Initialize ();
 		}
 
 		protected override RecentFiles CreateRecentFilesProvider ()

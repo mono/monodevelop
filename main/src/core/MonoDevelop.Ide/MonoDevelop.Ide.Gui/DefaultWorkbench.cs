@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.MenuBar topMenu;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
-		MainToolbar toolbar;
+		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MainToolbar Toolbar {
+		public MainToolbarController Toolbar {
 			get {
 				return toolbar;
 			}
@@ -786,8 +786,7 @@ namespace MonoDevelop.Ide.Gui
 			Realize ();
 			toolbar = DesktopService.CreateMainToolbar (this);
 			DesktopService.SetMainWindowDecorations (this);
-			var toolbarBox = new HBox ();
-			fullViewVBox.PackStart (toolbarBox, false, false, 0);
+			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
@@ -828,7 +827,6 @@ namespace MonoDevelop.Ide.Gui
 			bottomBar = new MonoDevelopStatusBar ();
 			fullViewVBox.PackEnd (bottomBar, false, true, 0);
 			bottomBar.ShowAll ();
-			toolbarBox.PackStart (this.toolbar, true, true, 0);
 
 			// In order to get the correct bar height we need to calculate the tab size using the
 			// correct style (the style of the window). At this point the widget is not yet a child
