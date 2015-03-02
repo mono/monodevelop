@@ -107,6 +107,8 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy (OptionSet options)
 		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
 			this.options = options;
 		}
 

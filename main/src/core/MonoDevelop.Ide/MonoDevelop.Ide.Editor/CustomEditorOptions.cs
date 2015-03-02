@@ -141,6 +141,13 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 
+		public CustomEditorOptions ()
+		{
+			this.ColorScheme = "Default";
+			this.TabSize = this.IndentationSize = 4;
+			this.DefaultEolMarker = "\n";
+		}
+
 		#region IDisposable implementation
 		public void Dispose ()
 		{

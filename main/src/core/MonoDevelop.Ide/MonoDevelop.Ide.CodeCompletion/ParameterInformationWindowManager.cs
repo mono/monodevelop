@@ -47,7 +47,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static ParameterInformationWindowManager ()
 		{
-			IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+			if (IdeApp.Workbench != null)
+				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
 		}
 
 		static void DestroyWindow ()

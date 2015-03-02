@@ -31,17 +31,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.CodeTemplates;
-using MonoDevelop.SourceEditor;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
-using Atk;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
-using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
@@ -534,8 +530,8 @@ namespace MonoDevelop.CSharp.Formatting
 		void HandleOnTheFlyFormatting (bool skipFormatting, KeyDescriptor descriptor)
 		{
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (DocumentContext.AnalysisDocument, descriptor.KeyChar)) {
-					var document = DocumentContext.AnalysisDocument;
+				var document = DocumentContext.AnalysisDocument;
+				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (document, descriptor.KeyChar)) {
 					var caretPosition = Editor.CaretOffset;
 					var token = CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default(CancellationToken)).Result;
 					if (token.IsMissing || !service.ValidSingleOrMultiCharactersTokenKind (descriptor.KeyChar, token.Kind ()) || token.IsKind (SyntaxKind.EndOfFileToken, SyntaxKind.None))

@@ -2425,6 +2425,8 @@ namespace Mono.TextEditor
 
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn, int tabSize)
 		{
+			if (tabSize == 0)
+				return currentColumn;
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}

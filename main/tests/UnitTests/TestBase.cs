@@ -41,7 +41,7 @@ namespace UnitTests
 		
 		
 		[TestFixtureSetUp]
-		public void Setup ()
+		public void Simulate ()
 		{
 			if (firstRun) {
 				string rootDir = Path.Combine (Util.TestsRootDir, "config");
