@@ -36,11 +36,16 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Debugger;
+using UnitTests;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
-	public class DebugTooltipTests
+	public class DebugTooltipTests : TestBase
 	{
 		Document document;
 		string content;
@@ -50,23 +55,44 @@ namespace MonoDevelop.SourceEditor
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
 			tww.ViewContent = content;
-			content.ContentName = "a.cs";
+			content.ContentName = "/a.cs";
 			content.Data.MimeType = "text/x-csharp";
-			var doc = new Document (tww);
 
 			var text = input;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "mscorlib"));
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System.Core"));
+
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			var config = solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor);
+
+			content.Project = project;
+
+
 			content.Text = text;
 			content.CursorPosition = Math.Max (0, endPos);
+			var doc = new Document (tww);
+			doc.SetProject (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
 			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
+
 			return doc;
 		}
 
@@ -179,16 +205,11 @@ namespace DebuggerTooltipTests
 		static string ResolveExpression (Document doc, string content, int offset)
 		{
 			var editor = doc.Editor;
-			ResolveResult result;
+			var loc = editor.OffsetToLocation (offset);
+			var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
+
 			int startOffset;
-			AstNode node;
-// TODO: Roslyn port
-			//var loc = editor.OffsetToLocation (offset);
-			//if (!doc.TryResolveAt (loc, out result, out node))
-			//	return null;
-//
-			//return CSharpCompletionTextEditorExtension.ResolveExpression (doc.Editor, result, node, out startOffset);
-			return "";
+			return resolver.ResolveExpression (editor, doc, offset, out startOffset);
 		}
 
 		int GetBasicOffset (string expr)
