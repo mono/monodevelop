@@ -48,16 +48,14 @@ namespace MonoDevelop.ValaBinding
 			get;
 		}
 		
-		string GetCompilerFlags (ValaProjectConfiguration configuration);
+		string GetCompilerFlags(ValaProjectConfiguration configuration);
 		
-		string GetDefineFlags (ValaProjectConfiguration configuration);
+		string GetDefineFlags(ValaProjectConfiguration configuration);
 		
-		BuildResult Compile (
-			ProjectFileCollection projectFiles,
-			ProjectPackageCollection packages,
-			ValaProjectConfiguration configuration,
+		BuildResult Compile(ValaProject project,
+            ConfigurationSelector solutionConfiguration,
 			IProgressMonitor monitor);
 		
-		void Clean (ProjectFileCollection projectFiles, ValaProjectConfiguration configuration, IProgressMonitor monitor);
+		void Clean(ProjectFileCollection projectFiles, ValaProjectConfiguration configuration, IProgressMonitor monitor);
 	}
 }

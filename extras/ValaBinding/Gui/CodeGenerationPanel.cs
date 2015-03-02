@@ -38,6 +38,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.ValaBinding.Utils;
 
 namespace MonoDevelop.ValaBinding
 {
@@ -103,10 +104,12 @@ namespace MonoDevelop.ValaBinding
 			extraCompilerTextView.Buffer.Text = compilationParameters.ExtraCompilerArguments;
 			
 			defineSymbolsTextEntry.Text = compilationParameters.DefineSymbols;
-			
+
+            libStore.Clear();
 			foreach (string lib in configuration.Libs)
 				libStore.AppendValues (lib);
-			
+
+            includePathStore.Clear();
 			foreach (string includePath in configuration.Includes)
 				includePathStore.AppendValues (includePath);
 		}
@@ -154,62 +157,69 @@ namespace MonoDevelop.ValaBinding
 			dialog.Run ();
 			includePathEntry.Text = dialog.SelectedPath;
 		}
-		
-		public bool Store ()
-		{
-			if (compilationParameters == null || configuration == null)
-				return false;
-			
-			string line;
-			Gtk.TreeIter iter;
-			
-			if (noWarningRadio.Active)
-				compilationParameters.WarningLevel = WarningLevel.None;
-			else if (normalWarningRadio.Active)
-				compilationParameters.WarningLevel = WarningLevel.Normal;
-			else
-				compilationParameters.WarningLevel = WarningLevel.All;
-			
-			compilationParameters.WarningsAsErrors = warningsAsErrorsCheckBox.Active;
-			
-			compilationParameters.OptimizationLevel = (int)optimizationSpinButton.Value;
-			
-			switch (targetComboBox.Active)
-			{
-			case 0:
-				configuration.CompileTarget = ValaBinding.CompileTarget.Bin;
-				compilationParameters.EnableMultithreading = threadingCheckbox.Active;
-				break;
-			case 1:
-				configuration.CompileTarget = ValaBinding.CompileTarget.StaticLibrary;
-				break;
-			case 2:
-				configuration.CompileTarget = ValaBinding.CompileTarget.SharedLibrary;
-				break;
-			}
-			
-			compilationParameters.ExtraCompilerArguments = extraCompilerTextView.Buffer.Text;
-			
-			compilationParameters.DefineSymbols = defineSymbolsTextEntry.Text;
-			
-			libStore.GetIterFirst (out iter);
-			configuration.Libs.Clear ();
-			while (libStore.IterIsValid (iter)) {
-				line = (string)libStore.GetValue (iter, 0);
-				configuration.Libs.Add (line);
-				libStore.IterNext (ref iter);
-			}
-			
-			includePathStore.GetIterFirst (out iter);
-			configuration.Includes.Clear ();
-			while (includePathStore.IterIsValid (iter)) {
-				line = (string)includePathStore.GetValue (iter, 0);
-				configuration.Includes.Add (line);
-				includePathStore.IterNext (ref iter);
-			}
-			
-			return true;
-		}
+
+        public bool Store()
+        {
+            if (compilationParameters == null || configuration == null)
+                return false;
+
+            string line;
+            Gtk.TreeIter iter;
+
+            if (noWarningRadio.Active)
+                compilationParameters.WarningLevel = WarningLevel.None;
+            else if (normalWarningRadio.Active)
+                compilationParameters.WarningLevel = WarningLevel.Normal;
+            else
+                compilationParameters.WarningLevel = WarningLevel.All;
+
+            compilationParameters.WarningsAsErrors = warningsAsErrorsCheckBox.Active;
+
+            compilationParameters.OptimizationLevel = (int)optimizationSpinButton.Value;
+
+            switch (targetComboBox.Active)
+            {
+                case 0:
+                    configuration.CompileTarget = ValaBinding.CompileTarget.Bin;
+                    compilationParameters.EnableMultithreading = threadingCheckbox.Active;
+                    break;
+                case 1:
+                    configuration.CompileTarget = ValaBinding.CompileTarget.StaticLibrary;
+                    break;
+                case 2:
+                    configuration.CompileTarget = ValaBinding.CompileTarget.SharedLibrary;
+                    break;
+            }
+
+            compilationParameters.ExtraCompilerArguments = extraCompilerTextView.Buffer.Text;
+
+            compilationParameters.DefineSymbols = defineSymbolsTextEntry.Text;
+
+            libStore.GetIterFirst(out iter);
+            configuration.Libs.Clear();
+            while (libStore.IterIsValid(iter))
+            {
+                line = (string)libStore.GetValue(iter, 0);
+                configuration.Libs.Add(line);
+                libStore.IterNext(ref iter);
+            }
+
+            includePathStore.GetIterFirst(out iter);
+            configuration.Includes.Clear();
+            while (includePathStore.IterIsValid(iter))
+            {
+                line = (string)includePathStore.GetValue(iter, 0);
+
+                var baseDirectory = FileUtils.GetExactPathName(configuration.SourceDirectory);
+                var path = FileUtils.GetExactPathName(line.Trim());
+                configuration.Includes.Add(FileService.AbsoluteToRelativePath(
+                    baseDirectory, path));
+
+                includePathStore.IterNext(ref iter);
+            }
+
+            return true;
+        }
 
 		protected virtual void OnLibAddEntryChanged (object sender, EventArgs e)
 		{

@@ -80,10 +80,6 @@ namespace MonoDevelop.ValaBinding
 		
 		protected override void InsertItem (int index, ProjectPackage value)
 		{
-			if(value.IsProject && null != project) {
-				ValaProjectConfiguration vpc = (ValaProjectConfiguration)project.DefaultConfiguration;
-				value.File = ProjectPackage.ToRelativePath(value.File, Path.Combine(vpc.OutputDirectory, vpc.CompiledOutputName));
-			}
 			base.InsertItem (index, value);
 			if (project != null) {
 				project.NotifyPackageAddedToProject (value);
@@ -102,10 +98,6 @@ namespace MonoDevelop.ValaBinding
 		protected override void SetItem (int index, ProjectPackage item)
 		{
 			ProjectPackage oldValue = Items [index];
-			if(item.IsProject && null != project) {
-				ValaProjectConfiguration vpc = (ValaProjectConfiguration)project.DefaultConfiguration;
-				item.File = ProjectPackage.ToRelativePath(item.File, Path.Combine(vpc.OutputDirectory, vpc.CompiledOutputName));
-			}
 			base.SetItem (index, item);
 			if (project != null) {
 				project.NotifyPackageRemovedFromProject (oldValue);

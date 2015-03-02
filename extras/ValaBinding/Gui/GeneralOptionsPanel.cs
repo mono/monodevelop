@@ -86,11 +86,14 @@ namespace MonoDevelop.ValaBinding
 			}
 
 			valaCombo.Active = active;
+
+			extraCompilerTextView.Buffer.Text = PropertyService.Get<string> ("ValaBinding.ExtraCompilerOptions");
 		}
 		
 		public bool Store ()
 		{
 			PropertyService.Set ("ValaBinding.DefaultValaCompiler", default_vala_compiler.Name);
+			PropertyService.Set ("ValaBinding.ExtraCompilerOptions", extraCompilerTextView.Buffer.Text);
 			PropertyService.SaveProperties ();
 			return true;
 		}

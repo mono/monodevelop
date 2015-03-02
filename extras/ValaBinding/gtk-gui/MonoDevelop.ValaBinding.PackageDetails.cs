@@ -5,29 +5,29 @@ namespace MonoDevelop.ValaBinding
 	public partial class PackageDetails
 	{
 		private global::Gtk.VBox vbox3;
-
+		
 		private global::Gtk.Table table1;
-
+		
 		private global::Gtk.Label descriptionLabel;
-
+		
 		private global::Gtk.Label label7;
-
+		
 		private global::Gtk.Label label8;
-
+		
 		private global::Gtk.Label label9;
-
+		
 		private global::Gtk.Label nameLabel;
-
+		
 		private global::Gtk.Label versionLabel;
-
+		
 		private global::Gtk.VBox vbox4;
-
+		
 		private global::Gtk.Label label13;
-
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
-
+		
 		private global::Gtk.TreeView requiresTreeView;
-
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -54,11 +54,11 @@ namespace MonoDevelop.ValaBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.descriptionLabel = new global::Gtk.Label ();
 			this.descriptionLabel.Name = "descriptionLabel";
-			this.descriptionLabel.Xalign = 0f;
-			this.descriptionLabel.Yalign = 0f;
+			this.descriptionLabel.Xalign = 0F;
+			this.descriptionLabel.Yalign = 0F;
 			this.descriptionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("label12");
 			this.table1.Add (this.descriptionLabel);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.descriptionLabel]));
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1 [this.descriptionLabel]));
 			w2.TopAttach = ((uint)(2));
 			w2.BottomAttach = ((uint)(3));
 			w2.LeftAttach = ((uint)(1));
@@ -68,19 +68,19 @@ namespace MonoDevelop.ValaBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();
 			this.label7.Name = "label7";
-			this.label7.Xalign = 0f;
+			this.label7.Xalign = 0F;
 			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Name:");
 			this.table1.Add (this.label7);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1[this.label7]));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table1 [this.label7]));
 			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label8 = new global::Gtk.Label ();
 			this.label8.Name = "label8";
-			this.label8.Xalign = 0f;
+			this.label8.Xalign = 0F;
 			this.label8.LabelProp = global::Mono.Unix.Catalog.GetString ("Version:");
 			this.table1.Add (this.label8);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1[this.label8]));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.label8]));
 			w4.TopAttach = ((uint)(1));
 			w4.BottomAttach = ((uint)(2));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -88,11 +88,11 @@ namespace MonoDevelop.ValaBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.label9 = new global::Gtk.Label ();
 			this.label9.Name = "label9";
-			this.label9.Xalign = 0f;
-			this.label9.Yalign = 0f;
+			this.label9.Xalign = 0F;
+			this.label9.Yalign = 0F;
 			this.label9.LabelProp = global::Mono.Unix.Catalog.GetString ("Description:");
 			this.table1.Add (this.label9);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1[this.label9]));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.label9]));
 			w5.TopAttach = ((uint)(2));
 			w5.BottomAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -100,10 +100,10 @@ namespace MonoDevelop.ValaBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.nameLabel = new global::Gtk.Label ();
 			this.nameLabel.Name = "nameLabel";
-			this.nameLabel.Xalign = 0f;
+			this.nameLabel.Xalign = 0F;
 			this.nameLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("label10");
 			this.table1.Add (this.nameLabel);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1[this.nameLabel]));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.nameLabel]));
 			w6.LeftAttach = ((uint)(1));
 			w6.RightAttach = ((uint)(2));
 			w6.XOptions = ((global::Gtk.AttachOptions)(4));
@@ -111,10 +111,10 @@ namespace MonoDevelop.ValaBinding
 			// Container child table1.Gtk.Table+TableChild
 			this.versionLabel = new global::Gtk.Label ();
 			this.versionLabel.Name = "versionLabel";
-			this.versionLabel.Xalign = 0f;
+			this.versionLabel.Xalign = 0F;
 			this.versionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("label11");
 			this.table1.Add (this.versionLabel);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1[this.versionLabel]));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.versionLabel]));
 			w7.TopAttach = ((uint)(1));
 			w7.BottomAttach = ((uint)(2));
 			w7.LeftAttach = ((uint)(1));
@@ -122,7 +122,7 @@ namespace MonoDevelop.ValaBinding
 			w7.XOptions = ((global::Gtk.AttachOptions)(4));
 			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.vbox3.Add (this.table1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table1]));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table1]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -133,10 +133,10 @@ namespace MonoDevelop.ValaBinding
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.label13 = new global::Gtk.Label ();
 			this.label13.Name = "label13";
-			this.label13.Xalign = 0f;
+			this.label13.Xalign = 0F;
 			this.label13.LabelProp = global::Mono.Unix.Catalog.GetString ("Requires:");
 			this.vbox4.Add (this.label13);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.label13]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label13]));
 			w9.Position = 0;
 			w9.Expand = false;
 			w9.Fill = false;
@@ -155,13 +155,13 @@ namespace MonoDevelop.ValaBinding
 			w10.Add (this.requiresTreeView);
 			this.scrolledwindow1.Add (w10);
 			this.vbox4.Add (this.scrolledwindow1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.scrolledwindow1]));
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.scrolledwindow1]));
 			w13.Position = 1;
 			this.vbox3.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.vbox4]));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.vbox4]));
 			w14.Position = 1;
 			w1.Add (this.vbox3);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(w1[this.vbox3]));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox3]));
 			w15.Position = 0;
 			// Internal child MonoDevelop.ValaBinding.PackageDetails.ActionArea
 			global::Gtk.HButtonBox w16 = this.ActionArea;
@@ -178,7 +178,7 @@ namespace MonoDevelop.ValaBinding
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16[this.buttonOk]));
+			global::Gtk.ButtonBox.ButtonBoxChild w17 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w16 [this.buttonOk]));
 			w17.Expand = false;
 			w17.Fill = false;
 			if ((this.Child != null)) {

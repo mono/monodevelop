@@ -5,28 +5,9 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="MonoDevelop.VersionControl, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.NUnit, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.XmlEditor, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.AspNet, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Gettext, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Deployment.Linux, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.GtkCore, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.DesignerSupport, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.VBNetBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.CSharpBinding, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Autotools, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Ide, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="Mono.TextEditor, Version=1.0.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.SourceEditor2, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Debugger, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Refactoring, Version=2.2.0.0, Culture=neutral" />
-    <widget-library name="MonoDevelop.Debugger.Soft, Version=2.2.0.0, Culture=neutral" />
     <widget-library name="../build/MonoDevelop.ValaBinding.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.CodeGenerationPanel" design-size="611 396">
+  <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.CodeGenerationPanel" design-size="628 496">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Notebook" id="notebook1">
@@ -130,7 +111,6 @@
                 <child>
                   <widget class="Gtk.SpinButton" id="optimizationSpinButton">
                     <property name="MemberName" />
-                    <property name="Sensitive">False</property>
                     <property name="CanFocus">True</property>
                     <property name="Upper">3</property>
                     <property name="PageIncrement">10</property>
@@ -1176,36 +1156,15 @@ Example:
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.GeneralOptionsPanel" design-size="457 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.ValaBinding.GeneralOptionsPanel" design-size="467 393">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.Table" id="table1">
         <property name="MemberName" />
-        <property name="NRows">3</property>
-        <property name="NColumns">3</property>
+        <property name="NRows">2</property>
+        <property name="NColumns">2</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <placeholder />
-        </child>
         <child>
           <widget class="Gtk.Label" id="label1">
             <property name="MemberName" />
@@ -1221,6 +1180,75 @@ Example:
             <property name="XFill">True</property>
             <property name="XShrink">False</property>
             <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Table" id="table5">
+            <property name="MemberName" />
+            <property name="NRows">2</property>
+            <property name="RowSpacing">6</property>
+            <property name="ColumnSpacing">9</property>
+            <property name="BorderWidth">6</property>
+            <child>
+              <widget class="Gtk.Label" id="label7">
+                <property name="MemberName" />
+                <property name="Xalign">0</property>
+                <property name="LabelProp" translatable="yes">Extra Compiler Options</property>
+              </widget>
+              <packing>
+                <property name="AutoSize">False</property>
+                <property name="XOptions">Fill</property>
+                <property name="YOptions">Fill</property>
+                <property name="XExpand">False</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">False</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="scrolledwindow4">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TextView" id="extraCompilerTextView">
+                    <property name="MemberName" />
+                    <property name="Tooltip" translatable="yes">A newline-separated list of extra options to send to the compiler.
+One option can be in more than one line.
+Example:
+	`--pkg
+	cairo`</property>
+                    <property name="CanFocus">True</property>
+                    <property name="Text" translatable="yes" />
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="TopAttach">1</property>
+                <property name="BottomAttach">2</property>
+                <property name="AutoSize">False</property>
+                <property name="XExpand">True</property>
+                <property name="XFill">True</property>
+                <property name="XShrink">False</property>
+                <property name="YExpand">True</property>
+                <property name="YFill">True</property>
+                <property name="YShrink">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="TopAttach">1</property>
+            <property name="BottomAttach">2</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">False</property>
+            <property name="XExpand">True</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">True</property>
             <property name="YFill">True</property>
             <property name="YShrink">False</property>
           </packing>

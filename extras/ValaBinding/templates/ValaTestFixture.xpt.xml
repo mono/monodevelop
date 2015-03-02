@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Test Fixture</_Name>
 		<_Category>Vala</_Category>
-		<Icon>md-project-console|res:vala-icon-32.png</Icon>
+		<Icon>md-project-cofnsole|res:vala-icon-32.png</Icon>
 		<LanguageName>Vala</LanguageName>
 		<_Description>Creates a Vala test fixture.</_Description>
 	</TemplateConfiguration>
@@ -21,7 +21,7 @@
 				PauseConsoleOutput = "True"
 				CompilerArgs = ""
 				LinkerArgs = ""
-				Packages = "glib-2.0"
+				Packages = "glib-2.0|gobject-2.0"
 				/>
 			
 			<Files>

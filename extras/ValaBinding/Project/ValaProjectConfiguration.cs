@@ -87,34 +87,53 @@ namespace MonoDevelop.ValaBinding
 			get { return compilationParameters; }
 			set { compilationParameters = value; }
 		}
-		
-		// TODO: This should be revised to use the naming conventions depending on OS
-		public string CompiledOutputName {
-			get {
-				string suffix = string.Empty;
-				string prefix = string.Empty;
-				
-				switch (target)
-				{
-				case CompileTarget.Bin:
-					break;
-				case CompileTarget.StaticLibrary:
-					if (!Output.StartsWith ("lib"))
-						prefix = "lib";
-					if (!Output.EndsWith (".a"))
-						suffix = ".a";
-					break;
-				case CompileTarget.SharedLibrary:
-					if (!Output.StartsWith ("lib"))
-						prefix = "lib";
-					if (!Output.EndsWith (".so"))
-						suffix = ".so";
-					break;
-				}
-				
-				return string.Format("{0}{1}{2}", prefix, Output, suffix);
-			}
-		}
+
+        public string CompiledOutputName
+        {
+            get
+            {
+                string suffix = string.Empty;
+                string prefix = string.Empty;
+
+                switch (target)
+                {
+                    case CompileTarget.Bin:
+                        if (MonoDevelop.Core.Platform.IsWindows)
+                        {
+                            if (!Output.EndsWith(".exe"))
+                                suffix = ".exe";
+                        }
+                        break;
+                    
+                    case CompileTarget.StaticLibrary:
+                        if (!Output.StartsWith("lib"))
+                            prefix = "lib";
+                        if (!Output.EndsWith(".a"))
+                            suffix = ".a";
+                        break;
+                    
+                    case CompileTarget.SharedLibrary:
+                        if (!Output.StartsWith("lib"))
+                            prefix = "lib";
+                        if (MonoDevelop.Core.Platform.IsWindows)
+                        {
+                            if (!Output.EndsWith(".dll"))
+                                suffix = ".dll";
+                        }
+                        else
+                        {
+                            if (!Output.EndsWith(".so"))
+                            {
+                                suffix = ".so";
+                            }
+                        }
+
+                        break;
+                }
+
+                return string.Format("{0}{1}{2}", prefix, Output, suffix);
+            }
+        }
 		
 		public string SourceDirectory {
 			get { return source_directory_path; }

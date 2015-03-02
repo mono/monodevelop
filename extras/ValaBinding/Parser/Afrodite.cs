@@ -87,14 +87,14 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		IntPtr instance;
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_completion_engine_new (string id);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern void afrodite_completion_engine_queue_sourcefile (IntPtr instance, string path, string content, 
 		                                                                bool is_vapi, bool is_glib);
 		                                                                
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_completion_engine_get_codedom (IntPtr instance);
 		
 		#endregion
@@ -327,37 +327,37 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		IntPtr instance;
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_type_name (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_display_name (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_children (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_parent (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_fully_qualified_name (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_source_references (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_symbol_get_access (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_parameters (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_symbol_get_member_type (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_symbol_type (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_symbol_get_return_type (IntPtr instance);
 		
 		#endregion
@@ -465,24 +465,24 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			get{ return instance; }
 		}
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_get_symbols_for_path (IntPtr instance, IntPtr options, string path);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_lookup_symbol_at (IntPtr instance, string filename, int line, int column);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_lookup (IntPtr instance, string fully_qualified_name, out IntPtr parent);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_get_symbol_for_name_and_path (IntPtr instance, IntPtr options,
 		                                                                string symbol_qualified_name, string path,
 		                                                                int line, int column);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_get_source_files (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_code_dom_lookup_source_file (IntPtr instance, string filename);
 		
 		#endregion
@@ -519,10 +519,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		IntPtr instance;
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_ast_dumper_new ();
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern void afrodite_ast_dumper_dump (IntPtr instance, IntPtr codeDom, string filterSymbol);
 		
 		#endregion
@@ -562,7 +562,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			get{ return instance; }
 		}
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_query_result_get_children (IntPtr instance);
 		
 		#endregion
@@ -593,7 +593,7 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			get{ return instance; }
 		}
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_result_item_get_symbol (IntPtr instance);
 		
 		#endregion
@@ -626,10 +626,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			get{ return instance; }
 		}
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_query_options_new ();
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_query_options_standard ();
 		
 		#endregion
@@ -685,10 +685,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                              
 		IntPtr instance;
 		                                              
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern bool vala_iterator_next (IntPtr instance);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern IntPtr vala_iterator_get (IntPtr instance);
 		
 		#endregion
@@ -809,37 +809,37 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		
 		IntPtr instance;
 
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern bool vala_collection_add (IntPtr instance, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern void vala_collection_clear (IntPtr instance);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern bool vala_collection_contains (IntPtr instance, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern int vala_collection_get_size (IntPtr instance);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern bool vala_collection_remove (IntPtr instance, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern IntPtr vala_iterable_iterator (IntPtr instance);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern int vala_list_index_of (IntPtr instance, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern void vala_list_insert (IntPtr instance, int index, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern IntPtr vala_list_get (IntPtr instance, int index);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern void vala_list_set (IntPtr instance, int index, IntPtr item);
 		
-		[DllImport("vala")]
+		[DllImport("libvala")]
 		static extern void vala_list_remove_at (IntPtr instance, int index);
 		
 		#endregion
@@ -903,16 +903,16 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                              
 		IntPtr instance;
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_source_file_new (string filename);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_source_file_get_filename (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_source_file_get_symbols (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_source_file_get_using_directives (IntPtr instance);
 		
 		
@@ -1044,34 +1044,34 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                              
 		IntPtr instance;
 		                                              
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_data_type_get_type_name (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_data_type_get_name (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_data_type_get_symbol (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_data_type_get_generic_types (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_array (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_pointer (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_nullable (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_out (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_ref (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern bool afrodite_data_type_get_is_generic (IntPtr instance);
 		
 		
@@ -1115,19 +1115,19 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 		                                              
 		IntPtr instance;
 		                                              
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_source_reference_get_file (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_source_reference_get_first_line (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_source_reference_get_last_line (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_source_reference_get_first_column (IntPtr instance);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern int afrodite_source_reference_get_last_column (IntPtr instance);
 		
 		
@@ -1166,10 +1166,10 @@ namespace MonoDevelop.ValaBinding.Parser.Afrodite
 			return Marshal.PtrToStringAuto (afrodite_utils_symbols_get_symbol_type_description (memberType));
 		}
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_utils_get_package_paths (string package, IntPtr codeContext, string[] vapiDirs);
 		
-		[DllImport("afrodite")]
+		[DllImport("libafrodite")]
 		static extern IntPtr afrodite_utils_symbols_get_symbol_type_description (int memberType);
 	}
 }

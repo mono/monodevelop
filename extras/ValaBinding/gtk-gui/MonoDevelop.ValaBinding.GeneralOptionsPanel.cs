@@ -5,9 +5,17 @@ namespace MonoDevelop.ValaBinding
 	public partial class GeneralOptionsPanel
 	{
 		private global::Gtk.Table table1;
-
+		
 		private global::Gtk.Label label1;
-
+		
+		private global::Gtk.Table table5;
+		
+		private global::Gtk.Label label7;
+		
+		private global::Gtk.ScrolledWindow scrolledwindow4;
+		
+		private global::Gtk.TextView extraCompilerTextView;
+		
 		private global::Gtk.ComboBox valaCombo;
 
 		protected virtual void Build ()
@@ -17,7 +25,7 @@ namespace MonoDevelop.ValaBinding
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.ValaBinding.GeneralOptionsPanel";
 			// Container child MonoDevelop.ValaBinding.GeneralOptionsPanel.Gtk.Container+ContainerChild
-			this.table1 = new global::Gtk.Table (((uint)(3)), ((uint)(3)), false);
+			this.table1 = new global::Gtk.Table (((uint)(2)), ((uint)(2)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
@@ -25,22 +33,58 @@ namespace MonoDevelop.ValaBinding
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
 			this.label1.Xpad = 10;
-			this.label1.Xalign = 0f;
+			this.label1.Xalign = 0F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Default Vala Compiler:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
+			global::Gtk.Table.TableChild w1 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
 			w1.XOptions = ((global::Gtk.AttachOptions)(4));
 			w1.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table1.Gtk.Table+TableChild
+			this.table5 = new global::Gtk.Table (((uint)(2)), ((uint)(1)), false);
+			this.table5.Name = "table5";
+			this.table5.RowSpacing = ((uint)(6));
+			this.table5.ColumnSpacing = ((uint)(9));
+			this.table5.BorderWidth = ((uint)(6));
+			// Container child table5.Gtk.Table+TableChild
+			this.label7 = new global::Gtk.Label ();
+			this.label7.Name = "label7";
+			this.label7.Xalign = 0F;
+			this.label7.LabelProp = global::Mono.Unix.Catalog.GetString ("Extra Compiler Options");
+			this.table5.Add (this.label7);
+			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table5 [this.label7]));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
+			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child table5.Gtk.Table+TableChild
+			this.scrolledwindow4 = new global::Gtk.ScrolledWindow ();
+			this.scrolledwindow4.CanFocus = true;
+			this.scrolledwindow4.Name = "scrolledwindow4";
+			this.scrolledwindow4.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child scrolledwindow4.Gtk.Container+ContainerChild
+			this.extraCompilerTextView = new global::Gtk.TextView ();
+			this.extraCompilerTextView.TooltipMarkup = "A newline-separated list of extra options to send to the compiler.\nOne option can" +
+			" be in more than one line.\nExample:\n\t`--pkg\n\tcairo`";
+			this.extraCompilerTextView.CanFocus = true;
+			this.extraCompilerTextView.Name = "extraCompilerTextView";
+			this.scrolledwindow4.Add (this.extraCompilerTextView);
+			this.table5.Add (this.scrolledwindow4);
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table5 [this.scrolledwindow4]));
+			w4.TopAttach = ((uint)(1));
+			w4.BottomAttach = ((uint)(2));
+			this.table1.Add (this.table5);
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.table5]));
+			w5.TopAttach = ((uint)(1));
+			w5.BottomAttach = ((uint)(2));
+			w5.RightAttach = ((uint)(2));
 			// Container child table1.Gtk.Table+TableChild
 			this.valaCombo = global::Gtk.ComboBox.NewText ();
 			this.valaCombo.TooltipMarkup = "Default compiler to use for new C projects.";
 			this.valaCombo.Name = "valaCombo";
 			this.table1.Add (this.valaCombo);
-			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table1[this.valaCombo]));
-			w2.LeftAttach = ((uint)(1));
-			w2.RightAttach = ((uint)(2));
-			w2.XOptions = ((global::Gtk.AttachOptions)(4));
-			w2.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.valaCombo]));
+			w6.LeftAttach = ((uint)(1));
+			w6.RightAttach = ((uint)(2));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

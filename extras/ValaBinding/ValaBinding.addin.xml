@@ -1,26 +1,11 @@
-<Addin id          = "ValaBinding"
-       namespace   = "MonoDevelop"
-       name		   = "Vala Language Binding"
-       author      = "Levi Bard"
-       copyright   = "MIT/X11"
-       url         = "http://www.monodevelop.com"
-       description = "Vala Language binding"
-       category    = "Language bindings"
-       version     = "4.2.3">
-
-	<Dependencies>
-		<Addin id = "Core" version = "4.2.3"/>
-		<Addin id = "Ide" version = "4.2.3"/>
-		<Addin id = "Deployment" version = "4.2.3"/>
-		<Addin id = "Deployment.Linux" version = "4.2.3"/>
-		<Addin id = "Autotools" version = "4.2.3"/>
-	</Dependencies>
+<ExtensionModel>
 	
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union"/>
-		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion"/>
-		<StockIcon stockid = "md-private-union" resource = "Icons.16x16.PrivateUnion"/>
-		<StockIcon stockid = "md-vala-file" resource = "text-x-vala.16x16.png" />
+		<StockIcon stockid = "md-union" resource = "Icons.16x16.Union" size="Menu"/>
+		<StockIcon stockid = "md-vala-project-reference" resource = "Icons.16x16.ProjectReference" size="Menu"/>
+		<StockIcon stockid = "md-protected-union" resource = "Icons.16x16.ProtectedUnion" size="Menu"/>
+		<StockIcon stockid = "md-private-union" resource = "Icons.16x16.PrivateUnion" size="Menu"/>
+		<StockIcon stockid = "md-vala-file" resource = "text-x-vala.16x16.png" size="Menu"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
@@ -43,7 +28,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
-		<MimeType id="text/x-vala" icon="md-vala-file">
+		<MimeType id="text/x-vala" _description="Vala source code" icon="md-vala-file" isText="true">
 			<File pattern="*.vala" />
 			<File pattern="*.vapi" />
 		</MimeType>
@@ -64,6 +49,7 @@
 		<Section
 			id = "ValaBindingOptions"
 			_label = "Vala"
+			fill = "true"
 			class = "MonoDevelop.ValaBinding.GeneralOptionsPanelBinding"/>
 	</Extension>
 
@@ -153,4 +139,5 @@
 		<Parser fileExtensions=".vala, .vapi" class = "MonoDevelop.ValaBinding.Parser.ValaDocumentParser"
 			id = "ValaDocumentParser" />
 	</Extension>
-</Addin>
+
+</ExtensionModel>
