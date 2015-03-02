@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharpBinding
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
 
 			var solution = new MonoDevelop.Projects.Solution ();
-			var config = solution.AddConfiguration ("", true); 
+			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
 				TypeSystemService.Load (solution, monitor);

@@ -75,6 +75,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public bool IsDelegateExpected { get; set; }
+
+
 		string text;
 		protected readonly CSharpCompletionTextEditorExtension ext;
 
@@ -86,9 +89,24 @@ namespace MonoDevelop.CSharp.Completion
 			this.symbol = symbol;
 		}
 
+		static readonly SymbolDisplayFormat nameOnlyFormat =
+			new SymbolDisplayFormat(
+				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameOnly,
+				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+				genericsOptions: SymbolDisplayGenericsOptions.None,
+				memberOptions: SymbolDisplayMemberOptions.None,
+				parameterOptions:
+				SymbolDisplayParameterOptions.None,
+				miscellaneousOptions:
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+		
 		protected virtual string GetInsertionText ()
 		{
-			return text ?? symbol.Name;
+			if (text != null)
+				return text;
+			return symbol.ToDisplayString (nameOnlyFormat);
 		}
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
@@ -144,7 +162,6 @@ namespace MonoDevelop.CSharp.Completion
 
 			bool addParens = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
 			bool addOpeningOnly = CompletionTextEditorExtension.AddOpeningOnly;
-			bool IsDelegateExpected = false;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
 			string insertionText = this.GetInsertionText();
@@ -359,23 +376,31 @@ namespace MonoDevelop.CSharp.Completion
 
 		static bool RequireGenerics (IMethodSymbol method)
 		{
-			if (method.MethodKind == MethodKind.Constructor)
-				return false;
-			if (!method.TypeArguments.Any (ta => ta.TypeKind == TypeKind.TypeParameter))
+			System.Collections.Immutable.ImmutableArray<ITypeSymbol> typeArgs;
+			if (method.MethodKind == MethodKind.Constructor) {
+				typeArgs = method.ContainingType.TypeArguments;
+			} else {
+				typeArgs = method.TypeArguments;
+			}
+			
+			if (!typeArgs.Any (ta => ta.TypeKind == TypeKind.TypeParameter))
 				return false;
 			var testMethod = method.ReducedFrom ?? method;
-			return testMethod.TypeArguments.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type as INamedTypeSymbol, t)));
+			return typeArgs.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type, t)));
 		}
 
-		static bool ContainsType (INamedTypeSymbol testType, ITypeSymbol searchType)
+		static bool ContainsType (ITypeSymbol testType, ITypeSymbol searchType)
 		{
 			if (testType == null)
 				return false;
 			if (testType == searchType)
 				return true;
-			foreach (var arg in testType.TypeParameters)
-				if (ContainsType (arg as INamedTypeSymbol, searchType))
-					return true;
+			var namedTypeSymbol = testType as INamedTypeSymbol;
+			if (namedTypeSymbol != null) {
+				foreach (var arg in namedTypeSymbol.TypeParameters)
+					if (ContainsType (arg, searchType))
+						return true;
+			}
 			return false;
 		}
 
