@@ -216,6 +216,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			void RealignTexts ()
 			{
+				if (Window == null)
+					return;
+
 				// fix the icon alignment, move it slightly up
 				var alignFix = new CGRect (0, Window.Screen.BackingScaleFactor == 2 ? -0.5f : -1f, 16, 16);
 				PathComponentCells [ConfigurationIdx].Image.AlignmentRect = alignFix;
