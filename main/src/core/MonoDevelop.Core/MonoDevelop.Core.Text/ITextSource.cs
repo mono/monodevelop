@@ -91,7 +91,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new TextReader to read from this text source.
 		/// </summary>
-		TextReader CreateReader (int offset, int length);
+		TextReader CreateReader (int offset, int length);		
 
 		/// <summary>
 		/// Writes the text from this document into the TextWriter.
@@ -128,6 +128,21 @@ namespace MonoDevelop.Core.Text
 				throw new ArgumentNullException ("source");
 			return source.GetTextAt (segment.Offset, segment.Length);
 		}
+
+
+		public static string GetTextBetween (this ITextSource source, int startOffset, int endOffset)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			if (startOffset < 0 || startOffset > source.Length)
+				throw new ArgumentNullException ("startOffset");
+			if (endOffset < 0 || endOffset > source.Length)
+				throw new ArgumentNullException ("endOffset");
+			if (startOffset > endOffset)
+				throw new InvalidOperationException ();
+			return source.GetTextAt (startOffset, endOffset - startOffset);
+		}
+
 
 		/// <summary>
 		/// Writes the text from this document into a file.

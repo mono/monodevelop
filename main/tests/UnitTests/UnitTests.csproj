@@ -278,6 +278,11 @@
     <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParserTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextSourceTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ReadonlyTextDocumentTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextDocumentTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Tests\StringTextSource_Tests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorTestBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -306,5 +311,7 @@
     <Folder Include="MonoDevelop.Refactoring\" />
     <Folder Include="MonoDevelop.Xml.StateEngine\" />
     <Folder Include="MonoDevelop.Ide.Templates\" />
+    <Folder Include="MonoDevelop.Ide.Editor\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
   </ItemGroup>
 </Project>
