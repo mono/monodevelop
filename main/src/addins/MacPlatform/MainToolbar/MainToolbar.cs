@@ -54,6 +54,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		int buttonBarStartIdx, buttonBarCount;
 
+		CenteringSpaceToolbarItem centeringSpace {
+			get { return (CenteringSpaceToolbarItem)widget.Items[buttonBarStartIdx + buttonBarCount]; }
+		}
+
 		int statusBarIdx;
 		StatusBar statusBar {
 			get { return (StatusBar)widget.Items[statusBarIdx + buttonBarCount].View; }
@@ -93,7 +97,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MinSize = new CGSize (150, 25),
 				MaxSize = new CGSize (150, 25),
 			};
-			selector.ResizeRequested += (o, e) => item.MinSize = item.MaxSize = e.Size;
+			selector.ResizeRequested += (o, e) => {
+				item.MinSize = item.MaxSize = e.Size;
+				centeringSpace.UpdateWidth ();
+			};
 
 			var pathSelector = (SelectorView.PathSelectorView)selector.Subviews [0];
 			pathSelector.ConfigurationChanged += (sender, e) => {
@@ -120,6 +127,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			bar.ResizeRequested += (o, e) => {
 				item.MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
 				item.MaxSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
+				centeringSpace.UpdateWidth ();
 			};
 			return item;
 		}
