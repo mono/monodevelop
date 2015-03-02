@@ -50,9 +50,113 @@ namespace MonoDevelop.CSharp.Parser
 		
 
 		#region implemented abstract members of ParsedDocument
+
+
+		WeakReference<IReadOnlyList<Comment>> weakComments;
+
 		public override Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Task.FromResult<IReadOnlyList<Comment>> (new Comment[0]);
+			IReadOnlyList<Comment> result;
+			if (weakComments == null || !weakComments.TryGetTarget (out result)) {
+				var visitor = new CommentVisitor (cancellationToken);
+				if (Unit != null)
+					visitor.Visit (Unit.GetRoot (cancellationToken));
+				result = visitor.Comments;
+
+				var newRef = new WeakReference<IReadOnlyList<Comment>> (result);
+				var oldRef = weakComments;
+				while (Interlocked.CompareExchange (ref weakComments, newRef, oldRef) == oldRef) {
+				}
+			}
+			return Task.FromResult (result);
+		}
+
+
+		class CommentVisitor : CSharpSyntaxWalker
+		{
+			public readonly List<Comment> Comments = new List<Comment> ();
+
+			CancellationToken cancellationToken;
+
+			public CommentVisitor (CancellationToken cancellationToken) : base(SyntaxWalkerDepth.Trivia)
+			{
+				this.cancellationToken = cancellationToken;
+			}
+
+			static DocumentRegion GetRegion (SyntaxTrivia trivia)
+			{
+				var lineSpan = trivia.GetLocation ().GetLineSpan ();
+				return (DocumentRegion)lineSpan;
+			}
+
+			public override void VisitBlock (BlockSyntax node)
+			{
+				cancellationToken.ThrowIfCancellationRequested ();
+				base.VisitBlock (node);
+			}
+
+			bool StartsLine (SyntaxTrivia trivia)
+			{
+				var sourceText = trivia.SyntaxTree.GetText (cancellationToken);
+				var textLine = sourceText.Lines.GetLineFromPosition (trivia.SpanStart);
+				for (int i = textLine.Start; i < trivia.SpanStart; i++) {
+					char ch = sourceText [i];
+					if (!char.IsWhiteSpace (ch))
+						return false;
+				}
+				return true;
+			}
+
+			static string CropStart (string text, string crop)
+			{
+				text = text.Trim ();
+				if (text.StartsWith (crop))
+					return text.Substring (crop.Length).TrimStart ();
+				return text;
+			}
+
+			public override void VisitTrivia (SyntaxTrivia trivia)
+			{
+				base.VisitTrivia (trivia);
+				switch (trivia.Kind ()) {
+				case SyntaxKind.MultiLineCommentTrivia:
+				case SyntaxKind.MultiLineDocumentationCommentTrivia:
+					{
+						var cmt = new Comment (CropStart (trivia.ToString (), "/*"));
+						cmt.CommentStartsLine = StartsLine(trivia);
+						cmt.CommentType = CommentType.Block;
+						cmt.OpenTag = "/*";
+						cmt.ClosingTag = "*/";
+						cmt.Region = GetRegion (trivia);
+						Comments.Add (cmt);
+						break;
+					}
+				case SyntaxKind.SingleLineCommentTrivia:
+					{
+						var cmt = new Comment (CropStart (trivia.ToString (), "//"));
+						cmt.CommentStartsLine = StartsLine(trivia);
+						cmt.CommentType = CommentType.SingleLine;
+						cmt.OpenTag = "//";
+						cmt.Region = GetRegion (trivia);
+						Comments.Add (cmt);
+						break;
+					}
+				case SyntaxKind.SingleLineDocumentationCommentTrivia:
+					{
+						var cmt = new Comment (CropStart (trivia.ToString (), "///"));
+						cmt.CommentStartsLine = StartsLine(trivia);
+						cmt.IsDocumentation = true;
+						cmt.CommentType = CommentType.Documentation;
+						cmt.OpenTag = "///";
+						cmt.ClosingTag = "*/";
+						cmt.Region = GetRegion (trivia);
+						Comments.Add (cmt);
+						break;
+					}
+
+				}
+
+			}
 		}
 
 		WeakReference<IReadOnlyList<Tag>> weakTags;

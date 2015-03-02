@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -152,6 +153,12 @@ namespace MonoDevelop.Ide.Editor
 		public static implicit operator DocumentRegion(Microsoft.CodeAnalysis.Text.LinePositionSpan location)
 		{
 			return new DocumentRegion (location.Start, location.End);
+		}
+
+
+		public static implicit operator DocumentRegion(FileLinePositionSpan location)
+		{
+			return new DocumentRegion (location.StartLinePosition, location.EndLinePosition);
 		}
 
 
