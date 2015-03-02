@@ -242,17 +242,13 @@
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
