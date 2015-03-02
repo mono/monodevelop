@@ -377,7 +377,7 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, timeout) = 
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, ?timeout) = 
    async {
     let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
@@ -390,15 +390,9 @@ type LanguageService(dirtyNotify) =
     | None -> 
         Debug.WriteLine(sprintf "LanguageService: Not using stale results - trying typecheck with timeout")
         // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
-   }
-  member x.GetTypedParseResultAsync(projectFilename, fileName:string, src, files, args, stale) = 
-   async { 
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
-
-    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
-    | Some results -> return results
-    | None -> return! mbox.PostAndAsyncReply(fun reply -> (fileName, src, opts, reply))
+        match timeout with
+        | Some timeout -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+        | None -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)))
    }
 
   member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, files, args, stale) = 
@@ -413,14 +407,16 @@ type LanguageService(dirtyNotify) =
    async { 
     match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
-
-        let! checkResults = x.GetTypedParseResultAsync(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource)
-        let! symbolResults = checkResults.GetSymbolAtLocation(line, colu, lineStr, identIsland)
-        match symbolResults with
-        | Some symbolUse -> 
-            let lastIdent = Seq.last identIsland
-            let! refs = checkResults.GetUsesOfSymbolInFile(symbolUse.Symbol)
-            return Some(lastIdent, refs)
+        let! checkResults = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource)
+        match checkResults with
+        | Some results ->
+            let! symbolResults = results.GetSymbolAtLocation(line, colu, lineStr, identIsland)
+            match symbolResults with
+            | Some symbolUse -> 
+                let lastIdent = Seq.last identIsland
+                let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol)
+                return Some(lastIdent, refs)
+            | None -> return None
         | None -> return None
     | None -> return None 
    }
