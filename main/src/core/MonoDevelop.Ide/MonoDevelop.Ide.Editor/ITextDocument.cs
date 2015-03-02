@@ -92,9 +92,9 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		IReadonlyTextDocument CreateDocumentSnapshot();
 
-		event EventHandler<LineEventArgs> LineChanged;
-		event EventHandler<LineEventArgs> LineInserted;
-		event EventHandler<LineEventArgs> LineRemoved;
+//		event EventHandler<LineEventArgs> LineChanged;
+//		event EventHandler<LineEventArgs> LineInserted;
+//		event EventHandler<LineEventArgs> LineRemoved;
 	}
 
 	public static class DocumentExtensions
