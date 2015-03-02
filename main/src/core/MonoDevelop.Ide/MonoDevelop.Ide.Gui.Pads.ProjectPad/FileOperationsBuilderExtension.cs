@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void OnOpenFolder ()
 		{
 			var paths = new Dictionary<string, HashSet<string>> ();
-			foreach (var ob in CurrentNodes.Select((node)=>node.DataItem)) {
+			foreach (var ob in CurrentNodes.Select(node => node.DataItem)) {
 				if (ob is IFileItem) {
 					string path = ((IFileItem)ob).FileName;
 					if (!string.IsNullOrEmpty (path)) {

@@ -403,17 +403,17 @@ namespace MonoDevelop.Platform
 
 		#region OpenFolder
 
-		[DllImport ("shell32.dll", ExactSpelling = true)]
+		[DllImport ("shell32.dll")]
 		static extern int SHOpenFolderAndSelectItems (
 			IntPtr pidlFolder,
 			uint cidl,
 			[In, MarshalAs (UnmanagedType.LPArray)] IntPtr[] apidl,
 			uint dwFlags);
 
-		[DllImport ("shell32.dll", CharSet = CharSet.Auto)]
+		[DllImport ("shell32.dll")]
 		static extern IntPtr ILCreateFromPath ([MarshalAs (UnmanagedType.LPTStr)] string pszPath);
 
-		[DllImport ("shell32.dll", CharSet = CharSet.None)]
+		[DllImport ("shell32.dll")]
 		static extern void ILFree (IntPtr pidl);
 
 		public override void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
