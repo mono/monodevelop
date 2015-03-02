@@ -109,11 +109,10 @@ namespace MonoDevelop.Debugger
 		const int PinIconColumn = 10;
 		const int LiveUpdateIconColumn = 11;
 		const int ViewerButtonVisibleColumn = 12;
-		const int ColorPreviewColumn = 13;
-		const int PreviewIconColumn = 14;
-		const int EvaluateStatusIconColumn = 15;
-		const int EvaluateStatusIconVisibleColumn = 16;
-		const int ValueButtonTextColumn = 17;
+		const int PreviewIconColumn = 13;
+		const int EvaluateStatusIconColumn = 14;
+		const int EvaluateStatusIconVisibleColumn = 15;
+		const int ValueButtonTextColumn = 16;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -295,7 +294,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -336,9 +335,16 @@ namespace MonoDevelop.Debugger
 			var crColorPreview = new CellRendererColorPreview ();
 			valueCol.PackStart (crColorPreview, false);
 			valueCol.SetCellDataFunc (crColorPreview, new TreeCellDataFunc ((tree_column, cell, model, iter) => {
-				var color = model.GetValue (iter, ColorPreviewColumn);
+				var val = (ObjectValue) model.GetValue (iter, ObjectColumn);
+				Xwt.Drawing.Color? color;
+
+				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
+					color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
+				else
+					color = null;
+
 				if (color != null) {
-					((CellRendererColorPreview)cell).Color = (Xwt.Drawing.Color)color;
+					((CellRendererColorPreview) cell).Color = (Xwt.Drawing.Color) color;
 					cell.Visible = true;
 				} else {
 					cell.Visible = false;
@@ -1125,11 +1131,6 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
 			if (ValidObjectForPreviewIcon (it))
 				store.SetValue (it, PreviewIconColumn, "md-empty");
-
-			if (!val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
-				store.SetValue (it, ColorPreviewColumn, DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val));
-			else
-				store.SetValue (it, ColorPreviewColumn, null);
 
 			if (!hasParent && PinnedWatch != null) {
 				store.SetValue (it, PinIconColumn, "md-pin-down");

@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using Mono.TextEditor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -71,6 +72,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.underlineErrorsCheckbutton.Active = underlineErrors = DefaultSourceEditorOptions.Instance.UnderlineErrors;
 			this.underlineErrorsCheckbutton.Toggled += delegate {
 				DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
+				foreach (var doc in IdeApp.Workbench.Documents)
+					doc.StartReparseThread ();
+
 			};
 
 			this.highlightMatchingBracketCheckbutton.Active = highlightMatchingBracket = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;

@@ -569,9 +569,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void ForeachEnumerable ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("Sdb has some problems when stepping into yeild methods. Have to investigate");
-			}
+			IgnoreSoftDebugger ("Sdb has some problems when stepping into yeild methods. Have to investigate");
+
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
 			StartTest ("ForeachEnumerable");
@@ -645,9 +644,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void PListSchemeTest ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("Sdb is reapeating StepIn in StaticConstructor instead of StepOut. Resulting in step stopping at unexpected location.");
-			}
+			IgnoreSoftDebugger ("Sdb is reapeating StepIn in StaticConstructor instead of StepOut. Resulting in step stopping at unexpected location.");
+
 			InitializeTest ();
 			AddBreakpoint ("41eb3a30-3b19-4ea5-a7dc-e4c76871f391");
 			StartTest ("PListSchemeTest");
@@ -875,9 +873,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void CatchPointTest2 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("I'm having problem testing this because. There is error nonstop happening in framework about CurrentCulture featching.");
-			}
+			IgnoreSoftDebugger ("I'm having problem testing this because. There is error nonstop happening in framework about CurrentCulture featching.");
+
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);
 			StartTest ("Catchpoint2");
@@ -902,9 +899,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("2", val.Value);
 			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
 
-			if (!(Session is SoftDebuggerSession)) {
-				Assert.Ignore ("TODO: Conditional breakpoints with compare against string or enum is not working on CorDebugger");
-			}
+			IgnoreCorDebugger ("TODO: Conditional breakpoints with compare against string or enum is not working on CorDebugger");
 
 			InitializeTest ();
 			bp = AddBreakpoint ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
@@ -1120,9 +1115,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void Bug21410 ()
 		{
-			if (Session is SoftDebuggerSession) {
-				Assert.Ignore ("Runtime bug.");
-			}
+			IgnoreSoftDebugger ("Runtime bug.");
+
 			InitializeTest ();
 			AddBreakpoint ("5e6663d0-9088-40ad-914d-0fcc05b2d0d5");
 			StartTest ("TestBug21410");

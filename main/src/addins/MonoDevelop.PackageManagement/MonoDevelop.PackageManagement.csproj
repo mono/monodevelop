@@ -367,6 +367,7 @@
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
