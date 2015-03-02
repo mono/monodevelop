@@ -111,10 +111,11 @@ namespace Mono.TextEditor
 			int min = 0;
 			int max = lines.Length - 1;
 			while (min <= max) {
-				int mid = min >> 1 + max >> 1;
-				if (offset < lines [mid].Offset) {
+				int mid = (min + max) / 2;
+				var middleLine = lines [mid];
+				if (offset < middleLine.Offset) {
 					max = mid - 1;
-				} else if (offset > lines [mid].EndOffset) {
+				} else if (offset > middleLine.EndOffset) {
 					min = mid + 1;
 				} else {
 					return mid + 1;
