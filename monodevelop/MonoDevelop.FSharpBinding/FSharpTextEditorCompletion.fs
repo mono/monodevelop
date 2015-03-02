@@ -34,10 +34,10 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
         overloads
         |> Seq.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, List.empty) :> _ )
 
-    override x.AddOverload (data: ICompletionData) = () //not currently called
+    override x.AddOverload (_data: ICompletionData) = () //not currently called
 
     // TODO: what does 'smartWrap' indicate?
-    override x.CreateTooltipInformation (smartWrap: bool) = 
+    override x.CreateTooltipInformation (_smartWrap: bool) = 
       Debug.WriteLine("computing tooltip for {0}", name)
       let tip = SymbolTooltips.getTooltipFromSymbolUse symbol (lazy None)
       match tip  with
@@ -121,7 +121,8 @@ type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem a
             let text = if lines.Length = 0 then name else  lines.[0]
             let textL = text.Split '('
             if textL.Length <> 2 then text else
-            let text0 = textL.[0]
+            //TODO: what was text0 used for?
+            let _text0 = textL.[0]
             let text1 = textL.[1]
             let text1L = text1.Split ')'
             if text1L.Length <> 2 then text else
@@ -232,9 +233,9 @@ type FSharpTextEditorCompletion() =
                 match symbolUse with
                 | Constructor c ->
                     Some c.EnclosingEntity.DisplayName
-                | TypeAbbreviation ta -> None
-                | Class cl -> None
-                | Delegate dl -> None
+                | TypeAbbreviation _ta -> None
+                | Class _cl -> None
+                | Delegate _dl -> None
                 | Event ev ->
                     Some ev.EnclosingEntity.DisplayName
                 | Property pr ->
@@ -255,7 +256,7 @@ type FSharpTextEditorCompletion() =
                     Some o.EnclosingEntity.DisplayName
                 | Pattern p ->
                     Some p.EnclosingEntity.DisplayName
-                | ClosureOrNestedFunction cl ->
+                | ClosureOrNestedFunction _cl ->
                     //Theres no link to a parent type for a closure (FCS limitation)
                     None
                 | Val _ |  Enum _ | Interface _ | Module _ | Namespace _
@@ -315,10 +316,13 @@ type FSharpTextEditorCompletion() =
       // Try to get typed result - within the specified timeout
       let methsOpt =
           Async.RunSynchronously (
-              async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName) 
-                     let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
-                     let! methsOpt = tyRes.GetMethods(line, col, lineStr)
-                     return methsOpt }, ServiceSettings.blockingTimeout)
+              async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName) 
+                     match tyRes with
+                     | Some tyRes ->
+                         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(startOffset, doc.Editor.Document)
+                         let! methsOpt = tyRes.GetMethods(line, col, lineStr)
+                         return methsOpt
+                     | None -> return None }, ServiceSettings.blockingTimeout)
 
       match methsOpt with 
       | Some(name, meths) when meths.Length > 0 -> 
@@ -410,10 +414,8 @@ type FSharpTextEditorCompletion() =
         // Get declarations and generate list for MonoDevelop
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(context.TriggerOffset, doc.Editor.Document)
         match tyRes.GetDeclarationSymbols(line, col, lineStr) with
-        | Some (symbols, residue) ->
-            let data = getCompletionData symbols
-            let debug = data |> Array.ofList
-            result.AddRange data
+        | Some (symbols, _residue) ->
+            result.AddRange (getCompletionData symbols)
         | None -> ()
     with
     | e ->
