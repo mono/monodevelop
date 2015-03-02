@@ -39,5 +39,126 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		protected abstract IReadonlyTextDocument CreateReadonlyTextDocument (string text, Encoding enc = null, bool useBom = false);
+
+
+		[Test]
+		public void TestLineCount()
+		{
+			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
+			Assert.AreEqual (4, doc.LineCount);
+		}
+
+
+		[Test]
+		public void TestLocationToOffset()
+		{
+			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
+			Assert.AreEqual (0, doc.LocationToOffset (1, 1));
+			Assert.AreEqual (4, doc.LocationToOffset (2, 1));
+			Assert.AreEqual (11, doc.LocationToOffset (3, 4));
+		}
+
+		[Test]
+		public void TestOffsetToLocation()
+		{
+			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
+			Assert.AreEqual (new DocumentLocation (1, 1), doc.OffsetToLocation (0));
+			Assert.AreEqual (new DocumentLocation (2, 1), doc.OffsetToLocation (4));
+			Assert.AreEqual (new DocumentLocation (3, 4), doc.OffsetToLocation (11));
+		}
+
+		[Test]
+		public void TestGetLine()
+		{
+			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
+			var line1 = doc.GetLine (1);
+			Assert.AreEqual (0, line1.Offset);
+			Assert.AreEqual (3, line1.Length);
+			Assert.AreEqual (1, line1.DelimiterLength);
+			Assert.AreEqual (1, line1.LineNumber);
+
+			var line2 = doc.GetLine (2);
+			Assert.AreEqual (4, line2.Offset);
+			Assert.AreEqual (3, line2.Length);
+			Assert.AreEqual (1, line2.DelimiterLength);
+			Assert.AreEqual (2, line2.LineNumber);
+
+			var line3 = doc.GetLine (3);
+			Assert.AreEqual (8, line3.Offset);
+			Assert.AreEqual (3, line3.Length);
+			Assert.AreEqual (1, line3.DelimiterLength);
+			Assert.AreEqual (3, line3.LineNumber);
+
+			var line4 = doc.GetLine (4);
+			Assert.AreEqual (12, line4.Offset);
+			Assert.AreEqual (0, line4.Length);
+			Assert.AreEqual (0, line4.DelimiterLength);
+			Assert.AreEqual (4, line4.LineNumber);
+		}
+
+		[Test]
+		public void GetLineByOffset()
+		{
+			var doc = CreateReadonlyTextDocument ("aaa\nbbb\nccc\n");
+			for (int i = 0; i < 3; i++) {
+				var line1 = doc.GetLineByOffset (0 + i);
+				Assert.AreEqual (0, line1.Offset);
+				Assert.AreEqual (3, line1.Length);
+				Assert.AreEqual (1, line1.DelimiterLength);
+				Assert.AreEqual (1, line1.LineNumber);
+			}
+
+			for (int i = 0; i < 3; i++) {
+				var line2 = doc.GetLineByOffset (4 + i);
+				Assert.AreEqual (4, line2.Offset);
+				Assert.AreEqual (3, line2.Length);
+				Assert.AreEqual (1, line2.DelimiterLength);
+				Assert.AreEqual (2, line2.LineNumber);
+			}
+
+			for (int i = 0; i < 3; i++) {
+				var line3 = doc.GetLineByOffset (8 + i);
+				Assert.AreEqual (8, line3.Offset);
+				Assert.AreEqual (3, line3.Length);
+				Assert.AreEqual (1, line3.DelimiterLength);
+				Assert.AreEqual (3, line3.LineNumber);
+			}
+
+			var line4 = doc.GetLineByOffset (12);
+			Assert.AreEqual (12, line4.Offset);
+			Assert.AreEqual (0, line4.Length);
+			Assert.AreEqual (0, line4.DelimiterLength);
+			Assert.AreEqual (4, line4.LineNumber);
+		}
+
+		[Test]
+		public void TestLineParsingLineEndings()
+		{
+			var doc = CreateReadonlyTextDocument ("1\n2\r\n3\r4\u00855\u000B6\u000C7\u20288\u2029");
+			Assert.AreEqual (UnicodeNewline.LF, doc.GetLine (1).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (1).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.CRLF, doc.GetLine (2).UnicodeNewline);
+			Assert.AreEqual (2, doc.GetLine (2).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.CR, doc.GetLine (3).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (3).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.NEL, doc.GetLine (4).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (4).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.VT, doc.GetLine (5).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (5).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.FF, doc.GetLine (6).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (6).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.LS, doc.GetLine (7).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (7).DelimiterLength);
+
+			Assert.AreEqual (UnicodeNewline.PS, doc.GetLine (8).UnicodeNewline);
+			Assert.AreEqual (1, doc.GetLine (8).DelimiterLength);
+		}
+
 	}
 }

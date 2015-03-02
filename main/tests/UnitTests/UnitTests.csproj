@@ -283,6 +283,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextDocumentTestBase.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Tests\StringTextSource_Tests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Tests\SimpleReadonlyDocument_Tests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

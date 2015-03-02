@@ -28,6 +28,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Util
 {
@@ -53,11 +54,11 @@ namespace MonoDevelop.Ide.Editor.Util
 		/// <returns>The readonly document async.</returns>
 		/// <param name="readOnlyTextSource">Read only text source.</param>
 		/// <param name="fileName">File name.</param>
-		public static Task<IReadonlyTextDocument> CreateReadonlyDocumentAsync (ITextSource readOnlyTextSource, string fileName = null, string mimeType = null)
+		public static Task<IReadonlyTextDocument> CreateReadonlyDocumentAsync (ITextSource readOnlyTextSource, string fileName = null, string mimeType = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				return (IReadonlyTextDocument)new SimpleReadonlyDocument (readOnlyTextSource, fileName, mimeType);
-			});
+			}, cancellationToken);
 		}
 
 		void Initalize (string text)
@@ -140,10 +141,10 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			for (int i = 0; i < delimiters.Count; i++) {
 				var delimiter = delimiters[i];
-				if (offset < delimiter.Offset)
+				if (offset <= delimiter.Offset)
 					return i + 1;
 			}
-			return delimiters.Count;
+			return delimiters.Count + 1;
 		}
 
 		#region IReadonlyTextDocument implementation
@@ -184,7 +185,7 @@ namespace MonoDevelop.Ide.Editor.Util
 				endOffset = Length;
 				newLine = UnicodeNewline.Unknown;
 			}
-			return new SimpleLineSegment (this, number, startOffset, endOffset - startOffset, newLine);
+			return new SimpleLineSegment (this, number + 1, startOffset, endOffset - startOffset, newLine);
 		}
 
 		sealed class SimpleLineSegment : IDocumentLine
