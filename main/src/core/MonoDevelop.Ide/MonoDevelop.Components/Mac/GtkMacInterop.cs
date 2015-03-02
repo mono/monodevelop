@@ -61,7 +61,7 @@ namespace MonoDevelop.Components.Mac
 		public static Gtk.Window GetGtkWindow (NSWindow window)
 		{
 			var toplevels = Gtk.Window.ListToplevels ();
-			return toplevels.FirstOrDefault (w => gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
+			return toplevels.FirstOrDefault (w => w.IsRealized && gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle);
 		}
 
 		public static IEnumerable<KeyValuePair<NSWindow,Gtk.Window>> GetToplevels ()
