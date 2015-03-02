@@ -324,6 +324,7 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
 					usedNamespaces.Add (un.GetFullName ()); 
 				}
+				var enclosingNamespaceName = semanticModel.GetEnclosingNamespace (position, cancellationToken).GetFullName ();
 
 				var stack = new Stack<INamespaceOrTypeSymbol>();
 				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
@@ -335,7 +336,11 @@ namespace MonoDevelop.CSharp.Completion
 					var current = stack.Pop();
 					var currentNs = current as INamespaceSymbol;
 					if (currentNs != null) {
-						if (usedNamespaces.Contains (currentNs.GetFullName ())) {
+						var currentNsName = currentNs.GetFullName ();
+						if (usedNamespaces.Contains (currentNsName) ||
+							enclosingNamespaceName == currentNsName ||
+							(enclosingNamespaceName.StartsWith (currentNsName) &&
+							enclosingNamespaceName [currentNsName.Length] == '.')) {
 							foreach (var member in currentNs.GetNamespaceMembers ())
 								stack.Push (member);
 						} else {
