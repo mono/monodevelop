@@ -39,22 +39,32 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide
 {
-	
+	public class StatusBarIconClickedEventArgs : EventArgs
+	{
+		public StatusBarIconClickedEventArgs ()
+		{
+			Button = Xwt.PointerButton.Left;
+			Modifiers = Xwt.ModifierKeys.None;
+		}
+
+		public Xwt.PointerButton Button { get; set; }
+		public Xwt.ModifierKeys Modifiers { get; set; }
+	}
+
 	/// <summary>
 	/// The MonoDevelop status bar.
 	/// </summary>
-	
 	public interface StatusBarIcon : IDisposable
 	{
 		/// <summary>
 		/// Tooltip of the status icon
 		/// </summary>
 		string ToolTip { get; set; }
-		
+
 		/// <summary>
-		/// Event box which can be used to subscribe mouse events on the icon
+		/// The clicked event to subscribe mouse clicks on the icon.
 		/// </summary>
-		EventBox EventBox { get; }
+		event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 		
 		/// <summary>
 		/// The icon

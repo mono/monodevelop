@@ -81,12 +81,12 @@ namespace MonoDevelop.Ide.Updater
 
 			updateIcon.ToolTip = s;
 			updateIcon.SetAlertMode (20);
-			updateIcon.EventBox.ButtonPressEvent += new ButtonPressEventHandler (OnUpdateClicked);
+			updateIcon.Clicked += OnUpdateClicked;
 		}
 
-		void OnUpdateClicked (object s, ButtonPressEventArgs args)
+		void OnUpdateClicked (object s, StatusBarIconClickedEventArgs args)
 		{
-			if (!args.Event.TriggersContextMenu () && args.Event.Button == 1) {
+			if (args.Button != Xwt.PointerButton.Right && args.Button == Xwt.PointerButton.Left) {
 				HideAlert ();
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}

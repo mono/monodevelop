@@ -696,43 +696,42 @@ namespace MonoDevelop.Components.MainToolbar
 			QueueDraw ();
 		}
 
-		internal bool ProcessKey (Gdk.Key key, Gdk.ModifierType state)
+		internal bool ProcessKey (Xwt.Key key, Xwt.ModifierKeys state)
 		{
 			switch (key) {
-			case Gdk.Key.Up:
-				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
-					goto case Gdk.Key.Page_Up;
-				if (state.HasFlag (Gdk.ModifierType.ControlMask))
-					goto case Gdk.Key.Home;
+			case Xwt.Key.Up:
+				if (state.HasFlag (Xwt.ModifierKeys.Command))
+					goto case Xwt.Key.PageUp;
+				if (state.HasFlag (Xwt.ModifierKeys.Control))
+					goto case Xwt.Key.Home;
 				SelectItemUp ();
 				return true;
-			case Gdk.Key.Down:
-				if (state.HasFlag (Gdk.ModifierType.Mod2Mask))
-					goto case Gdk.Key.Page_Down;
-				if (state.HasFlag (Gdk.ModifierType.ControlMask))
-					goto case Gdk.Key.End;
+			case Xwt.Key.Down:
+				if (state.HasFlag (Xwt.ModifierKeys.Command))
+					goto case Xwt.Key.PageDown;
+				if (state.HasFlag (Xwt.ModifierKeys.Control))
+					goto case Xwt.Key.End;
 				SelectItemDown ();
 				return true;
-			case Gdk.Key.KP_Page_Down:
-			case Gdk.Key.Page_Down:
+			case (Xwt.Key)Gdk.Key.KP_Page_Down:
+			case Xwt.Key.PageDown:
 				SelectNextCategory ();
 				return true;
-			case Gdk.Key.KP_Page_Up:
-			case Gdk.Key.Page_Up:
+			case (Xwt.Key)Gdk.Key.KP_Page_Up:
+			case Xwt.Key.PageUp:
 				SelectPrevCategory ();
 				return true;
-			case Gdk.Key.Home:
+			case Xwt.Key.Home:
 				SelectFirstCategory ();
 				return true;
-			case Gdk.Key.End:
+			case Xwt.Key.End:
 				SelectLastCatgory ();
 				return true;
-			
-			case Gdk.Key.Return:
+			case Xwt.Key.Return:
 				OnItemActivated (EventArgs.Empty);
 				return true;
 			}
-			return true;
+			return false;
 		}
 
 		public event EventHandler ItemActivated;
