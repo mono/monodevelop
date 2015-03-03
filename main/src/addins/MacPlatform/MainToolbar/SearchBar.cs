@@ -101,20 +101,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			// TODO: Remove his hack when we get CommandManager in place for NSView handling.
-			if ((theEvent.ModifierFlags & NSEventModifierMask.CommandKeyMask) == NSEventModifierMask.CommandKeyMask) {
-				if (theEvent.KeyCode == (ushort)NSKey.X)
-					return NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("cut:"), Window.FirstResponder, this);
-				if (theEvent.KeyCode == (ushort)NSKey.C)
-					return NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("copy:"), Window.FirstResponder, this);
-				if (theEvent.KeyCode == (ushort)NSKey.V)
-					return NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("paste:"), Window.FirstResponder, this);
-				if (theEvent.KeyCode == (ushort)NSKey.A)
-					return NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("selectAll:"), Window.FirstResponder, this);
-				if (theEvent.KeyCode == (ushort)NSKey.Q)
-					return NSApplication.SharedApplication.SendAction (new ObjCRuntime.Selector ("terminate:"), NSApplication.SharedApplication, this);
-			}
-
 			if (theEvent.KeyCode == (ushort)NSKey.Escape) {
 				SendKeyPressed (Xwt.Key.Escape, Xwt.ModifierKeys.None);
 				base.PerformKeyEquivalent (theEvent);
