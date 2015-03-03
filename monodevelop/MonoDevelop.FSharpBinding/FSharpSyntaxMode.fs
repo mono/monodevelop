@@ -78,11 +78,11 @@ module FSharpSyntaxModeInternals =
             this.FoundSpanBegin.Invoke(span, i, len)
             i <- i + endIdx
 
-        member private this.SpanBegin(newState, spanBegin, newi, i:byref<int>) =
+        member private this.SpanBegin(_newState, spanBegin, newi, i:byref<int>) =
             this.FoundSpanBegin.Invoke(spanBegin)
             i <- newi
 
-        member private this.SpanEnd(newState, spanEnd, newi, i:byref<int>) =
+        member private this.SpanEnd(_newState, spanEnd, newi, i:byref<int>) =
             this.FoundSpanEnd.Invoke(spanEnd)
             i <- newi
 
@@ -92,7 +92,6 @@ module FSharpSyntaxModeInternals =
                 let currentText = this.CurText
                 let endIdx = this.CurText.Length
                 let len = endIdx - textOffset
-                let subText = currentText.Substring(textOffset)
                 if (textOffset < this.CurText.Length && 
                     this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
 
@@ -111,10 +110,6 @@ module FSharpSyntaxModeInternals =
                         i <- i + 6
                         true
                     elif (this.CurSpan = null || (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code")) then
-                        let spanLength = 
-                            match currentText.Substring(textOffset).IndexOf(Environment.NewLine) with
-                            | -1 -> currentText.Substring(textOffset).Length
-                            | value -> value
                         let span = PreprocessorSpan()
                         this.FoundSpanBegin.Invoke(span, i, len)
                         this.FoundSpanEnd.Invoke(span, i + endIdx, 0)
@@ -123,11 +118,9 @@ module FSharpSyntaxModeInternals =
                     else
                         false
                 elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
-                    false
-                    //base.ScanSpan(&i)
+                    base.ScanSpan(&i)
                 else
-                    false
-                    //base.ScanSpan(&i)
+                    base.ScanSpan(&i)
             with
             | exn -> 
                 LoggingService.LogError("An error occurred in FSharpSpanParser.ScanSpan", exn)
@@ -149,7 +142,7 @@ module internal Patterns =
         | FSharpTokenColorKind.Keyword, _ -> Some(Keyword)
         | _, Some (_range, extra) when extra = FSharpTokenColorKind.Keyword ->  
             Some Keyword
-        | _, Some (_range, extra) ->
+        | _, Some (_range, _extra) ->
             None
         | _ -> None
 
@@ -258,7 +251,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse with
-            | ExtendedPatterns.Property pr -> Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Property _pr -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -299,7 +292,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | ExtendedPatterns.Event ev -> Some symbolUse.IsFromDefinition
+            | ExtendedPatterns.Event _ev -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
