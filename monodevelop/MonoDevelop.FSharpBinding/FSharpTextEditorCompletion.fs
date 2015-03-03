@@ -136,7 +136,8 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
             let text = if lines.Length = 0 then name else  lines.[0]
             let textL = text.Split '('
             if textL.Length <> 2 then text else
-            let _text0 = textL.[0] //TODO where is this/was used. Fix
+            //TODO: what was text0 used for?
+            let _text0 = textL.[0]
             let text1 = textL.[1]
             let text1L = text1.Split ')'
             if text1L.Length <> 2 then text else
@@ -316,12 +317,17 @@ type FSharpTextEditorCompletion() =
         
         // Try to get typed result - within the specified timeout
         let! methsOpt =
-            async {let! tyRes = MDLanguageService.Instance.GetTypedParseResultAsync (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName) 
-                   let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
-                   let! methsOpt = tyRes.GetMethods(line, col, lineStr)
-                   //TODO: Use the symbol version when available
-                   //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
-                   return methsOpt }
+            async {let! tyRes =
+                       MDLanguageService.Instance.GetTypedParseResultWithTimeout
+                           (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout) 
+                   match tyRes with
+                   | Some tyRes ->
+                       let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
+                       let! methsOpt = tyRes.GetMethods(line, col, lineStr)
+                       //TODO: Use the symbol version when available
+                       //let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
+                       return methsOpt
+                   | None -> return None}
         
         match methsOpt with
         | Some(name, meths) when meths.Length > 0 -> 
@@ -340,36 +346,6 @@ type FSharpTextEditorCompletion() =
     | ex ->
         LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
         return ParameterHintingResult.Empty})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   override x.KeyPress (descriptor:KeyDescriptor) =
       // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'

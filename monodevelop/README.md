@@ -44,10 +44,9 @@ If not, install the F# Language Binding via the AddIn manager.
 Normally you should get the binding from the repository. If you want to build and install it yourself and develop it, try this:
 
 
-### Build on Linux/Mac:
+### Build on Mac/Linux:
 
 First get nuget.exe and install the required nuget packages:
-
 
 Now make:
 
@@ -62,6 +61,12 @@ If Monodevelop is installed in an unusual prefix you will need to invoke `config
 
 If you subsequently make changes to the add-in, you will need to `make install` again and restart MonoDevelop/Xamarin Studio. 
 
+The first time you `make install` the AddIn you'll override Xamarin's official one and it will initially be set to disabled, so you need to go to the AddIn manager and ensure the F# AddIn is enabled.  
+
+**Note:**  One thing to check is the the version specified in `configure.fsx` is higher than the pre-installed version, if it's not then the local addin will not be loaded.   
+
+For reference on Mac the addin is installed locally at the following location:  ```/Users/<username>/Library/Application Support/XamarinStudio-5.0/LocalInstall/Addins/fsharpbinding/<version>```
+
 ### Build on Windows (builds and installs the Debug version into Xamarin Studio - adjust as needed)
 
 ```dos
@@ -72,14 +77,6 @@ build-and-install-debug.bat
 
 If you subsequently make changes to the add-in, you will need to `build-and-install-debug.bat` again and restart MonoDevelop/Xamarin Studio. 
 
-
-### Using the ASP.NET MVC 4 Template
-
-On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
-You can then create a project from the template, build it, and run. 
-
-On Mac and Linux the template uses nuget to bring in the ASP.NET MVC 4 core DLLs.
-
 ### Can't get it to work?  
 
 Don't give up! Add an issue to [the issue tracker](https://github.com/fsharp/fsharpbinding/issues). Your issue will be seen by the developers.
@@ -88,8 +85,8 @@ Users of Windows XP wishing to use this project are advised to read the instruct
 
 ### Notes for Developers
 
-Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
-of MonoDevelop and Xamarin Studio. Some of the information below will be obsolete once this is done.
+Note: The MonoDevelop/Xamarin Studio developers have now incorporated the binding into all releases 
+of MonoDevelop and Xamarin Studio. 
 
 To check things are working try a few different things somewhat at random:
   - Check the F# templates are appearing
@@ -139,15 +136,15 @@ You can start Xamarin Studio or MonoDevelop under the debugger using the normal 
 
 ### Notes for People Preparing Releases
 
-Note (as of 13/9/2013): the MonoDevelop/Xamarin Studio developers are preparing to incorporate the binding into all releases 
-of MonoDevelop and Xamarin Studio. The information below will be obsolete once this is done.
+Note the MonoDevelop/Xamarin Studio developers have incorporated the binding into all releases 
+of MonoDevelop and Xamarin Studio. 
 
 The MonoDevelop Addin mechanism can be hard to easily find information for so here are a couple of links to help get a better understanding.  
 
   - The addin.xml installation schema description can be found [here](http://addins.monodevelop.com/Source/AddinProjectHelp?projectId=1)
   - Details about publishing an addin can be found [here](http://monodevelop.com/Developers/Articles/Publishing_an_Addin)
 
-The addin gets released to http://addins.monodevelop.com under project 'FSharp' (project index 48). Contact @7sharp9, @tpetricek or @funnelweb to make an update.
+The addin used to get released to http://addins.monodevelop.com under project 'FSharp' (project index 48).  This is obsolete due to the addin being packaged as part of the Xamarin Studio release cycle.  Manual updates can be done although this is only really relevant for linux.  Raise an issue for more information or to discuss this.  
 
 To build the .mpack files to upload to this site, use:
 
