@@ -308,23 +308,22 @@ namespace MonoDevelop.Components.MainToolbar
 			try {
 				var confs = ToolbarView.ConfigurationModel.ToList ();
 				if (confs.Count > 0) {
-					string defaultConfig = confs[0].OriginalId;
+					string defaultConfig = ToolbarView.ActiveConfiguration != null ? ToolbarView.ActiveConfiguration.OriginalId : confs[0].OriginalId;
 					bool selected = false;
-					int i = 0;
 
 					foreach (var item in confs) {
 						string config = item.OriginalId;
 						if (config == name) {
 							IdeApp.Workspace.ActiveConfigurationId = config;
-							ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.ElementAt (i);
+							ToolbarView.ActiveConfiguration = item;
 							selected = true;
 							break;
 						}
 					}
 
 					if (!selected) {
-						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
 						ToolbarView.ActiveConfiguration = ToolbarView.ConfigurationModel.First ();
+						IdeApp.Workspace.ActiveConfigurationId = defaultConfig;
 					}
 				}
 			} finally {

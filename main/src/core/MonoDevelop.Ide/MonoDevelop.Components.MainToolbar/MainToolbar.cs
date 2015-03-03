@@ -414,7 +414,7 @@ namespace MonoDevelop.Components.MainToolbar
 				bool found = false;
 				if (configurationStore.GetIterFirst (out iter)) {
 					do {
-						if (value == configurationStore.GetValue (iter, 1)) {
+						if (value.OriginalId == ((IConfigurationModel)configurationStore.GetValue (iter, 1)).OriginalId) {
 							found = true;
 							break;
 						}
