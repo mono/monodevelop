@@ -116,11 +116,9 @@ module FSharpSyntaxModeInternals =
                     else
                         false
                 elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
-                    false
-                    //base.ScanSpan(&i)
+                    base.ScanSpan(&i)
                 else
-                    false
-                    //base.ScanSpan(&i)
+                    base.ScanSpan(&i)
             with
             | exn -> 
                 LoggingService.LogError("An error occurred in FSharpSpanParser.ScanSpan", exn)
