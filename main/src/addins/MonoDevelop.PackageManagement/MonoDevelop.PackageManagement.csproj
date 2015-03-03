@@ -367,6 +367,7 @@
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -430,6 +431,11 @@
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
