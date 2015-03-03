@@ -33,9 +33,11 @@ module MonoDevelop =
 
     type MonoDevelop.Ide.TypeSystem.ParsedDocument with
         member x.TryGetAst() =
-            let ast = x.GetAst<FSharp.CompilerBinding.ParseAndCheckResults> ()
-            if ast = Unchecked.defaultof<FSharp.CompilerBinding.ParseAndCheckResults> then None
-            else Some ast
+            match x.Ast with
+            | null -> None
+            | :? FSharp.CompilerBinding.ParseAndCheckResults as ast
+                -> Some ast
+            | _ -> None
 
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
     let internal getCheckerArgsFromProject(project:DotNetProject, config) =
