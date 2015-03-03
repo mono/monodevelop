@@ -529,6 +529,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleOnTheFlyFormatting (bool skipFormatting, KeyDescriptor descriptor)
 		{
+			if (descriptor.KeyChar == '{')
+				return;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				var document = DocumentContext.AnalysisDocument;
 				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (document, descriptor.KeyChar)) {
