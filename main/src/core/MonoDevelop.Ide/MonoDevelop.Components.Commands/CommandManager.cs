@@ -327,8 +327,10 @@ namespace MonoDevelop.Components.Commands
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
 			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
-			if (gdkev!= null)
-				ProcessKeyEvent (gdkev);
+			if (gdkev != null) {
+				if (ProcessKeyEvent (gdkev))
+					return null;
+			}
 			return ev;
 		}
 		#endif
