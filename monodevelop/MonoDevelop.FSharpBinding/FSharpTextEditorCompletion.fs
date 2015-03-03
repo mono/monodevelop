@@ -492,24 +492,24 @@ type FSharpTextEditorCompletion() =
                   let loc = field.DeclarationLocation
                   startOffset <- loc.StartColumn
                   field.DisplayName
-              | CorePatterns.GenericParameter gp -> null
+              | CorePatterns.GenericParameter _gp -> null
               //| CorePatterns.MemberFunctionOrValue
-              | CorePatterns.Parameter p -> null
-              | CorePatterns.StaticParameter sp -> null
-              | CorePatterns.UnionCase uc -> null
-              | ExtendedPatterns.Class c -> null
-              | ExtendedPatterns.ClosureOrNestedFunction cl -> null
-              | ExtendedPatterns.Constructor ctor -> null
-              | ExtendedPatterns.Delegate del -> null
-              | ExtendedPatterns.Enum enum -> null
-              | ExtendedPatterns.Event ev -> null
-              | ExtendedPatterns.Function f -> null
-              | ExtendedPatterns.Interface i -> null
-              | ExtendedPatterns.Module m -> null
-              | ExtendedPatterns.Namespace ns -> null
-              | ExtendedPatterns.Operator op -> null
-              | ExtendedPatterns.Pattern p -> null
-              | ExtendedPatterns.Property pr ->
+              | CorePatterns.Parameter _p -> null
+              | CorePatterns.StaticParameter _sp -> null
+              | CorePatterns.UnionCase _uc -> null
+              | ExtendedPatterns.Class _c -> null
+              | ExtendedPatterns.ClosureOrNestedFunction _cl -> null
+              | ExtendedPatterns.Constructor _ctor -> null
+              | ExtendedPatterns.Delegate _del -> null
+              | ExtendedPatterns.Enum _enum -> null
+              | ExtendedPatterns.Event _ev -> null
+              | ExtendedPatterns.Function _f -> null
+              | ExtendedPatterns.Interface _i -> null
+              | ExtendedPatterns.Module _m -> null
+              | ExtendedPatterns.Namespace _ns -> null
+              | ExtendedPatterns.Operator _op -> null
+              | ExtendedPatterns.Pattern _p -> null
+              | ExtendedPatterns.Property _pr ->
                   let loc = symbolUse.RangeAlternate
                   startOffset <- loc.StartColumn
                   let fullName = lineTxt.[loc.StartColumn..loc.EndColumn]
@@ -518,13 +518,13 @@ type FSharpTextEditorCompletion() =
                   let loc = r.DeclarationLocation
                   startOffset <- loc.StartColumn
                   r.DisplayName
-              | ExtendedPatterns.TypeAbbreviation ta -> null
-              | ExtendedPatterns.Union un -> null
+              | ExtendedPatterns.TypeAbbreviation _ta -> null
+              | ExtendedPatterns.Union _un -> null
               | ExtendedPatterns.Val v ->
                   let loc = v.DeclarationLocation
                   startOffset <- loc.StartColumn
                   v.DisplayName
-              | ExtendedPatterns.ValueType vt -> null
+              | ExtendedPatterns.ValueType _vt -> null
               | _ -> null
           | _ -> null
       | _ -> null
