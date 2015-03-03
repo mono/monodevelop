@@ -29,11 +29,17 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameTextEditorExtension : TextEditorExtension
 	{
+		public override bool IsValidInContext (MonoDevelop.Ide.Editor.DocumentContext context)
+		{
+			return context.Name != null && context.Name.EndsWith (".cs", FilePath.PathComparison);
+		}
+
 		[CommandUpdateHandler(EditCommands.Rename)]
 		public void RenameCommand_Update(CommandInfo ci)
 		{
