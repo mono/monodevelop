@@ -310,6 +310,32 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/Commands">
+        <!-- RefactoryCommands -->
+    <Category _name = "Refactoring" id = "Refactoring" >
+      <Command id = "MonoDevelop.FSharp.CurrentRefactoringOperations"
+	           defaultHandler = "MonoDevelop.FSharp.CurrentRefactoringOperationsHandler"
+		       type="array"
+			   _label = "Refactoring Operations" />
+    </Category>
+
+    <!-- EditCommands -->
+	<Category _name = "Edit" id="Edit">
+		<Command id = "MonoDevelop.Ide.Commands.EditCommands.Rename"
+				defaultHandler = "MonoDevelop.FSharp.RenameHandler"
+				_label = "Re_name"
+				_description = "Rename the selection"
+				shortcut = "F2"
+				macShortcut = "Meta|R"/>
+	</Category>
+
+	<Category _name = "Code Navigation" id = "CodeNavigation">
+		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
+					defaultHandler = "MonoDevelop.FSharp.GotoDeclarationHandler"
+					_label = "_Go to Declaration" 
+					shortcut = "F12"
+					macShortcut = "Meta|D"/>
+	</Category>
+
     <ComplexCondition>
       <Or>
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
@@ -363,6 +389,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+    <CommandItem id = "MonoDevelop.FSharp.CurrentRefactoringOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
     <ComplexCondition>
       <Or>
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
