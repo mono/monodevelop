@@ -823,7 +823,7 @@ namespace MonoDevelop.Ide
 				UnregisterTreeAnimation (ainfo);
 			}
 			if (iconId == null) {
-				treeStore.SetValue (iter, column, null);
+				treeStore.SetValue (iter, column, CellRendererImage.NullImage);
 			} else if (IsAnimation (iconId, size)) {
 				var anim = GetAnimatedIcon (iconId);
 				ainfo = new AnimatedTreeStoreIconInfo (treeStore, iter, column, anim, iconId);
