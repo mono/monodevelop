@@ -100,7 +100,10 @@ namespace MonoDevelop.CSharp.Formatting
 					var doc = Formatter.FormatAsync (context.AnalysisDocument, span, policy.CreateOptions (textPolicy)).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
-						editor.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
+						var newText = change.NewText;
+						if (editor.EolMarker != "\r\n")
+							newText = newText.Replace ("\r\n", editor.EolMarker);
+						editor.ReplaceText (change.Span.Start, change.Span.Length, newText);
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);

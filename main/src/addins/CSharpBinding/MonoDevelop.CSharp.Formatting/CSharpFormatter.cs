@@ -93,8 +93,12 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var inputTree = CSharpSyntaxTree.ParseText (SourceText.From (input));
 
-			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
+			var root = inputTree.GetRoot ();
+			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
 			var result = doc.ToFullString ();
+			if (textPolicy.GetEolMarker () != "\r\n")
+				result = result.Replace ("\r\n", textPolicy.GetEolMarker ());
+			
 			return result.Substring (startOffset, endOffset + result.Length - input.Length);
 		}
 
