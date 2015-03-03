@@ -65,7 +65,7 @@
 		<End>"""</End>
 	</Span>
 	
-	<Span color="String" rule="String" stopateol="true" escape='\"'>
+	<Span color="String" rule="String" stopateol="false" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
