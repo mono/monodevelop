@@ -136,6 +136,7 @@
     <Compile Include="MainToolbar\SelectorView.cs" />
     <Compile Include="MainToolbar\StatusBar.cs" />
     <Compile Include="MainToolbar\CenteringSpace.cs" />
+    <Compile Include="MainToolbar\CALayerExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

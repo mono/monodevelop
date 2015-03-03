@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
 
-namespace MonoDevelop.MacIntegration
+namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	class StatusIcon : StatusBarIcon
 	{
@@ -72,7 +72,7 @@ namespace MonoDevelop.MacIntegration
 			get { return image; }
 			set {
 				image = value;
-				layer.Contents = value.ToNSImage ().CGImage;
+				layer.SetImage (value);
 			}
 		}
 
@@ -139,20 +139,6 @@ namespace MonoDevelop.MacIntegration
 			return attrString;
 		}
 
-		void SetImageFor (CALayer layer, Xwt.Drawing.Image xwtImage)
-		{
-			var image = xwtImage.ToNSImage ();
-			var layerContents = image.GetLayerContentsForContentsScale (layer.ContentsScale);
-
-			void_objc_msgSend_IntPtr (layer.Handle, setContentsSelector, layerContents.Handle);
-			layer.Bounds = new CGRect (0, 0, image.Size.Width, image.Size.Height);
-		}
-
-		void SetImageFor (CALayer layer, string resource)
-		{
-			SetImageFor (layer, ImageService.GetIcon (resource, Gtk.IconSize.Menu));
-		}
-
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
@@ -178,12 +164,12 @@ namespace MonoDevelop.MacIntegration
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					SetImageFor (buildResultIcon, "md-status-error-count");
+					buildResultIcon.SetImage ("md-status-error-count");
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					SetImageFor (buildResultIcon, "md-status-warning-count");
+					buildResultIcon.SetImage ("md-status-warning-count");
 				} else
 					buildResultVisible = false;
 
@@ -367,7 +353,7 @@ namespace MonoDevelop.MacIntegration
 
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			SetImageFor (layer, pixbuf);
+			layer.SetImage (pixbuf);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			var statusIcon = new StatusIcon (this, layer);
@@ -695,10 +681,5 @@ namespace MonoDevelop.MacIntegration
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
 		}
-
-		IntPtr setContentsSelector = ObjCRuntime.Selector.GetHandle ("setContents:");
-		const string LIBOBJC_DYLIB = "/usr/lib/libobjc.dylib";
-		[System.Runtime.InteropServices.DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
-		public extern static void void_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg);
 	}
 }
