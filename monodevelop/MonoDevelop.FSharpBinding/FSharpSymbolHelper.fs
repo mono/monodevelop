@@ -322,7 +322,17 @@ module SymbolTooltips =
             |> Seq.map Seq.toList 
             |> Seq.toList 
 
-        let retType = asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+        let retType =
+            //This try block will be removed when FCS updates
+            try 
+                asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+            with _ex ->
+                try
+                    if func.FullType.GenericArguments.Count > 0 then
+                        let lastArg = func.FullType.GenericArguments |> Seq.last
+                        asType UserType (escapeText(lastArg.Format displayContext))
+                    else "Unknown"
+                with _ -> "Unknown"
 
         let padLength = 
             let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
@@ -352,84 +362,6 @@ module SymbolTooltips =
                     allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
                 if signatureOnly then typeArguments
                 else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
-
-    // For closures/nexted functions the curried arguments are not present but the following is used:
-    // Get FullType, iterate over generic arguments, if its a tuple type the use '*' for the seperator else use '->'
-
-    //e.g. let myClosure (p1: sting) = 42
-    // FullType.GenericArguments [2]
-    // [0]string
-    // [1]int
-    // myClosure -> string -> int
-
-    // e.g let myClosure (p1:string, p2:int) = 42
-    // FullType.GenericArguments [2]
-    //[0]IsTupleType, GenericArguments[2] [0]string;[1]int  
-    //[1]int
-    // myClosure -> string * int -> int
-    let getNestedFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
-        let indent = String.replicate indent " "
-        let functionName = escapeText func.DisplayName
-        let modifiers = "val" 
-
-        let argInfos =
-            let rec loop (args: FSharpType seq) parent =
-                [for ty in args do
-                    if ty.IsGenericParameter then
-                        yield GenericParam ty.GenericParameter
-                    elif ty.HasTypeDefinition then
-                        yield NamedType ty
-                    elif ty.IsTupleType then
-                        yield TupleParam ty.GenericArguments
-                    else
-                        yield! loop ty.GenericArguments ty ]
-
-            loop func.FullType.GenericArguments func.FullType
-
-
-        let padLength = 
-            let allLengths =
-                argInfos
-                |> List.map
-                    (fun p -> match p with
-                              | GenericParam gp -> gp.Name.Length+1
-                              | NamedType nt -> (nt.Format displayContext).Length
-                              | TupleParam tps ->
-                                tps
-                                |> Seq.map (fun t -> (t.Format displayContext).Length)
-                                |> Seq.max)
-            match allLengths with
-            | [] -> 0
-            | l -> l |> List.max
-
-        let typeArguments =
-            argInfos
-            |> Seq.mapi (fun i nestedFuncParam ->
-                let last = i = argInfos.Length-1
-                match nestedFuncParam with
-                | GenericParam gp ->
-                    let parameter = indent + asType UserType (("'" + gp.Name).PadRight padLength)
-                    if last then parameter else parameter + asType Symbol " ->"
-                | NamedType nt ->
-                    let parameter = indent + asType UserType ((nt.Format displayContext).PadRight padLength)
-                    if last then parameter else parameter + asType Symbol " ->"
-                | TupleParam tuples ->
-                    let parameters =
-                        tuples
-                        |> Seq.mapi (fun i t -> let lastTuple = i = tuples.Count-1
-                                                let parameter =
-                                                     indent + asType UserType ((t.Format displayContext).PadRight padLength)
-                                                if lastTuple then
-                                                    parameter
-                                                else parameter + asType Symbol " *")
-                        |> String.concat "\n"
-                    if last then parameters
-                    else parameters + asType Symbol " ->" )
-
-            |> String.concat "\n"
-
-        if signatureOnly then typeArguments
-        else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
 
     let getEntitySignature displayContext (fse: FSharpEntity) =
         let modifier =
@@ -474,10 +406,12 @@ module SymbolTooltips =
             let basicName = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
             //TODO: add generic constraint display
             basicName 
+
         let fullName =
             match fse.TryGetFullName () with
             | Some fullname -> "\n\nFull name: " + fullname
             | None -> "\n\nFull name: " + fse.QualifiedName
+
         match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
         | true, false, false -> typeDisplay + uniontip () + fullName
         | false, true, false -> typeDisplay + enumtip () + fullName
@@ -530,8 +464,8 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol func backUpSig)
 
         | ClosureOrNestedFunction func ->
-            //represents a closure or nested function, needs FCS support
-            let signature = getNestedFuncSignature symbol.DisplayContext func 3 false
+            //represents a closure or nested function
+            let signature = getFuncSignature symbol.DisplayContext func 3 false
             let summary = getSummaryFromSymbol func backUpSig
             ToolTip(signature, summary)
 
@@ -553,7 +487,8 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol uc backUpSig)
 
         | ActivePatternCase _apc ->
-            //Theres not enough information to build this?
+            //There is actually enough information, but we need a sane way of presenting FSharpType in
+            //rather than using the Format method.  E.g. Like CurriedParameterGroups
             ToolTips.EmptyTip
            
         | _ ->
