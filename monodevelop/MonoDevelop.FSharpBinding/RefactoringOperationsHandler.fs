@@ -153,6 +153,7 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
         
             let provider = MonoDevelop.Ide.FindInFiles.FileProvider (location.FileName)
             let doc = TextEditorFactory.CreateNewDocument ()
+            //TODO: This is unfinished...
             //(doc :> ITextDocument).Text <- provider.ReadString ()
             //let fileName, start, finish = Symbols.getTrimmedRangesForDeclarations lastIdent symbolUse
                         
