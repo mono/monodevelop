@@ -23,44 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp;
-using Gdk;
-using Mono.TextEditor;
+
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.SourceEditor.JSon
+namespace MonoDevelop.JSon
 {
 	class JSonTextEditorExtension : TextEditorExtension
 	{
 		CacheIndentEngine stateTracker;
 
-		TextEditorData textEditorData {
-			get {
-				return document.Editor;
-			}
-		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			IStateMachineIndentEngine indentEngine;
-			indentEngine = new JSonIndentEngine (document.Editor);
+			indentEngine = new JSonIndentEngine (Editor, DocumentContext);
 			stateTracker = new CacheIndentEngine (indentEngine);
-			document.Editor.IndentationTracker = new JSonIndentationTracker (document.Editor, stateTracker);
+			Editor.SetIndentationTracker (new JSonIndentationTracker (Editor, stateTracker));
 		}
-
-
-		public override bool KeyPress (Key key, char keyChar, ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			var result = base.KeyPress (key, keyChar, modifier);
+			var result = base.KeyPress (descriptor);
 
-			if (key == Key.Return) {
-				if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
-					if (textEditorData.GetLine (textEditorData.Caret.Line).Length == 0)
-						textEditorData.Caret.Column = textEditorData.IndentationTracker.GetVirtualIndentationColumn (textEditorData.Caret.Location);
+			if (descriptor.SpecialKey == SpecialKey.Return) {
+				if (Editor.Options.IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Virtual) {
+					if (Editor.GetLine (Editor.CaretLine).Length == 0)
+						Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
 				} else {
 					DoReSmartIndent ();
 				}
@@ -71,7 +64,7 @@ namespace MonoDevelop.SourceEditor.JSon
 
 		void DoReSmartIndent ()
 		{
-			DoReSmartIndent (textEditorData.Caret.Offset);
+			DoReSmartIndent (Editor.CaretOffset);
 		}
 
 		void DoReSmartIndent (int cursor)
@@ -79,23 +72,23 @@ namespace MonoDevelop.SourceEditor.JSon
 			SafeUpdateIndentEngine (cursor);
 			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)
 				return;
-			var line = textEditorData.Document.GetLineByOffset (cursor);
+			var line = Editor.GetLineByOffset (cursor);
 
 			// Get context to the end of the line w/o changing the main engine's state
 			var curTracker = stateTracker.Clone ();
 			try {
 				for (int max = cursor; max < line.EndOffset; max++) {
-					curTracker.Push (textEditorData.Document.GetCharAt (max));
+					curTracker.Push (Editor.GetCharAt (max));
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception during indentation", e);
 			}
 
 			int pos = line.Offset;
-			string curIndent = line.GetIndentation (textEditorData.Document);
+			string curIndent = line.GetIndentation (Editor);
 			int nlwsp = curIndent.Length;
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
-			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && textEditorData.Document.GetCharAt (line.Offset + nlwsp) == '*')) {
+			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && Editor.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
 				string newIndent = curTracker.ThisLineIndent;
 				int newIndentLength = newIndent.Length;
@@ -105,8 +98,8 @@ namespace MonoDevelop.SourceEditor.JSon
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 					}
 
-					newIndentLength = textEditorData.Replace (pos, nlwsp, newIndent);
-					textEditorData.Document.CommitLineUpdate (textEditorData.Caret.Line);
+					Editor.ReplaceText (pos, nlwsp, newIndent);
+					newIndentLength = newIndent.Length;
 					CompletionWindowManager.HideWindow ();
 				}
 				pos += newIndentLength;
@@ -116,8 +109,9 @@ namespace MonoDevelop.SourceEditor.JSon
 
 			pos += offset;
 
-			textEditorData.FixVirtualIndentation ();
+			Editor.FixVirtualIndentation ();
 		}
+
 		internal void SafeUpdateIndentEngine (int offset)
 		{
 			try {

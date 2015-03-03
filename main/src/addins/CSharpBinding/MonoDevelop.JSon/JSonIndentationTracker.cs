@@ -23,19 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.CSharp;
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory6.CSharp;
 
-namespace MonoDevelop.SourceEditor.JSon
+namespace MonoDevelop.JSon
 {
-	class JSonIndentationTracker : IIndentationTracker
+	class JSonIndentationTracker : IndentationTracker
 	{
-		readonly TextEditorData data;
+		readonly IReadonlyTextDocument data;
 		readonly CacheIndentEngine stateTracker;
 
-		public JSonIndentationTracker(TextEditorData data, CacheIndentEngine stateTracker)
+		public JSonIndentationTracker(IReadonlyTextDocument data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
@@ -43,16 +44,16 @@ namespace MonoDevelop.SourceEditor.JSon
 
 		string GetIndentationString (DocumentLocation loc)
 		{
-			var line = data.Document.GetLine (loc.Line);
+			var line = data.GetLine (loc.Line);
 			if (line == null)
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
 			var offset = line.Offset;
-			string curIndent = line.GetIndentation (data.Document);
+			string curIndent = line.GetIndentation (data);
 			try {
 				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
 				int nlwsp = curIndent.Length;
-				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
+				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.GetCharAt (offset + nlwsp) == '*'))
 					return stateTracker.ThisLineIndent;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting at "+ loc, e); 
@@ -60,27 +61,10 @@ namespace MonoDevelop.SourceEditor.JSon
 			return curIndent;
 		}
 
-		#region IIndentationTracker implementation
-		public string GetIndentationString (int offset)
+		public override string GetIndentationString (int lineNumber)
 		{
-			return GetIndentationString (data.OffsetToLocation (offset));
+			return GetIndentationString (new DocumentLocation (lineNumber, 1));
 		}
-
-		public string GetIndentationString (int lineNumber, int column)
-		{
-			return GetIndentationString (new DocumentLocation (lineNumber, column));
-		}
-
-		public int GetVirtualIndentationColumn (int offset)
-		{
-			return 1 + GetIndentationString (offset).Length;
-		}
-
-		public int GetVirtualIndentationColumn (int lineNumber, int column)
-		{
-			return 1 + GetIndentationString (lineNumber, column).Length;
-		}
-		#endregion
 	}
 }
 

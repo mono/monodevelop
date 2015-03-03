@@ -324,6 +324,9 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ObjectCreationCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CastCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionData.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonIndentationTracker.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonIndentEngine.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -360,5 +363,6 @@
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
+    <Folder Include="MonoDevelop.JSon\" />
   </ItemGroup>
 </Project>

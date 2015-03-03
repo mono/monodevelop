@@ -286,10 +286,6 @@
   <Import Project="..\..\md.targets" />
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
-    <None Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
-    <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
-    <None Include="MonoDevelop.Projects\DomTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <None Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />

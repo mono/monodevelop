@@ -98,6 +98,10 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
+      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -311,14 +315,10 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
-    <Folder Include="MonoDevelop.SourceEditor.Extension\" />
     <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
     <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
-    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
-    <None Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
     <None Include="packages.config" />
   </ItemGroup>
 </Project>

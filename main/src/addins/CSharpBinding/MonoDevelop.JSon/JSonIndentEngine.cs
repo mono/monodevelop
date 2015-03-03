@@ -24,27 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor;
 using System.Text;
-using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.TypeSystem;
 
-namespace MonoDevelop.SourceEditor.JSon
+namespace MonoDevelop.JSon
 {
 	class JSonIndentEngine : IStateMachineIndentEngine
 	{
-		TextEditorData data;
+		TextEditor editor;
+		DocumentContext ctx;
 		int offset, line, column;
 		internal Indent thisLineIndent, nextLineIndent;
 		StringBuilder currentIndent;
-		char previousNewline = '\0';
+		// char previousNewline = '\0';
 		char previousChar = '\0';
 		bool isLineStart;
 		bool isInString;
 
-		public JSonIndentEngine (TextEditorData data)
+		public JSonIndentEngine (TextEditor editor, DocumentContext ctx)
 		{
-			this.data = data;
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
+			if (ctx == null)
+				throw new ArgumentNullException ("ctx");
+			this.editor = editor;
+			this.ctx = ctx;
 			Reset ();
 		}
 
@@ -141,20 +149,6 @@ namespace MonoDevelop.SourceEditor.JSon
 
 		#endregion
 
-		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (TextEditorData doc)
-		{
-			return new ICSharpCode.NRefactory.CSharp.TextEditorOptions {
-				TabsToSpaces = doc.TabsToSpaces,
-				TabSize = doc.Options.TabSize,
-				IndentSize = doc.Options.IndentationSize,
-				ContinuationIndent = doc.Options.IndentationSize,
-				LabelIndent = -doc.Options.IndentationSize,
-				EolMarker = doc.EolMarker,
-				IndentBlankLines = doc.Options.IndentStyle != IndentStyle.Virtual,
-				WrapLineLength = doc.Options.RulerColumn
-			};
-		}
-
 		#region IDocumentIndentEngine implementation
 
 		public void Push (char ch)
@@ -181,7 +175,7 @@ namespace MonoDevelop.SourceEditor.JSon
 
 			offset++;
 			if (!isNewLine) {
-				previousNewline = '\0';
+				// previousNewline = '\0';
 
 				isLineStart &= char.IsWhiteSpace (ch);
 
@@ -189,13 +183,13 @@ namespace MonoDevelop.SourceEditor.JSon
 					currentIndent.Append (ch);
 
 				if (ch == '\t') {
-					var nextTabStop = (column - 1 + data.Options.IndentationSize) / data.Options.IndentationSize;
-					column = 1 + nextTabStop * data.Options.IndentationSize;
+					var nextTabStop = (column - 1 + editor.Options.IndentationSize) / editor.Options.IndentationSize;
+					column = 1 + nextTabStop * editor.Options.IndentationSize;
 				} else {
 					column++;
 				}
 			} else {
-				previousNewline = ch;
+				// previousNewline = ch;
 				currentIndent.Length = 0;
 				isLineStart = true;
 				column = 1;
@@ -209,10 +203,10 @@ namespace MonoDevelop.SourceEditor.JSon
 		{
 			offset = 0;
 			line = column = 1;
-			thisLineIndent = new Indent (CreateNRefactoryTextEditorOptions (data));
-			nextLineIndent = new Indent (CreateNRefactoryTextEditorOptions (data));
+			thisLineIndent = new Indent (ctx.GetOptionSet ());
+			nextLineIndent = new Indent (ctx.GetOptionSet ());
 			currentIndent = new StringBuilder ();
-			previousNewline = '\0';
+			// previousNewline = '\0';
 			previousChar = '\0';
 			isLineStart = true;
 			isInString = false;
@@ -224,7 +218,7 @@ namespace MonoDevelop.SourceEditor.JSon
 				Reset ();
 
 			while (Offset < offset) {
-				Push (Document.GetCharAt (Offset));
+				Push (editor.GetCharAt (Offset));
 			}
 		}
 
@@ -233,9 +227,10 @@ namespace MonoDevelop.SourceEditor.JSon
 			return Clone ();
 		}
 
-		public ICSharpCode.NRefactory.Editor.IDocument Document {
+		SourceText sourceText;
+		public SourceText Document {
 			get {
-				return data.Document;
+				return sourceText ?? (sourceText = new MonoDevelopSourceText (editor));
 			}
 		}
 
@@ -268,12 +263,12 @@ namespace MonoDevelop.SourceEditor.JSon
 				return offset;
 			}
 		}
-
-		public TextLocation Location {
-			get {
-				return new TextLocation (line, column);
-			}
-		}
+//
+//		public TextLocation Location {
+//			get {
+//				return new TextLocation (line, column);
+//			}
+//		}
 
 		public bool EnableCustomIndentLevels {
 			get;
