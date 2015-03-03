@@ -210,7 +210,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		nfloat LeftMostItemX ()
 		{
 			if (Layer.Sublayers == null)
-				return Frame.Width;
+				return Layer.Frame.Width;
 
 			var left = Layer.Sublayers.Min<CALayer, nfloat> (layer => {
 				if (layer.Name == null)
@@ -220,7 +220,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return layer.Frame.Left;
 				return nfloat.PositiveInfinity;
 			});
-			return left == nfloat.PositiveInfinity ? Frame.Width : left;
+			return left == nfloat.PositiveInfinity ? Layer.Frame.Width : left;
 		}
 
 		nfloat DrawSeparatorIfNeeded (nfloat right)
@@ -317,7 +317,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				tooltip.Dispose ();
 			tooltips.Clear ();
 
-			nfloat right = Frame.Width;
+			nfloat right = Layer.Frame.Width;
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
@@ -343,7 +343,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			nfloat right = layerToStatus.Count == 0 ?
-				Frame.Width :
+				Layer.Frame.Width :
 				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
 
 			var layer = CALayer.Create ();
@@ -531,7 +531,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Layer.Frame.Height - barHeight, (nfloat)width, barHeight);
 			}
 			return progress;
 		}
@@ -563,7 +563,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
 			move.From = NSNumber.FromDouble (-frameAutoPulseWidth);
-			move.To = NSNumber.FromDouble (Frame.Width + frameAutoPulseWidth);
+			move.To = NSNumber.FromDouble (Layer.Frame.Width + frameAutoPulseWidth);
 			move.RepeatCount = float.PositiveInfinity;
 			move.RemovedOnCompletion = false;
 			move.Duration = 4;
@@ -606,7 +606,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void StartProgress (double newFraction)
 		{
 			progressMarks.Clear ();
-			var progress = CreateProgressBarLayer (Frame.Width);
+			var progress = CreateProgressBarLayer (Layer.Frame.Width);
 			var grp = CreateMoveAndGrowAnimation (progress, newFraction);
 			oldFraction = newFraction;
 
