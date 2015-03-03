@@ -129,7 +129,7 @@ namespace MonoDevelop.Components.Mac
 			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.AlternateKeyMask) != 0)
 				state |= Gdk.ModifierType.Mod1Mask;
 
-			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, null);
+			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, GetGtkWindow (ev.Window).GdkWindow);
 		}
 
 
