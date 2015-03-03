@@ -42,7 +42,6 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandManager: IDisposable
 	{
-		public static CommandManager Main = new CommandManager ();
 		Gtk.Window rootWidget;
 		KeyBindingManager bindings;
 		Gtk.AccelGroup accelGroup;
@@ -92,8 +91,12 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
+
+			#if MAC
+			AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
+			#endif
 		}
-		
+
 		/// <summary>
 		/// Loads command definitions from the provided extension path
 		/// </summary>
@@ -320,59 +323,73 @@ namespace MonoDevelop.Components.Commands
 			return false;
 		}
 
+		#if MAC
+		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
+		{
+			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
+			if (gdkev != null) {
+				if (ProcessKeyEvent (gdkev))
+					return null;
+			}
+			return ev;
+		}
+		#endif
+
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
+			e.RetVal = ProcessKeyEvent (e.Event);
+		}
+
+		bool ProcessKeyEvent (Gdk.EventKey ev)
+		{
 			if (!IsEnabled)
-				return;
+				return true;
 
 			RegisterUserInteraction ();
 			
 			bool complete;
-			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
+			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (ev, out complete);
 
-			if (IsShortcutHandledByEmbeddedNSView (e.Event.Window, accels))
-				return;
+			if (ev.Window != null && IsShortcutHandledByEmbeddedNSView (ev.Window, accels))
+				return true;
 
 			if (!complete) {
 				// incomplete accel
-				e.RetVal = true;
-				return;
+				return true;
 			}
 			
 			List<Command> commands = null;
 			KeyBinding binding;
 			bool isChord;
-			
+			bool result;
+
 			if (CanUseBinding (chords, accels, out binding, out isChord)) {
 				commands = bindings.Commands (binding);
-				e.RetVal = true;
+				result = true;
 				chords = null;
 				chord = null;
 			} else if (isChord) {
-				chord = KeyBindingManager.AccelLabelFromKey (e.Event);
-				e.RetVal = true;
+				chord = KeyBindingManager.AccelLabelFromKey (ev);
 				chords = accels;
-				return;
+				return true;
 			} else if (chords != null) {
 				// Note: The user has entered a valid chord but the accel was invalid.
 				if (KeyBindingFailed != null) {
-					string accel = KeyBindingManager.AccelLabelFromKey (e.Event);
+					string accel = KeyBindingManager.AccelLabelFromKey (ev);
 					
 					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}, {1}) is not a command.", chord, accel)));
 				}
 				
-				e.RetVal = true;
 				chords = null;
 				chord = null;
-				return;
+				return true;
 			} else {
-				e.RetVal = false;
 				chords = null;
 				chord = null;
 				
-				NotifyKeyPressed (e);
-				return;
+				NotifyKeyPressed (ev);
+				return false;
 			}
 			
 			bool bypass = false;
@@ -383,26 +400,27 @@ namespace MonoDevelop.Components.Commands
 					continue;
 				}
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
-					return;
+					return result;
 			}
 
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
 			
 			if (commands.Count > 0 && !bypass) {
-				e.RetVal = true;
+				result = true;
 			} else {
-				e.RetVal = false;
-				NotifyKeyPressed (e);
+				result = false;
+				NotifyKeyPressed (ev);
 			}
 			
 			chords = null;
+			return result;
 		}
 		
-		void NotifyKeyPressed (Gtk.KeyPressEventArgs e)
+		void NotifyKeyPressed (Gdk.EventKey ev)
 		{
 			if (KeyPressed != null)
-				KeyPressed (this, new KeyPressArgs () { Key = e.Event.Key, Modifiers = e.Event.State });
+				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, Modifiers = ev.State });
 		}
 		
 		/// <summary>
@@ -1203,7 +1221,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = cmd;
 
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
-				
+
 				while (cmdTarget != null)
 				{
 					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
@@ -1594,6 +1612,17 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = ((ICommandRouter)cmdTarget).GetNextCommandTarget ();
 			else if (cmdTarget is Gtk.Widget)
 				cmdTarget = ((Gtk.Widget)cmdTarget).Parent;
+			#if MAC
+			else if (cmdTarget is AppKit.NSView) {
+				var v = (AppKit.NSView) cmdTarget;
+				if (v.Superview != null && IsRootGdkQuartzView (v.Superview))
+					// FIXME: We should get here the GTK parent of the superview. Since there is no api for this
+					// right now, we rely on it being set by GetActiveWidget()
+					cmdTarget = null;
+				else
+					cmdTarget = v.Superview;
+			}
+			#endif
 			else
 				cmdTarget = null;
 			
@@ -1660,18 +1689,29 @@ namespace MonoDevelop.Components.Commands
 				return null;
 		}
 		
-		Gtk.Widget GetActiveWidget (Gtk.Window win)
+		object GetActiveWidget (Gtk.Window win)
 		{
 			win = GetActiveWindow (win);
+
 			Gtk.Widget widget = win;
 			if (win != null) {
-				while (widget is Gtk.Container) {
-					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-					if (child != null)
-						widget = child;
-					else
-						break;
+
+				#if MAC
+				var nw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (win);
+				if (nw != null) {
+					var v = nw.FirstResponder as AppKit.NSView;
+					if (v != null && !IsRootGdkQuartzView (v)) {
+						if (IsEmbeddedNSView (v))
+							// FIXME: since there is no way to get the parent GTK widget of an embedded NSView,
+							// here we return a ICommandDelegatorRouter object that will cause the command route
+							// to continue with the active gtk widget once the NSView hierarchy has been inspected.
+							return new NSViewCommandRouter { ActiveView = v, ParentWidget = GetFocusedChild (widget) };
+						return v;
+					}
 				}
+				#endif
+
+				widget = GetFocusedChild (widget);
 			}
 			if (widget != lastActiveWidget) {
 				if (ActiveWidgetChanged != null)
@@ -1680,6 +1720,50 @@ namespace MonoDevelop.Components.Commands
 			}
 			return widget;
 		}
+
+		Gtk.Widget GetFocusedChild (Gtk.Widget widget)
+		{
+			while (widget is Gtk.Container) {
+				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+				if (child != null)
+					widget = child;
+				else
+					break;
+			}
+			return widget;
+		}
+
+		#if MAC
+		class NSViewCommandRouter: ICommandDelegatorRouter
+		{
+			public AppKit.NSView ActiveView;
+			public Gtk.Widget ParentWidget;
+
+			public object GetNextCommandTarget ()
+			{
+				return ParentWidget;
+			}
+
+			public object GetDelegatedCommandTarget ()
+			{
+				return ActiveView;
+			}
+		}
+
+		bool IsRootGdkQuartzView (AppKit.NSView view)
+		{
+			return view.ToString ().Contains ("GdkQuartzView");
+		}
+
+		bool IsEmbeddedNSView (AppKit.NSView view)
+		{
+			if (IsRootGdkQuartzView (view))
+				return true;
+			if (view.Superview != null)
+				return IsEmbeddedNSView (view.Superview);
+			return false;
+		}
+		#endif
 
 		bool UpdateStatus ()
 		{
