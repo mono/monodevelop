@@ -129,6 +129,7 @@ AC_SUBST(MD_DIR)
 
 AC_OUTPUT([
 Makefile
+build/Makefile
 monodevelop-database.pc
 monodevelop-database.spec
 MonoDevelop.Database.Sql/Makefile
