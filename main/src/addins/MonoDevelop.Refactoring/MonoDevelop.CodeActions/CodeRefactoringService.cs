@@ -27,7 +27,6 @@
 using System;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
@@ -35,29 +34,55 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.Ide.Editor;
+using MonoDevelop.CodeIssues;
+using Mono.Addins;
 
 namespace MonoDevelop.CodeActions
 {
 	static class CodeRefactoringService
 	{
-		static readonly List<CodeRefactoringDescriptor> codeActions = new List<CodeRefactoringDescriptor> ();
+		readonly static List<CodeDiagnosticProvider> providers = new List<CodeDiagnosticProvider> ();
 
 		static CodeRefactoringService ()
-		{
-			foreach (var type in typeof(ICSharpCode.NRefactory6.CSharp.Refactoring.IssueMarker).Assembly.GetTypes ()) {
-				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
-				if (exportAttr == null)
-					continue;
-				codeActions.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
-			}
+		{	
+			providers.Add (new BuiltInCodeDiagnosticProvider ());
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var node = (TypeExtensionNode)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					providers.Add ((CodeDiagnosticProvider)node.CreateInstance ());
+					break;
+				}
+			});
 		}
 
-		public static IEnumerable<CodeRefactoringDescriptor> GetCodeActions (string language, bool includeDisabledNodes = false)
+		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			if (string.IsNullOrEmpty (language))
-				return includeDisabledNodes ? codeActions : codeActions.Where (act => act.IsEnabled);
-			return includeDisabledNodes ? codeActions.Where (ca => ca.Language == language) : codeActions.Where (ca => ca.Language == language && ca.IsEnabled);
+			var result = new List<CodeDiagnosticDescriptor> ();
+			foreach (var provider in providers) {
+				result.AddRange (await provider.GetCodeIssuesAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+			}
+
+			return result;
+		}
+
+		public async static Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var result = new List<CodeFixDescriptor> ();
+			foreach (var provider in providers) {
+				result.AddRange (await provider.GetCodeFixDescriptorAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+			}
+			return result;
+		}
+
+		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var result = new List<CodeRefactoringDescriptor> ();
+			foreach (var provider in providers) {
+				result.AddRange (await provider.GetCodeActionsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+			}
+			return result;
 		}
 
 		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (TextEditor editor, DocumentContext doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
@@ -76,8 +101,8 @@ namespace MonoDevelop.CodeActions
 			var root = model.SyntaxTree.GetRoot();
 			if (span.End > root.Span.End)
 				return actions;
-
-			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(editor.MimeType))) {
+			
+			foreach (var descriptor in await GetCodeActionsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken)) {
 				try {
 					await descriptor.GetProvider ().ComputeRefactoringsAsync (new CodeRefactoringContext (doc.AnalysisDocument, span,
 						(ca) => actions.Add (Tuple.Create (descriptor, ca)),

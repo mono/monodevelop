@@ -17,8 +17,6 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
-
-	
 	<!-- Extensions -->
 	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">

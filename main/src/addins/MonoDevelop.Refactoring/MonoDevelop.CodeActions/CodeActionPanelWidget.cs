@@ -32,6 +32,7 @@ using System.Text;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using GLib;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.CodeActions
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.CodeActions
 		void GetAllProviderStates ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
-			foreach (var node in CodeRefactoringService.GetCodeActions (language, true)) {
+			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeActionsAsync (CodeRefactoringService.MimeTypeToLanguage(language), true).Result) {
 				providerStates [node] = node.IsEnabled;
 			}
 		}

@@ -328,7 +328,7 @@ namespace MonoDevelop.AnalysisCore
 				}
 
 				var providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
-				foreach (var node in CodeRefactoringService.GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(lang), true)) {
+				foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeActionsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
 					providerStates [node] = node.IsEnabled;
 				}
 

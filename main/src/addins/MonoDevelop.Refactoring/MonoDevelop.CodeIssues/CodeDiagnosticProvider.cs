@@ -29,6 +29,7 @@ using System.Threading;
 using MonoDevelop.CodeIssues;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -39,5 +40,6 @@ namespace MonoDevelop.CodeIssues
 	{
 		public abstract Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
 		public abstract Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		public abstract Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
 	}
 }
