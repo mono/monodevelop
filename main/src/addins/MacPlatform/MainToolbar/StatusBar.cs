@@ -107,21 +107,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, string imageResource, NSColor color)
 		{
-			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), size, color);
+			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), color);
 		}
 
-		NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, NSImage image, NSColor color)
 		{
 			var attrString = new NSMutableAttributedString ("");
-			if (image != null) {
-				// FIXME: Use the size parameter.
-				// Center image with frame.
-				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (0, 0, image.Size.Width, image.Size.Height);
+			if (image != null)
 				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
-			}
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
@@ -143,7 +138,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public StatusBar ()
 		{
 			Cell.PlaceholderAttributedString = GetAttributedString (BrandingService.ApplicationName, Stock.StatusSteady,
-				new CGSize (360, 23), NSColor.DisabledControlText);
+				NSColor.DisabledControlText);
 
 			AllowsEditingTextAttributes = WantsLayer = true;
 			Editable = Selectable = false;
@@ -198,7 +193,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (string.IsNullOrEmpty (text))
 				AttributedStringValue = new NSAttributedString ("");
 			else
-				AttributedStringValue = GetAttributedString (text, image, new CGSize (350, 22), textColor);
+				AttributedStringValue = GetAttributedString (text, image, textColor);
 		}
 
 		CALayer ProgressLayer {
