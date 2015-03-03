@@ -58,7 +58,7 @@ namespace MonoDevelop.CodeIssues
 
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				var codeIssues = CodeDiagnosticService.GetBuiltInCodeIssuesAsync (language);
+				var codeIssues = CodeDiagnosticService.GetCodeIssuesAsync (analysisDocument.DocumentContext, language);
 				foreach (var issue in codeIssues.Result) {
 					if (alreadyAdded.Contains (issue.CodeIssueType))
 						continue;

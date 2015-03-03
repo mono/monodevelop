@@ -37,79 +37,46 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using System.Diagnostics;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using Mono.Addins;
 
 namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticService
 	{
-		readonly static Task<BuiltInDiagnostics> builtInDiagnostics;
-
-		class BuiltInDiagnostics
-		{
-			public List<CodeDiagnosticDescriptor> Analyzers;
-			public List<CodeFixDescriptor> Fixes;
-		}
+		readonly static List<CodeDiagnosticProvider> providers = new List<CodeDiagnosticProvider> ();
 
 		static CodeDiagnosticService ()
 		{	
-			builtInDiagnostics = Task.Run (() => {
-				var result = new BuiltInDiagnostics ();
-				result.Analyzers = new List<CodeDiagnosticDescriptor> ();
-				result.Fixes = new List<CodeFixDescriptor> ();
-				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
-					try {
-						CheckAddins (result.Analyzers, result.Fixes, asm);
-					} catch (Exception e) {
-						LoggingService.LogError ("error while loading diagnostics in " + asm.FullName, e);
-					}
+			providers.Add (new BuiltInCodeDiagnosticProvider ()); 
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate(object sender, ExtensionNodeEventArgs args) {
+				var node = (TypeExtensionNode)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					providers.Add ((CodeDiagnosticProvider)node.CreateInstance ());
+					break;
 				}
-				return result;
 			});
 		}
 
-		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
-
-		static void CheckAddins (List<CodeDiagnosticDescriptor> analyzers, List<CodeFixDescriptor> codeFixes, System.Reflection.Assembly asm)
+		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var assemblyName = asm.GetName ().Name;
-			if (assemblyName == "MonoDevelop.AspNet" ||
-				assemblyName != "ICSharpCode.NRefactory6.CSharp.Refactoring" &&
-				!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
-				return;
- 			foreach (var type in asm.GetTypes ()) {
-				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				var nrefactoryAnalyzerAttribute = (NRefactoryCodeDiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(NRefactoryCodeDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				if (analyzerAttr != null) {
-					var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
-					foreach (var diag in analyzer.SupportedDiagnostics) {
-						analyzers.Add (new CodeDiagnosticDescriptor (diag.Title.ToString (), new[] {
-							"C#"
-						}, type, nrefactoryAnalyzerAttribute));
-					}
-				}
-				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
-				if (codeFixAttr != null) {
-					codeFixes.Add (new CodeFixDescriptor (type, codeFixAttr));
-				}
+			var result = new List<CodeDiagnosticDescriptor> ();
+			foreach (var provider in providers) {
+				result.AddRange (await provider.GetCodeIssuesAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
 			}
+
+			return result;
 		}
 
-		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeIssuesAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var diags = await builtInDiagnostics.ConfigureAwait (false);
-			var builtInCodeDiagnostics = diags.Analyzers;
-			if (string.IsNullOrEmpty (language))
-				return includeDisabledNodes ? builtInCodeDiagnostics : builtInCodeDiagnostics.Where (act => act.IsEnabled);
-			return includeDisabledNodes ? builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language)) : builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language) && ca.IsEnabled);
-		}
-
-		public async static Task<IEnumerable<CodeFixDescriptor>> GetBuiltInCodeFixDescriptorAsync (string language, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			var diags = await builtInDiagnostics.ConfigureAwait (false);
-			var builtInCodeFixes = diags.Fixes;
-			if (string.IsNullOrEmpty (language))
-				return builtInCodeFixes;
-			return builtInCodeFixes.Where (cfp => cfp.Languages.Contains (language));
+			var result = new List<CodeFixDescriptor> ();
+			foreach (var provider in providers) {
+				result.AddRange (await provider.GetCodeFixDescriptorAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+			}
+			return result;
 		}
 	}
 }

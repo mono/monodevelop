@@ -8,3 +8,4 @@ using System.Reflection;
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("X11")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.CSharpBinding")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.PackageManagement")]

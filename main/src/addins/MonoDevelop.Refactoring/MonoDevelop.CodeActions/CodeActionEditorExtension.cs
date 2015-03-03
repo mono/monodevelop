@@ -187,7 +187,7 @@ namespace MonoDevelop.CodeActions
 					Task.Run (async delegate {
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
 						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
-						foreach (var cfp in CodeDiagnosticService.GetBuiltInCodeFixDescriptorAsync (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
+						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
 							if (token.IsCancellationRequested)
 								return;
 							var provider = cfp.GetCodeFixProvider ();

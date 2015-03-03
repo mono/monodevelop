@@ -12,6 +12,12 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeDiagnosticProvider" name = "Code Diagnostic Provider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+
 	
 	<!-- Extensions -->
 	
