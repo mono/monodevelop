@@ -6,13 +6,6 @@ prefix=NONE
 test -e "$CONFIG_SITE" && . "$CONFIG_SITE"
 test "$prefix" = NONE && prefix=/usr/local
 
-bail ()
-{
-        echo "$2"
-        echo "Run 'configure --help' for usage."
-        exit "$1"
-}
-
 usage ()
 {
 	profiles=`ls profiles | sed -e "s/$/,/g" | fmt | sed -e 's/,$//' -e "s/ChangeLog, //"`
@@ -262,8 +255,6 @@ while test x$1 != x; do
 	esac
 	shift
 done
-
-ruby dependency_checker.rb || bail 7 "A dependency is not fulfilled"
 
 # make the build & run use libraries already installed in $PREFIX
 if [ -d "$prefix" ]; then
