@@ -99,12 +99,17 @@ namespace MonoDevelop.CSharp.Formatting
 
 					var doc = Formatter.FormatAsync (context.AnalysisDocument, span, policy.CreateOptions (textPolicy)).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
+					var caretOffset = editor.CaretOffset;
 					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
+						if (change.Span.Start >= caretOffset)
+							continue;
 						var newText = change.NewText;
 						if (editor.EolMarker != "\r\n")
-							newText = newText.Replace ("\r\n", editor.EolMarker);
-						editor.ReplaceText (change.Span.Start, change.Span.Length, newText);
+							newText = newText.Replace ("\r", "");
+						editor.ReplaceText (change.Span.Start, change.Span.Length, newText); 
 					}
+					if (editor.CaretColumn == 1)
+						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}
