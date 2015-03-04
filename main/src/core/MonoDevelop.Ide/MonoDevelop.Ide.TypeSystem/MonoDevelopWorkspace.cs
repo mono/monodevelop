@@ -456,7 +456,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
-				yield return new ProjectReference (GetProjectId (referencedProject));
+				yield return new ProjectReference (GetOrCreateProjectId (referencedProject));
 			}
 		}
 
