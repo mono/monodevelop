@@ -47,6 +47,8 @@ namespace MonoDevelop.CodeIssues
 		public List<CodeFixDescriptor> Fixes;
 		public List<CodeRefactoringDescriptor> Refactorings;
 
+		public readonly static AnalyzersFromAssembly Empty = new AnalyzersFromAssembly ();
+
 		public AnalyzersFromAssembly ()
 		{
 			Analyzers = new List<CodeDiagnosticDescriptor> ();

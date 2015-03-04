@@ -549,8 +549,13 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 			}
-			if (OnTheFlyFormatting && descriptor.SpecialKey == SpecialKey.Return)
-				FormatOnReturn ();
+			if (OnTheFlyFormatting && descriptor.SpecialKey == SpecialKey.Return) {
+				try {
+					FormatOnReturn ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Exception while formatting", e);
+				}
+			}
 		}
 
 		async void FormatOnReturn (CancellationToken cancellationToken = default(CancellationToken))

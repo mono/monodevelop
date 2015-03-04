@@ -62,6 +62,8 @@ namespace MonoDevelop.PackageManagement.Refactoring
 
 		static Task<AnalyzersFromAssembly> GetProjectDiagnosticsAsync (Project project, string language, CancellationToken cancellationToken)
 		{
+			if (project == null)
+				return Task.FromResult (AnalyzersFromAssembly.Empty);
 			WeakReference<AnalyzersFromAssembly> r;
 			AnalyzersFromAssembly result;
             if (diagnosticCache.TryGetValue(project, out r) && r.TryGetTarget(out result)) 
