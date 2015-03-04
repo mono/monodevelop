@@ -648,28 +648,28 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (false);
 			}
-			using (monitor) {
-				try {
-					if (!monitor.IsCancelRequested)
-						Items.Add (item);
-					else {
-						item.Dispose ();
-						return;
-					}
-					Gtk.Application.Invoke (delegate {
-						if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
-							IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
-						if (Items.Count == 1 && loadPreferences) {
-							timer.Trace ("Restoring workspace preferences");
-							RestoreWorkspacePreferences (item);
-						}
-						timer.Trace ("Reattaching documents");
-						ReattachDocumentProjects (null);
-						monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-					});
-				} finally {
-					timer.End ();
+			try {
+				if (!monitor.IsCancelRequested)
+					Items.Add (item);
+				else {
+					item.Dispose ();
+					monitor.Dispose ();
+					return;
 				}
+				Gtk.Application.Invoke (delegate {
+					if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
+						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
+					if (Items.Count == 1 && loadPreferences) {
+						timer.Trace ("Restoring workspace preferences");
+						RestoreWorkspacePreferences (item);
+					}
+					timer.Trace ("Reattaching documents");
+					ReattachDocumentProjects (null);
+					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+					monitor.Dispose ();
+				});
+			} finally {
+				timer.End ();
 			}
 		}
 
@@ -1001,9 +1001,7 @@ namespace MonoDevelop.Ide
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
 			try {
-				using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
-					MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, progressMonitor);
-				}
+				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not load parser database.", ex);
 			}

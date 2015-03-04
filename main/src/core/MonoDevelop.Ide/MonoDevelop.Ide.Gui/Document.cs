@@ -155,6 +155,14 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
+			TypeSystemService.WorkspaceItemLoaded += TypeSystemService_WorkspaceItemLoaded;
+		}
+
+		void TypeSystemService_WorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		{
+			EnsureAnalysisDocumentIsOpen ();
+			if (analysisDocument != null)
+				StartReparseThread ();
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -566,6 +574,8 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
+			TypeSystemService.WorkspaceItemLoaded -= TypeSystemService_WorkspaceItemLoaded;
+
 			window = null;
 
 			parsedDocument = null;
@@ -795,7 +805,8 @@ namespace MonoDevelop.Ide.Gui
 				// be parsed at the same time.
 				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
-				
+				if (analysisDocument == null)
+					return;
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
 				CancelOldParsing ();

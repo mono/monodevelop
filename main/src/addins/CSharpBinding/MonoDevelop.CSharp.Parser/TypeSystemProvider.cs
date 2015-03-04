@@ -64,21 +64,24 @@ namespace MonoDevelop.CSharp.Parser
 				var curDoc = options.RoslynDocument;
 				if (curDoc == null) {
 					var curProject = TypeSystemService.GetCodeAnalysisProject (project);
-					var documentId = TypeSystemService.GetDocumentId (project, fileName);
-					curDoc = curProject.GetDocument (documentId);
+					if (curProject != null) {
+						var documentId = TypeSystemService.GetDocumentId (project, fileName);
+						curDoc = curProject.GetDocument (documentId);
+					}
 				}
-
-				try {
-					var model  =  curDoc.GetSemanticModelAsync (cancellationToken).Result;
-					unit = model.SyntaxTree;
-					result.Ast = model;
-				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (x => x is TaskCanceledException); 
-					return Task.FromResult ((ParsedDocument)result);
-				} catch (TaskCanceledException) {
-					return Task.FromResult ((ParsedDocument)result);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
+				if (curDoc != null) {
+					try {
+						var model = curDoc.GetSemanticModelAsync (cancellationToken).Result;
+						unit = model.SyntaxTree;
+						result.Ast = model;
+					} catch (AggregateException ae) {
+						ae.Flatten ().Handle (x => x is TaskCanceledException); 
+						return Task.FromResult ((ParsedDocument)result);
+					} catch (TaskCanceledException) {
+						return Task.FromResult ((ParsedDocument)result);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 
+					}
 				}
 			}
 

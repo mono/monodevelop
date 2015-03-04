@@ -533,6 +533,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				var document = DocumentContext.AnalysisDocument;
+				if (document == null)
+					return;
 				if (!skipFormatting && service.SupportsFormattingOnTypedCharacter (document, descriptor.KeyChar)) {
 					var caretPosition = Editor.CaretOffset;
 					var token = CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync (document, caretPosition, default(CancellationToken)).Result;

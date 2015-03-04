@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using System.IO;
 using System.Linq;
 using System.Collections.Immutable;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		static readonly MonoDevelopWorkspace emptyWorkspace;
 
-		static Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
+		static ConcurrentDictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new ConcurrentDictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
 
 		static ImmutableArray<MonoDevelopWorkspace> Workspaces {
 			get {
@@ -113,16 +114,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		public static void Load (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)
+		public static void Load (WorkspaceItem item, IProgressMonitor progressMonitor)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				InternalLoad (item, progressMonitor);
-				OnWorkspaceItemLoaded (new WorkspaceItemEventArgs (item));
 			}
 		}
 		public static event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
 
-		static void OnWorkspaceItemLoaded (WorkspaceItemEventArgs e)
+		internal static void OnWorkspaceItemLoaded (WorkspaceItemEventArgs e)
 		{
 			var handler = WorkspaceItemLoaded;
 			if (handler != null)
@@ -140,11 +140,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
-					var newWorkspace = new MonoDevelopWorkspace ();
-					newWorkspace.LoadSolution (solution, progressMonitor);
-					workspaces [solution] = newWorkspace;
-					solution.SolutionItemAdded += OnSolutionItemAdded;
-					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+					Task.Run (() => {
+						var newWorkspace = new MonoDevelopWorkspace ();
+						newWorkspace.TryLoadSolution (solution/*, progressMonitor*/);
+						workspaces [solution] = newWorkspace;
+						solution.SolutionItemAdded += OnSolutionItemAdded;
+						solution.SolutionItemRemoved += OnSolutionItemRemoved;
+					});
 				}
 			}
 		}
@@ -163,7 +165,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (solution != null) {
 					MonoDevelopWorkspace result;
 					if (workspaces.TryGetValue (solution, out result)) {
-						workspaces.Remove (solution);
+						MonoDevelopWorkspace val;
+						workspaces.TryRemove (solution, out val);
 						result.Dispose ();
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
@@ -231,9 +234,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
 		{
-			using (var progressMonitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (false)) {
-				Task.Run (() => TypeSystemService.Load (args.Item, progressMonitor));
-			}
+			Task.Run (() => TypeSystemService.Load (args.Item, null));
 		}
 
 		static void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
