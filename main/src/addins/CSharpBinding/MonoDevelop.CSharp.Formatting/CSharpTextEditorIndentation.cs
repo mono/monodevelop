@@ -561,6 +561,8 @@ namespace MonoDevelop.CSharp.Formatting
 		async void FormatOnReturn (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var document = DocumentContext.AnalysisDocument;
+			if (document == null)
+				return;
 			var caretPosition = Editor.CaretOffset;
 			var token = await CSharpEditorFormattingService.GetTokenBeforeTheCaretAsync(document, caretPosition, cancellationToken).ConfigureAwait(false);
 			if (token.IsMissing)

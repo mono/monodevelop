@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
-				if (DocumentContext == null || SemanticModel == null)
+				if (DocumentContext == null || SemanticModel == null || DocumentContext.AnalysisDocument == null)
 					return ns + "." + name;
 				
 				var type = SemanticModel.Compilation.GetTypeByMetadataName (ns + "." + name);

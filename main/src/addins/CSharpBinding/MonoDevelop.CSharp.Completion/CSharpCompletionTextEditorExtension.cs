@@ -617,7 +617,7 @@ namespace MonoDevelop.CSharp.Completion
 				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
 				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
 					var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				var result = engine.GetParameterDataProviderAsync (DocumentContext.AnalysisDocument, semanticModel, offset, token).Result;
+				var result = engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token).Result;
 				return Task.FromResult (new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset));
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 

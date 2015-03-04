@@ -114,7 +114,10 @@ namespace MonoDevelop.CSharp
 			if (doc == null)
 				return;
 			var selectionRange = doc.Editor.CaretOffset;
-			var parsedDocument = await doc.AnalysisDocument.GetSyntaxTreeAsync ();
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var parsedDocument = await analysisDocument.GetSyntaxTreeAsync ();
 			if (parsedDocument == null)
 				return;
 			var unit = parsedDocument.GetRoot ();

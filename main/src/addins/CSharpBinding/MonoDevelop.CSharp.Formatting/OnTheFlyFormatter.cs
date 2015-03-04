@@ -82,9 +82,13 @@ namespace MonoDevelop.CSharp.Formatting
 				span = new TextSpan (0, endOffset);
 			}
 
+			var analysisDocument = context.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
-					var syntaxTree = context.AnalysisDocument.GetSyntaxTreeAsync ().Result;
+					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
 
 					if (formatLastStatementOnly) {
 						var root = syntaxTree.GetRoot ();
@@ -97,7 +101,7 @@ namespace MonoDevelop.CSharp.Formatting
 					var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 					var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 
-					var doc = Formatter.FormatAsync (context.AnalysisDocument, span, policy.CreateOptions (textPolicy)).Result;
+					var doc = Formatter.FormatAsync (analysisDocument, span, policy.CreateOptions (textPolicy)).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
 					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
