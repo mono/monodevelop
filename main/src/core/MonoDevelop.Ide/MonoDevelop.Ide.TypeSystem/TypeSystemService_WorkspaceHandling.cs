@@ -80,11 +80,11 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		static readonly MonoDevelopWorkspace emptyWorkspace;
 
-		static ConcurrentDictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new ConcurrentDictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
+		static ConcurrentBag<MonoDevelopWorkspace> workspaces = new ConcurrentBag<MonoDevelopWorkspace>();
 
 		static ImmutableArray<MonoDevelopWorkspace> Workspaces {
 			get {
-				return workspaces.Values.ToImmutableArray ();
+				return workspaces.ToImmutableArray ();
 			}
 		}
 
@@ -92,9 +92,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (solution == null)
 				throw new ArgumentNullException ("solution");
-			MonoDevelopWorkspace result;
-			if (workspaces.TryGetValue (solution, out result))
-				return result;
+			foreach (var ws in Workspaces) {
+				if (ws.MonoDevelopSolution == solution)
+					return ws;
+			}
 			return emptyWorkspace;
 		}
 
@@ -114,12 +115,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		public static void Load (WorkspaceItem item, IProgressMonitor progressMonitor)
+		internal static void Load (WorkspaceItem item, IProgressMonitor progressMonitor, bool loadInBackground = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				InternalLoad (item, progressMonitor);
+				InternalLoad (item, progressMonitor, new MonoDevelopWorkspace (), loadInBackground);
 			}
 		}
+
 		public static event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
 
 		internal static void OnWorkspaceItemLoaded (WorkspaceItemEventArgs e)
@@ -129,24 +131,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				handler (null, e);
 		}
 
-		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor)
+		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor, MonoDevelopWorkspace workspace, bool loadInBackground)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
+				var newWorkspace = new MonoDevelopWorkspace ();
 				foreach (var it in ws.Items)
-					InternalLoad (it, progressMonitor);
+					InternalLoad (it, progressMonitor, new MonoDevelopWorkspace (), loadInBackground );
 				ws.ItemAdded += OnWorkspaceItemAdded;
 				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
-					Task.Run (() => {
-						var newWorkspace = new MonoDevelopWorkspace ();
-						newWorkspace.TryLoadSolution (solution/*, progressMonitor*/);
-						workspaces [solution] = newWorkspace;
+					Action loadAction = () =>  {
+						workspace.TryLoadSolution (solution/*, progressMonitor*/);
+						workspaces.Add (workspace);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
-					});
+					};
+					if (loadInBackground) {
+						Task.Run (loadAction);
+					} else {
+						loadAction ();
+					}
 				}
 			}
 		}
@@ -163,10 +170,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
-					MonoDevelopWorkspace result;
-					if (workspaces.TryGetValue (solution, out result)) {
-						MonoDevelopWorkspace val;
-						workspaces.TryRemove (solution, out val);
+					MonoDevelopWorkspace result = GetWorkspace (solution);
+					if (result != emptyWorkspace) {
+						workspaces = new ConcurrentBag<MonoDevelopWorkspace> (Workspaces.Where (w => w != result));
 						result.Dispose ();
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;

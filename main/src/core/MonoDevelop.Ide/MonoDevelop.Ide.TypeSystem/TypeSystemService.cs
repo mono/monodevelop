@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (options == null)
 				throw new ArgumentNullException ("options");
 			if (options.FileName == null)
-				throw new ArgumentNullException ("fileName");
+				throw new ArgumentNullException ("options.FileName");
 
 			var parser = GetParser (mimeType);
 			if (parser == null)

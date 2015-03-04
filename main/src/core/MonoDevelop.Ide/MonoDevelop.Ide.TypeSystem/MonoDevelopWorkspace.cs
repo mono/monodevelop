@@ -55,6 +55,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		object addLock = new object();
 		bool added;
 
+		public MonoDevelop.Projects.Solution MonoDevelopSolution {
+			get {
+				return currentMonoDevelopSolution;
+			}
+		}
+
 		public MonoDevelopWorkspace () : base (services, "MonoDevelopWorkspace")
 		{
 			if (IdeApp.Workspace != null) {
@@ -162,6 +168,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			lock (projectIdMap) {
 				ProjectId result;
+				if (projectIdMap.TryGetValue (p, out result))
+					return result;
+				return null;
+			}
+		}
+
+		internal ProjectId GetOrCreateProjectId (MonoDevelop.Projects.Project p)
+		{
+			lock (projectIdMap) {
+				ProjectId result;
 				if (!projectIdMap.TryGetValue (p, out result)) {
 					result = ProjectId.CreateNewId (p.Name);
 					projectIdMap [p] = result;
@@ -171,6 +187,17 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		ProjectData GetProjectData (ProjectId id)
+		{
+			lock (projectIdMap) {
+				ProjectData result;
+				if (projectDataMap.TryGetValue (id, out result)) {
+					return result;
+				}
+				return null;
+			}
+		}
+
+		ProjectData GetOrCreateProjectData (ProjectId id)
 		{
 			lock (projectIdMap) {
 				ProjectData result;
@@ -198,7 +225,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				documentIdMap = new Dictionary<string, DocumentId> (FilePath.PathComparer);
 			}
 
-			public DocumentId GetOrCreateDocumentId (string name)
+			internal DocumentId GetOrCreateDocumentId (string name)
 			{
 				lock (documentIdMap) {
 					DocumentId result;
@@ -244,8 +271,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				p.Modified += OnProjectModified;
 			}
 
-			var projectId = GetProjectId (p);
-			var projectData = GetProjectData (projectId); 
+			var projectId = GetOrCreateProjectId (p);
+			var projectData = GetOrCreateProjectData (projectId); 
 			var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
 			if (config != null)
@@ -272,14 +299,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
-		static DocumentId GetDocumentId (ProjectData id, MonoDevelop.Projects.ProjectFile f)
-		{
-			return id.GetOrCreateDocumentId (f.Name);
-		}
-
 		static DocumentInfo CreateDocumentInfo (ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
-			return DocumentInfo.Create (GetDocumentId (id, f), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, false);
+			return DocumentInfo.Create (id.GetOrCreateDocumentId (f.Name), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, false);
 		}
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
@@ -289,7 +311,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
-					if (!duplicates.Add (GetDocumentId (id, f)))
+					if (!duplicates.Add (id.GetDocumentId (f.Name)))
 						continue;
 					yield return CreateDocumentInfo (id, f);
 					continue;
@@ -298,7 +320,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					continue;
-				if (!duplicates.Add (GetDocumentId (id, f)))
+				if (!duplicates.Add (id.GetDocumentId (f.Name)))
 					continue;
 				var options = new ParseOptions {
 					FileName = f.FilePath,

@@ -191,9 +191,11 @@ namespace MonoDevelop.Ide.Gui
 			set { Window.ViewContent.IsDirty = value; }
 		}
 
-		
+		FilePath adHocFile;
+		Project adhocProject;
+
 		public override Project Project {
-			get { return Window != null ? Window.ViewContent.Project : null; }
+			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -386,7 +388,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.TrackFileChanges = true;
 			}
 		}
-		
+
 		public void SaveAs ()
 		{
 			SaveAs (null);
@@ -559,6 +561,7 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
 				analysisDocument = null;
 			}
+			UnloadAdhocProject ();
 			if (Editor != null) {
 				Editor.Dispose ();
 			}
@@ -699,6 +702,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
+			UnloadAdhocProject ();
 			analysisDocument = null;
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
@@ -779,11 +783,48 @@ namespace MonoDevelop.Ide.Gui
 
 		void EnsureAnalysisDocumentIsOpen ()
 		{
-			if (analysisDocument == null && Project != null) {
+			if (analysisDocument != null)
+				return;
+			if (Project != null) {
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
+			} else {
+				lock (adhocProjectLock) {
+					if (adhocProject != null)
+						return;
+					var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+					this.adhocProject = newProject;
+
+					newProject.Name = "<invisible>";
+					newProject.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
+					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+
+					newProject.FileName = "test.csproj";
+					adHocFile = Platform.IsWindows ? "C:\\a.cs" : "/a.cs";
+					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile)); 
+
+					var solution = new Solution ();
+					solution.AddConfiguration ("", true); 
+					solution.DefaultSolutionFolder.AddItem (newProject);
+					using (var monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+						TypeSystemService.Load (solution, monitor, false);
+					analysisDocument = TypeSystemService.GetDocumentId (adhocProject, adHocFile);
+					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+				}
+			}
+		}
+		object adhocProjectLock = new object();
+
+		void UnloadAdhocProject ()
+		{
+			lock (adhocProjectLock) {
+				if (adhocProject == null)
+					return;
+				TypeSystemService.Unload (adhocProject.ParentSolution.ParentWorkspace);
+				adhocProject = null;
 			}
 		}
 
@@ -796,7 +837,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 		internal void StartReparseThread ()
 		{
-			string currentParseFile = FileName;
+			string currentParseFile = adhocProject != null ? adHocFile : FileName;
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
 			Application.Invoke (delegate {
@@ -814,7 +855,7 @@ namespace MonoDevelop.Ide.Gui
 				var project = Project;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
-					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, FileName)) {
+					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
 						TypeSystemService.ParseProjection (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;

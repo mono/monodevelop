@@ -586,7 +586,7 @@ namespace MonoDevelop.Ide.Gui
 			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			
-			IViewContent newContent = binding.CreateContent (null, mimeType, null);
+			IViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
 			using (content) {
 				newContent.LoadNew (content, mimeType);
 			}

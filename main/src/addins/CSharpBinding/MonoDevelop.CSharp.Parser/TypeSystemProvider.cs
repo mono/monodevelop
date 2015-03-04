@@ -66,7 +66,8 @@ namespace MonoDevelop.CSharp.Parser
 					var curProject = TypeSystemService.GetCodeAnalysisProject (project);
 					if (curProject != null) {
 						var documentId = TypeSystemService.GetDocumentId (project, fileName);
-						curDoc = curProject.GetDocument (documentId);
+						if (documentId != null)
+							curDoc = curProject.GetDocument (documentId);
 					}
 				}
 				if (curDoc != null) {
