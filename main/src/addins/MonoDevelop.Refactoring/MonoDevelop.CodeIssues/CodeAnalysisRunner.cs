@@ -79,10 +79,12 @@ namespace MonoDevelop.CodeIssues
 					clock.Start ();
 					#endif
 					foreach (var provider in EnumerateProvider (parentProvider)) {
+						cancellationToken.ThrowIfCancellationRequested ();
 						var severity = provider.GetSeverity ();
 						if (severity == Severity.None || !provider.GetIsEnabled ())
 							continue;
 						foreach (var r in provider.GetIssues (context, cancellationToken)) {
+							cancellationToken.ThrowIfCancellationRequested ();
 							var fixes = r.Actions == null ? new List<GenericFix> () : new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 								Action batchAction = null;
 								if (a.SupportsBatchRunning)
