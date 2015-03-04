@@ -288,9 +288,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"test.dll",
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions () : null,
-				GetDocuments (projectData, p, token),
-				GetProjectReferences (p, token),
-				GetMetadataReferences (p, projectId, token)
+				CreateDocuments (projectData, p, token),
+				CreateProjectReferences (p, token),
+				CreateMetadataReferences (p, projectId, token)
 			);
 
 			projectData.Info = info;
@@ -304,14 +304,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return DocumentInfo.Create (id.GetOrCreateDocumentId (f.Name), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, false);
 		}
 
-		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			var duplicates = new HashSet<DocumentId> ();
 			foreach (var f in p.Files) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
-					if (!duplicates.Add (id.GetDocumentId (f.Name)))
+					if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
 						continue;
 					yield return CreateDocumentInfo (id, f);
 					continue;
@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
 					continue;
-				if (!duplicates.Add (id.GetDocumentId (f.Name)))
+				if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
 					continue;
 				var options = new ParseOptions {
 					FileName = f.FilePath,
@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		static IEnumerable<MetadataReference> GetMetadataReferences (MonoDevelop.Projects.Project p, ProjectId projectId, CancellationToken token)
+		static IEnumerable<MetadataReference> CreateMetadataReferences (MonoDevelop.Projects.Project p, ProjectId projectId, CancellationToken token)
 		{
 			var netProject = p as MonoDevelop.Projects.DotNetProject;
 			if (netProject == null)
@@ -446,7 +446,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		IEnumerable<ProjectReference> GetProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				if (token.IsCancellationRequested)
