@@ -45,6 +45,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		Entry entry;
 		ComboBox combo;
 		ListStore store;
+		bool changed;
 
 		public void Initialize (EditSession session)
 		{
@@ -93,7 +94,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			//if we have an entry, fix it up a little
 			if (entry != null) {
 				entry.HasFrame = false;
-				entry.Activated += TextChanged;
+				entry.Changed += TextChanged;
+				entry.FocusOutEvent += FirePendingChangeEvent;
 			}
 
 			if (entry != null && ShouldShowDialogButton ()) {
@@ -125,13 +127,16 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			}
 		}
 
-		bool GetValue (out object value)
+		bool GetValue (out object value, out bool isStandard)
 		{
+			isStandard = false;
+
 			//combo box, just find the active value
 			if (store != null && entry == null) {
 				TreeIter it;
 				if (combo.GetActiveIter (out it)) {
 					value = ObjectBox.Unbox (store.GetValue (it, 1));
+					isStandard = true;
 					return true;
 				}
 				value = null;
@@ -147,7 +152,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 					do {
 						if ((string)store.GetValue (it, 0) == text) {
 							value = ObjectBox.Unbox (store.GetValue (it, 1));
-							return false;
+							isStandard = true;
+							return true;
 						}
 					} while (store.IterNext (ref it));
 				}
@@ -175,14 +181,30 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			}
 
 			object val;
-			if (GetValue (out val)) {
+			bool isStandard;
+			if (GetValue (out val, out isStandard)) {
 				currentValue = val;
-				if (ValueChanged != null)
-					ValueChanged (this, a);
 				if (entry != null)
 					entry.ModifyFg (StateType.Normal);
 			} else {
 				entry.ModifyFg (StateType.Normal, new Color (255, 0, 0));
+			}
+
+			//if it's a standard value, fire the event immediately
+			//else defer till the entry loses focus
+			changed = true;
+			if (isStandard) {
+				FirePendingChangeEvent (null, null);
+			}
+		}
+
+		void FirePendingChangeEvent (object s, EventArgs a)
+		{
+			if (changed) {
+				if (ValueChanged != null) {
+					ValueChanged (this, EventArgs.Empty);
+				}
+				changed = false;
 			}
 		}
 		
@@ -233,8 +255,13 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 		void IDisposable.Dispose ()
 		{
-			if (!disposed && entry != null && initialText != entry.Text) {
+			if (!disposed) {
+				disposed = true;
+				return;
+			}
+			if (entry != null) {
 				TextChanged (null, null);
+				FirePendingChangeEvent (null, null);
 			}
 			disposed = true;
 		}
