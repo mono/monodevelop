@@ -147,7 +147,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 					do {
 						if ((string)store.GetValue (it, 0) == text) {
 							value = ObjectBox.Unbox (store.GetValue (it, 1));
-							return false;
+							return true;
 						}
 					} while (store.IterNext (ref it));
 				}
