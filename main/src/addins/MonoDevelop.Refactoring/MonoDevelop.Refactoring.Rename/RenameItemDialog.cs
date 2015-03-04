@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring.Rename
 			Init (title, currentName, renameOperation);
 		}
 
-		public RenameItemDialog (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameRefactoring rename)
+		public RenameItemDialog (ISymbol symbol, RenameRefactoring rename)
 		{
 			this.Build ();
 
@@ -112,7 +112,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 
-			Init (title, symbol.Name, prop => rename.PerformChanges (symbol, locations, prop));
+			Init (title, symbol.Name, prop => rename.PerformChanges (symbol, prop));
 
 		}
 

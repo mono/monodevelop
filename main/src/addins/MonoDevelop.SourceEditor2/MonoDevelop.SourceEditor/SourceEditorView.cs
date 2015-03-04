@@ -2556,7 +2556,13 @@ namespace MonoDevelop.SourceEditor
 				tle.OldMode = TextEditor.CurrentMode;
 				if (textLinkModeOptions.ModeExitedAction != null) {
 					tle.Cancel += (sender, e) => textLinkModeOptions.ModeExitedAction (new TextLinkModeEventArgs (false));
-					tle.Exited += (sender, e) => textLinkModeOptions.ModeExitedAction (new TextLinkModeEventArgs (true));
+					tle.Exited += (sender, e) => {
+						for (int i = 0; i < convertedLinks.Count; i++) {
+							textLinkModeOptions.Links[i].CurrentText = convertedLinks[i].CurrentText;
+						}
+						textLinkModeOptions.ModeExitedAction (new TextLinkModeEventArgs (true));
+						
+					};
 				}
 				tle.StartMode ();
 				TextEditor.CurrentMode = tle;

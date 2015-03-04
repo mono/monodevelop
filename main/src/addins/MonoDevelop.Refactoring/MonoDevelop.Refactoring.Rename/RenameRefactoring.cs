@@ -40,91 +40,120 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Rename;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameRefactoring
 	{
-		public static void Rename (ISymbol symbol, string newName)
+		public static bool Rename (ISymbol symbol, string newName)
 		{
-			var locations = new List<Tuple<string, TextSpan>> ();
-			foreach (var loc in symbol.Locations) {
-				locations.Add (Tuple.Create (loc.SourceTree.FilePath, loc.SourceSpan));
+			if (symbol == null)
+				throw new ArgumentNullException ("symbol");
+			if (newName == null)
+				throw new ArgumentNullException ("newName");
+			try {
+				var result = new RenameRefactoring ().PerformChanges (symbol, new RenameProperties () { NewName = newName });
+
+				using (var monitor = new NullProgressMonitor ()) {
+					if (result.Count > 0) {
+						RefactoringService.AcceptChanges (monitor, result);
+					}
+				}
+				return true;
+			} catch (AggregateException ae) {
+				foreach (var inner in ae.Flatten ().InnerExceptions)
+					LoggingService.LogError ("Exception while rename.", inner);
+				return false;
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while rename.", e);
+				return false;
 			}
-					
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result) {
-				foreach (var loc in mref.Locations) {
-					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
-				}
-			}
-			
-			using (var monitor = new NullProgressMonitor ()) {
-				var result = new List<Change> ();
-				foreach (var memberRef in locations) {
-					var change = new TextReplaceChange ();
-					change.FileName = memberRef.Item1;
-					change.Offset = memberRef.Item2.Start;
-					change.RemovedChars = memberRef.Item2.Length;
-					change.InsertedText = newName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), symbol.Name, newName);
-					result.Add (change);
-				}
-				if (result.Count > 0) {
-					RefactoringService.AcceptChanges (monitor, result);
-				}
+		}
+
+		static void Rollback (TextEditor editor, List<MonoDevelop.Core.Text.TextChangeEventArgs> textChanges)
+		{
+			for (int i = textChanges.Count - 1; i >= 0; i--) {
+				var v = textChanges [i];
+				editor.ReplaceText (v.Offset, v.InsertionLength, v.RemovedText);
 			}
 		}
 
 		public void Rename (ISymbol symbol)
 		{
-			var locations = new List<Tuple<string, TextSpan>> ();
-			var fileNames = new HashSet<string> ();
-			foreach (var loc in symbol.Locations) {
-				locations.Add (Tuple.Create (loc.SourceTree.FilePath, loc.SourceSpan));
-				fileNames.Add (loc.SourceTree.FilePath);
+
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			var ws = TypeSystemService.GetWorkspace (solution);
+
+			var currentSolution = ws.CurrentSolution;
+			var newSolution = Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options).Result;
+			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
+
+			if (projectChanges.Count != 1) {
+				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, this));
+				return;
 			}
-					
-			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).Result) {
-				foreach (var loc in mref.Locations) {
-					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
-					fileNames.Add (loc.Document.FilePath);
+
+			var projectChange = projectChanges [0];
+			var changes = projectChange.GetChangedDocuments ().ToList ();
+			if (changes.Count != 1) {
+				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, this));
+				return;
+			}
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var editor = doc.Editor;
+			
+			var links = new List<TextLink> ();
+			var link = new TextLink ("name");
+
+			var cd = changes [0];
+			var oldDoc = projectChange.OldProject.GetDocument (cd);
+			var newDoc = projectChange.NewProject.GetDocument (cd);
+			var oldVersion = editor.Version;
+			foreach (var textChange in oldDoc.GetTextChangesAsync (newDoc).Result) {
+				var segment = new TextSegment (textChange.Span.Start, textChange.Span.Length);
+				if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
+					link.Links.Insert (0, segment); 
+				} else {
+					link.AddLink (segment);
 				}
 			}
 			
-			if (fileNames.Count == 1) {
-				var editor = IdeApp.Workbench.ActiveDocument.Editor;
-				
-				var links = new List<TextLink> ();
-				var link = new TextLink ("name");
+			links.Add (link);
+			editor.StartTextLinkMode (new TextLinkModeOptions (links, args => {
+				if (!args.Success)
+					return;
 
-				foreach (var r in locations) {
-					var segment = new TextSegment (r.Item2.Start, r.Item2.Length);
-					if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
-						link.Links.Insert (0, segment); 
-					} else {
-						link.AddLink (segment);
-					}
+				var version = editor.Version;
+				var span = symbol.Locations.First ().SourceSpan;
+				var newName = link.CurrentText;
+				var textChanges = version.GetChangesTo (oldVersion).ToList ();
+				foreach (var v in textChanges) {
+					editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 				}
-				
-				links.Add (link);
-				editor.StartTextLinkMode (new TextLinkModeOptions (links));
-//				if (editor.CurrentMode is TextLinkEditMode)
-//					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
-//				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
-//				tle.SetCaretPosition = false;
-//				tle.SelectPrimaryLink = true;
-//				if (tle.ShouldStartTextLinkMode) {
-//					tle.Cancel += delegate {
-//						if (tle.HasChangedText)
-//							editor.Document.Undo ();
-//					};
-//					tle.OldMode = data.CurrentMode;
-//					tle.StartMode ();
-//					data.CurrentMode = tle;
-//				}
-			} else {
-				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, locations, this));
-			}
+				var parsedDocument = doc.UpdateParseDocument ();
+				if (parsedDocument == null) {
+					Rollback (editor, textChanges);
+					return;
+				}
+				var model = parsedDocument.GetAst<SemanticModel> ();
+				if (model == null) {
+					Rollback (editor, textChanges);
+					return;
+				}
+				var node = model.SyntaxTree.GetRoot ().FindNode (span);
+				if (node == null) {
+					Rollback (editor, textChanges);
+					return;
+				}
+				var sym = model.GetDeclaredSymbol (node);
+				if (sym == null) {
+					Rollback (editor, textChanges);
+					return;
+				}
+				if (!Rename (sym, newName))
+					Rollback (editor, textChanges);
+			}));
 		}
 		
 		public class RenameProperties
@@ -145,49 +174,60 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 		
-		public List<Change> PerformChanges (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameProperties properties)
+		public List<Change> PerformChanges (ISymbol symbol, RenameProperties properties)
 		{
+			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			var ws = TypeSystemService.GetWorkspace (solution);
+
+			var newSolution = Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options).Result;
 			var result = new List<Change> ();
-			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
-				if (properties.RenameFile && symbol.Kind == SymbolKind.NamedType) {
-					int currentPart = 1;
-					var alreadyRenamed = new HashSet<string> ();
-					foreach (var part in symbol.Locations) {
-						var filePath = part.SourceTree.FilePath;
-						if (alreadyRenamed.Contains (filePath))
-							continue;
-						alreadyRenamed.Add (filePath);
-							
-						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (filePath);
-						string newFileName;
-						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper (), StringComparison.Ordinal))
-							continue;
-						int idx = oldFileName.IndexOf (symbol.Name, StringComparison.Ordinal);
-						if (idx >= 0) {
-							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + filePath.Length);
-						} else {
-							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
-							currentPart++;
-						}
-							
-						int t = 0;
-						while (System.IO.File.Exists (GetFullFileName (newFileName, filePath, t))) {
-							t++;
-						}
-						result.Add (new RenameFileChange (filePath, GetFullFileName (newFileName, filePath, t)));
+
+			foreach (var change in ws.CurrentSolution.GetChanges (newSolution).GetProjectChanges ()) {
+				foreach (var changedDocument in change.GetChangedDocuments ()) {
+					var oldDoc = change.OldProject.GetDocument (changedDocument);
+					var newDoc = change.NewProject.GetDocument (changedDocument);
+
+					foreach (var textChange in oldDoc.GetTextChangesAsync (newDoc).Result.OrderByDescending(ts => ts.Span.Start)) {
+						var trChange = new TextReplaceChange ();
+						trChange.FileName = oldDoc.FilePath;
+						trChange.Offset = textChange.Span.Start;
+						trChange.RemovedChars = textChange.Span.Length;
+						trChange.InsertedText = textChange.NewText;
+						trChange.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), symbol.Name, properties.NewName);
+						result.Add (trChange);
 					}
 				}
-				
-				foreach (var memberRef in locations) {
-					var change = new TextReplaceChange ();
-					change.FileName = memberRef.Item1;
-					change.Offset = memberRef.Item2.Start;
-					change.RemovedChars = memberRef.Item2.Length;
-					change.InsertedText = properties.NewName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), symbol.Name, properties.NewName);
-					result.Add (change);
+			}
+
+			if (properties.RenameFile && symbol.Kind == SymbolKind.NamedType) {
+				int currentPart = 1;
+				var alreadyRenamed = new HashSet<string> ();
+				foreach (var part in symbol.Locations) {
+					var filePath = part.SourceTree.FilePath;
+					if (alreadyRenamed.Contains (filePath))
+						continue;
+					alreadyRenamed.Add (filePath);
+
+					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (filePath);
+					string newFileName;
+					if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper (), StringComparison.Ordinal))
+						continue;
+					int idx = oldFileName.IndexOf (symbol.Name, StringComparison.Ordinal);
+					if (idx >= 0) {
+						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + filePath.Length);
+					} else {
+						newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
+						currentPart++;
+					}
+
+					int t = 0;
+					while (System.IO.File.Exists (GetFullFileName (newFileName, filePath, t))) {
+						t++;
+					}
+					result.Add (new RenameFileChange (filePath, GetFullFileName (newFileName, filePath, t)));
 				}
 			}
+
 			return result;
 		}
 		
