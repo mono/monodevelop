@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				workspacesLoading++;
 				if (statusIcon != null)
 					return;
-				statusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusWorking));
+				statusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
 			});
 		}
 
@@ -127,9 +127,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (currentMonoDevelopSolution == null)
 				return;
+			ShowStatusIcon ();
 			CancelLoad ();
 			var token = src.Token;
-			ShowStatusIcon ();
 			Task.Run (() => {
 				try {
 					return CreateSolutionInfo (currentMonoDevelopSolution, token);
