@@ -28,11 +28,31 @@ using System;
 
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Text;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
+	public struct DebugDataTipInfo
+	{
+		public readonly TextSpan Span;
+		public readonly string Text;
+
+		public DebugDataTipInfo (TextSpan span, string text)
+		{
+			this.Span = span;
+			this.Text = text;
+		}
+
+		public bool IsDefault
+		{
+			get { return Span.Length == 0 && Span.Start == 0 && Text == null; }
+		}
+	}
+
 	public interface IDebuggerExpressionResolver
 	{
-		string ResolveExpression (IReadonlyTextDocument editor, DocumentContext doc, int offset, out int startOffset);
+		Task<DebugDataTipInfo> ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken);
 	}
 }

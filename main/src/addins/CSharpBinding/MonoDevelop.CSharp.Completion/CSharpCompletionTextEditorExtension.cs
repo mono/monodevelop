@@ -1078,9 +1078,9 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IDebuggerExpressionResolver implementation
 
-		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, DocumentContext doc, int offset, out int startOffset)
+		async Task<DebugDataTipInfo> IDebuggerExpressionResolver.ResolveExpressionAsync (IReadonlyTextDocument editor, DocumentContext doc, int offset, CancellationToken cancellationToken)
 		{
-			return Resolver.DebuggerExpressionResolver.Resolve (doc.ParsedDocument.GetAst<SemanticModel> (), offset, out startOffset);
+			return await Resolver.DebuggerExpressionResolver.ResolveAsync (editor, doc, offset, cancellationToken);
 		}
 
 		#endregion

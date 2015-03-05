@@ -110,7 +110,9 @@ namespace MonoDevelop.SourceEditor
 				var data = doc.GetContent<SourceEditorView> ();
 
 				if (resolver != null) {
-					expression = resolver.ResolveExpression (editor, doc, offset, out startOffset);
+					var result = resolver.ResolveExpressionAsync (editor, doc, offset, default(System.Threading.CancellationToken)).Result;
+					expression = result.Text;
+					startOffset = result.Span.Start;
 				} else {
 					int endOffset = data.GetTextEditorData ().FindCurrentWordEnd (offset);
 					startOffset = data.GetTextEditorData ().FindCurrentWordStart (offset);

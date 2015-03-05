@@ -1,4 +1,6 @@
-﻿//
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+//
 // DebuggerExpressionResolver.cs
 //
 // Author:
@@ -27,193 +29,138 @@
 using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Debugger;
 
 namespace MonoDevelop.CSharp.Resolver
 {
 	public static class DebuggerExpressionResolver
 	{
-		public static string Resolve (SemanticModel semanticModel, int offset, out int startOffset)
+		public static async Task<DebugDataTipInfo> ResolveAsync (IReadonlyTextDocument editor, DocumentContext document, int offset, CancellationToken cancellationToken)
 		{
-			var walker = new DebuggerWalker (semanticModel, offset);
-			walker.Visit (semanticModel.SyntaxTree.GetRoot ());
-			startOffset = walker.StartOffset;
-			return walker.ResolvedExpression;
+			var analysisDocument = document.AnalysisDocument;
+			DebugDataTipInfo result;
+			CompilationUnitSyntax compilationUnit = null;
+			if (analysisDocument == null) {
+				compilationUnit = SyntaxFactory.ParseCompilationUnit (editor.Text);
+				result = GetInfo (compilationUnit, null, offset, default(CancellationToken));
+			} else {
+				compilationUnit = await analysisDocument.GetCSharpSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+				var semantic = document.ParsedDocument.GetAst<SemanticModel> ();
+				if (semantic == null) {
+					semantic = await document.AnalysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+				}
+				result = GetInfo (compilationUnit, semantic, offset, default(CancellationToken));
+			}
+			if (result.IsDefault) {
+				return new DebugDataTipInfo (result.Span, null);
+			} else if (result.Text == null) {
+				return new DebugDataTipInfo (result.Span, compilationUnit.GetText ().ToString (result.Span));
+			} else {
+				return result;
+			}
 		}
 
-		class DebuggerWalker : CSharpSyntaxWalker
+		static DebugDataTipInfo GetInfo (CompilationUnitSyntax root, SemanticModel semanticModel, int position, CancellationToken cancellationToken)
 		{
-			public int StartOffset {
-				get;
-				private set;
-			}
+			var token = root.FindToken (position);
+			string textOpt = null;
 
-			public string ResolvedExpression { get; private set; }
-
-			readonly int offset;
-			readonly SemanticModel semanticModel;
-
-			public DebuggerWalker (SemanticModel semanticModel, int offset)
-			{
-				this.semanticModel = semanticModel;
-				this.offset = offset;
-				this.StartOffset = -1;
-			}
-
-			static bool AllMemberAccessExpression (SyntaxNode node)
-			{
-				var memberNode = node as MemberAccessExpressionSyntax;
-				if (memberNode != null) {
-					if (memberNode.Expression is IdentifierNameSyntax)//We came to end
-						return true;
-					return AllMemberAccessExpression (memberNode.Expression);
-				} else {
-					return false;
-				}
-			}
-
-			public override void VisitMemberAccessExpression (MemberAccessExpressionSyntax node)
-			{
-				if (node.Expression.Span.Contains (offset)) {
-					base.VisitMemberAccessExpression (node);
-				} else {
-					if (!(node.Parent is InvocationExpressionSyntax) && AllMemberAccessExpression (node)) {//We don't want some method invocation
-						StartOffset = node.SpanStart;
-						ResolvedExpression = node.ToString ();
-					} else {
-						return;
+			var expression = token.Parent as ExpressionSyntax;
+			if (expression == null) {
+				if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind (token, SyntaxKind.IdentifierToken)) {
+					if (semanticModel != null) {
+						if (token.Parent is PropertyDeclarationSyntax) {
+							var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax)token.Parent);
+							if (propertySymbol.IsStatic) {
+								textOpt = propertySymbol.ContainingType.GetFullName () + "." + propertySymbol.Name;
+							}
+						} else if (token.GetAncestor<FieldDeclarationSyntax> () != null) {
+							var fieldSymbol = semanticModel.GetDeclaredSymbol (token.GetAncestor<VariableDeclaratorSyntax> ());
+							if (fieldSymbol.IsStatic) {
+								textOpt = fieldSymbol.ContainingType.GetFullName () + "." + fieldSymbol.Name;
+							}
+						}
 					}
-				}
-			}
 
-			public override void VisitVariableDeclarator (VariableDeclaratorSyntax node)
-			{
-				if (node.Identifier.Span.Contains (offset)) {
-					StartOffset = node.Identifier.SpanStart;
-					ResolvedExpression = node.Identifier.Text;
+					return new DebugDataTipInfo (token.Span, text: textOpt);
 				} else {
-					base.VisitVariableDeclarator (node);
+					return default(DebugDataTipInfo);
 				}
 			}
 
-			[System.Diagnostics.DebuggerStepThrough]
-			public override void VisitCompilationUnit (CompilationUnitSyntax node)
-			{
-				var startNode = node.DescendantNodesAndSelf (n => offset <= n.SpanStart).FirstOrDefault ();
-				if (startNode == node || startNode == null) {
-					base.VisitCompilationUnit (node);
-				} else {
-					this.Visit (startNode);
-				}
+			if (expression.IsAnyLiteralExpression ()) {
+				// If the user hovers over a literal, give them a DataTip for the type of the
+				// literal they're hovering over.
+				// Partial semantics should always be sufficient because the (unconverted) type
+				// of a literal can always easily be determined.
+				var type = semanticModel?.GetTypeInfo (expression, cancellationToken).Type;
+				return type == null
+					? default(DebugDataTipInfo)
+						: new DebugDataTipInfo (expression.Span, type.GetFullName ());
 			}
 
-			[System.Diagnostics.DebuggerStepThrough]
-			public override void Visit (SyntaxNode node)
+			// Check if we are invoking method and if we do return null so we don't invoke it
+			if (expression.Parent is InvocationExpressionSyntax ||
+				(semanticModel != null &&
+				  expression.Parent is MemberAccessExpressionSyntax &&
+				  expression.Parent.Parent is InvocationExpressionSyntax &&
+				  semanticModel.GetSymbolInfo (token).Symbol is IMethodSymbol))
 			{
-					
-				if (node.Span.End < offset)
-					return;
-				if (node.Span.Start > offset)
-					return;
-				base.Visit (node);
+				return default(DebugDataTipInfo);
 			}
 
-			public override void VisitForEachStatement (ForEachStatementSyntax node)
-			{
-				if (node.Identifier.Span.Contains (offset)) {
-					StartOffset = node.Identifier.SpanStart;
-					ResolvedExpression = node.Identifier.Text;
-				} else {
-					base.VisitForEachStatement (node);
-				}
-			}
-
-			public override void VisitUsingDirective (UsingDirectiveSyntax node)
-			{
-				if (node.Alias.Name.Span.Contains (offset)) {
-					ResolveType (node.Name);//Workaround ResolveType(node.Alias.Name); not working
-					StartOffset = node.Alias.Name.SpanStart;
-				} else if (node.Name.Span.Contains (offset)) {
-					ResolveType (node.Name);
-				}
-			}
-
-			public override void VisitNamespaceDeclaration (NamespaceDeclarationSyntax node)
-			{
-				if (!node.Name.Span.Contains (offset)) {
-					base.VisitNamespaceDeclaration (node);
-				}
-			}
-
-			public override void VisitVariableDeclaration (VariableDeclarationSyntax node)
-			{
-				if (node.Type.IsVar && node.Type.Span.Contains(offset)) {
-					return;
-				}
-				base.VisitVariableDeclaration (node);
-			}
-
-			public override void VisitIdentifierName (IdentifierNameSyntax node)
-			{
-				if (node.Parent is InvocationExpressionSyntax)
-					return;
-				StartOffset = node.SpanStart;
-				ResolvedExpression = node.ToString ();
-			}
-
-			void ResolveType (SyntaxNode node)
-			{
-				var symbolInfo = semanticModel.GetSymbolInfo (node);
-				if (symbolInfo.Symbol != null) {
-					ResolvedExpression = symbolInfo.Symbol.ToDisplayString (new SymbolDisplayFormat (typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces));
-					StartOffset = node.SpanStart;
-				}
-			}
-
-			public override void VisitPredefinedType (PredefinedTypeSyntax node)
-			{
-				ResolveType (node);
-			}
-
-			public override void VisitGenericName (GenericNameSyntax node)
-			{
-				StartOffset = node.SpanStart;
-				ResolvedExpression = node.ToString ();
-			}
-
-			public override void VisitParameter (ParameterSyntax node)
-			{
-				if (node.Identifier.Span.Contains (offset)) {
-					StartOffset = node.Identifier.SpanStart;
-					ResolvedExpression = node.Identifier.Text;
-				} else {
-					base.VisitParameter (node);
-				}
-			}
-
-			public override void VisitPropertyDeclaration (PropertyDeclarationSyntax node)
-			{
-				if (node.Identifier.Span.Contains (offset)) {
-					StartOffset = node.Identifier.SpanStart;
-					ResolvedExpression = node.Identifier.Text;
-				} else {
-					base.VisitPropertyDeclaration (node);
-				}
-			}
-
-			public override void VisitFieldDeclaration (FieldDeclarationSyntax node)
-			{
-				foreach (var variable in node.Declaration.Variables) {
-					if (variable.Span.Contains (offset)) {
-						ResolvedExpression = node.ToString ();
-						StartOffset = node.SpanStart;
-						return;
+			if (expression.IsRightSideOfDotOrArrow ()) {
+				var curr = expression;
+				while (true) {
+					var conditionalAccess = curr.GetParentConditionalAccessExpression ();
+					if (conditionalAccess == null) {
+						break;
 					}
+
+					curr = conditionalAccess;
 				}
-				base.VisitFieldDeclaration (node);
+
+				if (curr == expression) {
+					// NB: Parent.Span, not Span as below.
+					return new DebugDataTipInfo (expression.Parent.Span, text: null);
+				}
+
+				// NOTE: There may not be an ExpressionSyntax corresponding to the range we want.
+				// For example, for input a?.$$B?.C, we want span [|a?.B|]?.C.
+				return new DebugDataTipInfo (TextSpan.FromBounds (curr.SpanStart, expression.Span.End), text: null);
 			}
+
+			var typeSyntax = expression as TypeSyntax;
+			if (typeSyntax != null && typeSyntax.IsVar) {
+				// If the user is hovering over 'var', then pass back the full type name that 'var'
+				// binds to.
+				var type = semanticModel?.GetTypeInfo (typeSyntax, cancellationToken).Type;
+				if (type != null) {
+					textOpt = type.GetFullName ();
+				}
+			}
+
+			if (semanticModel != null) {
+				if (expression is IdentifierNameSyntax) {
+					if (expression.Parent is ObjectCreationExpressionSyntax) {
+						textOpt = ((INamedTypeSymbol)semanticModel.GetSymbolInfo (expression).Symbol).GetFullName ();
+					} else if (expression.Parent is AssignmentExpressionSyntax && expression.Parent.Parent is InitializerExpressionSyntax) {
+						var variable = expression.GetAncestor<VariableDeclaratorSyntax> ();
+						if (variable != null) {
+							textOpt = variable.Identifier.Text + "." + ((IdentifierNameSyntax)expression).Identifier.Text;
+						}
+					}
+
+				}
+			}
+			return new DebugDataTipInfo (expression.Span, textOpt);
 		}
 	}
 }

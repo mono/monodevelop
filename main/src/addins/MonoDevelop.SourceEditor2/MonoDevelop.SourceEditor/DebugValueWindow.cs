@@ -103,7 +103,7 @@ namespace MonoDevelop.SourceEditor
 			tree.PinnedWatch = watch;
 			var location = editor.OffsetToLocation (offset);
 			tree.PinnedWatchLine = location.Line;
-			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
+			tree.PinnedWatchFile = editor.FileName;
 			
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();

@@ -50,8 +50,9 @@ namespace MonoDevelop.SourceEditor
 	{
 		Document document;
 		string content;
+		MonoDevelop.Projects.Solution solution;
 
-		static Document CreateDocument (string input)
+		Document CreateDocument (string input)
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
@@ -73,7 +74,7 @@ namespace MonoDevelop.SourceEditor
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
 
-			var solution = new MonoDevelop.Projects.Solution ();
+			solution = new MonoDevelop.Projects.Solution ();
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
@@ -92,7 +93,6 @@ namespace MonoDevelop.SourceEditor
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
-			TypeSystemService.Unload (solution);
 
 			return doc;
 		}
@@ -203,14 +203,19 @@ namespace DebuggerTooltipTests
 			document = CreateDocument (content);
 		}
 
+		public override void TearDown()
+		{
+			TypeSystemService.Unload (solution);
+			base.TearDown ();
+		}
+
 		static string ResolveExpression (Document doc, string content, int offset)
 		{
 			var editor = doc.Editor;
 			var loc = editor.OffsetToLocation (offset);
 			var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
 
-			int startOffset;
-			return resolver.ResolveExpression (editor, doc, offset, out startOffset);
+			return resolver.ResolveExpressionAsync (editor, doc, offset, default(System.Threading.CancellationToken)).Result.Text;
 		}
 
 		int GetBasicOffset (string expr)
@@ -286,15 +291,15 @@ namespace DebuggerTooltipTests
 		public void TestFieldDeclarations ()
 		{
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (document, content, GetBasicOffset ("StaticField")));
-			Assert.AreEqual ("this.@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
-			Assert.AreEqual ("this.field", ResolveExpression (document, content, GetBasicOffset ("field")));
+			Assert.AreEqual ("@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
+			Assert.AreEqual ("field", ResolveExpression (document, content, GetBasicOffset ("field")));
 		}
 
 		[Test]
 		public void TestPropertyDeclarations ()
 		{
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (document, content, GetBasicOffset ("StaticProperty")));
-			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
+			Assert.AreEqual ("Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
 		}
 
 		[Test]
