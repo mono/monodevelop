@@ -203,6 +203,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("project");
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
+			fileName = FileService.GetFullPath (fileName);
 			foreach (var w in Workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null)

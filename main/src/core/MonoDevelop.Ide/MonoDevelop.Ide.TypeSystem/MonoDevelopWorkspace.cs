@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				workspacesLoading++;
 				if (statusIcon != null)
 					return;
-				statusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
+				statusIcon = IdeApp.Workbench?.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-parser"));
 			});
 		}
 
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var netProject = p as MonoDevelop.Projects.DotNetProject;
 			if (netProject == null)
 				yield break;
-			var configurationSelector = IdeApp.Workspace.ActiveConfiguration;
+			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration;
 			var config = IdeApp.Workspace != null ? netProject.GetConfiguration (configurationSelector) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
 			bool noStdLib = false;
 			if (config != null) {

@@ -44,7 +44,6 @@ using UnitTests;
 
 namespace MonoDevelop.SourceEditor
 {
-	[Ignore("Many broken tests (roslyn)")]
 	[TestFixture]
 	public class DebugTooltipTests : TestBase
 	{
@@ -54,12 +53,6 @@ namespace MonoDevelop.SourceEditor
 
 		Document CreateDocument (string input)
 		{
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "/a.cs";
-			content.Data.MimeType = "text/x-csharp";
-
 			var text = input;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
@@ -80,6 +73,11 @@ namespace MonoDevelop.SourceEditor
 			using (var monitor = new NullProgressMonitor ())
 				TypeSystemService.Load (solution, monitor);
 
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
 			content.Project = project;
 
 
