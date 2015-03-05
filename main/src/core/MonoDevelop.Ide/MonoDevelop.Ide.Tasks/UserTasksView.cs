@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
+		TreeModelSort sortModel;
 		CellRendererText cellRendDesc;
 		
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
@@ -76,8 +77,10 @@ namespace MonoDevelop.Ide.Tasks
 				typeof (Task),	 // user task
 				typeof (Gdk.Color),  // foreground color
 				typeof (int));		 // font style
-			
-			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
+
+			sortModel = new TreeModelSort (store);
+
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (sortModel);
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
 			view.Selection.Changed += new EventHandler (SelectionChanged);
@@ -88,26 +91,20 @@ namespace MonoDevelop.Ide.Tasks
 			cellRendPriority.Editable = true;
 			cellRendPriority.Changed += new ComboSelectionChangedHandler (UserTaskPriorityEdited);
 			col = view.AppendColumn (GettextCatalog.GetString ("Priority"), cellRendPriority, "text", Columns.Priority, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
-			col.Clickable = true;
 			col.Resizable = true;
-			TreeIterCompareFunc sortFunc = new TreeIterCompareFunc (PrioirtySortFunc);
-			store.SetSortFunc ((int)Columns.Priority, sortFunc);
-			col.Clicked += new EventHandler (UserTaskPriorityResort);
+			col.SortColumnId = (int)Columns.Priority;
 			
 			CellRendererToggle cellRendCompleted = new CellRendererToggle ();
 			cellRendCompleted.Toggled += new ToggledHandler (UserTaskCompletedToggled);
 			cellRendCompleted.Activatable = true;
 			col = view.AppendColumn (String.Empty, cellRendCompleted, "active", Columns.Completed);
-			col.Clickable = true;
-			col.Clicked += new EventHandler (UserTaskCompletedResort);
-			
+
 			cellRendDesc = view.TextRenderer;
 			cellRendDesc.Editable = true;
 			cellRendDesc.Edited += new EditedHandler (UserTaskDescEdited);
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), cellRendDesc, "text", Columns.Description, "strikethrough", Columns.Completed, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
-			col.Clickable = true;
 			col.Resizable = true;
-			col.Clicked += new EventHandler (UserTaskDescResort);
+			col.SortColumnId = (int)Columns.Description;
 			
 			newButton = new Button ();
 			newButton.Label = GettextCatalog.GetString ("New Task");
@@ -288,28 +285,6 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		int PrioirtySortFunc (TreeModel model, TreeIter iter1, TreeIter iter2)
-		{
-			TaskPriority prio1 = (TaskPriority) Enum.Parse (typeof (TaskPriority), (string)model.GetValue (iter1, (int)Columns.Priority));
-			TaskPriority prio2 = (TaskPriority) Enum.Parse (typeof (TaskPriority), (string)model.GetValue (iter2, (int)Columns.Priority));
-
-			if (prio1 == prio2)
-				return 0;
-			return prio1 < prio2 ? 1 : -1;
-		}
-		
-		void UserTaskPriorityResort (object sender, EventArgs args)
-		{
-			TreeViewColumn col = view.Columns[(int)Columns.Priority];
-			foreach (TreeViewColumn c in view.Columns)
-			{
-				if (c != col) c.SortIndicator = false;
-			}
-			col.SortOrder = ReverseSortOrder (col);
-			col.SortIndicator = true;
-			store.SetSortColumnId ((int)Columns.Priority, col.SortOrder);
-		}
-		
 		void UserTaskCompletedToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
@@ -323,18 +298,6 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		void UserTaskCompletedResort (object sender, EventArgs args)
-		{
-			TreeViewColumn col = view.Columns[(int)Columns.Completed];
-			foreach (TreeViewColumn c in view.Columns)
-			{
-				if (c != col) c.SortIndicator = false;
-			}
-			col.SortOrder = ReverseSortOrder (col);
-			col.SortIndicator = true;
-			store.SetSortColumnId ((int)Columns.Completed, col.SortOrder);
-		}
-		
 		void UserTaskDescEdited (object o, EditedArgs args)
 		{
 			Gtk.TreeIter iter;
@@ -344,18 +307,6 @@ namespace MonoDevelop.Ide.Tasks
 				store.SetValue (iter, (int)Columns.Description, args.NewText);
 				TaskService.SaveUserTasks (task.WorkspaceObject);
 			}
-		}
-		
-		void UserTaskDescResort (object sender, EventArgs args)
-		{
-			TreeViewColumn col = view.Columns[(int)Columns.Description];
-			foreach (TreeViewColumn c in view.Columns)
-			{
-				if (c != col) c.SortIndicator = false;
-			}
-			col.SortOrder = ReverseSortOrder (col);
-			col.SortIndicator = true;
-			store.SetSortColumnId ((int)Columns.Description, col.SortOrder);
 		}
 		
 		Gdk.Color GetColorByPriority (TaskPriority prio)
