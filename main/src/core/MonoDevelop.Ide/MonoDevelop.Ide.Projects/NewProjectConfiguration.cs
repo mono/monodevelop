@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Projects
 			CreateProjectDirectoryInsideSolutionDirectory = true;
 
 			CreateGitIgnoreFile = true;
-			UseGit = true;
+			UseGit = false;
 
 			Parameters = new ProjectCreateParameters ();
 		}
