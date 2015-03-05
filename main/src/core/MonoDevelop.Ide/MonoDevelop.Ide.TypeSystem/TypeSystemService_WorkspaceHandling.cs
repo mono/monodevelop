@@ -118,7 +118,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static void Load (WorkspaceItem item, IProgressMonitor progressMonitor, bool loadInBackground = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
-				InternalLoad (item, progressMonitor, new MonoDevelopWorkspace (), loadInBackground);
+				var workspace = new MonoDevelopWorkspace ();
+				if (!(item is MonoDevelop.Projects.Workspace))
+					workspaces.Add (workspace);
+				workspace.ShowStatusIcon ();
+				InternalLoad (item, progressMonitor, workspace, loadInBackground).ContinueWith (t => {
+					workspace.HideStatusIcon ();
+				});
 			}
 		}
 
@@ -131,31 +137,39 @@ namespace MonoDevelop.Ide.TypeSystem
 				handler (null, e);
 		}
 
-		static void InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor, MonoDevelopWorkspace workspace, bool loadInBackground)
+		static Task InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor, MonoDevelopWorkspace workspace, bool loadInBackground)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
-				var newWorkspace = new MonoDevelopWorkspace ();
-				foreach (var it in ws.Items)
-					InternalLoad (it, progressMonitor, new MonoDevelopWorkspace (), loadInBackground );
-				ws.ItemAdded += OnWorkspaceItemAdded;
-				ws.ItemRemoved += OnWorkspaceItemRemoved;
+				Action loadAction = () =>  {
+					var newWorkspace = new MonoDevelopWorkspace ();
+					foreach (var it in ws.Items)
+						InternalLoad (it, progressMonitor, newWorkspace, false);
+					workspaces.Add (workspace);
+					ws.ItemAdded += OnWorkspaceItemAdded;
+					ws.ItemRemoved += OnWorkspaceItemRemoved;
+				};
+				if (loadInBackground) {
+					return Task.Run (loadAction);
+				} else {
+					loadAction ();
+				}
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
 					Action loadAction = () =>  {
 						workspace.TryLoadSolution (solution/*, progressMonitor*/);
-						workspaces.Add (workspace);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 					};
 					if (loadInBackground) {
-						Task.Run (loadAction);
+						return Task.Run (loadAction);
 					} else {
 						loadAction ();
 					}
 				}
 			}
+			return Task.FromResult(false);
 		}
 
 		public static void Unload (MonoDevelop.Projects.WorkspaceItem item)

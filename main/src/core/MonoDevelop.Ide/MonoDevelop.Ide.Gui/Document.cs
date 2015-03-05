@@ -155,10 +155,10 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			TypeSystemService.WorkspaceItemLoaded += TypeSystemService_WorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
 
-		void TypeSystemService_WorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
 			EnsureAnalysisDocumentIsOpen ();
 			if (analysisDocument != null)
@@ -577,7 +577,7 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			TypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
-			TypeSystemService.WorkspaceItemLoaded -= TypeSystemService_WorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished -= TypeSystemService_WorkspaceItemLoaded;
 
 			window = null;
 
@@ -830,17 +830,22 @@ namespace MonoDevelop.Ide.Gui
 
 		object reparseLock = new object();
 		CancellationTokenSource parseTokenSource = new CancellationTokenSource();
+		int reparseQueue;
 		void CancelOldParsing()
 		{
 			parseTokenSource.Cancel ();
 			parseTokenSource = new CancellationTokenSource ();
 		}
+
 		internal void StartReparseThread ()
 		{
 			string currentParseFile = adhocProject != null ? adHocFile : FileName;
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
+			Interlocked.Increment (ref reparseQueue);
 			Application.Invoke (delegate {
+				if (Interlocked.Decrement (ref reparseQueue) != 0) 
+					return;
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
 				// be parsed at the same time.

@@ -88,20 +88,66 @@ namespace MonoDevelop.Ide.TypeSystem
 			src = new CancellationTokenSource ();
 		}
 
-		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		static StatusBarIcon statusIcon = null;
+		static int workspacesLoading = 0;
+
+		internal static event EventHandler LoadingFinished;
+
+		static void OnLoadingFinished (EventArgs e)
+		{
+			var handler = LoadingFinished;
+			if (handler != null)
+				handler (null, e);
+		}
+
+		internal void HideStatusIcon ()
+		{
+			Task.WhenAll (this.CurrentSolution.Projects.Select (p => p.GetCompilationAsync ()));
+			Gtk.Application.Invoke (delegate {
+				workspacesLoading--;
+				if (workspacesLoading == 0 && statusIcon != null) {
+					statusIcon.Dispose ();
+					statusIcon = null;
+					OnLoadingFinished (EventArgs.Empty);
+				}
+			});
+		}
+
+		internal void ShowStatusIcon ()
+		{
+			Gtk.Application.Invoke (delegate {
+				workspacesLoading++;
+				if (statusIcon != null)
+					return;
+				statusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusWorking));
+			});
+		}
+
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
 			if (currentMonoDevelopSolution == null)
 				return;
-			try {
-				CancelLoad ();
-				Task.Run (() => CreateSolutionInfo (currentMonoDevelopSolution, src.Token)).ContinueWith ((Task<SolutionInfo> t) => {
-					if (t.Result == null)
-						return;
-					OnSolutionReloaded (t.Result);
-				}, TaskContinuationOptions.OnlyOnRanToCompletion);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error while reloading solution.", ex); 
-			}
+			CancelLoad ();
+			var token = src.Token;
+			ShowStatusIcon ();
+			Task.Run (() => {
+				try {
+					return CreateSolutionInfo (currentMonoDevelopSolution, token);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while reloading solution.", ex); 
+					return null;
+				}
+			}).ContinueWith ((Task<SolutionInfo> t) => {
+				try {
+					if (t.Status == TaskStatus.RanToCompletion) {
+						if (t.Result == null)
+							return;
+						OnSolutionReloaded (t.Result);
+					}
+				} finally {
+					HideStatusIcon ();
+				}
+			});
 		}
 
 		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
@@ -120,7 +166,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!added) {
 					added = true;
 					OnSolutionAdded (solutionInfo);
-
 					TypeSystemService.OnWorkspaceItemLoaded (new MonoDevelop.Projects.WorkspaceItemEventArgs (solution));
 				}
 			}
@@ -131,8 +176,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.currentMonoDevelopSolution = solution;
 			CancelLoad ();
-			var token = src.Token;
-			CreateSolutionInfo (solution, token);
+			CreateSolutionInfo (solution, src.Token);
 		}
 		
 		public void UnloadSolution ()
