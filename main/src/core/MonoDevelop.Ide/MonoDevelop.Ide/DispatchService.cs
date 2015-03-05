@@ -356,7 +356,6 @@ namespace MonoDevelop.Ide
 		
 		static List<AnimationInfo> activeAnimations = new List<AnimationInfo> ();
 		static uint animationHandle;
-		static DateTime nextDueTime;
 		static int currentAnimationSpan;
 
 		class AnimationInfo: IDisposable {
@@ -371,36 +370,23 @@ namespace MonoDevelop.Ide
 
 		static bool ProcessAnimations ()
 		{
-			List<AnimationInfo> toDelete = null;
-
 			DateTime now = DateTime.Now;
-			nextDueTime = DateTime.MaxValue;
 
-			foreach (var a in activeAnimations) {
-				if (a.NextDueTime <= now) {
-					int ms = a.AnimationFunc ();
-					if (ms <= 0) {
-						if (toDelete == null)
-							toDelete = new List<AnimationInfo> ();
-						toDelete.Add (a);
-						a.NextDueTime = DateTime.MaxValue;
-					} else
-						a.NextDueTime = DateTime.Now + TimeSpan.FromMilliseconds (ms);
-				}
-				if (a.NextDueTime < nextDueTime)
-					nextDueTime = a.NextDueTime;
-			}
-
-			if (toDelete != null) {
-				foreach (var a in toDelete)
+			foreach (var a in activeAnimations.Where (an => an.NextDueTime <= now).ToArray ()) {
+				int ms = a.AnimationFunc ();
+				if (ms <= 0) {
 					activeAnimations.Remove (a);
+				} else
+					a.NextDueTime = DateTime.Now + TimeSpan.FromMilliseconds (ms);
 			}
 
-			if (nextDueTime == DateTime.MaxValue) {
+			if (activeAnimations.Count == 0) {
 				// No more animations
 				animationHandle = 0;
 				return false;
 			}
+
+			var nextDueTime = activeAnimations.Min (a => a.NextDueTime);
 
 			int nms = (int) (nextDueTime - DateTime.Now).TotalMilliseconds;
 			if (nms < 20)
