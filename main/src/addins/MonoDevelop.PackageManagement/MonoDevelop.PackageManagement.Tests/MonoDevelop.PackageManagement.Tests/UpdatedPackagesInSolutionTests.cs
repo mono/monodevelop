@@ -562,6 +562,25 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
 		}
+
+		[Test]
+		public void CheckForUpdates_TaskCancelled_TaskResultIsNotReferenced ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.IsCancelled = true;
+			task.ExecuteTaskButNotContinueWith ();
+			task.Result = null;
+
+			Assert.DoesNotThrow (() => {
+				task.ExecuteContinueWith ();
+			});
+		}
 	}
 }
 
