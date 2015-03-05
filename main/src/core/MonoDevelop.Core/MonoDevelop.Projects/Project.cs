@@ -37,6 +37,7 @@ using MonoDevelop;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Instrumentation;
 
 
 namespace MonoDevelop.Projects
@@ -52,6 +53,8 @@ namespace MonoDevelop.Projects
 	[ProjectModelDataItem(FallbackType = typeof(UnknownProject))]
 	public abstract class Project : SolutionEntityItem
 	{
+		static Counter ProjectOpenedCounter = InstrumentationService.CreateCounter ("Ide.Project.Open", "Project Model");
+
 		string[] buildActions;
 
 		protected Project ()
@@ -61,7 +64,27 @@ namespace MonoDevelop.Projects
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
 		}
-		
+
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+
+			var sb = new System.Text.StringBuilder ();
+			var first = true;
+
+			var projectTypes = this.GetProjectTypes ().ToList ();
+			foreach (var p in projectTypes.Where (x => (x != "DotNet") || projectTypes.Count == 1)) {
+				if (!first)
+					sb.Append (", ");
+				sb.Append (p);
+				first = false;
+			}
+
+			ProjectOpenedCounter.Inc (1, null, new Dictionary<string, string> () {
+				{ "ProjectTypes", sb.ToString () },
+			});
+		}
+
 		/// <summary>
 		/// Description of the project.
 		/// </summary>
