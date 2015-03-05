@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Gui
 		Project adhocProject;
 
 		public override Project Project {
-			get { return (Window != null ? Window.ViewContent.Project : null) ?? adhocProject; }
+			get { return (Window != null ? Window.ViewContent.Project : null); }
 /*			set { 
 				Window.ViewContent.Project = value; 
 				if (value != null)
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = TypeSystemService.GetCodeAnalysisProject (Project); 
+			var project = TypeSystemService.GetCodeAnalysisProject (Project ?? adhocProject); 
 			if (project == null)
 				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
@@ -760,8 +760,9 @@ namespace MonoDevelop.Ide.Gui
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
-				if (Project != null && TypeSystemService.CanParseProjections (Project, Editor.MimeType, FileName)) {
-					var task = TypeSystemService.ParseProjection (Project, currentParseFile, editor.MimeType, currentParseText);
+				var project = Project ?? adhocProject;
+				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
+					var task = TypeSystemService.ParseProjection (project, currentParseFile, editor.MimeType, currentParseText);
 					if (task.Result != null) {
 						var p = task.Result;
 						this.parsedDocument = p.ParsedDocument;
@@ -770,7 +771,7 @@ namespace MonoDevelop.Ide.Gui
 						Editor.SetOrUpdateProjections (this, new [] { projection }, p.DisabledProjectionFeatures);
 					}
 				} else { 
-					this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText).Result ?? this.parsedDocument;
+					this.parsedDocument = TypeSystemService.ParseFile (project, currentParseFile, editor.MimeType, currentParseText).Result ?? this.parsedDocument;
 				}
 			} finally {
 
@@ -857,7 +858,7 @@ namespace MonoDevelop.Ide.Gui
 				string mimeType = Editor.MimeType;
 				CancelOldParsing ();
 				var token = parseTokenSource.Token;
-				var project = Project;
+				var project = Project ?? adhocProject;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
