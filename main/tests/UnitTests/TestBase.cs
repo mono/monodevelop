@@ -67,6 +67,7 @@ namespace UnitTests
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
+			Xwt.Application.Initialize ();
 			Gtk.Application.Init ();
 			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
