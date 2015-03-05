@@ -70,19 +70,17 @@ namespace MonoDevelop.Components
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
 				var toplevel = parent.Toplevel as Gtk.Window;
-				int trans_x, trans_y;
-				parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
-				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
-				var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
-				int w,h;
-				toplevel.GetSize (out w, out h);
-				pt.Y = h - pt.Y;
+				var screenPoint = NSEvent.CurrentMouseLocation;
+				var screenRect = new CoreGraphics.CGRect (screenPoint.X, screenPoint.Y, 0, 0);
+				var nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel);
+				var rect = nswindow.ConvertRectFromScreen (screenRect);
+				var pt = rect.Location;
 
 				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					pt,
 					0, 0,
-					MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
+					nswindow.WindowNumber,
 					null, 0, 0, 0);
 
 				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
