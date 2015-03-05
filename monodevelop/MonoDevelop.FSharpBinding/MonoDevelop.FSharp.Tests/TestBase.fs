@@ -64,7 +64,7 @@ type TestBase() =
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
         Runtime.Initialize (true)
         Gtk.Application.Init ()
-        TypeSystemService.TrackFileChanges <- true
+        MonoDevelop.Ide.TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
         

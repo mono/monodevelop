@@ -14,34 +14,39 @@ open MonoDevelop.Debugger
 open MonoDevelopTests
 
 let createDoc (text:string) references =
-        let workbenchWindow = TestWorkbenchWindow()
-        let viewContent = new TestViewContent()
-        let filePath = match Platform.IsWindows with
-                       | true -> FilePath(@"C:\Temp\test.fsproj")
-                       | _ -> FilePath("test.fsproj")
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
-        project.References.AddRange references
-        let projectConfig = project.AddNewConfiguration("Debug")
-        TypeSystemService.LoadProject (project) |> ignore
+    let workbenchWindow = TestWorkbenchWindow()
+    let viewContent = new TestViewContent()
+    let filePath = match Platform.IsWindows with
+                   | true -> FilePath(@"C:\Temp\test.fsproj")
+                   | _ -> FilePath("test.fsproj")
+    let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
+    project.References.AddRange references
+    let projectConfig = project.AddNewConfiguration("Debug")
 
-        viewContent.Project <- project
+    use solution = new MonoDevelop.Projects.Solution ()
+    solution.AddConfiguration ("", true) |> ignore
+    solution.DefaultSolutionFolder.AddItem (project)
+    using ( new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+        (fun monitor -> MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (solution, monitor) |> ignore)
 
-        workbenchWindow.SetViewContent(viewContent)
+    viewContent.Project <- project
 
-        viewContent.ContentName <- "a.fs"
-        viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
-        let doc = Document(workbenchWindow)
+    workbenchWindow.SetViewContent(viewContent)
 
-        (viewContent :> IEditableTextBuffer).Text <- text
-        (viewContent:> IEditableTextBuffer).CursorPosition <- 0
+    viewContent.ContentName <- "a.fs"
+    viewContent.Data.MimeType <- "text/x-fsharp"
+    let doc = Document(workbenchWindow)
 
-        let pfile = doc.Project.AddFile("a.fs")
+    viewContent.Text <- text
+    viewContent.CursorPosition <- 0
 
-        let textEditorCompletion = new FSharpTextEditorCompletion()
-        textEditorCompletion.Initialize(doc)
-        viewContent.Contents.Add(textEditorCompletion)
+    let pfile = doc.Project.AddFile("a.fs")
 
-        try 
-            doc.UpdateParseDocument() |> ignore
-        with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
-        doc, viewContent
+    let textEditorCompletion = new FSharpTextEditorCompletion()
+    textEditorCompletion.Initialize(doc.Editor, doc)
+    viewContent.Contents.Add(textEditorCompletion)
+
+    try 
+        doc.UpdateParseDocument() |> ignore
+    with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
+    doc, viewContent

@@ -56,12 +56,12 @@ module Test =
 """
 
     let nunitRef =
-        ProjectReference (ReferenceType.Assembly, __SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.2/lib/nunit.framework.dll" )
+        ProjectReference (ReferenceType.Assembly, __SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.4/lib/nunit.framework.dll" )
 
     let createDoc (text:string) references =
         let doc,viewContent = TestHelpers.createDoc(text) references
         let test = new FSharpUnitTestTextEditorExtension()
-        test.Initialize (doc)
+        test.Initialize (doc.Editor, doc)
         viewContent.Contents.Add (test)
 
         try doc.UpdateParseDocument() |> ignore
@@ -75,7 +75,10 @@ module Test =
     [<Test>]
     member x.``Basic Test covering normal and double quoted tests in a test fixture`` () =
         let testExtension = createDoc normalAndDoubleTick [nunitRef]
-        let res = testExtension.GatherUnitTests() |> Seq.toList
+        let res = testExtension.GatherUnitTests (Async.DefaultCancellationToken)
+                  |> Async.AwaitTask
+                  |> Async.RunSynchronously
+                  |> Seq.toList
         match res with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
@@ -94,14 +97,19 @@ module Test =
     [<Test>]
     member x.``No tests`` () =
         let testExtension = createDoc noTests [nunitRef]
-        let tests = testExtension.GatherUnitTests()
+        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
         tests.Count |> should equal 0
 
     [<Test>]
     member x.``Nested Test covering normal and double quoted tests in a test fixture`` () =
         let testExtension = createDoc nestedTests [nunitRef]
 
-        match testExtension.GatherUnitTests() |> Seq.toList with
+        match testExtension.GatherUnitTests(Async.DefaultCancellationToken)
+              |> Async.AwaitTask
+              |> Async.RunSynchronously
+              |> Seq.toList with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
             fixture.UnitTestIdentifier |> should equal "A+Test+Test"
@@ -119,6 +127,8 @@ module Test =
     [<Test>]
     member x.``Tests present but no NUnit reference`` () =
         let testExtension = createDoc normalAndDoubleTick []
-        let tests = testExtension.GatherUnitTests()
+        let tests = testExtension.GatherUnitTests(Async.DefaultCancellationToken)
+                    |> Async.AwaitTask
+                    |> Async.RunSynchronously
         tests.Count |> should equal 0
 #endif

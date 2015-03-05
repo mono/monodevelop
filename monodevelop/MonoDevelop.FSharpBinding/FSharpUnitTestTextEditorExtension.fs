@@ -30,6 +30,11 @@ type FSharpUnitTestTextEditorExtension() =
         sb.Append ")" |> ignore
         sb.ToString ()
 
+    //only used for testing
+    member x.Initialize(editor, context) =
+        x.DocumentContext <- context
+        x.Editor <- editor
+
     override x.GatherUnitTests (cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 

@@ -279,6 +279,11 @@ type FSharpTextEditorCompletion() =
 
       symbols |> List.map symbolToCompletionData
 
+  //only used for testing
+  member x.Initialize(editor, context) =
+      x.DocumentContext <- context
+      x.Editor <- editor
+
   override x.CompletionLanguage = "F#"
   override x.Initialize() = 
       do x.Editor.SetIndentationTracker (FSharpIndentationTracker(base.Editor))

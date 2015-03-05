@@ -29,16 +29,16 @@ let b = (fun a ->
         do match content.IndexOf('§') with
            | -1 -> ()
            | x  -> let l = d.Editor.OffsetToLocation(x)
-                   d.Editor.SetCaretTo(l.Line, l.Column)
+                   d.Editor.SetCaretLocation(l.Line, l.Column)
         d
 
     let getBasicOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
         startOffset + (expr.Length / 2)
 
-    let getIndent (doc:Document, content:string, line, col) =
-        doc.Editor.SetCaretTo(2, 2)
-        let column = doc.Editor.IndentationTracker.GetVirtualIndentationColumn(line, col)
+    let getIndent (doc:Document, content:string, line:int, col) =
+        doc.Editor.SetCaretLocation (2, 2)
+        let column = doc.Editor.GetVirtualIndentationColumn (line)
         column
 
     [<TestFixtureSetUp>]
@@ -68,7 +68,7 @@ let b = (fun a ->
         let doc = docWithCaret("""  let a = 123
   §let b = 321""")
         doc.Editor.InsertAtCaret("\n")
-        doc.Editor.Document.Text 
+        doc.Editor.Text 
         |> should equal @"  let a = 123
 
   let b = 321"
@@ -78,7 +78,7 @@ let b = (fun a ->
         let doc = docWithCaret("""  let a = 123
 §  let b = 321""")
         doc.Editor.InsertAtCaret("\n")
-        doc.Editor.Document.Text 
+        doc.Editor.Text 
         |> should equal @"  let a = 123
 
   let b = 321"
@@ -88,7 +88,7 @@ let b = (fun a ->
     member x.EnterAfterEqualsIndents() =
         let doc = docWithCaret """  let a = §123"""
         doc.Editor.InsertAtCaret("\n")
-        doc.Editor.Document.Text 
+        doc.Editor.Text 
         |> should equal "  let a = 123\n      123"
 
 
