@@ -117,6 +117,22 @@ namespace MonoDevelop.Components.Mac
 			return (int)(frame.Height - rect.Height);
 		}
 
+		internal static Gdk.EventKey ConvertKeyEvent (AppKit.NSEvent ev)
+		{
+			var state = Gdk.ModifierType.None;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ControlKeyMask) != 0)
+				state |= Gdk.ModifierType.ControlMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.ShiftKeyMask) != 0)
+				state |= Gdk.ModifierType.ShiftMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.CommandKeyMask) != 0)
+				state |= Gdk.ModifierType.MetaMask;
+			if ((ev.ModifierFlags & AppKit.NSEventModifierMask.AlternateKeyMask) != 0)
+				state |= Gdk.ModifierType.Mod1Mask;
+
+			return GtkUtil.CreateKeyEventFromKeyCode (ev.KeyCode, state, Gdk.EventType.KeyPress, GetGtkWindow (ev.Window).GdkWindow);
+		}
+
+
 		[DllImport (LibGtk)]
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 

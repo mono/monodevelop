@@ -230,7 +230,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var entry = searchEntry;
 			if (!IsSearchEntryInOverflow)
-				entry.Window.MakeFirstResponder (entry);
+				entry.SelectText (entry);
 			else {
 				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
 				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
@@ -258,7 +258,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					searchView.EventsAttached = true;
 				}
 				menu.PopUpMenu (menu.ItemAt (0), new CGPoint (0, -5), clipItem);
-				entry.Window.MakeFirstResponder (searchView);
+				searchView.SelectText (searchView);
 			}
 		}
 
@@ -350,8 +350,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public string SearchCategory {
 			set {
 				var entry = searchEntry;
+				entry.SelectText (entry);
 				entry.StringValue = value;
-				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (entry.StringValue.Length, entry.StringValue.Length);
+				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (value.Length, 0);
 			}
 		}
 

@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
 
-namespace MonoDevelop.MacIntegration
+namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	class StatusIcon : StatusBarIcon
 	{
@@ -72,7 +72,7 @@ namespace MonoDevelop.MacIntegration
 			get { return image; }
 			set {
 				image = value;
-				layer.Contents = value.ToNSImage ().CGImage;
+				layer.SetImage (value);
 			}
 		}
 
@@ -107,21 +107,16 @@ namespace MonoDevelop.MacIntegration
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		NSAttributedString GetAttributedString (string text, string imageResource, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, string imageResource, NSColor color)
 		{
-			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), size, color);
+			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), color);
 		}
 
-		NSAttributedString GetAttributedString (string text, NSImage image, CGSize size, NSColor color)
+		NSAttributedString GetAttributedString (string text, NSImage image, NSColor color)
 		{
 			var attrString = new NSMutableAttributedString ("");
-			if (image != null) {
-				// FIXME: Use the size parameter.
-				// Center image with frame.
-				if (!size.IsEmpty)
-					image.AlignmentRect = new CGRect (0, 0, image.Size.Width, image.Size.Height);
+			if (image != null)
 				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
-			}
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
@@ -139,25 +134,11 @@ namespace MonoDevelop.MacIntegration
 			return attrString;
 		}
 
-		void SetImageFor (CALayer layer, Xwt.Drawing.Image xwtImage)
-		{
-			var image = xwtImage.ToNSImage ();
-			var layerContents = image.GetLayerContentsForContentsScale (layer.ContentsScale);
-
-			void_objc_msgSend_IntPtr (layer.Handle, setContentsSelector, layerContents.Handle);
-			layer.Bounds = new CGRect (0, 0, image.Size.Width, image.Size.Height);
-		}
-
-		void SetImageFor (CALayer layer, string resource)
-		{
-			SetImageFor (layer, ImageService.GetIcon (resource, Gtk.IconSize.Menu));
-		}
-
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
 			Cell.PlaceholderAttributedString = GetAttributedString (BrandingService.ApplicationName, Stock.StatusSteady,
-				new CGSize (360, 23), NSColor.DisabledControlText);
+				NSColor.DisabledControlText);
 
 			AllowsEditingTextAttributes = WantsLayer = true;
 			Editable = Selectable = false;
@@ -178,12 +159,12 @@ namespace MonoDevelop.MacIntegration
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					SetImageFor (buildResultIcon, "md-status-error-count");
+					buildResultIcon.SetImage ("md-status-error-count");
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					SetImageFor (buildResultIcon, "md-status-warning-count");
+					buildResultIcon.SetImage ("md-status-warning-count");
 				} else
 					buildResultVisible = false;
 
@@ -212,7 +193,7 @@ namespace MonoDevelop.MacIntegration
 			if (string.IsNullOrEmpty (text))
 				AttributedStringValue = new NSAttributedString ("");
 			else
-				AttributedStringValue = GetAttributedString (text, image, new CGSize (350, 22), textColor);
+				AttributedStringValue = GetAttributedString (text, image, textColor);
 		}
 
 		CALayer ProgressLayer {
@@ -229,7 +210,7 @@ namespace MonoDevelop.MacIntegration
 		nfloat LeftMostItemX ()
 		{
 			if (Layer.Sublayers == null)
-				return Frame.Width;
+				return Layer.Frame.Width;
 
 			var left = Layer.Sublayers.Min<CALayer, nfloat> (layer => {
 				if (layer.Name == null)
@@ -239,7 +220,7 @@ namespace MonoDevelop.MacIntegration
 					return layer.Frame.Left;
 				return nfloat.PositiveInfinity;
 			});
-			return left == nfloat.PositiveInfinity ? Frame.Width : left;
+			return left == nfloat.PositiveInfinity ? Layer.Frame.Width : left;
 		}
 
 		nfloat DrawSeparatorIfNeeded (nfloat right)
@@ -336,7 +317,7 @@ namespace MonoDevelop.MacIntegration
 				tooltip.Dispose ();
 			tooltips.Clear ();
 
-			nfloat right = Frame.Width;
+			nfloat right = Layer.Frame.Width;
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
@@ -362,12 +343,12 @@ namespace MonoDevelop.MacIntegration
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			nfloat right = layerToStatus.Count == 0 ?
-				Frame.Width :
+				Layer.Frame.Width :
 				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
 
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			SetImageFor (layer, pixbuf);
+			layer.SetImage (pixbuf);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			var statusIcon = new StatusIcon (this, layer);
@@ -550,7 +531,7 @@ namespace MonoDevelop.MacIntegration
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Layer.Frame.Height - barHeight, (nfloat)width, barHeight);
 			}
 			return progress;
 		}
@@ -582,7 +563,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
 			move.From = NSNumber.FromDouble (-frameAutoPulseWidth);
-			move.To = NSNumber.FromDouble (Frame.Width + frameAutoPulseWidth);
+			move.To = NSNumber.FromDouble (Layer.Frame.Width + frameAutoPulseWidth);
 			move.RepeatCount = float.PositiveInfinity;
 			move.RemovedOnCompletion = false;
 			move.Duration = 4;
@@ -625,7 +606,7 @@ namespace MonoDevelop.MacIntegration
 		void StartProgress (double newFraction)
 		{
 			progressMarks.Clear ();
-			var progress = CreateProgressBarLayer (Frame.Width);
+			var progress = CreateProgressBarLayer (Layer.Frame.Width);
 			var grp = CreateMoveAndGrowAnimation (progress, newFraction);
 			oldFraction = newFraction;
 
@@ -695,10 +676,5 @@ namespace MonoDevelop.MacIntegration
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
 		}
-
-		IntPtr setContentsSelector = ObjCRuntime.Selector.GetHandle ("setContents:");
-		const string LIBOBJC_DYLIB = "/usr/lib/libobjc.dylib";
-		[System.Runtime.InteropServices.DllImport (LIBOBJC_DYLIB, EntryPoint="objc_msgSend")]
-		public extern static void void_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg);
 	}
 }
