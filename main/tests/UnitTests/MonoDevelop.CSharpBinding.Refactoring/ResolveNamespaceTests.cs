@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			using (var monitor = new NullProgressMonitor ())
-				TypeSystemService.Load (solution, monitor);
+				TypeSystemService.Load (solution, monitor, false);
 
 			content.Project = project;
 
