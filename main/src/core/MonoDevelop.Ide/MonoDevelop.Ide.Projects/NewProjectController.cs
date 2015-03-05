@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void SetDefaultGitSettings ()
 		{
-			projectConfiguration.UseGit = PropertyService.Get (UseGitPropertyName, true);
+			projectConfiguration.UseGit = PropertyService.Get (UseGitPropertyName, false);
 			projectConfiguration.CreateGitIgnoreFile = PropertyService.Get (CreateGitIgnoreFilePropertyName, true);
 		}
 
