@@ -28,17 +28,8 @@ let localTwo = localOne.PropertyOne"""
         startOffset + (expr.Length / 2)
 
     let resolveExpression (doc:Document, content:string, offset:int) =
-        let debugResolver =
-            doc.GetContents<obj>()
-            |> Seq.cast<IDebuggerExpressionResolver> 
-            |> (fun s -> if Seq.isEmpty s then None else Some (Seq.head s))
-        
-        match debugResolver with
-        | Some resolver -> 
-            let result, startoffset = resolver.ResolveExpression(doc.Editor, doc,offset)
-            result, startoffset
-        | None -> failwith "No debug resolver found"
-
+        let resolver = doc.GetContents<FSharpTextEditorCompletion> () |> Seq.toArray
+        (resolver.[0] :> IDebuggerExpressionResolver).ResolveExpression(doc.Editor, doc,offset)
 
     [<TestFixtureSetUp>]
     override x.Setup() =
@@ -52,7 +43,6 @@ let localTwo = localOne.PropertyOne"""
     member x.TestBasicLocalVariable(localVariable) =
         let basicOffset = getBasicOffset (localVariable)
         let expression, offset = resolveExpression (doc, content, basicOffset)
-        System.Console.WriteLine(offset)
         expression |> should equal localVariable
 
    

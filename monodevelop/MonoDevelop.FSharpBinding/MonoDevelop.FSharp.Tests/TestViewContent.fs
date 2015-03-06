@@ -6,18 +6,18 @@ open Mono.TextEditor
 open MonoDevelop.Projects.Text
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
+open MonoDevelop.Ide.Editor
 
 type TestViewContent() =
     inherit AbstractViewContent()
-    let document = TextDocument()
-    let data = new TextEditorData(document)
     let caretPositionSet = Event<_>()
     let textChanged = Event<_>()
     let name = FilePath()
 
-    member x.GetTextEditorData() = data
-    member val Contents = ResizeArray<obj>() with get, set
-    member val Data = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
+    let data = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor ()
+
+    member val Contents = ResizeArray([data :> obj]) with get, set
+    member val Data = data
 
     override x.Load(fileName:FileOpenInformation) = ()
     override x.Control = null
@@ -25,12 +25,15 @@ type TestViewContent() =
         let xx = x.Contents.FirstOrDefault(fun o -> ty.IsInstanceOfType(ty))
         if xx = null then base.GetContent(ty) else xx
 
-    interface ITextEditorDataProvider with
-        member x.GetTextEditorData() = data
+    override x.GetContents<'a when 'a : not struct > () =
+        x.Contents.OfType<'a> ()
+
+    //interface ITextEditorDataProvider with
+    member x.GetTextEditorData() = data
 
     //interface IEditableTextBuffer with
     member x.HasInputFocus = false
-    member x.LineCount = document.LineCount
+    member x.LineCount = data.LineCount
     [<CLIEvent>]
     member x.CaretPositionSet = caretPositionSet.Publish
     [<CLIEvent>]
@@ -40,31 +43,33 @@ type TestViewContent() =
     member x.SetCaretTo(line, column, highlightCaretLine, centerCaret) =()
     member x.RunWhenLoaded(f) = f()
     member x.SelectedText with get() = "" and set (v:string) = ()
-    member x.CursorPosition with get() = data.Caret.Offset and set v = data.Caret.Offset <- v
-    member x.SelectionStartPosition with get() = if data.IsSomethingSelected then data.SelectionRange.Offset else data.Caret.Offset
-    member x.SelectionEndPosition with get() = if data.IsSomethingSelected then data.SelectionRange.EndOffset else data.Caret.Offset
-    member x.Select(start, end') = data.SelectionRange <- new TextSegment (start, end' - start)
+    member x.CursorPosition with get() = data.CaretOffset and set v = data.CaretOffset <- v
+    member x.SelectionStartPosition with get() = if data.IsSomethingSelected then data.SelectionRange.Offset else data.CaretOffset
+    member x.SelectionEndPosition with get() = if data.IsSomethingSelected then data.SelectionRange.EndOffset else data.CaretOffset
+    member x.Select(s, e) =
+        if not (data.IsSomethingSelected) then data.CaretOffset
+        else data.SelectionRange.EndOffset
     member x.ShowPosition(pos) = ()
 
-    member x.InsertText(pos, str) =
-        document.Insert(pos, str)
+    member x.InsertText(pos, str:string) =
+        data.InsertText(pos, str)
         str.Length
-    member x.DeleteText(pos, length) = document.Replace (pos, length, "")
+    member x.DeleteText(pos, length) = data.ReplaceText (pos, length, "")
     member x.EnableUndo = false
     member x.EnableRedo = false
     member x.Undo() = ()
     member x.Redo() = ()
     member x.OpenUndoGroup() = {new IDisposable with member x.Dispose() = ()}
-    member x.Text with get() = document.Text and set v = document.Text <- v
+    member x.Text with get() = data.Text and set v = data.Text <- v
 
     interface ITextFile with
-        member x.Text with get() = document.Text
+        member x.Text with get() = data.Text
         member x.Name with get() = name
-        member x.Length = document.TextLength
-        member x.GetText(start, end') = document.GetTextBetween (start, end')
-        member x.GetCharAt(pos) = document.GetCharAt(pos)
-        member x.GetPositionFromLineColumn(line, column) = document.LocationToOffset (line, column)
+        member x.Length = data.Length
+        member x.GetText(s, e) = data.GetTextBetween (s, e)
+        member x.GetCharAt(pos) = data.GetCharAt(pos)
+        member x.GetPositionFromLineColumn(line, column) = data.LocationToOffset (line, column)
         member x.GetLineColumnFromPosition(position, line, col) = 
-            let loc = document.OffsetToLocation (position)
+            let loc = data.OffsetToLocation (position)
             line <- loc.Line
             col <- loc.Column

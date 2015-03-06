@@ -11,7 +11,7 @@ type TestWorkbenchWindow() =
     let avcc = DelegateEvent<_>()
     let viewsChanged = DelegateEvent<_>()
 
-    member x.SetViewContent(v) = viewContent <- v
+    member val ViewContent = Unchecked.defaultof<IViewContent> with get, set
     
     interface IWorkbenchWindow with
         member x.SelectWindow () = ()

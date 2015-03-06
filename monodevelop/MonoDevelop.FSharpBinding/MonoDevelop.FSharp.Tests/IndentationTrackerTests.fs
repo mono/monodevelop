@@ -14,8 +14,6 @@ open MonoDevelop.Debugger
 [<TestFixture>]
 type IndentationTrackerTests() =
     inherit TestBase()
-    let mutable doc = Unchecked.defaultof<Document>
-
     let content = """
 let a = 
 
@@ -40,16 +38,11 @@ let b = (fun a ->
         doc.Editor.SetCaretLocation (2, 2)
         let column = doc.Editor.GetVirtualIndentationColumn (line)
         column
-
-    [<TestFixtureSetUp>]
-    override x.Setup() =
-        base.Setup()
-        doc <- fst(TestHelpers.createDoc(content) [])
-
-    
+           
     [<Test>]
-    member x.``Basic Indents``() =
+    member x.BasicIndents() =
        // let basicOffset = getBasicOffset (localVariable)
+        let doc = fst(TestHelpers.createDoc(content) [])
         getIndent (doc, content, 3, 1) |> should equal 5
         getIndent (doc, content, 5, 1) |> should equal 5
         getIndent (doc, content, 7, 1) |> should equal 3

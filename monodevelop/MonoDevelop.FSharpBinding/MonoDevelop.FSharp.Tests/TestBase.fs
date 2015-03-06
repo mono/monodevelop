@@ -114,6 +114,7 @@ type TestBase() =
         Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir)
         Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir)
         Runtime.Initialize (true)
+        Xwt.Application.Initialize ()
         Gtk.Application.Init ()
         MonoDevelop.Ide.TypeSystem.TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()

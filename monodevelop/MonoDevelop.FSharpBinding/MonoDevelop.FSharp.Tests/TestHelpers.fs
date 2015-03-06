@@ -1,4 +1,4 @@
-﻿module TestHelpers
+﻿namespace MonoDevelopTests
 
 open System
 open NUnit.Framework
@@ -13,40 +13,46 @@ open FsUnit
 open MonoDevelop.Debugger
 open MonoDevelopTests
 
-let createDoc (text:string) references =
-    let workbenchWindow = TestWorkbenchWindow()
-    let viewContent = new TestViewContent()
-    let filePath = match Platform.IsWindows with
-                   | true -> FilePath(@"C:\Temp\test.fsproj")
-                   | _ -> FilePath("test.fsproj")
-    let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
-    project.References.AddRange references
-    let projectConfig = project.AddNewConfiguration("Debug")
+module TestHelpers =
 
-    use solution = new MonoDevelop.Projects.Solution ()
-    solution.AddConfiguration ("", true) |> ignore
-    solution.DefaultSolutionFolder.AddItem (project)
-    using ( new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
-        (fun monitor -> MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (solution, monitor) |> ignore)
+    let createDoc (text:string) references =
+        let tww = TestWorkbenchWindow()
+        let content = new TestViewContent()
+        tww.ViewContent <- content
+        content.ContentName <- "/a.fs"
+        content.Data.MimeType <- "text/x-fsharp"
 
-    viewContent.Project <- project
+        let endPos = text.IndexOf ('$')
+        let text = 
+            if endPos > 0 then text.Substring (0, endPos) + text.Substring (endPos + 1)
+            else text
 
-    workbenchWindow.SetViewContent(viewContent)
+        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
+        project.References.AddRange references
+        let projectConfig = project.AddNewConfiguration("Debug")
 
-    viewContent.ContentName <- "a.fs"
-    viewContent.Data.MimeType <- "text/x-fsharp"
-    let doc = Document(workbenchWindow)
+        use solution = new MonoDevelop.Projects.Solution ()
+        solution.AddConfiguration ("", true) |> ignore
+        solution.DefaultSolutionFolder.AddItem (project)
+        using ( new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+            (fun monitor -> MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (solution, monitor) |> ignore)
 
-    viewContent.Text <- text
-    viewContent.CursorPosition <- 0
+        content.Project <- project
 
-    let pfile = doc.Project.AddFile("a.fs")
+        content.Text <- text
+        content.CursorPosition <- max 0 endPos
+        let doc = Document(tww)
 
-    let textEditorCompletion = new FSharpTextEditorCompletion()
-    textEditorCompletion.Initialize(doc.Editor, doc)
-    viewContent.Contents.Add(textEditorCompletion)
+        let pfile = doc.Project.AddFile("a.fs")
 
-    try 
-        doc.UpdateParseDocument() |> ignore
-    with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
-    doc, viewContent
+        let compExt = new FSharpTextEditorCompletion()
+        compExt.Initialize(doc.Editor, doc)
+        content.Contents.Add(compExt)
+
+        try
+            try 
+                doc.UpdateParseDocument() |> ignore
+            with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
+        finally
+            MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload solution
+        doc, content

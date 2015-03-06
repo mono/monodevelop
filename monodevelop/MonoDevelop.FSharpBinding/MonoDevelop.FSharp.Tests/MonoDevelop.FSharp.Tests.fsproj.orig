@@ -105,9 +105,6 @@
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
     </Reference>
-    <Reference Include="FsUnit.NUnit">
-      <HintPath>..\packages\FsUnit.1.3.0.1\Lib\Net40\FsUnit.NUnit.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
