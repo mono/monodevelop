@@ -172,7 +172,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.FromResult(false);
 		}
 
-		public static void Unload (MonoDevelop.Projects.WorkspaceItem item)
+		internal static void Unload (MonoDevelop.Projects.WorkspaceItem item)
 		{
 			var ws = item as MonoDevelop.Projects.Workspace;
 			if (ws != null) {
