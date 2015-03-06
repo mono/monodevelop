@@ -50,7 +50,7 @@ module Symbols =
                                                                   Microsoft.CodeAnalysis.Text.LinePosition(finish.Line, finish.Column))
             fileName, ts, ls)
 
-    let getTextSpan lastIdent (symbolUse:FSharpSymbolUse) =
+    let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
         let range = symbolUse.RangeAlternate
         let editor = getEditorForFileName symbolUse.RangeAlternate.FileName
 
@@ -59,6 +59,11 @@ module Symbols =
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
         range.FileName, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
+
+    let getTextSpan (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
+        let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)
+        let endOffset = editor.LocationToOffset (range.EndLine, range.EndColumn+1)
+        Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
 
 [<AutoOpen>]
 module FSharpTypeExt =
