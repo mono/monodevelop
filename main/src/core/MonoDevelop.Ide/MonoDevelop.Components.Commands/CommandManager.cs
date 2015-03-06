@@ -1089,15 +1089,23 @@ namespace MonoDevelop.Components.Commands
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									chi.Run (localTarget, cmd, dataItem);
-									OnCommandActivated (commandId, info, dataItem, localTarget, source);
+									var t = DateTime.Now;
+									try {
+										chi.Run (localTarget, cmd, dataItem);
+									} finally {
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+									}
 								});
 							}
 							else {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									chi.Run (localTarget, cmd);
-									OnCommandActivated (commandId, info, dataItem, localTarget, source);
+									var t = DateTime.Now;
+									try {
+										chi.Run (localTarget, cmd);
+									} finally {
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+									}
 								});
 							}
 							handlerFoundInMulticast = true;
@@ -1151,8 +1159,13 @@ namespace MonoDevelop.Components.Commands
 				cmd.DefaultHandler = (CommandHandler) Activator.CreateInstance (cmd.DefaultHandlerType);
 			}
 			OnCommandActivating (cmd.Id, info, dataItem, target, source);
-			cmd.DefaultHandler.InternalRun (dataItem);
-			OnCommandActivated (cmd.Id, info, dataItem, target, source);
+
+			var t = DateTime.Now;
+			try {
+				cmd.DefaultHandler.InternalRun (dataItem);
+			} finally {
+				OnCommandActivated (cmd.Id, info, dataItem, target, source, DateTime.Now - t);
+			}
 			return true;
 		}
 		
@@ -1162,10 +1175,10 @@ namespace MonoDevelop.Components.Commands
 				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
 		}
 		
-		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
+		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan time)
 		{
 			if (CommandActivated != null)
-				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
+				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source, time));
 		}
 		
 		/// <summary>
@@ -2406,13 +2419,14 @@ namespace MonoDevelop.Components.Commands
 		
 	public class CommandActivationEventArgs : EventArgs
 	{
-		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
+		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan executionTime = default(TimeSpan))
 		{
 			this.CommandId = commandId;
 			this.CommandInfo = commandInfo;
 			this.Target = target;
 			this.Source = source;
 			this.DataItem = dataItem;
+			this.ExecutionTime = executionTime;
 		}			
 		
 		public object CommandId  { get; private set; }
@@ -2420,6 +2434,7 @@ namespace MonoDevelop.Components.Commands
 		public object Target  { get; private set; }
 		public CommandSource Source { get; private set; }
 		public object DataItem  { get; private set; }
+		public TimeSpan ExecutionTime { get; private set; }
 	}
 	
 	public enum CommandSource

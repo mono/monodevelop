@@ -98,12 +98,17 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public ITimeTracker BeginTiming ()
 		{
-			return BeginTiming (null);
+			return BeginTiming (null, null);
 		}
 		
 		public ITimeTracker BeginTiming (string message)
 		{
 			return BeginTiming (message, null);
+		}
+
+		public ITimeTracker BeginTiming (IDictionary<string, string> metadata)
+		{
+			return BeginTiming (null, metadata);
 		}
 
 		public ITimeTracker BeginTiming (string message, IDictionary<string, string> metadata)
