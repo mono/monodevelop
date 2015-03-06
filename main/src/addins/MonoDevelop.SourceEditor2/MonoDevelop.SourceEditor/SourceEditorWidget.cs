@@ -992,7 +992,12 @@ namespace MonoDevelop.SourceEditor
 			hbox.PackStart (label, true, true, 0);
 			var okButton = new Button (Gtk.Stock.Ok);
 			okButton.WidthRequest = 60;
-			hbox.PackEnd (okButton, false, false, 0); 
+
+			// Small amount of vertical padding for the OK button.
+			const int verticalPadding = 2;
+			var vbox = new VBox ();
+			vbox.PackEnd (okButton, true, true, verticalPadding);
+			hbox.PackEnd (vbox, false, false, 0);
 
 			var list = new List<string> ();
 			list.Add (string.Format ("Convert to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
@@ -1007,6 +1012,12 @@ namespace MonoDevelop.SourceEditor
 			container.PackStart (hbox, true, true, containerPadding); 
 			messageOverlayWindow.Child = container; 
 			messageOverlayWindow.ShowOverlay (this.TextEditor);
+
+			// This is hacky, but it will ensure that our combo appears with with the correct size.
+			GLib.Timeout.Add (100, delegate {
+				combo.QueueResize ();
+				return false;
+			});
 
 			messageOverlayWindow.SizeFunc = () => {
 				return okButton.SizeRequest ().Width +
