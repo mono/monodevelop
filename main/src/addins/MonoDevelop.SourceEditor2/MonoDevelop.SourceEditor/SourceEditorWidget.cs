@@ -911,7 +911,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (UseIncorrectMarkers || DefaultSourceEditorOptions.Instance.LineEndingConversion == LineEndingConversion.LeaveAsIs)
 				return;
-			ShowIncorretEolMarkers (Document.FileName, multiple);
+			ShowIncorrectEolMarkers (Document.FileName, multiple);
 		}
 
 		internal bool EnsureCorrectEolMarker (string fileName)
@@ -921,9 +921,9 @@ namespace MonoDevelop.SourceEditor
 			if (HasIncorrectEolMarker) {
 				switch (DefaultSourceEditorOptions.Instance.LineEndingConversion) {
 				case LineEndingConversion.Ask:
-					var hasMultipleIncorretEolMarkers = FileRegistry.HasMultipleIncorretEolMarkers;
-					ShowIncorretEolMarkers (fileName, hasMultipleIncorretEolMarkers);
-					if (hasMultipleIncorretEolMarkers) {
+					var hasMultipleIncorrectEolMarkers = FileRegistry.HasMultipleIncorrectEolMarkers;
+					ShowIncorrectEolMarkers (fileName, hasMultipleIncorrectEolMarkers);
+					if (hasMultipleIncorrectEolMarkers) {
 						FileRegistry.UpdateEolMessages ();
 					}
 					return false;
@@ -971,7 +971,7 @@ namespace MonoDevelop.SourceEditor
 
 		OverlayMessageWindow messageOverlayWindow;
 
-		void ShowIncorretEolMarkers (string fileName, bool multiple)
+		void ShowIncorrectEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
 			messageOverlayWindow = new OverlayMessageWindow ();
