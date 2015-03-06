@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 					return;
 				}
 
-				Task.Factory.StartNew (delegate {
+				Task.Run (delegate {
 					var list = GetReferences (result, token).ToList ();
 					if (!token.IsCancellationRequested) {
 						Gtk.Application.Invoke (delegate {

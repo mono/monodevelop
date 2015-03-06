@@ -61,11 +61,6 @@ namespace MonoDevelop.CodeActions
 		uint menuCloseTimeoutId;
 		FixMenuDescriptor codeActionMenu;
 
-		public CodeActionContainer Fixes {
-			get;
-			private set;
-		}
-
 		static CodeActionEditorExtension ()
 		{
 			var usages = PropertyService.Get<Properties> ("CodeActionUsages", new Properties ());
@@ -99,7 +94,6 @@ namespace MonoDevelop.CodeActions
 				currentSmartTagBegin = -1;
 			}
 			CancelSmartTagPopupTimeout ();
-
 		}
 		
 		public override void Dispose ()
@@ -110,8 +104,8 @@ namespace MonoDevelop.CodeActions
 			Editor.SelectionChanged -= HandleSelectionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
 			Editor.BeginMouseHover -= HandleBeginHover;
+			Editor.TextChanged -= Editor_TextChanged;
 			RemoveWidget ();
-			Fixes = null;
 			base.Dispose ();
 		}
 
@@ -155,6 +149,14 @@ namespace MonoDevelop.CodeActions
 			CancelQuickFixTimer ();
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				var token = quickFixCancellationTokenSource.Token;
+				var curOffset = Editor.CaretOffset;
+				foreach (var fix in GetCurrentFixes ().AllValidCodeActions) {
+					if (!fix.ValidSegment.Contains (curOffset)) {
+						RemoveWidget ();
+						break;
+					}
+				}
+
 				quickFixTimeout = GLib.Timeout.Add (50, delegate {
 					var loc = Editor.CaretOffset;
 					var ad = DocumentContext.AnalysisDocument;
@@ -437,7 +439,7 @@ namespace MonoDevelop.CodeActions
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.CodeAction))
 					gotImportantFix = true;
@@ -460,7 +462,7 @@ namespace MonoDevelop.CodeActions
 			}
 
 			bool first = true;
-			foreach (var fix in Fixes.CodeRefactoringActions) {
+			foreach (var fix in GetCurrentFixes ().CodeRefactoringActions) {
 				if (first) {
 					if (items > 0)
 						menu.Add (FixMenuEntry.Separator);
@@ -479,11 +481,11 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 
-			if (Fixes.CodeDiagnosticActions.Count > 0) {
+			if (GetCurrentFixes ().CodeDiagnosticActions.Count > 0) {
 				menu.Add (FixMenuEntry.Separator);
 			}
 
-			foreach (var fix_ in Fixes.CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new FixMenuDescriptor (label);
@@ -622,8 +624,7 @@ namespace MonoDevelop.CodeActions
 
 		void CreateSmartTag (CodeActionContainer fixes, int offset)
 		{
-			Fixes = fixes;
-			if (!AnalysisOptions.EnableFancyFeatures) {
+			if (!AnalysisOptions.EnableFancyFeatures || fixes.IsEmpty) {
 				RemoveWidget ();
 				return;
 			}
@@ -686,6 +687,13 @@ namespace MonoDevelop.CodeActions
 //			document.Editor.SelectionChanged += HandleSelectionChanged;
 			Editor.BeginMouseHover += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
+			Editor.TextChanged += Editor_TextChanged;
+		}
+
+		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+		{
+			RemoveWidget ();
+			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void HandleBeginHover (object sender, EventArgs e)
@@ -712,8 +720,6 @@ namespace MonoDevelop.CodeActions
 			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
-		
-		
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
 			HandleCaretPositionChanged (null, EventArgs.Empty);

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CodeActions;
 using System;
 using MonoDevelop.CodeIssues;
+using System.Linq;
 
 namespace MonoDevelop.CodeActions
 {
@@ -58,6 +59,12 @@ namespace MonoDevelop.CodeActions
 			}
 			private set {
 				codeRefactoringActions = value;
+			}
+		}
+
+		public IEnumerable<ValidCodeAction> AllValidCodeActions {
+			get {
+				return CodeRefactoringActions.Concat (CodeDiagnosticActions);
 			}
 		}
 

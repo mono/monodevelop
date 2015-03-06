@@ -204,8 +204,8 @@ namespace MonoDevelop.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			if (ext != null && ext.Fixes != null) {
-				var fixMenu = CreateFixMenu (doc.Editor, doc, ext.Fixes);
+			if (ext != null && !ext.GetCurrentFixes ().IsEmpty) {
+				var fixMenu = CreateFixMenu (doc.Editor, doc, ext.GetCurrentFixes ());
 				if (fixMenu.CommandInfos.Count > 0) {
 					ainfo.Add (fixMenu, null);
 					added = true;
@@ -222,8 +222,8 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			bool first = true;
-			if (ext != null && ext.Fixes != null) {
-				foreach (var fix in ext.Fixes.CodeRefactoringActions) {
+			if (ext != null) {
+				foreach (var fix in ext.GetCurrentFixes ().CodeRefactoringActions) {
 					if (added & first)
 						ciset.CommandInfos.AddSeparator ();
 					var info2 = new CommandInfo (fix.CodeAction.Title);

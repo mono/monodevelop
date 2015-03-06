@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 	{
 		static readonly Dictionary<Project, WeakReference<AnalyzersFromAssembly>> diagnosticCache = new Dictionary<Project, WeakReference<AnalyzersFromAssembly>> ();
 
-		public async override Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
+		public async override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var diags = await GetProjectDiagnosticsAsync (document.Project, language, cancellationToken).ConfigureAwait (false);
 			return diags.Fixes;
