@@ -289,7 +289,7 @@ namespace MonoDevelop.Refactoring
 					var ext = doc.GetContent <CodeActionEditorExtension> ();
 					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
 				} else {
-					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
+					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc);
 				}
 
 				lastLocation = loc;
