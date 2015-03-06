@@ -125,7 +125,7 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
             |> Async.RunSynchronously
 
         let locations =
-            symbols |> Array.map (Symbols.getTextSpan lastIdent)
+            symbols |> Array.map (Symbols.getTextSpanTrimmed lastIdent)
 
         let fileLocations = 
             locations

@@ -3,16 +3,14 @@ open System
 open Mono.Addins
 open MonoDevelop.Ide.Gui
 
-type TestWorkbenchWindow() =
-    let mutable viewContent = Unchecked.defaultof<IViewContent>
+type TestWorkbenchWindow(viewContent) =
+
     let edc = DelegateEvent<_>()
     let closed = DelegateEvent<_>()
     let closing = DelegateEvent<_>()
     let avcc = DelegateEvent<_>()
     let viewsChanged = DelegateEvent<_>()
-
-    member val ViewContent = Unchecked.defaultof<IViewContent> with get, set
-    
+     
     interface IWorkbenchWindow with
         member x.SelectWindow () = ()
         member x.SwitchView (viewNumber:int) = ()
@@ -23,7 +21,7 @@ type TestWorkbenchWindow() =
         member val DocumentType = "" with get, set
         member val ShowNotification = false with get, set
         member x.ViewContent with get() = viewContent
-        member x.ActiveViewContent with get() = viewContent :> _ and set v = viewContent <- downcast v
+        member x.ActiveViewContent with get() = viewContent :> IBaseViewContent and set v = ()
         member x.ExtensionContext with get() = AddinManager.AddinEngine :> _
         member x.CloseWindow (force) = true
         member x.AttachViewContent (subViewContent) = ()

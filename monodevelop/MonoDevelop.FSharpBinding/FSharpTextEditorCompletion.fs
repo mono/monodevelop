@@ -473,63 +473,63 @@ type FSharpTextEditorCompletion() =
           res
 
   interface IDebuggerExpressionResolver with
-    member x.ResolveExpression(editor, doc, offset, startOffset: byref<int>) =
-      let ast = doc.ParsedDocument.Ast
-      match ast with
-      | null -> null
-      | :? ParseAndCheckResults as pcr ->
-          let location = editor.OffsetToLocation(offset)
-          let line = editor.GetLine location.Line
-          let lineTxt = editor.GetTextAt (line.Offset, line.Length)
-          let symbol = pcr.GetSymbolAtLocation (location.Line, location.Column, lineTxt) |> Async.RunSynchronously
-          match symbol with
-          | Some symbolUse when not symbolUse.IsFromDefinition ->
-              match symbolUse with
-              | CorePatterns.ActivePatternCase apc ->
-                  let loc = apc.DeclarationLocation
-                  startOffset <- loc.StartColumn
-                  apc.DisplayName
-              | CorePatterns.Entity ent ->
-                  let loc = ent.DeclarationLocation
-                  startOffset <- loc.StartColumn
-                  ent.DisplayName
-              | CorePatterns.Field field ->
-                  let loc = field.DeclarationLocation
-                  startOffset <- loc.StartColumn
-                  field.DisplayName
-              | CorePatterns.GenericParameter _gp -> null
-              //| CorePatterns.MemberFunctionOrValue
-              | CorePatterns.Parameter _p -> null
-              | CorePatterns.StaticParameter _sp -> null
-              | CorePatterns.UnionCase _uc -> null
-              | ExtendedPatterns.Class _c -> null
-              | ExtendedPatterns.ClosureOrNestedFunction _cl -> null
-              | ExtendedPatterns.Constructor _ctor -> null
-              | ExtendedPatterns.Delegate _del -> null
-              | ExtendedPatterns.Enum _enum -> null
-              | ExtendedPatterns.Event _ev -> null
-              | ExtendedPatterns.Function _f -> null
-              | ExtendedPatterns.Interface _i -> null
-              | ExtendedPatterns.Module _m -> null
-              | ExtendedPatterns.Namespace _ns -> null
-              | ExtendedPatterns.Operator _op -> null
-              | ExtendedPatterns.Pattern _p -> null
-              | ExtendedPatterns.Property _pr ->
-                  let loc = symbolUse.RangeAlternate
-                  startOffset <- loc.StartColumn
-                  let fullName = lineTxt.[loc.StartColumn..loc.EndColumn]
-                  fullName
-              | ExtendedPatterns.Record r ->
-                  let loc = r.DeclarationLocation
-                  startOffset <- loc.StartColumn
-                  r.DisplayName
-              | ExtendedPatterns.TypeAbbreviation _ta -> null
-              | ExtendedPatterns.Union _un -> null
-              | ExtendedPatterns.Val v ->
-                  let loc = v.DeclarationLocation
-                  startOffset <- loc.StartColumn
-                  v.DisplayName
-              | ExtendedPatterns.ValueType _vt -> null
-              | _ -> null
-          | _ -> null
-      | _ -> null
+    member x.ResolveExpressionAsync (doc, context, offset, cancellationToken) =
+      let computation = async {
+          let ast = context.ParsedDocument.Ast
+          let location = 
+              match ast with
+              | null -> None
+              | :? ParseAndCheckResults as pcr ->
+                  let location = doc.OffsetToLocation(offset)
+                  let line = doc.GetLine location.Line
+                  let lineTxt = doc.GetTextAt (line.Offset, line.Length)
+                  let symbol = pcr.GetSymbolAtLocation (location.Line, location.Column, lineTxt) |> Async.RunSynchronously
+                  match symbol with
+                  | Some symbolUse when not symbolUse.IsFromDefinition ->
+                      match symbolUse with
+                      | CorePatterns.ActivePatternCase apc ->
+                          Some (apc.DeclarationLocation, apc.DisplayName)
+                      | CorePatterns.Entity ent ->
+                          Some (ent.DeclarationLocation, ent.DisplayName)
+                      | CorePatterns.Field field ->
+                          Some (field.DeclarationLocation, field.DisplayName)
+                      | CorePatterns.GenericParameter _gp -> None
+                      //| CorePatterns.MemberFunctionOrValue
+                      | CorePatterns.Parameter _p -> None
+                      | CorePatterns.StaticParameter _sp -> None
+                      | CorePatterns.UnionCase _uc -> None
+                      | ExtendedPatterns.Class _c -> None
+                      | ExtendedPatterns.ClosureOrNestedFunction _cl -> None
+                      | ExtendedPatterns.Constructor _ctor -> None
+                      | ExtendedPatterns.Delegate _del -> None
+                      | ExtendedPatterns.Enum _enum -> None
+                      | ExtendedPatterns.Event _ev -> None
+                      | ExtendedPatterns.Function _f -> None
+                      | ExtendedPatterns.Interface _i -> None
+                      | ExtendedPatterns.Module _m -> None
+                      | ExtendedPatterns.Namespace _ns -> None
+                      | ExtendedPatterns.Operator _op -> None
+                      | ExtendedPatterns.Pattern _p -> None
+                      | ExtendedPatterns.Property _pr ->
+                          let loc = symbolUse.RangeAlternate
+                          Some (loc, lineTxt.[loc.StartColumn..loc.EndColumn])
+                      | ExtendedPatterns.Record r ->
+                          let loc = r.DeclarationLocation
+                          Some (loc, r.DisplayName)
+                      | ExtendedPatterns.TypeAbbreviation _ta -> None
+                      | ExtendedPatterns.Union _un -> None
+                      | ExtendedPatterns.Val v ->
+                          let loc = v.DeclarationLocation
+                          Some (loc, v.DisplayName)
+                      | ExtendedPatterns.ValueType _vt -> None
+                      | _ -> None
+                  | _ -> None
+              | _ -> None
+          match location with
+          | None -> return DebugDataTipInfo()
+          | Some (range, name) ->
+            let ts = Symbols.getTextSpan range doc
+            return DebugDataTipInfo(ts, name)}
+
+      Async.StartAsTask (computation, cancellationToken = cancellationToken) 
+

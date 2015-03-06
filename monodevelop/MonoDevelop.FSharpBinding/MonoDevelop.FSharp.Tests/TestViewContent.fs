@@ -22,8 +22,9 @@ type TestViewContent() =
     override x.Load(fileName:FileOpenInformation) = ()
     override x.Control = null
     override x.GetContent(ty) =
-        let xx = x.Contents.FirstOrDefault(fun o -> ty.IsInstanceOfType(ty))
-        if xx = null then base.GetContent(ty) else xx
+        match x.Contents |> Seq.tryFind ty.IsInstanceOfType with
+        | Some content -> content
+        | None -> base.GetContent (ty)
 
     override x.GetContents<'a when 'a : not struct > () =
         x.Contents.OfType<'a> ()

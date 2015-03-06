@@ -14,7 +14,6 @@ open MonoDevelop.Debugger
 [<TestFixture>]
 type DebuggerExpressionResolver() =
     inherit TestBase()
-    let mutable doc = Unchecked.defaultof<Document>
 
     let content = """type TestOne() =
     member val PropertyOne = "42" with get, set
@@ -28,22 +27,19 @@ let localTwo = localOne.PropertyOne"""
         startOffset + (expr.Length / 2)
 
     let resolveExpression (doc:Document, content:string, offset:int) =
-        let resolver = doc.GetContents<FSharpTextEditorCompletion> () |> Seq.toArray
-        (resolver.[0] :> IDebuggerExpressionResolver).ResolveExpression(doc.Editor, doc,offset)
+        let resolvers = doc.GetContents<FSharpTextEditorCompletion> () |> Seq.toArray
+        let resolver = (resolvers.[0] :> IDebuggerExpressionResolver)
+        Async.AwaitTask (resolver.ResolveExpressionAsync(doc.Editor, doc,offset, Async.DefaultCancellationToken))
+        |> Async.RunSynchronously
 
-    [<TestFixtureSetUp>]
-    override x.Setup() =
-        base.Setup()
-        doc <- fst (TestHelpers.createDoc(content) [])
-
-    
     [<Test>]
     [<TestCase("localOne")>]
     [<TestCase("localTwo")>]
     member x.TestBasicLocalVariable(localVariable) =
         let basicOffset = getBasicOffset (localVariable)
-        let expression, offset = resolveExpression (doc, content, basicOffset)
-        expression |> should equal localVariable
+        let doc, _viewContent = TestHelpers.createDoc content []
+        let debugDataTipInfo = resolveExpression (doc, content, basicOffset)
+        debugDataTipInfo.Text |> should equal localVariable
 
    
 
