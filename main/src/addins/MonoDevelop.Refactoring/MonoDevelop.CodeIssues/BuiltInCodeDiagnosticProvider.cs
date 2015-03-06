@@ -69,7 +69,7 @@ namespace MonoDevelop.CodeIssues
 			return includeDisabledNodes ? builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language)) : builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language) && ca.IsEnabled);
 		}
 
-		public async static Task<IEnumerable<CodeFixDescriptor>> GetBuiltInCodeFixDescriptorAsync (string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetBuiltInCodeFixDescriptorAsync (string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var diags = await builtInDiagnostics.ConfigureAwait (false);
 			var builtInCodeFixes = diags.Fixes;
@@ -83,7 +83,7 @@ namespace MonoDevelop.CodeIssues
 			return string.IsNullOrEmpty (language) ? builtInCodeFixes : builtInCodeFixes.Where (cfp => cfp.Language.Contains (language));
 		}
 
-		public override Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken)
+		public override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken)
 		{
 			return GetBuiltInCodeFixDescriptorAsync (language, cancellationToken);
 		}

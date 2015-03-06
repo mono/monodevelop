@@ -36,6 +36,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeActions
 {
@@ -67,9 +69,9 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
-		public async static Task<IEnumerable<CodeFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var result = new List<CodeFixDescriptor> ();
+			var result = new List<CodeDiagnosticFixDescriptor> ();
 			foreach (var provider in providers) {
 				result.AddRange (await provider.GetCodeFixDescriptorAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
 			}
@@ -85,28 +87,38 @@ namespace MonoDevelop.CodeActions
 			return result;
 		}
 
-		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (TextEditor editor, DocumentContext doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<IEnumerable<ValidCodeAction>> GetValidActionsAsync (TextEditor editor, DocumentContext doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			var parsedDocument = doc.ParsedDocument;
-			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
+			var actions = new List<ValidCodeAction> ();
 			if (parsedDocument == null)
 				return actions;
 			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
 				return actions;
-			var root = model.SyntaxTree.GetRoot();
+			var root = await model.SyntaxTree.GetRootAsync(cancellationToken);
 			if (span.End > root.Span.End)
 				return actions;
+			TextSpan tokenSegment = span;
+			var token = root.FindToken (span.Start);
+			if (!token.IsMissing)
+				tokenSegment = token.Span;
 			
 			foreach (var descriptor in await GetCodeActionsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken)) {
 				try {
-					await descriptor.GetProvider ().ComputeRefactoringsAsync (new CodeRefactoringContext (doc.AnalysisDocument, span,
-						(ca) => actions.Add (Tuple.Create (descriptor, ca)),
-						cancellationToken));
+					await descriptor.GetProvider ().ComputeRefactoringsAsync (
+						new CodeRefactoringContext (doc.AnalysisDocument, span, delegate (CodeAction ca) {
+							var nrca = ca as NRefactoryCodeAction;
+							var validSegment = tokenSegment;
+							if (nrca != null)
+								validSegment = nrca.TextSpan;
+							actions.Add (new ValidCodeAction (ca, validSegment));
+						}, cancellationToken)
+					);
 				} catch (OperationCanceledException) {
 					break;
 				} catch (Exception e) {

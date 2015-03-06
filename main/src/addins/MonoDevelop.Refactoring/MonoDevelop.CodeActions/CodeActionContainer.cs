@@ -41,20 +41,20 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		IReadOnlyList<Tuple<CodeFixDescriptor, CodeAction>> codeDiagnosticActions;
-		public IReadOnlyList<Tuple<CodeFixDescriptor, CodeAction>> CodeDiagnosticActions {
+		IReadOnlyList<ValidCodeDiagnosticAction> codeDiagnosticActions;
+		public IReadOnlyList<ValidCodeDiagnosticAction> CodeDiagnosticActions {
 			get {
-				return codeDiagnosticActions ?? new Tuple<CodeFixDescriptor, CodeAction>[0];
+				return codeDiagnosticActions ?? new ValidCodeDiagnosticAction[0];
 			}
 			private set {
 				codeDiagnosticActions = value;
 			}
 		}
 
-		IReadOnlyList<Tuple<CodeRefactoringDescriptor, CodeAction>> codeRefactoringActions;
-		public IReadOnlyList<Tuple<CodeRefactoringDescriptor, CodeAction>> CodeRefactoringActions {
+		IReadOnlyList<ValidCodeAction> codeRefactoringActions;
+		public IReadOnlyList<ValidCodeAction> CodeRefactoringActions {
 			get {
-				return codeRefactoringActions ?? new Tuple<CodeRefactoringDescriptor, CodeAction>[0];
+				return codeRefactoringActions ?? new ValidCodeAction[0];
 			}
 			private set {
 				codeRefactoringActions = value;
@@ -63,11 +63,11 @@ namespace MonoDevelop.CodeActions
 
 		CodeActionContainer ()
 		{
-			CodeDiagnosticActions = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
-			CodeRefactoringActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
+			CodeDiagnosticActions = new List<ValidCodeDiagnosticAction> ();
+			CodeRefactoringActions = new List<ValidCodeAction> ();
 		}
 
-		internal CodeActionContainer (List<Tuple<CodeFixDescriptor, CodeAction>> codeDiagnosticActions, List<Tuple<CodeRefactoringDescriptor, CodeAction>> codeRefactoringActions)
+		internal CodeActionContainer (List<ValidCodeDiagnosticAction> codeDiagnosticActions, List<ValidCodeAction> codeRefactoringActions)
 		{
 			if (codeDiagnosticActions == null)
 				throw new ArgumentNullException ("codeDiagnosticActions");

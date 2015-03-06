@@ -1,5 +1,5 @@
 //
-// CodeDiagnosticProvider.cs
+// ValidCodeDiagnosticAction.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,22 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using MonoDevelop.CodeIssues;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Editor;
+using System;
+using Microsoft.CodeAnalysis.CodeActions;
+using MonoDevelop.Core.Text;
 using MonoDevelop.CodeActions;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CodeIssues;
+using Microsoft.CodeAnalysis.Text;
 
-namespace MonoDevelop.CodeIssues
+namespace MonoDevelop.CodeActions
 {
 	/// <summary>
-	/// The code diagnostic provider gives a list of code diagnostic & fix providers from an arbitrary source.
+	/// Represents a code action that's valid at a specific segment that was created as a action for a specific code diagnostic.
 	/// </summary>
-	abstract class CodeDiagnosticProvider 
+	class ValidCodeDiagnosticAction : ValidCodeAction
 	{
-		public abstract Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		public CodeDiagnosticFixDescriptor Diagnostic {
+			get;
+			private set;
+		}
+
+		public ValidCodeDiagnosticAction (CodeDiagnosticFixDescriptor diagnostic, CodeAction codeAction, TextSpan validSegment) : base (codeAction, validSegment)
+		{
+			this.Diagnostic = diagnostic;
+		}
 	}
 }

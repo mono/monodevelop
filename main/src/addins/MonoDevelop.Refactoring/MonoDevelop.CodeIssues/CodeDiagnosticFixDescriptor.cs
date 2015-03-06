@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.CodeIssues
 {
-	class CodeFixDescriptor
+	class CodeDiagnosticFixDescriptor
 	{
 		readonly Type codeFixProviderType;
 		readonly ExportCodeFixProviderAttribute attribute;
@@ -48,7 +48,7 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		internal CodeFixDescriptor (Type codeFixProviderType, ExportCodeFixProviderAttribute attribute)
+		internal CodeDiagnosticFixDescriptor (Type codeFixProviderType, ExportCodeFixProviderAttribute attribute)
 		{
 			if (codeFixProviderType == null)
 				throw new ArgumentNullException ("codeFixProviderType");

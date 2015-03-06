@@ -44,7 +44,7 @@ namespace MonoDevelop.CodeIssues
 	class AnalyzersFromAssembly
 	{
 		public List<CodeDiagnosticDescriptor> Analyzers;
-		public List<CodeFixDescriptor> Fixes;
+		public List<CodeDiagnosticFixDescriptor> Fixes;
 		public List<CodeRefactoringDescriptor> Refactorings;
 
 		public readonly static AnalyzersFromAssembly Empty = new AnalyzersFromAssembly ();
@@ -52,7 +52,7 @@ namespace MonoDevelop.CodeIssues
 		public AnalyzersFromAssembly ()
 		{
 			Analyzers = new List<CodeDiagnosticDescriptor> ();
-			Fixes = new List<CodeFixDescriptor> ();
+			Fixes = new List<CodeDiagnosticFixDescriptor> ();
 			Refactorings = new List<CodeRefactoringDescriptor> ();
 		}
 
@@ -86,7 +86,7 @@ namespace MonoDevelop.CodeIssues
 
 				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes (typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
 				if (codeFixAttr != null) {
-					Fixes.Add (new CodeFixDescriptor (type, codeFixAttr));
+					Fixes.Add (new CodeDiagnosticFixDescriptor (type, codeFixAttr));
 				}
 
 				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;

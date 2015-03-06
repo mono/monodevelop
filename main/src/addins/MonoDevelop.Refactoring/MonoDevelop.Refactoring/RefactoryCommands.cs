@@ -137,17 +137,17 @@ namespace MonoDevelop.Refactoring
 			var result = new CommandInfoSet ();
 			result.Text = GettextCatalog.GetString ("Fix");
 			foreach (var diagnostic in container.CodeDiagnosticActions) {
-				var info = new CommandInfo (diagnostic.Item2.Title);
-				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.Item2, editor, ctx).Run));
+				var info = new CommandInfo (diagnostic.CodeAction.Title);
+				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run));
 			}
 			if (result.CommandInfos.Count == 0)
 				return result;
 			result.CommandInfos.AddSeparator ();
 			foreach (var fix in container.CodeDiagnosticActions) {
 
-				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null); 
+				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null); 
 
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.Item2.Title);
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new CommandInfoSet ();
 				subMenu.Text = label;
 
@@ -162,17 +162,17 @@ namespace MonoDevelop.Refactoring
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.ValidSegment)));
 				}
 
 				if (inspector.CanDisableOnce) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Disable Once"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, fix.ValidSegment)));
 				}
 
 				if (inspector.CanDisableAndRestore) {
 					var info = new CommandInfo (GettextCatalog.GetString ("Disable _and Restore"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, CodeActionEditorExtension.GetTextSpan (fix.Item2))));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, fix.ValidSegment)));
 				}
 
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
@@ -226,8 +226,8 @@ namespace MonoDevelop.Refactoring
 				foreach (var fix in ext.Fixes.CodeRefactoringActions) {
 					if (added & first)
 						ciset.CommandInfos.AddSeparator ();
-					var info2 = new CommandInfo (fix.Item2.Title);
-					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.Item2, doc.Editor, doc).Run));
+					var info2 = new CommandInfo (fix.CodeAction.Title);
+					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run));
 					added = true;
 					first = false;
 				}
