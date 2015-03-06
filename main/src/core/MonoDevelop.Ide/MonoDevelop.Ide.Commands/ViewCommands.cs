@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -112,6 +113,8 @@ namespace MonoDevelop.Ide.Commands
 			Pad pad = (Pad)dataItem;
 			pad.Visible = true;
 			pad.BringToFront (true);
+
+			Counters.PadShown.Inc (new Dictionary<string,string> {{ "Pad", pad.Id }});
 		}
 	}
 

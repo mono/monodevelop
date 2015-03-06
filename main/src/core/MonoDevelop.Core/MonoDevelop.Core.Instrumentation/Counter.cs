@@ -255,6 +255,16 @@ namespace MonoDevelop.Core.Instrumentation
 			Inc (n, message, null);
 		}
 
+		public void Inc (string message, IDictionary<string, string> metadata)
+		{
+			Inc (1, message, metadata);
+		}
+
+		public void Inc (IDictionary<string, string> metadata)
+		{
+			Inc (1, null, metadata);
+		}
+
 		public void Inc (int n, string message, IDictionary<string, string> metadata)
 		{
 			if (enabled) {

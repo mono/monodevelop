@@ -52,7 +52,21 @@ namespace MonoDevelop.Components.Commands
 		
 		public CommandInfo FindCommandInfo (object dataItem)
 		{
-			return list.FirstOrDefault (ci => ci.HandlesItem (dataItem));
+			foreach (var ci in list) {
+				if (ci.HandlesItem (dataItem))
+					return ci;
+				else if (ci.ArrayInfo != null) {
+					var r = ci.ArrayInfo.FindCommandInfo (dataItem);
+					if (r != null)
+						return r;
+				}
+				else if (ci is CommandInfoSet) {
+					var r = ((CommandInfoSet)ci).CommandInfos.FindCommandInfo (dataItem);
+					if (r != null)
+						return r;
+				}
+			}
+			return null;
 		}
 		
 		public void Insert (int index, CommandInfoSet infoSet)
