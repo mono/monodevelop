@@ -269,7 +269,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (item, configuration);
-				foreach (var r in builder.ResolveAssemblyReferences (configs))
+
+				string[] refs;
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (Item.GetProjectEventMetadata ()))
+					refs = builder.ResolveAssemblyReferences (configs);
+				foreach (var r in refs)
 					yield return r;
 			}
 			else {
@@ -292,7 +296,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
 					var configs = GetConfigurations (item, configuration);
-					var result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+
+					TimerCounter buildTimer = null;
+					switch (target) {
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					}
+
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (Item.GetProjectEventMetadata ());
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (Item.GetProjectEventMetadata ()) : null;
+
+					MSBuildResult result;
+
+					try {
+						result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+					} finally {
+						t1.End ();
+						if (t2 != null)
+							t2.End ();
+					}
+
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					var br = new BuildResult ();

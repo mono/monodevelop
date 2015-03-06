@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 	[ProjectModelDataItem(FallbackType = typeof(UnknownProject))]
 	public abstract class Project : SolutionEntityItem
 	{
-		static Counter ProjectOpenedCounter = InstrumentationService.CreateCounter ("Ide.Project.Open", "Project Model");
+		static Counter ProjectOpenedCounter = InstrumentationService.CreateCounter ("Project Opened", "Project Model", id:"Ide.Project.Open");
 
 		string[] buildActions;
 
@@ -65,10 +65,9 @@ namespace MonoDevelop.Projects
 			DependencyResolutionEnabled = true;
 		}
 
-		protected override void OnEndLoad ()
+		protected override void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
 		{
-			base.OnEndLoad ();
-
+			base.OnGetProjectEventMetadata (metadata);
 			var sb = new System.Text.StringBuilder ();
 			var first = true;
 
@@ -79,10 +78,14 @@ namespace MonoDevelop.Projects
 				sb.Append (p);
 				first = false;
 			}
+			metadata ["ProjectTypes"] = sb.ToString ();
+		}
 
-			ProjectOpenedCounter.Inc (1, null, new Dictionary<string, string> () {
-				{ "ProjectTypes", sb.ToString () },
-			});
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+
+			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata ());
 		}
 
 		/// <summary>

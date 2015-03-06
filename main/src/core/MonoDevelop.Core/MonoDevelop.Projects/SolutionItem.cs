@@ -520,7 +520,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name);
+			ITimeTracker tt = Counters.CleanProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata ());
 			try {
 				//SolutionFolder handles the begin/end task itself, don't duplicate
 				if (this is SolutionFolder) {
@@ -571,28 +571,30 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Building " + Name);
-			try {
-				if (!buildReferences) {
-					//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
-					if (this is SolutionFolder) {
-						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-					}
+			if (!buildReferences) {
+				//SolutionFolder's OnRunTarget handles the begin/end task itself, don't duplicate
+				if (this is SolutionFolder) {
+					return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
+				}
+				
+				try {
+					SolutionEntityItem it = this as SolutionEntityItem;
+					SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
+					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
+					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
-					try {
-						SolutionEntityItem it = this as SolutionEntityItem;
-						SolutionItemConfiguration iconf = it != null ? it.GetConfiguration (solutionConfiguration) : null;
-						string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-						monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
-						
+					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ())) {
 						// This will end calling OnBuild ()
 						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
-						
-					} finally {
-						monitor.EndTask ();
 					}
-				}
 					
+				} finally {
+					monitor.EndTask ();
+				}
+			}
+				
+			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ());
+			try {
 				// Get a list of all items that need to be built (including this),
 				// and build them in the correct order
 				
@@ -897,6 +899,17 @@ namespace MonoDevelop.Projects
 					extendedProperties = new Hashtable ();
 				return extendedProperties;
 			}
+		}
+
+		public IDictionary<string, string> GetProjectEventMetadata ()
+		{
+			var data = new Dictionary<string, string> ();
+			OnGetProjectEventMetadata (data);
+			return data;
+		}
+
+		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
+		{
 		}
 		
 		void ILoadController.BeginLoad ()
