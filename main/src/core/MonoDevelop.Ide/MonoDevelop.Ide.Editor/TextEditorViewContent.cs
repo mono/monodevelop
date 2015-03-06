@@ -47,6 +47,7 @@ using System.Threading;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Gdk;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -645,7 +646,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[CommandHandler (EditCommands.ToggleCodeComment)]
-		void ToggleCodeComment ()
+		internal void ToggleCodeComment ()
 		{
 			string commentTag;
 			if (!TryGetLineCommentTag (out commentTag))
@@ -680,7 +681,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[CommandHandler (EditCommands.AddCodeComment)]
-		void AddCodeComment ()
+		internal void AddCodeComment ()
 		{
 			string commentTag;
 			if (!TryGetLineCommentTag (out commentTag))
@@ -690,27 +691,34 @@ namespace MonoDevelop.Ide.Editor
 				var wasSelected = textEditor.IsSomethingSelected;
 				var lead = textEditor.SelectionLeadOffset;
 				var anchor = textEditor.SelectionAnchorOffset;
-				int lines = 0;
+				var lineAndIndents = new List<Tuple<IDocumentLine, string>>();
+				string indent = null;
+				var oldVersion = textEditor.Version;
 				foreach (var line in GetSelectedLines (textEditor)) {
-					lines++;
-					//					if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
-					//						continue;
-					textEditor.InsertText (line.Offset, commentTag);
+					var curIndent = line.GetIndentation (textEditor);
+					if (line.Length == curIndent.Length) {
+						lineAndIndents.Add (Tuple.Create ((IDocumentLine)null, ""));
+						continue;
+					}
+					if (indent == null || curIndent.Length < indent.Length)
+						indent = curIndent;
+					lineAndIndents.Add (Tuple.Create (line, curIndent));
+				}
+
+				foreach (var line in lineAndIndents) {
+					if (line.Item1 == null)
+						continue;
+					textEditor.InsertText (line.Item1.Offset + indent.Length, commentTag);
 				}
 				if (wasSelected) {
-					if (anchor < lead) {
-						textEditor.SelectionAnchorOffset = anchor + commentTag.Length;
-						textEditor.SelectionLeadOffset = lead + commentTag.Length * lines;
-					} else {
-						textEditor.SelectionAnchorOffset = anchor + commentTag.Length * lines;
-						textEditor.SelectionLeadOffset = lead + commentTag.Length;
-					}
+					textEditor.SelectionAnchorOffset = oldVersion.MoveOffsetTo (textEditor.Version, anchor);
+					textEditor.SelectionLeadOffset = oldVersion.MoveOffsetTo (textEditor.Version, lead);
 				}
 			}
 		}
 
 		[CommandHandler (EditCommands.RemoveCodeComment)]
-		void RemoveCodeComment ()
+		internal void RemoveCodeComment ()
 		{
 			string commentTag;
 			if (!TryGetLineCommentTag (out commentTag))
@@ -722,31 +730,28 @@ namespace MonoDevelop.Ide.Editor
 				var anchor = textEditor.SelectionAnchorOffset;
 				int lines = 0;
 				
-				int first = -1;
-				int last;
+				IDocumentLine first = null;
+				IDocumentLine last  = null;
+				var oldVersion = textEditor.Version;
 				foreach (var line in GetSelectedLines (textEditor)) {
 					string text = textEditor.GetTextAt (line);
 					string trimmedText = text.TrimStart ();
-					int length = 0;
 					if (trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
 						textEditor.RemoveText (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
-						length = commentTag.Length;
 						lines++;
 					}
 					
-					last = length;
-					if (first < 0)
-						first = last;
+					last = line;
+					if (first == null)
+						first = line;
 				}
-				
+
 				if (wasSelected) {
-					if (anchor < lead) {
-						textEditor.SelectionAnchorOffset = anchor - commentTag.Length;
-						textEditor.SelectionLeadOffset = lead - commentTag.Length * lines;
-					} else {
-						textEditor.SelectionAnchorOffset = anchor - commentTag.Length * lines;
-						textEditor.SelectionLeadOffset = lead - commentTag.Length;
-					}
+					if (IdeApp.Workbench != null)
+						CodeFormatterService.Format (textEditor, IdeApp.Workbench.ActiveDocument, TextSegment.FromBounds (first.Offset, last.EndOffset));
+
+					textEditor.SelectionAnchorOffset = oldVersion.MoveOffsetTo (textEditor.Version, anchor);
+					textEditor.SelectionLeadOffset = oldVersion.MoveOffsetTo (textEditor.Version, lead);
 				}
 			}
 		}

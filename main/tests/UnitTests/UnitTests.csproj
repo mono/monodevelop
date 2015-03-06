@@ -281,6 +281,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorTestBase.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Tests\SimpleReadonlyDocument_Tests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Tests\MonoTextEditorImplementationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Commands\CodeCommentTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -307,5 +308,6 @@
     <Folder Include="MonoDevelop.Ide.Templates\" />
     <Folder Include="MonoDevelop.Ide.Editor\" />
     <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
   </ItemGroup>
 </Project>
