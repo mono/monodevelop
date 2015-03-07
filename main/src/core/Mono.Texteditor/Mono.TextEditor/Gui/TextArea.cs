@@ -1651,9 +1651,9 @@ namespace Mono.TextEditor
 
 			if (!Platform.IsMac) {
 				if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
-					if (evnt.Direction == ScrollDirection.Up)
+					if (evnt.Direction == ScrollDirection.Down)
 						HAdjustment.Value = System.Math.Min (HAdjustment.Upper - HAdjustment.PageSize, HAdjustment.Value + HAdjustment.StepIncrement * 3);
-					else if (evnt.Direction == ScrollDirection.Down)
+					else if (evnt.Direction == ScrollDirection.Up)
 						HAdjustment.Value -= HAdjustment.StepIncrement * 3;
 					
 					return true;

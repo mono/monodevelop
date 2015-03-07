@@ -15,7 +15,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return false;
 			
 			DotNetProject project = item as DotNetProject;
-			return project != null && GtkDesignInfo.HasDesignedObjects (project);
+			return project != null && project.References.Count != 0 && GtkDesignInfo.HasDesignedObjects (project);
 		}
 
 		protected override BuildResult Build (IProgressMonitor monitor, SolutionEntityItem entry, ConfigurationSelector configuration)

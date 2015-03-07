@@ -17,8 +17,6 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
-	<!-- Extensions -->
-	
 	<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules">
 		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.CategoryNode">
 			<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
@@ -41,6 +39,9 @@
 		<Description>Fix handlers. Classes must implement IAnalysisFixHandler.</Description>
 		<ExtensionNode name="Handler" type="MonoDevelop.AnalysisCore.Extensions.FixHandlerExtensionNode" />
 	</ExtensionPoint>
+
+	<!-- Extensions -->
+
 	<!--
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>

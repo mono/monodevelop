@@ -352,6 +352,8 @@ namespace MonoDevelop.Platform
 			//look in all the locatiosn where progids can be registered as handler for files
 			//starting with local user and falling back to system
 			foreach (var key in GetOpenWithProgidsKeys (extension)) {
+				if (key == null)
+					continue;
 				using (key) {
 					//if we didn't find a default app yet, check for one
 					if (defaultApp == null) {

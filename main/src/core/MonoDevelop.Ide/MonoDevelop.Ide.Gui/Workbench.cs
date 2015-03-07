@@ -265,7 +265,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Toolbar.HideCommandBar (barId);
 		}
 
-		internal MonoDevelop.Components.MainToolbar.MainToolbar Toolbar {
+		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {
 			get {
 				return workbench.Toolbar;
 			}

@@ -419,23 +419,6 @@ namespace MonoDevelop.Components.AutoTest
 		}
 	}
 
-	
-	// Analysis disable InconsistentNaming
-	[StructLayout (LayoutKind.Sequential)] 
-	struct NativeEventKeyStruct { 
-		public Gdk.EventType type; 
-		public IntPtr window; 
-		public sbyte send_event; 
-		public uint time; 
-		public uint state; 
-		public uint keyval; 
-		public int length;
-		public IntPtr str;
-		public ushort hardware_keycode;
-		public byte group;
-		public uint is_modifier;
-	} 
-	
 	[StructLayout (LayoutKind.Sequential)] 
 	struct NativeEventButtonStruct { 
 		public Gdk.EventType type; 

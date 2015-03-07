@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		class TableRow : ITypeDescriptorContext
 		{
-			PropertyGrid parentGrid;
+			readonly PropertyGrid parentGrid;
 
 			public TableRow (PropertyGrid parentGrid)
 			{
@@ -163,23 +163,72 @@ namespace MonoDevelop.Components.PropertyGrid
 			EndEditing ();
 		}
 
-		HashSet<string> expandedStatus;
+		Dictionary<object,List<string>> expandedStatus;
+
+		class ReferenceEqualityComparer<T> : IEqualityComparer<T>
+		{
+			public bool Equals (T x, T y)
+			{
+				return object.ReferenceEquals (x, y);
+			}
+			public int GetHashCode (T obj)
+			{
+				return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode (obj);
+			}
+		}
 
 		public void SaveStatus ()
 		{
-			expandedStatus = new HashSet<string> ();
-			foreach (var r in rows.Where (r => r.IsCategory))
-				if (!r.Expanded)
-					expandedStatus.Add (r.Label);
+			//when the tree is rebuilt, there isn't a reliable way to match up new nodes to existing nodes
+			//since the tree can be built dynamically, and there can be multiple instances of each type.
+			//make a best attempt using reference equality to match objects and the name to match their properties.
+			expandedStatus = new Dictionary<object,List<string>>(new ReferenceEqualityComparer<object> ());
+			foreach (var r in rows.Where (r => r.IsExpandable)) {
+				object key;
+				string val;
+				bool mark;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+					mark = !r.Expanded;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+					mark = r.Expanded;
+				}
+				if (key == null || !mark) {
+					continue;
+				}
+				List<string> list;
+				if (!expandedStatus.TryGetValue (key, out list)) {
+					expandedStatus [key] = list = new List<string> ();
+				}
+				list.Add (val);
+			}
 		}
 
 		public void RestoreStatus ()
 		{
-			if (expandedStatus == null)
+			if (expandedStatus == null) {
 				return;
+			}
 
-			foreach (var row in rows.Where (r => r.IsCategory))
-				row.Expanded = !expandedStatus.Contains (row.Label);
+			foreach (var r in rows.Where (r => r.IsExpandable)) {
+				object key;
+				string val;
+				if (r.IsCategory) {
+					key = this;
+					val = r.Label;
+				} else {
+					key = r.Instance;
+					val = r.Property.Name;
+				}
+				List<string> list;
+				var isMarked = expandedStatus.TryGetValue (key, out list) && list.Any (l => string.Equals (l, val));
+				//categories are expanded by default, other things are not
+				//we mark those that deviate from the defauult
+				r.Expanded = r.IsCategory ^ isMarked;
+			}
 
 			expandedStatus = null;
 
@@ -286,14 +335,17 @@ namespace MonoDevelop.Components.PropertyGrid
 				object cob = prop.GetValue (instance);
 				row.ChildRows = new List<TableRow> ();
 				//TODO: should we support TypeDescriptor extensibility? how to merge with TypeConverter?
-				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob))
-					AppendProperty (row.ChildRows, cprop, cob);
+				foreach (PropertyDescriptor cprop in tc.GetProperties (row, cob)) {
+					if (cprop.IsBrowsable) {
+						AppendProperty (row.ChildRows, cprop, cob);
+					}
+				}
 			}
 		}
 
 		PropertyEditorCell GetCell (TableRow row)
 		{
-			var e = editorManager.GetEditor (row.Property);
+			var e = editorManager.GetEditor (row);
 			e.Initialize (this, editorManager, row);
 			return e;
 		}
@@ -656,7 +708,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				s.AppendLine ();
 				s.AppendLine ();
 				s.Append (GLib.Markup.EscapeText (row.Property.Description));
-				if (row.Property.Converter.CanConvertTo (typeof(string))) {
+				if (row.Property.Converter.CanConvertTo (row, typeof(string))) {
 					var value = Convert.ToString (row.Property.GetValue (row.Instance));
 					if (!string.IsNullOrEmpty (value)) {
 						const int chunkLength = 200;
@@ -769,10 +821,21 @@ namespace MonoDevelop.Components.PropertyGrid
 			currentEditor.CanFocus = true;
 			currentEditor.GrabFocus ();
 			ConnectTabEvent (currentEditor);
+
+			var refreshAtt = row.Property.Attributes.OfType<RefreshPropertiesAttribute> ().FirstOrDefault ();
+			var refresh = refreshAtt == null ? RefreshProperties.None : refreshAtt.RefreshProperties;
 			editSession.Changed += delegate {
+				if (refresh == RefreshProperties.Repaint) {
+					parentGrid.Refresh ();
+				} else if (refresh == RefreshProperties.All) {
+					parentGrid.Populate();
+				}
+
 				if (Changed != null)
 					Changed (this, EventArgs.Empty);
+
 			};
+
 			var vs = ((Gtk.Viewport)Parent).Vadjustment;
 			if (row.EditorBounds.Top < vs.Value)
 				vs.Value = row.EditorBounds.Top;

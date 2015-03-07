@@ -157,7 +157,7 @@ namespace MonoDevelop.SourceEditor
 				case Gdk.Key.bracketright:
 					// ctrl-] => Go to declaration	
 					// HACK: since the SourceEditor can't link the Refactoring addin the command is provided as string.
-					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration");
+					IdeApp.CommandService.DispatchCommand ("MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration", MonoDevelop.Components.Commands.CommandSource.Keybinding);
 					return;
 				}
 			}// ctrl+key		

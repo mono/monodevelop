@@ -75,4 +75,13 @@
 	<Extension path = "/MonoDevelop/Core/WebCredentialProviders">
 		<Class class = "MonoDevelop.MacIntegration.MacProxyCredentialProvider" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid = "build" resource = "build.png" size="Menu" />
+		<StockIcon stockid = "continue" resource = "continue.png" size="Menu" />
+		<StockIcon stockid = "device" resource = "device.png" size="Menu" />
+		<StockIcon stockid = "pause" resource = "pause.png" size="Menu" />
+		<StockIcon stockid = "project" resource = "project.png" size="Menu" />
+		<StockIcon stockid = "stop" resource = "stop.png" size="Menu" />
+	</Extension>
 </ExtensionModel>

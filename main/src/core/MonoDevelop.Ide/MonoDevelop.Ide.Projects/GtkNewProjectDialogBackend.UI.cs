@@ -82,30 +82,36 @@ namespace MonoDevelop.Ide.Projects
 			TransientFor = IdeApp.Workbench.RootWindow;
 
 			projectConfigurationWidget = new GtkProjectConfigurationWidget ();
+			projectConfigurationWidget.Name = "projectConfigurationWidget";
 
 			// Top banner of dialog.
 			var topLabelEventBox = new EventBox ();
+			topLabelEventBox.Name = "topLabelEventBox";
 			topLabelEventBox.HeightRequest = 52;
 			topLabelEventBox.ModifyBg (StateType.Normal, bannerBackgroundColor);
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
 
 			var topBannerTopEdgeLineEventBox = new EventBox ();
+			topBannerTopEdgeLineEventBox.Name = "topBannerTopEdgeLineEventBox";
 			topBannerTopEdgeLineEventBox.HeightRequest = 1;
 			topBannerTopEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
 			topBannerTopEdgeLineEventBox.BorderWidth = 0;
 
 			var topBannerBottomEdgeLineEventBox = new EventBox ();
+			topBannerBottomEdgeLineEventBox.Name = "topBannerBottomEdgeLineEventBox";
 			topBannerBottomEdgeLineEventBox.HeightRequest = 1;
 			topBannerBottomEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
 			topBannerBottomEdgeLineEventBox.BorderWidth = 0;
 
 			topBannerLabel = new Label ();
+			topBannerLabel.Name = "topBannerLabel";
 			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy ();
 			font.Size = (int)(font.Size * 1.8);
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
 			var topLabelHBox = new HBox ();
+			topLabelHBox.Name = "topLabelHBox";
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
 
@@ -115,19 +121,24 @@ namespace MonoDevelop.Ide.Projects
 
 			// Main templates section.
 			centreVBox = new VBox ();
+			centreVBox.Name = "centreVBox";
 			VBox.PackStart (centreVBox, true, true, 0);
 			templatesHBox = new HBox ();
+			templatesHBox.Name = "templatesHBox";
 			centreVBox.PackEnd (templatesHBox, true, true, 0);
 
 			// Template categories.
 			var templateCategoriesVBox = new VBox ();
+			templateCategoriesVBox.Name = "templateCategoriesVBox";
 			templateCategoriesVBox.BorderWidth = 0;
 			templateCategoriesVBox.WidthRequest = 220;
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
+			templateCategoriesScrolledWindow.Name = "templateCategoriesScrolledWindow";
 			templateCategoriesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
 
 			// Template categories tree view.
 			templateCategoriesTreeView = new TreeView ();
+			templateCategoriesTreeView.Name = "templateCategoriesTreeView";
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
@@ -139,13 +150,16 @@ namespace MonoDevelop.Ide.Projects
 
 			// Templates.
 			var templatesVBox = new VBox ();
+			templatesVBox.Name = "templatesVBox";
 			templatesVBox.WidthRequest = 400;
 			templatesHBox.PackStart (templatesVBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
+			templatesScrolledWindow.Name = "templatesScrolledWindow";
 			templatesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
 
 			// Templates tree view.
 			templatesTreeView = new TreeView ();
+			templatesTreeView.Name = "templatesTreeView";
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
 			templatesTreeView.ModifyBase (StateType.Normal, templateListBackgroundColor);
@@ -155,6 +169,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Template
 			var templateEventBox = new EventBox ();
+			templateEventBox.Name = "templateEventBox";
 			templateEventBox.ModifyBg (StateType.Normal, templateBackgroundColor);
 			templatesHBox.PackStart (templateEventBox, true, true, 0);
 			templateVBox = new VBox ();
@@ -165,18 +180,21 @@ namespace MonoDevelop.Ide.Projects
 
 			// Template large image.
 			templateImage = new ImageView ();
+			templateImage.Name = "templateImage";
 			templateImage.HeightRequest = 140;
 			templateImage.WidthRequest = 240;
 			templateVBox.PackStart (templateImage, false, false, 10);
 
 			// Template description.
 			templateNameLabel = new Label ();
+			templateNameLabel.Name = "templateNameLabel";
 			templateNameLabel.WidthRequest = 240;
 			templateNameLabel.Wrap = true;
 			templateNameLabel.Xalign = 0;
 			templateNameLabel.Markup = MarkupTemplateName ("TemplateName");
 			templateVBox.PackStart (templateNameLabel, false, false, 0);
 			templateDescriptionLabel = new Label ();
+			templateDescriptionLabel.Name = "templateDescriptionLabel";
 			templateDescriptionLabel.WidthRequest = 240;
 			templateDescriptionLabel.Wrap = true;
 			templateDescriptionLabel.Xalign = 0;
@@ -185,16 +203,19 @@ namespace MonoDevelop.Ide.Projects
 
 			// Template - button separator.
 			var templateSectionSeparatorEventBox = new EventBox ();
+			templateSectionSeparatorEventBox.Name = "templateSectionSeparatorEventBox";
 			templateSectionSeparatorEventBox.HeightRequest = 1;
 			templateSectionSeparatorEventBox.ModifyBg (StateType.Normal, templateSectionSeparatorColor);
 			VBox.PackStart (templateSectionSeparatorEventBox, false, false, 0);
 
 			// Buttons at bottom of dialog.
 			var bottomHBox = new HBox ();
+			bottomHBox.Name = "bottomHBox";
 			VBox.PackStart (bottomHBox, false, false, 0);
 
 			// Cancel button - bottom left.
 			var cancelButtonBox = new HButtonBox ();
+			cancelButtonBox.Name = "cancelButtonBox";
 			cancelButtonBox.BorderWidth = 16;
 			cancelButton = new Button ();
 			cancelButton.Label = "gtk-cancel";
@@ -204,18 +225,21 @@ namespace MonoDevelop.Ide.Projects
 
 			// Previous button - bottom right.
 			var previousNextButtonBox = new HButtonBox ();
+			previousNextButtonBox.Name = "previousNextButtonBox";
 			previousNextButtonBox.BorderWidth = 16;
 			previousNextButtonBox.Spacing = 9;
 			bottomHBox.PackStart (previousNextButtonBox);
 			previousNextButtonBox.Layout = ButtonBoxStyle.End;
 
 			previousButton = new Button ();
+			previousButton.Name = "previousButton";
 			previousButton.Label = GettextCatalog.GetString ("Previous");
 			previousButton.Sensitive = false;
 			previousNextButtonBox.PackEnd (previousButton);
 
 			// Next button - bottom right.
 			nextButton = new Button ();
+			nextButton.Name = "nextButton";
 			nextButton.Label = GettextCatalog.GetString ("Next");
 			previousNextButtonBox.PackEnd (nextButton);
 

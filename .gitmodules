@@ -23,6 +23,7 @@
 [submodule "main/external/ikvm"]
 	path = main/external/ikvm
 	url = git://github.com/mono/ikvm-fork.git
+	branch = master-signed
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
 	url = git://github.com/mono/debugger-libs.git
@@ -39,7 +40,7 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = xammac-unified
+	branch = master
 [submodule "main/external/NRefactory6"]
 	path = main/external/NRefactory6
 	url = git://github.com/icsharpcode/NRefactory.git

@@ -285,6 +285,11 @@ namespace MonoDevelop.Debugger.Win32
 			name.StartsWith ("op_", StringComparison.Ordinal));
 		}
 
+		static bool IsCompilerGenerated (MethodInfo method)
+		{
+			return method.GetCustomAttributes (true).Any (v => v is System.Runtime.CompilerServices.CompilerGeneratedAttribute);
+		}
+
 		void OnStepComplete (object sender, CorStepCompleteEventArgs e)
 		{
 			lock (debugLock) {
@@ -330,7 +335,7 @@ namespace MonoDevelop.Debugger.Win32
 				return;
 			}
 
-			if (Options.StepOverPropertiesAndOperators &&
+			if ((Options.StepOverPropertiesAndOperators || IsCompilerGenerated(e.Thread.ActiveFrame.Function.GetMethodInfo (this))) &&
 			    IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this)) &&
 				e.StepReason == CorDebugStepReason.STEP_CALL) {
 				stepper.StepOut ();
