@@ -44,7 +44,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		object currentValue;
 		Entry entry;
 		ComboBox combo;
-		public PropertyTextEditor()
+		ListStore store;
 		bool changed;
 
 		public void Initialize (EditSession session)

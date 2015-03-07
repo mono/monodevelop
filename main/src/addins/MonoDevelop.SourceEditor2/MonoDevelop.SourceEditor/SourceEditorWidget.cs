@@ -526,77 +526,9 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.lastActiveEditor = editor;
 		}
-			
-		#region Error underlining
-		List<ErrorMarker> errors = new List<ErrorMarker> ();
-		uint resetTimerId;
-		
-		void RemoveErrorUndelinesResetTimerId ()
-		{
-			if (resetTimerId > 0) {
-				GLib.Source.Remove (resetTimerId);
-				resetTimerId = 0;
-			}
-		}
-		
-		void UpdateErrorUndelines (ParsedDocument parsedDocument)
-		{
-			if (!options.UnderlineErrors || parsedDocument == null) {
-				Application.Invoke (delegate {
-					var doc = this.TextEditor != null ? this.TextEditor.Document : null;
-					if (doc == null)
-						return;
-					RemoveErrorUnderlines (doc);
-					UpdateQuickTasks (parsedDocument);
-				});
-				return;
-			}
-				
-			Application.Invoke (delegate {
-				if (!quickTaskProvider.Contains (this))
-					AddQuickTaskProvider (this);
-				RemoveErrorUndelinesResetTimerId ();
-				const uint timeout = 500;
-				resetTimerId = GLib.Timeout.Add (timeout, delegate {
-					if (!this.isDisposed) {
-						Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
-						if (doc != null) {
-							RemoveErrorUnderlines (doc);
 
-							// Else we underline the error
-							if (parsedDocument.Errors != null) {
-								foreach (var error in parsedDocument.Errors)
-									UnderLineError (doc, error);
-							}
-						}
-					}
-					resetTimerId = 0;
-					return false;
-				});
-				UpdateQuickTasks (parsedDocument);
-			});
-		}
-		
-		void RemoveErrorUnderlines (Document doc)
-		{
-			errors.ForEach (err => doc.RemoveMarker (err));
-			errors.Clear ();
-		}
-		
-		void UnderLineError (Document doc, Error info)
-		{
-			var line = doc.GetLine (info.Region.BeginLine);
-			// If the line is already underlined
-			if (errors.Any (em => em.LineSegment == line))
-				return;
-			ErrorMarker error = new ErrorMarker (textEditor.Document, info, line);
-			errors.Add (error);
-			doc.AddMarker (line, error);
-		}
-		#endregion
-	
-		
-		Gtk.Paned splitContainer = null;
+		Gtk.Paned splitContainer;
+
 		public bool IsSplitted {
 			get {
 				return splitContainer != null;
