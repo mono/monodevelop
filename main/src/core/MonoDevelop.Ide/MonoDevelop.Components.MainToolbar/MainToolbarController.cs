@@ -611,7 +611,7 @@ namespace MonoDevelop.Components.MainToolbar
 			OperationIcon operation;
 			var ci = GetStartButtonCommandInfo (out operation);
 			if (ci.Enabled)
-				IdeApp.CommandService.DispatchCommand (ci.Command.Id);
+				IdeApp.CommandService.DispatchCommand (ci.Command.Id, CommandSource.MainToolbar);
 		}
 
 		static CommandInfo GetStartButtonCommandInfo (out OperationIcon operation)

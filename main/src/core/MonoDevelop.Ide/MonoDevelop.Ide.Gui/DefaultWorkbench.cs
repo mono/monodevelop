@@ -370,6 +370,28 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
 		{
+			bool isFile = content.IsFile;
+			if (!isFile) {
+				try {
+					isFile = File.Exists (content.ContentName);
+				} catch { /*Ignore*/ }
+			}
+
+			string type;
+			if (isFile) {
+				type = System.IO.Path.GetExtension (content.ContentName);
+				var mt = DesktopService.GetMimeTypeForUri (content.ContentName);
+				if (!string.IsNullOrEmpty (mt))
+					type += " (" + mt + ")";
+			} else
+				type = "(not a file)";
+
+			Counters.DocumentOpened.Inc (new Dictionary<string,string> () {
+				{ "FileType", type},
+				{ "DisplayBinding", content.GetType ().FullName},
+				{ "DisplayBindingAndType", type + " | " + content.GetType ().FullName},
+			});
+
 			var mimeimage = PrepareShowView (content);
 			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.AddTab ();
