@@ -122,7 +122,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (value == (nint)(long)NSTextMovement.Return)
 					SendKeyPressed (Xwt.Key.Return, Xwt.ModifierKeys.None);
 
-				Window.MakeFirstResponder (this);
+				SelectText (this);
 				return;
 			}
 
