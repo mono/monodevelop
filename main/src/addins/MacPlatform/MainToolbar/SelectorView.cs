@@ -71,7 +71,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			SetFrameSize (size);
 			p.SetFrameSize (size);
-			base.DrawRect (dirtyRect);
+			p.SetNeedsDisplay ();
+			base.DrawRect (new CGRect (CGPoint.Empty, size));
 		}
 
 		#region PathSelectorView
