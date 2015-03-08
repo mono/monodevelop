@@ -200,7 +200,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (Window.Screen.BackingScaleFactor == 2)
 							offs.Y += 0.5f; // fine tune menu position on retinas
 
-						menu.PopUpMenu (menu.ItemAt (idx), offs, this);
+						menu.PopUpMenu (null, offs, this);
 					}
 				};
 			}
