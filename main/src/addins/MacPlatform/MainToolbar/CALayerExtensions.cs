@@ -33,14 +33,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 {
 	static class CALayerExtensions
 	{
-		internal static void SetImage (this CALayer layer, string resource)
+		internal static void SetImage (this CALayer layer, string resource, nfloat scale)
 		{
-			SetImage (layer, ImageService.GetIcon (resource, Gtk.IconSize.Menu));
+			SetImage (layer, ImageService.GetIcon (resource, Gtk.IconSize.Menu), scale);
 		}
 
-		internal static void SetImage (this CALayer layer, Xwt.Drawing.Image xwtImage)
+		internal static void SetImage (this CALayer layer, Xwt.Drawing.Image xwtImage, nfloat scale)
 		{
 			var image = xwtImage.ToNSImage ();
+			layer.ContentsScale = scale;
 			var layerContents = image.GetLayerContentsForContentsScale (layer.ContentsScale);
 
 			void_objc_msgSend_IntPtr (layer.Handle, setContentsSelector, layerContents.Handle);
