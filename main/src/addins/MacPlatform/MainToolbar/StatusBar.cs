@@ -116,20 +116,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var attrString = new NSMutableAttributedString ("");
 			if (image != null)
-				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
+				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image) } ));
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
-					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
-					Alignment = NSTextAlignment.Justified,
 					FirstLineHeadIndent = 3f,
 					HeadIndent = 3f,
 					TailIndent = -3f,
 				},
 				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
 			}));
+
+			attrString.AddAttribute (NSAttributedString.ParagraphStyleAttributeName, new NSMutableParagraphStyle {
+				LineBreakMode = NSLineBreakMode.TruncatingMiddle,
+			}, new NSRange (0, attrString.Length));
 
 			return attrString;
 		}
