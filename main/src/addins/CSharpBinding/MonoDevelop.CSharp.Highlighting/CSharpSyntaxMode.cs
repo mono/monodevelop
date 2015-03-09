@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp.Highlighting
 							}
 							highlightTree = newTree;
 							highlightTree.InstallListener (editor);
-							UpdateSemanticHighlighting ();
+							NotifySemanticHighlightingUpdate ();
 						});
 					}
 				} catch (TaskCanceledException) {

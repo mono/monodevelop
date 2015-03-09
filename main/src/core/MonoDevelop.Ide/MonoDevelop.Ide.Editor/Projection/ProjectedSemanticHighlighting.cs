@@ -61,12 +61,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		void HandleSemanticHighlightingUpdated (object sender, EventArgs e)
 		{
-			UpdateSemanticHighlighting ();
+			NotifySemanticHighlightingUpdate ();
 		}
 
 		protected override void DocumentParsed ()
 		{
-			UpdateSemanticHighlighting ();
+			NotifySemanticHighlightingUpdate ();
 		}
 
 		public override IEnumerable<ColoredSegment> GetColoredSegments (MonoDevelop.Core.Text.ISegment segment)

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		protected abstract void DocumentParsed ();
 
-		protected void UpdateSemanticHighlighting ()
+		public void NotifySemanticHighlightingUpdate ()
 		{
 			var handler = SemanticHighlightingUpdated;
 			if (handler != null)
