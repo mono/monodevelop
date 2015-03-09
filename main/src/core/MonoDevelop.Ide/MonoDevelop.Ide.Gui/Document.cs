@@ -160,6 +160,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
+			analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ();
 			if (analysisDocument != null)
 				StartReparseThread ();

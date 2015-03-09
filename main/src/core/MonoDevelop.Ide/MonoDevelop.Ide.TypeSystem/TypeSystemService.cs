@@ -41,6 +41,7 @@ using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
+using Mono.Posix;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -518,7 +519,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var t = Counters.ParserService.ObjectDeserialized.BeginTiming (path);
 			try {
-				using (var fs = new FileStream (path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
+				using (var fs = new FileStream (path, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					using (var reader = new BinaryReaderWith7BitEncodedInts (fs)) {
 						lock (sharedSerializer) {
 							return (T)sharedSerializer.Deserialize (reader);
@@ -540,7 +541,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.ObjectSerialized.BeginTiming (path);
 			try {
-				using (var fs = new FileStream (path, FileMode.Create, FileAccess.Write)) {
+				using (var fs = new FileStream (path, System.IO.FileMode.Create, FileAccess.Write)) {
 					using (var writer = new BinaryWriterWith7BitEncodedInts (fs)) {
 						lock (sharedSerializer) {
 							sharedSerializer.Serialize (writer, obj);
@@ -647,9 +648,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var w in Workspaces) {
 				if (w.Contains (analysisDocument.ProjectId)) {
 					w.InformDocumentOpen (analysisDocument, editor); 
+					return;
 				}
 			}
+			if (!gotDocumentRequestError) {
+				gotDocumentRequestError = true;
+				LoggingService.LogWarning ("Can't open requested document : " + analysisDocument + ":" + editor.FileName);
+			}
 		}
+
+		static bool gotDocumentRequestError = false;
 
 		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 		{

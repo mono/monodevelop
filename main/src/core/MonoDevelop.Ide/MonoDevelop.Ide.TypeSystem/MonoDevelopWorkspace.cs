@@ -298,6 +298,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal DocumentId GetDocumentId (ProjectId projectId, string name)
 		{
 			var data = GetProjectData (projectId);
+			if (data == null)
+				return null;
 			return data.GetDocumentId (name);
 		}
 
@@ -513,7 +515,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public override void OpenDocument (DocumentId documentId, bool activate = true)
 		{
-			var document = CurrentSolution.GetDocument (documentId);
+			var document = GetDocument (documentId);
 			if (document == null)
 				return;
 			MonoDevelop.Projects.Project prj = null;
@@ -532,9 +534,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
-			var document = CurrentSolution.GetDocument (documentId);
-			if (document == null)
+			var document = this.GetDocument (documentId);
+			if (document == null) {
 				return;
+			}
 			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
@@ -580,7 +583,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
-			var document = CurrentSolution.GetDocument (id);
+			var document = GetDocument (id);
 			
 			if (document == null)
 				return;
@@ -596,11 +599,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var projectData = GetProjectData (documentId.ProjectId); 
-			if (projectData == null)
+			var project = CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
 				return null;
-
-			return CurrentSolution.GetDocument (documentId); 
+			return project.GetDocument (documentId);
 		}
 
 		public void UpdateFileContent (string fileName, string text)
