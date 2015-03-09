@@ -71,7 +71,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			SetFrameSize (size);
 			p.SetFrameSize (size);
-			base.DrawRect (dirtyRect);
+			p.SetNeedsDisplay ();
+			base.DrawRect (new CGRect (CGPoint.Empty, size));
 		}
 
 		#region PathSelectorView
@@ -200,7 +201,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (Window.Screen.BackingScaleFactor == 2)
 							offs.Y += 0.5f; // fine tune menu position on retinas
 
-						menu.PopUpMenu (menu.ItemAt (idx), offs, this);
+						menu.PopUpMenu (null, offs, this);
 					}
 				};
 			}

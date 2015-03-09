@@ -72,7 +72,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return image; }
 			set {
 				image = value;
-				layer.SetImage (value);
+				layer.SetImage (value, bar.Window.BackingScaleFactor);
 			}
 		}
 
@@ -116,20 +116,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var attrString = new NSMutableAttributedString ("");
 			if (image != null)
-				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image)  }));
+				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image) } ));
 
 			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
-					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
-					Alignment = NSTextAlignment.Justified,
 					FirstLineHeadIndent = 3f,
 					HeadIndent = 3f,
 					TailIndent = -3f,
 				},
 				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
 			}));
+
+			attrString.AddAttribute (NSAttributedString.ParagraphStyleAttributeName, new NSMutableParagraphStyle {
+				LineBreakMode = NSLineBreakMode.TruncatingMiddle,
+			}, new NSRange (0, attrString.Length));
 
 			return attrString;
 		}
@@ -159,12 +161,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultIcon.SetImage ("md-status-error-count");
+					buildResultIcon.SetImage ("md-status-error-count", Window.BackingScaleFactor);
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultIcon.SetImage ("md-status-warning-count");
+					buildResultIcon.SetImage ("md-status-warning-count", Window.BackingScaleFactor);
 				} else
 					buildResultVisible = false;
 
@@ -348,7 +350,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			layer.SetImage (pixbuf);
+			layer.SetImage (pixbuf, Window.BackingScaleFactor);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			var statusIcon = new StatusIcon (this, layer);
