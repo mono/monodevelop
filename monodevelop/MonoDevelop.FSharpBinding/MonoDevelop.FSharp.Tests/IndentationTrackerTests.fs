@@ -24,6 +24,7 @@ let b = (fun a ->
 
     let docWithCaret (content:string) = 
         let d = fst(TestHelpers.createDoc(content.Replace("§", "")) [])
+        d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
            | -1 -> ()
            | x  -> let l = d.Editor.OffsetToLocation(x)
@@ -43,6 +44,7 @@ let b = (fun a ->
     member x.BasicIndents() =
        // let basicOffset = getBasicOffset (localVariable)
         let doc = fst(TestHelpers.createDoc(content) [])
+        doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
         getIndent (doc, content, 3, 1) |> should equal 5
         getIndent (doc, content, 5, 1) |> should equal 5
         getIndent (doc, content, 7, 1) |> should equal 3
@@ -51,10 +53,18 @@ let b = (fun a ->
     [<Test>]
     member x.MatchExpression() =
         let doc = docWithCaret("""let m = match 123 with§""")
-        doc.Editor.GetVirtualIndentationColumn(9)
-
+        doc.Editor.InsertAtCaret("\n")
+        doc.Editor.GetVirtualIndentationColumn(doc.Editor.CaretLine)
         |> should equal 9
 
+    [<Test>]
+    member x.IndentedMatchExpression() =
+        let doc = docWithCaret("""let m =
+   match 123 with§""")
+        doc.Editor.InsertAtCaret("\n")
+        doc.Editor.GetVirtualIndentationColumn(doc.Editor.CaretLine)
+        |> should equal 4
+  
     [<Test>]
     [<Ignore("InsertAtCaret doesn't simulate what happens when you press enter in MD, so this test currently fails")>]
     member x.EnterDoesntChangeIndentationAtIndentPosition() =
