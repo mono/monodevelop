@@ -168,6 +168,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding, hadBom);
 				DesktopService.SetFileAttributes (FileName, attributes);
 			}
+			FileService.NotifyFileChanged (FileName);
 			buffer = null;
 		}
 	}

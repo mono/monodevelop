@@ -40,6 +40,7 @@ using MonoDevelop.Core.Assemblies;
 using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -102,6 +103,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					foreach (var w in Workspaces)
 						w.UpdateFileContent (file.FileName, text);
 				}
+				foreach (var w in IdeApp.Workbench.Documents)
+					w.StartReparseThread ();
 			};
 
 			IntitializeTrackedProjectHandling ();
