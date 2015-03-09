@@ -170,7 +170,7 @@ namespace MonoDevelop.Ide.Commands
 					return;
 				}
 				#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSTextView;
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Copy (mactv);
 					return;
@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
 			#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
-			info.Enabled |= macfocus is AppKit.NSTextView;
+			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 			info.Bypass = !info.Enabled;
 		}
@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Commands
 					return;
 				}
 				#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSTextView;
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Cut (mactv);
 					return;
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Commands
 
 			#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
-			info.Enabled |= macfocus is AppKit.NSTextView;
+			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 
 			info.Bypass = !info.Enabled;
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Commands
 					return;
 				}
 				#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSTextView;
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.Paste (mactv);
 					return;
@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.Commands
 
 			#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
-			info.Enabled |= macfocus is AppKit.NSTextView;
+			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 
 			info.Bypass = !info.Enabled;
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.Commands
 					return;
 				}
 				#if MAC
-				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSTextView;
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
 				if (mactv != null) {
 					mactv.SelectAll (mactv);
 					return;
@@ -332,7 +332,7 @@ namespace MonoDevelop.Ide.Commands
 
 			#if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
-			info.Enabled |= macfocus is AppKit.NSTextView;
+			info.Enabled |= macfocus is AppKit.NSText;
 			#endif
 		}
 	}	
