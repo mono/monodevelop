@@ -35,84 +35,105 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components;
-using MonoDevelop.Projects.Dom;
-using MonoDevelop.Projects.Dom.Output;
 
 using Gtk;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.PatternMatching;
+using Xwt.Drawing;
 
 namespace MonoDevelop.ValaBinding
 {
-	// Yoinked from C# binding
-	public class DataProvider : DropDownBoxListWindow.IListDataProvider
-	{
-		object tag;
-		Ambience amb;
-		List<IMember> memberList = new List<IMember> ();
-		
-		Document Document { get; set; }
-		
-		public DataProvider (Document doc, object tag, Ambience amb)
-		{
-			this.Document = doc;
-			this.tag = ((INode)tag).Parent;
-			this.amb = amb;
-			Reset ();
-		}// constructor
-		
-		#region IListDataProvider implementation
-		public void Reset ()
-		{
-			memberList.Clear ();
-			if (tag is ICompilationUnit) {
-				Stack<IType> types = new Stack<IType> (((ICompilationUnit)tag).Types);
-				while (types.Count > 0) {
-					IType type = types.Pop ();
-					memberList.Add (type);
-					foreach (IType innerType in type.InnerTypes)
-						types.Push (innerType);
-				}
-			} else  if (tag is IType) {
-				memberList.AddRange (((IType)tag).Members);
-			}
-			memberList.Sort ((x, y) => String.Compare (GetString (amb, x), GetString (amb, y), StringComparison.OrdinalIgnoreCase));
-		}// Reset
-		
-		string GetString (Ambience amb, IMember x)
-		{
-			if (tag is ICompilationUnit)
-				return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
-			return amb.GetString (x, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
-		}// GetString
-		
-		public string GetMarkup (int n)
-		{
-			return GetString (amb, memberList[n]);
-		}// GetText
+    // Yoinked from C# binding
+    public class DataProvider : DropDownBoxListWindow.IListDataProvider
+    {
+        object tag;
+        Ambience amb;
+        List<IUnresolvedEntity> memberList = new List<IUnresolvedEntity>();
 
-		public Gdk.Pixbuf GetIcon (int n)
-		{
-			return ImageService.GetPixbuf (memberList[n].StockIcon, IconSize.Menu);
-		}// GetIcon
+        Document Document { get; set; }
 
-		public object GetTag (int n)
-		{
-			return memberList[n];
-		}// GetTag
+        public DataProvider(Document doc, object tag, Ambience amb)
+        {
+            this.Document = doc;
+            this.tag = tag;
+            this.amb = amb;
+            Reset();
+        }
 
-		public void ActivateItem (int n)
-		{
-			var member = memberList[n];
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, member.Location.Line), member.Location.Column);
-		}// ActivateItem
+        #region IListDataProvider implementation
+        public void Reset()
+        {
+            memberList.Clear();
+            if (tag is IUnresolvedFile)
+            {
+                Stack<IUnresolvedTypeDefinition> types = new Stack<IUnresolvedTypeDefinition>(((IUnresolvedFile)tag).TopLevelTypeDefinitions);
+                while (types.Count > 0)
+                {
+                    IUnresolvedTypeDefinition type = types.Pop();
+                    memberList.Add(type);
+                    foreach (IUnresolvedTypeDefinition innerType in type.NestedTypes)
+                        types.Push(innerType);
+                }
+            }
+            else if (tag is IUnresolvedTypeDefinition)
+            {
+                memberList.AddRange(((IUnresolvedTypeDefinition)tag).Members);
+            }
+            memberList.Sort(delegate(IUnresolvedEntity x, IUnresolvedEntity y)
+            {
+                return String.Compare(GetString(amb, x), GetString(amb, y), StringComparison.OrdinalIgnoreCase);
+            });
+        }
 
-		public int IconCount {
-			get {
-				return memberList.Count;
-			}
-		}// IconCount
-		#endregion
-	}// DataProvider
+        string GetString(Ambience amb, IUnresolvedEntity x)
+        {
+            SimpleTypeResolveContext simpleTypeResolveContext = new SimpleTypeResolveContext(Document.Compilation.MainAssembly);
+            IEntity entity = null;
+            if (x is IUnresolvedMember)
+            {
+                entity = ((IUnresolvedMember)x).CreateResolved(simpleTypeResolveContext);
+            }
+            if (tag is IUnresolvedEntity)
+            {
+                return amb.GetString(entity, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.UseFullInnerTypeName | OutputFlags.ReformatDelegates);
+            }
+            return amb.GetString(entity, OutputFlags.IncludeGenerics | OutputFlags.IncludeParameters | OutputFlags.ReformatDelegates);
+        }
+
+        public string GetMarkup(int n)
+        {
+            IUnresolvedEntity x = this.memberList[n];
+            return GLib.Markup.EscapeText(this.GetString(this.amb, x));
+        }
+
+        public Xwt.Drawing.Image GetIcon(int n)
+        {
+            return ImageService.GetIcon(memberList[n].GetStockIcon(), Gtk.IconSize.Menu);
+        }
+
+        public object GetTag(int n)
+        {
+            return memberList[n];
+        }
+
+        public void ActivateItem(int n)
+        {
+            IUnresolvedEntity unresolvedEntity = this.memberList[n];
+            IExtensibleTextEditor content = this.Document.GetContent<IExtensibleTextEditor>();
+            if (content != null)
+            {
+                content.SetCaretTo(Math.Max(1, unresolvedEntity.Region.BeginLine), Math.Max(1, unresolvedEntity.Region.BeginColumn));
+            }
+        }
+
+        public int IconCount
+        {
+            get
+            {
+                return memberList.Count;
+            }
+        }
+        #endregion
+    }
 }
-

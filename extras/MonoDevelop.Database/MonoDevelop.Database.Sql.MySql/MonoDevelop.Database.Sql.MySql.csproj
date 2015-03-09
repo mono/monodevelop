@@ -15,7 +15,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\build</OutputPath>
+    <OutputPath>..\build\MonoDevelop.Database</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -47,8 +47,8 @@
       <SpecificVersion>False</SpecificVersion>
       <Package>monodevelop</Package>
     </Reference>
-    <Reference Include="MySql.Data, Version=5.0.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
-      <HintPath>..\contrib\MySql\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.9.5\lib\net45\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="NRefactory, Version=0.0.0.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
@@ -195,6 +195,13 @@
     <None Include="ChangeLog" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>..\..\..\main\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Condition="Exists('..\..\..\.git')" Command="$(NuGet) restore -SolutionDirectory .." />
+  </Target>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

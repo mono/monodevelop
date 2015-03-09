@@ -35,64 +35,64 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components;
-using MonoDevelop.Projects.Dom;
 
 using Gtk;
 
 namespace MonoDevelop.ValaBinding
 {
-	// Yoinked from C# binding
-	public class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
-	{
-		Document Document { get; set; }
-		
-		public CompilationUnitDataProvider (Document document)
-		{
-			this.Document = document;
-		}// constructor
-		
-		#region IListDataProvider implementation
-		public void Reset () { }
-		
-		public string GetMarkup (int n)
-		{
-			return Document.ParsedDocument.UserRegions.ElementAt (n).Name;
-		}// GetText
-		
-		internal static Gdk.Pixbuf Pixbuf
-		{
-			get { return ImageService.GetPixbuf (Gtk.Stock.Add, IconSize.Menu); }
-		}// Pixbuf
-		
-		public Gdk.Pixbuf GetIcon (int n)
-		{
-			return Pixbuf;
-		}// GetIcon
-		
-		public object GetTag (int n)
-		{
-			return Document.ParsedDocument.UserRegions.ElementAt (n);
-		}// GetTag
-		
-		
-		public void ActivateItem (int n)
+    // Yoinked from C# binding
+    public class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
+    {
+        Document Document { get; set; }
+
+        public CompilationUnitDataProvider(Document document)
+        {
+            this.Document = document;
+        }// constructor
+
+        #region IListDataProvider implementation
+        public void Reset() { }
+
+        public string GetMarkup(int n)
+        {
+            return Document.ParsedDocument.UserRegions.ElementAt(n).Name;
+        }// GetText
+
+        internal static Image Pixbuf
+        {
+            get { return ImageService.GetImage(Gtk.Stock.Add, IconSize.Menu); }
+        }// Pixbuf
+
+        public Xwt.Drawing.Image GetIcon(int n)
+        {
+            return ImageService.GetIcon(Gtk.Stock.Add, IconSize.Menu);
+        }// GetIcon
+
+        public object GetTag(int n)
+        {
+            return Document.ParsedDocument.UserRegions.ElementAt(n);
+        }// GetTag
+
+        public void ActivateItem(int n)
 		{
 			var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
 			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
 			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, reg.Region.Start.Line), reg.Region.Start.Column);
+            {
+				extEditor.SetCaretTo(Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
+            }
 		}// ActivateItem
-		
-		public int IconCount
-		{
-			get {
-				if (Document.ParsedDocument == null)
-					return 0;
-				return Document.ParsedDocument.UserRegions.Count ();
-			}
-		}// IconCount
-		
-		#endregion
-	}// CompilationUnitDataProvider
-}
 
+        public int IconCount
+        {
+            get
+            {
+                if (Document.ParsedDocument == null)
+                    return 0;
+                return Document.ParsedDocument.UserRegions.Count();
+            }
+        }// IconCount
+
+        #endregion
+    }// CompilationUnitDataProvider
+}

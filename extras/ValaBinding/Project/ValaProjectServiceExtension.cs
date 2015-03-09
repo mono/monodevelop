@@ -58,7 +58,7 @@ namespace MonoDevelop.ValaBinding
 			ValaProjectConfiguration conf = (ValaProjectConfiguration)project.GetConfiguration(configuration);
 			
 			if (conf.CompileTarget != CompileTarget.Bin)
-				project.WriteMDPkgPackage (configuration);
+				project.WritePkgConfig (configuration);
 			
 			return base.Build (monitor, entry, configuration);
 		}

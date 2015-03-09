@@ -43,9 +43,7 @@ namespace MonoDevelop.ValaBinding
 		public PackageDetails (ProjectPackage package)
 		{
 			this.Build();
-			
-			package = new ProjectPackage(package.File);
-			
+					
 			Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
 			
 			requiresTreeView.Model = requiresStore;

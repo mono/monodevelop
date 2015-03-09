@@ -1,4 +1,7 @@
+include $(top_srcdir)/xbuild.include
+
 SUBDIRS = \
+	build \
 	MonoDevelop.Database.Sql \
 	MonoDevelop.Database.Components \
 	MonoDevelop.Database.Designer \
@@ -12,6 +15,12 @@ SUBDIRS = \
 	po
 
 all:
+
+all-local: sln_build
+
+clean: clean-local
+
+clean-local: sln_clean
 
 pkgconfig_in_files = monodevelop-database.pc.in
 

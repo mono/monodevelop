@@ -69,104 +69,61 @@ namespace MonoDevelop.ValaBinding
 		public string CompilerCommand {
 			get { return compilerCommand; }
 		}
-		
-		/// <summary>
-		/// Generates compiler args for depended packages
-		/// </summary>
-		/// <param name="packages">
-		/// The collection of packages for this project 
-		/// <see cref="ProjectPackageCollection"/>
-		/// </param>
-		/// <returns>
-		/// The string needed by the compiler to reference the necessary packages
-		/// <see cref="System.String"/>
-		/// </returns>
-		public static string GeneratePkgCompilerArgs (ProjectPackageCollection packages)
-		{
-			if (packages == null || packages.Count < 1)
-				return string.Empty;
-			
-			StringBuilder libs = new StringBuilder ();
-			
-			foreach (ProjectPackage p in packages) {
-				if (p.IsProject) {
-					libs.AppendFormat (" \"{0}\" ", p.File);
-				} else {
-					libs.AppendFormat (" --pkg \"{0}\" ", p.Name);
-				}
-			}
-			
-			return libs.ToString ();
-		}
 
 		/// <summary>
 		/// Compile the project
 		/// </summary>
-		/// <param name="projectFiles">
-		/// Collection of project files
-		/// <see cref="ProjectFileCollection"/>
-		/// </param>
-		/// <param name="packages">
-		/// Collection of depended packages
-		/// <see cref="ProjectPackageCollection"/>
-		/// </param>
-		/// <param name="configuration">
-		/// Project configuration
-		/// <see cref="ValaProjectConfiguration"/>
-		/// </param>
-		/// <param name="monitor">
-		/// Progress monitor to be used
-		/// <see cref="IProgressMonitor"/>
-		/// </param>
-		/// <returns>
-		/// Result of the compilation
-		/// <see cref="ICompilerResult"/>
-		/// </returns>
-		public BuildResult Compile (
-			ProjectFileCollection projectFiles,
-			ProjectPackageCollection packages,
-			ValaProjectConfiguration configuration,
+		public BuildResult Compile(ValaProject project,
+			ConfigurationSelector solutionConfiguration,
 			IProgressMonitor monitor)
 		{
-			
-			if (!appsChecked) {
+            var projectFiles = project.Files;
+            var packages = project.Packages;
+            var projectConfiguration = (ValaProjectConfiguration)project.GetConfiguration(solutionConfiguration);
+
+			if (!appsChecked)
+            {
+                // Check for compiler
 				appsChecked = true;
-				compilerFound = CheckApp (compilerCommand);
-			}/// Check for compiler
-				
-			
-			if (!compilerFound) {
+				compilerFound = CheckApp(compilerCommand);
+			}
+
+			if (!compilerFound)
+            {
+                // No compiler!
 				BuildResult cres = new BuildResult ();
-				cres.AddError ("Compiler not found: " + compilerCommand);
+				cres.AddError("Compiler not found: " + compilerCommand);
 				return cres;
-			}/// No compiler!
-			
-			CompilerResults cr = new CompilerResults (new TempFileCollection ());
-			bool success = true;
-			
-			/// Build compiler params string
-			string compilerArgs = GetCompilerFlags (configuration) + " " + GeneratePkgCompilerArgs (packages);
-			
-			/// Build executable name
-			string outputName = Path.Combine (configuration.OutputDirectory,
-											  configuration.CompiledOutputName);
-			
-			monitor.BeginTask (GettextCatalog.GetString ("Compiling source"), 1);
-			
-			success = DoCompilation (projectFiles, compilerArgs, outputName, monitor, cr);
+			}
 
-			GenerateDepfile (configuration, packages);
-
-			if (success)
-				monitor.Step (1);
-			monitor.EndTask ();
+			// Build compiler params string
+			string compilerArgs = GetCompilerFlags(projectConfiguration) + " " +
+                GeneratePkgCompilerArgs(packages, solutionConfiguration);
 			
-			return new BuildResult (cr, "");
+			// Build executable name
+			string outputName = Path.Combine(
+                FileService.RelativeToAbsolutePath(projectConfiguration.SourceDirectory, projectConfiguration.OutputDirectory),
+                projectConfiguration.CompiledOutputName);
+			
+			monitor.BeginTask(GettextCatalog.GetString ("Compiling source"), 1);
+
+            CompilerResults cr = new CompilerResults(new TempFileCollection());
+            bool success = DoCompilation(projectFiles, compilerArgs, outputName, monitor, cr);
+
+			GenerateDepfile(projectConfiguration, packages);
+
+            if (success)
+            {
+                monitor.Step(1);
+            }
+			monitor.EndTask();
+
+			return new BuildResult(cr, "");
 		}
 		
-		string ICompiler.GetCompilerFlags (ValaProjectConfiguration configuration)
+		string ICompiler.GetCompilerFlags(ValaProjectConfiguration configuration)
 		{
-			return ValaCompiler.GetCompilerFlags (configuration);
+			return ValaCompiler.GetCompilerFlags(configuration);
 		}
 		
 		/// <summary>
@@ -180,69 +137,138 @@ namespace MonoDevelop.ValaBinding
 		/// A compiler-interpretable string
 		/// <see cref="System.String"/>
 		/// </returns>
-		public static string GetCompilerFlags (ValaProjectConfiguration configuration)
-		{
-			List<string> args = new List<string> ();
-			
-			
-			ValaCompilationParameters cp =
-				(ValaCompilationParameters)configuration.CompilationParameters;
+        public static string GetCompilerFlags(ValaProjectConfiguration configuration)
+        {
+            List<string> args = new List<string>();
 
-			args.Add (string.Format ("-d '{0}'", configuration.OutputDirectory));
-			
-			if (configuration.DebugMode)
-				args.Add ("-g");
+            ValaCompilationParameters cp =
+                (ValaCompilationParameters)configuration.CompilationParameters;
 
-			switch (configuration.CompileTarget) {
-			case ValaBinding.CompileTarget.Bin:
-				if (cp.EnableMultithreading) {
-					args.Add ("--thread");
-				}
-				break;
-			case ValaBinding.CompileTarget.SharedLibrary:
-				args.Add (string.Format ("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" -H \"{1}.h\" --library \"{1}\"", configuration.OutputDirectory, configuration.Output));
-				break;
-			}
+            var outputDir = FileService.RelativeToAbsolutePath(configuration.SourceDirectory,
+                        configuration.OutputDirectory);
+            var outputNameWithoutExt = Path.GetFileNameWithoutExtension(configuration.Output);
 
-// Valac will get these sooner or later			
-//			switch (cp.WarningLevel)
-//			{
-//			case WarningLevel.None:
-//				args.Append ("-w ");
-//				break;
-//			case WarningLevel.Normal:
-//				// nothing
-//				break;
-//			case WarningLevel.All:
-//				args.Append ("-Wall ");
-//				break;
-//			}
-//			
-//			if (cp.WarningsAsErrors)
-//				args.Append ("-Werror ");
-//			
-			if (0 < cp.OptimizationLevel) { 
-				args.Add ("--Xcc=\"-O" + cp.OptimizationLevel + "\"");
-			}
-			
-			if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0) {
-				args.Add (ExpandBacktickedParameters (cp.ExtraCompilerArguments.Replace (Environment.NewLine, " ")));
-			}
-			
-			if (cp.DefineSymbols != null && cp.DefineSymbols.Length > 0) {
-				args.Add (ProcessDefineSymbols (cp.DefineSymbols));
-			}
-			
-			if (configuration.Includes != null)
-				foreach (string inc in configuration.Includes)
-					args.Add ("--vapidir \"" + inc + "\"");
+            args.Add(string.Format("-d \"{0}\"", outputDir));
 
-			if (configuration.Libs != null)
-				foreach (string lib in configuration.Libs)
-					args.Add ("--pkg \"" + lib + "\"");
-			
-			return string.Join (" ", args.ToArray ());
-		}
+            if (configuration.DebugMode)
+                args.Add("-g");
+
+            switch (configuration.CompileTarget)
+            {
+                case ValaBinding.CompileTarget.Bin:
+                    if (cp.EnableMultithreading)
+                    {
+                        args.Add("--thread");
+                    }
+                    break;
+                case ValaBinding.CompileTarget.SharedLibrary:
+                    if (Platform.IsWindows)
+                    {
+                        args.Add(string.Format("--Xcc=\"-shared\" --Xcc=-I\"{0}\" -H \"{1}.h\" --library \"{1}\"", outputDir, outputNameWithoutExt));
+                    }
+                    else
+                    {
+                        args.Add(string.Format("--Xcc=\"-shared\" --Xcc=\"-fPIC\" --Xcc=\"-I'{0}'\" -H \"{1}.h\" --library \"{1}\"", outputDir, outputNameWithoutExt));
+                    }
+                    break;
+            }
+
+            // Valac will get these sooner or later			
+            //			switch (cp.WarningLevel)
+            //			{
+            //			case WarningLevel.None:
+            //				args.Append ("-w ");
+            //				break;
+            //			case WarningLevel.Normal:
+            //				// nothing
+            //				break;
+            //			case WarningLevel.All:
+            //				args.Append ("-Wall ");
+            //				break;
+            //			}
+            //			
+            //			if (cp.WarningsAsErrors)
+            //				args.Append ("-Werror ");
+            //			
+            if (0 < cp.OptimizationLevel)
+            {
+                args.Add("--Xcc=\"-O" + cp.OptimizationLevel + "\"");
+            }
+
+            // global extra compiler arguments
+            string globalExtraCompilerArgs = PropertyService.Get("ValaBinding.ExtraCompilerOptions", "");
+            if (!string.IsNullOrEmpty(globalExtraCompilerArgs))
+            {
+                args.Add(globalExtraCompilerArgs.Replace(Environment.NewLine, " "));
+            }
+
+            // extra compiler arguments specific to project
+            if (cp.ExtraCompilerArguments != null && cp.ExtraCompilerArguments.Length > 0)
+            {
+                args.Add(cp.ExtraCompilerArguments.Replace(Environment.NewLine, " "));
+            }
+
+            if (cp.DefineSymbols != null && cp.DefineSymbols.Length > 0)
+            {
+                args.Add(ProcessDefineSymbols(cp.DefineSymbols));
+            }
+
+            if (configuration.Includes != null)
+            {
+                foreach (string inc in configuration.Includes)
+                {
+                    var includeDir = FileService.RelativeToAbsolutePath(configuration.SourceDirectory, inc);
+                    args.Add("--vapidir \"" + includeDir + "\"");
+                }
+            }
+
+            if (configuration.Libs != null)
+                foreach (string lib in configuration.Libs)
+                    args.Add("--pkg \"" + lib + "\"");
+
+            return string.Join(" ", args.ToArray());
+        }
+
+        /// <summary>
+        /// Generates compiler args for depended packages
+        /// </summary>
+        /// <param name="packages">
+        /// The collection of packages for this project 
+        /// <see cref="ProjectPackageCollection"/>
+        /// </param>
+        /// <returns>
+        /// The string needed by the compiler to reference the necessary packages
+        /// <see cref="System.String"/>
+        /// </returns>
+        public static string GeneratePkgCompilerArgs(ProjectPackageCollection packages,
+            ConfigurationSelector solutionConfiguration)
+        {
+            if (packages == null || packages.Count < 1)
+                return string.Empty;
+
+            StringBuilder libs = new StringBuilder();
+
+            foreach (ProjectPackage p in packages)
+            {
+                if (p.IsProject)
+                {
+                    var proj = p.GetProject();
+                    var projectConfiguration = (ValaProjectConfiguration)proj.GetConfiguration(solutionConfiguration);
+                    var outputDir = FileService.RelativeToAbsolutePath(projectConfiguration.SourceDirectory,
+                        projectConfiguration.OutputDirectory);
+                    var outputNameWithoutExt = Path.GetFileNameWithoutExtension(projectConfiguration.Output);
+                    var vapifile = Path.Combine(outputDir, outputNameWithoutExt + ".vapi");
+                    libs.AppendFormat(" --Xcc=-I\"{0}\" --Xcc=-L\"{0}\" --Xcc=-l\"{1}\" \"{2}\" ",
+                        outputDir, outputNameWithoutExt, vapifile);
+                }
+                else
+                {
+                    libs.AppendFormat(" --pkg \"{0}\" ", p.Name);
+                }
+            }
+
+            return libs.ToString();
+        }
 		
 		/// <summary>
 		/// Generates compilers flags for selected defines
@@ -382,7 +408,14 @@ namespace MonoDevelop.ValaBinding
 			string errorOutput = string.Empty;
 			int exitCode = ExecuteCommand (compilerCommand, compiler_args, Path.GetDirectoryName (outputName), monitor, out errorOutput);
 			
-			ParseCompilerOutput (errorOutput, cr, projectFiles);
+			ParseCompilerOutput(errorOutput, cr, projectFiles);
+
+            if (exitCode != 0 && cr.Errors.Count == 0)
+            {
+                // error isn't recognized but cannot ignore it because exitCode != 0
+                cr.Errors.Add(new CompilerError() { ErrorText = errorOutput });
+            }
+
 			return exitCode == 0;
 		}
 		
@@ -401,23 +434,31 @@ namespace MonoDevelop.ValaBinding
 		/// The progress monitor to be used
 		/// <see cref="IProgressMonitor"/>
 		/// </param>
-		public void Clean (ProjectFileCollection projectFiles, ValaProjectConfiguration configuration, IProgressMonitor monitor)
-		{
-			/// Clean up intermediate files
-			/// These should only be generated for libraries, but we'll check for them in all cases
-			foreach (ProjectFile file in projectFiles) {
-				if (file.BuildAction == BuildAction.Compile) {
-					string cFile = Path.Combine (configuration.OutputDirectory, Path.GetFileNameWithoutExtension (file.Name) + ".c");
-					if (File.Exists (cFile)){ File.Delete (cFile); }
-						
-					string hFile = Path.Combine (configuration.OutputDirectory, Path.GetFileNameWithoutExtension (file.Name) + ".h");
-					if (File.Exists (hFile)){ File.Delete (hFile); }
-				}
-			}
-			
-			string vapiFile = Path.Combine (configuration.OutputDirectory, configuration.Output + ".vapi");
-			if (File.Exists (vapiFile)){ File.Delete (vapiFile); }
-		}
+        public void Clean(ProjectFileCollection projectFiles, ValaProjectConfiguration configuration, IProgressMonitor monitor)
+        {
+            /// Clean up intermediate files
+            /// These should only be generated for libraries, but we'll check for them in all cases
+            foreach (ProjectFile file in projectFiles)
+            {
+                if (file.BuildAction == BuildAction.Compile)
+                {
+                    string cFile = Path.Combine(
+                        FileService.RelativeToAbsolutePath(configuration.SourceDirectory, configuration.OutputDirectory),
+                        Path.GetFileNameWithoutExtension(file.Name) + ".c");
+                    if (File.Exists(cFile)) { File.Delete(cFile); }
+
+                    string hFile = Path.Combine(
+                        FileService.RelativeToAbsolutePath(configuration.SourceDirectory, configuration.OutputDirectory),
+                        Path.GetFileNameWithoutExtension(file.Name) + ".h");
+                    if (File.Exists(hFile)) { File.Delete(hFile); }
+                }
+            }
+
+            string vapiFile = Path.Combine(
+                FileService.RelativeToAbsolutePath(configuration.SourceDirectory, configuration.OutputDirectory),
+                configuration.Output + ".vapi");
+            if (File.Exists(vapiFile)) { File.Delete(vapiFile); }
+        }
 		
 		/// <summary>
 		/// Determines whether the target needs to be updated
@@ -451,22 +492,24 @@ namespace MonoDevelop.ValaBinding
 		/// The CompilerResults into which to parse errorString
 		/// <see cref="CompilerResults"/>
 		/// </param>
-		protected void ParseCompilerOutput (string errorString, CompilerResults cr, ProjectFileCollection projectFiles)
-		{
-			TextReader reader = new StringReader (errorString);
-			string next;
-				
-			while ((next = reader.ReadLine ()) != null) {
-				CompilerError error = CreateErrorFromErrorString (next, projectFiles);
-				// System.Console.WriteLine ("Creating error from string \"{0}\"", next);
-				if (error != null) {
-					cr.Errors.Insert (0, error);
-					// System.Console.WriteLine ("Adding error");
-				}
-			}
-			
-			reader.Close ();
-		}
+        protected void ParseCompilerOutput(string errorString, CompilerResults cr, ProjectFileCollection projectFiles)
+        {
+            TextReader reader = new StringReader(errorString);
+            string next;
+
+            while ((next = reader.ReadLine()) != null)
+            {
+                CompilerError error = CreateErrorFromErrorString(next, projectFiles);
+                // System.Console.WriteLine ("Creating error from string \"{0}\"", next);
+                if (error != null)
+                {
+                    cr.Errors.Insert(0, error);
+                    // System.Console.WriteLine ("Adding error");
+                }
+            }
+
+            reader.Close();
+        }
 		
 		/// Error regex for valac
 		/// Sample output: "/home/user/project/src/blah.vala:23.5-23.5: error: syntax error, unexpected }, expecting ;"
@@ -475,7 +518,7 @@ namespace MonoDevelop.ValaBinding
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		private static Regex gccRegex = new Regex (
-		    @"^\s*(?<file>.*):(?<line>\d*):((?<column>\d*):)?\s*(?<level>.*)\s*:\s(?<message>.*)",
+		    @"^\s*(?<file>.*\.c):(?<line>\d*):((?<column>\d*):)?\s*(?<level>[^:]*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
 		/// Error regex for gnu linker - this could still be pertinent for vala
@@ -500,12 +543,13 @@ namespace MonoDevelop.ValaBinding
 			foreach (Regex regex in new Regex[]{errorRegex, gccRegex})
 				if ((errorMatch = regex.Match (errorString)).Success)
 					break;
-			
-			if (!errorMatch.Success)
-				return null;
 
-			CompilerError error = new CompilerError ();
-			
+            if (!errorMatch.Success)
+            {
+                return null;
+            }
+
+            CompilerError error = new CompilerError();
 			foreach (ProjectFile pf in projectFiles) {
 				if (Path.GetFileName (pf.Name) == errorMatch.Groups["file"].Value) {
 					error.FileName = pf.FilePath;
@@ -518,7 +562,8 @@ namespace MonoDevelop.ValaBinding
 			error.Line = int.Parse (errorMatch.Groups["line"].Value);
 			if (errorMatch.Groups["column"].Success)
 				error.Column = int.Parse (errorMatch.Groups["column"].Value);
-			error.IsWarning = !errorMatch.Groups["level"].Value.Equals (GettextCatalog.GetString ("error"), StringComparison.Ordinal);
+			error.IsWarning = !errorMatch.Groups["level"].Value.Equals(GettextCatalog.GetString ("error"), StringComparison.Ordinal) &&
+                !errorMatch.Groups["level"].Value.StartsWith("fatal error");
 			error.ErrorText = errorMatch.Groups["message"].Value;
 			
 			return error;
@@ -577,34 +622,6 @@ namespace MonoDevelop.ValaBinding
 			
 			return null;
 		}
-
-		/// <summary>
-		/// Expands backticked portions of the parameter-list using "sh" and "echo"
-		/// </summary>
-		/// <param name="tmp">
-		/// The string to expand
-		/// <see cref="System.String"/>
-		/// </param>
-		/// <returns>
-		/// The result of the expansion
-		/// <see cref="System.String"/>
-		/// </returns> 
-		// TODO: Portability, although otoh, probably someone who doesn't have sh 
-		// isn't going to put backticks in the compiler flags
-		public static string ExpandBacktickedParameters (string tmp)
-		{
-			string parameters = "-c \"echo -n " + tmp + "\"";
-			Process p = new Process ();
-			
-			p.StartInfo.FileName = "sh";
-			p.StartInfo.Arguments = parameters;
-			p.StartInfo.UseShellExecute = false;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.Start ();
-			p.WaitForExit ();
-
-			return p.StandardOutput.ReadToEnd ();
-		}
 		
 		/// <summary>
 		/// Check to see if we have a given app
@@ -628,17 +645,23 @@ namespace MonoDevelop.ValaBinding
 			}
 		}
 
-		public void GenerateDepfile (ValaProjectConfiguration configuration, ProjectPackageCollection packages)
-		{
-			try {
-				if (configuration.CompileTarget != CompileTarget.SharedLibrary){ return; }
-				
-				using (StreamWriter writer = new StreamWriter (Path.Combine (configuration.OutputDirectory, Path.ChangeExtension (configuration.Output, ".deps")))) {
-					foreach (ProjectPackage package in packages) {
-						writer.WriteLine (package.Name);
-					}
-				}
-			} catch { /* Don't care */ }
-		}
+        public void GenerateDepfile(ValaProjectConfiguration configuration, ProjectPackageCollection packages)
+        {
+            try
+            {
+                if (configuration.CompileTarget != CompileTarget.SharedLibrary) { return; }
+
+                using (StreamWriter writer = new StreamWriter(Path.Combine(
+                    FileService.RelativeToAbsolutePath(configuration.SourceDirectory, configuration.OutputDirectory),
+                    Path.ChangeExtension(configuration.Output, ".deps"))))
+                {
+                    foreach (ProjectPackage package in packages)
+                    {
+                        writer.WriteLine(package.Name);
+                    }
+                }
+            }
+            catch { /* Don't care */ }
+        }
 	}
 }

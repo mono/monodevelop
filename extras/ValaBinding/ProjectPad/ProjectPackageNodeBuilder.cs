@@ -60,20 +60,16 @@ namespace MonoDevelop.ValaBinding.ProjectPad
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/ValaBinding/Views/ProjectBrowser/ContextMenu/PackageNode"; }
 		}
-		
-		public override void BuildNode (ITreeBuilder treeBuilder,
-		                                object dataObject,
-		                                ref string label,
-		                                ref Gdk.Pixbuf icon,
-		                                ref Gdk.Pixbuf closedIcon)
-		{
-			label = ((ProjectPackage)dataObject).Name;
-			
-			if (((ProjectPackage)dataObject).IsProject)
-				icon = new Gdk.Pixbuf (Assembly.GetExecutingAssembly (), "Icons.16x16.ProjectReference");
+
+        public override void BuildNode(ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+        {
+            nodeInfo.Label = ((ProjectPackage)dataObject).Name;
+
+            if (((ProjectPackage)dataObject).IsProject)
+                nodeInfo.Icon = Context.GetIcon("md-vala-project-reference");
 			else
-				icon = Context.GetIcon (Stock.Reference);
-		}
+                nodeInfo.Icon = Context.GetIcon(Stock.Reference);
+        }
 	}
 	
 	public class PackageNodeCommandHandler : NodeCommandHandler

@@ -67,17 +67,13 @@ namespace MonoDevelop.ValaBinding.Navigation
 		{
 			return ((Symbol)dataObject).Name;
 		}
-		
-		public override void BuildNode (ITreeBuilder treeBuilder,
-		                                object dataObject,
-		                                ref string label,
-		                                ref Gdk.Pixbuf icon,
-		                                ref Gdk.Pixbuf closedIcon)
-		{
-			Symbol c = (Symbol)dataObject;
-			label = c.DisplayText;
-			icon = Context.GetIcon (c.Icon);
-		}
+
+        public override void BuildNode(ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+        {
+            Symbol c = (Symbol)dataObject;
+            nodeInfo.Label = c.DisplayText;
+            nodeInfo.Icon = Context.GetIcon(c.Icon);
+        }
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{

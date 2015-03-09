@@ -37,8 +37,6 @@ using Mono.Addins;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Projects.Dom.Parser;
-using MonoDevelop.Projects.CodeGeneration;
 
 namespace MonoDevelop.ValaBinding
 {
@@ -51,25 +49,17 @@ namespace MonoDevelop.ValaBinding
 		public string SingleLineCommentTag { get { return "//"; } }
 		public string BlockCommentStartTag { get { return "/*"; } }
 		public string BlockCommentEndTag { get { return "*/"; } }
-		
-		public bool IsSourceCodeFile (string fileName)
-		{
-			string ext = Path.GetExtension(fileName);
-			return (ext.Equals(".vala", StringComparison.OrdinalIgnoreCase) ||
-			        ext.Equals(".vapi", StringComparison.OrdinalIgnoreCase));
-		}
-		
-		public IParser Parser {
-			get { return null; }
-		}
-		
-		public IRefactorer Refactorer {
-			get { return null; }
-		}
-		
-		public string GetFileName (string baseName)
-		{
-			return baseName + ".vala";
-		}
-	}
+
+        public bool IsSourceCodeFile(FilePath fileName)
+        {
+            string ext = Path.GetExtension(fileName);
+            return (ext.Equals(".vala", StringComparison.OrdinalIgnoreCase) ||
+                    ext.Equals(".vapi", StringComparison.OrdinalIgnoreCase));
+        }
+
+        public FilePath GetFileName(FilePath fileNameWithoutExtension)
+        {
+            return fileNameWithoutExtension + ".vala";
+        }
+    }
 }

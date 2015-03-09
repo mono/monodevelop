@@ -44,19 +44,21 @@ using MonoDevelop.ValaBinding.Parser.Afrodite;
 
 namespace MonoDevelop.ValaBinding.Navigation
 {
-	public class LanguageItemCommandHandler : NodeCommandHandler
-	{
-		/// <summary>
-		/// Jump to a node's declaration when it's activated
-		/// </summary>
-		public override void ActivateItem ()
-		{
-			Symbol item = (Symbol)CurrentNode.DataItem;
-			
-			if (null != item && 0 < item.SourceReferences.Count) {
-				SourceReference reference = item.SourceReferences[0];
-				IdeApp.Workbench.OpenDocument (reference.File, reference.FirstLine, reference.FirstColumn);
-			}
-		}
-	}
+    public class LanguageItemCommandHandler : NodeCommandHandler
+    {
+        /// <summary>
+        /// Jump to a node's declaration when it's activated
+        /// </summary>
+        public override void ActivateItem()
+        {
+            Symbol item = (Symbol)CurrentNode.DataItem;
+
+            if (null != item && 0 < item.SourceReferences.Count)
+            {
+                SourceReference reference = item.SourceReferences[0];
+
+                IdeApp.Workbench.OpenDocument(reference.File, reference.FirstLine, reference.FirstColumn, Ide.Gui.OpenDocumentOptions.Default);
+            }
+        }
+    }
 }

@@ -7,7 +7,6 @@ obj/
 /main/build/AddIns
 /main/build/data/
 /main/build/locale/
-/extras/*/build
 /extras/*/*/bin
 /main/src/tools/SharpCoco/SharpCoco.exe*
 /main/vcrevision
