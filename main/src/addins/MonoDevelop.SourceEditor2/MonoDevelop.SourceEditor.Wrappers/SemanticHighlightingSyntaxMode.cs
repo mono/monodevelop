@@ -30,6 +30,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -97,17 +98,19 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			this.semanticHighlighting = semanticHighlighting;
 			this.syntaxMode = syntaxMode as SyntaxMode;
 			semanticHighlighting.SemanticHighlightingUpdated += delegate {
-				foreach (var kv in lineSegments) {
-					try {
-						kv.Value.RemoveListener ();
-					} catch (Exception) {
+				Application.Invoke (delegate {
+					foreach (var kv in lineSegments) {
+						try {
+							kv.Value.RemoveListener ();
+						} catch (Exception) {
+						}
 					}
-				}
-				lineSegments.Clear ();
+					lineSegments.Clear ();
 
-				var margin = editor.TextViewMargin;
-				margin.PurgeLayoutCache ();
-				editor.QueueDraw ();
+					var margin = editor.TextViewMargin;
+					margin.PurgeLayoutCache ();
+					editor.QueueDraw ();
+				});
 			};
 		}
 
