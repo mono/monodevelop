@@ -32,9 +32,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	class VerticallyCenteredTextFieldCell : NSTextFieldCell
 	{
 		nfloat offset;
-		public VerticallyCenteredTextFieldCell (bool inContainer)
+		public VerticallyCenteredTextFieldCell (nfloat yOffset)
 		{
-			offset = inContainer ? -1 : 0;
+			offset = yOffset;
 		}
 
 		public override CGRect DrawingRectForBounds (CGRect theRect)
