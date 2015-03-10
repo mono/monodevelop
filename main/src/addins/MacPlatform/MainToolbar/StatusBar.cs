@@ -110,7 +110,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		NSAttributedString GetAttributedString (string text, NSColor color)
+		NSAttributedString GetStatusString (string text, NSColor color)
 		{
 			return new NSAttributedString (text, new NSStringAttributes {
 				BaselineOffset = -2f,
@@ -142,7 +142,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			AllowsEditingTextAttributes = Selectable = Editable = false;
 
-			textField.Cell.PlaceholderAttributedString = GetAttributedString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
 			BezelStyle = NSTextFieldBezelStyle.Rounded;
@@ -174,7 +174,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				textField.AttributedStringValue = new NSAttributedString ("");
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
-				textField.AttributedStringValue = GetAttributedString (text, textColor);
+				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
 		}
@@ -595,8 +595,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.MouseExited (theEvent);
 
 			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
-			var layer = LayerForEvent (theEvent);
-
 			if (oldLayer != null) {
 				CancelPreviousPerformRequest (this, sel, oldLayer);
 				oldLayer = null;
