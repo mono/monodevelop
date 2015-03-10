@@ -113,7 +113,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
 			return new NSAttributedString (text, new NSStringAttributes {
-				BaselineOffset = -2f,
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
 					HeadIndent = imageView.Frame.Width,
@@ -130,7 +129,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		readonly NSTextField textField = new NSTextField {
 			AllowsEditingTextAttributes = true,
-			UsesSingleLineMode = true,
 			Bordered = false,
 			DrawsBackground = false,
 			Bezeled = false,
@@ -142,6 +140,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			AllowsEditingTextAttributes = Selectable = Editable = false;
 
+			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
+			textField.Cell.StringValue = "";
 			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
@@ -553,7 +553,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Editable = false,
 				Frame = new CGRect (0, 0, 230, 30),
 				AutoresizingMask = NSViewResizingMask.HeightSizable,
-				Cell = new VerticallyCenteredTextFieldCell (true),
+				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
 			};
 		}
 
