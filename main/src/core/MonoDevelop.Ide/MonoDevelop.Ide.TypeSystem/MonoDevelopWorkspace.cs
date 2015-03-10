@@ -391,10 +391,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var netProject = p as MonoDevelop.Projects.DotNetProject;
 			if (netProject == null)
 				yield break;
-			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration;
-			var config = IdeApp.Workspace != null ? netProject.GetConfiguration (configurationSelector) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
+			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
-			foreach (string file in netProject.GetReferencedAssemblies (MonoDevelop.Projects.ConfigurationSelector.Default, false)) {
+			foreach (string file in netProject.GetReferencedAssemblies (configurationSelector, false)) {
 				if (token.IsCancellationRequested)
 					yield break;
 				string fileName;
