@@ -145,7 +145,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
-			BezelStyle = NSTextFieldBezelStyle.Rounded;
+			// Fixes a render glitch of a whiter bg than the others.
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+				BezelStyle = NSTextFieldBezelStyle.Rounded;
+
 			WantsLayer = true;
 			Layer.CornerRadius = 4;
 			ctxHandler = new StatusBarContextHandler (this);
