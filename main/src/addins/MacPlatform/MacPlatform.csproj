@@ -137,6 +137,7 @@
     <Compile Include="MainToolbar\StatusBar.cs" />
     <Compile Include="MainToolbar\CenteringSpace.cs" />
     <Compile Include="MainToolbar\CALayerExtensions.cs" />
+    <Compile Include="MainToolbar\VerticallyCenteredTextFieldCell.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
