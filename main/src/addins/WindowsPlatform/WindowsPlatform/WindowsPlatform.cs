@@ -362,6 +362,8 @@ namespace MonoDevelop.Platform
 							apps[defaultProgid] = defaultApp = WindowsAppFromName (defaultProgid, true, AssociationFlags.None);
 					}
 					using (var sk = key.OpenSubKey ("OpenWithProgids")) {
+						if (sk == null)
+							continue;
 						foreach (var progid in sk.GetValueNames ()) {
 							if (!apps.ContainsKey (progid))
 								apps[progid] = WindowsAppFromName (progid, false, AssociationFlags.None);
