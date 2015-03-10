@@ -27,103 +27,28 @@
 //
 
 using System;
-using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
-using System.Collections.Immutable;
-using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
-using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
-	public enum RefactoryCommands
-	{
-		CurrentRefactoryOperations,
-		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
-		FindReferences,
-		FindAllReferences,
-		FindDerivedClasses,
-		DeclareLocal,
-		RemoveUnusedImports,
-		SortImports,
-		RemoveSortImports,
-		ExtractMethod,
-		CreateMethod,
-		IntroduceConstant,
-		IntegrateTemporaryVariable,
-		ImportSymbol,
-		QuickFix,
-		Resolve
-	}
-
-	public class RefactoringSymbolInfo
-	{
-		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo(new SymbolInfo());
-
-		SymbolInfo symbolInfo;
-
-		public ISymbol Symbol {
-			get {
-				return symbolInfo.Symbol;
-			}
-		}
-
-		public ImmutableArray<ISymbol> CandidateSymbols {
-			get {
-				return symbolInfo.CandidateSymbols;
-			}
-		}
-
-		public ISymbol DeclaredSymbol {
-			get;
-			internal set;
-		}
-
-		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
-		{
-			this.symbolInfo = symbolInfo;
-		}
-	}
-
 	public class CurrentRefactoryOperationsHandler : CommandHandler
 	{
-		protected override void Run (object data)
+		protected override void Run (object dataItem)
 		{
-			var del = (System.Action) data;
+			var del = (Action) dataItem;
 			if (del != null)
 				del ();
-		}
-
-		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			if (document.ParsedDocument == null)
-				return RefactoringSymbolInfo.Empty;
-			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
-			if (unit != null) {
-				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
-				try {
-					var token = root.FindToken (offset);
-					var symbol = unit.GetSymbolInfo (token.Parent);
-					return new RefactoringSymbolInfo (symbol) {
-						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
-					};
-				} catch (Exception) {
-					return RefactoringSymbolInfo.Empty;
-				}
-			}
-			return RefactoringSymbolInfo.Empty;
 		}
 
 		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
@@ -199,7 +124,7 @@ namespace MonoDevelop.Refactoring
 			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
 				return;
-			var info = GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
@@ -244,8 +169,8 @@ namespace MonoDevelop.Refactoring
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					foreach (var part in type.Locations) {
-						int line = 0;
-						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), line), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Project)));
+						var loc = part.GetLineSpan ();
+						declSet.CommandInfos.Add (string.Format (GettextCatalog.GetString ("{0}, Line {1}"), FormatFileName (part.SourceTree.FilePath), loc.StartLinePosition.Line + 1), new Action (() => IdeApp.ProjectOperations.JumpTo (type, part, doc.Project)));
 					}
 					ainfo.Add (declSet);
 				} else {
@@ -289,6 +214,14 @@ namespace MonoDevelop.Refactoring
 					ainfo.Add (description, new Action (() => FindExtensionMethodHandler.FindExtensionMethods (info.DeclaredSymbol)));
 					added = true;
 				}
+			}
+			if (ExtractMethodCommandHandler.IsValid(doc).Result)
+			{
+				ciset.CommandInfos.AddSeparator ();
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo ("MonoDevelop.CSharp.Refactoring.ExtractMethodCommand"), new Action (delegate {
+					ExtractMethodCommandHandler.Run (doc).RunSynchronously ();
+				}));
+
 			}
 		}
 

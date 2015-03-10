@@ -29,17 +29,96 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
+using System.Threading;
+using System;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
-	public class GotoDeclarationHandler : CommandHandler
+	public enum RefactoryCommands
+	{
+		CurrentRefactoryOperations,
+		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
+		FindReferences,
+		FindAllReferences,
+		FindDerivedClasses,
+		DeclareLocal,
+		RemoveUnusedImports,
+		SortImports,
+		RemoveSortImports,
+		ExtractMethod,
+		CreateMethod,
+		IntroduceConstant,
+		IntegrateTemporaryVariable,
+		ImportSymbol,
+		QuickFix,
+		Resolve
+	}
+
+	class RefactoringSymbolInfo
+	{
+		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo(new SymbolInfo());
+
+		SymbolInfo symbolInfo;
+
+		public ISymbol Symbol {
+			get {
+				return symbolInfo.Symbol;
+			}
+		}
+
+		public ImmutableArray<ISymbol> CandidateSymbols {
+			get {
+				return symbolInfo.CandidateSymbols;
+			}
+		}
+
+		public ISymbol DeclaredSymbol {
+			get;
+			internal set;
+		}
+
+		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
+		{
+			this.symbolInfo = symbolInfo;
+		}
+
+		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (document.ParsedDocument == null)
+				return RefactoringSymbolInfo.Empty;
+			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
+			if (unit != null) {
+				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+				try {
+					var token = root.FindToken (offset);
+					var symbol = unit.GetSymbolInfo (token.Parent);
+					return new RefactoringSymbolInfo (symbol) {
+						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
+					};
+				} catch (Exception) {
+					return RefactoringSymbolInfo.Empty;
+				}
+			}
+			return RefactoringSymbolInfo.Empty;
+		}
+	}
+
+
+	class GotoDeclarationHandler : CommandHandler
 	{
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result);
+			JumpToDeclaration (doc, RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result);
 		}
 		
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)

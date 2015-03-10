@@ -90,7 +90,7 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null)
 				FindRefs (sym);
@@ -148,7 +148,7 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (sym != null)

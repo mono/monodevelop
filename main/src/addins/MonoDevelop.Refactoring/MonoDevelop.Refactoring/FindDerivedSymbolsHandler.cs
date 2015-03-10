@@ -88,7 +88,7 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var info = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
 			if (info.DeclaredSymbol != null)
 				FindDerivedSymbols (info.DeclaredSymbol);
 		}

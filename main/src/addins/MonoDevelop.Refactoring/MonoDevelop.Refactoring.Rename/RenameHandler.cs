@@ -47,7 +47,7 @@ namespace MonoDevelop.Refactoring.Rename
 			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
 				ci.Enabled = false;
 			}
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
 			var sym = info.DeclaredSymbol ?? info.Symbol;
 			if (!CanRename (sym))
 				ci.Bypass = true;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 		internal void Run (TextEditor editor, DocumentContext ctx)
 		{
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (ctx, editor.CaretOffset).Result;
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (ctx, editor.CaretOffset).Result;
 			var sym = info.DeclaredSymbol ?? info.Symbol;
 			if (!CanRename (sym))
 				return;
