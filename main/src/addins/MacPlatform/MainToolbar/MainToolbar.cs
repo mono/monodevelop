@@ -165,8 +165,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			return new NSToolbarItem (StatusBarId) {
 				View = new StatusBar (),
-				MinSize = new CGSize (360, 23),
-				MaxSize = new CGSize (360, 23),
+				MinSize = new CGSize (360, 22),
+				MaxSize = new CGSize (360, 22),
 			};
 		}
 
