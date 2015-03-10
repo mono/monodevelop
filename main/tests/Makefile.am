@@ -69,6 +69,14 @@ test:
 		fi; \
 	fi
 
+coverage:
+	if ! test -n "$(assembly)"; then \
+		for asm in $(TEST_ASSEMBLIES); do \
+			echo Generating coverage for `basename $$asm`...; \
+			($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:coverage,output=CoverageResult_`basename $$asm`.mlpd "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
+		done; \
+	fi
+
 include $(top_srcdir)/Makefile.include
 
 EXTRA_DIST = \
