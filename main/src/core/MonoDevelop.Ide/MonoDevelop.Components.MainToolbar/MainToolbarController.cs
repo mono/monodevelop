@@ -97,6 +97,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
 
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
