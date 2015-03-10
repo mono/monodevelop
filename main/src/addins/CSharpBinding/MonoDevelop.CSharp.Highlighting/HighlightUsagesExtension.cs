@@ -40,6 +40,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -119,29 +121,14 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (node == null)
 				return ReferenceUsageType.Read;
-
-			var parent = node.Parent;
-			if (parent.IsKind (SyntaxKind.SimpleMemberAccessExpression))
-				parent = parent.Parent;
-
-			if (parent.IsKind (SyntaxKind.PreIncrementExpression) ||
-				parent.IsKind (SyntaxKind.PostIncrementExpression) || 
-				parent.IsKind (SyntaxKind.PreDecrementExpression) || 
-				parent.IsKind (SyntaxKind.PostDecrementExpression))
+			
+			var parent = node.AncestorsAndSelf ().OfType<ExpressionSyntax> ().FirstOrDefault();
+			if (parent == null)
+				return ReferenceUsageType.Read;
+			if (parent.IsOnlyWrittenTo ())
+				return ReferenceUsageType.Write;
+			if (parent.IsWrittenTo ())
 				return ReferenceUsageType.ReadWrite;
-			var argumentSyntax = node.Parent as ArgumentSyntax;
-			if (argumentSyntax != null) {
-				if (argumentSyntax.RefOrOutKeyword.IsKind (SyntaxKind.RefKeyword))
-					return ReferenceUsageType.ReadWrite;
-				if (argumentSyntax.RefOrOutKeyword.IsKind (SyntaxKind.OutKeyword))
-					return ReferenceUsageType.Write;
-			} 
-
-			if (parent is AssignmentExpressionSyntax) {
-				var ae = (AssignmentExpressionSyntax)parent;
-				if (ae.Left.Span.Contains (node.Span))
-					return ReferenceUsageType.Write;
-			} 
 			return ReferenceUsageType.Read;
 		}
 
