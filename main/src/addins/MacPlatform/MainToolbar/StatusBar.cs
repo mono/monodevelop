@@ -45,10 +45,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		StatusBar bar;
 		CALayer layer;
 
-		public StatusIcon (StatusBar bar, CALayer layer)
+		public StatusIcon (StatusBar bar, CALayer layer, NSTrackingArea trackingArea)
 		{
 			this.bar = bar;
 			this.layer = layer;
+			TrackingArea = trackingArea;
 		}
 
 		public void SetAlertMode (int seconds)
@@ -63,6 +64,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public string ToolTip {
+			get;
+			set;
+		}
+
+		internal NSTrackingArea TrackingArea {
 			get;
 			set;
 		}
@@ -180,6 +186,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		readonly Dictionary<CALayer, StatusIcon> layerToStatus = new Dictionary<CALayer, StatusIcon> ();
 		internal void RemoveStatusLayer (CALayer statusLayer)
 		{
+			RemoveTrackingArea (layerToStatus [statusLayer].TrackingArea);
 			layerToStatus.Remove (statusLayer);
 			RepositionStatusLayers ();
 		}
@@ -200,43 +207,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return left == nfloat.PositiveInfinity ? Layer.Frame.Width : left;
 		}
 
-		class TooltipOwner : NSObject
-		{
-			readonly StatusBar bar;
-			readonly CALayer layer;
-
-			public TooltipOwner (StatusBar bar, CALayer layer)
-			{
-				this.bar = bar;
-				this.layer = layer;
-			}
-
-			public override string Description { get { return bar.layerToStatus [layer].ToolTip; } }
-		}
-
-		List<TooltipOwner> tooltips = new List<TooltipOwner> ();
-		void AddTooltip (CALayer layer)
-		{
-			var tooltip = new TooltipOwner (this, layer);
-			tooltips.Add (tooltip);
-			AddToolTip (layer.Frame, tooltip, IntPtr.Zero);
-		}
-
 		void RepositionStatusLayers ()
 		{
-			RemoveAllToolTips ();
-			foreach (var tooltip in tooltips)
-				tooltip.Dispose ();
-			tooltips.Clear ();
-
 			nfloat right = Layer.Frame.Width;
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
+					var icon = layerToStatus [item];
+					RemoveTrackingArea (icon.TrackingArea);
+
 					right -= item.Bounds.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
-					AddTooltip (item);
 					item.SetNeedsDisplay ();
+
+					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+					AddTrackingArea (area);
+
+					icon.TrackingArea = area;
 					last = item;
 				}
 			}
@@ -261,9 +248,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			layer.SetImage (pixbuf, Window.BackingScaleFactor);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			var statusIcon = new StatusIcon (this, layer);
+
+			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+			AddTrackingArea (area);
+
+			var statusIcon = new StatusIcon (this, layer, area);
 			layerToStatus [layer] = statusIcon;
-			AddTooltip (layer);
 
 			Layer.AddSublayer (layer);
 
@@ -543,6 +533,40 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
+		public override void ViewDidMoveToSuperview ()
+		{
+			base.ViewDidMoveToSuperview ();
+
+			popover.ContentViewController.View = new NSTextField {
+				DrawsBackground = false,
+				Bezeled = false,
+				Editable = false,
+				Alignment = NSTextAlignment.Center,
+			};
+		}
+
+		NSPopover popover = new NSPopover {
+			ContentViewController = new NSViewController (null, null),
+		};
+
+		[Export("showPopoverForLayer:")]
+		public void ShowPopoverForLayer (NSString name)
+		{
+			var field = (NSTextField)popover.ContentViewController.View;
+			var layer = Layer.Sublayers.FirstOrDefault (l => l.Name == name);
+			if (layer == null)
+				return;
+
+			field.StringValue = layerToStatus [layer].ToolTip;
+
+			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
+		}
+
+		void DestroyPopover ()
+		{
+			popover.Close ();
+		}
+
 		CALayer LayerForEvent (NSEvent theEvent)
 		{
 			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
@@ -550,10 +574,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return layer != null ? layer.ModelLayer : null;
 		}
 
-		public override void MouseMoved (NSEvent theEvent)
+		CALayer oldLayer;
+		public override void MouseEntered (NSEvent theEvent)
 		{
-			// Take care of tooltip.
-			base.MouseMoved (theEvent);
+			base.MouseEntered (theEvent);
+
+			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
+			var layer = LayerForEvent (theEvent);
+			if (layer != null) {
+				if (layer == oldLayer)
+					return;
+
+				PerformSelector (sel, new NSString (layer.Name), 0.05);
+				oldLayer = layer;
+			}
+		}
+
+		public override void MouseExited (NSEvent theEvent)
+		{
+			base.MouseExited (theEvent);
+
+			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
+			var layer = LayerForEvent (theEvent);
+
+			if (oldLayer != null) {
+				CancelPreviousPerformRequest (this, sel, oldLayer);
+				oldLayer = null;
+				DestroyPopover ();
+			}
 		}
 
 		public override void MouseDown (NSEvent theEvent)
