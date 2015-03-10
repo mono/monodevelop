@@ -532,6 +532,8 @@ namespace MonoDevelop.CSharp.Formatting
 			if (descriptor.KeyChar == '{')
 				return;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
+				if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.GetAst<SemanticModel> () == null)
+					return;
 				var document = DocumentContext.AnalysisDocument;
 				if (document == null)
 					return;

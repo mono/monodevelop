@@ -219,7 +219,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			{
 				ciset.CommandInfos.AddSeparator ();
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo ("MonoDevelop.CSharp.Refactoring.ExtractMethodCommand"), new Action (delegate {
-					ExtractMethodCommandHandler.Run (doc).RunSynchronously ();
+					ExtractMethodCommandHandler.Run (doc);
 				}));
 
 			}
