@@ -539,7 +539,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				ParagraphStyle = new NSMutableParagraphStyle {
 					Alignment = NSTextAlignment.Center,
 				},
-				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
+				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 1),
 			});
 		}
 
