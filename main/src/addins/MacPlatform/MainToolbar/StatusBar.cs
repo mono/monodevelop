@@ -595,13 +595,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
 			var layer = LayerForEvent (theEvent);
-			if (layer != null) {
-				if (layer == oldLayer)
-					return;
+			if (layer == null || layer == oldLayer || string.IsNullOrEmpty (layerToStatus [layer].ToolTip))
+				return;
 
-				PerformSelector (sel, new NSString (layer.Name), 0.05);
-				oldLayer = layer;
-			}
+			PerformSelector (sel, new NSString (layer.Name), 0.05);
+			oldLayer = layer;
 		}
 
 		public override void MouseExited (NSEvent theEvent)
