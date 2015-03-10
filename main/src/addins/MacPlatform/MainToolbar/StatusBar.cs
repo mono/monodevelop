@@ -155,6 +155,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
 				ReconstructString ();
+				foreach (var statusPair in layerToStatus)
+					statusPair.Key.SetImage (statusPair.Value.Image, Window.BackingScaleFactor);
 			});
 
 			AddSubview (imageView);
