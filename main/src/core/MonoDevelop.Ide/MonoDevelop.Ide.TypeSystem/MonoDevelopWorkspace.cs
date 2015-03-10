@@ -393,13 +393,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				yield break;
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration;
 			var config = IdeApp.Workspace != null ? netProject.GetConfiguration (configurationSelector) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
-			bool noStdLib = false;
-			if (config != null) {
-				var parameters = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
-				if (parameters != null) {
-					noStdLib = parameters.NoStdLib;
-				}
-			}
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 			foreach (string file in netProject.GetReferencedAssemblies (MonoDevelop.Projects.ConfigurationSelector.Default, false)) {
 				if (token.IsCancellationRequested)
@@ -413,7 +406,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (hashSet.Contains (fileName))
 					continue;
 				hashSet.Add (fileName);
-
 				yield return MetadataReferenceCache.LoadReference (projectId, fileName);
 			}
 			var portableProfiles = Environment.GetEnvironmentVariable ("MD_FACADES"); 
