@@ -2262,12 +2262,6 @@
     <EmbeddedResource Include="icons\mac\status-error-16%402x.png">
       <LogicalName>status-error-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16.png">
-      <LogicalName>status-error-count-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-error-count-16%402x.png">
-      <LogicalName>status-error-count-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-opening-1-16.png">
       <LogicalName>status-opening-1-16.png</LogicalName>
     </EmbeddedResource>
@@ -2483,12 +2477,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-warning-16%402x.png">
       <LogicalName>status-warning-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16.png">
-      <LogicalName>status-warning-count-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\status-warning-count-16%402x.png">
-      <LogicalName>status-warning-count-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
