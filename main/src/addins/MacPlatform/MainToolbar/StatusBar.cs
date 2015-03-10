@@ -533,6 +533,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
+		static NSAttributedString GetPopoverString (string text)
+		{
+			return new NSAttributedString (text, new NSStringAttributes {
+				ParagraphStyle = new NSMutableParagraphStyle {
+					Alignment = NSTextAlignment.Center,
+				},
+				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
+			});
+		}
+
 		public override void ViewDidMoveToSuperview ()
 		{
 			base.ViewDidMoveToSuperview ();
@@ -541,7 +551,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				DrawsBackground = false,
 				Bezeled = false,
 				Editable = false,
-				Alignment = NSTextAlignment.Center,
+				Frame = new CGRect (0, 0, 230, 30),
+				AutoresizingMask = NSViewResizingMask.HeightSizable,
+				Cell = new VerticallyCenteredTextFieldCell (true),
 			};
 		}
 
@@ -557,9 +569,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (layer == null)
 				return;
 
-			field.StringValue = layerToStatus [layer].ToolTip;
-
-			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
+			field.AttributedStringValue = GetPopoverString (layerToStatus [layer].ToolTip);
+			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);;
 		}
 
 		void DestroyPopover ()
