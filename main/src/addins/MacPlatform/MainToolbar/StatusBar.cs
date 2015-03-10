@@ -248,14 +248,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			right -= (nfloat)pixbuf.Width + 6;
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			layer.SetImage (pixbuf, Window.BackingScaleFactor);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 
 			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
 			AddTrackingArea (area);
 
-			var statusIcon = new StatusIcon (this, layer, area);
+			var statusIcon = new StatusIcon (this, layer, area) {
+				Image = pixbuf,
+			};
 			layerToStatus [layer] = statusIcon;
 
 			Layer.AddSublayer (layer);
