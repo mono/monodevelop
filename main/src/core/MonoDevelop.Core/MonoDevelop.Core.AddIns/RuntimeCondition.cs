@@ -49,7 +49,12 @@ namespace MonoDevelop.Core.AddIns
 				result = false; break;
 			}
 
-			// TODO: Add version attribute?
+			Version version;
+			if (Version.TryParse (conditionNode.GetAttribute ("minVersion"), out version))
+				result &= Environment.Version >= version;
+
+			if (Version.TryParse (conditionNode.GetAttribute ("maxVersion"), out version))
+				result &= Environment.Version <= version;
 
 			return negate ? !result : result;
 		}
