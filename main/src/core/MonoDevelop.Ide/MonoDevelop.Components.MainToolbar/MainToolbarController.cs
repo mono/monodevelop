@@ -76,7 +76,10 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
 			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
-			ToolbarView.SearchEntryLostFocus += (o, e) => ToolbarView.SearchText = "";
+			ToolbarView.SearchEntryLostFocus += (o, e) => {
+				ToolbarView.SearchText = "";
+				DestroyPopup ();
+			};
 
 			toolbarView.ConfigurationChanged += HandleConfigurationChanged;
 			toolbarView.RuntimeChanged += HandleRuntimeChanged;
