@@ -61,7 +61,27 @@ namespace MonoDevelop.Ide.TypeSystem
 				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
 				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
 			);
-
+		/// <summary>
+		/// Standard format for displaying to the user.
+		/// </summary>
+		/// <remarks>
+		/// No return type.
+		/// </remarks>
+		public static readonly SymbolDisplayFormat NameFormat =
+			new SymbolDisplayFormat(
+				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
+				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
+				genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters | SymbolDisplayGenericsOptions.IncludeVariance,
+				memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeExplicitInterface,
+				parameterOptions:
+				SymbolDisplayParameterOptions.IncludeParamsRefOut |
+				SymbolDisplayParameterOptions.IncludeExtensionThis |
+				SymbolDisplayParameterOptions.IncludeType |
+				SymbolDisplayParameterOptions.IncludeName,
+				miscellaneousOptions:
+				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
 		static Ambience ()
 		{
 			// may not have been initialized in testing environment.

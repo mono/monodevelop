@@ -60,9 +60,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		public string Message { get { return message; } }
 
 		/// <summary>
+		/// The id of the error.
+		/// </summary>
+		public string Id { get; private set; }
+
+		/// <summary>
 		/// The region of the error.
 		/// </summary>
 		public DocumentRegion Region { get { return region; } }
+
+		/// <summary>
+		/// Gets or sets the tag.
+		/// </summary>
+		public object Tag { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
@@ -127,6 +137,77 @@ namespace MonoDevelop.Ide.TypeSystem
 		public Error (ErrorType errorType, string message)
 		{
 			this.errorType = errorType;
+			this.message = message;
+			this.region = DocumentRegion.Empty;
+		}
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
+		/// </summary>
+		/// <param name='errorType'>
+		/// The error type.
+		/// </param>
+		/// <param name='message'>
+		/// The description of the error.
+		/// </param>
+		/// <param name='region'>
+		/// The region of the error.
+		/// </param>
+		public Error (ErrorType errorType, string id, string message, DocumentRegion region)
+		{
+			this.errorType = errorType;
+			this.Id = id;
+			this.message = message;
+			this.region = region;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
+		/// </summary>
+		/// <param name='errorType'>
+		/// The error type.
+		/// </param>
+		/// <param name='message'>
+		/// The description of the error.
+		/// </param>
+		/// <param name='location'>
+		/// The location of the error.
+		/// </param>
+		public Error (ErrorType errorType, string id, string message, DocumentLocation location)
+		{
+			this.errorType = errorType;
+			this.Id = id;
+			this.message = message;
+			this.region = new DocumentRegion (location, location);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
+		/// </summary>
+		/// <param name='errorType'>
+		/// The error type.
+		/// </param>
+		/// <param name='message'>
+		/// The description of the error.
+		/// </param>
+		public Error (ErrorType errorType, string id, string message, int line, int column) : this (errorType, id, message, new DocumentLocation (line, column)) 
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.Error"/> class.
+		/// </summary>
+		/// <param name='errorType'>
+		/// The error type.
+		/// </param>
+		/// <param name='message'>
+		/// The description of the error.
+		/// </param>
+		public Error (ErrorType errorType, string id, string message)
+		{
+			this.errorType = errorType;
+			this.Id = id;
 			this.message = message;
 			this.region = DocumentRegion.Empty;
 		}
