@@ -434,7 +434,6 @@ type FSharpSyntaxMode(editor, context) =
             | None -> ()
 
     override x.GetColoredSegments (segment) =
-        let style = getColourScheme ()
         let line = editor.GetLineByOffset segment.Offset
         match segments with
         | [||] -> Seq.empty
