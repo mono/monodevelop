@@ -307,22 +307,6 @@ namespace MonoDevelop.Components.Commands
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 
-		bool IsShortcutHandledByEmbeddedNSView (Gdk.Window window, KeyboardShortcut[] accels)
-		{
-			if (Mono.TextEditor.GtkWorkarounds.HasNSTextFieldFocus (window)) {
-				foreach (KeyboardShortcut ks in accels) {
-					if (ks.Modifier == Gdk.ModifierType.MetaMask && (
-					        ks.Key == Gdk.Key.a || ks.Key == Gdk.Key.c ||
-					        ks.Key == Gdk.Key.x || ks.Key == Gdk.Key.v ||
-					        ks.Key == Gdk.Key.z)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
 		#if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
@@ -350,9 +334,6 @@ namespace MonoDevelop.Components.Commands
 			
 			bool complete;
 			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (ev, out complete);
-
-			if (ev.Window != null && IsShortcutHandledByEmbeddedNSView (ev.Window, accels))
-				return true;
 
 			if (!complete) {
 				// incomplete accel
