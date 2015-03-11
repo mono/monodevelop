@@ -683,6 +683,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSPopover popover = new NSPopover {
 			ContentViewController = new NSViewController (null, null),
+			Animates = false,
 		};
 
 		public void ShowPopoverForLayer (CALayer layer)
