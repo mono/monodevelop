@@ -169,12 +169,12 @@ module NRefactory =
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
     let createMemberReference(doc:MonoDevelop.Ide.Editor.TextEditor, context:MonoDevelop.Ide.Editor.DocumentContext, symbolUse: FSharpSymbolUse, lastIdentAtLoc:string) =
         let start, finish = Symbols.trimSymbolRegion symbolUse lastIdentAtLoc
-             
+        let filename = doc.FileName.ToString()  
         let offset = doc.LocationToOffset(start.Line, start.Column+1)
-        let domRegion = DomRegion(context.Name, start.Line, start.Column+1, finish.Line, finish.Column+1)
+        let domRegion = DomRegion(filename, start.Line, start.Column+1, finish.Line, finish.Column+1)
     
         let symbol = createSymbol(doc, context, symbolUse.Symbol, lastIdentAtLoc, domRegion)
-        let memberRef = MemberReference(symbol, context.Name, offset, lastIdentAtLoc.Length)
+        let memberRef = MemberReference(symbol, filename, offset, lastIdentAtLoc.Length)
     
         //if the current range is a symbol range and the fileNameOfRefs match change the ReferenceUsageType
         if symbolUse.IsFromDefinition then
