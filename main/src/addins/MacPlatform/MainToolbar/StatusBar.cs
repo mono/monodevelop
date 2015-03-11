@@ -746,7 +746,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.MouseDown (theEvent);
 
 			var layer = LayerForEvent (theEvent);
-			if (layer != null) {
+			if (layer != null && layer.Name != null) {
 				Xwt.PointerButton button = Xwt.PointerButton.Left;
 				switch ((NSEventType)(long)theEvent.ButtonNumber) {
 				case NSEventType.LeftMouseDown:
