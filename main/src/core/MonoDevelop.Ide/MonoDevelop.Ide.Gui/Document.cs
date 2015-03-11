@@ -799,7 +799,7 @@ namespace MonoDevelop.Ide.Gui
 					var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 					this.adhocProject = newProject;
 
-					newProject.Name = "<invisible>";
+					newProject.Name = "InvisibleProject";
 					newProject.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
 					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
