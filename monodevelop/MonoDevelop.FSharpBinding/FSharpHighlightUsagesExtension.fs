@@ -20,8 +20,8 @@ type HighlightUsagesExtension() =
 
     override x.Initialize() =
         base.Initialize ()
-        //let syntaxMode = new FSharpSyntaxMode (this.Editor, this.DocumentContext)
-        //this.Editor.SemanticHighlighting <- syntaxMode
+        let syntaxMode = new FSharpSyntaxMode (x.Editor, x.DocumentContext)
+        x.Editor.SemanticHighlighting <- syntaxMode
 
     override x.ResolveAsync (token) =
         Async.StartAsTask (
@@ -37,7 +37,7 @@ type HighlightUsagesExtension() =
                 let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (projectFilename, currentFile, source, files, line, col, lineStr, args)
                 return symbolReferences
             with
-            | :? OperationCanceledException -> return None
+            | :? Threading.Tasks.TaskCanceledException -> return None
             | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
                      return None })
             
@@ -53,6 +53,10 @@ type HighlightUsagesExtension() =
                 | _ -> Seq.empty
                                 
             with
-            | :? OperationCanceledException -> Seq.empty
+            | :? Threading.Tasks.TaskCanceledException -> Seq.empty
             | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                     Seq.empty  
+                     Seq.empty
+
+    override x.Dispose () =
+        x.Editor.SemanticHighlighting.Dispose()
+        x.Editor.SemanticHighlighting <- null
