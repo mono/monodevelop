@@ -337,7 +337,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 					right -= item.Bounds.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
-					item.SetNeedsDisplay ();
 
 					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
 					AddTrackingArea (area);
