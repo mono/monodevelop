@@ -52,13 +52,13 @@ namespace MonoDevelop.CSharp.Resolver
 				result = GetInfo (compilationUnit, null, offset, default(CancellationToken));
 			} else {
 				compilationUnit = await analysisDocument.GetCSharpSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-				var semantic = document.ParsedDocument.GetAst<SemanticModel> ();
+				var semantic = document.ParsedDocument?.GetAst<SemanticModel> ();
 				if (semantic == null) {
-					semantic = await document.AnalysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+					semantic = await analysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 				}
 				result = GetInfo (compilationUnit, semantic, offset, default(CancellationToken));
 			}
-			if (result.IsDefault) {
+			if (result.IsDefault || !result.Span.Contains(offset)) {
 				return new DebugDataTipInfo (result.Span, null);
 			} else if (result.Text == null) {
 				return new DebugDataTipInfo (result.Span, compilationUnit.GetText ().ToString (result.Span));
@@ -75,6 +75,9 @@ namespace MonoDevelop.CSharp.Resolver
 			var expression = token.Parent as ExpressionSyntax;
 			if (expression == null) {
 				if (Microsoft.CodeAnalysis.CSharpExtensions.IsKind (token, SyntaxKind.IdentifierToken)) {
+					if (token.Parent is MethodDeclarationSyntax) {
+						return default(DebugDataTipInfo);
+					}
 					if (semanticModel != null) {
 						if (token.Parent is PropertyDeclarationSyntax) {
 							var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax)token.Parent);
