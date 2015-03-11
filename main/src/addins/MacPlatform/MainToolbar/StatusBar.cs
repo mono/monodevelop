@@ -192,8 +192,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
 				ReconstructString ();
-				foreach (var statusPair in layerToStatus)
-					statusPair.Key.SetImage (statusPair.Value.Image, Window.BackingScaleFactor);
+				foreach (var layer in Layer.Sublayers) {
+					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
+						layer.SetImage (layerToStatus [layer.Name].Image, Window.BackingScaleFactor);
+				}
 				if (buildResultVisible) {
 					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
 					buildResultText.ContentsScale = Window.BackingScaleFactor;
@@ -236,11 +238,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return Layer.Sublayers.FirstOrDefault (l => l.Name == ProgressLayerId); }
 		}
 
-		readonly Dictionary<CALayer, StatusIcon> layerToStatus = new Dictionary<CALayer, StatusIcon> ();
+		readonly Dictionary<string, StatusIcon> layerToStatus = new Dictionary<string, StatusIcon> ();
 		internal void RemoveStatusLayer (CALayer statusLayer)
 		{
-			RemoveTrackingArea (layerToStatus [statusLayer].TrackingArea);
-			layerToStatus.Remove (statusLayer);
+			RemoveTrackingArea (layerToStatus [statusLayer.Name].TrackingArea);
+			layerToStatus.Remove (statusLayer.Name);
 			RepositionStatusLayers ();
 		}
 
@@ -332,7 +334,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
-					var icon = layerToStatus [item];
+					var icon = layerToStatus [item.Name];
 					RemoveTrackingArea (icon.TrackingArea);
 
 					right -= item.Bounds.Width + 6;
@@ -375,7 +377,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var statusIcon = new StatusIcon (this, layer, area) {
 				Image = pixbuf,
 			};
-			layerToStatus [layer] = statusIcon;
+			layerToStatus [layer.Name] = statusIcon;
 
 			Layer.AddSublayer (layer);
 
@@ -683,22 +685,22 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			ContentViewController = new NSViewController (null, null),
 		};
 
-		[Export("showPopoverForLayer:")]
-		public void ShowPopoverForLayer (NSString name)
+		public void ShowPopoverForLayer (CALayer layer)
 		{
-			var field = (NSTextField)popover.ContentViewController.View;
-			var layer = Layer.Sublayers.FirstOrDefault (l => l.Name == name);
-			if (layer == null)
+			if (!layerToStatus.ContainsKey (layer.Name))
 				return;
 
-			field.AttributedStringValue = GetPopoverString (layerToStatus [layer].ToolTip);
+			var field = (NSTextField)popover.ContentViewController.View;
+			string tooltip = layerToStatus [layer.Name].ToolTip;
+			if (tooltip == null)
+				return;
+
+			field.AttributedStringValue = GetPopoverString (tooltip);
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void DestroyPopover ()
 		{
-			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
-			CancelPreviousPerformRequest (this, sel, oldLayer);
 			oldLayer = null;
 			popover.Close ();
 		}
@@ -710,24 +712,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return layer != null ? layer.ModelLayer : null;
 		}
 
-		CALayer oldLayer;
+		string oldLayer;
 		public override void MouseEntered (NSEvent theEvent)
 		{
 			base.MouseEntered (theEvent);
 
 			StatusIcon icon;
-			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
 			var layer = LayerForEvent (theEvent);
-			if (layer == null || layer == oldLayer) {
-				if (!layerToStatus.TryGetValue (layer, out icon))
+			if (layer == null || layer.Name == oldLayer) {
+				if (!layerToStatus.TryGetValue (layer.Name, out icon))
 					return;
 
 				if (string.IsNullOrEmpty (icon.ToolTip))
 					return;
 			}
 
-			PerformSelector (sel, new NSString (layer.Name), 0.05);
-			oldLayer = layer;
+			oldLayer = layer.Name;
+			ShowPopoverForLayer (layer);
 		}
 
 		public override void MouseExited (NSEvent theEvent)
@@ -758,9 +759,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					break;
 				}
 
-				if (layerToStatus.ContainsKey (layer)) {
+				if (layerToStatus.ContainsKey (layer.Name)) {
 					DestroyPopover ();
-					layerToStatus [layer].NotifyClicked (button);
+					layerToStatus [layer.Name].NotifyClicked (button);
 					return;
 				}
 			}
