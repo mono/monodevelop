@@ -184,6 +184,9 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
       <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -329,6 +332,7 @@
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\CSharpFullyQualifyCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -366,5 +370,7 @@
     <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
     <Folder Include="MonoDevelop.JSon\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
   </ItemGroup>
 </Project>
