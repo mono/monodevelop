@@ -346,11 +346,9 @@ module Keywords =
 type FSharpSyntaxMode(editor, context) =
     inherit MonoDevelop.Ide.Editor.Highlighting.SemanticHighlighting(editor, context)
 
-    let mutable symbolsInFile = None
-    let mutable colourisations = None
     let mutable segments = [||]
 
-    let makeChunk (line: IDocumentLine) (style: ColorScheme) (token: FSharpTokenInfo) =
+    let makeChunk symbolsInFile colourisations (line: IDocumentLine) (style: ColorScheme) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
@@ -401,8 +399,8 @@ type FSharpSyntaxMode(editor, context) =
             let parseAndCheckResults = localParsedDocument.Ast |> tryCast<ParseAndCheckResults>
             match parseAndCheckResults with
             | Some pd ->
-                symbolsInFile <- pd.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
-                colourisations <- pd.GetExtraColorizations ()
+                let symbolsInFile = pd.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
+                let colourisations = pd.GetExtraColorizations ()
                 let alllines = editor.GetLines()
 
                 // Create source tokenizer
@@ -430,7 +428,7 @@ type FSharpSyntaxMode(editor, context) =
                     |> Array.map
                         (fun chunks -> chunks
                                        |> List.map (fun (line, token) ->
-                                                        makeChunk line style token ))
+                                                        makeChunk symbolsInFile colourisations line style token ))
                 segments <- processedTokens
                 Gtk.Application.Invoke (fun _ _ -> x.NotifySemanticHighlightingUpdate())
             | None -> ()
