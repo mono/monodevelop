@@ -132,6 +132,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return item;
 		}
 
+		void AttachToolbarEvents (SearchBar bar)
+		{
+			if (bar.EventsAttached)
+				return;
+
+			bar.Changed += (o, e) => {
+				if (SearchEntryChanged != null)
+					SearchEntryChanged (o, e);
+			};
+			bar.KeyPressed += (o, e) => {
+				if (SearchEntryKeyPressed != null)
+					SearchEntryKeyPressed (o, e);
+			};
+			bar.LostFocus += (o, e) => {
+				if (SearchEntryLostFocus != null)
+					SearchEntryLostFocus (o, e);
+			};
+			bar.EventsAttached = true;
+		}
+
 		NSToolbarItem CreateSearchBarToolbarItem ()
 		{
 			var bar = new SearchBar ();
@@ -146,18 +166,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MinSize = new CGSize (180, bar.FittingSize.Height),
 				MaxSize = new CGSize (180, bar.FittingSize.Height),
 			};
-			bar.Changed += (o, e) => {
-				if (SearchEntryChanged != null)
-					SearchEntryChanged (o, e);
-			};
-			bar.KeyPressed += (o, e) => {
-				if (SearchEntryKeyPressed != null)
-					SearchEntryKeyPressed (o, e);
-			};
-			bar.LostFocus += (o, e) => {
-				if (SearchEntryLostFocus != null)
-					SearchEntryLostFocus (o, e);
-			};
+			AttachToolbarEvents (bar);
 			return item;
 		}
 
@@ -371,6 +380,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				clipItem.PerformSelector (sel);
 
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				AttachToolbarEvents (menuBar);
 				return menuBar.StringValue;
 			}
 			set {
@@ -388,6 +398,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				clipItem.PerformSelector (sel);
 
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				AttachToolbarEvents (menuBar);
 				menuBar.StringValue = value;
 			}
 		}
