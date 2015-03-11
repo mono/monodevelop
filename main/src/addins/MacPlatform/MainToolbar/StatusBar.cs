@@ -693,11 +693,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 
 			field.AttributedStringValue = GetPopoverString (layerToStatus [layer].ToolTip);
-			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);;
+			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void DestroyPopover ()
 		{
+			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
+			CancelPreviousPerformRequest (this, sel, oldLayer);
+			oldLayer = null;
 			popover.Close ();
 		}
 
@@ -732,10 +735,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseExited (theEvent);
 
-			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
 			if (oldLayer != null) {
-				CancelPreviousPerformRequest (this, sel, oldLayer);
-				oldLayer = null;
 				DestroyPopover ();
 			}
 		}
@@ -760,6 +760,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				if (layerToStatus.ContainsKey (layer)) {
+					DestroyPopover ();
 					layerToStatus [layer].NotifyClicked (button);
 					return;
 				}
