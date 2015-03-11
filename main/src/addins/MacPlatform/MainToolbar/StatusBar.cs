@@ -99,6 +99,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string ProgressLayerId = "ProgressLayer";
 		const string ProgressLayerFadingId = "ProgressLayerFading";
 		const string StatusIconPrefixId = "StatusLayer";
+		const string BuildIconLayerId = "BuildIconLayer";
+		const string BuildTextLayerId = "BuildTextLayer";
+		const string SeparatorLayerId = "SeparatorLayer";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
 		Stack<double> progressMarks = new Stack<double> ();
@@ -136,6 +139,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Selectable = false,
 		};
 
+		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
 			AllowsEditingTextAttributes = Selectable = Editable = false;
@@ -153,10 +157,47 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Layer.CornerRadius = 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
+			updateHandler = delegate {
+				int ec=0, wc=0;
+
+				foreach (Task t in TaskService.Errors) {
+					if (t.Severity == TaskSeverity.Error)
+						ec++;
+					else if (t.Severity == TaskSeverity.Warning)
+						wc++;
+				}
+
+				if (ec > 0) {
+					buildResultVisible = true;
+					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
+						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+					buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
+				} else if (wc > 0) {
+					buildResultVisible = true;
+					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
+						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+					buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
+				} else
+					buildResultVisible = false;
+
+				DrawBuildResults ();
+			};
+
+			updateHandler (null, null);
+
+			TaskService.Errors.TasksAdded += updateHandler;
+			TaskService.Errors.TasksRemoved += updateHandler;
+
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
 				ReconstructString ();
 				foreach (var statusPair in layerToStatus)
 					statusPair.Key.SetImage (statusPair.Value.Image, Window.BackingScaleFactor);
+				if (buildResultVisible) {
+					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+				}
 			});
 
 			AddSubview (imageView);
@@ -171,6 +212,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width, Frame.Height);
 
 			base.DrawRect (dirtyRect);
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			TaskService.Errors.TasksAdded -= updateHandler;
+			TaskService.Errors.TasksRemoved -= updateHandler;
+			base.Dispose (disposing);
 		}
 
 		void ReconstructString ()
@@ -205,11 +253,77 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (layer.Name == null)
 					return nfloat.PositiveInfinity;
 
-				if (layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
+				if (layer.Name == SeparatorLayerId || layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
 					return layer.Frame.Left;
 				return nfloat.PositiveInfinity;
 			});
 			return left == nfloat.PositiveInfinity ? Layer.Frame.Width : left;
+		}
+
+		nfloat DrawSeparatorIfNeeded (nfloat right)
+		{
+			CALayer layer = Layer.Sublayers.FirstOrDefault (l => l.Name == SeparatorLayerId);
+			if (layerToStatus.Count == 0) {
+				if (layer != null)
+					layer.RemoveFromSuperLayer ();
+				return right;
+			}
+
+			right -= 9;
+			if (layer != null) {
+				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.SetNeedsDisplay ();
+			} else {
+				layer = CALayer.Create ();
+				layer.Name = SeparatorLayerId;
+				layer.Frame = new CGRect (right, 3, 1, 16);
+				layer.BackgroundColor = NSColor.LightGray.CGColor;
+				Layer.AddSublayer (layer);
+			}
+			return right - 3;
+		}
+
+		bool buildResultVisible;
+		readonly CATextLayer buildResultText = new CATextLayer {
+			Name = BuildTextLayerId,
+		};
+		IconId buildImageId;
+		readonly CALayer buildResultIcon = new CALayer {
+			Name = BuildIconLayerId,
+		};
+		nfloat DrawBuildResults ()
+		{
+			if (!buildResultVisible) {
+				if (Layer.Sublayers != null) {
+					CALayer layer;
+					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (BuildIconLayerId, StringComparison.Ordinal));
+					if (layer != null)
+						layer.RemoveFromSuperLayer ();
+
+					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (BuildTextLayerId, StringComparison.Ordinal));
+					if (layer != null)
+						layer.RemoveFromSuperLayer ();
+
+					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (SeparatorLayerId, StringComparison.Ordinal));
+					if (layer != null)
+						layer.RemoveFromSuperLayer ();
+				}
+				return nfloat.PositiveInfinity;
+			}
+
+			nfloat right = DrawSeparatorIfNeeded (LeftMostItemX ());
+			CGSize size = buildResultText.AttributedString.Size;
+			right = right - 6 - size.Width;
+			buildResultText.Frame = new CGRect (right, 5f, size.Width, size.Height);
+			if (buildResultText.SuperLayer == null)
+				Layer.AddSublayer (buildResultText);
+			buildResultText.SetNeedsDisplay ();
+			right -= buildResultIcon.Bounds.Width;
+			buildResultIcon.Frame = new CGRect (right, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
+			if (buildResultIcon.SuperLayer == null)
+				Layer.AddSublayer (buildResultIcon);
+
+			return right;
 		}
 
 		void RepositionStatusLayers ()
@@ -233,9 +347,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 
-			if (last != null) {
+			nfloat buildResultPosition = DrawBuildResults ();
+			if (buildResultPosition < right) { // We have a build result layer.
 				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
-			} else {
+			} else if (last != null) { // We only have status icons.
+				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+			} else { // Fill the bar.
 				textField.SetFrameSize (new CGSize (Frame.Width - textField.Frame.Left, Frame.Height));
 			}
 		}
@@ -596,10 +713,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseEntered (theEvent);
 
+			StatusIcon icon;
 			var sel = new ObjCRuntime.Selector ("showPopoverForLayer:");
 			var layer = LayerForEvent (theEvent);
-			if (layer == null || layer == oldLayer || string.IsNullOrEmpty (layerToStatus [layer].ToolTip))
-				return;
+			if (layer == null || layer == oldLayer) {
+				if (!layerToStatus.TryGetValue (layer, out icon))
+					return;
+
+				if (string.IsNullOrEmpty (icon.ToolTip))
+					return;
+			}
 
 			PerformSelector (sel, new NSString (layer.Name), 0.05);
 			oldLayer = layer;
@@ -640,6 +763,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					layerToStatus [layer].NotifyClicked (button);
 					return;
 				}
+			}
+
+			if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+				return;
 			}
 
 			if (sourcePad != null)
