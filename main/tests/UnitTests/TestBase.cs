@@ -71,7 +71,7 @@ namespace UnitTests
 			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
-				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);
+				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);
 		}
 
 		
