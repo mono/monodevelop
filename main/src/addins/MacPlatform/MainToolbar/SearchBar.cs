@@ -45,6 +45,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SearchBar ()
 		{
+			Cell.Scrollable = true;
 			Initialize ();
 		}
 
