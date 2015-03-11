@@ -364,6 +364,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
 				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
+				if (!clipItem.RespondsToSelector (sel))
+					throw new Exception ("Cocoa selector changed for clipped items menu.");
+
+				clipItem.PerformSelector (sel);
+
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
 				return menuBar.StringValue;
 			}
@@ -375,6 +381,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
 				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
+				if (!clipItem.RespondsToSelector (sel))
+					throw new Exception ("Cocoa selector changed for clipped items menu.");
+
+				clipItem.PerformSelector (sel);
+
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
 				menuBar.StringValue = value;
 			}
