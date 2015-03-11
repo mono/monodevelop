@@ -71,7 +71,8 @@ namespace MonoDevelop.CSharp.Refactoring
 			foreach (var fix in container.CodeDiagnosticActions) {
 
 				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null); 
-
+				if (inspector == null)
+					continue;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new CommandInfoSet ();
 				subMenu.Text = label;

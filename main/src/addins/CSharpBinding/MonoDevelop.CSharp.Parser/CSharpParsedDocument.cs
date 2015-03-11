@@ -351,7 +351,7 @@ namespace MonoDevelop.CSharp.Parser
 					result = model
 						.GetDiagnostics (null, cancellationToken)
 						.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.GetMessage (), GetRegion (diag)))
+						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
 						.ToList ();
 					var newRef = new WeakReference<IReadOnlyList<Error>> (result);
 					var oldRef = weakErrors;
