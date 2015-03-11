@@ -50,7 +50,6 @@ namespace MonoDevelop.Refactoring
 		RemoveUnusedImports,
 		SortImports,
 		RemoveSortImports,
-		ExtractMethod,
 		CreateMethod,
 		IntroduceConstant,
 		IntegrateTemporaryVariable,

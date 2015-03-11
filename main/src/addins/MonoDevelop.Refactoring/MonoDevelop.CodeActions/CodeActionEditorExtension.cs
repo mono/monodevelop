@@ -179,19 +179,24 @@ namespace MonoDevelop.CodeActions
 							.OfType<DiagnosticResult> ()
 							.Select (dr => dr.Diagnostic)
 							.ToList ();
-
+					
+					var errorList = Editor
+						.GetTextSegmentMarkersAt (Editor.CaretOffset)
+						.OfType<IErrorMarker> ()
+						.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
+					
+					
 					Task.Run (async delegate {
 						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToImmutableArray<string> ();
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
 						foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
 							if (token.IsCancellationRequested)
 								return;
 							var provider = cfp.GetCodeFixProvider ();
 							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
 								continue;
-
 							try {
-								foreach (var diag in diagnosticsAtCaret) {
+								foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
 									await provider.RegisterCodeFixesAsync (
 										new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token)
 									);
