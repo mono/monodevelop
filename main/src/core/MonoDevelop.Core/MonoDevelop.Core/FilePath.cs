@@ -43,7 +43,7 @@ namespace MonoDevelop.Core
 
 		public FilePath (string name)
 		{
-			if (name != null && name.StartsWith ("file://", StringComparison.Ordinal))
+			if (name != null && name.Length > 6 && name[0] == 'f' && name.StartsWith ("file://", StringComparison.Ordinal))
 				name = new Uri (name).LocalPath;
 
 			fileName = name;
