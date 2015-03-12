@@ -40,68 +40,79 @@ using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		SearchPopupWindow widget;
+		static SearchPopupWindow widget;
 
 		public ProjectSearchCategory (SearchPopupWindow widget) : base (GettextCatalog.GetString ("Solution"))
 		{
-			this.widget = widget;
-			this.lastResult = new WorkerResult (widget);
+			ProjectSearchCategory.widget = widget;
+			lastResult = new WorkerResult (widget);
 		}
 
+		internal static Task<ImmutableList<DeclaredSymbolInfo>> SymbolInfoTask;
+
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
-
-
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
-		static IReadOnlyList<INamedTypeSymbol> GetTypes (CancellationToken token)
+		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
+		public static void UpdateSymbolInfos ()
+		{
+			symbolInfoTokenSrc.Cancel ();
+			symbolInfoTokenSrc = new CancellationTokenSource();
+			CancellationToken token = symbolInfoTokenSrc.Token;
+			lastResult = new WorkerResult (widget);
+			SymbolInfoTask = Task.Run (delegate {
+				return GetSymbolInfos (token);
+			}, token);
+		}
+
+		static ImmutableList<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
 		{
 			getTypesTimer.BeginTiming ();
 			try {
-				var result = new List<INamedTypeSymbol> ();
-				foreach (var doc in IdeApp.Workbench.Documents) {
-					token.ThrowIfCancellationRequested();
-					// We only want to check it here if it's not part
-					// of the open combine. Otherwise, it will get
-					// checked down below.
-					if (doc.Project == null && doc.IsFile) {
-						var info = doc.ParsedDocument;
-						if (info != null) {
-							var ctx = info.GetAst<SemanticModel> ().Compilation;
-							result.AddRange (ctx.GetAllTypesInMainAssembly ());
-						}
-					}
+				var result = ImmutableList<DeclaredSymbolInfo>.Empty;
+				Stopwatch sw = new Stopwatch();
+				sw.Start ();
+				foreach (var workspace in TypeSystemService.AllWorkspaces) {
+					result = result.AddRange (workspace.CurrentSolution.Projects.Select (p => SearchAsync (p, token)).SelectMany (i => i));
 				}
-
-				var taskList = new List<Task<List<INamedTypeSymbol>>> ();
-				foreach (var p in TypeSystemService.Workspace.CurrentSolution.Projects) {
-					taskList.Add(p.GetCompilationAsync (token).ContinueWith (task => {
-						var tList = new List<INamedTypeSymbol> ();
-						foreach (var type in task.Result.GetAllTypesInMainAssembly (token)) {
-							if (type.IsDefinedInSource ())
-								tList.Add (type);
-						}
-						return tList;
-					}, TaskContinuationOptions.OnlyOnRanToCompletion));
-				}
-				foreach (var t in taskList) {
-					t.Wait();
-					if (t.Status == TaskStatus.RanToCompletion)
-						result.AddRange(t.Result);
-				}
+				sw.Stop ();
 				return result;
-			} catch (OperationCanceledException) {
-				return ImmutableList<INamedTypeSymbol>.Empty;
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
+				return ImmutableList<DeclaredSymbolInfo>.Empty;
+			} catch (TaskCanceledException) {
+				return ImmutableList<DeclaredSymbolInfo>.Empty;
 			} finally {
 				getTypesTimer.EndTiming ();
 			}
 		}
 
-		WorkerResult lastResult;
+		static IEnumerable<DeclaredSymbolInfo> SearchAsync(Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+		{
+			var result = new ConcurrentBag<DeclaredSymbolInfo> ();
+			Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
+				try {
+					cancellationToken.ThrowIfCancellationRequested ();
+					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+					foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
+						DeclaredSymbolInfo declaredSymbolInfo;
+						if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
+							result.Add (declaredSymbolInfo);
+						}
+					}
+				} catch (OperationCanceledException) {
+				}
+			});
+			return (IEnumerable<DeclaredSymbolInfo>)result;
+		}
+
+		static WorkerResult lastResult;
 		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d" };
 		string[] memberTags = new [] { "member", "m", "p", "f", "evt" };
 
@@ -112,7 +123,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
@@ -122,9 +133,10 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.Tag = searchPattern.Tag;
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
-					var allTypes = GetTypes (token);
-					var firstType = allTypes.FirstOrDefault ();
-					
+					ImmutableList<DeclaredSymbolInfo> allTypes;
+					if (SymbolInfoTask == null)
+						SymbolInfoTask = Task.FromResult(GetSymbolInfos (token));
+					allTypes = SymbolInfoTask.Result;
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
@@ -145,101 +157,53 @@ namespace MonoDevelop.Components.MainToolbar
 			}, token);
 		}
 
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<INamedTypeSymbol> completeTypeList, CancellationToken token)
+		void AllResults (WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
 			if (newResult.isGotoFilePattern)
 				return;
 			uint x = 0;
 			// Search Types
 			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredTypes = new List<INamedTypeSymbol> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
-				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : completeTypeList;
+				newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
+				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
+				var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 				foreach (var type in allTypes) {
-					if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
+					if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested) {
+						newResult.filteredSymbols = null;
 						return;
+					}
 
+					if (type.Kind == DeclaredSymbolInfoKind.Constructor ||
+					    type.Kind == DeclaredSymbolInfoKind.Module ||
+					    type.Kind == DeclaredSymbolInfoKind.Indexer)
+						continue;
+					
 					if (newResult.Tag != null) {
-						if (newResult.Tag == "c" && type.TypeKind != TypeKind.Class)
+						if (newResult.Tag == "c" && type.Kind != DeclaredSymbolInfoKind.Class)
 							continue;
-						if (newResult.Tag == "s" && type.TypeKind != TypeKind.Struct)
+						if (newResult.Tag == "s" && type.Kind != DeclaredSymbolInfoKind.Struct)
 							continue;
-						if (newResult.Tag == "i" && type.TypeKind != TypeKind.Interface)
+						if (newResult.Tag == "i" && type.Kind != DeclaredSymbolInfoKind.Interface)
 							continue;
-						if (newResult.Tag == "e" && type.TypeKind != TypeKind.Enum)
+						if (newResult.Tag == "e" && type.Kind != DeclaredSymbolInfoKind.Enum)
 							continue;
-						if (newResult.Tag == "d" && type.TypeKind != TypeKind.Delegate)
+						if (newResult.Tag == "d" && type.Kind != DeclaredSymbolInfoKind.Delegate)
 							continue;
+
+						if (newResult.Tag == "m" && type.Kind != DeclaredSymbolInfoKind.Method)
+							continue;
+						if (newResult.Tag == "p" && type.Kind != DeclaredSymbolInfoKind.Property)
+							continue;
+						if (newResult.Tag == "f" && type.Kind != DeclaredSymbolInfoKind.Field)
+							continue;
+						if (newResult.Tag == "evt" && type.Kind != DeclaredSymbolInfoKind.Event)
+							continue;
+						
 					}
 					SearchResult curResult = newResult.CheckType (type);
 					if (curResult != null) {
-						newResult.filteredTypes.Add (type);
+						newResult.filteredSymbols.Add (type);
 						newResult.results.AddResult (curResult);
-					}
-				}
-			}
-			
-			// Search members
-			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredMembers = new List<Tuple<INamedTypeSymbol, ISymbol>> ();
-				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
-				if (startsWithLastFilter) {
-					foreach (var t in lastResult.filteredMembers) {
-						if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
-							return;
-						var member = t.Item2;
-						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.Kind != SymbolKind.Method)
-								continue;
-							if (newResult.Tag == "p" && member.Kind != SymbolKind.Property)
-								continue;
-							if (newResult.Tag == "f" && member.Kind != SymbolKind.Field)
-								continue;
-							if (newResult.Tag == "evt" && member.Kind != SymbolKind.Event)
-								continue;
-						}
-						SearchResult curResult = newResult.CheckMember (t.Item1, member);
-						if (curResult != null) {
-							newResult.filteredMembers.Add (t);
-							newResult.results.AddResult (curResult);
-						}
-					}
-				} else {
-					Func<ISymbol, bool> mPred = member => {
-						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.Kind != SymbolKind.Method)
-								return false;
-							if (newResult.Tag == "p" && member.Kind != SymbolKind.Property)
-								return false;
-							if (newResult.Tag == "f" && member.Kind != SymbolKind.Field)
-								return false;
-							if (newResult.Tag == "evt" && member.Kind != SymbolKind.Event)
-								return false;
-						}
-						return newResult.IsMatchingMember (member);
-					};
-
-					getMembersTimer.BeginTiming ();
-					try {
-						foreach (var type in completeTypeList) {
-							if (type.IsDelegateType ())
-								continue;
-							//							foreach (var p in type.Parts) {
-							foreach (ISymbol member in type.GetMembers ().Where (mPred)) {
-								if (member is INamedTypeSymbol || member.IsImplicitlyDeclared || member.IsDefinedInMetadata ())
-									continue;
-								if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
-									return;
-								SearchResult curResult = newResult.CheckMember (type, member);
-								if (curResult != null) {
-									newResult.filteredMembers.Add (Tuple.Create (type, member));
-									newResult.results.AddResult (curResult);
-								}
-							}
-							//	}
-						}
-					} finally {
-						getMembersTimer.EndTiming ();
 					}
 				}
 			}
@@ -252,9 +216,8 @@ namespace MonoDevelop.Components.MainToolbar
 				set;
 			}
 
-			public List<ProjectFile> filteredFiles;
-			public List<INamedTypeSymbol> filteredTypes;
-			public List<Tuple<INamedTypeSymbol, ISymbol>> filteredMembers;
+			public List<DeclaredSymbolInfo> filteredSymbols;
+
 			string pattern2;
 			char firstChar;
 			char[] firstChars;
@@ -285,56 +248,22 @@ namespace MonoDevelop.Components.MainToolbar
 				results = new ResultsDataSource (widget);
 			}
 
-			internal SearchResult CheckFile (ProjectFile file)
+			internal SearchResult CheckType (DeclaredSymbolInfo symbol)
 			{
 				int rank;
-				string matchString = System.IO.Path.GetFileName (file.FilePath);
-				if (MatchName (matchString, out rank))
-					return new FileSearchResult (pattern, matchString, rank, file, true);
-				
-				if (!FullSearch)
-					return null;
-				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (matchString, out rank))
-					return new FileSearchResult (pattern, matchString, rank, file, false);
-				
-				return null;
-			}
-
-			internal SearchResult CheckType (INamedTypeSymbol type)
-			{
-				int rank;
-				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank)) {
-					if (type.ContainingType != null)
-						rank--;
-					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false);
+				if (MatchName (symbol.Name, out rank)) {
+//					if (type.ContainerDisplayName != null)
+//						rank--;
+					return new DeclaredSymbolInfoResult (pattern, symbol.Name, rank, symbol, false);
 				}
 				if (!FullSearch)
 					return null;
-				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank)) {
-					if (type.ContainingType != null)
-						rank--;
-					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true);
+				if (MatchName (symbol.FullyQualifiedContainerName, out rank)) {
+//					if (type.ContainingType != null)
+//						rank--;
+					return new DeclaredSymbolInfoResult (pattern, symbol.FullyQualifiedContainerName, rank, symbol, true);
 				}
 				return null;
-			}
-			
-			internal SearchResult CheckMember (INamedTypeSymbol declaringType, ISymbol member)
-			{
-				int rank;
-				bool useDeclaringTypeName = member.Kind == SymbolKind.Method && (((IMethodSymbol)member).MethodKind == MethodKind.Constructor || ((IMethodSymbol)member).MethodKind == MethodKind.Destructor);
-				string memberName = useDeclaringTypeName ? member.ContainingType.Name : member.Name;
-				if (MatchName (memberName, out rank))
-					return new MemberSearchResult (pattern, memberName, rank, declaringType, member, false);
-				return null;
-			}
-
-			internal bool IsMatchingMember (ISymbol member)
-			{
-				int rank;
-				bool useDeclaringTypeName = member.Kind == SymbolKind.Method && (((IMethodSymbol)member).MethodKind == MethodKind.Constructor || ((IMethodSymbol)member).MethodKind == MethodKind.Destructor);
-				string memberName = useDeclaringTypeName ? member.ContainingType.Name : member.Name;
-				return MatchName (memberName, out rank);
 			}
 
 			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> (StringComparer.Ordinal);

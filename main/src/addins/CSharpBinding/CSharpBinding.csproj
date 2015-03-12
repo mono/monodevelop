@@ -332,7 +332,6 @@
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
-    <Compile Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\CSharpFullyQualifyCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -371,6 +370,5 @@
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
     <Folder Include="MonoDevelop.JSon\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
-    <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
   </ItemGroup>
 </Project>

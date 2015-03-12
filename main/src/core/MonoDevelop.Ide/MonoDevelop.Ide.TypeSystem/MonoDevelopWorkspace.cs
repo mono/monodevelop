@@ -31,19 +31,12 @@ using System.IO;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
-using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Host.Mef;
-using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
-using System.Collections.Immutable;
 using MonoDevelop.Core.Text;
-using System.Diagnostics;
 using System.Collections.Concurrent;
-using Monodoc;
-using Gdk;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -102,7 +95,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void HideStatusIcon ()
 		{
-			Task.WhenAll (this.CurrentSolution.Projects.Select (p => p.GetCompilationAsync ()));
 			Gtk.Application.Invoke (delegate {
 				workspacesLoading--;
 				if (workspacesLoading == 0 && statusIcon != null) {
@@ -166,7 +158,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!added) {
 					added = true;
 					OnSolutionAdded (solutionInfo);
-					TypeSystemService.OnWorkspaceItemLoaded (new MonoDevelop.Projects.WorkspaceItemEventArgs (solution));
 				}
 			}
 			return solutionInfo;

@@ -87,6 +87,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				return workspaces.ToImmutableArray ();
 			}
 		}
+		public static ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
+			get {
+				return workspaces.ToImmutableArray<Microsoft.CodeAnalysis.Workspace> ();
+			}
+		}
+
 
 		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
@@ -126,15 +132,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					workspace.HideStatusIcon ();
 				});
 			}
-		}
-
-		public static event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
-
-		internal static void OnWorkspaceItemLoaded (WorkspaceItemEventArgs e)
-		{
-			var handler = WorkspaceItemLoaded;
-			if (handler != null)
-				handler (null, e);
 		}
 
 		static Task InternalLoad (MonoDevelop.Projects.WorkspaceItem item, IProgressMonitor progressMonitor, MonoDevelopWorkspace workspace, bool loadInBackground)
@@ -223,6 +220,20 @@ namespace MonoDevelop.Ide.TypeSystem
 					return w.GetDocumentId (projectId, fileName);
 			}
 			return null;
+		}
+
+		public static IEnumerable<DocumentId> GetDocuments (string fileName)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			fileName = FileService.GetFullPath (fileName);
+			foreach (var w in Workspaces) {
+				foreach (var projectId in w.CurrentSolution.ProjectIds) {
+					var docId = w.GetDocumentId (projectId, fileName);
+					if (docId != null)
+						yield return docId;
+				}
+			}
 		}
 
 		public static Microsoft.CodeAnalysis.Project GetCodeAnalysisProject (MonoDevelop.Projects.Project project)

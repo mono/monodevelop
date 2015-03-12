@@ -38,6 +38,7 @@ using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
+using System.Threading;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -119,54 +120,49 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 	}
 	
-	class TypeSearchResult : MemberSearchResult
+	class DeclaredSymbolInfoResult : SearchResult
 	{
-		INamedTypeSymbol type;
+		bool useFullName;
+
+		DeclaredSymbolInfo type;
 			
 		public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }
 
 		public override string File {
-			get { return type.Locations.First().SourceTree.FilePath; }
+			get { return type.Node.GetLocation ().SourceTree.FilePath; }
 		}
 		
 		public override Xwt.Drawing.Image Icon {
 			get {
-				return ImageService.GetIcon (type.GetStockIcon (), IconSize.Menu);
+				return ImageService.GetIcon (type.GetStockIcon(), IconSize.Menu);
 			}
 		}
+
 		
 		public override int Offset {
-			get { return type.Locations.First ().SourceSpan.Start; }
+			get { return type.Span.Start; }
 		}
 
 		public override int Length {
-			get { return type.Locations.First ().SourceSpan.Length; }
+			get { return type.Span.Length; }
 		}
-
-		public static string GetPlainText (INamedTypeSymbol type, bool useFullName)
-		{
-			if (type.Arity == 0)
-				return useFullName ? type.GetFullName () : type.Name;
-			StringBuilder sb = new StringBuilder (useFullName ? type.GetFullName () : type.Name);
-			sb.Append ("<");
-			for (int i = 0; i < type.Arity; i++) {
-				if (i > 0)
-					sb.Append (", ");
-				sb.Append (type.TypeParameters [i].Name);
-			}
-			sb.Append (">");
-			return sb.ToString ();
-		}
-		
+			
 		public override string PlainText {
 			get {
-				return GetPlainText (type, false);
+				return type.Name;
 			}
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
+		public override TooltipInformation TooltipInformation {
 			get {
-				return Ambience.GetTooltip (type);
+				var docId = TypeSystemService.GetDocuments (type.Node.SyntaxTree.FilePath).FirstOrDefault ();
+				if (docId == null) {
+					return new  TooltipInformation ();
+				}
+				var cancellationToken = default(CancellationToken);
+				var task = type.GetSymbolAsync (TypeSystemService.GetCodeAnysisDocument (docId, cancellationToken), cancellationToken);
+				var tooltipInformation = Ambience.GetTooltip (task.Result);
+				return tooltipInformation;
 			}
 		}
 
@@ -177,31 +173,44 @@ namespace MonoDevelop.Components.MainToolbar
 //				if (type.TryGetSourceProject (out project)) {
 //					loc = GettextCatalog.GetString ("project {0}", project.Name);
 //				} else {
-				loc = GettextCatalog.GetString ("file {0}", type.Locations.First ().SourceTree.FilePath);
+				loc = GettextCatalog.GetString ("file {0}", File);
 //				}
 
-				switch (type.TypeKind) {
-				case TypeKind.Interface:
+				switch (type.Kind) {
+				case DeclaredSymbolInfoKind.Interface:
 					return GettextCatalog.GetString ("interface ({0})", loc);
-				case TypeKind.Struct:
+				case DeclaredSymbolInfoKind.Struct:
 					return GettextCatalog.GetString ("struct ({0})", loc);
-				case TypeKind.Delegate:
+				case DeclaredSymbolInfoKind.Delegate:
 					return GettextCatalog.GetString ("delegate ({0})", loc);
-				case TypeKind.Enum:
+				case DeclaredSymbolInfoKind.Enum:
 					return GettextCatalog.GetString ("enumeration ({0})", loc);
-				default:
+				case DeclaredSymbolInfoKind.Class:
 					return GettextCatalog.GetString ("class ({0})", loc);
+
+				case DeclaredSymbolInfoKind.Field:
+					return GettextCatalog.GetString ("field ({0})", loc);
+				case DeclaredSymbolInfoKind.Property:
+					return GettextCatalog.GetString ("property ({0})", loc);
+				case DeclaredSymbolInfoKind.Indexer:
+					return GettextCatalog.GetString ("indexer ({0})", loc);
+				case DeclaredSymbolInfoKind.Event:
+					return GettextCatalog.GetString ("event ({0})", loc);
+				case DeclaredSymbolInfoKind.Method:
+					return GettextCatalog.GetString ("method ({0})", loc);
 				}
+				return GettextCatalog.GetString ("symbol ({0})", loc);
 			}
 		}
 		
 		public override string GetMarkupText (Widget widget)
 		{
-			return HighlightMatch (widget, GetPlainText (type, useFullName), match);
+			return HighlightMatch (widget, useFullName ? type.FullyQualifiedContainerName : type.Name, match);
 		}
 		
-		public TypeSearchResult (string match, string matchedString, int rank, INamedTypeSymbol type, bool useFullName) : base (match, matchedString, rank, null, null, useFullName)
+		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)
 		{
+			this.useFullName = useFullName;
 			this.type = type;
 		}
 	}
@@ -263,91 +272,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return file.FilePath;
 		}
 	}
-	
-	class MemberSearchResult : SearchResult
-	{
-		protected bool useFullName;
-		protected ISymbol member;
-		protected INamedTypeSymbol declaringType;
 
-		public override SearchResultType SearchResultType { get { return SearchResultType.Member; } }
-
-		public override string PlainText {
-			get {
-				return member.Name;
-			}
-		}
-
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
-			get {
-				return Ambience.GetTooltip (member);
-			}
-		}
-
-		public override string File {
-			get { return member.Locations.First ().SourceTree.FilePath; }
-		}
-		
-		public override Xwt.Drawing.Image Icon {
-			get {
-				return ImageService.GetIcon (member.GetStockIcon (), IconSize.Menu);
-			}
-		}
-		
-		public override int Offset {
-			get { return member.Locations.First ().SourceSpan.Start; }
-		}
-
-		public override int Length {
-			get { return member.Locations.First ().SourceSpan.Length; }
-		}
-
-		public override string Description {
-			get {
-				string loc = GettextCatalog.GetString ("type \"{0}\"", member.ContainingType.Name);
-
-				switch (member.Kind) {
-				case SymbolKind.Field:
-					return GettextCatalog.GetString ("field ({0})", loc);
-				case SymbolKind.Property:
-					if (((IPropertySymbol)member).IsIndexer)
-						return GettextCatalog.GetString ("indexer ({0})", loc);
-					return GettextCatalog.GetString ("property ({0})", loc);
-				case SymbolKind.Event:
-					return GettextCatalog.GetString ("event ({0})", loc);
-				case SymbolKind.Method:
-					switch (((IMethodSymbol)member).MethodKind) {
-					case MethodKind.StaticConstructor:
-					case MethodKind.Constructor:
-						return GettextCatalog.GetString ("constructor ({0})", loc);
-					case MethodKind.Destructor:
-						return GettextCatalog.GetString ("destructor ({0})", loc);
-					case MethodKind.UserDefinedOperator:
-					case MethodKind.Conversion:
-					case MethodKind.BuiltinOperator:
-						return GettextCatalog.GetString ("operator ({0})", loc);
-					}
-					return GettextCatalog.GetString ("method ({0})", loc);
-				default:
-					throw new NotSupportedException (member.Kind + " is not supported.");
-				}
-			}
-		}
-		
-		public MemberSearchResult (string match, string matchedString, int rank, INamedTypeSymbol declaringType, ISymbol member, bool useFullName) : base (match, matchedString, rank)
-		{
-			this.declaringType = declaringType;
-			this.member = member;
-			this.useFullName = useFullName;
-		}
-		
-		public override string GetMarkupText (Widget widget)
-		{
-			if (useFullName)
-				return HighlightMatch (widget, member.IsAnyConstructor () ? member.ContainingType.GetFullName () :  member.ToDisplayString (SymbolDisplayFormat.FullyQualifiedFormat), match);
-			return HighlightMatch (widget, member.IsAnyConstructor ()  ? member.ContainingType.Name : member.Name, match);
-		}
-	}
 
 	class CommandResult: SearchResult
 	{

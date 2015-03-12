@@ -234,6 +234,8 @@ namespace MonoDevelop.Components.MainToolbar
 						LoggingService.LogError ("Error getting search results", t.Exception);
 					} else {
 						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
 							ShowResult (cat, t.Result ?? new NullDataSource ());
 						});
 					}

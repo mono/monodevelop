@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -103,6 +104,10 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+			MonoDevelopWorkspace.LoadingFinished += delegate {
+				ProjectSearchCategory.UpdateSymbolInfos ();
+				HandleSearchEntryChanged (null, EventArgs.Empty);
+			};
 		}
 
 		public void Initialize ()
@@ -528,7 +533,6 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.ShowAll ();
 			}
-
 			popup.Update (pattern);
 		}
 

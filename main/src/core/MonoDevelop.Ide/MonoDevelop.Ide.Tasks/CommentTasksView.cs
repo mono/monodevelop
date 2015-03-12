@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.CommentTasksChanged += OnCommentTasksChanged;
 			CommentTag.SpecialCommentTagsChanged += OnCommentTagsChanged;
 
-			TypeSystemService.WorkspaceItemLoaded += OnWorkspaceItemLoaded;
+			MonoDevelopWorkspace.LoadingFinished += OnWorkspaceItemLoaded;
 			IdeApp.Workspace.WorkspaceItemUnloaded += OnWorkspaceItemUnloaded;
 			IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
 			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;;
@@ -128,15 +128,8 @@ namespace MonoDevelop.Ide.Tasks
 			col.Resizable = true;
 
 			LoadColumnsVisibility ();
-			
-			comments.BeginTaskUpdates ();
-			try {
-				foreach (var item in IdeApp.Workspace.Items) {
-					LoadWorkspaceItemContents (item);
-				}
-			} finally {
-				comments.EndTaskUpdates ();
-			}
+
+			OnWorkspaceItemLoaded (null, EventArgs.Empty);
 
 			comments.TasksAdded += DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskAdded);
 			comments.TasksRemoved += DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskRemoved);
@@ -151,7 +144,7 @@ namespace MonoDevelop.Ide.Tasks
 				view.RowActivated -= OnRowActivated;
 				TaskService.CommentTasksChanged -= OnCommentTasksChanged;
 				CommentTag.SpecialCommentTagsChanged -= OnCommentTagsChanged;
-				IdeApp.Workspace.WorkspaceItemLoaded -= OnWorkspaceItemLoaded;
+				MonoDevelopWorkspace.LoadingFinished -= OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
 				comments.TasksAdded -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskAdded);
 				comments.TasksRemoved -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskRemoved);
@@ -217,21 +210,16 @@ namespace MonoDevelop.Ide.Tasks
 			PropertyService.Set ("Monodevelop.CommentTasksColumns", columns);
 		}
 		
-		void OnWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		void OnWorkspaceItemLoaded (object sender, EventArgs e)
 		{
 			comments.BeginTaskUpdates ();
 			try {
-				LoadWorkspaceItemContents (e.Item);
+				foreach (var sln in IdeApp.Workspace.GetAllSolutions ())
+					LoadSolutionContents (sln);
 			}
 			finally {
 				comments.EndTaskUpdates ();
 			}
-		}
-		
-		void LoadWorkspaceItemContents (WorkspaceItem wob)
-		{
-			foreach (var sln in wob.GetAllSolutions ())
-				LoadSolutionContents (sln);
 		}
 
 		Dictionary<Project, ProjectCommentTags> projectTags = new Dictionary<Project, ProjectCommentTags> ();
