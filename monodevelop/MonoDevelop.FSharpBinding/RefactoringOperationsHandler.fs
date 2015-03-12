@@ -198,12 +198,6 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
 //                | _ -> ()
 //            | _ -> ()
 
-//We create our own enum of commands as we have to replicate the ones that are now going through the Roslyn services
-//Our commands have the same keyboardshortcuts as defined in the core addin definition e.g. Meta|R for rename refactor
-type FSharpRefactorCommands =
-| Rename = 1
-| GotoDeclaration = 2
-
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
 
@@ -244,7 +238,7 @@ type CurrentRefactoringOperationsHandler() =
             //rename refactoring
             let canRename = Refactoring.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
             if canRename then
-                let commandInfo = IdeApp.CommandService.GetCommandInfo (FSharpRefactorCommands.Rename)
+                let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
                 commandInfo.Enabled <- true
 
                 ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (FSharpRefactoring (doc.Editor, doc)).Rename (lastIdent, symbolUse)))
