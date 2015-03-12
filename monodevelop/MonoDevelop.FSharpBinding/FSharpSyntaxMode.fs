@@ -271,56 +271,6 @@ module Patterns =
             | _ -> None
         else None
 
-
-    let isPreprocessor (s:string) =
-        s.StartsWith "#if" || s.StartsWith "#else" || s.StartsWith "#endif" 
-
-//    let (|StartsWithAbstractBlockSpan|ContainsAbstractBlockSpan|Other|) (spans: CloneableStack<Span>) =
-//        if spans = null || spans.Count = 0 then Other else
-//        match spans.Peek () with
-//        | :? FSharpSyntaxModeInternals.AbstractBlockSpan as abs -> StartsWithAbstractBlockSpan abs
-//        | _ -> spans.Clone()
-//               |> Seq.tryFind (fun s -> s :? FSharpSyntaxModeInternals.AbstractBlockSpan)
-//               |> function
-//                  | Some bs -> ContainsAbstractBlockSpan (bs :?> FSharpSyntaxModeInternals.AbstractBlockSpan)
-//                  | None -> Other
-
-//    let (|ExcludedCode|StringCode|CommentCode|OtherCode|PreProcessor|) (document: TextDocument, line: DocumentLine, offset, length, style: Highlighting.ColorScheme) =
-//        let docText = document.GetTextAt(offset, length)
-//
-//        let isPreProcessor = docText.Trim() |> isPreprocessor
-//
-//        if line.StartSpan <> null && line.StartSpan.Count > 0 then
-//            match line.StartSpan with
-//            | StartsWithAbstractBlockSpan abs ->
-//                if isPreProcessor then
-//                    PreProcessor docText
-//                else
-//                    if abs.Disabled then
-//                        ExcludedCode style.ExcludedCode.Name
-//                    else
-//                        OtherCode (style.PlainText.Name, docText)
-//
-//            | ContainsAbstractBlockSpan bs-> 
-//                if bs.Disabled then
-//                    ExcludedCode style.ExcludedCode.Name
-//                else
-//                    OtherCode (style.PlainText.Name, docText)
-//
-//            | Other ->
-//                match line.StartSpan.Peek() with
-//                | span when span.Rule = "String" || span.Rule = "VerbatimString" || span.Rule = "TripleQuotedString" ->
-//                    StringCode span.Color
-//                | span when span.Rule = "Comment" || span.Rule = "MultiComment" ->
-//                    CommentCode span.Color
-//                | _span -> OtherCode (style.PlainText.Name, docText)
-//
-//        else
-//            if docText.StartsWith ("#") then
-//                PreProcessor docText
-//            else
-//                OtherCode (style.PlainText.Name, docText)
-
 module internal Rules =
     let baseMode =
         let assembly = Reflection.Assembly.GetExecutingAssembly ()
@@ -342,6 +292,39 @@ module Keywords =
                        |> Option.map (fun keywords -> scheme.GetChunkStyle keywords.Color)
                        |> Option.fill scheme.KeywordTypes
         | None -> scheme.KeywordTypes
+
+module Tokens =
+    let (|InactiveCode|_|) = function
+        | token when token.ColorClass = FSharpTokenColorKind.InactiveCode -> Some token
+        | _ -> None
+
+    let (|InactiveCodeSection|_|) = function
+       | InactiveCode x :: xs -> 
+           let rec loop ts acc = 
+               match ts with 
+               | InactiveCode head :: rest ->
+                   loop rest (head :: acc) 
+               | _ -> List.rev acc, ts
+           Some (loop xs [x])
+       | _ -> None
+
+    let CollapseInactiveTokens tokens =
+        let rec loop tokens =
+            [   match tokens with
+                | InactiveCodeSection (inactiveSegs, rest) ->
+                    //collapse inactivesegs
+                    let startSeg = inactiveSegs |> List.head
+                    let endSeg = inactiveSegs |> List.last
+                    let combinedToken =
+                        {startSeg with RightColumn = endSeg.RightColumn
+                                       FullMatchedLength = endSeg.RightColumn - startSeg.LeftColumn}
+                    yield combinedToken
+                    yield! loop rest
+                | head::tail -> yield head
+                                yield! loop tail
+                | [] -> () ]
+        loop tokens
+
 
 type FSharpSyntaxMode(editor, context) =
     inherit MonoDevelop.Ide.Editor.Highlighting.SemanticHighlighting(editor, context)
@@ -368,7 +351,7 @@ type FSharpSyntaxMode(editor, context) =
         let chunkStyle =
             match tokenSymbol with
             | InactiveCode -> style.ExcludedCode
-            | ComputationExpression name -> style.KeywordTypes
+            | ComputationExpression _name -> style.KeywordTypes
             | Punctuation -> style.Punctuation
             | PunctuationBrackets -> style.PunctuationForBrackets
             | Keyword ts -> Keywords.getType style ts
@@ -390,7 +373,8 @@ type FSharpSyntaxMode(editor, context) =
             | _ -> style.PlainText
  
         let seg = ColoredSegment(line.Offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
-        LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
+        //Uncomment to visualise tokens segments
+        //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
         seg
 
     override x.DocumentParsed () =
@@ -416,19 +400,20 @@ type FSharpSyntaxMode(editor, context) =
                         let rec parseLine() =
                             [ match tokenizer.ScanToken(!state) with
                               | Some(tok), nstate ->
-                                  yield line, tok
+                                  yield tok
                                   state := nstate
                                   yield! parseLine()
                               | None, nstate -> state := nstate ]
-                        yield parseLine() |]
-
+                        yield line, parseLine() |]
+                                        
                 let processedTokens =
                     let style = getColourScheme ()
                     tokens
                     |> Array.map
-                        (fun chunks -> chunks
-                                       |> List.map (fun (line, token) ->
-                                                        makeChunk symbolsInFile colourisations line style token ))
+                        (fun (line, chunks) ->
+                            chunks
+                            |> Tokens.CollapseInactiveTokens
+                            |> List.map (makeChunk symbolsInFile colourisations line style))
                 segments <- processedTokens
                 Gtk.Application.Invoke (fun _ _ -> x.NotifySemanticHighlightingUpdate())
             | None -> ()
@@ -436,5 +421,5 @@ type FSharpSyntaxMode(editor, context) =
     override x.GetColoredSegments (segment) =
         let line = editor.GetLineByOffset segment.Offset
         match segments with
-        | [||] -> Seq.empty
         | xs when xs.Length >= line.LineNumber-1 -> segments.[line.LineNumber-1] |> List.toSeq
+        | _ -> Seq.empty
