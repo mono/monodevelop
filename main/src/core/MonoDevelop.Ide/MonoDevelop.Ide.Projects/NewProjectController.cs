@@ -498,6 +498,8 @@ namespace MonoDevelop.Ide.Projects
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
 				RunTemplateActions (processedTemplate);
+				if (wizardProvider.HasWizard)
+					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}

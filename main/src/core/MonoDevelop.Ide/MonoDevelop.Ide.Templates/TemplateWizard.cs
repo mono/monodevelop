@@ -94,6 +94,10 @@ namespace MonoDevelop.Ide.Templates
 			return TemplateParameter.CreateParameters (parameters)
 				.Where (parameter => parameter.IsValid);
 		}
+
+		public virtual void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
+		{
+		}
 	}
 }
 
