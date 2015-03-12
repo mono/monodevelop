@@ -110,15 +110,15 @@ namespace MonoDevelop.Projects
 			
 			ProjectReference pr = project.References [0];
 			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
-			Assert.AreEqual ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
+			Assert.AreEqual ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			pr = project.References [1];
 			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
-			Assert.AreEqual ("System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
+			Assert.AreEqual ("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			pr = project.References [2];
 			Assert.AreEqual (ReferenceType.Package, pr.ReferenceType);
-			Assert.AreEqual ("System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
+			Assert.AreEqual ("System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", pr.Reference);
 			
 			// Configurations
 			
