@@ -840,6 +840,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 
+			fileName = openFileInfo.FileName;
 			if (!origName.StartsWith ("http://", StringComparison.Ordinal))
 				fileName = fileName.FullPath;
 			
