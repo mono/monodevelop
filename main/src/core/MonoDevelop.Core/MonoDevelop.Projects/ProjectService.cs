@@ -248,7 +248,7 @@ namespace MonoDevelop.Projects
 
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, FilePath file)
 		{
-			string fullpath = file.FullPath;
+			string fullpath = FileService.ResolveFullPath (file).FullPath;
 			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 				fullpath = GetTargetFile (fullpath);
 				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
