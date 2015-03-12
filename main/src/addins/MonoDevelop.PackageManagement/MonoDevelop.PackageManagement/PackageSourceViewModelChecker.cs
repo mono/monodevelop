@@ -127,7 +127,11 @@ namespace MonoDevelop.PackageManagement
 
 		PackageSourceViewModelCheckedEventArgs CheckFileSystemPackageSource (PackageSourceViewModel packageSource)
 		{
-			if (Directory.Exists (packageSource.SourceUrl)) {
+			var dir = packageSource.SourceUrl;
+			if (dir.StartsWith ("file://", StringComparison.OrdinalIgnoreCase)) {
+				dir = new Uri (dir).LocalPath;
+			}
+			if (Directory.Exists (dir)) {
 				return new PackageSourceViewModelCheckedEventArgs (packageSource);
 			}
 			return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Directory not found"));
