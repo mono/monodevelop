@@ -275,8 +275,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void OnSolutionItemRemoved (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
 		{
 			var project = args.SolutionItem as MonoDevelop.Projects.Project;
+			var solution = sender as MonoDevelop.Projects.Solution;
 			if (project != null) {
-				var ws = GetWorkspace (project.ParentSolution);
+				var ws = GetWorkspace (solution);
 				ws.RemoveProject (project);
 			}
 		}
