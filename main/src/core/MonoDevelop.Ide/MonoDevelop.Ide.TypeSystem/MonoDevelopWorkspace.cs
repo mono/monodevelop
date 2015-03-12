@@ -455,7 +455,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var dll in portableDlls) {
 					if (token.IsCancellationRequested)
 						yield break;
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, portableProfiles + dll);
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, Path.Combine (portableProfiles, dll));
 					if (metadataReference != null)
 						yield return metadataReference;
 				}
