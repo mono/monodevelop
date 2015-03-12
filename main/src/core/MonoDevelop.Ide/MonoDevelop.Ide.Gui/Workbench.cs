@@ -839,12 +839,7 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
 				return;
 			}
-			
-			if (origName.StartsWith ("file://", StringComparison.Ordinal))
-				fileName = new Uri (origName).LocalPath;
-			else
-				fileName = origName;
-			
+
 			if (!origName.StartsWith ("http://", StringComparison.Ordinal))
 				fileName = fileName.FullPath;
 			
