@@ -45,11 +45,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SearchBar ()
 		{
+			Cell.Scrollable = true;
+			Initialize ();
 		}
 
 		public SearchBar (IntPtr ptr) : base (ptr)
 		{
-			EventsAttached = false;
+			Initialize ();
+		}
+
+		void Initialize ()
+		{
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => {
+				if (notification.Object == Window)
+					if (LostFocus != null)
+						LostFocus (this, null);
+			});
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => {
+				if (notification.Object == Window)
+					if (LostFocus != null)
+						LostFocus (this, null);
+			});
 		}
 
 		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)

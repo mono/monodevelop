@@ -132,6 +132,26 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return item;
 		}
 
+		void AttachToolbarEvents (SearchBar bar)
+		{
+			if (bar.EventsAttached)
+				return;
+
+			bar.Changed += (o, e) => {
+				if (SearchEntryChanged != null)
+					SearchEntryChanged (o, e);
+			};
+			bar.KeyPressed += (o, e) => {
+				if (SearchEntryKeyPressed != null)
+					SearchEntryKeyPressed (o, e);
+			};
+			bar.LostFocus += (o, e) => {
+				if (SearchEntryLostFocus != null)
+					SearchEntryLostFocus (o, e);
+			};
+			bar.EventsAttached = true;
+		}
+
 		NSToolbarItem CreateSearchBarToolbarItem ()
 		{
 			var bar = new SearchBar ();
@@ -146,18 +166,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MinSize = new CGSize (180, bar.FittingSize.Height),
 				MaxSize = new CGSize (180, bar.FittingSize.Height),
 			};
-			bar.Changed += (o, e) => {
-				if (SearchEntryChanged != null)
-					SearchEntryChanged (o, e);
-			};
-			bar.KeyPressed += (o, e) => {
-				if (SearchEntryKeyPressed != null)
-					SearchEntryKeyPressed (o, e);
-			};
-			bar.LostFocus += (o, e) => {
-				if (SearchEntryLostFocus != null)
-					SearchEntryLostFocus (o, e);
-			};
+			AttachToolbarEvents (bar);
 			return item;
 		}
 
@@ -165,8 +174,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			return new NSToolbarItem (StatusBarId) {
 				View = new StatusBar (),
-				MinSize = new CGSize (360, 23),
-				MaxSize = new CGSize (360, 23),
+				MinSize = new CGSize (360, 22),
+				MaxSize = new CGSize (360, 22),
 			};
 		}
 
@@ -364,7 +373,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
 				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
+				if (!clipItem.RespondsToSelector (sel))
+					throw new Exception ("Cocoa selector changed for clipped items menu.");
+
+				clipItem.PerformSelector (sel);
+
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				AttachToolbarEvents (menuBar);
 				return menuBar.StringValue;
 			}
 			set {
@@ -375,7 +391,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				// NSSearchField -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
 				var clipItem = (NSButton)searchEntry.Superview.Superview.Superview.Subviews [1];
+				var sel = new ObjCRuntime.Selector ("_computeMenuForClippedItemsIfNeeded");
+				if (!clipItem.RespondsToSelector (sel))
+					throw new Exception ("Cocoa selector changed for clipped items menu.");
+
+				clipItem.PerformSelector (sel);
+
 				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
+				AttachToolbarEvents (menuBar);
 				menuBar.StringValue = value;
 			}
 		}

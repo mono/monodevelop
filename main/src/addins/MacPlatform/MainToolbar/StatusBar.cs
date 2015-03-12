@@ -45,10 +45,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		StatusBar bar;
 		CALayer layer;
 
-		public StatusIcon (StatusBar bar, CALayer layer)
+		public StatusIcon (StatusBar bar, CALayer layer, NSTrackingArea trackingArea)
 		{
 			this.bar = bar;
 			this.layer = layer;
+			TrackingArea = trackingArea;
 		}
 
 		public void SetAlertMode (int seconds)
@@ -63,6 +64,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public string ToolTip {
+			get;
+			set;
+		}
+
+		internal NSTrackingArea TrackingArea {
 			get;
 			set;
 		}
@@ -107,43 +113,47 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 
-		NSAttributedString GetAttributedString (string text, string imageResource, NSColor color)
+		NSAttributedString GetStatusString (string text, NSColor color)
 		{
-			return GetAttributedString (text, ImageService.GetIcon (imageResource, Gtk.IconSize.Menu).ToNSImage (), color);
-		}
-
-		NSAttributedString GetAttributedString (string text, NSImage image, NSColor color)
-		{
-			var attrString = new NSMutableAttributedString ("");
-			if (image != null)
-				attrString.Append (NSAttributedString.FromAttachment (new NSTextAttachment { AttachmentCell = new NSTextAttachmentCell (image) } ));
-
-			attrString.Append (new NSAttributedString (text, new NSStringAttributes {
-				BaselineOffset = Window != null && Window.BackingScaleFactor == 2 ? 4.5f : 4,
+			return new NSAttributedString (text, new NSStringAttributes {
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
-					FirstLineHeadIndent = 3f,
-					HeadIndent = 3f,
-					TailIndent = -3f,
+					HeadIndent = imageView.Frame.Width,
+					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
 				},
 				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
-			}));
-
-			attrString.AddAttribute (NSAttributedString.ParagraphStyleAttributeName, new NSMutableParagraphStyle {
-				LineBreakMode = NSLineBreakMode.TruncatingMiddle,
-			}, new NSRange (0, attrString.Length));
-
-			return attrString;
+			});
 		}
+
+		readonly NSImageView imageView = new NSImageView {
+			ImageFrameStyle = NSImageFrameStyle.None,
+			Editable = false,
+		};
+
+		readonly NSTextField textField = new NSTextField {
+			AllowsEditingTextAttributes = true,
+			Bordered = false,
+			DrawsBackground = false,
+			Bezeled = false,
+			Editable = false,
+			Selectable = false,
+		};
 
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
-			Cell.PlaceholderAttributedString = GetAttributedString (BrandingService.ApplicationName, Stock.StatusSteady,
-				NSColor.DisabledControlText);
+			AllowsEditingTextAttributes = Selectable = Editable = false;
 
-			AllowsEditingTextAttributes = WantsLayer = true;
-			Editable = Selectable = false;
+			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
+			textField.Cell.StringValue = "";
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
+
+			// Fixes a render glitch of a whiter bg than the others.
+			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
+				BezelStyle = NSTextFieldBezelStyle.Rounded;
+
+			WantsLayer = true;
 			Layer.CornerRadius = 4;
 			ctxHandler = new StatusBarContextHandler (this);
 
@@ -161,12 +171,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultIcon.SetImage ("md-status-error-count", Window.BackingScaleFactor);
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+					buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
 				} else if (wc > 0) {
 					buildResultVisible = true;
 					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
 						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultIcon.SetImage ("md-status-warning-count", Window.BackingScaleFactor);
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+					buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
 				} else
 					buildResultVisible = false;
 
@@ -180,7 +192,28 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
 				ReconstructString ();
+				foreach (var layer in Layer.Sublayers) {
+					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
+						layer.SetImage (layerToStatus [layer.Name].Image, Window.BackingScaleFactor);
+				}
+				if (buildResultVisible) {
+					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
+					buildResultText.ContentsScale = Window.BackingScaleFactor;
+				}
 			});
+
+			AddSubview (imageView);
+			AddSubview (textField);
+		}
+
+		public override void DrawRect (CGRect dirtyRect)
+		{
+			if (imageView.Frame == CGRect.Empty)
+				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
+			if (textField.Frame == CGRect.Empty)
+				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width, Frame.Height);
+
+			base.DrawRect (dirtyRect);
 		}
 
 		protected override void Dispose (bool disposing)
@@ -192,20 +225,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void ReconstructString ()
 		{
-			if (string.IsNullOrEmpty (text))
-				AttributedStringValue = new NSAttributedString ("");
-			else
-				AttributedStringValue = GetAttributedString (text, image, textColor);
+			if (string.IsNullOrEmpty (text)) {
+				textField.AttributedStringValue = new NSAttributedString ("");
+				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
+			} else {
+				textField.AttributedStringValue = GetStatusString (text, textColor);
+				imageView.Image = image;
+			}
 		}
 
 		CALayer ProgressLayer {
 			get { return Layer.Sublayers.FirstOrDefault (l => l.Name == ProgressLayerId); }
 		}
 
-		readonly Dictionary<CALayer, StatusIcon> layerToStatus = new Dictionary<CALayer, StatusIcon> ();
+		readonly Dictionary<string, StatusIcon> layerToStatus = new Dictionary<string, StatusIcon> ();
 		internal void RemoveStatusLayer (CALayer statusLayer)
 		{
-			layerToStatus.Remove (statusLayer);
+			RemoveTrackingArea (layerToStatus [statusLayer.Name].TrackingArea);
+			layerToStatus.Remove (statusLayer.Name);
 			RepositionStatusLayers ();
 		}
 
@@ -227,11 +264,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		nfloat DrawSeparatorIfNeeded (nfloat right)
 		{
-			if (layerToStatus.Count == 0)
+			CALayer layer = Layer.Sublayers.FirstOrDefault (l => l.Name == SeparatorLayerId);
+			if (layerToStatus.Count == 0) {
+				if (layer != null)
+					layer.RemoveFromSuperLayer ();
 				return right;
+			}
 
 			right -= 9;
-			var layer = Layer.Sublayers.FirstOrDefault (l => l.Name == SeparatorLayerId);
 			if (layer != null) {
 				layer.Frame = new CGRect (right, 3, 1, 16);
 				layer.SetNeedsDisplay ();
@@ -242,19 +282,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				layer.BackgroundColor = NSColor.LightGray.CGColor;
 				Layer.AddSublayer (layer);
 			}
-			return right;
+			return right - 3;
 		}
 
 		bool buildResultVisible;
-		readonly CATextLayer buildResultText = new CATextLayer ();
-		readonly CALayer buildResultIcon = new CALayer ();
-		void DrawBuildResults ()
+		readonly CATextLayer buildResultText = new CATextLayer {
+			Name = BuildTextLayerId,
+		};
+		IconId buildImageId;
+		readonly CALayer buildResultIcon = new CALayer {
+			Name = BuildIconLayerId,
+		};
+		nfloat DrawBuildResults ()
 		{
-			if (buildResultText.Name != BuildTextLayerId)
-				buildResultText.Name = BuildTextLayerId;
-			if (buildResultIcon.Name != BuildIconLayerId)
-				buildResultIcon.Name = BuildIconLayerId;
-
 			if (!buildResultVisible) {
 				if (Layer.Sublayers != null) {
 					CALayer layer;
@@ -270,7 +310,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (layer != null)
 						layer.RemoveFromSuperLayer ();
 				}
-				return;
+				return nfloat.PositiveInfinity;
 			}
 
 			nfloat right = DrawSeparatorIfNeeded (LeftMostItemX ());
@@ -280,65 +320,42 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (buildResultText.SuperLayer == null)
 				Layer.AddSublayer (buildResultText);
 			buildResultText.SetNeedsDisplay ();
-			buildResultIcon.Frame = new CGRect (right - buildResultIcon.Bounds.Width, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
+			right -= buildResultIcon.Bounds.Width;
+			buildResultIcon.Frame = new CGRect (right, 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
 			if (buildResultIcon.SuperLayer == null)
 				Layer.AddSublayer (buildResultIcon);
 
-			var textLayer = Layer.Sublayers [0];
-			textLayer.Constraints = new [] {
-				new CAConstraint (CAConstraintAttribute.Width, BuildIconLayerId, CAConstraintAttribute.MinX, 1, -6),
-			};
-		}
-
-		class TooltipOwner : NSObject
-		{
-			readonly StatusBar bar;
-			readonly CALayer layer;
-
-			public TooltipOwner (StatusBar bar, CALayer layer)
-			{
-				this.bar = bar;
-				this.layer = layer;
-			}
-
-			public override string Description { get { return bar.layerToStatus [layer].ToolTip; } }
-		}
-
-		List<TooltipOwner> tooltips = new List<TooltipOwner> ();
-		void AddTooltip (CALayer layer)
-		{
-			var tooltip = new TooltipOwner (this, layer);
-			tooltips.Add (tooltip);
-			AddToolTip (layer.Frame, tooltip, IntPtr.Zero);
+			return right;
 		}
 
 		void RepositionStatusLayers ()
 		{
-			RemoveAllToolTips ();
-			foreach (var tooltip in tooltips)
-				tooltip.Dispose ();
-			tooltips.Clear ();
-
 			nfloat right = Layer.Frame.Width;
 			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
+					var icon = layerToStatus [item.Name];
+					RemoveTrackingArea (icon.TrackingArea);
+
 					right -= item.Bounds.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
-					AddTooltip (item);
-					item.SetNeedsDisplay ();
+
+					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+					AddTrackingArea (area);
+
+					icon.TrackingArea = area;
 					last = item;
 				}
 			}
 
-			if (last != null) {
-				var textLayer = Layer.Sublayers [0];
-				textLayer.Constraints = new [] {
-					new CAConstraint (CAConstraintAttribute.Width, last.Name, CAConstraintAttribute.MinX, 1, -6),
-				};
+			nfloat buildResultPosition = DrawBuildResults ();
+			if (buildResultPosition < right) { // We have a build result layer.
+				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+			} else if (last != null) { // We only have status icons.
+				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+			} else { // Fill the bar.
+				textField.SetFrameSize (new CGSize (Frame.Width - textField.Frame.Left, Frame.Height));
 			}
-
-			DrawBuildResults ();
 		}
 
 		long statusCounter;
@@ -348,16 +365,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Layer.Frame.Width :
 				Layer.Sublayers.Last (i => i.Name != null && i.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)).Frame.Left;
 
+			right -= (nfloat)pixbuf.Width + 6;
 			var layer = CALayer.Create ();
 			layer.Name = StatusIconPrefixId + (++statusCounter);
-			layer.SetImage (pixbuf, Window.BackingScaleFactor);
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			layer.Frame = new CGRect (right - (nfloat)pixbuf.Width - 6, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			var statusIcon = new StatusIcon (this, layer);
-			layerToStatus [layer] = statusIcon;
-			AddTooltip (layer);
+			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
+
+			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+			AddTrackingArea (area);
+
+			var statusIcon = new StatusIcon (this, layer, area) {
+				Image = pixbuf,
+			};
+			layerToStatus [layer.Name] = statusIcon;
 
 			Layer.AddSublayer (layer);
+
+			textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
 
 			return statusIcon;
 		}
@@ -533,7 +557,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				progress.BackgroundColor = xamBlue;
 				progress.BorderColor = xamBlue;
 				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Layer.Frame.Height - barHeight, (nfloat)width, barHeight);
+				progress.Frame = new CGRect (0, Frame.Height - barHeight, (nfloat)width, barHeight);
 			}
 			return progress;
 		}
@@ -633,6 +657,55 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
+		static NSAttributedString GetPopoverString (string text)
+		{
+			return new NSAttributedString (text, new NSStringAttributes {
+				ParagraphStyle = new NSMutableParagraphStyle {
+					Alignment = NSTextAlignment.Center,
+				},
+				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 1),
+			});
+		}
+
+		public override void ViewDidMoveToSuperview ()
+		{
+			base.ViewDidMoveToSuperview ();
+
+			popover.ContentViewController.View = new NSTextField {
+				DrawsBackground = false,
+				Bezeled = false,
+				Editable = false,
+				Frame = new CGRect (0, 0, 230, 30),
+				AutoresizingMask = NSViewResizingMask.HeightSizable,
+				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
+			};
+		}
+
+		NSPopover popover = new NSPopover {
+			ContentViewController = new NSViewController (null, null),
+			Animates = false,
+		};
+
+		public void ShowPopoverForLayer (CALayer layer)
+		{
+			if (!layerToStatus.ContainsKey (layer.Name))
+				return;
+
+			var field = (NSTextField)popover.ContentViewController.View;
+			string tooltip = layerToStatus [layer.Name].ToolTip;
+			if (tooltip == null)
+				return;
+
+			field.AttributedStringValue = GetPopoverString (tooltip);
+			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
+		}
+
+		void DestroyPopover ()
+		{
+			oldLayer = null;
+			popover.Close ();
+		}
+
 		CALayer LayerForEvent (NSEvent theEvent)
 		{
 			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
@@ -640,10 +713,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return layer != null ? layer.ModelLayer : null;
 		}
 
-		public override void MouseMoved (NSEvent theEvent)
+		string oldLayer;
+		public override void MouseEntered (NSEvent theEvent)
 		{
-			// Take care of tooltip.
-			base.MouseMoved (theEvent);
+			base.MouseEntered (theEvent);
+
+			StatusIcon icon;
+			var layer = LayerForEvent (theEvent);
+			if (layer == null || layer.Name == oldLayer) {
+				if (!layerToStatus.TryGetValue (layer.Name, out icon))
+					return;
+
+				if (string.IsNullOrEmpty (icon.ToolTip))
+					return;
+			}
+
+			oldLayer = layer.Name;
+			ShowPopoverForLayer (layer);
+		}
+
+		public override void MouseExited (NSEvent theEvent)
+		{
+			base.MouseExited (theEvent);
+
+			if (oldLayer != null) {
+				DestroyPopover ();
+			}
 		}
 
 		public override void MouseDown (NSEvent theEvent)
@@ -651,7 +746,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.MouseDown (theEvent);
 
 			var layer = LayerForEvent (theEvent);
-			if (layer != null) {
+			if (layer != null && layer.Name != null) {
 				Xwt.PointerButton button = Xwt.PointerButton.Left;
 				switch ((NSEventType)(long)theEvent.ButtonNumber) {
 				case NSEventType.LeftMouseDown:
@@ -665,14 +760,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					break;
 				}
 
-				if (layerToStatus.ContainsKey (layer)) {
-					layerToStatus [layer].NotifyClicked (button);
+				if (layerToStatus.ContainsKey (layer.Name)) {
+					DestroyPopover ();
+					layerToStatus [layer.Name].NotifyClicked (button);
 					return;
 				}
-				if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
-					IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
-					return;
-				}
+			}
+
+			if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+				return;
 			}
 
 			if (sourcePad != null)

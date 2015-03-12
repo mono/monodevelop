@@ -76,7 +76,10 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
 			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
-			ToolbarView.SearchEntryLostFocus += (o, e) => ToolbarView.SearchText = "";
+			ToolbarView.SearchEntryLostFocus += (o, e) => {
+				ToolbarView.SearchText = "";
+				DestroyPopup ();
+			};
 
 			toolbarView.ConfigurationChanged += HandleConfigurationChanged;
 			toolbarView.RuntimeChanged += HandleRuntimeChanged;
@@ -94,6 +97,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
 
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
