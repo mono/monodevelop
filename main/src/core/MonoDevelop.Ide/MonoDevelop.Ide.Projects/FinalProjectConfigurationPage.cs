@@ -38,6 +38,7 @@ namespace MonoDevelop.Ide.Projects
 		NewProjectConfiguration config;
 		SolutionTemplate template;
 		bool valid;
+		bool projectNameIsReadOnly;
 
 		public FinalProjectConfigurationPage (NewProjectConfiguration config)
 		{
@@ -151,7 +152,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsProjectNameEnabled {
-			get { return HasProjects; }
+			get { return HasProjects && !projectNameIsReadOnly; }
 		}
 
 		public bool IsSolutionNameEnabled {
@@ -227,6 +228,7 @@ namespace MonoDevelop.Ide.Projects
 		public void UpdateFromParameters ()
 		{
 			ProjectName = Parameters ["ProjectName"];
+			projectNameIsReadOnly = Parameters.GetBoolean ("IsProjectNameReadOnly", false);
 		}
 	}
 }
