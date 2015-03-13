@@ -94,7 +94,7 @@ open Reflection
 
 module TestHelpers =
 
-    let createDoc (text:string) references =
+    let createDoc (text:string) references defines =
         let content = new TestViewContent()
         let tww = TestWorkbenchWindow(content)
 
@@ -109,7 +109,13 @@ module TestHelpers =
         let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
         project.References.AddRange references
         project.Files.Add (new ProjectFile ("/a.fs", BuildAction.Compile))
-        let projectConfig = project.AddNewConfiguration("Debug")
+
+        let projectConfig = DotNetProjectConfiguration("Debug")
+        let cp = FSharpCompilerParameters(DefineConstants = defines)
+        projectConfig.CompilationParameters <- cp
+
+        project.Configurations.Add projectConfig
+        project.DefaultConfiguration <- projectConfig
 
         use solution = new MonoDevelop.Projects.Solution ()
         solution.AddConfiguration ("", true) |> ignore
@@ -137,5 +143,5 @@ module TestHelpers =
             with exn ->
                 Diagnostics.Debug.WriteLine(exn.ToString())
         finally
-            MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload solution
+            typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>?Unload(solution)
         doc, content
