@@ -287,10 +287,10 @@ namespace MonoDevelop.CodeActions
 			//ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
 
-			if (AddPossibleNamespace != null) {
-				AddPossibleNamespace (Editor, DocumentContext, menu);
-				items = menu.Items.Count;
-			}
+//			if (AddPossibleNamespace != null) {
+//				AddPossibleNamespace (Editor, DocumentContext, menu);
+//				items = menu.Items.Count;
+//			}
 
 			PopulateFixes (fixMenu, ref items);
 

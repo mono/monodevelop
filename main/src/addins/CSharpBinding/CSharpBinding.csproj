@@ -332,6 +332,14 @@
     <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\CSharpAddImportCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\AbstractAddImportCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\CSharpFullyQualifyCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\PredefinedCodeFixProviderNames.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpConvertToAsyncMethodCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAwaitCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAsyncCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\AbstractAsyncCodeFix.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -370,5 +378,8 @@
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
     <Folder Include="MonoDevelop.JSon\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\AddImport\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\Async\" />
   </ItemGroup>
 </Project>

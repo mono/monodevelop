@@ -10,10 +10,10 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
-		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
+<!--		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
 				defaultHandler = "MonoDevelop.CSharp.Refactoring.ResolveCommandHandler"
 				type="array"
-				_label = "Resolve"/> 
+				_label = "Resolve"/> -->
 		<Command id = "MonoDevelop.CSharp.Refactoring.ExtractMethodCommand"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.ExtractMethodCommandHandler"
 			_label = "Extract Method" 
@@ -264,7 +264,7 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>
+<!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
 	</Extension>
 
 </ExtensionModel>
