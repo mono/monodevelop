@@ -862,7 +862,6 @@ namespace MonoDevelop.Components.Docking
 
 			if (UseWindowsForTopLevelFrames) {
 				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
-				win.AcceptFocus = false;
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
 				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
