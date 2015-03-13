@@ -484,12 +484,16 @@ namespace MonoDevelop.Ide.Projects
 
 			if (OpenSolution) {
 				DisposeExistingNewItems ();
+				TemplateWizard wizard = wizardProvider.CurrentWizard;
 				var op = OpenCreatedSolution (processedTemplate);
 				op.Completed += delegate {
 					if (op.Success) {
 						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-						if (sol != null)
+						if (sol != null) {
+							if (wizard != null)
+								wizard.ItemsCreated (new [] { sol });
 							InstallProjectTemplatePackages (sol);
+						}
 					}
 				};
 			}
