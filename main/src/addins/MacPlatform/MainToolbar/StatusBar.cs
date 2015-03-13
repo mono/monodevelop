@@ -211,7 +211,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (imageView.Frame == CGRect.Empty)
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
 			if (textField.Frame == CGRect.Empty)
-				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width, Frame.Height);
+				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 
 			base.DrawRect (dirtyRect);
 		}
