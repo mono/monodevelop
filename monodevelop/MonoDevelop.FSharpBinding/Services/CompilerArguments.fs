@@ -298,16 +298,23 @@ module CompilerArguments =
         generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
 
   let getDefineSymbols (fileName:string) (project: MonoDevelop.Projects.Project option) =
-    [ let workspace = MonoDevelop.Ide.IdeApp.Workspace
-      if workspace = null then
-          if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript")) then
-              yield "INTERACTIVE"
-          else
-              yield "COMPILED"
-      match project with
-      | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
-                  | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
-                      for s in configuration.GetDefineSymbols() do
-                          yield s
-                  | _ -> ()
-      | None -> ()]
+    [if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript"))
+     then yield "INTERACTIVE"
+     else yield "COMPILED"
+    
+     let workspace = MonoDevelop.Ide.IdeApp.Workspace |> Option.ofNull
+     let configuration =
+        match workspace, project with
+         | None, Some proj ->
+             //as there is no workspace use the default configuration for the project
+             Some (proj.GetConfiguration(proj.DefaultConfiguration.Selector))
+         | Some workspace, Some project ->
+             Some (project.GetConfiguration(workspace.ActiveConfiguration))
+         | _ -> None
+
+     match configuration with
+     | Some config  ->
+         match config with
+         | :? DotNetProjectConfiguration as config -> yield! config.GetDefineSymbols() 
+         | _ -> ()
+     | None -> () ]
