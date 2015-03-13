@@ -37,6 +37,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal Widget gtkWidget;
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
+		new internal event EventHandler Activated;
 
 		/// <summary>
 		/// This tells whether events have been attached when created from the menu.
@@ -132,13 +133,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override void DidEndEditing (NSNotification notification)
 		{
-			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
-			if (value == (nint)(long)NSTextMovement.Return ||
-				value == (nint)(long)NSTextMovement.Tab) {
-				if (value == (nint)(long)NSTextMovement.Return)
-					SendKeyPressed (Xwt.Key.Return, Xwt.ModifierKeys.None);
+			base.DidEndEditing (notification);
 
+			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
+			if (value == (nint)(long)NSTextMovement.Tab) {
 				SelectText (this);
+				return;
+			}
+
+			if (value == (nint)(long)NSTextMovement.Return) {
+				if (Activated != null)
+					Activated (this, null);
 				return;
 			}
 
@@ -146,8 +151,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null)
 				LostFocus (this, null);
-
-			base.DidEndEditing (notification);
 		}
 
 		public override void ViewDidMoveToWindow ()

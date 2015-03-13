@@ -149,6 +149,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (SearchEntryLostFocus != null)
 					SearchEntryLostFocus (o, e);
 			};
+			bar.Activated += (o, e) => {
+				if (SearchEntryActivated != null)
+					SearchEntryActivated (o, e);
+			};
 			bar.EventsAttached = true;
 		}
 
@@ -251,21 +255,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var menu = clipItem.Menu;
 				var searchItem = menu.ItemAt (0);
 				var searchView = (SearchBar)searchItem.View;
-				if (!searchView.EventsAttached) {
-						searchView.Changed += (o, e) => {
-						if (SearchEntryChanged != null)
-							SearchEntryChanged (o, e);
-					};
-					searchView.KeyPressed += (o, e) => {
-						if (SearchEntryKeyPressed != null)
-							SearchEntryKeyPressed (o, e);
-					};
-					searchView.LostFocus += (o, e) => {
-						if (SearchEntryLostFocus != null)
-							SearchEntryLostFocus (o, e);
-					};
-					searchView.EventsAttached = true;
-				}
+				AttachToolbarEvents (searchView);
 				menu.PopUpMenu (menu.ItemAt (0), new CGPoint (0, -5), clipItem);
 				searchView.SelectText (searchView);
 			}
