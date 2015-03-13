@@ -2774,7 +2774,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
-			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (wrapper, indentationTracker) : null;
+			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (TextEditor.GetTextEditorData (), wrapper, indentationTracker) : null;
 		}
 
 		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)

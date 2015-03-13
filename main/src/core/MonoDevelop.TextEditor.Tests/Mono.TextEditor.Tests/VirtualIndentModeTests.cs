@@ -168,8 +168,8 @@ namespace Mono.TextEditor.Tests
 			var data = CreateData ("test\n\n\n");
 			data.Caret.Location = new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1));
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1) - 1), data.Caret.Location);
-			Assert.AreEqual ("test\n\t\n\n", data.Document.Text);
+			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			Assert.AreEqual ("test\n\n", data.Document.Text);
 		}
 
 		[Test]
@@ -391,7 +391,7 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Location = new DocumentLocation (1, 2);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("", data.Document.Text);
-			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
+			Assert.AreEqual (0, data.Caret.Offset);
 		}
 
 		/// <summary>
@@ -455,15 +455,29 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Location = new DocumentLocation (4, 3);
 
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (4, 2), data.Caret.Location);
-			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (4, 1), data.Caret.Location);
-
-			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
 
 		}
 
+		[Test]
+		public void TestSmartBackspaceBehavior ()
+		{
+			var data = CreateData ("\n\t\t\n\t\t");
+			data.Caret.Location = new DocumentLocation (3, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n", data.Document.Text);
+		}
+
+		[Test]
+		public void TestSmartBackspaceBehaviorCase2 ()
+		{
+			var data = CreateData ("\n\t\tTest\n\t\t");
+			data.Caret.Location = new DocumentLocation (3, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 7), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tTest", data.Document.Text);
+		}
 	}
 }
 

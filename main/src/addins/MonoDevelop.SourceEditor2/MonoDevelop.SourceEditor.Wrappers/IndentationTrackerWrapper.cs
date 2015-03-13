@@ -31,12 +31,17 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		readonly IReadonlyTextDocument document;
 		readonly MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker;
 
-		public IndentationTrackerWrapper (IReadonlyTextDocument document, MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
+		readonly Mono.TextEditor.TextEditorData textEditorData;
+
+		public IndentationTrackerWrapper (Mono.TextEditor.TextEditorData textEditorData, IReadonlyTextDocument document, MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
 		{
+			if (textEditorData == null)
+				throw new System.ArgumentNullException ("textEditorData");
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
 			if (indentationTracker == null)
 				throw new System.ArgumentNullException ("indentationTracker");
+			this.textEditorData = textEditorData;
 			this.document = document;
 			this.indentationTracker = indentationTracker;
 		}
@@ -52,14 +57,28 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return indentationTracker.GetIndentationString (lineNumber);
 		}
 
+		int CountIndent (string str)
+		{
+			int result = 0;
+			for (int i = 0; i < str.Length; i++) {
+				var ch = str[i];
+				if (ch == '\t') {
+					result += textEditorData.Options.TabSize;
+					continue;
+				}
+				result++;
+			}
+			return result;
+		}
+
 		int Mono.TextEditor.IIndentationTracker.GetVirtualIndentationColumn (int offset)
 		{
-			return 1 + ((Mono.TextEditor.IIndentationTracker)this).GetIndentationString (offset).Length;
+			return 1 + CountIndent(((Mono.TextEditor.IIndentationTracker)this).GetIndentationString (offset));
 		}
 
 		int Mono.TextEditor.IIndentationTracker.GetVirtualIndentationColumn (int lineNumber, int column)
 		{
-			return 1 + ((Mono.TextEditor.IIndentationTracker)this).GetIndentationString (lineNumber, column).Length;
+			return 1 + CountIndent(((Mono.TextEditor.IIndentationTracker)this).GetIndentationString (lineNumber, column));
 		}
 		#endregion
 	}
