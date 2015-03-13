@@ -248,7 +248,6 @@
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
