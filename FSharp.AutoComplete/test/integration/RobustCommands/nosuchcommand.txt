@@ -1,2 +1,0 @@
-ERROR: Unknown command or wrong arguments
-<<EOF>>
