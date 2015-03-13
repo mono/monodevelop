@@ -206,7 +206,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Up (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 			DeleteActions.Delete (data);
-			Assert.AreEqual ("\t\t\t\ttest", data.Document.Text);
+			Assert.AreEqual ("\t\ttest", data.Document.Text);
 		}
 
 		[Test]
@@ -504,6 +504,26 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual ("\n\t\tTest", data.Document.Text);
 		}
 
+
+		[Test]
+		public void TestSmartDeleteBehavior ()
+		{
+			var data = CreateData ("\n\t\t\n\t\t");
+			data.Caret.Location = new DocumentLocation (2, 3);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n", data.Document.Text);
+		}
+
+		[Test]
+		public void TestSmartDeleteBehaviorNonEmptyLines ()
+		{
+			var data = CreateData ("\n\t\tFoo\n\t\tBar");
+			data.Caret.Location = new DocumentLocation (2, 6);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
+		}
 	}
 }
 

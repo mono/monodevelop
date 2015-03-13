@@ -235,7 +235,7 @@ namespace Mono.TextEditor
 							data.Remove (startOffset, data.Caret.Offset - startOffset);
 							if (prevLine != null) {
 								if (prevLineIsEmpty) {
-									if (line.Length - data.Caret.Column - 1 > 0) {
+									if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
 										data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
 									} else {
 										data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
@@ -315,7 +315,21 @@ namespace Mono.TextEditor
 				DocumentLine line = data.Document.GetLine (data.Caret.Line);
 				if (data.Caret.Column == line.Length + 1) {
 					if (data.Caret.Line < data.Document.LineCount) { 
-						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, line.DelimiterLength);
+						var deletionLength = line.DelimiterLength;
+						// smart backspace (delete indentation)
+						if (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual) {
+							var next = line.NextLine;
+							if (next != null) {
+								if (data.HasIndentationTracker) {
+									var lineIndentation = next.GetIndentation (data.Document);
+									if (data.IndentationTracker.GetIndentationString (next.Offset) == lineIndentation) {
+										deletionLength += lineIndentation.Length;
+									}
+								}
+							}
+						} 
+
+						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, deletionLength);
 						if (line.EndOffsetIncludingDelimiter == data.Document.TextLength)
 							line.UnicodeNewline = UnicodeNewline.Unknown;
 					}
