@@ -67,12 +67,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			if (result.CommandInfos.Count == 0)
 				return result;
-			result.CommandInfos.AddSeparator ();
+			bool firstDiagnosticOption = true;
 			foreach (var fix in container.CodeDiagnosticActions) {
 
 				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null); 
 				if (inspector == null)
 					continue;
+
+				if (firstDiagnosticOption) {
+					result.CommandInfos.AddSeparator ();
+					firstDiagnosticOption = false;
+				}
+
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new CommandInfoSet ();
 				subMenu.Text = label;
@@ -150,7 +156,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool first = true;
 			if (ext != null) {
 				foreach (var fix in ext.GetCurrentFixes ().CodeRefactoringActions) {
-					if (added & first)
+					if (added & first && ciset.CommandInfos.Count > 0)
 						ciset.CommandInfos.AddSeparator ();
 					var info2 = new CommandInfo (fix.CodeAction.Title);
 					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run));
