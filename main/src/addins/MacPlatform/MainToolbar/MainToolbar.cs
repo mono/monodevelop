@@ -31,6 +31,7 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
 using AppKit;
 using CoreGraphics;
+using Foundation;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -176,11 +177,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSToolbarItem CreateStatusBarToolbarItem ()
 		{
-			return new NSToolbarItem (StatusBarId) {
-				View = new StatusBar (),
+			var bar = new StatusBar ();
+			var item = new NSToolbarItem (StatusBarId) {
+				View = bar,
+				// Place some temporary values in there.
 				MinSize = new CGSize (360, 22),
 				MaxSize = new CGSize (360, 22),
 			};
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => {
+				item.MinSize = new CGSize ((nfloat)Math.Round (bar.Window.Frame.Width * 0.25f), 22);
+				item.MaxSize = new CGSize ((nfloat)Math.Round (bar.Window.Screen.Frame.Width * 0.25f), 22);
+			});
+			return item;
 		}
 
 		NSToolbarItem CreateCenteringSpaceItem ()
