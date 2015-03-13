@@ -350,7 +350,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			nfloat buildResultPosition = DrawBuildResults ();
 			if (buildResultPosition < right) { // We have a build result layer.
-				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
 			} else if (last != null) { // We only have status icons.
 				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
 			} else { // Fill the bar.
