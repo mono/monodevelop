@@ -182,7 +182,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				} else
 					buildResultVisible = false;
 
-				DrawBuildResults ();
+				nfloat buildResultPosition = DrawBuildResults ();
+				if (buildResultPosition == nfloat.PositiveInfinity)
+					return;
+				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
 			};
 
 			updateHandler (null, null);
@@ -208,9 +211,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
-			if (imageView.Frame == CGRect.Empty)
+			if (imageView.Frame.Location == CGPoint.Empty)
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-			if (textField.Frame == CGRect.Empty)
+			if (textField.Frame.Location == CGPoint.Empty)
 				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 
 			base.DrawRect (dirtyRect);
@@ -328,10 +331,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return right;
 		}
 
-		void RepositionStatusLayers ()
+		internal void RepositionStatusLayers ()
 		{
 			nfloat right = Layer.Frame.Width;
-			CALayer last = null;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					var icon = layerToStatus [item.Name];
@@ -344,18 +346,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					AddTrackingArea (area);
 
 					icon.TrackingArea = area;
-					last = item;
 				}
 			}
 
 			nfloat buildResultPosition = DrawBuildResults ();
 			if (buildResultPosition < right) { // We have a build result layer.
 				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
-			} else if (last != null) { // We only have status icons.
+			} else
 				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
-			} else { // Fill the bar.
-				textField.SetFrameSize (new CGSize (Frame.Width - textField.Frame.Left, Frame.Height));
-			}
 		}
 
 		long statusCounter;
@@ -774,6 +772,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
+		}
+
+		public override void ViewDidEndLiveResize ()
+		{
+			base.ViewDidEndLiveResize ();
+			RepositionStatusLayers ();
 		}
 	}
 }
