@@ -91,6 +91,34 @@ namespace MonoDevelop.Ide.Commands
 			IdeApp.Workbench.ShowDefaultPoliciesDialog (null);
 		}
 	}
+
+	internal class DefaultUndoHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			// Nothing. Will be forwarded to gtk
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			// Forward to gtk
+			info.Bypass = true;
+		}
+	}
+
+	internal class DefaultRedoHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			// Nothing. Will be forwarded to gtk
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			// Forward to gtk
+			info.Bypass = true;
+		}
+	}
 	
 	internal class DefaultDeleteKeyHandler: CommandHandler
 	{

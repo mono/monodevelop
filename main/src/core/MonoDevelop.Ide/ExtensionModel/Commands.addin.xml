@@ -71,12 +71,14 @@
 			_label = "_Undo"
 			icon = "gtk-undo"
 			_description = "Undo last action"
+			defaultHandler = "MonoDevelop.Ide.Commands.DefaultUndoHandler"
 			shortcut = "Control|Z"
 			macShortcut = "Meta|Z" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Redo"
 			_label = "_Redo"
 			icon = "gtk-redo"
 			_description = "Redo last undone action"
+			defaultHandler = "MonoDevelop.Ide.Commands.DefaultRedoHandler"
 			shortcut = "Control|Shift|Z"
 			winShortcut = "Control|Y Control|Shift|Z"
 			macShortcut = "Meta|Shift|Z" />
