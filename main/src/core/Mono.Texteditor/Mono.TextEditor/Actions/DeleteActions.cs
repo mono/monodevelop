@@ -322,7 +322,7 @@ namespace Mono.TextEditor
 							if (next != null) {
 								if (data.HasIndentationTracker) {
 									var lineIndentation = next.GetIndentation (data.Document);
-									if (data.IndentationTracker.GetIndentationString (next.Offset) == lineIndentation) {
+									if (lineIndentation.StartsWith (data.IndentationTracker.GetIndentationString (next.Offset))) {
 										deletionLength += lineIndentation.Length;
 									}
 								}

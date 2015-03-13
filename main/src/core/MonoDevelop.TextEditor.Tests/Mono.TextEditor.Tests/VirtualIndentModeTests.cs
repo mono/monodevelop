@@ -524,6 +524,17 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
 			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
 		}
+
+
+		[Test]
+		public void TestSmartDeleteBehaviorBug1 ()
+		{
+			var data = CreateData ("\n\t\tFoo\n\t\t Bar");
+			data.Caret.Location = new DocumentLocation (2, 6);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
+		}
 	}
 }
 
