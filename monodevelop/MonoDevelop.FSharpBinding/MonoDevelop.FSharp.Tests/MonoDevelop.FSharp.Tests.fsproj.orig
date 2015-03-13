@@ -177,6 +177,7 @@
     <Compile Include="Checker.fs" />
     <Compile Include="IndentationTrackerTests.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
+    <Compile Include="SemanticHighlighting.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
