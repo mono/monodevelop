@@ -169,7 +169,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					View = menuBar,
 				},
 				MinSize = new CGSize (180, bar.FittingSize.Height),
-				MaxSize = new CGSize (180, bar.FittingSize.Height),
+				MaxSize = new CGSize (270, bar.FittingSize.Height),
 			};
 			AttachToolbarEvents (bar);
 			return item;
