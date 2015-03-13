@@ -163,10 +163,12 @@ namespace MonoDevelop.CodeActions
 
 				TextSpan span;
 
-				if (Editor.IsSomethingSelected)
-					span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
-				else
+				if (Editor.IsSomethingSelected) {
+					var selectionRange = Editor.SelectionRange;
+					span = selectionRange.Offset >= 0 ? TextSpan.FromBounds (selectionRange.Offset, selectionRange.EndOffset) : TextSpan.FromBounds (loc, loc);
+				} else {
 					span = TextSpan.FromBounds (loc, loc);
+				}
 				
 				var diagnosticsAtCaret =
 					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
@@ -180,7 +182,8 @@ namespace MonoDevelop.CodeActions
 					.GetTextSegmentMarkersAt (Editor.CaretOffset)
 					.OfType<IErrorMarker> ()
 					.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
-				
+				int editorLength = Editor.Length;
+
 				smartTagTask = Task.Run (async delegate {
 					try {
 						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
@@ -193,8 +196,16 @@ namespace MonoDevelop.CodeActions
 								continue;
 							try {
 								foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token));
+									var sourceSpan = diag.Location.SourceSpan;
+									if (sourceSpan.Start < 0 || sourceSpan.End < 0 || sourceSpan.End > editorLength || sourceSpan.Start >= editorLength)
+										continue;
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, sourceSpan)), token));
 								}
+							} catch (TaskCanceledException) {
+								return CodeActionContainer.Empty;
+							} catch (AggregateException ae) {
+								ae.Flatten ().Handle (aex => aex is TaskCanceledException);
+								return CodeActionContainer.Empty;
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
 								continue;
