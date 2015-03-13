@@ -23,7 +23,7 @@ let b = (fun a ->
 """
 
     let docWithCaret (content:string) = 
-        let d = fst(TestHelpers.createDoc(content.Replace("§", "")) [])
+        let d = fst(TestHelpers.createDoc(content.Replace("§", "")) [] "")
         d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
            | -1 -> ()
@@ -43,7 +43,7 @@ let b = (fun a ->
     [<Test>]
     member x.BasicIndents() =
        // let basicOffset = getBasicOffset (localVariable)
-        let doc = fst(TestHelpers.createDoc(content) [])
+        let doc = fst(TestHelpers.createDoc(content) [] "")
         doc.Editor.SetIndentationTracker (FSharpIndentationTracker(doc.Editor))
         getIndent (doc, content, 3, 1) |> should equal 5
         getIndent (doc, content, 5, 1) |> should equal 5

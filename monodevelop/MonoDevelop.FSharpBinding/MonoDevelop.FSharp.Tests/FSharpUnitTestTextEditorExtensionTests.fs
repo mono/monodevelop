@@ -59,7 +59,7 @@ module Test =
         ProjectReference (ReferenceType.Assembly, __SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.4/lib/nunit.framework.dll" )
 
     let createDoc (text:string) references =
-        let doc,viewContent = TestHelpers.createDoc(text) references
+        let doc,viewContent = TestHelpers.createDoc(text) references ""
         let test = new FSharpUnitTestTextEditorExtension()
         test.Initialize (doc.Editor, doc)
         viewContent.Contents.Add (test)

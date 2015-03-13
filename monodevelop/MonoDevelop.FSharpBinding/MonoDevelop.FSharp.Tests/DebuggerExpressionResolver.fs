@@ -37,9 +37,6 @@ let localTwo = localOne.PropertyOne"""
     [<TestCase("localTwo")>]
     member x.TestBasicLocalVariable(localVariable) =
         let basicOffset = getBasicOffset (localVariable)
-        let doc, _viewContent = TestHelpers.createDoc content []
+        let doc, _viewContent = TestHelpers.createDoc content [] ""
         let debugDataTipInfo = resolveExpression (doc, content, basicOffset)
         debugDataTipInfo.Text |> should equal localVariable
-
-   
-
