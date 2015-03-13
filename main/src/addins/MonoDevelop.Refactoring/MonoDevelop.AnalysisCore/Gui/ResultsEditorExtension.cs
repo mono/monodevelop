@@ -36,6 +36,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -133,24 +134,45 @@ namespace MonoDevelop.AnalysisCore.Gui
 		
 		Task oldTask;
 		CancellationTokenSource src = null;
+		object updateLock = new object();
 		uint updateTimeout = 0;
 
-		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
+			CancelUpdateTimout ();
 			var doc = DocumentContext.ParsedDocument;
 			if (doc == null)
 				return;
-			lock (this) {
-				CancelTask ();
-				src = new CancellationTokenSource ();
-				var treeType = new RuleTreeType ("AnalysisDocument", Path.GetExtension (doc.FileName));
-				var task = AnalysisService.QueueAnalysis (new AnalysisDocument (Editor, DocumentContext), treeType, src.Token);
-				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
+			var ad = new AnalysisDocument (Editor, DocumentContext);
+
+			updateTimeout = GLib.Timeout.Add (250, delegate {
+				lock (updateLock) {
+					CancelTask ();
+					src = new CancellationTokenSource ();
+					var token = src.Token;
+					oldTask = Task.Run (() => {
+						var result = CodeDiagnosticRunner.Check (ad, token);
+						if (token.IsCancellationRequested)
+							return;
+						var updater = new ResultsUpdater (this, result, token);
+						updater.Update ();
+					});
+					updateTimeout = 0;
+					return false;
+				}
+			});
+		}
+
+		public void CancelUpdateTimout ()
+		{
+			if (updateTimeout != 0) {
+				GLib.Source.Remove (updateTimeout);
+				updateTimeout = 0;
 			}
 		}
+
 
 		class ResultsUpdater 
 		{

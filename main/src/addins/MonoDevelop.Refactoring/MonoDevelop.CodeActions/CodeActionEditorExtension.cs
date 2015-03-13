@@ -182,38 +182,46 @@ namespace MonoDevelop.CodeActions
 					.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
 				
 				smartTagTask = Task.Run (async delegate {
-					var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-					var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
-					foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
-						if (token.IsCancellationRequested)
-							return CodeActionContainer.Empty;
-						var provider = cfp.GetCodeFixProvider ();
-						if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
-							continue;
-						try {
-							foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
-								await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token));
+					try {
+						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
+						foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
+							if (token.IsCancellationRequested)
+								return CodeActionContainer.Empty;
+							var provider = cfp.GetCodeFixProvider ();
+							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
+								continue;
+							try {
+								foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token));
+								}
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
+								continue;
 							}
-						} catch (Exception ex) {
-							LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
-							continue;
 						}
-					}
-					var codeActions = new List<ValidCodeAction> ();
-					foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
-						codeActions.Add (action);
-					}
-					var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions);
-					Application.Invoke (delegate {
-						if (token.IsCancellationRequested)
-							return;
-						if (codeActions.Count == 0) {
-							RemoveWidget ();
-							return;
+						var codeActions = new List<ValidCodeAction> ();
+						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+							codeActions.Add (action);
 						}
-						CreateSmartTag (codeActionContainer, loc);
-					});
-					return codeActionContainer;
+						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions);
+						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
+							if (codeActions.Count == 0) {
+								RemoveWidget ();
+								return;
+							}
+							CreateSmartTag (codeActionContainer, loc);
+						});
+						return codeActionContainer;
+
+					} catch (AggregateException ae) {
+						ae.Flatten ().Handle (aex => aex is TaskCanceledException);
+						return CodeActionContainer.Empty;
+					} catch (TaskCanceledException) {
+						return CodeActionContainer.Empty;
+					}
 				}, token);
 			} else {
 				RemoveWidget ();
