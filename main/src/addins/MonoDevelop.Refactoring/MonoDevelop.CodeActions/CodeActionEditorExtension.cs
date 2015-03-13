@@ -136,12 +136,10 @@ namespace MonoDevelop.CodeActions
 		{
 			quickFixCancellationTokenSource.Cancel ();
 			quickFixCancellationTokenSource = new CancellationTokenSource ();
-			if (quickFixTimeout != 0) {
-				GLib.Source.Remove (quickFixTimeout);
-				quickFixTimeout = 0;
-			}
+			smartTagTask = null;
 		}
 
+		Task<CodeActionContainer> smartTagTask;
 		CancellationTokenSource quickFixCancellationTokenSource = new CancellationTokenSource ();
 
 		void HandleCaretPositionChanged (object sender, EventArgs e)
@@ -157,72 +155,66 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				quickFixTimeout = GLib.Timeout.Add (50, delegate {
-					var loc = Editor.CaretOffset;
-					var ad = DocumentContext.AnalysisDocument;
-					if (ad == null) {
-						quickFixTimeout = 0;
-						return false;
+				var loc = Editor.CaretOffset;
+				var ad = DocumentContext.AnalysisDocument;
+				if (ad == null) {
+					return;
+				}
+
+				TextSpan span;
+
+				if (Editor.IsSomethingSelected)
+					span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
+				else
+					span = TextSpan.FromBounds (loc, loc);
+				
+				var diagnosticsAtCaret =
+					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
+						.OfType<IGenericTextSegmentMarker> ()
+						.Select (rm => rm.Tag)
+						.OfType<DiagnosticResult> ()
+						.Select (dr => dr.Diagnostic)
+						.ToList ();
+				
+				var errorList = Editor
+					.GetTextSegmentMarkersAt (Editor.CaretOffset)
+					.OfType<IErrorMarker> ()
+					.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
+				
+				smartTagTask = Task.Run (async delegate {
+					var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
+					var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
+					foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
+						if (token.IsCancellationRequested)
+							return CodeActionContainer.Empty;
+						var provider = cfp.GetCodeFixProvider ();
+						if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
+							continue;
+						try {
+							foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
+								await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token));
+							}
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
+							continue;
+						}
 					}
-
-					TextSpan span;
-
-					if (Editor.IsSomethingSelected)
-						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset);
-					else
-						span = TextSpan.FromBounds (loc, loc);
-					
-					var diagnosticsAtCaret =
-						Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
-							.OfType<IGenericTextSegmentMarker> ()
-							.Select (rm => rm.Tag)
-							.OfType<DiagnosticResult> ()
-							.Select (dr => dr.Diagnostic)
-							.ToList ();
-					
-					var errorList = Editor
-						.GetTextSegmentMarkersAt (Editor.CaretOffset)
-						.OfType<IErrorMarker> ()
-						.Where (rm => !string.IsNullOrEmpty (rm.Error.Id)).ToList ();
-					
-					
-					Task.Run (async delegate {
-						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
-						foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType)).Result) {
-							if (token.IsCancellationRequested)
-								return;
-							var provider = cfp.GetCodeFixProvider ();
-							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
-								continue;
-							try {
-								foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
-									await provider.RegisterCodeFixesAsync (
-										new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diag.Location.SourceSpan)), token)
-									);
-								}
-							} catch (Exception ex) {
-								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
-								continue;
-							}
+					var codeActions = new List<ValidCodeAction> ();
+					foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+						codeActions.Add (action);
+					}
+					var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions);
+					Application.Invoke (delegate {
+						if (token.IsCancellationRequested)
+							return;
+						if (codeActions.Count == 0) {
+							RemoveWidget ();
+							return;
 						}
-						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
-							codeActions.Add (action); 
-						}
-						Application.Invoke (delegate {
-							if (token.IsCancellationRequested)
-								return;
-							if (codeActions.Count == 0) {
-								RemoveWidget ();
-								return;
-							}
-							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
-						});
+						CreateSmartTag (codeActionContainer, loc);
 					});
-					quickFixTimeout = 0;
-					return false;
-				});
+					return codeActionContainer;
+				}, token);
 			} else {
 				RemoveWidget ();
 			}
@@ -769,9 +761,7 @@ namespace MonoDevelop.CodeActions
 
 		internal CodeActionContainer GetCurrentFixes ()
 		{
-			if (currentSmartTag == null)
-				return CodeActionContainer.Empty;
-			return (CodeActionContainer)currentSmartTag.Tag;
+			return smartTagTask == null ? CodeActionContainer.Empty : smartTagTask.Result;
 		}
 	}
 }
