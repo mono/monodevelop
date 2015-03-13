@@ -13,6 +13,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.CSharp.CodeFixes;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.CodeFixes
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.CSharp.CodeFixes
 			CancellationToken cancellationToken)
 		{
 			var methodNode = await GetMethodDeclaration(node, semanticModel, cancellationToken).ConfigureAwait(false);
-			return string.Format("Make {0} return Task instead of void", methodNode.WithBody(null));
+			return string.Format(GettextCatalog.GetString ("Make {0} return Task instead of void"), methodNode.WithBody(null));
 		}
 
 		protected override async Task<Tuple<SyntaxTree, SyntaxNode>> GetRootInOtherSyntaxTree(

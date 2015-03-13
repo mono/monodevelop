@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 {
@@ -180,7 +181,7 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 						var codeAction = new DocumentChangeAction(
 							node.Span,
 							DiagnosticSeverity.Info,
-							string.Format("Change '{0}' to '{1}.{2}';..", name, containerName, memberName),
+							string.Format(GettextCatalog.GetString ("Change '{0}' to '{1}.{2}'"), name, containerName, memberName),
 							(c) =>
 							{
 								var newRoot = this.ReplaceNode(node, containerName, c);

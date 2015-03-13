@@ -27,6 +27,7 @@ using System;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -60,8 +61,14 @@ namespace MonoDevelop.CodeIssues
 		
 		public CodeFixProvider GetCodeFixProvider ()
 		{
-			if (instance == null)
-				instance = (CodeFixProvider)Activator.CreateInstance(codeFixProviderType);
+			if (instance == null) {
+				try {
+					instance = (CodeFixProvider)Activator.CreateInstance (codeFixProviderType);
+				} catch (InvalidCastException e) {
+					LoggingService.LogError (codeFixProviderType + " can't be cast to CodeFixProvider.");
+					throw;
+				}
+			}
 
 			return instance;
 		}

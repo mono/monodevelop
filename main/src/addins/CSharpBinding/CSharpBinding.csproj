@@ -339,6 +339,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAwaitCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAsyncCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\AbstractAsyncCodeFix.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\MoveTypeToFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -346,7 +347,6 @@
     <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
     <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml" />
@@ -380,5 +380,6 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\AddImport\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\Async\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\" />
   </ItemGroup>
 </Project>

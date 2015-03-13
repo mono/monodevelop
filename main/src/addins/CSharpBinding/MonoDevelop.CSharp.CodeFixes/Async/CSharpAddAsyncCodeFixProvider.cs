@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.CSharp.CodeFixes;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.CodeFixes
 {
@@ -99,7 +100,7 @@ namespace MonoDevelop.CSharp.CodeFixes
 
 		protected override string GetDescription(Diagnostic diagnostic, SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
 		{
-			return "Make async";
+			return GettextCatalog.GetString ("Make async");
 		}
 
 		protected override async Task<SyntaxNode> GetNewRoot(SyntaxNode root, SyntaxNode oldNode, SemanticModel semanticModel, Diagnostic diagnostic, Document document, CancellationToken cancellationToken)
