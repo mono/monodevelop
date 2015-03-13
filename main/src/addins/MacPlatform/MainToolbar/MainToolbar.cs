@@ -186,8 +186,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => {
-				item.MinSize = new CGSize ((nfloat)Math.Round (bar.Window.Frame.Width * 0.25f), 22);
-				item.MaxSize = new CGSize ((nfloat)Math.Round (bar.Window.Screen.Frame.Width * 0.25f), 22);
+				double size = Math.Round (bar.Window.Frame.Width * 0.25f);
+				item.MinSize = new CGSize ((nfloat)Math.Max (300, size), 22);
+				item.MaxSize = new CGSize ((nfloat)Math.Min (600, size), 22);
+				bar.RepositionStatusLayers ();
 			});
 			return item;
 		}
