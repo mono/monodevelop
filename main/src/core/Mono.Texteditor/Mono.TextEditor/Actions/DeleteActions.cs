@@ -224,7 +224,6 @@ namespace Mono.TextEditor
 				var line = data.Document.GetLine (data.Caret.Line);
 				// smart backspace (delete indentation)
 				if (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual) {
-					var column = data.GetVirtualIndentationColumn (data.Caret.Offset);
 					if (data.Caret.Column == data.Caret.Column) {
 						bool isAllIndent = line.GetIndentation (data.Document).Length == data.Caret.Column - 1;
 
@@ -236,7 +235,11 @@ namespace Mono.TextEditor
 							data.Remove (startOffset, data.Caret.Offset - startOffset);
 							if (prevLine != null) {
 								if (prevLineIsEmpty) {
-									data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
+									if (line.Length - data.Caret.Column - 1 > 0) {
+										data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
+									} else {
+										data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
+									}
 								}
 								data.FixVirtualIndentation ();
 							}
