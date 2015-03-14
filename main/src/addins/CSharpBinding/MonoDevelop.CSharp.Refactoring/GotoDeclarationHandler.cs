@@ -36,88 +36,66 @@ using MonoDevelop.Ide.Editor;
 using System.Threading;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition;
+using Mono.Posix;
+using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
-	public enum RefactoryCommands
-	{
-		CurrentRefactoryOperations,
-		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
-		FindReferences,
-		FindAllReferences,
-		FindDerivedClasses,
-		DeclareLocal,
-		RemoveUnusedImports,
-		SortImports,
-		RemoveSortImports,
-		CreateMethod,
-		IntroduceConstant,
-		IntegrateTemporaryVariable,
-		ImportSymbol,
-		QuickFix,
-		Resolve
-	}
-
-	class RefactoringSymbolInfo
-	{
-		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo(new SymbolInfo());
-
-		SymbolInfo symbolInfo;
-
-		public ISymbol Symbol {
-			get {
-				return symbolInfo.Symbol;
-			}
-		}
-
-		public ImmutableArray<ISymbol> CandidateSymbols {
-			get {
-				return symbolInfo.CandidateSymbols;
-			}
-		}
-
-		public ISymbol DeclaredSymbol {
-			get;
-			internal set;
-		}
-
-		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
-		{
-			this.symbolInfo = symbolInfo;
-		}
-
-		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			if (document.ParsedDocument == null)
-				return RefactoringSymbolInfo.Empty;
-			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
-			if (unit != null) {
-				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
-				try {
-					var token = root.FindToken (offset);
-					var symbol = unit.GetSymbolInfo (token.Parent);
-					return new RefactoringSymbolInfo (symbol) {
-						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
-					};
-				} catch (Exception) {
-					return RefactoringSymbolInfo.Empty;
-				}
-			}
-			return RefactoringSymbolInfo.Empty;
-		}
-	}
-
-
 	class GotoDeclarationHandler : CommandHandler
 	{
+		static GotoDeclarationHandler ()
+		{
+			GoToDefinitionService.TryNavigateToSymbol = delegate(ISymbol symbol, Microsoft.CodeAnalysis.Project project, bool usePreviewTab) {
+				IdeApp.ProjectOperations.JumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
+				return true;
+			};
+
+			GoToDefinitionService.TryNavigateToSpan = delegate(Workspace workspace, DocumentId documentId, Microsoft.CodeAnalysis.Text.TextSpan textSpan, bool usePreviewTab) {
+				var project = workspace.CurrentSolution.GetProject (documentId.ProjectId);
+				if (project == null)
+					return false;
+
+				IdeApp.Workbench.OpenDocument (new FileOpenInformation (project.GetDocument (documentId).FilePath, TypeSystemService.GetMonoProject (project)) {
+					Offset = textSpan.Start
+				});
+				return true;
+			};
+
+			GoToDefinitionService.DisplayMultiple = delegate(IEnumerable<Tuple<Solution, ISymbol, Location>> list) {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+					foreach (var part in list)
+						monitor.ReportResult (GetJumpTypePartSearchResult (part.Item2, part.Item3));
+				}
+			};
+		}
+
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
+		{
+			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
+			var doc = TextEditorFactory.CreateNewDocument ();
+			doc.Text = provider.ReadString ();
+			int position = location.SourceSpan.Start;
+			while (position + part.Name.Length < doc.Length) {
+				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
+					break;
+				position++;
+			}
+			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
+		}
+
 		protected override void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			JumpToDeclaration (doc, RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result);
+			Run (doc);
+		}
+
+		public static void Run (MonoDevelop.Ide.Gui.Document doc)
+		{
+			GoToDefinitionService.TryGoToDefinition (doc.AnalysisDocument, doc.Editor.CaretOffset, default(CancellationToken));
 		}
 		
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)

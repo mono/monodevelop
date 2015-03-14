@@ -661,6 +661,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
 			foreach (var w in Workspaces) {
 				var projectId = w.GetProjectId (project);
 				if (projectId != null) {
@@ -672,6 +674,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static Microsoft.CodeAnalysis.Document GetCodeAnysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			if (docId == null)
+				throw new ArgumentNullException ("docId");
 			foreach (var w in Workspaces) {
 				var documentId = w.GetDocument (docId, cancellationToken);
 				if (documentId != null) {
@@ -680,5 +684,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return null;
 		}
+
+		public static MonoDevelop.Projects.Project GetMonoProject (Microsoft.CodeAnalysis.Project project)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			foreach (var w in Workspaces) {
+				var documentId = w.GetMonoProject (project);
+				if (documentId != null) {
+					return documentId;
+				}
+			}
+			return null;
+		}
+
 	}
 }

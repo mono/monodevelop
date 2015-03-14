@@ -27,11 +27,25 @@ using System;
 
 namespace MonoDevelop.Refactoring
 {
-	public class Commands
+
+	public enum RefactoryCommands
 	{
-		public Commands ()
-		{
-		}
+		CurrentRefactoryOperations,
+		GotoDeclaration, // in 'referenced' in IdeViMode.cs as string
+		FindReferences,
+		FindAllReferences,
+		FindDerivedClasses,
+		DeclareLocal,
+		RemoveUnusedImports,
+		SortImports,
+		RemoveSortImports,
+		CreateMethod,
+		IntroduceConstant,
+		IntegrateTemporaryVariable,
+		ImportSymbol,
+		QuickFix,
+		Resolve
 	}
+
 }
 

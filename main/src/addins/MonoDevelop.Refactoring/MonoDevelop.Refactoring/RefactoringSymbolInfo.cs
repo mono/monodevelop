@@ -37,7 +37,7 @@ using System.Threading;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace MonoDevelop.CSharp.Refactoring
+namespace MonoDevelop.Refactoring
 {
 
 	class RefactoringSymbolInfo

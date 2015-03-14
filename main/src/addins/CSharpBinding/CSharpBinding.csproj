@@ -340,6 +340,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAsyncCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\AbstractAsyncCodeFix.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

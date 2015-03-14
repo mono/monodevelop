@@ -194,6 +194,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new ConcurrentDictionary<MonoDevelop.Projects.Project, ProjectId> ();
 		ConcurrentDictionary<ProjectId, ProjectData> projectDataMap = new ConcurrentDictionary<ProjectId, ProjectData> ();
 
+		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
+		{
+			foreach (var kv in projectIdMap) {
+				if (kv.Value == project.Id)
+					return kv.Key;
+			}
+			return null;
+		}
+
 		public bool Contains (ProjectId projectId) 
 		{
 			return projectDataMap.ContainsKey (projectId);

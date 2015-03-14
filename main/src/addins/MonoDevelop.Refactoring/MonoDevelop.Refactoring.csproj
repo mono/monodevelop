@@ -146,7 +146,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
@@ -181,6 +180,8 @@
     <Compile Include="MonoDevelop.CodeActions\ValidCodeAction.cs" />
     <Compile Include="MonoDevelop.CodeActions\ValidCodeDiagnosticAction.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticFixDescriptor.cs" />
+    <Compile Include="MonoDevelop.Refactoring\Commands.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringSymbolInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
