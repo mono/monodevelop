@@ -374,12 +374,26 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			bool bypass = false;
+			List<string> catchInAllWindows = new List<string> {
+				"MonoDevelop.Ide.Commands.EditCommands.SelectAll",
+				"MonoDevelop.Ide.Commands.EditCommands.Cut",
+				"MonoDevelop.Ide.Commands.EditCommands.Paste",
+				"MonoDevelop.Ide.Commands.EditCommands.Copy"
+			};
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
 				if (cinfo.Bypass) {
 					bypass = true;
 					continue;
 				}
+
+				var focusSkip = !catchInAllWindows.Contains (commands [i].Id.ToString ()) && !IdeApp.Workbench.HasToplevelFocus;
+
+				if (focusSkip) {
+					bypass = true;
+					continue;
+				}
+
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
 					return result;
 			}
