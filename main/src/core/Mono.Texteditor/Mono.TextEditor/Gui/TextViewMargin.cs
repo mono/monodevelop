@@ -2045,7 +2045,7 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
-						textEditor.SetSelection (clickLocation, clickLocation);
+						textEditor.MainSelection = new Selection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
 				}
