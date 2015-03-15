@@ -195,12 +195,20 @@ namespace MonoDevelop.CodeActions
 							if (!provider.FixableDiagnosticIds.Any (diagnosticIds.Contains))
 								continue;
 							try {
-								foreach (var diag in diagnosticsAtCaret.Concat (errorList.Select (em => em.Error.Tag).OfType<Diagnostic> ())) {
-									var sourceSpan = diag.Location.SourceSpan;
-									if (sourceSpan.Start < 0 || sourceSpan.End < 0 || sourceSpan.End > editorLength || sourceSpan.Start >= editorLength)
-										continue;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diag, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, sourceSpan)), token));
+								var groupedDiagnostics = diagnosticsAtCaret
+									.Concat (errorList.Select (em => em.Error.Tag)
+									.OfType<Diagnostic> ())
+									.GroupBy (d => d.Location.SourceSpan);
+								foreach (var g in groupedDiagnostics) {
+									var diagnosticSpan = g.Key;
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, g.ToImmutableArray (), (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
+
+									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
+									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
+									// Work around for now is to only take the first diagnostic batch.
+									break;
 								}
+
 							} catch (TaskCanceledException) {
 								return CodeActionContainer.Empty;
 							} catch (AggregateException ae) {
