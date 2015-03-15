@@ -57,18 +57,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return indentationTracker.GetIndentationString (lineNumber);
 		}
 
-		int CountIndent (string str)
+		static int CountIndent (string str)
 		{
-			int result = 0;
-			for (int i = 0; i < str.Length; i++) {
-				var ch = str[i];
-				if (ch == '\t') {
-					result += textEditorData.Options.TabSize;
-					continue;
-				}
-				result++;
-			}
-			return result;
+			// '\t' == 1 - virtual indent is here the character indent not the visual one.
+			return str.Length;
 		}
 
 		int Mono.TextEditor.IIndentationTracker.GetVirtualIndentationColumn (int offset)
