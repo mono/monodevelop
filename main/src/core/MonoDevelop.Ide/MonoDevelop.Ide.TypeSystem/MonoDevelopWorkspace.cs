@@ -578,12 +578,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			if (document == null)
 				return;
-			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath);
+			bool isOpen;
+			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath, out isOpen);
 
 			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start)) {
 				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
 			}
-			
+
+			if (!isOpen) {
+				data.Save ();
+			}
 			OnDocumentTextChanged (id, text, PreservationMode.PreserveValue);
 		}
 		#endregion
