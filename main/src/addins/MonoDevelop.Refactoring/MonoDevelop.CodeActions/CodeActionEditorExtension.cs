@@ -208,8 +208,7 @@ namespace MonoDevelop.CodeActions
 									// Work around for now is to only take the first diagnostic batch.
 									break;
 								}
-
-							} catch (TaskCanceledException) {
+							} catch (OperationCanceledException) {
 								return CodeActionContainer.Empty;
 							} catch (AggregateException ae) {
 								ae.Flatten ().Handle (aex => aex is TaskCanceledException);
