@@ -677,7 +677,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnLineDeleted ()
 		{
 			base.OnLineDeleted ();
-			Line++;
+			dlg.Dispose ();
 		}
 
 		public override Widget CreateWidget ()
@@ -771,7 +771,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnLineDeleted ()
 		{
 			base.OnLineDeleted ();
-			Line++;
+			dlg.Dispose ();
 		}
 
 		public override Widget CreateWidget ()
