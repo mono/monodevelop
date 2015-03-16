@@ -32,6 +32,7 @@ using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -137,11 +138,32 @@ namespace MonoDevelop.Components.AutoTest
 		}
 
 		//TODO: expose ATK API over the session, instead of exposing specific widgets
-		public void SelectTreeviewItem (string name)
+		public bool SelectTreeviewItem (string treeViewName, string name, string after = null)
 		{
-			var accessible = ((Gtk.Widget)currentObject).Accessible;
-			var child = GetAccessibleChildren (accessible).First (c => c.Role == Atk.Role.TableCell && c.Name == name);
-			Atk.ComponentAdapter.GetObject (child).GrabFocus ();
+			return (bool)Sync (delegate {
+				var itemSelected = SelectWidget (treeViewName, true);
+				if (!itemSelected)
+					return false;
+
+				bool parentFound = after == null;
+				var treeView = currentObject as Gtk.TreeView;
+				bool result = false;
+				if (treeView != null) {
+					treeView.Model.Foreach ((model, path, iter) => {
+						var iterName = (string)model.GetValue (iter, 0);
+						parentFound = parentFound || iterName.Contains (after);
+						if (parentFound && string.Equals (name, iterName)) {
+							treeView.SetCursor (path, treeView.Columns [0], false);
+
+							result = true;
+							return true;
+						}
+						return result;
+					});
+				}
+
+				return result;
+			});
 		}
 
 		public string[] GetTreeviewCells ()
@@ -153,15 +175,18 @@ namespace MonoDevelop.Components.AutoTest
 				.ToArray ();
 		}
 
-		IEnumerable<Atk.Object> GetAccessibleChildren (Atk.Object obj)
+		IEnumerable<Atk.Object> GetAccessibleChildren (Atk.Object obj, bool recursive = false)
 		{
+			var childrenObjects = new List<Atk.Object> ();
 			var count = obj.NAccessibleChildren;
 			for (int i = 0; i < count; i++) {
 				var child = obj.RefAccessibleChild (i);
-				yield return child;
-				foreach (var c in GetAccessibleChildren (child))
-					yield return c;
+				childrenObjects.Add (child);
+				if (recursive)
+					childrenObjects.AddRange (GetAccessibleChildren (child));
 			}
+
+			return childrenObjects;
 		}
 		
 		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state)
@@ -206,6 +231,11 @@ namespace MonoDevelop.Components.AutoTest
 				currentObject = widget;
 				return widget != null && (!focus || FocusWidget (widget));
 			});
+		}
+
+		public bool IsBuildSuccessful ()
+		{
+			return TaskService.Errors.Count (x => x.Severity == TaskSeverity.Error) == 0;
 		}
 
 		bool FocusWidget (Gtk.Widget widget)
@@ -293,6 +323,17 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			return Sync (delegate {
 				return Invoke (CurrentObject, CurrentObject.GetType (), methodName, args);
+			});
+		}
+
+		public bool SetPropertyValue (string propertyName, object value, object[] index = null)
+		{
+			return (bool)Sync (delegate {
+				PropertyInfo propertyInfo = CurrentObject.GetType().GetProperty(propertyName);
+				if (propertyInfo != null)
+					propertyInfo.SetValue (CurrentObject, value, index);
+
+				return propertyInfo != null;
 			});
 		}
 		
@@ -406,7 +447,7 @@ namespace MonoDevelop.Components.AutoTest
 
 			GLib.Timeout.Add ((uint) pollTime, () => {
 				var window = GetFocusedWindow (false);
-				if (window != null && window.Name == windowName) {
+				if (window != null && window.GetType ().FullName == windowName) {
 					syncEvent.Set ();
 					return false;
 				}

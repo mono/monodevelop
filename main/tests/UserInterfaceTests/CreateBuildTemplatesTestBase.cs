@@ -1,4 +1,4 @@
-//
+﻿//
 // SimpleTest.cs
 //
 // Author:
@@ -24,45 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Commands;
+
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	public class SimpleTest: UITestBase
+	public abstract class CreateBuildTemplatesTestBase: UITestBase
 	{
-		[Test]
-		public void OpenEditCompile ()
-		{
-			var slnFile = Ide.OpenTestSolution ("ConsoleApp-VS2010/ConsoleApplication.sln");
-			var slnDir = slnFile.ParentDirectory;
+		public readonly static Action EmptyAction = () => { };
 
-			var exe = slnDir.Combine ("bin", "Debug", "ConsoleApplication.exe");
-			Assert.IsFalse (File.Exists (exe));
-
-			Ide.OpenFile (slnFile.ParentDirectory.Combine ("Program.cs"));
-
-			Ide.BuildSolution ();
-			AssertExeHasOutput (exe, "");
-
-			//select text editor, move down 10 lines, and insert a statement
-			Session.SelectActiveWidget ();
-			for (int n = 0; n < 10; n++)
-				Session.ExecuteCommand (TextEditorCommands.LineDown);
-			Session.ExecuteCommand (TextEditorCommands.LineEnd);
-			Session.TypeText ("\nConsole.WriteLine (\"Hello World!\");");
-
-			Ide.BuildSolution ();
-			AssertExeHasOutput (exe, "Hello World!");
-
-			Ide.CloseAll ();
-		}
-
-		void AssertExeHasOutput (string exe, string expectedOutput)
+		public void AssertExeHasOutput (string exe, string expectedOutput)
 		{
 			var sw = new StringWriter ();
 			var p = ProcessUtils.StartProcess (new ProcessStartInfo (exe), sw, sw, CancellationToken.None);
@@ -72,20 +49,47 @@ namespace UserInterfaceTests
 			Assert.AreEqual (expectedOutput, output.Trim ());
 		}
 
-		[Test]
-		public void CreateBuildProject ()
+		public void CreateBuildProject (string projectName, string kind, string category, string categoryRoot, Action beforeBuild)
 		{
-			string projectName = "TestFoo";
-			string projectCategory = "C#";
-			string projectKind = "Console Project";
+			var solutionParentDirectory = Util.CreateTmpDir (projectName);
+			try {
+				var newProject = new NewProjectController ();
+				newProject.Open ();
 
-			var projectDirectory = Util.CreateTmpDir (projectName);
+				Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
+				Thread.Sleep (3000);
+				Assert.IsTrue (newProject.SelectTemplate (kind));
+				Thread.Sleep (3000);
 
-			Ide.CreateProject (projectName, projectCategory, projectKind, projectDirectory);
+				Assert.IsTrue (newProject.Next ());
+				Thread.Sleep (3000);
 
-			Ide.BuildSolution ();
+				Assert.IsTrue (newProject.SetProjectName (projectName));
+				Thread.Sleep (2000);
 
-			Ide.CloseAll ();
+				Assert.IsTrue (newProject.SetSolutionName (projectName));
+				Thread.Sleep (2000);
+
+				Assert.IsTrue (newProject.SetSolutionLocation (solutionParentDirectory));
+				Thread.Sleep (2000);
+
+				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
+				Thread.Sleep (2000);
+
+				Assert.IsTrue (newProject.UseGit (true, false));
+				Thread.Sleep (2000);
+
+				Assert.IsTrue (newProject.Next ());
+				Thread.Sleep (2000);
+
+				beforeBuild ();
+				Thread.Sleep (1000);
+
+				Assert.IsTrue (Ide.BuildSolution ());
+			} finally {
+				Directory.Delete (solutionParentDirectory, true);
+				Ide.CloseAll ();
+			}
 		}
 	}
 }

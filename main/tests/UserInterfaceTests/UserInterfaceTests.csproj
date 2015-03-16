@@ -39,15 +39,18 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
     <Compile Include="TestService.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="SimpleTest.cs" />
     <Compile Include="ProcessUtils.cs" />
     <Compile Include="Gui.cs" />
     <Compile Include="Ide.cs" />
+    <Compile Include="CreateBuildTemplatesTestBase.cs" />
+    <Compile Include="MonoDevelopTemplatesTest.cs" />
+    <Compile Include="NewProjectController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -125,6 +125,12 @@ namespace MonoDevelop.Components.AutoTest
 			return session.SelectWidget (name, focus);
 		}
 
+		public bool SetPropertyValue (string propertyName, object value, object[] index = null)
+		{
+			ClearEventQueue ();
+			return session.SetPropertyValue (propertyName, value, index);
+		}
+
 		public object GlobalInvoke (string name, params object[] args)
 		{
 			ClearEventQueue ();
@@ -164,10 +170,10 @@ namespace MonoDevelop.Components.AutoTest
 			session.TypeText (text);
 		}
 
-		public void SelectTreeviewItem (string name)
+		public bool SelectTreeviewItem (string treeName, string name, string after = null)
 		{
 			ClearEventQueue ();
-			session.SelectTreeviewItem (name);
+			return session.SelectTreeviewItem (treeName, name, after);
 		}
 
 		public string[] GetTreeviewCells ()
@@ -175,6 +181,11 @@ namespace MonoDevelop.Components.AutoTest
 
 			ClearEventQueue ();
 			return session.GetTreeviewCells ();
+		}
+
+		public bool IsBuildSuccessful ()
+		{
+			return session.IsBuildSuccessful ();
 		}
 
 		public void PressKey (Gdk.Key key)
