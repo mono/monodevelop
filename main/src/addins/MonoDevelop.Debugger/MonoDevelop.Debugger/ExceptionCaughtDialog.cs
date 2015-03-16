@@ -51,7 +51,6 @@ namespace MonoDevelop.Debugger
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
 		protected Label ExceptionMessageLabel { get; private set; }
 		protected Label ExceptionTypeLabel { get; private set; }
-		readonly ExceptionCaughtMessage message;
 		readonly ExceptionInfo exception;
 		ExceptionInfo selected;
 		bool destroyed;
@@ -62,10 +61,9 @@ namespace MonoDevelop.Debugger
 			IsUserCode
 		}
 
-		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
+		public ExceptionCaughtDialog (ExceptionInfo ex)
 		{
 			selected = exception = ex;
-			message = msg;
 
 			Build ();
 			UpdateDisplay ();
@@ -377,7 +375,7 @@ namespace MonoDevelop.Debugger
 
 		void CloseClicked (object sender, EventArgs e)
 		{
-			message.Close ();
+			Destroy ();
 		}
 
 		void CopyClicked (object sender, EventArgs e)
@@ -393,7 +391,7 @@ namespace MonoDevelop.Debugger
 
 		protected override bool OnDeleteEvent (Gdk.Event evnt)
 		{
-			message.Close ();
+			Destroy ();
 			return true;
 		}
 
@@ -553,259 +551,4 @@ namespace MonoDevelop.Debugger
 			}
 		}
 	}
-
-	class ExceptionCaughtMessage : IDisposable
-	{
-		ExceptionCaughtMiniButton miniButton;
-		ExceptionCaughtDialog dialog;
-		ExceptionCaughtButton button;
-		readonly ExceptionInfo ex;
-
-		public ExceptionCaughtMessage (ExceptionInfo val, FilePath file, int line, int col)
-		{
-			File = file;
-			Line = line;
-			ex = val;
-		}
-
-		public FilePath File {
-			get; private set;
-		}
-
-		public int Line {
-			get; set;
-		}
-
-		public bool IsMinimized {
-			get { return miniButton != null; }
-		}
-
-		public void ShowDialog ()
-		{
-			if (dialog == null) {
-				dialog = new ExceptionCaughtDialog (ex, this);
-				MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
-				dialog = null;
-			}
-		}
-
-		public void ShowButton ()
-		{
-			if (dialog != null) {
-				dialog.Destroy ();
-				dialog = null;
-			}
-			if (button == null) {
-				button = new ExceptionCaughtButton (ex, this, File, Line);
-				TextEditorService.RegisterExtension (button);
-				button.ScrollToView ();
-			}
-			if (miniButton != null) {
-				miniButton.Dispose ();
-				miniButton = null;
-			}
-		}
-
-		public void ShowMiniButton ()
-		{
-			if (dialog != null) {
-				dialog.Destroy ();
-				dialog = null;
-			}
-			if (button != null) {
-				button.Dispose ();
-				button = null;
-			}
-			if (miniButton == null) {
-				miniButton = new ExceptionCaughtMiniButton (this, File, Line);
-				TextEditorService.RegisterExtension (miniButton);
-				miniButton.ScrollToView ();
-			}
-		}
-
-		public void Dispose ()
-		{
-			if (dialog != null) {
-				dialog.Destroy ();
-				dialog = null;
-			}
-			if (button != null) {
-				button.Dispose ();
-				button = null;
-			}
-			if (miniButton != null) {
-				miniButton.Dispose ();
-				miniButton = null;
-			}
-			if (Closed != null)
-				Closed (this, EventArgs.Empty);
-		}
-
-		public void Close ()
-		{
-			ShowButton ();
-		}
-
-		public event EventHandler Closed;
-	}
-
-	class ExceptionCaughtButton: TopLevelWidgetExtension
-	{
-		readonly Xwt.Drawing.Image closeSelOverImage;
-		readonly Xwt.Drawing.Image closeSelImage;
-		readonly ExceptionCaughtMessage dlg;
-		readonly ExceptionInfo exception;
-		Label messageLabel;
-
-		public ExceptionCaughtButton (ExceptionInfo val, ExceptionCaughtMessage dlg, FilePath file, int line)
-		{
-			this.exception = val;
-			this.dlg = dlg;
-			OffsetX = 6;
-			File = file;
-			Line = line;
-			closeSelImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu);
-			closeSelOverImage = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu);
-		}
-
-		protected override void OnLineChanged ()
-		{
-			base.OnLineChanged ();
-			dlg.Line = Line;
-		}
-
-		protected override void OnLineDeleted ()
-		{
-			base.OnLineDeleted ();
-			dlg.Dispose ();
-		}
-
-		public override Widget CreateWidget ()
-		{
-			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
-			var image = new Xwt.ImageView (icon).ToGtkWidget ();
-
-			var box = new HBox (false, 6);
-			var vb = new VBox ();
-			vb.PackStart (image, false, false, 0);
-			box.PackStart (vb, false, false, 0);
-			vb = new VBox (false, 6);
-			vb.PackStart (new Label {
-				Markup = GettextCatalog.GetString ("<b>{0}</b> has been thrown", exception.Type),
-				Xalign = 0
-			});
-			messageLabel = new Label {
-				Xalign = 0,
-				NoShowAll = true
-			};
-			vb.PackStart (messageLabel);
-
-			var detailsBtn = new Xwt.LinkLabel (GettextCatalog.GetString ("Show Details"));
-			var hh = new HBox ();
-			detailsBtn.NavigateToUrl += (o,e) => dlg.ShowDialog ();
-			hh.PackStart (detailsBtn.ToGtkWidget (), false, false, 0);
-			vb.PackStart (hh, false, false, 0);
-
-			box.PackStart (vb, true, true, 0);
-
-			vb = new VBox ();
-			var closeButton = new ImageButton {
-				InactiveImage = closeSelImage,
-				Image = closeSelOverImage
-			};
-			closeButton.Clicked += delegate {
-				dlg.ShowMiniButton ();
-			};
-			vb.PackStart (closeButton, false, false, 0);
-			box.PackStart (vb, false, false, 0);
-
-			exception.Changed += delegate {
-				Application.Invoke (delegate {
-					LoadData ();
-				});
-			};
-			LoadData ();
-
-			var eb = new PopoverWidget ();
-			eb.ShowArrow = true;
-			eb.EnableAnimation = true;
-			eb.PopupPosition = PopupPosition.Left;
-			eb.ContentBox.Add (box);
-			eb.ShowAll ();
-			return eb;
-		}
-
-		void LoadData ()
-		{
-			if (!string.IsNullOrEmpty (exception.Message)) {
-				messageLabel.Show ();
-				messageLabel.Text = exception.Message;
-				if (messageLabel.SizeRequest ().Width > 400) {
-					messageLabel.WidthRequest = 400;
-					messageLabel.Wrap = true;
-				}
-			} else {
-				messageLabel.Hide ();
-			}
-		}
-	}
-
-	class ExceptionCaughtMiniButton: TopLevelWidgetExtension
-	{
-		readonly ExceptionCaughtMessage dlg;
-
-		public ExceptionCaughtMiniButton (ExceptionCaughtMessage dlg, FilePath file, int line)
-		{
-			this.dlg = dlg;
-			OffsetX = 6;
-			File = file;
-			Line = line;
-		}
-
-		protected override void OnLineChanged ()
-		{
-			base.OnLineChanged ();
-			dlg.Line = Line;
-		}
-
-		protected override void OnLineDeleted ()
-		{
-			base.OnLineDeleted ();
-			dlg.Dispose ();
-		}
-
-		public override Widget CreateWidget ()
-		{
-			var box = new EventBox ();
-			box.VisibleWindow = false;
-			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
-			box.Add (new Xwt.ImageView (icon).ToGtkWidget ());
-			box.ButtonPressEvent += (o,e) => dlg.ShowButton ();
-			var eb = new PopoverWidget ();
-			eb.Theme.Padding = 2;
-			eb.ShowArrow = true;
-			eb.EnableAnimation = true;
-			eb.PopupPosition = PopupPosition.Left;
-			eb.ContentBox.Add (box);
-			eb.ShowAll ();
-			return eb;
-		}
-	}
-
-	class ExceptionCaughtTextEditorExtension: TextEditorExtension
-	{
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
-			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
-
-				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
-				return true;
-			}
-
-			return base.KeyPress (key, keyChar, modifier);
-		}
-	}
 }
-

@@ -70,7 +70,7 @@ namespace MonoDevelop.Debugger
 		static Backtrace currentBacktrace;
 		static int currentFrame;
 		
-		static ExceptionCaughtMessage exceptionDialog;
+		static ExceptionCaughtDialog exceptionDialog;
 		
 		static BusyEvaluatorDialog busyDialog;
 		static StatusBarIcon busyStatusIcon;
@@ -336,23 +336,17 @@ namespace MonoDevelop.Debugger
 			var val = CurrentFrame.GetException (ops);
 			if (val != null) {
 				HideExceptionCaughtDialog ();
-				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
-				exceptionDialog.ShowButton ();
-				exceptionDialog.Closed += (o, args) => exceptionDialog = null;
+				exceptionDialog = new ExceptionCaughtDialog (val);
+				MessageService.ShowCustomDialog (exceptionDialog, IdeApp.Workbench.RootWindow);
+				exceptionDialog.DeleteEvent += (o, args) => exceptionDialog = null;
 			}
 		}
 
 		static void HideExceptionCaughtDialog ()
 		{
 			if (exceptionDialog != null) {
-				exceptionDialog.Dispose ();
+				exceptionDialog.Destroy ();
 				exceptionDialog = null;
-			}
-		}
-
-		internal static ExceptionCaughtMessage ExceptionCaughtMessage {
-			get {
-				return exceptionDialog;
 			}
 		}
 		
