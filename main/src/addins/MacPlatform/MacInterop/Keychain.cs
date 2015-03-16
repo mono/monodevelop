@@ -63,6 +63,9 @@ namespace MonoDevelop.MacInterop
 		[DllImport (SecurityLib)]
 		static extern OSStatus SecKeychainDelete (IntPtr keychain);
 
+		[DllImport (SecurityLib)]
+		static extern OSStatus SecKeychainOpen (string pathName, ref IntPtr keychain);
+
 		internal static IntPtr CreateKeychain (string path, string password)
 		{
 			var passwd = Encoding.UTF8.GetBytes (password);
@@ -73,6 +76,27 @@ namespace MonoDevelop.MacInterop
 				throw new Exception (GetError (status));
 
 			return result;
+		}
+
+		internal static bool TryDeleteKeychain (string path)
+		{
+			try {
+				var ptr = IntPtr.Zero;
+				var result = SecKeychainOpen (path, ref ptr);
+				if (result == OSStatus.Ok) {
+					DeleteKeychain (ptr);
+					return true;
+				}
+			} catch {
+				// If we call 'SecKeychainOpen' on a keychain path that does not exist,
+				// we get a return value of 'success' and we also get a non-null handle.
+				// As such there's no way for the test suite to safely check if a keychain
+				// exists so it can delete a pre-existing one before exceuting. Work around
+				// this by wrapping in a try/catch. The 'DeleteKeyChain (IntPtr)' method 
+				// will throw a 'key chain does not exist' error if there is no pre-existing
+				// keychain
+			}
+			return false;
 		}
 
 		internal static void DeleteKeychain (IntPtr keychain)
