@@ -167,25 +167,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						wc++;
 				}
 
-				if (ec > 0) {
-					buildResultVisible = true;
-					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultText.ContentsScale = Window.BackingScaleFactor;
-					buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
-				} else if (wc > 0) {
-					buildResultVisible = true;
-					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultText.ContentsScale = Window.BackingScaleFactor;
-					buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
-				} else
-					buildResultVisible = false;
+				DispatchService.GuiDispatch (delegate {
+					if (ec > 0) {
+						buildResultVisible = true;
+						buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
+							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+						buildResultText.ContentsScale = Window.BackingScaleFactor;
+						buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
+					} else if (wc > 0) {
+						buildResultVisible = true;
+						buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
+							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+						buildResultText.ContentsScale = Window.BackingScaleFactor;
+						buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
+					} else
+						buildResultVisible = false;
 
-				nfloat buildResultPosition = DrawBuildResults ();
-				if (buildResultPosition == nfloat.PositiveInfinity)
-					return;
-				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+					nfloat buildResultPosition = DrawBuildResults ();
+					if (buildResultPosition == nfloat.PositiveInfinity)
+						return;
+					textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+				});
 			};
 
 			updateHandler (null, null);
