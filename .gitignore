@@ -21,34 +21,14 @@ repository/*
 =======
 *~
 pack/*
-lib/NUnit*
-lib/FsUnit
-
-FSharp.AutoComplete/test/unit/build
-FSharp.AutoComplete/packages
-
-# Vim
-
-vim/packages
-
-# Emacs
-*.elc
-emacs/deps
-emacs/tmp
-
-# Sublime Text
-*.sublime-workspace
-
-sublimetext/FSharp/fsac/fsac/*.*
-sublimetext/plugin_dev.json
 
 .DS_Store
 
-monodevelop/Makefile
+Makefile
 
-/monodevelop/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
-/monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
-/monodevelop/MonoDevelop.FSharpBinding/packages
+/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
+/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
+/packages
 
-monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj
-monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/tests
+/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj
+/MonoDevelop.FSharp.Tests/tests
