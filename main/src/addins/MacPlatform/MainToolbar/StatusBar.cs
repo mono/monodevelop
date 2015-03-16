@@ -334,6 +334,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal void RepositionStatusLayers ()
 		{
 			nfloat right = Layer.Frame.Width;
+			CATransaction.DisableActions = true;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					var icon = layerToStatus [item.Name];
@@ -350,6 +351,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 
 			nfloat buildResultPosition = DrawBuildResults ();
+			CATransaction.DisableActions = false;
 			if (buildResultPosition < right) { // We have a build result layer.
 				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
 			} else
