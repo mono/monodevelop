@@ -141,13 +141,19 @@ namespace MonoDevelop.Components.DockNotebook
 
 			var arr = new Xwt.ImageView (tabbarPrevImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			PreviousButton = new Button (arr.ToGtkWidget ());
+
+			var alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			alignment.Add (arr.ToGtkWidget ());
+			PreviousButton = new Button (alignment);
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 
 			arr = new Xwt.ImageView (tabbarNextImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
-			NextButton = new Button (arr.ToGtkWidget ());
+
+			alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
+			alignment.Add (arr.ToGtkWidget ());
+			NextButton = new Button (alignment);
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 
@@ -260,6 +266,21 @@ namespace MonoDevelop.Components.DockNotebook
 				LeftBarPadding / 2,
 				0,
 				LeftBarPadding / 2, height)
+			);
+
+			var image = PreviousButton.Child;
+			int buttonWidth = LeftBarPadding / 2;
+			image.SizeAllocate (new Gdk.Rectangle (
+				(buttonWidth - 12) / 2,
+				(height - 12) / 2,
+				12, 12)
+			);
+
+			image = NextButton.Child;
+			image.SizeAllocate (new Gdk.Rectangle (
+				buttonWidth + (buttonWidth - 12) / 2,
+				(height - 12) / 2,
+				12, 12)
 			);
 
 			DropDownButton.SizeAllocate (new Gdk.Rectangle (
