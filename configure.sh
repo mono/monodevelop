@@ -3,4 +3,4 @@ echo "Configuring..."
 fsharpi configure.fsx "$@"
 echo "Getting nuget packages..."
 mozroots --import --sync --quiet || echo 'Could not import mozroots, proceeding anyway'
-(cd MonoDevelop.FSharpBinding && mono .nuget/NuGet.exe restore MonoDevelop.FSharp.mac-linux.sln)
+mono .nuget/NuGet.exe restore MonoDevelop.FSharp.mac-linux.sln

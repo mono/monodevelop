@@ -106,9 +106,9 @@ let (mdDir, mdVersion) =
     | Some _ ->
         printfn "No MonoDevelop libraries found in specified prefix."
         exit 1
-    | None when (File.Exists (GetPath ["../../../monodevelop.pc.in"])) -> 
+    | None when (File.Exists (GetPath ["../../monodevelop.pc.in"])) -> 
         // Local MonoDevelop build directory
-        let dir = GetPath [Environment.CurrentDirectory + "/../../../build"]
+        let dir = GetPath [Environment.CurrentDirectory + "/../../build"]
         let version = Grep (GetPath [dir; "../../version.config"], @"^Version.*?(?<ver>([0-9]|\.)+)", "ver")
         dir, version
     | None ->
@@ -139,7 +139,7 @@ Console.WriteLine ("Detected version: {0}", mdVersion)
 let tag = if isWindows then "windows" else "mac-linux"
 
 let fsprojFile = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp." + tag + ".fsproj"
-let testProject = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj"
+let testProject = "MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj"
 let xmlFile = "MonoDevelop.FSharpBinding/FSharpBinding.addin.xml"
 
 //process main project file

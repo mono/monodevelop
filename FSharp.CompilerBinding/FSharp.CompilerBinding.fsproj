@@ -11,7 +11,6 @@
     <UsePartialTypes>False</UsePartialTypes>
     <AssemblyName>FSharp.CompilerBinding</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\monodevelop\MonoDevelop.FSharpBinding\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -69,14 +68,14 @@
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
     <Reference Include="Mono.Cecil">
-      <HintPath>..\lib\mono.cecil\Mono.Cecil.dll</HintPath>
+      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\mono.cecil\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.85\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\packages\FSharp.Compiler.Service.0.0.85\lib\net45\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\.nuget\NuGet.targets" Condition="Exists('..\.nuget\NuGet.targets')" />
 </Project>

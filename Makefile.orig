@@ -13,13 +13,8 @@ MDTOOL = mono 'INSERT_MDROOT/bin/mdtool.exe'
 # us to prepare new editions of the binding for several different versions of MonoDevelop.
 MDVERSION4=INSERT_MDVERSION4
 
-ifeq ($(USE_KNOWN_BINARIES),true)
-MDROOT=../dependencies/monodevelop.$(MDVERSION4)
-MDTAG=monodevelop-$(MDVERSION4)
-else
 MDROOT=INSERT_MDROOT
 MDTAG=mac-linux
-endif
 
 
 # The default configuration is Debug
@@ -54,5 +49,5 @@ clean:
 	-rm -fr MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 	-rm -fr MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
 	-rm -fr MonoDevelop.FSharpBinding/obj
-	(cd MonoDevelop.FSharpBinding/Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean)
+	(cd MonoDevelop.FSharp.Gui && xbuild MonoDevelop.FSharp.Gui.csproj /target:Clean)
 
