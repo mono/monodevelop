@@ -18,16 +18,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <Tailcalls>False</Tailcalls>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <Externalconsole>True</Externalconsole>
-    <GenerateDebugInfo>false</GenerateDebugInfo>
-    <OptimizeCode>false</OptimizeCode>
-    <GenerateXmlDoc>false</GenerateXmlDoc>
-    <GenerateTailCalls>false</GenerateTailCalls>
+    <Externalconsole>true</Externalconsole>
     <StartAction>Program</StartAction>
     <OtherFlags>--warnon:1182</OtherFlags>
 
@@ -48,16 +44,13 @@
   </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
-    <Tailcalls>True</Tailcalls>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>..\bin\INSERT_FSPROJ_MDTAG\Release\</OutputPath>
     <DefineConstants>TRACE;INSERT_FSPROJ_MDVERSIONDEFINE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <GenerateDebugInfo>false</GenerateDebugInfo>
-    <OptimizeCode>false</OptimizeCode>
+    <OptimizeCode>true</OptimizeCode>
     <GenerateXmlDoc>false</GenerateXmlDoc>
-    <GenerateTailCalls>false</GenerateTailCalls>
-    <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
