@@ -366,6 +366,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!AutoSelect)
 					AutoSelect = true;
 				goto case SpecialKey.Return;
+			case SpecialKey.Space:
+				if (AutoSelect) {
+					lastCommitCharEndoffset = CompletionWidget.CaretOffset;
+					WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
+					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
+				}
+				break;
 
 			case SpecialKey.Return:
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset;

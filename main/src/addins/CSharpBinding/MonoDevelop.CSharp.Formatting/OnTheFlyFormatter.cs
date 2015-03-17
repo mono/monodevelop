@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Formatting
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
 					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
-						if (change.Span.Start >= caretOffset)
+						if (!exact && change.Span.Start >= caretOffset)
 							continue;
 						var newText = change.NewText;
 						if (editor.EolMarker != "\r\n")
