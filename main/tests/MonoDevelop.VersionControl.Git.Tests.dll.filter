@@ -1,0 +1,6 @@
++MonoDevelop.VersionControl
++MonoDevelop.VersionControl.Git
++MonoDevelop.VersionControl.Subversion
++MonoDevelop.VersionControl.Subversion.Unix
++NGit
+-MonoDevelop.VersionControl.Git.Tests
