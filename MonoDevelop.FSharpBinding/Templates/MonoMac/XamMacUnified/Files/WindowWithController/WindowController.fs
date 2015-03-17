@@ -10,11 +10,11 @@ type ${Name}Controller =
 
     new () = { inherit NSWindowController ("${Name}") }
     new (handle : IntPtr) = { inherit NSWindowController (handle) }
-	
-	[<Export ("initWithCoder:")>]
-	new (coder : NSCoder) = { inherit NSWindowController (coder) }
 
-	override x.AwakeFromNib () =
-		base.AwakeFromNib ()
+    [<Export ("initWithCoder:")>]
+    new (coder : NSCoder) = { inherit NSWindowController (coder) }
 
-	member x.Window with get () = base.Window :?> ${Name}
+    override x.AwakeFromNib () =
+        base.AwakeFromNib ()
+
+    member x.Window with get () = base.Window :?> ${Name}

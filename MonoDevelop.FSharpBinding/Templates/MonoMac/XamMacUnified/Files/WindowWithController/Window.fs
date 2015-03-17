@@ -11,8 +11,8 @@ type ${Name} =
     new () = { inherit NSWindow () }
     new (handle : IntPtr) = { inherit NSWindow (handle) }
 
-	[<Export ("initWithCoder:")>]
-	new (coder : NSCoder) = { inherit NSWindow (coder) }
+    [<Export ("initWithCoder:")>]
+    new (coder : NSCoder) = { inherit NSWindow (coder) }
 
-	override x.AwakeFromNib () =
-		base.AwakeFromNib ()
+    override x.AwakeFromNib () =
+        base.AwakeFromNib ()

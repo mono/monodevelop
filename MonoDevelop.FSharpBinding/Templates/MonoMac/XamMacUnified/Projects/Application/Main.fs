@@ -5,6 +5,6 @@ open AppKit
 module main =
     [<EntryPoint>]
     let main args =
-		NSApplication.Init ()
-		NSApplication.Main (args)
-		0
+        NSApplication.Init ()
+        NSApplication.Main (args)
+        0
