@@ -581,7 +581,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath, out isOpen);
-
 			var changes = text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start).ToList ();
 
 			int delta = 0;
@@ -613,7 +612,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 			}
-			OnDocumentTextChanged (id, text, PreservationMode.PreserveValue);
+			OnDocumentTextChanged (id, new MonoDevelopSourceText(data), PreservationMode.PreserveValue);
 		}
 		#endregion
 
