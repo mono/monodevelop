@@ -134,7 +134,7 @@ namespace MonoDevelop.Components.MainToolbar
 		
 		public override Xwt.Drawing.Image Icon {
 			get {
-				return ImageService.GetIcon (type.GetStockIcon(), IconSize.Menu);
+				return ImageService.GetIcon (type.GetStockIconForSymbolInfo(), IconSize.Menu);
 			}
 		}
 

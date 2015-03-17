@@ -257,7 +257,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static IconId GetStockIcon (this DeclaredSymbolInfo symbol)
+		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfo symbol)
 		{
 			switch (symbol.Kind) {
 			case DeclaredSymbolInfoKind.Class:
