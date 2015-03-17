@@ -190,7 +190,7 @@
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp.mac-linux</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
+    <ProjectReference Include="..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
       <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>
       <Name>FSharp.CompilerBinding</Name>
     </ProjectReference>
