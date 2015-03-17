@@ -167,22 +167,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						wc++;
 				}
 
-				if (ec > 0) {
-					buildResultVisible = true;
-					buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultText.ContentsScale = Window.BackingScaleFactor;
-					buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
-				} else if (wc > 0) {
-					buildResultVisible = true;
-					buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
-						font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-					buildResultText.ContentsScale = Window.BackingScaleFactor;
-					buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
-				} else
-					buildResultVisible = false;
+				DispatchService.GuiDispatch (delegate {
+					if (ec > 0) {
+						buildResultVisible = true;
+						buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
+							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+						buildResultText.ContentsScale = Window.BackingScaleFactor;
+						buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
+					} else if (wc > 0) {
+						buildResultVisible = true;
+						buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
+							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+						buildResultText.ContentsScale = Window.BackingScaleFactor;
+						buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
+					} else
+						buildResultVisible = false;
 
-				DrawBuildResults ();
+					nfloat buildResultPosition = DrawBuildResults ();
+					if (buildResultPosition == nfloat.PositiveInfinity)
+						return;
+					textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+				});
 			};
 
 			updateHandler (null, null);
@@ -208,10 +213,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override void DrawRect (CGRect dirtyRect)
 		{
-			if (imageView.Frame == CGRect.Empty)
+			if (imageView.Frame.Location == CGPoint.Empty)
 				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-			if (textField.Frame == CGRect.Empty)
-				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width, Frame.Height);
+			if (textField.Frame.Location == CGPoint.Empty)
+				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
 
 			base.DrawRect (dirtyRect);
 		}
@@ -328,10 +333,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return right;
 		}
 
-		void RepositionStatusLayers ()
+		internal void RepositionStatusLayers ()
 		{
 			nfloat right = Layer.Frame.Width;
-			CALayer last = null;
+			CATransaction.DisableActions = true;
 			foreach (var item in Layer.Sublayers) {
 				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
 					var icon = layerToStatus [item.Name];
@@ -344,18 +349,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					AddTrackingArea (area);
 
 					icon.TrackingArea = area;
-					last = item;
 				}
 			}
 
 			nfloat buildResultPosition = DrawBuildResults ();
+			CATransaction.DisableActions = false;
 			if (buildResultPosition < right) { // We have a build result layer.
+				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+			} else
 				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
-			} else if (last != null) { // We only have status icons.
-				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
-			} else { // Fill the bar.
-				textField.SetFrameSize (new CGSize (Frame.Width - textField.Frame.Left, Frame.Height));
-			}
 		}
 
 		long statusCounter;
@@ -774,6 +776,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			if (sourcePad != null)
 				sourcePad.BringToFront (true);
+		}
+
+		public override void ViewDidEndLiveResize ()
+		{
+			base.ViewDidEndLiveResize ();
+			RepositionStatusLayers ();
 		}
 	}
 }
