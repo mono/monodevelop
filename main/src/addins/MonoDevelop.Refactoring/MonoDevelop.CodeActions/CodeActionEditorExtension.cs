@@ -589,30 +589,33 @@ namespace MonoDevelop.CodeActions
 					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
 
 					var document = IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath);
-					var insertionPoints = InsertionPointService.GetInsertionPoints (
-						document.Editor,
-						document.ParsedDocument,
-						insertion.Type,
-						insertion.Location
-					);
+					var parsedDocument = document.UpdateParseDocument ();
+					if (parsedDocument != null) {
+						var insertionPoints = InsertionPointService.GetInsertionPoints (
+							                     document.Editor,
+							                     parsedDocument,
+							                     insertion.Type,
+							                     insertion.Location
+						                     );
 
-					var options = new InsertionModeOptions (
-						insertionAction.Title,
-						insertionPoints,
-						async point => {
-							if (!point.Success) 
-								return;
+						var options = new InsertionModeOptions (
+							             insertionAction.Title,
+							             insertionPoints,
+							             async point => {
+								if (!point.Success)
+									return;
 
-							var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
+								var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
 
-							point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
-							// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
+								point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
 
-						}
-					);
+							}
+						             );
 
-					document.Editor.StartInsertionMode (options);
-					return;
+						document.Editor.StartInsertionMode (options);
+						return;
+					}
 				}
 
 				foreach (var op in act.GetOperationsAsync (token).Result) {
