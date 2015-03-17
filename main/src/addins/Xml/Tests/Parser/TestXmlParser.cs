@@ -71,7 +71,7 @@ namespace MonoDevelop.Xml.Tests.Parser
 			var doc = (XDocument) p.Nodes.Last ();
 
 			for (int i = 0; i < asserts.Length; i++) {
-				asserts [i] (doc.AllDescendentNodes.FirstOrDefault (n => n.Region.Contains (list[i])));
+				asserts [i] (doc.AllDescendentNodes.FirstOrDefault (n => n.Region.IsInside (list[i])));
 			}
 		}
 

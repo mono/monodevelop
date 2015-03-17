@@ -111,6 +111,16 @@ namespace MonoDevelop.Ide.Editor
 			return Contains (new DocumentLocation (line, column));
 		}
 
+		public bool IsInside (DocumentLocation location)
+		{
+			return Begin <= location && location <= End;
+		}
+
+		public bool IsInside (int line, int column)
+		{
+			return IsInside (new DocumentLocation (line, column));
+		}
+
 		public override bool Equals (object obj)
 		{
 			return obj is DocumentRegion && Equals ((DocumentRegion)obj);
