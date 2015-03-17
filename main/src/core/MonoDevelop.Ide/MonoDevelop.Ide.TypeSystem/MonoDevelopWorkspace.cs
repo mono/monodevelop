@@ -587,6 +587,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			if (!isOpen) {
 				data.Save ();
+				FileService.NotifyFileChanged (document.FilePath);
 			}
 			OnDocumentTextChanged (id, text, PreservationMode.PreserveValue);
 		}

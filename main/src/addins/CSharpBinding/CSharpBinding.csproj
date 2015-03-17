@@ -343,6 +343,12 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\GenerateConstructorCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\AbstractGenerateMemberCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\GenerateEnumMemberCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateConversionCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateMethodCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\GenerateVariableCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\ImplementAbstractClassCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\ImplementInterfaceCodeFixProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -385,5 +391,10 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\Async\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\" />
   </ItemGroup>
 </Project>
