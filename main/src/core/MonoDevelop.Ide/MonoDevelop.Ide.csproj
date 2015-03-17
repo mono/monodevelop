@@ -220,12 +220,6 @@
     <EmbeddedResource Include="icons\project-reference-overlay-16%402x.png">
       <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\parser-16.png">
-      <LogicalName>parser-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\parser-16%402x.png">
-      <LogicalName>parser-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\GenericProject.xpt.xml">
       <LogicalName>GenericProject.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -2176,6 +2170,12 @@
     <EmbeddedResource Include="icons\status-waiting-5-14%402x.png">
       <LogicalName>status-waiting-5-14@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\parser-16.png">
+      <LogicalName>parser-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\parser-16%402x.png">
+      <LogicalName>parser-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
     <EmbeddedResource Include="icons\mac\status-building-1-16.png">
@@ -2303,6 +2303,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-opening-6-16%402x.png">
       <LogicalName>status-opening-6-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-parsing-16.png">
+      <LogicalName>status-parsing-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\status-parsing-16%402x.png">
+      <LogicalName>status-parsing-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-pulling-1-16.png">
       <LogicalName>status-pulling-1-16.png</LogicalName>
