@@ -42,6 +42,13 @@ namespace MonoDevelop.Debugger
 			tree.AllowAdding = false;
 		}
 
+		protected override void OnDebuggerStopped (object s, EventArgs a)
+		{
+			lastLookup = null;
+			lastFrame = null;
+			base.OnDebuggerStopped (s, a);
+		}
+
 		public override void OnUpdateList ()
 		{
 			base.OnUpdateList ();
