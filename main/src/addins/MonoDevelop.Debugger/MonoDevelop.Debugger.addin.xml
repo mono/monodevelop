@@ -261,4 +261,9 @@
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
 		<Section id="Debugger" _label="Debugger" fill="true" class="MonoDevelop.Debugger.DebuggerOptionsPanel" icon="md-prefs-debugger" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class class="MonoDevelop.Debugger.ExceptionCaughtTextEditorExtension" />
+	</Extension>
 </ExtensionModel>
+
