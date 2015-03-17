@@ -787,6 +787,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (analysisDocument != null)
 				return;
+			if (Editor == null) {
+				analysisDocument = null;
+				return;
+			}
 			if (Project != null) {
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
