@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Xamarin.Mac Library Project</_Name>
-		<_Category>F#/Mac/Unified API</_Category>
+		<_Name>Library Project</_Name>
+		<Category>mac/library/unified</Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-library-project" />
 		<LanguageName>F#</LanguageName>
-		<_Description><![CDATA[*** PREVIEW ONLY ***
+		<GroupId>md-xamarin-mac-unified-library-project</GroupId>
+		<_Description><![CDATA[A basic Cocoa Mac library project with XIB support that targets the new Unified API shared with Xamarin.iOS. Requires Xcode 5 or newer.
 
-			A basic Cocoa Mac library that targets the new Unified API shared with Xamarin.iOS. Requires Xcode 5 or newer.
+The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. 
 
-			The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
-
-			Currently the Unified API is available as a preview, is subject to change, and stability is not yet guaranteed.]]>
-		</_Description>
+The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.]]></_Description>
 	</TemplateConfiguration>
 	
 	<Actions>

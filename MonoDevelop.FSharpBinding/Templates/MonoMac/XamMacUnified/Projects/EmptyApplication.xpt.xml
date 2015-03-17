@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Xamarin.Mac Empty Application</_Name>
-		<_Category>F#/Mac/Unified API</_Category>
+		<_Name>Empty Project</_Name>
+		<Category>mac/app/general</Category>
+		<Icon>md-project-mac</Icon>
+		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
-		<_Description><![CDATA[*** PREVIEW ONLY ***
+		<GroupId>md-xamarin-mac-unified-empty-project</GroupId>
+		<_Description><![CDATA[An empty Mac project that targets the new Unified API shared with Xamarin.iOS. Requires Xcode 5 or newer.
 
-An empty Cocoa Mac application that targets the new Unified API shared with Xamarin.iOS. Requires Xcode 5 or newer.
+The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. 
 
-The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
-
-Currently the Unified API is available as a preview, is subject to change, and stability is not yet guaranteed.]]>
-		</_Description>
+The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.]]></_Description>
 	</TemplateConfiguration>
 
 	<Actions>
