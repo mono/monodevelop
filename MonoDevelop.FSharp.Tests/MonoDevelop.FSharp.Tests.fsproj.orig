@@ -186,7 +186,7 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharp.INSERT_PROJ_TAG.fsproj">
+    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.INSERT_PROJ_TAG.fsproj">
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp.mac-linux</Name>
     </ProjectReference>
