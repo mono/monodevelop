@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core.Text;
 using System.Collections.Concurrent;
+using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -581,13 +582,36 @@ namespace MonoDevelop.Ide.TypeSystem
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath, out isOpen);
 
-			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start)) {
+			var changes = text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start).ToList ();
+
+			int delta = 0;
+			foreach (var change in changes) {
 				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
+				delta += change.Span.Length - change.NewText.Length;
 			}
 
 			if (!isOpen) {
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
+				var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
+				string currentText = data.Text;
+				foreach (var change in changes) {
+					delta -= change.Span.Length - change.NewText.Length;
+					var startOffset = change.Span.Start - delta;
+					var str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+					data.ReplaceText (startOffset, change.NewText.Length, str);
+				}
 				data.Save ();
 				FileService.NotifyFileChanged (document.FilePath);
+			} else {
+				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
+				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, document.FilePath) == 0);
+				if (documentContext != null) {
+					foreach (var change in changes) {
+						delta -= change.Span.Length - change.NewText.Length;
+						var startOffset = change.Span.Start - delta;
+						formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+					}
+				}
 			}
 			OnDocumentTextChanged (id, text, PreservationMode.PreserveValue);
 		}
