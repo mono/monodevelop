@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Widget parsingMessage;
 		int initialWordLength;
 		int previousWidth = -1, previousHeight = -1;
-		
+
 		public CodeCompletionContext CodeCompletionContext {
 			get;
 			set;
@@ -59,7 +59,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		IMutableCompletionDataList mutableList;
-		ICompletionDataList completionDataList;
 		public ICompletionDataList CompletionDataList {
 			get { return completionDataList; }
 			set {
@@ -468,14 +467,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 							AddWordToHistory (PartialWord, cdItem.CompletionText);
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
-
 				if (item.HasOverloads) {
 					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ref ka, descriptor);
 				} else {
 					item.InsertCompletionText (this, ref ka, descriptor);
 				}
-
-				AddWordToHistory (PartialWord, item.DisplayText);
+				cache.CommitCompletionData (item);
 				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
 			} finally {
 				IsInCompletion = false;

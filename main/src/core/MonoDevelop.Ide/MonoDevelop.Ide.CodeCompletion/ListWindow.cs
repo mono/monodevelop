@@ -59,7 +59,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		ListWidget list;
 		Widget footer;
 		protected VBox vbox;
-		
+		internal MruCache cache = new MruCache();
+		protected ICompletionDataList completionDataList;
+
 		public CompletionTextEditorExtension Extension {
 			get;
 			set;
@@ -577,46 +579,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (string.Compare (bestWord, partialWord ?? "", true) == 0) 
 					return idx;
 			}
-			
-			if (string.IsNullOrEmpty (partialWord) || partialWord.Length <= 2) {
-				// Search for history matches.
-				string historyWord;
-				if (wordHistory.TryGetValue (partialWord, out historyWord)) {
-					for (int xIndex = 0; xIndex < list.filteredItems.Count; xIndex++) {
-						string currentWord = DataProvider.GetCompletionText (list.filteredItems[xIndex]);
-						if (currentWord == historyWord) {
-							idx = xIndex;
-							break;
-						}
-					}
-				}
-			}
-			return idx;
-		}
 
-		static Dictionary<string,string> wordHistory = new Dictionary<string,string> ();
-		static List<string> partalWordHistory = new List<string> ();
-		const int maxHistoryLength = 500;
-		protected void AddWordToHistory (string partialWord, string word)
-		{
-			if (!wordHistory.ContainsKey (partialWord)) {
-				wordHistory.Add (partialWord, word);
-				partalWordHistory.Add (partialWord);
-				while (partalWordHistory.Count > maxHistoryLength) {
-					string first = partalWordHistory [0];
-					partalWordHistory.RemoveAt (0);
-					wordHistory.Remove (first);
+			var mruIdx = idx < 0 ? 0 : idx;
+			if (mruIdx >= list.filteredItems.Count)
+				return idx;
+			var bestMruIndex = cache.GetIndex (completionDataList[list.filteredItems [mruIdx]]);
+			for (int i = 0; i < list.filteredItems.Count; i++) {
+				int curMruIndex = cache.GetIndex (completionDataList[list.filteredItems[i]]);
+				if (curMruIndex == 1)
+					continue;
+				if (curMruIndex < bestMruIndex) {
+					bestMruIndex = curMruIndex;
+					mruIdx = i;
 				}
-			} else {
-				partalWordHistory.Remove (partialWord);
-				partalWordHistory.Add (partialWord);
-				wordHistory [partialWord] = word;
 			}
-		}
-		public static void ClearHistory ()
-		{
-			wordHistory.Clear ();
-			partalWordHistory.Clear ();
+			return mruIdx;
 		}
 
 		void SelectEntry (int n)
