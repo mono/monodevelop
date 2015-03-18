@@ -574,7 +574,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					engine.SetCulture (GettextCatalog.UICulture);
 					engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
 					foreach (var gpp in globalPropertyProviders)
-						builder.SetGlobalProperties (gpp.GetGlobalProperties ());
+						engine.SetGlobalProperties (gpp.GetGlobalProperties ());
 					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
