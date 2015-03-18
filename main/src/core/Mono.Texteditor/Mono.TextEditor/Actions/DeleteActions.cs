@@ -224,7 +224,7 @@ namespace Mono.TextEditor
 				var line = data.Document.GetLine (data.Caret.Line);
 				// smart backspace (delete indentation)
 				if (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual) {
-					if (data.Caret.Column == data.Caret.Column) {
+					if (data.Caret.Column == data.GetVirtualIndentationColumn (data.Caret.Location)) {
 						bool isAllIndent = line.GetIndentation (data.Document).Length == data.Caret.Column - 1;
 
 						if (isAllIndent) {
