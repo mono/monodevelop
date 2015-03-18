@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.TextEditor;
@@ -310,6 +311,28 @@ namespace MonoDevelop.Components.Commands
 		#if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
+			// If we have a native window that can handle this command, let it process
+			// the keys itself and do not go through the command manager.
+			// Events in Gtk windows do not pass through here except when they're done
+			// in native NSViews. PerformKeyEquivalent for them will not return true,
+			// so we're always going to fallback to the command manager for them.
+			// If no window is focused, it's probably because a gtk window had focus
+			// and the focus didn't go to any other window on close. (debug popup on hover
+			// that gets closed on unhover). So if no keywindow is focused, events will
+			// pass through here and let us use the command manager.
+			var window = AppKit.NSApplication.SharedApplication.KeyWindow;
+			if (window != null) {
+				// Try the handler in the native window.
+				if (window.PerformKeyEquivalent (ev))
+					return null;
+
+				// If the window is a gtk window and is registered in the command manager
+				// process the events through the handler.
+				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
+				if (gtkWindow == null || !TopLevelWindowStack.Contains (gtkWindow))
+					return null;
+			}
+
 			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
 			if (gdkev != null) {
 				if (ProcessKeyEvent (gdkev))
@@ -324,13 +347,6 @@ namespace MonoDevelop.Components.Commands
 		{
 			e.RetVal = ProcessKeyEvent (e.Event);
 		}
-
-		static List<object> catchInAllWindows = new List<object> {
-			MonoDevelop.Ide.Commands.EditCommands.SelectAll,
-			MonoDevelop.Ide.Commands.EditCommands.Cut,
-			MonoDevelop.Ide.Commands.EditCommands.Paste,
-			MonoDevelop.Ide.Commands.EditCommands.Copy
-		};
 
 		bool ProcessKeyEvent (Gdk.EventKey ev)
 		{
@@ -385,13 +401,6 @@ namespace MonoDevelop.Components.Commands
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
 				if (cinfo.Bypass) {
-					bypass = true;
-					continue;
-				}
-
-				var focusSkip = !catchInAllWindows.Contains (commands [i].Id) && !toplevelFocus;
-
-				if (focusSkip) {
 					bypass = true;
 					continue;
 				}
