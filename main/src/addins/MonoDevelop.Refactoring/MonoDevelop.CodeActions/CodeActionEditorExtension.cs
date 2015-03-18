@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeActions
 		internal static int GetUsage (string id)
 		{
 			int result;
-			if (!CodeActionUsages.TryGetValue (id, out result)) 
+			if (id == null || !CodeActionUsages.TryGetValue (id, out result)) 
 				return 0;
 			return result;
 		}
@@ -226,7 +226,7 @@ namespace MonoDevelop.CodeActions
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
 								return;
-							if (codeActions.Count == 0) {
+							if (codeActionContainer.IsEmpty) {
 								RemoveWidget ();
 								return;
 							}
@@ -504,16 +504,19 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 
-			if (GetCurrentFixes ().CodeDiagnosticActions.Count > 0) {
-				menu.Add (FixMenuEntry.Separator);
-			}
-
+			first = false;
 			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new FixMenuDescriptor (label);
 
 				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null);
+				if (inspector == null)
+					continue;
+				if (first) {
+					menu.Add (FixMenuEntry.Separator);
+					first = false;
+				}
 //				if (inspector.CanSuppressWithAttribute) {
 //					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
 //						delegate {
