@@ -158,7 +158,7 @@ namespace MonoDevelop.CSharpBinding
 	}$
 }", (content, ext) => {
 				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
-			
+
 				var newText = content.Text;
 				Console.WriteLine (newText);
 				Assert.AreEqual (@"class Foo
@@ -170,6 +170,70 @@ namespace MonoDevelop.CSharpBinding
 }", newText);
 			});
 
+		}
+
+		[Test]
+		public void TestCloseBraceIf ()
+		{
+			//Notice that some text stay unformatted by design
+			Simulate (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		if(true){
+		Console.WriteLine()                   ;
+	}$
+	}
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Console.WriteLine (newText);
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		if (true) {
+			Console.WriteLine ();
+		}
+	}
+}", newText);
+			});
+		}
+
+		[Test]
+		public void TestCloseBraceCatch ()
+		{
+			//Notice that some text stay unformatted by design
+			Simulate (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+					try{
+		Console.WriteLine()                   ;
+	}catch(Exception e){
+	}$
+	}
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Console.WriteLine (newText);
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		try {
+			Console.WriteLine ();
+		} catch (Exception e) {
+		}
+	}
+}", newText);
+			});
 		}
 
 		

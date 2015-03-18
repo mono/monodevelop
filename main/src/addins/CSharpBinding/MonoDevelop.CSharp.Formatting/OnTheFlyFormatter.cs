@@ -93,9 +93,14 @@ namespace MonoDevelop.CSharp.Formatting
 					if (formatLastStatementOnly) {
 						var root = syntaxTree.GetRoot ();
 						var token = root.FindToken (endOffset);
-						var parent = token.Parent;
-						if (parent != null)
-							span = parent.FullSpan;
+						var tokens = ICSharpCode.NRefactory6.CSharp.FormattingRangeHelper.FindAppropriateRange (token);
+						if (tokens.HasValue) {
+							span = new TextSpan (tokens.Value.Item1.SpanStart, tokens.Value.Item2.Span.End);
+						} else {
+							var parent = token.Parent;
+							if (parent != null)
+								span = parent.FullSpan;
+						}
 					}
 
 					var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
