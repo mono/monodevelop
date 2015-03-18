@@ -355,6 +355,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.InitializerRewriter.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.ReferenceRewriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\ExtractMethodCodeRefactoringProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -405,5 +406,6 @@
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\" />
   </ItemGroup>
 </Project>

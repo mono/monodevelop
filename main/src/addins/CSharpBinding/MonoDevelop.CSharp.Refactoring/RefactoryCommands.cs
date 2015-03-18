@@ -221,14 +221,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					added = true;
 				}
 			}
-			if (ExtractMethodCommandHandler.IsValid(doc).Result)
-			{
-				ciset.CommandInfos.AddSeparator ();
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo ("MonoDevelop.CSharp.Refactoring.ExtractMethodCommand"), new Action (delegate {
-					ExtractMethodCommandHandler.Run (doc);
-				}));
-
-			}
 		}
 
 		static string FormatFileName (string fileName)
