@@ -349,6 +349,7 @@
     <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\GenerateVariableCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\ImplementAbstractClassCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\ImplementInterfaceCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

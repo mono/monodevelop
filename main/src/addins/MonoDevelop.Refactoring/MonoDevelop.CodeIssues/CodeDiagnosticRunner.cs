@@ -77,7 +77,12 @@ namespace MonoDevelop.CodeIssues
 					(CSharpCompilationOptions)compilation.Options
 				);
 
-				var compilationWithAnalyzer = localCompilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers), null, cancellationToken); 
+				CompilationWithAnalyzers compilationWithAnalyzer;
+				try {
+					compilationWithAnalyzer = localCompilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers), null, cancellationToken); 
+				} catch (Exception) {
+					return Enumerable.Empty<Result> ();
+				}
 
 				if (input.ParsedDocument == null)
 					return Enumerable.Empty<Result> ();

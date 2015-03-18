@@ -24,13 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.CodeCompletion;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class RoslynCompletionCategory
+	class RoslynCompletionCategory : CompletionCategory, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory
 	{
-		public RoslynCompletionCategory ()
+		readonly ISymbol symbol;
+
+		public RoslynCompletionCategory (ISymbol symbol)
 		{
+			this.symbol = symbol;
+			this.DisplayText = symbol.ToDisplayString (Ambience.NameFormat);
+			this.Icon = symbol.GetStockIcon ();
+		}
+
+		public override int CompareTo (CompletionCategory other)
+		{
+			if (other == null)
+				return 1;
+			var t1 = symbol as INamedTypeSymbol;
+			var t2 = ((RoslynCompletionCategory)other).symbol as INamedTypeSymbol;
+			if (t1 != null && t2 != null) {
+				if (t1.AllInterfaces.Contains (t2) || t1.GetBaseTypes().Contains (t2))
+					return -1;
+				if (t2.AllInterfaces.Contains (t1) || t2.GetBaseTypes().Contains (t1))
+					return 1;
+			}
+
+			return this.DisplayText.CompareTo (other.DisplayText);
 		}
 	}
 }

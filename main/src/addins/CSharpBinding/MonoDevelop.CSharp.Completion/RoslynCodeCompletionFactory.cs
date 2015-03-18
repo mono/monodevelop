@@ -210,6 +210,11 @@ namespace MonoDevelop.CSharp.Completion
 			return new CastCompletionData (keyHandler, ext, semanticModel, member, nodeToCast, targetType);
 		}
 
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateCompletionDataCategory (ISymbol forSymbol)
+		{
+			return new RoslynCompletionCategory (forSymbol);
+		}
+
 		#endregion
 	}
 }
