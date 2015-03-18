@@ -183,7 +183,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					} else
 						buildResultVisible = false;
 
+					CATransaction.DisableActions = true;
 					nfloat buildResultPosition = DrawBuildResults ();
+					CATransaction.DisableActions = false;
 					if (buildResultPosition == nfloat.PositiveInfinity)
 						return;
 					textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
