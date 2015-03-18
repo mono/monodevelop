@@ -552,16 +552,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					IBuildEngine engine;
 					if (!runLocal) {
 						p = runtime.ExecuteAssembly (pinfo);
-						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+
+						// The builder app will write the build engine reference
+						// after reading the process id from the standard input
+						ManualResetEvent ev = new ManualResetEvent (false);
 						string responseKey = "[MonoDevelop]";
-						string sref;
-						while (true) {
-							sref = p.StandardError.ReadLine ();
-							if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
-								sref = sref.Substring (responseKey.Length);
-								break;
-							}
-						}
+						string sref = null;
+						p.ErrorDataReceived += (sender, e) => {
+							if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
+								sref = e.Data.Substring (responseKey.Length);
+								ev.Set ();
+							} else
+								Console.WriteLine (e.Data);
+						};
+						p.BeginErrorReadLine ();
+						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+						if (!ev.WaitOne (TimeSpan.FromSeconds (5)))
+							throw new Exception ("MSBuild process could not be started");
+						
 						byte[] data = Convert.FromBase64String (sref);
 						MemoryStream ms = new MemoryStream (data);
 						BinaryFormatter bf = new BinaryFormatter ();
@@ -585,7 +593,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					throw;
 				}
-
 
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
