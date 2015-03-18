@@ -290,11 +290,13 @@ namespace MonoDevelop.CSharp.Parser
 			{
 				openBrace = openBrace.GetPreviousToken (false, false, true, true);
 
-				var first = openBrace.GetLocation ().GetLineSpan ();
-				var last = closeBrace.GetLocation ().GetLineSpan ();
+				try {
+					var first = openBrace.GetLocation ().GetLineSpan ();
+					var last = closeBrace.GetLocation ().GetLineSpan ();
 
-				if (first.EndLinePosition.Line != last.EndLinePosition.Line)
-					Foldings.Add (new FoldingRegion (new DocumentRegion (first.EndLinePosition, last.EndLinePosition), FoldType.Undefined));
+					if (first.EndLinePosition.Line != last.EndLinePosition.Line)
+						Foldings.Add (new FoldingRegion (new DocumentRegion (first.EndLinePosition, last.EndLinePosition), FoldType.Undefined));
+				} catch (ArgumentOutOfRangeException) {}
 			}
 
 

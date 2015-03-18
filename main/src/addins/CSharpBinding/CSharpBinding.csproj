@@ -352,6 +352,9 @@
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\IntroduceVariableCodeRefactoringProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.InitializerRewriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.ReferenceRewriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -401,5 +404,6 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
   </ItemGroup>
 </Project>

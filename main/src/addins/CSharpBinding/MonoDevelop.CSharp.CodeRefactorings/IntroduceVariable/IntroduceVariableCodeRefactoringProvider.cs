@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable;
 using ICSharpCode.NRefactory6.CSharp;
 
-namespace MonoDevelop.CSharp.CodeRefactorings.GenerateVariable
+namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 {
 	[ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = PredefinedCodeRefactoringProviderNames.IntroduceVariable), Shared]
 	class IntroduceVariableCodeRefactoringProvider : CodeRefactoringProvider
