@@ -588,6 +588,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				mdProject.Files.Add (file);
 				IdeApp.ProjectOperations.Save (mdProject);
 			}
+
+			OnDocumentAdded (info);
 		}
 		#endregion
 
