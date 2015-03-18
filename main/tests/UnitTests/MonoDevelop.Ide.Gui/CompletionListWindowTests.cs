@@ -136,6 +136,10 @@ namespace MonoDevelop.Ide.Gui
 		static void SimulateInput (CompletionListWindow listWindow, string input)
 		{
 			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
+			bool isClosed = false;
+			listWindow.WindowClosed += delegate {
+				isClosed = true;
+			};
 			foreach (char ch in input) {
 				switch (ch) {
 				case '8':
@@ -173,6 +177,9 @@ namespace MonoDevelop.Ide.Gui
 					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					break;
 				}
+				// window closed.
+				if (isClosed)
+					break;
 			}
 		}
 		
@@ -896,6 +903,13 @@ namespace MonoDevelop.Ide.Gui
 
 			ContinueSimulation (listWindow, list, ref testCompletionWidget, "\t");
 			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+		}
+
+		[Test]
+		public void TestCloseWithPunctiation ()
+		{
+			var output = RunSimulation ("", "\"\t", true, true, false, punctuationData);
+			Assert.AreEqual (null, output);
 		}
 
 

@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -204,8 +205,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 				ka = PostProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0) 
 				CompleteWord (ref ka, descriptor);
-			if ((ka & KeyActions.CloseWindow) != 0)
+			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
+				OnWindowClosed (EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
+		/// For unit test purposes.
+		/// </summary>
+		[EditorBrowsableAttribute(EditorBrowsableState.Never)]
+		internal event EventHandler WindowClosed;
+
+		protected virtual void OnWindowClosed (EventArgs e)
+		{
+			var handler = WindowClosed;
+			if (handler != null)
+				handler (this, e);
 		}
 		
 		public void ToggleCategoryMode ()
@@ -233,14 +249,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-			
 			if (!keyHandled)
 				ka = PreProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0)
 				CompleteWord (ref ka, descriptor);
 
-			if ((ka & KeyActions.CloseWindow) != 0)
+			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
+				OnWindowClosed (EventArgs.Empty);
+			}
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
@@ -256,6 +273,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
 					if ((descriptor.ModifierKeys & (ModifierKeys.Shift | ModifierKeys.Alt | ModifierKeys.Control | ModifierKeys.Command)) != 0) {
 						CompletionWindowManager.HideWindow ();
+						OnWindowClosed (EventArgs.Empty);
 						return false;
 					}
 					
@@ -267,6 +285,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						UpdateDeclarationView ();
 					} else {
 						CompletionWindowManager.HideWindow ();
+						OnWindowClosed (EventArgs.Empty);
 						return false;
 					}
 					return true;

@@ -324,7 +324,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.CloseWindow | KeyActions.Process;
 			}
-			
+
+			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
+				if (descriptor.KeyChar == ':') {
+					foreach (var item in FilteredItems) {
+						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
+							list.SelectedItem = item;
+							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
+						}
+					}
+				} else {
+					var selectedItem = list.SelectedItem;
+					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
+						return KeyActions.CloseWindow;
+					if (!DataProvider.GetText (selectedItem).Substring (0, CurrentPartialWord.Length) .EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal))
+						return KeyActions.Process | KeyActions.CloseWindow;
+				}
+			}
 			return KeyActions.Process;
 		}
 		
