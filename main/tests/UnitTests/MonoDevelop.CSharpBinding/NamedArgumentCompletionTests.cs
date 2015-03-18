@@ -196,7 +196,6 @@ namespace MonoDevelop.CSharpBinding
 			TestViewContent content;
 			var ext = Setup (input, out content);
 
-			ListWindow.ClearHistory ();
 			var listWindow = new CompletionListWindow ();
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
