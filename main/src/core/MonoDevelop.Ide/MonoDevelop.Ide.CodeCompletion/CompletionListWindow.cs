@@ -645,7 +645,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		protected override void ResetState ()
+		protected internal override void ResetState ()
 		{
 			StartOffset = 0;
 			previousWidth = previousHeight = -1;

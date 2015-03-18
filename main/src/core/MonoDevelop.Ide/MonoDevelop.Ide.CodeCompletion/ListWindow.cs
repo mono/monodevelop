@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// This method is used to set the completion window to it's inital state.
 		/// This is required for re-using the window object.
 		/// </summary>
-		protected virtual void ResetState ()
+		protected internal virtual void ResetState ()
 		{
 			HideWhenWordDeleted = false;
 			lastCommitCharEndoffset = -1;
@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					if (!text.ToUpper ().StartsWith (curword.ToUpper (), StringComparison.Ordinal))
 						match = -1;	 
 				}
-				if (match >= 0 && !hasMismatches && keyChar != '<') {
+				if (match >= 0 && !hasMismatches && keyChar != '<' && keyChar != ' ') {
 					ResetSizes ();
 					UpdateWordSelection ();
 					return KeyActions.Process;
@@ -368,13 +368,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (!AutoSelect)
 					AutoSelect = true;
 				goto case SpecialKey.Return;
-			case SpecialKey.Space:
-				if (AutoSelect) {
-					lastCommitCharEndoffset = CompletionWidget.CaretOffset;
-					WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
-					return KeyActions.Complete | KeyActions.Process | KeyActions.CloseWindow;
-				}
-				break;
 
 			case SpecialKey.Return:
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset;
@@ -550,50 +543,54 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			// default - word with highest match rating in the list.
 			hasMismatches = true;
-			if (partialWord == null)
-				return -1;
-			
 			int idx = -1;
-			var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
-			string bestWord = null;
-			int bestRank = int.MinValue;
-			int bestIndex = 0;
-			if (!string.IsNullOrEmpty (partialWord)) {
-				for (int i = 0; i < list.filteredItems.Count; i++) {
-					int index = list.filteredItems[i];
-					string text = DataProvider.GetText (index);
-					int rank;
-					if (!matcher.CalcMatchRank (text, out rank))
-						continue;
-					if (rank > bestRank) {
-						bestWord = text;
-						bestRank = rank;
-						bestIndex = i;
+
+			if (partialWord != null) {
+				var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
+				string bestWord = null;
+				int bestRank = int.MinValue;
+				int bestIndex = 0;
+				if (!string.IsNullOrEmpty (partialWord)) {
+					for (int i = 0; i < list.filteredItems.Count; i++) {
+						int index = list.filteredItems [i];
+						string text = DataProvider.GetText (index);
+						int rank;
+						if (!matcher.CalcMatchRank (text, out rank))
+							continue;
+						if (rank > bestRank) {
+							bestWord = text;
+							bestRank = rank;
+							bestIndex = i;
+						}
 					}
 				}
-			}
-			if (bestWord != null) {
-				idx = bestIndex;
-				hasMismatches = false;
-				// exact match found.
-				if (string.Compare (bestWord, partialWord ?? "", true) == 0) 
-					return idx;
+				if (bestWord != null) {
+					idx = bestIndex;
+					hasMismatches = false;
+					// exact match found.
+					if (string.Compare (bestWord, partialWord ?? "", true) == 0)
+						return idx;
+				}
 			}
 
-			var mruIdx = idx < 0 ? 0 : idx;
-			if (mruIdx >= list.filteredItems.Count)
-				return idx;
-			var bestMruIndex = cache.GetIndex (completionDataList[list.filteredItems [mruIdx]]);
+			int bestMruIndex;
+
+			if (idx >= 0) {
+				bestMruIndex = cache.GetIndex (completionDataList [list.filteredItems [idx]]);
+			} else {
+				bestMruIndex = int.MaxValue;
+			}
+
 			for (int i = 0; i < list.filteredItems.Count; i++) {
 				int curMruIndex = cache.GetIndex (completionDataList[list.filteredItems[i]]);
 				if (curMruIndex == 1)
 					continue;
 				if (curMruIndex < bestMruIndex) {
 					bestMruIndex = curMruIndex;
-					mruIdx = i;
+					idx = i;
 				}
 			}
-			return mruIdx;
+			return idx;
 		}
 
 		void SelectEntry (int n)

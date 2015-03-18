@@ -602,8 +602,8 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestBug543984 ()
 		{
-			string output = RunSimulation ("", "foo b\n", true, true, false, "foo bar", "foo bar baz");
-			Assert.AreEqual ("foo bar", output);
+			string output = RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
+			Assert.AreEqual ("foo#bar", output);
 		}
 		
 		[Test]
@@ -826,6 +826,76 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
 			Assert.AreEqual ("d", output);
+		}
+
+		[Test]
+		public void TestSpaceCommits ()
+		{
+			string output = RunSimulation ("", "over ", true, true, 
+				"override",
+				"override foo");
+
+			Assert.AreEqual ("override", output);
+		}
+
+		static void ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, ref TestCompletionWidget testCompletionWidget, string simulatedInput)
+		{
+			listWindow.ResetState ();
+			listWindow.CodeCompletionContext = new CodeCompletionContext ();
+			listWindow.CompletionDataList = list;
+			listWindow.CompletionWidget = testCompletionWidget = new TestCompletionWidget ();
+			listWindow.List.FilterWords ();
+			listWindow.ResetSizes ();
+			listWindow.UpdateWordSelection ();
+			SimulateInput (listWindow, simulatedInput);
+			listWindow.CompleteWord ();
+		}
+
+		[Test]
+		public void TestMruSimpleLastItem ()
+		{
+			var settings = new SimulationSettings () {
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = true,
+				CompletionData = new[] { "Foo", "Bar", "FooBar"}
+			};
+
+			var listWindow = CreateListWindow (settings);
+			var list = listWindow.CompletionDataList;
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
+			SimulateInput (listWindow, "F\t");
+			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FBar\t");
+			Assert.AreEqual ("FooBar", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
+			Assert.AreEqual ("FooBar", testCompletionWidget.CompletedWord);
+		}
+
+		[Test]
+		public void TestMruEmptyMatch ()
+		{
+			var settings = new SimulationSettings () {
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = true,
+				CompletionData = new[] { "Foo", "Bar", "Test"}
+			};
+
+			var listWindow = CreateListWindow (settings);
+			var list = listWindow.CompletionDataList;
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
+			SimulateInput (listWindow, "Foo\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
+			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "Bar\t");
+			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "\t");
+			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
 		}
 
 
