@@ -1,37 +1,38 @@
-﻿//
-// IntroduceVariableCodeRefactoringProvider.cs
-//
-// Author:
-//       Mike Krüger <mkrueger@xamarin.com>
-//
-// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-using System;
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-namespace IntroduceVariable
+using System.Composition;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable;
+using ICSharpCode.NRefactory6.CSharp;
+
+namespace MonoDevelop.CSharp.CodeRefactorings.GenerateVariable
 {
-	public class IntroduceVariableCodeRefactoringProvider
+	[ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = PredefinedCodeRefactoringProviderNames.IntroduceVariable), Shared]
+	class IntroduceVariableCodeRefactoringProvider : CodeRefactoringProvider
 	{
-		public IntroduceVariableCodeRefactoringProvider ()
+		static readonly CSharpIntroduceVariableService service = new CSharpIntroduceVariableService ();
+
+		public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
 		{
+			var document = context.Document;
+			var textSpan = context.Span;
+			var cancellationToken = context.CancellationToken;
+			if (document.Project.Solution.Workspace.Kind == WorkspaceKind.MiscellaneousFiles)
+			{
+				return;
+			}
+
+			var result = await service.IntroduceVariableAsync(document, textSpan, cancellationToken).ConfigureAwait(false);
+
+			if (!result.ContainsChanges)
+			{
+				return;
+			}
+
+			var actions = result.GetCodeRefactoring(cancellationToken).Actions;
+			context.RegisterRefactorings(actions);
 		}
 	}
 }
-

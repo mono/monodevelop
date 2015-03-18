@@ -146,21 +146,25 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var caretOffset = Editor.CaretOffset;
 				try {
 					var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
-					var result = task.Result;
-					if (result != null) {
-						int triggerWordLength = result.TriggerWordLength;
+					if (task != null) {
+						var result = task.Result;
+						if (result != null) {
+							int triggerWordLength = result.TriggerWordLength;
 
-						if (triggerWordLength > 0 && (triggerWordLength < caretOffset
-							|| (triggerWordLength == 1 && caretOffset == 1))) {
-							currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
-							currentCompletionContext.TriggerWordLength = triggerWordLength;
-						}
+							if (triggerWordLength > 0 && (triggerWordLength < caretOffset
+								|| (triggerWordLength == 1 && caretOffset == 1))) {
+								currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
+								currentCompletionContext.TriggerWordLength = triggerWordLength;
+							}
 
-						if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, result, CompletionWidget, currentCompletionContext))
+							if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, result, CompletionWidget, currentCompletionContext))
+								currentCompletionContext = null;
+						} else {
 							currentCompletionContext = null;
+						}
 					} else {
 						currentCompletionContext = null;
-					}	
+					}
 				} catch (TaskCanceledException) {
 					currentCompletionContext = null;
 				} catch (AggregateException) {
@@ -174,9 +178,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 				parameterHintingSrc = new CancellationTokenSource ();
 				var token = parameterHintingSrc.Token;
 				try {
-					var result = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token).Result;
-					if (result != null) {
-						ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, result);
+					var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
+					if (task != null) {
+						var result = task.Result;
+						if (result != null) {
+							ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, result);
+						}
 					}
 				} catch (TaskCanceledException) {
 				} catch (AggregateException) {

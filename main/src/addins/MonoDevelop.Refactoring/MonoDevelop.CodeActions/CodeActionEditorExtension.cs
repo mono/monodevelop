@@ -712,8 +712,8 @@ namespace MonoDevelop.CodeActions
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-//			document.DocumenInitializetParsed += HandleDocumentDocumentParsed;
-//			document.Editor.SelectionChanged += HandleSelectionChanged;
+			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
+			Editor.SelectionChanged += HandleSelectionChanged;
 			Editor.BeginMouseHover += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;

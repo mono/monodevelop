@@ -350,6 +350,8 @@
     <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\ImplementAbstractClassCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\ImplementInterfaceCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\IntroduceVariableCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -397,5 +399,7 @@
     <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\" />
   </ItemGroup>
 </Project>
