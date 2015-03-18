@@ -183,7 +183,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					} else
 						buildResultVisible = false;
 
+					CATransaction.DisableActions = true;
 					nfloat buildResultPosition = DrawBuildResults ();
+					CATransaction.DisableActions = false;
 					if (buildResultPosition == nfloat.PositiveInfinity)
 						return;
 					textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
@@ -251,7 +253,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			RepositionStatusLayers ();
 		}
 
-		nfloat LeftMostItemX ()
+		nfloat LeftMostStatusItemX ()
 		{
 			if (Layer.Sublayers == null)
 				return Layer.Frame.Width;
@@ -260,7 +262,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (layer.Name == null)
 					return nfloat.PositiveInfinity;
 
-				if (layer.Name == SeparatorLayerId || layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
+				if (layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
 					return layer.Frame.Left;
 				return nfloat.PositiveInfinity;
 			});
@@ -318,7 +320,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return nfloat.PositiveInfinity;
 			}
 
-			nfloat right = DrawSeparatorIfNeeded (LeftMostItemX ());
+			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
 			CGSize size = buildResultText.AttributedString.Size;
 			right = right - 6 - size.Width;
 			buildResultText.Frame = new CGRect (right, 5f, size.Width, size.Height);
