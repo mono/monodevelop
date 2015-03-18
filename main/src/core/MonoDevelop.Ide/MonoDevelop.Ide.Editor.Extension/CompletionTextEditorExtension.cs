@@ -144,28 +144,26 @@ namespace MonoDevelop.Ide.Editor.Extension
 				completionTokenSrc = new CancellationTokenSource ();
 				var token = completionTokenSrc.Token;
 				var caretOffset = Editor.CaretOffset;
-				var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
-				if (task != null) {
-					task.ContinueWith ((Task<ICompletionDataList> rt, object completionList) => {
-						if (rt.Result == null)
-							return;
-						Application.Invoke (delegate {
-							int triggerWordLength = rt.Result.TriggerWordLength;
+				try {
+					var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
+					var result = task.Result;
+					if (result != null) {
+						int triggerWordLength = result.TriggerWordLength;
 
-							if (triggerWordLength > 0 && (triggerWordLength < caretOffset
-							    || (triggerWordLength == 1 && caretOffset == 1))) {
-								currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
-								currentCompletionContext.TriggerWordLength = triggerWordLength;
-							}
-							if (completionList != null) {
-								if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, rt.Result, CompletionWidget, currentCompletionContext))
-									currentCompletionContext = null;
-							} else {
-								currentCompletionContext = null;
-							}
-						});
-					}, TaskScheduler.Current, token);
-				} else {
+						if (triggerWordLength > 0 && (triggerWordLength < caretOffset
+							|| (triggerWordLength == 1 && caretOffset == 1))) {
+							currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
+							currentCompletionContext.TriggerWordLength = triggerWordLength;
+						}
+
+						if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, result, CompletionWidget, currentCompletionContext))
+							currentCompletionContext = null;
+					} else {
+						currentCompletionContext = null;
+					}	
+				} catch (TaskCanceledException) {
+					currentCompletionContext = null;
+				} catch (AggregateException) {
 					currentCompletionContext = null;
 				}
 			}
@@ -175,16 +173,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 				parameterHintingSrc.Cancel ();
 				parameterHintingSrc = new CancellationTokenSource ();
 				var token = parameterHintingSrc.Token;
-				var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
-				if (task != null) {
-					task.ContinueWith ((Task<ParameterHintingResult> rt, object completionList) => {
-						if (rt.Result != null) {
-							Application.Invoke (delegate {
-								ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, rt.Result);
-							});
-						}
-					}, TaskScheduler.Current, token);
+				try {
+					var result = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token).Result;
+					if (result != null) {
+						ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, result);
+					}
+				} catch (TaskCanceledException) {
+				} catch (AggregateException) {
 				}
+
 			}
 			/*			autoHideCompletionWindow = true;
 						autoHideParameterWindow = keyChar != ':';*/
@@ -429,7 +426,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 					var completionList = task.Result;
 					if (completionList != null)
 						return completionList;
-				} catch (OperationCanceledException) {
+				} catch (TaskCanceledException) {
+				} catch (AggregateException) {
 				}
 			}
 			return null;
@@ -454,7 +452,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				var cp = task.Result;
 				if (cp != null)
 					return cp;
-			} catch (OperationCanceledException) {
+			} catch (TaskCanceledException) {
+			} catch (AggregateException) {
 			}
 			return null;
 		}
