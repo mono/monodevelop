@@ -307,8 +307,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (list == null)
 				throw new ArgumentNullException ("list");
-			if (completionContext == null)
-				throw new ArgumentNullException ("completionContext");
+			if (completionWidget == null)
+				throw new ArgumentNullException ("completionWidget");
 			if (completionContext == null)
 				throw new ArgumentNullException ("completionContext");
 			if (mutableList != null) {
@@ -495,7 +495,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
 			} finally {
 				IsInCompletion = false;
-				HideWindow ();
+				CompletionWindowManager.HideWindow ();
 			}
             return true;
 		}
