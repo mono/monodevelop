@@ -566,6 +566,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			OnDocumentTextChanged (id, new MonoDevelopSourceText(data), PreservationMode.PreserveValue);
 		}
+
+		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
+		{
+			var id = info.Id;
+			var path = info.FilePath;
+
+			TextFileUtility.WriteText (
+				path,
+				text.ToString (),
+				text.Encoding ?? System.Text.Encoding.UTF8,
+				false
+			);
+			if (id.ProjectId != null) {
+				var project = CurrentSolution.GetProject (id.ProjectId);
+				var mdProject = GetMonoProject (project);
+				if (mdProject == null)
+					return;
+
+				var file = new MonoDevelop.Projects.ProjectFile (info.FilePath);
+				mdProject.Files.Add (file);
+				IdeApp.ProjectOperations.Save (mdProject);
+			}
+		}
 		#endregion
 
 		public Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
