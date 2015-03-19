@@ -420,6 +420,7 @@ type FSharpSyntaxMode(editor, context) =
 
     override x.GetColoredSegments (segment) =
         let line = editor.GetLineByOffset segment.Offset
-        match segments with
-        | xs when xs.Length >= line.LineNumber-1 -> segments.[line.LineNumber-1] |> List.toSeq
-        | _ -> Seq.empty
+        let lineNumber = line.LineNumber
+        if segments.Length >= lineNumber
+        then segments.[lineNumber-1] |> List.toSeq
+        else Seq.empty
