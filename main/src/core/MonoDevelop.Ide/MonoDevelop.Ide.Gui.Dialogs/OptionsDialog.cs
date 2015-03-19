@@ -54,6 +54,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		Dictionary<OptionsPanelNode, PanelInstance> panels = new Dictionary<OptionsPanelNode,PanelInstance> ();
 		object mainDataObject;
 		string extensionPath;
+		PropertyWrapper<string> lastOpenPanel;
 		ExtensionContext extensionContext;
 		HashSet<object> modifiedObjects = new HashSet<object> ();
 		bool removeEmptySections;
@@ -194,6 +195,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			DefaultWidth = 722;
 			DefaultHeight = 502;
+
+			lastOpenPanel = new PropertyWrapper<string> ("MonoDevelop.Ide.LastOpenPanel." + extensionPath, "");
+			if (!string.IsNullOrEmpty (lastOpenPanel.Value))
+				SelectPanel (lastOpenPanel.Value);
 		}
 		
 		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -560,6 +565,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			tree.ExpandToPath (store.GetPath (page.Iter));
 			tree.Selection.SelectIter (page.Iter);
+
+			lastOpenPanel.Value = section.Id;
 		}
 		
 		SectionPage CreatePage (TreeIter it, OptionsDialogSection section, object dataObject)
