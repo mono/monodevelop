@@ -148,10 +148,20 @@ FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 
+if File.Exists(GetPath [fsprojFile]) then
+    Console.WriteLine ("Created {0}", GetPath [fsprojFile])
+else
+    Console.WriteLine ("Failed to create {0}", GetPath [fsprojFile])
+
 //process test project
 FileReplace (testProject + ".orig", testProject, "INSERT_FSPROJ_MDROOT", mdDir)
 FileReplace (testProject          , testProject, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (testProject          , testProject, "INSERT_PROJ_TAG", tag)
+
+if File.Exists(GetPath [testProject]) then
+    Console.WriteLine ("Created {0}", GetPath [testProject])
+else
+    Console.WriteLine ("Failed to create {0}", GetPath [testProject])
 
 match getMdExe mdDir with
 | Some mdExe ->
@@ -160,6 +170,11 @@ match getMdExe mdDir with
 
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
+
+if File.Exists(GetPath [xmlFile]) then
+    Console.WriteLine ("Created {0}", GetPath [xmlFile])
+else
+    Console.WriteLine ("Failed to create {0}", GetPath [xmlFile])
 
 if installMdbFiles then
     FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
