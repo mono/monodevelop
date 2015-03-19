@@ -38,6 +38,8 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -172,6 +174,7 @@ namespace MonoDevelop.CSharpBinding
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+			project.Policies.Set (PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> ());
 
 			var solution = new MonoDevelop.Projects.Solution ();
 			solution.AddConfiguration ("", true); 
