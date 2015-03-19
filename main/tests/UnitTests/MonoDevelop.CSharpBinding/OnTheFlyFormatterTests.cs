@@ -96,6 +96,7 @@ namespace MonoDevelop.CSharpBinding
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+			project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
 
 			var solution = new MonoDevelop.Projects.Solution ();
 			solution.AddConfiguration ("", true); 
@@ -141,7 +142,7 @@ namespace MonoDevelop.CSharpBinding
 {
 	void Test ()
 	{
-		Console.WriteLine ();
+		Console.WriteLine();
 	}
 }", newText);
 			});
@@ -163,9 +164,9 @@ namespace MonoDevelop.CSharpBinding
 				Console.WriteLine (newText);
 				Assert.AreEqual (@"class Foo
 {
-	void Test ()
+	void Test()
 	{
-		Console.WriteLine ();
+		Console.WriteLine();
 	}
 }", newText);
 			});
@@ -195,8 +196,9 @@ namespace MonoDevelop.CSharpBinding
 	void Test ()
 			{
 		Console.WriteLine()                   ;
-		if (true) {
-			Console.WriteLine ();
+		if (true)
+		{
+			Console.WriteLine();
 		}
 	}
 }", newText);
@@ -227,9 +229,12 @@ namespace MonoDevelop.CSharpBinding
 	void Test ()
 			{
 		Console.WriteLine()                   ;
-		try {
-			Console.WriteLine ();
-		} catch (Exception e) {
+		try
+		{
+			Console.WriteLine();
+		}
+		catch (Exception e)
+		{
 		}
 	}
 }", newText);
@@ -422,7 +427,7 @@ namespace FormatSelectionTest
 {
 	public class EmptyClass
 	{
-		public EmptyClass ()
+		public EmptyClass()
 		{
 		}
 	}
