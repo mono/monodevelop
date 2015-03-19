@@ -174,8 +174,7 @@ namespace MonoDevelop.CSharpBinding
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
-			project.Policies.Set (PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> ());
-
+			project.Policies.Set (PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
 			var solution = new MonoDevelop.Projects.Solution ();
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
@@ -225,7 +224,7 @@ namespace MonoDevelop.CSharpBinding
 		$
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar ();|", completion); 
+			Assert.AreEqual ("FooBar();|", completion); 
 		}
 
 		[Test]
@@ -251,7 +250,7 @@ namespace MonoDevelop.CSharpBinding
 		Test($);
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar ()|", completion); 
+			Assert.AreEqual ("FooBar()|", completion); 
 		}
 
 		[Test]
@@ -264,7 +263,7 @@ namespace MonoDevelop.CSharpBinding
 		Test(foo, $
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar ()|", completion); 
+			Assert.AreEqual ("FooBar()|", completion); 
 		}
 
 		[Test]
@@ -280,7 +279,7 @@ namespace MonoDevelop.CSharpBinding
 		$
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar (|);", completion); 
+			Assert.AreEqual ("FooBar(|);", completion); 
 		}
 
 		[Test]
@@ -294,7 +293,7 @@ namespace MonoDevelop.CSharpBinding
 		i = $
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar ()|", completion); 
+			Assert.AreEqual ("FooBar()|", completion); 
 		}
 
 		[Test]
@@ -312,7 +311,7 @@ namespace MonoDevelop.CSharpBinding
 		i = $
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar (|)", completion); 
+			Assert.AreEqual ("FooBar(|)", completion); 
 		}
 
 		[Test]
@@ -340,7 +339,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar", (Gdk.Key)'.');
-			Assert.AreEqual ("FooBar ().|", completion); 
+			Assert.AreEqual ("FooBar().|", completion); 
 		}
 
 
@@ -357,7 +356,7 @@ class MyClass
 		$
 	}
 }", "MyClass", null);
-			Assert.AreEqual ("MyClass ()|", completion); 
+			Assert.AreEqual ("MyClass()|", completion); 
 		}
 
 		[Test]
@@ -373,7 +372,7 @@ class MyClass
 		$
 	}
 }", "MyClass", null);
-			Assert.AreEqual ("MyClass (|)", completion); 
+			Assert.AreEqual ("MyClass(|)", completion); 
 		}
 
 		[Test]
@@ -386,7 +385,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar<|> ();", completion); 
+			Assert.AreEqual ("FooBar<|>();", completion); 
 		}
 
 		[Test]
@@ -399,7 +398,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar (|);", completion); 
+			Assert.AreEqual ("FooBar(|);", completion); 
 		}
 
 		[Test]
@@ -412,7 +411,7 @@ class MyClass
 		$
 	}
 }", "MyClass", "FooBar", (Gdk.Key)'.');
-			Assert.AreEqual ("FooBar<> ().|", completion); 
+			Assert.AreEqual ("FooBar<>().|", completion); 
 		}
 
 		[Test]
@@ -426,7 +425,7 @@ class MyClass
 		if (true) { }
 	}
 }", "MyClass", "FooBar");
-			Assert.AreEqual ("FooBar ();|", completion); 
+			Assert.AreEqual ("FooBar();|", completion); 
 		}
 
 		
@@ -442,7 +441,7 @@ class MyClass
 		$
 	}
 }", "MyClass`1", null);
-			Assert.AreEqual ("MyClass<|> ()", completion); 
+			Assert.AreEqual ("MyClass<|>()", completion); 
 		}
 
 		[Test]
