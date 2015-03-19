@@ -197,7 +197,7 @@ namespace MonoDevelop.Components.MainToolbar
 									list.Add (parent);
 
 									foreach (var version in versions) {
-										parent.AddChild (new RuntimeModel (this, version, parent));
+										list.Add (new RuntimeModel (this, version, parent));
 										runtimes++;
 									}
 								} else {
@@ -771,6 +771,7 @@ namespace MonoDevelop.Components.MainToolbar
 				else {
 					HasParent = true;
 					parent.HasChildren = true;
+					parent.AddChild (this);
 				}
 			}
 
