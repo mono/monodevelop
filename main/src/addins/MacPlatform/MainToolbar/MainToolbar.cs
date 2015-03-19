@@ -95,8 +95,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var selector = new SelectorView ();
 			var item = new NSToolbarItem (SelectorId) {
 				View = selector,
-				MinSize = new CGSize (164, 25),
-				MaxSize = new CGSize (164, 25),
+				MinSize = new CGSize (150, 25),
+				MaxSize = new CGSize (150, 25),
 			};
 			selector.ResizeRequested += (o, e) => {
 				item.MinSize = item.MaxSize = e.Size;
