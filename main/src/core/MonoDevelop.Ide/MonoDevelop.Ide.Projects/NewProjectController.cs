@@ -107,13 +107,13 @@ namespace MonoDevelop.Ide.Projects
 		public NewProjectDialogController ()
 		{
 			IsFirstPage = true;
-			LoadTemplateCategories ();
 			GetVersionControlHandler ();
 		}
 
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
+			LoadTemplateCategories ();
 			SetDefaultSettings ();
 			SelectDefaultTemplate ();
 
@@ -246,7 +246,16 @@ namespace MonoDevelop.Ide.Projects
 
 		void LoadTemplateCategories ()
 		{
-			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
+			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
+			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
+		}
+
+		Predicate<SolutionTemplate> GetTemplateFilter ()
+		{
+			if (IsNewSolution) {
+				return ProjectTemplateCategorizer.MatchNewSolutionTemplates;
+			}
+			return ProjectTemplateCategorizer.MatchNewProjectTemplates;
 		}
 
 		void SelectDefaultTemplate ()
@@ -431,6 +440,9 @@ namespace MonoDevelop.Ide.Projects
 
 		public void Create ()
 		{
+			if (wizardProvider.HasWizard)
+				wizardProvider.BeforeProjectIsCreated ();
+
 			if (!CreateProject ())
 				return;
 

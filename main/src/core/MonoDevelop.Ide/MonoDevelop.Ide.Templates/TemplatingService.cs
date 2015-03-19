@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
@@ -92,7 +93,12 @@ namespace MonoDevelop.Ide.Templates
 
 		public IEnumerable<TemplateCategory> GetProjectTemplateCategories ()
 		{
-			var templateCategorizer = new ProjectTemplateCategorizer (projectTemplateCategories);
+			return GetProjectTemplateCategories (solutionTemplate => true);
+		}
+
+		public IEnumerable<TemplateCategory> GetProjectTemplateCategories (Predicate<SolutionTemplate> match)
+		{
+			var templateCategorizer = new ProjectTemplateCategorizer (projectTemplateCategories, match);
 			foreach (IProjectTemplatingProvider provider in templateProviders) {
 				templateCategorizer.CategorizeTemplates (provider.GetTemplates ());
 			}
