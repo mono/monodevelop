@@ -64,23 +64,26 @@ namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 			CancellationToken cancellationToken)
 		{
 			var options = document.Project.Solution.Workspace.Options;
-			var result = await service.ExtractMethodAsync(
-				document,
-				textSpan,
-				options,
-				cancellationToken).ConfigureAwait(false);
+			try {
+				var result = await service.ExtractMethodAsync(
+					document,
+					textSpan,
+					options,
+					cancellationToken).ConfigureAwait(false);
 
-			if (result.Succeeded || result.SucceededWithSuggestion)
-			{
-				var description = options.GetOption(ExtractMethodOptions.AllowMovingDeclaration, document.Project.Language) ?
-					GettextCatalog.GetString ("Extract Method + Local") : GettextCatalog.GetString ("Extract Method");
+				if (result.Succeeded || result.SucceededWithSuggestion)
+				{
+					var description = options.GetOption(ExtractMethodOptions.AllowMovingDeclaration, document.Project.Language) ?
+						GettextCatalog.GetString ("Extract Method + Local") : GettextCatalog.GetString ("Extract Method");
 
-				var codeAction = new DocumentChangeAction(textSpan, DiagnosticSeverity.Info, description, (c) => AddRenameAnnotationAsync(result.Document, result.InvocationNameToken, c));
-				var methodBlock = result.MethodDeclarationNode;
+					var codeAction = new DocumentChangeAction(textSpan, DiagnosticSeverity.Info, description, (c) => AddRenameAnnotationAsync(result.Document, result.InvocationNameToken, c));
+					var methodBlock = result.MethodDeclarationNode;
 
-				return Tuple.Create<CodeAction, string>(codeAction, methodBlock.ToString());
+					return Tuple.Create<CodeAction, string>(codeAction, methodBlock.ToString());
+				}
+			} catch (Exception) {
+				// currently the extract method refactoring crashes often. Ignore the roslyn issues for now.
 			}
-
 			return null;
 		}
 

@@ -596,18 +596,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			var id = info.Id;
 			var path = info.FilePath;
 
-			TextFileUtility.WriteText (
-				path,
-				text.ToString (),
-				text.Encoding ?? System.Text.Encoding.UTF8,
-				true
-			);
+			MonoDevelop.Projects.Project mdProject = null;
+
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
-				var mdProject = GetMonoProject (project);
+				mdProject = GetMonoProject (project);
 				if (mdProject == null)
-					return;
+					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", path, info.Id.ProjectId);
+			}
 
+			string formattedText;
+			var formatter = CodeFormatterService.GetFormatter (DesktopService.GetMimeTypeForUri (path)); 
+			if (formatter != null && mdProject != null) {
+				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
+			} else {
+				formattedText = text.ToString ();
+			}
+
+			var textSource = new StringTextSource (formattedText, text.Encoding ?? System.Text.Encoding.UTF8);
+			try {
+				textSource.WriteTextTo (path);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while saving file to " + path, e);
+			}
+
+			if (mdProject != null) {
 				var file = new MonoDevelop.Projects.ProjectFile (info.FilePath);
 				mdProject.Files.Add (file);
 				IdeApp.ProjectOperations.Save (mdProject);
