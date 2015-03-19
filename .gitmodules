@@ -31,8 +31,8 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/fsharpbinding"]
 	path = main/external/fsharpbinding
-	url = git://github.com/xamarin/fsharpbinding.git
-	branch = templates-update
+	url = git://github.com/fsharp/fsharpbinding.git
+	branch = master
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
 	url = git://github.com/mono/nuget-binary.git
