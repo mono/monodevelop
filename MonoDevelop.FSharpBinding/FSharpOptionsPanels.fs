@@ -143,45 +143,66 @@ type FSharpSettingsPanel() =
 type CodeGenerationPanel() = 
   inherit MultiConfigItemOptionsPanel()
   let mutable widget : FSharpCompilerOptionsWidget = null
+  let mutable debugCheckedHandler = Unchecked.defaultof<IDisposable>
+
+  let debugInformationToIndex (item:string) =
+      match item.ToLower() with
+      | "full" -> 0
+      | "pdbonly" -> 1
+      | _ -> 0
+
+  let indexToDebugInformation i =
+      match i with
+      | 0 -> "full"
+      | 1 -> "pdbonly"
+      | _ -> "full"     
 
   override x.Dispose () =
     if widget <> null then
       widget.Dispose ()
+    if debugCheckedHandler <> null then
+        debugCheckedHandler.Dispose()
 
   override x.CreatePanelWidget() =
     widget <- new FSharpCompilerOptionsWidget ()
+    debugCheckedHandler <- widget.CheckDebugInformation.Clicked.Subscribe(fun _ -> widget.ComboDebugInformation.Sensitive <- widget.CheckDebugInformation.Active )
+
     widget.Show ()
     upcast widget 
   
   override x.LoadConfigData() =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
-    
-    widget.CheckDebugInfo.Active <- fsconfig.DebugSymbols
+
     widget.CheckOptimize.Active <- fsconfig.Optimize
     widget.CheckTailCalls.Active <- fsconfig.GenerateTailCalls
     widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
     widget.EntryCommandLine.Text <- if String.IsNullOrWhiteSpace fsconfig.OtherFlags then "" else fsconfig.OtherFlags
     widget.EntryDefines.Text <- fsconfig.DefineConstants
-  
+
+    if fsconfig.DebugSymbols then
+        widget.CheckDebugInformation.Active <- true
+        widget.ComboDebugInformation.Sensitive <- true
+        widget.ComboDebugInformation.Active <- debugInformationToIndex fsconfig.DebugType
+ 
   override x.ApplyChanges () =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
 
-    fsconfig.DebugSymbols <- widget.CheckDebugInfo.Active
     fsconfig.Optimize <- widget.CheckOptimize.Active
     fsconfig.GenerateTailCalls <- widget.CheckTailCalls.Active
-    fsconfig.DocumentationFile <- 
-        if widget.CheckXmlDocumentation.Active then 
-           // We use '\' because that's what Visual Studio uses.
-           //
-           // We use uppercase 'XML' because that's what Visual Studio does.
-           // A shame to perpetuate that horror but cross-tool portability of project
-           // files without mucking with them needlessly is very nice.
-           config.OutputDirectory.ToRelative(x.ConfiguredProject.BaseDirectory).ToString().Replace("/","\\").TrimEnd('\\') 
-              + "\\" + Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".XML" 
-        else null
 
-    fsconfig.OtherFlags <- if String.IsNullOrWhiteSpace widget.EntryCommandLine.Text then null
-                           else widget.EntryCommandLine.Text
+    if widget.CheckXmlDocumentation.Active then 
+        // We use '\' because that's what Visual Studio uses.
+        // We use uppercase 'XML' because that's what Visual Studio does.
+        // A shame to perpetuate that horror but cross-tool portability of project files without mucking with them needlessly is very nice.
+        fsconfig.DocumentationFile <-
+            config.OutputDirectory.ToRelative(x.ConfiguredProject.BaseDirectory).ToString().Replace("/","\\").TrimEnd('\\') + "\\" + 
+            Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".XML" 
+
+    if not (String.IsNullOrWhiteSpace widget.EntryCommandLine.Text) then 
+        fsconfig.OtherFlags <-  widget.EntryCommandLine.Text
     fsconfig.DefineConstants <- widget.EntryDefines.Text
+
+    fsconfig.DebugSymbols <- widget.CheckDebugInformation.Active
+    fsconfig.DebugType <- indexToDebugInformation widget.ComboDebugInformation.Active
