@@ -506,26 +506,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				data.Save (new NullProgressMonitor ());
 		}
 
-		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
-		{
-			// TODO: Save document on disk.
-
-//			var document = newSolution.GetDocument(info.Id);
-//			Console.WriteLine ("-------");
-//			Console.WriteLine (info.Id);
-//			Console.WriteLine ("doc: " + document);
-//			foreach (var f in info.Folders)
-//				Console.WriteLine ("folder:" + f);
-//			Console.WriteLine ("path:"+ info.FilePath);
-//			Console.WriteLine ("sck:" + info.SourceCodeKind);
-//			if (document != null) {
-//				new StringTextSource (text.ToString ()).WriteTextTo (document.FilePath);
-//				OnDocumentTextChanged (info.Id, text, PreservationMode.PreserveValue);
-//			}
-
-			this.OnDocumentAdded(info.WithTextLoader(TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create()))));
-		}
-
 		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
 		{
 			Console.WriteLine ("apply additional doc added");
@@ -620,7 +600,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				path,
 				text.ToString (),
 				text.Encoding ?? System.Text.Encoding.UTF8,
-				false
+				true
 			);
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
