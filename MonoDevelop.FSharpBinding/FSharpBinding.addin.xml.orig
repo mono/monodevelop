@@ -107,35 +107,6 @@
     <Import file="Templates/ios/SingleView/ProjectUniversal.xpt.xml" />
     <Import file="Templates/ios/LibraryProject.xpt.xml" />
 
-    <!--- F# Xamarin.iOS unified templates -->
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPad.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPhone.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_Universal.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPad.Storyboard.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPhone.Storyboard.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Info_Universal.Storyboard.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Entitlements.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Default-568h.png" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/Conversions.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/Common/ExtensionAppDelegate.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/Empty/AppDelegate.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPad.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPhone.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectUniversal.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/Common/AppDelegate.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/IPad/ViewController.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/IPhone/ViewController.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/Universal/ViewController.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPad.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPhone.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectUniversal.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestAppDelegate.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Info.plist.xml" />
-    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/KeyboardViewController.fs" />
-    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Project.xpt.xml" />
-
     <!-- Code templates -->
     <Import file = "Templates/FSharp-templates.xml" />
 
@@ -476,18 +447,6 @@
         <ProjectTemplate file="Templates/ios/SingleView/ProjectIPhone.xpt.xml"/>
         <ProjectTemplate file="Templates/ios/SingleView/ProjectUniversal.xpt.xml"/>
         <ProjectTemplate file="Templates/ios/LibraryProject.xpt.xml"/>
-      </Condition>
-
-      <Condition id="XamarinIOSInstalled">
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectIPad.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectIPhone.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectUniversal.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPad.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPhone.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectUniversal.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml"/>
-        <ProjectTemplate file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Project.xpt.xml"/>
       </Condition>
     </Extension>
 
