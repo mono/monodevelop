@@ -98,7 +98,12 @@ namespace MonoDevelop.CSharp.Parser
 			bool StartsLine (SyntaxTrivia trivia)
 			{
 				var sourceText = trivia.SyntaxTree.GetText (cancellationToken);
-				var textLine = sourceText.Lines.GetLineFromPosition (trivia.SpanStart);
+				Microsoft.CodeAnalysis.Text.TextLine textLine;
+				try {
+					textLine = sourceText.Lines.GetLineFromPosition (trivia.SpanStart);
+				} catch (ArgumentOutOfRangeException) {
+					return false;
+				}
 				for (int i = textLine.Start; i < trivia.SpanStart; i++) {
 					char ch = sourceText [i];
 					if (!char.IsWhiteSpace (ch))

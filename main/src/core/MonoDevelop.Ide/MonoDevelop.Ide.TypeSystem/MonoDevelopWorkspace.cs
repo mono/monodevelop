@@ -38,6 +38,7 @@ using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core.Text;
 using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -475,6 +476,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				activate
 			)); 
 		}
+
 		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
@@ -487,6 +489,48 @@ namespace MonoDevelop.Ide.TypeSystem
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
+		}
+
+		Solution newSolution;
+		public override bool TryApplyChanges (Solution newSolution)
+		{
+			this.newSolution = newSolution;
+			return base.TryApplyChanges (newSolution);
+		}
+
+		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
+		{
+			base.ApplyProjectChanges (projectChanges);
+			var data = GetMonoProject (projectChanges.NewProject);
+			if (data != null)
+				data.Save (new NullProgressMonitor ());
+		}
+
+		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
+		{
+			// TODO: Save document on disk.
+
+//			var document = newSolution.GetDocument(info.Id);
+//			Console.WriteLine ("-------");
+//			Console.WriteLine (info.Id);
+//			Console.WriteLine ("doc: " + document);
+//			foreach (var f in info.Folders)
+//				Console.WriteLine ("folder:" + f);
+//			Console.WriteLine ("path:"+ info.FilePath);
+//			Console.WriteLine ("sck:" + info.SourceCodeKind);
+//			if (document != null) {
+//				new StringTextSource (text.ToString ()).WriteTextTo (document.FilePath);
+//				OnDocumentTextChanged (info.Id, text, PreservationMode.PreserveValue);
+//			}
+
+			this.OnDocumentAdded(info.WithTextLoader(TextLoader.From(TextAndVersion.Create(text, VersionStamp.Create()))));
+		}
+
+		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
+		{
+			Console.WriteLine ("apply additional doc added");
+
+			base.ApplyAdditionalDocumentAdded (info, text);
 		}
 
 		protected override void OnDocumentTextChanged (Document document)
