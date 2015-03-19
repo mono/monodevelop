@@ -61,6 +61,8 @@ namespace MonoDevelop.Ide
 						SolutionPath = dir
 					};
 					cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
+					cinfo.Parameters ["CreateiOSUITest"] = "False";
+					cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {
