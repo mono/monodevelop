@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 {
 	sealed class PackageCodeDiagnosticProvider : CodeDiagnosticProvider
 	{
-		static readonly Dictionary<Project, AnalyzersFromAssembly> diagnosticCache = new Dictionary<Project, WeakReference<AnalyzersFromAssembly>> ();
+		static readonly Dictionary<Project, AnalyzersFromAssembly> diagnosticCache = new Dictionary<Project, AnalyzersFromAssembly> ();
 
 		static PackageCodeDiagnosticProvider ()
 		{
@@ -77,11 +77,11 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			if (project == null)
 				return Task.FromResult (AnalyzersFromAssembly.Empty);
 			AnalyzersFromAssembly result;
-            if (diagnosticCache.TryGetValue(project, out result)) 
+			if (diagnosticCache.TryGetValue(project, out result)) 
 				return Task.FromResult (result);
 
 			result = new AnalyzersFromAssembly ();
-			            
+
 			var dotNetProject = project as DotNetProject;
 			if (dotNetProject != null) {
 				var proxy = new DotNetProjectProxy (dotNetProject);
