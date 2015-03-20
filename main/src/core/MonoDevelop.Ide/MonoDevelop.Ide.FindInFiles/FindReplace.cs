@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				} else {
 					Parallel.ForEach (contents, content => { 
-						if (monitor.IsCancelRequested)
+						if (monitor.CancellationToken.IsCancellationRequested)
 							return;
 						try {
 							Interlocked.Increment (ref searchedFilesCount);

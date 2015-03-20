@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects
 			var sb = new System.Text.StringBuilder ();
 			var first = true;
 
-			var projectTypes = this.GetProjectTypes ().ToList ();
+			var projectTypes = this.GetTypeTags ().ToList ();
 			foreach (var p in projectTypes.Where (x => (x != "DotNet") || projectTypes.Count == 1)) {
 				if (!first)
 					sb.Append (", ");

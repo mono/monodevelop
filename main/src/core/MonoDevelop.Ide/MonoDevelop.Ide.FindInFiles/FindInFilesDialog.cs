@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var scopeStore = new ListStore (typeof(string));
 
 			var workspace = IdeApp.Workspace;
-			if (workspace != null && workspace.GetAllSolutions ().Count == 1) {
+			if (workspace != null && workspace.GetAllSolutions ().Count() == 1) {
 				scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			} else {
 				scopeStore.AppendValues (GettextCatalog.GetString ("All solutions"));

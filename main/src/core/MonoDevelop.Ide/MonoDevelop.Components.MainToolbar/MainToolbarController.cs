@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.MainToolbar
 		int ignoreConfigurationChangedCount, ignoreRuntimeChangedCount;
 		Solution currentSolution;
 		bool settingGlobalConfig;
-		SolutionEntityItem currentStartupProject;
+		SolutionItem currentStartupProject;
 		EventHandler executionTargetsChanged;
 
 		public MainToolbarController (IMainToolbarView toolbarView)
