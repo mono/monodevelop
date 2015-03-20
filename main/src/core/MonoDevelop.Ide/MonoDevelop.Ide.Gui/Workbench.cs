@@ -264,7 +264,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.Toolbar.HideCommandBar (barId);
 		}
 
-		internal MonoDevelop.Components.MainToolbar.MainToolbar Toolbar {
+		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {
 			get {
 				return workbench.Toolbar;
 			}
@@ -839,12 +839,8 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
 				return;
 			}
-			
-			if (origName.StartsWith ("file://", StringComparison.Ordinal))
-				fileName = new Uri (origName).LocalPath;
-			else
-				fileName = origName;
-			
+
+			fileName = openFileInfo.FileName;
 			if (!origName.StartsWith ("http://", StringComparison.Ordinal))
 				fileName = fileName.FullPath;
 			
@@ -1285,7 +1281,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = ResolveSymbolicLink (value.CanonicalPath);
+				fileName = FileService.ResolveFullPath (value.CanonicalPath);
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}

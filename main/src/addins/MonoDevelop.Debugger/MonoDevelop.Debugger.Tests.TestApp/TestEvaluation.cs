@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -507,6 +508,19 @@ struct SimpleStruct
 	public override string ToString ()
 	{
 		return StringField + " " + IntField + " " + NulledIntField;
+	}
+}
+
+class ClassWithCompilerGeneratedNestedClass
+{
+	async Task TestMethodAsync()
+	{
+		await Task.Delay (1);
+	}
+
+	public class NestedClass
+	{
+
 	}
 }
 

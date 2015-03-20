@@ -1,6 +1,6 @@
 {
     "name":"Default",
-    "version":"1.3",
+    "version":"1.3.1",
     "description":"Bright and friendly, just like Xamarin.",
     "originator":"Xamarin Inc. (http://xamarin.com)",
 
@@ -36,8 +36,8 @@
     "colors":[
         { "name":"Background(Read Only)", "color":"white" },
 
-        { "name":"Search result background", "color":"#F6B94D" },
-        { "name":"Search result background (highlighted)", "color":"#E5992F" },
+        { "name":"Search result background", "color":"#fffeb7" },
+        { "name":"Search result background (highlighted)", "color":"#fffc38" },
 
         { "name":"Column Ruler", "color":"aluminium3" },
 

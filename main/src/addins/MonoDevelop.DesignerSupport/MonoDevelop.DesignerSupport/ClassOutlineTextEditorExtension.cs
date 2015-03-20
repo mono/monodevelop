@@ -308,8 +308,14 @@ namespace MonoDevelop.DesignerSupport
 			if (lastCU != null) {
 				BuildTreeChildren (outlineTreeStore, TreeIter.Zero, lastCU);
 				TreeIter it;
-				if (outlineTreeStore.GetIterFirst (out it))
-					outlineTreeView.Selection.SelectIter (it);
+				if (IsSorting ()) {
+					if (outlineTreeModelSort.GetIterFirst (out it))
+						outlineTreeView.Selection.SelectIter (it);
+				} else {
+					if (outlineTreeStore.GetIterFirst (out it))
+						outlineTreeView.Selection.SelectIter (it);
+				}
+
 				outlineTreeView.ExpandAll ();
 			}
 			outlineReady = true;

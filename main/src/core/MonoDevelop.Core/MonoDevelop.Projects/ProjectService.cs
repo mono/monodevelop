@@ -170,14 +170,14 @@ namespace MonoDevelop.Projects
 				}
 			});
 		}
-		
-		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, string file)
+
+		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, FilePath file)
 		{
 			return Runtime.RunInMainThread (async delegate {
-				file = Path.GetFullPath (file);
+				string fullpath = FileService.ResolveFullPath (file).FullPath;
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
-					file = GetTargetFile (file);
-					WorkspaceItem item = await GetExtensionChain ().LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+					fullpath = GetTargetFile (fullpath);
+					WorkspaceItem item = await GetExtensionChain ().LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
 					if (item != null)
 						item.NeedsReload = false;
 					else
@@ -372,28 +372,22 @@ namespace MonoDevelop.Projects
 				return tempSolution;
 			}
 		}
-		
-		public bool FileIsObjectOfType (string filename, Type type)
+
+		public bool FileIsObjectOfType (FilePath file, Type type)
 		{
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-			filename = GetTargetFile (filename);
+			var filename = GetTargetFile (file);
 			return GetExtensionChain ().FileIsObjectOfType (filename, type);
 		}
 
-		public bool IsSolutionItemFile (string filename)
+		public bool IsSolutionItemFile (FilePath file)
 		{
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-			filename = GetTargetFile (filename);
+			var filename = GetTargetFile (file);
 			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(SolutionItem));
 		}
-		
-		public bool IsWorkspaceItemFile (string filename)
+
+		public bool IsWorkspaceItemFile (FilePath file)
 		{
-			if (filename.StartsWith ("file://"))
-				filename = new Uri(filename).LocalPath;
-			filename = GetTargetFile (filename);
+			var filename = GetTargetFile (file);
 			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(WorkspaceItem));
 		}
 		
@@ -478,15 +472,24 @@ namespace MonoDevelop.Projects
 		public static Counter ItemsLoaded = InstrumentationService.CreateCounter ("Projects loaded", "Project Model");
 		public static Counter SolutionsInMemory = InstrumentationService.CreateCounter ("Solutions in memory", "Project Model");
 		public static Counter SolutionsLoaded = InstrumentationService.CreateCounter ("Solutions loaded", "Project Model");
-		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model", id:"Core.ReadWorkspaceItem");
-		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model");
-		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model");
-		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model");
-		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Solution built", "Project Model");
-		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Project built", "Project Model");
-		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Workspace item built", "Project Model");
-		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Needs building checked", "Project Model");
+
+		public static TimerCounter ReadWorkspaceItem = InstrumentationService.CreateTimerCounter ("Workspace item read", "Project Model", id:"Projects.WorkspaceItemRead");
+		public static TimerCounter ReadSolutionItem = InstrumentationService.CreateTimerCounter ("Solution item read", "Project Model", id:"Projects.SolutionItemRead");
+		public static TimerCounter ReadMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project read", "Project Model", id:"Projects.MSBuildProjectRead");
+		public static TimerCounter WriteMSBuildProject = InstrumentationService.CreateTimerCounter ("MSBuild project written", "Project Model", id:"Projects.MSBuildProjectWritten");
+
+		public static TimerCounter BuildSolutionTimer = InstrumentationService.CreateTimerCounter ("Build solution", "Project Model", id:"Projects.BuildSolution");
+		public static TimerCounter BuildProjectAndReferencesTimer = InstrumentationService.CreateTimerCounter ("Build project and references", "Project Model", id:"Projects.BuildProjectAndReferences");
+		public static TimerCounter BuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build project", "Project Model", id:"Projects.BuildProject");
+		public static TimerCounter CleanProjectTimer = InstrumentationService.CreateTimerCounter ("Clean project", "Project Model", id:"Projects.CleanProject");
+		public static TimerCounter BuildWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Build workspace item", "Project Model");
+		public static TimerCounter NeedsBuildingTimer = InstrumentationService.CreateTimerCounter ("Check needs building", "Project Model");
 		
+		public static TimerCounter BuildMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Build MSBuild project", "Project Model", id:"Projects.BuildMSBuildProject");
+		public static TimerCounter CleanMSBuildProjectTimer = InstrumentationService.CreateTimerCounter ("Clean MSBuild project", "Project Model", id:"Projects.CleanMSBuildProject");
+		public static TimerCounter RunMSBuildTargetTimer = InstrumentationService.CreateTimerCounter ("Run MSBuild target", "Project Model", id:"Projects.RunMSBuildTarget");
+		public static TimerCounter ResolveMSBuildReferencesTimer = InstrumentationService.CreateTimerCounter ("Resolve MSBuild references", "Project Model", id:"Projects.ResolveMSBuildReferences");
+
 		public static TimerCounter HelpServiceInitialization = InstrumentationService.CreateTimerCounter ("Help Service initialization", "IDE");
 		public static TimerCounter ParserServiceInitialization = InstrumentationService.CreateTimerCounter ("Parser Service initialization", "IDE");
 	}

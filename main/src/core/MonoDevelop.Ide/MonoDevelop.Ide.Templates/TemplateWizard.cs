@@ -38,6 +38,10 @@ namespace MonoDevelop.Ide.Templates
 
 		public abstract WizardPage GetPage (int pageNumber);
 
+		public virtual void ConfigureWizard ()
+		{
+		}
+
 		public virtual int TotalPages {
 			get { return 1; }
 		}

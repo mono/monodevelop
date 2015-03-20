@@ -120,7 +120,7 @@ namespace MonoDevelop.Ide.Projects
 			w4.TopAttach = ((uint)(7));
 			w4.BottomAttach = ((uint)(8));
 			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
+			w4.RightAttach = ((uint)(3));
 			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child projectConfigurationTable.Gtk.Table+TableChild
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Projects
 			w5.TopAttach = ((uint)(4));
 			w5.BottomAttach = ((uint)(5));
 			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
+			w5.RightAttach = ((uint)(3));
 			w5.XOptions = ((global::Gtk.AttachOptions)(4));
 			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child projectConfigurationTable.Gtk.Table+TableChild

@@ -45,6 +45,8 @@ namespace ICSharpCode.PackageManagement
 
 		public event EventHandler SolutionLoaded;
 
+		ISolution openSolution;
+
 		void OnSolutionLoaded (Solution solution)
 		{
 			OpenSolution = new SolutionProxy (solution);
@@ -80,7 +82,21 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		public ISolution OpenSolution { get; private set; }
+		public ISolution OpenSolution {
+			get { return openSolution; }
+
+			private set {
+				if (openSolution != null) {
+					openSolution.Solution.SolutionItemAdded -= SolutionItemAdded;
+				}
+
+				openSolution = value;
+
+				if (openSolution != null) {
+					openSolution.Solution.SolutionItemAdded += SolutionItemAdded;
+				}
+			}
+		}
 
 		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{
@@ -99,6 +115,22 @@ namespace ICSharpCode.PackageManagement
 		{
 			return String.Empty;
 			//return CustomToolsService.GetCompatibleCustomToolNames(projectItem).FirstOrDefault();
+		}
+
+		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
+
+		void SolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!e.Reloading)
+				return;
+
+			var handler = ProjectReloaded;
+			if (handler != null) {
+				ProjectReloadedEventArgs reloadedEventArgs = ProjectReloadedEventArgs.Create (e);
+				if (reloadedEventArgs != null) {
+					handler (this, reloadedEventArgs);
+				}
+			}
 		}
 	}
 }

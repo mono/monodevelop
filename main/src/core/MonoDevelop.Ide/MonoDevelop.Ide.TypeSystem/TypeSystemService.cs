@@ -1547,11 +1547,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return newReferencedAssemblies;
 			}
 
-			static readonly object assemblyReconnectLock = new object();
-
 			public void EnsureReferencesAreLoaded ()
 			{
-				lock (assemblyReconnectLock) {
+				lock (projectContentLock) {
 					if (referencesConnected)
 						return;
 					compilation = null;

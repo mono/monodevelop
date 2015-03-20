@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Projects
 			CreateProjectDirectoryInsideSolutionDirectory = true;
 
 			CreateGitIgnoreFile = true;
-			UseGit = true;
+			UseGit = false;
 
 			Parameters = new ProjectCreateParameters ();
 		}
@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Projects
 				!FileService.IsValidPath (ProjectLocation);
 		}
 
-		static readonly char [] InvalidProjectNameCharacters = "&*;".ToCharArray ();
+		static readonly char [] InvalidProjectNameCharacters = "&<*;?>%:#|".ToCharArray ();
 
 		public static bool IsValidProjectName (string name)
 		{

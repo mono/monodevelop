@@ -61,6 +61,9 @@ namespace MonoDevelop.Ide
 						SolutionPath = dir
 					};
 					cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
+					cinfo.Parameters ["UseUniversal"] = "True";
+					cinfo.Parameters ["UseIPad"] = "False";
+					cinfo.Parameters ["UseIPhone"] = "False";
 
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {

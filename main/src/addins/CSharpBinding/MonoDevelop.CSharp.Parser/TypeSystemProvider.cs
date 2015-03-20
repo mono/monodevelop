@@ -86,7 +86,14 @@ namespace MonoDevelop.CSharp.Parser
 
 			result.CreateRefactoringContext = delegate (MonoDevelop.Ide.Gui.Document doc, System.Threading.CancellationToken token) {
 				var task = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, token);
-				task.Wait (5000, token);
+				try {
+					task.Wait (5000, token);
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (aex => aex is OperationCanceledException);
+					return null;
+				} catch (OperationCanceledException) {
+					return null;
+				}
 				if (!task.IsCompleted)
 					return null;
 				return task.Result;

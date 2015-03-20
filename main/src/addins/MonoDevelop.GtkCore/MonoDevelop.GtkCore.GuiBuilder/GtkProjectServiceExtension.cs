@@ -12,7 +12,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	{
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return base.SupportsObject (item) && IdeApp.IsInitialized;
+			if (!base.SupportsObject (item) || !IdeApp.IsInitialized)
+				return false;
+			
+			DotNetProject project = item as DotNetProject;
+			return project != null && project.References.Count != 0 && GtkDesignInfo.HasDesignedObjects (project);
 		}
 
 		protected override void OnExtensionChainCreated ()

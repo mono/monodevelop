@@ -56,6 +56,11 @@ namespace MonoDevelop.Ide.Projects
 			projectNameTextBox.ActivatesDefault = true;
 			solutionNameTextBox.ActivatesDefault = true;
 			locationTextBox.ActivatesDefault = true;
+
+			projectNameTextBox.TruncateMultiline = true;
+			solutionNameTextBox.TruncateMultiline = true;
+			locationTextBox.TruncateMultiline = true;
+
 			RegisterEvents ();
 		}
 
@@ -75,6 +80,7 @@ namespace MonoDevelop.Ide.Projects
 		void RegisterEvents ()
 		{
 			locationTextBox.Changed += (sender, e) => OnLocationTextBoxChanged ();
+			projectNameTextBox.TextInserted += ProjectNameTextInserted;
 			projectNameTextBox.Changed += (sender, e) => OnProjectNameTextBoxChanged ();
 			solutionNameTextBox.Changed += (sender, e) => OnSolutionNameTextBoxChanged ();
 			createGitIgnoreFileCheckBox.Clicked += (sender, e) => OnCreateGitIgnoreFileCheckBoxClicked ();
@@ -87,6 +93,14 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectConfiguration.Location = locationTextBox.Text;
 			projectFolderPreviewWidget.UpdateLocation ();
+		}
+
+		void ProjectNameTextInserted (object o, TextInsertedArgs args)
+		{
+			if (args.Text.IndexOf ('\r') >= 0) {
+				var textBox = (Entry)o;
+				textBox.Text = textBox.Text.Replace ("\r", string.Empty);
+			}
 		}
 
 		void OnProjectNameTextBoxChanged ()

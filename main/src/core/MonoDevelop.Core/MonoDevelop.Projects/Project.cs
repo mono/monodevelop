@@ -43,6 +43,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 using System.Collections.Immutable;
+using MonoDevelop.Core.Instrumentation;
 
 
 namespace MonoDevelop.Projects
@@ -57,6 +58,8 @@ namespace MonoDevelop.Projects
 	public class Project : SolutionItem
 	{
 		string[] flavorGuids = new string[0];
+		static Counter ProjectOpenedCounter = InstrumentationService.CreateCounter ("Project Opened", "Project Model", id:"Ide.Project.Open");
+
 		string[] buildActions;
 		MSBuildProject sourceProject;
 
@@ -300,6 +303,28 @@ namespace MonoDevelop.Projects
 		internal protected override IEnumerable<string> GetItemTypeGuids ()
 		{
 			return base.GetItemTypeGuids ().Concat (flavorGuids);
+		}
+
+		protected override void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
+		{
+			base.OnGetProjectEventMetadata (metadata);
+			var sb = new System.Text.StringBuilder ();
+			var first = true;
+
+			var projectTypes = this.GetProjectTypes ().ToList ();
+			foreach (var p in projectTypes.Where (x => (x != "DotNet") || projectTypes.Count == 1)) {
+				if (!first)
+					sb.Append (", ");
+				sb.Append (p);
+				first = false;
+			}
+			metadata ["ProjectTypes"] = sb.ToString ();
+		}
+
+		protected override void OnEndLoad ()
+		{
+			base.OnEndLoad ();
+			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata ());
 		}
 
 		/// <summary>
@@ -697,7 +722,24 @@ namespace MonoDevelop.Projects
 
 				MSBuildResult result = null;
 				await Task.Run (delegate {
-					result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+					
+					TimerCounter buildTimer = null;
+					switch (target) {
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					}
+
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata ());
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata ()) : null;
+
+					try {
+						result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+					} finally {
+						t1.End ();
+						if (t2 != null)
+							t2.End ();
+					}
+
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 				});
 

@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
-			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
+			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
@@ -98,40 +98,49 @@ namespace MonoDevelop.Ide.FindInFiles
 				var contents = new List<Tuple<FileProvider, string, List<SearchResult>>>();
 				foreach (var provider in scope.GetFiles (monitor, filter)) {
 					try {
+						searchedFilesCount++;
 						contents.Add(Tuple.Create (provider, provider.ReadString (), new List<SearchResult> ()));
+						if (searchedFilesCount % step == 0)
+							monitor.Step (2); 
 					} catch (FileNotFoundException) {
 						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 					}
 				}
 
 				var results = new List<SearchResult>();
-				Parallel.ForEach (contents, content => { 
-					if (monitor.CancellationToken.IsCancellationRequested)
-						return;
-					try {
-						Interlocked.Increment (ref searchedFilesCount);
-						content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
-						lock (results) {
-							results.AddRange (content.Item3);
-						}
-						FoundMatchesCount += content.Item3.Count;
-						if (searchedFilesCount % step == 0)
-							monitor.Step (1); 
-					} catch (Exception e) {
-						LoggingService.LogError("Exception during search.", e);
-					}
-				});
-
-				if (replacePattern != null) {
+				if (filter.RegexSearch && replacePattern != null) {
 					foreach (var content in contents) {
-						if (content.Item3.Count == 0)
-							continue;
+						results.AddRange (RegexSearch (monitor, content.Item1, content.Item2, replacePattern, filter));
+					}
+				} else {
+					Parallel.ForEach (contents, content => { 
+						if (monitor.IsCancelRequested)
+							return;
 						try {
-							content.Item1.BeginReplace (content.Item2);
-							Replace (content.Item1, content.Item3, replacePattern);
-							content.Item1.EndReplace ();
+							Interlocked.Increment (ref searchedFilesCount);
+							content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
+							lock (results) {
+								results.AddRange (content.Item3);
+							}
+							FoundMatchesCount += content.Item3.Count;
+							if (searchedFilesCount % step == 0)
+								monitor.Step (1); 
 						} catch (Exception e) {
-							LoggingService.LogError("Exception during replace.", e);
+							LoggingService.LogError("Exception during search.", e);
+						}
+					});
+
+					if (replacePattern != null) {
+						foreach (var content in contents) {
+							if (content.Item3.Count == 0)
+								continue;
+							try {
+								content.Item1.BeginReplace (content.Item2);
+								Replace (content.Item1, content.Item3, replacePattern);
+								content.Item1.EndReplace ();
+							} catch (Exception e) {
+								LoggingService.LogError("Exception during replace.", e);
+							}
 						}
 					}
 				}

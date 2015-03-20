@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Templates
 			Name = name;
 			IconId = UseDefaultIconIdIfNullOrEmpty (iconId);
 			HasProjects = true;
+			Visibility = SolutionTemplateVisibility.All;
 		}
 
 		static string UseDefaultIconIdIfNullOrEmpty (string iconId)
@@ -65,6 +66,7 @@ namespace MonoDevelop.Ide.Templates
 		public string Description { get; set; }
 		public string Category { get; set; }
 		public bool HasProjects { get; set; }
+		public SolutionTemplateVisibility Visibility { get; set; }
 
 		/// <summary>
 		/// Allows templates to be grouped together in the New Project dialog.
@@ -202,6 +204,11 @@ namespace MonoDevelop.Ide.Templates
 			default:
 				return ".proj";
 			}
+		}
+
+		internal bool IsMatch (SolutionTemplateVisibility visibility)
+		{
+			return (Visibility == visibility) || (Visibility == SolutionTemplateVisibility.All);
 		}
 	}
 }

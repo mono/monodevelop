@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Fonts
 			} else {
 				var size = font.Size;
 				if (size == 0)
-					size = 10;
+					size = (int)(10 * Pango.Scale.PangoScale); 
 				font.Size = (int)(Pango.Scale.PangoScale * (int)(scale * size / Pango.Scale.PangoScale));
 			}
 		}

@@ -41,8 +41,8 @@ using MonoDevelop.Core.Setup;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.Net;
-using MonoDevelop.Core.Web;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 
 namespace MonoDevelop.Core
@@ -211,7 +211,7 @@ namespace MonoDevelop.Core
 		
 		static void OnLoad (object s, AddinEventArgs args)
 		{
-			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId);
+			Counters.AddinsLoaded.Inc ("Add-in loaded: " + args.AddinId, new Dictionary<string,string> { { "AddinId", args.AddinId } });
 		}
 		
 		static void OnUnload (object s, AddinEventArgs args)

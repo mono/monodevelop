@@ -270,7 +270,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workspace.IsOpen) {
 				var target = GetRunTarget ();
 				if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (target))
-					IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget, executionHandler);
+					IdeApp.ProjectOperations.Execute (target, executionHandler);
 			}
         }
 
@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			var target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (target))
-				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				IdeApp.ProjectOperations.Execute (target);
 		}
 	}
 
@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.Commands
 				return;
 
 			if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (target))
-				IdeApp.ProjectOperations.Execute (IdeApp.ProjectOperations.CurrentSelectedBuildTarget);
+				IdeApp.ProjectOperations.Execute (target);
 		}
 	}
 

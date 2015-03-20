@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		Gtk.MenuBar topMenu;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
-		MainToolbar toolbar;
+		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public MainToolbar Toolbar {
+		public MainToolbarController Toolbar {
 			get {
 				return toolbar;
 			}
@@ -370,6 +370,32 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
 		{
+			bool isFile = content.IsFile;
+			if (!isFile) {
+				try {
+					isFile = File.Exists (content.ContentName);
+				} catch { /*Ignore*/ }
+			}
+
+			string type;
+			if (isFile) {
+				type = System.IO.Path.GetExtension (content.ContentName);
+				var mt = DesktopService.GetMimeTypeForUri (content.ContentName);
+				if (!string.IsNullOrEmpty (mt))
+					type += " (" + mt + ")";
+			} else
+				type = "(not a file)";
+
+			var metadata = new Dictionary<string,string> () {
+				{ "FileType", type },
+				{ "DisplayBinding", content.GetType ().FullName },
+			};
+
+			if (isFile)
+				metadata ["DisplayBindingAndType"] = type + " | " + content.GetType ().FullName;
+
+			Counters.DocumentOpened.Inc (metadata);
+
 			var mimeimage = PrepareShowView (content);
 			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.AddTab ();
@@ -786,8 +812,7 @@ namespace MonoDevelop.Ide.Gui
 			Realize ();
 			toolbar = DesktopService.CreateMainToolbar (this);
 			DesktopService.SetMainWindowDecorations (this);
-			var toolbarBox = new HBox ();
-			fullViewVBox.PackStart (toolbarBox, false, false, 0);
+			DesktopService.AttachMainToolbar (fullViewVBox, toolbar);
 			toolbarFrame = new CommandFrame (IdeApp.CommandService);
 
 			fullViewVBox.PackStart (toolbarFrame, true, true, 0);
@@ -828,7 +853,6 @@ namespace MonoDevelop.Ide.Gui
 			bottomBar = new MonoDevelopStatusBar ();
 			fullViewVBox.PackEnd (bottomBar, false, true, 0);
 			bottomBar.ShowAll ();
-			toolbarBox.PackStart (this.toolbar, true, true, 0);
 
 			// In order to get the correct bar height we need to calculate the tab size using the
 			// correct style (the style of the window). At this point the widget is not yet a child

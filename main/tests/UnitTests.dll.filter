@@ -1,0 +1,10 @@
++MonoDevelop.Core
++MonoDevelop.CSharpBinding
++MonoDevelop.CSharpBinding.Refactoring
++MonoDevelop.Ide.FindInFiles
++MonoDevelop.Ide.Gui
++MonoDevelop.Ide.Templates
++MonoDevelop.Projects
++MonoDevelop.Refactoring
++MonoDevelop.SourceEditor
++MonoDevelop.VersionControl.Views

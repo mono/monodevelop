@@ -106,6 +106,7 @@ namespace MonoDevelop.CSharp.Project
 			langVerStore.AppendValues ("Version 3");
 			langVerStore.AppendValues ("Version 4");
 			langVerStore.AppendValues ("Version 5");
+			langVerStore.AppendValues ("Version 6");
 			langVerCombo.Model = langVerStore;
 			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}

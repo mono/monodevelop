@@ -39,6 +39,7 @@ namespace MacPlatform.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup ()
 		{
+			Keychain.TryDeleteKeychain (TestKeyChain);
 			Keychain.CurrentKeychain = Keychain.CreateKeychain (TestKeyChain, "mypassword");
 		}
 

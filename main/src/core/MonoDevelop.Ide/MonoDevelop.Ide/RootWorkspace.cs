@@ -444,27 +444,24 @@ namespace MonoDevelop.Ide
 			get { return openingItemCancellationSource != null; }
 		}
 
-		public Task<bool> OpenWorkspaceItem (string filename)
+		public Task<bool> OpenWorkspaceItem (FilePath file)
 		{
-			return OpenWorkspaceItem (filename, true);
+			return OpenWorkspaceItem (file, true);
 		}
 		
-		public Task<bool> OpenWorkspaceItem (string filename, bool closeCurrent)
+		public Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent)
 		{
-			return OpenWorkspaceItem (filename, closeCurrent, true);
+			return OpenWorkspaceItem (file, closeCurrent, true);
 		}
-		
-		public async Task<bool> OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
+
+		public async Task<bool> OpenWorkspaceItem (FilePath file, bool closeCurrent, bool loadPreferences)
 		{
 			if (openingItemCancellationSource != null && closeCurrent) {
 				openingItemCancellationSource.Cancel ();
 				openingItemCancellationSource = null;
 			}
 
-			if (filename.StartsWith ("file://", StringComparison.Ordinal))
-				filename = new Uri(filename).LocalPath;
-
-			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == filename);
+			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == file.FullPath);
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
 				IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
@@ -484,7 +481,7 @@ namespace MonoDevelop.Ide
 			var cancellationSource = openingItemCancellationSource = new System.Threading.CancellationTokenSource ();
 			monitor = monitor.WithCancellationSource (cancellationSource);
 
-			var oper = BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+			var oper = BackgroundLoadWorkspace (monitor, file, loadPreferences, reloading);
 
 			try {
 				return await oper;
@@ -510,7 +507,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, string filename, bool loadPreferences, bool reloading)
+		async Task<bool> BackgroundLoadWorkspace (ProgressMonitor monitor, FilePath file, bool loadPreferences, bool reloading)
 		{
 			WorkspaceItem item = null;
 			ITimeTracker timer = Counters.OpenWorkspaceItemTimer.BeginTiming ();
@@ -519,15 +516,15 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (true);
 
-				if (!File.Exists (filename)) {
-					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", filename), null);
+				if (!File.Exists (file)) {
+					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", file), null);
 					monitor.Dispose ();
 					return false;
 				}
 
-				if (!Services.ProjectService.IsWorkspaceItemFile (filename)) {
-					if (!Services.ProjectService.IsSolutionItemFile (filename)) {
-						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", filename), null);
+				if (!Services.ProjectService.IsWorkspaceItemFile (file)) {
+					if (!Services.ProjectService.IsSolutionItemFile (file)) {
+						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", file), null);
 						monitor.Dispose ();
 						return false;
 					}
@@ -535,12 +532,12 @@ namespace MonoDevelop.Ide
 					// It is a project, not a solution. Try to create a dummy solution and add the project to it
 					
 					timer.Trace ("Getting wrapper solution");
-					item = await IdeApp.Services.ProjectService.GetWrapperSolution (monitor, filename);
+					item = await IdeApp.Services.ProjectService.GetWrapperSolution (monitor, file);
 				}
 				
 				if (item == null) {
 					timer.Trace ("Reading item");
-					item = await Services.ProjectService.ReadWorkspaceItem (monitor, filename);
+					item = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
 					if (monitor.CancellationToken.IsCancellationRequested) {
 						monitor.Dispose ();
 						return false;

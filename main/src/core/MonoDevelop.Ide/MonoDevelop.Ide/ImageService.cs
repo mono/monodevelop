@@ -102,19 +102,24 @@ namespace MonoDevelop.Ide
 
 		static Xwt.Drawing.Image LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)
 		{
+			return LoadStockIcon (iconCodon.Addin, iconCodon.StockId, iconCodon.Resource, iconCodon.File, iconCodon.IconId, iconCodon.IconSize, iconCodon.Animation, forceWildcard);
+		}
+
+		static Xwt.Drawing.Image LoadStockIcon (RuntimeAddin addin, string stockId, string resource, string imageFile, string iconId, Gtk.IconSize iconSize, string animation, bool forceWildcard)
+		{
 			try {
 				Gdk.Pixbuf pixbuf = null, pixbuf2x = null;
 				AnimatedIcon animatedIcon = null;
 				Func<Stream[]> imageLoader = null;
 
-				if (!string.IsNullOrEmpty (iconCodon.Resource) || !string.IsNullOrEmpty (iconCodon.File)) {
+				if (!string.IsNullOrEmpty (resource) || !string.IsNullOrEmpty (imageFile)) {
 					// using the stream directly produces a gdk warning.
 					byte[] buffer;
 
-					if (iconCodon.Resource != null) {
+					if (resource != null) {
 						imageLoader = delegate {
-							var stream = iconCodon.Addin.GetResource (iconCodon.Resource);
-							var stream2x = iconCodon.Addin.GetResource2x (iconCodon.Resource);
+							var stream = addin.GetResource (resource);
+							var stream2x = addin.GetResource2x (resource);
 							if (stream2x == null)
 								return new [] { stream };
 							else
@@ -123,7 +128,7 @@ namespace MonoDevelop.Ide
 					}
 					else {
 						imageLoader = delegate {
-							var file = iconCodon.Addin.GetFilePath (iconCodon.File);
+							var file = addin.GetFilePath (imageFile);
 							var stream = File.OpenRead (file);
 							Stream stream2x = null;
 							var file2x = Path.Combine (Path.GetDirectoryName (file), Path.GetFileNameWithoutExtension (file) + "@2x" + Path.GetExtension (file));
@@ -148,7 +153,7 @@ namespace MonoDevelop.Ide
 					using (st) {
 						if (st == null || st.Length < 0) {
 							LoggingService.LogError ("Did not find resource '{0}' in addin '{1}' for icon '{2}'",
-								iconCodon.Resource, iconCodon.Addin.Id, iconCodon.StockId);
+								resource, addin.Id, stockId);
 							return null;
 						}
 						buffer = new byte [st.Length];
@@ -164,25 +169,25 @@ namespace MonoDevelop.Ide
 						}
 					}
 
-				} else if (!string.IsNullOrEmpty (iconCodon.IconId)) {
-					var id = GetStockIdForImageSpec (iconCodon.Addin, iconCodon.IconId, iconCodon.IconSize);
-					pixbuf = GetPixbuf (id, iconCodon.IconSize);
+				} else if (!string.IsNullOrEmpty (iconId)) {
+					var id = GetStockIdForImageSpec (addin, iconId, iconSize);
+					pixbuf = GetPixbuf (id, iconSize);
 					pixbuf2x = Get2xIconVariant (pixbuf);
 					// This may be an animation, get it
 					animationFactory.TryGetValue (id, out animatedIcon);
-				} else if (!string.IsNullOrEmpty (iconCodon.Animation)) {
-					string id = GetStockIdForImageSpec (iconCodon.Addin, "animation:" + iconCodon.Animation, iconCodon.IconSize);
-					pixbuf = GetPixbuf (id, iconCodon.IconSize);
+				} else if (!string.IsNullOrEmpty (animation)) {
+					string id = GetStockIdForImageSpec (addin, "animation:" + animation, iconSize);
+					pixbuf = GetPixbuf (id, iconSize);
 					// This *should* be an animation
 					animationFactory.TryGetValue (id, out animatedIcon);
 				}
 
-				Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconCodon.IconSize;
+				Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconSize;
 				if (pixbuf != null)
-					AddToIconFactory (iconCodon.StockId, pixbuf, pixbuf2x, size);
+					AddToIconFactory (stockId, pixbuf, pixbuf2x, size);
 
 				if (animatedIcon != null)
-					AddToAnimatedIconFactory (iconCodon.StockId, animatedIcon);
+					AddToAnimatedIconFactory (stockId, animatedIcon);
 
 				var img = Xwt.Toolkit.CurrentEngine.WrapImage (pixbuf);
 				if (pixbuf2x != null) {
@@ -191,10 +196,11 @@ namespace MonoDevelop.Ide
 				}
 				if (imageLoader != null)
 					img.SetStreamSource (imageLoader);
+
 				return img;
 
 			} catch (Exception ex) {
-				LoggingService.LogError (string.Format ("Error loading icon '{0}'", iconCodon.StockId), ex);
+				LoggingService.LogError (string.Format ("Error loading icon '{0}'", stockId), ex);
 				return null;
 			}
 		}
@@ -526,20 +532,7 @@ namespace MonoDevelop.Ide
 			Dictionary<string, string> hash = addinIcons[addinId];
 			string stockId = "__asm" + addinId + "__" + id + "__" + size;
 			if (!hash.ContainsKey (stockId)) {
-				System.IO.Stream stream = addin.GetResource (id);
-				if (stream != null) {
-					Gdk.Pixbuf pix1, pix2 = null;
-					using (stream) {
-						pix1 = new Gdk.Pixbuf (stream);
-					}
-					stream = addin.GetResource2x (id);
-					if (stream != null) {
-						using (stream) {
-							pix2 = new Gdk.Pixbuf (stream);
-						}
-					}
-					AddToIconFactory (stockId, pix1, pix2, size);
-				}
+				icons[stockId] = LoadStockIcon (addin, stockId, id, null, null, size, null, false);
 				hash[stockId] = stockId;
 			}
 			return stockId;
@@ -830,7 +823,7 @@ namespace MonoDevelop.Ide
 				UnregisterTreeAnimation (ainfo);
 			}
 			if (iconId == null) {
-				treeStore.SetValue (iter, column, null);
+				treeStore.SetValue (iter, column, CellRendererImage.NullImage);
 			} else if (IsAnimation (iconId, size)) {
 				var anim = GetAnimatedIcon (iconId);
 				ainfo = new AnimatedTreeStoreIconInfo (treeStore, iter, column, anim, iconId);

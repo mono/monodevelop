@@ -141,12 +141,15 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId StatusUpload = "md-status-upload";
 		public static readonly IconId StatusSearch = "md-status-search";
 		public static readonly IconId StatusBuild = "md-status-build";
-		public static readonly IconId StatusSteady = "md-status-steady";
+		public static readonly IconId StatusSteady = BrandingService.StatusSteadyIconId;
 		public static readonly IconId StatusSuccess = "md-status-success";
 		public static readonly IconId StatusWarning = "md-status-warning";
 		public static readonly IconId StatusError = "md-status-error";
 		public static readonly IconId StatusConnecting = "md-status-connecting";
 		public static readonly IconId StatusWorking = "md-status-waiting";
+		public static readonly IconId StatusUpdatesDownloading = "md-status-updates-downloading";
+		public static readonly IconId StatusUpdatesPaused = "md-status-updates-paused";
+		public static readonly IconId StatusUpdatesReady = "md-status-updates-ready";
 		public static readonly IconId Broom = "md-clear";
 		public static readonly IconId Stop = "md-stop";
 		public static readonly IconId MessageLog = "md-message-log";

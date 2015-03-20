@@ -88,9 +88,34 @@ namespace MonoDevelop.Ide.Execution
 				if (info.Count > 0)
 					info.AddSeparator ();
 			}
+
+			var targets = new List<ExecutionTarget> ();
+			FlattenExecutionTargets (targets, project.GetExecutionTargets (IdeApp.Workspace.ActiveConfiguration));
+
+			if (targets.Count > 1) {
+				foreach (var t in targets) {
+					var h = new TargetedExecutionHandler (Runtime.ProcessService.DefaultExecutionHandler, t);
+					CommandInfo ci = info.Add (t.FullName, new CommandItem (ctx, new ExecutionMode (t.Id, t.FullName, h)));
+					ci.Description = GettextCatalog.GetString ("Run With: {0}", ci.Text);
+				}
+				info.AddSeparator ();
+			}
+
 			if (supportsParameterization) {
 				info.AddSeparator ();
 				info.Add (GettextCatalog.GetString ("Edit Custom Modes..."), new CommandItem (ctx, null));
+			}
+		}
+
+		static void FlattenExecutionTargets (List<ExecutionTarget> addToList, IEnumerable<ExecutionTarget> targets)
+		{
+			foreach (var t in targets) {
+				var group = t as ExecutionTargetGroup;
+				if (group != null) {
+					FlattenExecutionTargets (addToList, group);
+				} else {
+					addToList.Add (t);
+				}
 			}
 		}
 		

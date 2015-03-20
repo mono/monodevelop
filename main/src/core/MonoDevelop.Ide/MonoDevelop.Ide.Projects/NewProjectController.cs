@@ -108,13 +108,13 @@ namespace MonoDevelop.Ide.Projects
 		public NewProjectDialogController ()
 		{
 			IsFirstPage = true;
-			LoadTemplateCategories ();
 			GetVersionControlHandler ();
 		}
 
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
+			LoadTemplateCategories ();
 			SetDefaultSettings ();
 			SelectDefaultTemplate ();
 
@@ -200,7 +200,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void SetDefaultGitSettings ()
 		{
-			projectConfiguration.UseGit = PropertyService.Get (UseGitPropertyName, true);
+			projectConfiguration.UseGit = PropertyService.Get (UseGitPropertyName, false);
 			projectConfiguration.CreateGitIgnoreFile = PropertyService.Get (CreateGitIgnoreFilePropertyName, true);
 		}
 
@@ -247,7 +247,16 @@ namespace MonoDevelop.Ide.Projects
 
 		void LoadTemplateCategories ()
 		{
-			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
+			Predicate<SolutionTemplate> templateMatch = GetTemplateFilter ();
+			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories (templateMatch).ToList ();
+		}
+
+		Predicate<SolutionTemplate> GetTemplateFilter ()
+		{
+			if (IsNewSolution) {
+				return ProjectTemplateCategorizer.MatchNewSolutionTemplates;
+			}
+			return ProjectTemplateCategorizer.MatchNewProjectTemplates;
 		}
 
 		void SelectDefaultTemplate ()
@@ -432,6 +441,9 @@ namespace MonoDevelop.Ide.Projects
 
 		public async Task Create ()
 		{
+			if (wizardProvider.HasWizard)
+				wizardProvider.BeforeProjectIsCreated ();
+
 			if (!CreateProject ())
 				return;
 
@@ -498,6 +510,7 @@ namespace MonoDevelop.Ide.Projects
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
+				RunTemplateActions (processedTemplate);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
@@ -595,13 +608,17 @@ namespace MonoDevelop.Ide.Projects
 		static async Task<bool> OpenCreatedSolution (ProcessedTemplateResult templateResult)
 		{
 			if (await IdeApp.Workspace.OpenWorkspaceItem (templateResult.SolutionFileName)) {
-				foreach (string action in templateResult.Actions) {
-					if (IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action)) == null)
-						return false;
-				}
+				RunTemplateActions (templateResult);
 				return true;
 			}
 			return false;
+		}
+
+		static void RunTemplateActions (ProcessedTemplateResult templateResult)
+		{
+			foreach (string action in templateResult.Actions) {
+				IdeApp.Workbench.OpenDocument (Path.Combine (templateResult.ProjectBasePath, action));
+			}
 		}
 
 		void CreateVersionControlItems ()

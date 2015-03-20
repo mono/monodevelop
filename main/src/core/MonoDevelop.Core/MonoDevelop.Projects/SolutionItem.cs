@@ -552,21 +552,23 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Building " + Name);
-			try {
-				if (!buildReferences) {
-					try {
-						SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
-						string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
-						monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
+			if (!buildReferences) {
+				try {
+					SolutionItemConfiguration iconf = GetConfiguration (solutionConfiguration);
+					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
+					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 
+					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ())) {
 						return await InternalBuild (monitor, solutionConfiguration);
-
-					} finally {
-						monitor.EndTask ();
 					}
-				}
 
+				} finally {
+					monitor.EndTask ();
+				}
+			}
+
+			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ());
+			try {
 				// Get a list of all items that need to be built (including this),
 				// and build them in the correct order
 
@@ -678,7 +680,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name);
+			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata ());
 			try {
 				try {
 					SolutionItemConfiguration iconf = GetConfiguration (configuration);
@@ -785,7 +787,18 @@ namespace MonoDevelop.Projects
 			sortedItems.Add (insertItem);
 			inserted[index] = true;
 		}
+		
+		public IDictionary<string, string> GetProjectEventMetadata ()
+		{
+			var data = new Dictionary<string, string> ();
+			OnGetProjectEventMetadata (data);
+			return data;
+		}
 
+		protected virtual void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
+		{
+		}
+		
 		/// <summary>
 		/// Executes this solution item
 		/// </summary>

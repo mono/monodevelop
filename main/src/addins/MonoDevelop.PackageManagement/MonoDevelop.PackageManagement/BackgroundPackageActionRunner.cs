@@ -170,7 +170,7 @@ namespace MonoDevelop.PackageManagement
 			foreach (var op in operations) {
 				var metadata = new Dictionary<string, string> ();
 				metadata ["PackageId"] = op.Package.Id;
-				metadata ["PackageVersion"] = op.Package.Version.ToString ();
+				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
 
 				switch (op.Action) {
 				case PackageAction.Install: 

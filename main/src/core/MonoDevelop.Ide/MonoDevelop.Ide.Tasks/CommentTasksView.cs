@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView view;
 		ListStore store;
+		TreeModelSort sortModel;
 
 		Gdk.Color highPrioColor, normalPrioColor, lowPrioColor;
 
@@ -98,7 +99,9 @@ namespace MonoDevelop.Ide.Tasks
 				typeof (Gdk.Color),  // foreground color
 				typeof (int));       // font weight
 
-			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (store);
+			sortModel = new TreeModelSort (store);
+
+			view = new MonoDevelop.Ide.Gui.Components.PadTreeView (sortModel);
 			view.RulesHint = true;
 			view.SearchColumn = (int)Columns.Description;
 			view.DoPopupMenu = (evt) => IdeApp.CommandService.ShowContextMenu (view, evt, CreateMenu ());
@@ -109,22 +112,16 @@ namespace MonoDevelop.Ide.Tasks
 			col.Clickable = false;
 
 			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer, "text", Columns.Description, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
-			col.Clickable = true;
 			col.SortColumnId = (int)Columns.Description;
 			col.Resizable = true;
-			col.Clicked += Resort;
 
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer, "text", Columns.File, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
-			col.Clickable = true;
 			col.SortColumnId = (int)Columns.File;
 			col.Resizable = true;
-			col.Clicked += Resort;
 
 			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer, "text", Columns.Path, "foreground-gdk", Columns.Foreground, "weight", Columns.Bold);
-			col.Clickable = true;
 			col.SortColumnId = (int)Columns.Path;
 			col.Resizable = true;
-			col.Clicked += Resort;
 
 			LoadColumnsVisibility ();
 			
@@ -540,31 +537,6 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 
-		void Resort (object sender, EventArgs args)
-		{
-			TreeViewColumn col = (TreeViewColumn)sender;
-			foreach (TreeViewColumn c in view.Columns)
-			{
-				if (c != col) c.SortIndicator = false;
-			}
-			col.SortOrder = ReverseSortOrder (col);
-			col.SortIndicator = true;
-			store.SetSortColumnId (col.SortColumnId, col.SortOrder);
-		}
-		
-		static SortType ReverseSortOrder (TreeViewColumn col)
-		{
-			if (col.SortIndicator) {
-				if (col.SortOrder == SortType.Ascending)
-					return SortType.Descending;
-				else
-					return SortType.Ascending;
-			} else
-			{
-				return SortType.Ascending;
-			}
-		}
-		
 		Gdk.Color GetColorByPriority (TaskPriority prio)
 		{
 			switch (prio)

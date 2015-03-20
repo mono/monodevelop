@@ -104,14 +104,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		bool errorAnimPending;
 
-		MainStatusBarContextImpl mainContext;
-		StatusBarContextImpl activeContext;
+		StatusBarContextHandler ctxHandler;
 		bool progressBarVisible;
 
 		Queue<Message> messageQueue;
 		
 		public StatusBar MainContext {
-			get { return mainContext; }
+			get { return ctxHandler.MainContext; }
 		}
 
 		public int MaxWidth { get; set; }
@@ -141,10 +140,7 @@ namespace MonoDevelop.Components.MainToolbar
 			theme = new StatusAreaTheme ();
 			renderArg = new RenderArg ();
 
-			mainContext = new MainStatusBarContextImpl (this);
-			activeContext = mainContext;
-			contexts.Add (mainContext);
-
+			ctxHandler = new StatusBarContextHandler (this);
 			VisibleWindow = false;
 			NoShowAll = true;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
@@ -401,16 +397,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		#region StatusBar implementation
 
-		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public void ClearCaretState ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
 			DispatchService.AssertGuiThread ();
@@ -428,12 +414,9 @@ namespace MonoDevelop.Components.MainToolbar
 			icon.EventBox.Destroy ();
 		}
 
-		List<StatusBarContextImpl> contexts = new List<StatusBarContextImpl> ();
 		public StatusBarContext CreateContext ()
 		{
-			StatusBarContextImpl ctx = new StatusBarContextImpl (this);
-			contexts.Add (ctx);
-			return ctx;
+			return ctxHandler.CreateContext ();
 		}
 
 		public void ShowReady ()
@@ -483,6 +466,24 @@ namespace MonoDevelop.Components.MainToolbar
 				box.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 				box.EnterNotifyEvent += HandleEnterNotifyEvent;
 				box.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+				box.ButtonPressEvent += (o, e) => {
+					// TODO: Refactor this in Xwt as an extension method.
+					var m = Xwt.ModifierKeys.None;
+					if ((e.Event.State & Gdk.ModifierType.ShiftMask) != 0)
+						m |= Xwt.ModifierKeys.Shift;
+					if ((e.Event.State & Gdk.ModifierType.ControlMask) != 0)
+						m |= Xwt.ModifierKeys.Control;
+					if ((e.Event.State & Gdk.ModifierType.Mod1Mask) != 0)
+						m |= Xwt.ModifierKeys.Alt;
+					// TODO: Backport this one.
+					if ((e.Event.State & Gdk.ModifierType.Mod2Mask) != 0)
+						m |= Xwt.ModifierKeys.Command;
+
+					Clicked (o, new StatusBarIconClickedEventArgs {
+						Button = (Xwt.PointerButton)e.Event.Button,
+						Modifiers = m,
+					});
+				};
 			}
 			
 			[GLib.ConnectBefore]
@@ -613,6 +614,8 @@ namespace MonoDevelop.Components.MainToolbar
 				astep = (astep + 1) % 20;
 				return true;
 			}
+
+			public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 		}
 		
 		#endregion
@@ -626,7 +629,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void ShowWarning (string warning)
 		{
-			DispatchService.AssertGuiThread ();
 			ShowMessage (StockIcons.StatusWarning, warning);
 		}
 
@@ -855,40 +857,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 		#endregion
-	
-		internal bool IsCurrentContext (StatusBarContextImpl ctx)
-		{
-			return ctx == activeContext;
-		}
-
-		internal void Remove (StatusBarContextImpl ctx)
-		{
-			if (ctx == mainContext)
-				return;
-			
-			StatusBarContextImpl oldActive = activeContext;
-			contexts.Remove (ctx);
-			UpdateActiveContext ();
-			if (oldActive != activeContext) {
-				// Removed the active context. Update the status bar.
-				activeContext.Update ();
-			}
-		}
-		
-		internal void UpdateActiveContext ()
-		{
-			for (int n = contexts.Count - 1; n >= 0; n--) {
-				StatusBarContextImpl ctx = contexts [n];
-				if (ctx.StatusChanged) {
-					if (ctx != activeContext) {
-						activeContext = ctx;
-						activeContext.Update ();
-					}
-					return;
-				}
-			}
-			throw new InvalidOperationException (); // There must be at least the main context
-		}
 	}
 
 	class StatusAreaSeparator: HBox

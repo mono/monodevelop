@@ -84,8 +84,8 @@ namespace ICSharpCode.PackageManagement
 
 		void ReadActivePackageSource()
 		{
-			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
-			activePackageSource = PackageSourceConverter.ConvertFromFirstKeyValuePair(packageSources);
+			IList<SettingValue> packageSources = settings.GetValues(ActivePackageSourceSectionName, false);
+			activePackageSource = PackageSourceConverter.ConvertFromFirstSetting(packageSources);
 		}
 
 		public RegisteredPackageSources PackageSources {

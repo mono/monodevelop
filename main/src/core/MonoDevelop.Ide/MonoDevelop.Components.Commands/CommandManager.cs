@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.TextEditor;
@@ -42,7 +43,6 @@ namespace MonoDevelop.Components.Commands
 {
 	public class CommandManager: IDisposable
 	{
-		public static CommandManager Main = new CommandManager ();
 		Gtk.Window rootWidget;
 		KeyBindingManager bindings;
 		Gtk.AccelGroup accelGroup;
@@ -92,8 +92,12 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
+
+			#if MAC
+			AppKit.NSEvent.AddLocalMonitorForEventsMatchingMask (AppKit.NSEventMask.KeyDown, OnNSEventKeyPress);
+			#endif
 		}
-		
+
 		/// <summary>
 		/// Loads command definitions from the provided extension path
 		/// </summary>
@@ -304,77 +308,95 @@ namespace MonoDevelop.Components.Commands
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 
-		bool IsShortcutHandledByEmbeddedNSView (Gdk.Window window, KeyboardShortcut[] accels)
+		#if MAC
+		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.HasNSTextFieldFocus (window)) {
-				foreach (KeyboardShortcut ks in accels) {
-					if (ks.Modifier == Gdk.ModifierType.MetaMask && (
-					        ks.Key == Gdk.Key.a || ks.Key == Gdk.Key.c ||
-					        ks.Key == Gdk.Key.x || ks.Key == Gdk.Key.v ||
-					        ks.Key == Gdk.Key.z)) {
-						return true;
-					}
-				}
+			// If we have a native window that can handle this command, let it process
+			// the keys itself and do not go through the command manager.
+			// Events in Gtk windows do not pass through here except when they're done
+			// in native NSViews. PerformKeyEquivalent for them will not return true,
+			// so we're always going to fallback to the command manager for them.
+			// If no window is focused, it's probably because a gtk window had focus
+			// and the focus didn't go to any other window on close. (debug popup on hover
+			// that gets closed on unhover). So if no keywindow is focused, events will
+			// pass through here and let us use the command manager.
+			var window = AppKit.NSApplication.SharedApplication.KeyWindow;
+			if (window != null) {
+				// Try the handler in the native window.
+				if (window.PerformKeyEquivalent (ev))
+					return null;
+
+				// If the window is a gtk window and is registered in the command manager
+				// process the events through the handler.
+				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
+				if (gtkWindow == null || !TopLevelWindowStack.Contains (gtkWindow))
+					return null;
 			}
 
-			return false;
+			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
+			if (gdkev != null) {
+				if (ProcessKeyEvent (gdkev))
+					return null;
+			}
+			return ev;
 		}
+		#endif
 
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
+			e.RetVal = ProcessKeyEvent (e.Event);
+		}
+
+		bool ProcessKeyEvent (Gdk.EventKey ev)
+		{
 			if (!IsEnabled)
-				return;
+				return true;
 
 			RegisterUserInteraction ();
 			
 			bool complete;
-			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
-
-			if (IsShortcutHandledByEmbeddedNSView (e.Event.Window, accels))
-				return;
+			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (ev, out complete);
 
 			if (!complete) {
 				// incomplete accel
-				e.RetVal = true;
-				return;
+				return true;
 			}
 			
 			List<Command> commands = null;
 			KeyBinding binding;
 			bool isChord;
-			
+			bool result;
+
 			if (CanUseBinding (chords, accels, out binding, out isChord)) {
 				commands = bindings.Commands (binding);
-				e.RetVal = true;
+				result = true;
 				chords = null;
 				chord = null;
 			} else if (isChord) {
-				chord = KeyBindingManager.AccelLabelFromKey (e.Event);
-				e.RetVal = true;
+				chord = KeyBindingManager.AccelLabelFromKey (ev);
 				chords = accels;
-				return;
+				return true;
 			} else if (chords != null) {
 				// Note: The user has entered a valid chord but the accel was invalid.
 				if (KeyBindingFailed != null) {
-					string accel = KeyBindingManager.AccelLabelFromKey (e.Event);
+					string accel = KeyBindingManager.AccelLabelFromKey (ev);
 					
 					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}, {1}) is not a command.", chord, accel)));
 				}
 				
-				e.RetVal = true;
 				chords = null;
 				chord = null;
-				return;
+				return true;
 			} else {
-				e.RetVal = false;
 				chords = null;
 				chord = null;
 				
-				NotifyKeyPressed (e);
-				return;
+				NotifyKeyPressed (ev);
+				return false;
 			}
-			
+
+			var toplevelFocus = IdeApp.Workbench.HasToplevelFocus;
 			bool bypass = false;
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
@@ -382,27 +404,29 @@ namespace MonoDevelop.Components.Commands
 					bypass = true;
 					continue;
 				}
+
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
-					return;
+					return result;
 			}
 
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
 			
 			if (commands.Count > 0 && !bypass) {
-				e.RetVal = true;
+				result = true;
 			} else {
-				e.RetVal = false;
-				NotifyKeyPressed (e);
+				result = false;
+				NotifyKeyPressed (ev);
 			}
 			
 			chords = null;
+			return result;
 		}
 		
-		void NotifyKeyPressed (Gtk.KeyPressEventArgs e)
+		void NotifyKeyPressed (Gdk.EventKey ev)
 		{
 			if (KeyPressed != null)
-				KeyPressed (this, new KeyPressArgs () { Key = e.Event.Key, Modifiers = e.Event.State });
+				KeyPressed (this, new KeyPressArgs () { Key = ev.Key, Modifiers = ev.State });
 		}
 		
 		/// <summary>
@@ -1071,15 +1095,23 @@ namespace MonoDevelop.Components.Commands
 							if (cmd.CommandArray) {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									chi.Run (localTarget, cmd, dataItem);
-									OnCommandActivated (commandId, info, dataItem, localTarget, source);
+									var t = DateTime.Now;
+									try {
+										chi.Run (localTarget, cmd, dataItem);
+									} finally {
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+									}
 								});
 							}
 							else {
 								handlers.Add (delegate {
 									OnCommandActivating (commandId, info, dataItem, localTarget, source);
-									chi.Run (localTarget, cmd);
-									OnCommandActivated (commandId, info, dataItem, localTarget, source);
+									var t = DateTime.Now;
+									try {
+										chi.Run (localTarget, cmd);
+									} finally {
+										OnCommandActivated (commandId, info, dataItem, localTarget, source, DateTime.Now - t);
+									}
 								});
 							}
 							handlerFoundInMulticast = true;
@@ -1133,8 +1165,13 @@ namespace MonoDevelop.Components.Commands
 				cmd.DefaultHandler = (CommandHandler) Activator.CreateInstance (cmd.DefaultHandlerType);
 			}
 			OnCommandActivating (cmd.Id, info, dataItem, target, source);
-			cmd.DefaultHandler.InternalRun (dataItem);
-			OnCommandActivated (cmd.Id, info, dataItem, target, source);
+
+			var t = DateTime.Now;
+			try {
+				cmd.DefaultHandler.InternalRun (dataItem);
+			} finally {
+				OnCommandActivated (cmd.Id, info, dataItem, target, source, DateTime.Now - t);
+			}
 			return true;
 		}
 		
@@ -1144,10 +1181,10 @@ namespace MonoDevelop.Components.Commands
 				CommandActivating (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
 		}
 		
-		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
+		void OnCommandActivated (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan time)
 		{
 			if (CommandActivated != null)
-				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source));
+				CommandActivated (this, new CommandActivationEventArgs (commandId, commandInfo, dataItem, target, source, time));
 		}
 		
 		/// <summary>
@@ -1203,7 +1240,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = cmd;
 
 				object cmdTarget = GetFirstCommandTarget (targetRoute);
-				
+
 				while (cmdTarget != null)
 				{
 					HandlerTypeInfo typeInfo = GetTypeHandlerInfo (cmdTarget);
@@ -1594,6 +1631,17 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = ((ICommandRouter)cmdTarget).GetNextCommandTarget ();
 			else if (cmdTarget is Gtk.Widget)
 				cmdTarget = ((Gtk.Widget)cmdTarget).Parent;
+			#if MAC
+			else if (cmdTarget is AppKit.NSView) {
+				var v = (AppKit.NSView) cmdTarget;
+				if (v.Superview != null && IsRootGdkQuartzView (v.Superview))
+					// FIXME: We should get here the GTK parent of the superview. Since there is no api for this
+					// right now, we rely on it being set by GetActiveWidget()
+					cmdTarget = null;
+				else
+					cmdTarget = v.Superview;
+			}
+			#endif
 			else
 				cmdTarget = null;
 			
@@ -1660,18 +1708,29 @@ namespace MonoDevelop.Components.Commands
 				return null;
 		}
 		
-		Gtk.Widget GetActiveWidget (Gtk.Window win)
+		object GetActiveWidget (Gtk.Window win)
 		{
 			win = GetActiveWindow (win);
+
 			Gtk.Widget widget = win;
 			if (win != null) {
-				while (widget is Gtk.Container) {
-					Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-					if (child != null)
-						widget = child;
-					else
-						break;
+
+				#if MAC
+				var nw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (win);
+				if (nw != null) {
+					var v = nw.FirstResponder as AppKit.NSView;
+					if (v != null && !IsRootGdkQuartzView (v)) {
+						if (IsEmbeddedNSView (v))
+							// FIXME: since there is no way to get the parent GTK widget of an embedded NSView,
+							// here we return a ICommandDelegatorRouter object that will cause the command route
+							// to continue with the active gtk widget once the NSView hierarchy has been inspected.
+							return new NSViewCommandRouter { ActiveView = v, ParentWidget = GetFocusedChild (widget) };
+						return v;
+					}
 				}
+				#endif
+
+				widget = GetFocusedChild (widget);
 			}
 			if (widget != lastActiveWidget) {
 				if (ActiveWidgetChanged != null)
@@ -1680,6 +1739,50 @@ namespace MonoDevelop.Components.Commands
 			}
 			return widget;
 		}
+
+		Gtk.Widget GetFocusedChild (Gtk.Widget widget)
+		{
+			while (widget is Gtk.Container) {
+				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+				if (child != null)
+					widget = child;
+				else
+					break;
+			}
+			return widget;
+		}
+
+		#if MAC
+		class NSViewCommandRouter: ICommandDelegatorRouter
+		{
+			public AppKit.NSView ActiveView;
+			public Gtk.Widget ParentWidget;
+
+			public object GetNextCommandTarget ()
+			{
+				return ParentWidget;
+			}
+
+			public object GetDelegatedCommandTarget ()
+			{
+				return ActiveView;
+			}
+		}
+
+		bool IsRootGdkQuartzView (AppKit.NSView view)
+		{
+			return view.ToString ().Contains ("GdkQuartzView");
+		}
+
+		bool IsEmbeddedNSView (AppKit.NSView view)
+		{
+			if (IsRootGdkQuartzView (view))
+				return true;
+			if (view.Superview != null)
+				return IsEmbeddedNSView (view.Superview);
+			return false;
+		}
+		#endif
 
 		bool UpdateStatus ()
 		{
@@ -2322,13 +2425,14 @@ namespace MonoDevelop.Components.Commands
 		
 	public class CommandActivationEventArgs : EventArgs
 	{
-		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source)
+		public CommandActivationEventArgs (object commandId, CommandInfo commandInfo, object dataItem, object target, CommandSource source, TimeSpan executionTime = default(TimeSpan))
 		{
 			this.CommandId = commandId;
 			this.CommandInfo = commandInfo;
 			this.Target = target;
 			this.Source = source;
 			this.DataItem = dataItem;
+			this.ExecutionTime = executionTime;
 		}			
 		
 		public object CommandId  { get; private set; }
@@ -2336,6 +2440,7 @@ namespace MonoDevelop.Components.Commands
 		public object Target  { get; private set; }
 		public CommandSource Source { get; private set; }
 		public object DataItem  { get; private set; }
+		public TimeSpan ExecutionTime { get; private set; }
 	}
 	
 	public enum CommandSource

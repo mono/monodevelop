@@ -51,7 +51,9 @@ namespace MonoDevelop.Ide
 		internal static TimerCounter CommandTargetScanTime = InstrumentationService.CreateTimerCounter ("Command target scan", "Timing", 0.3, false);
 		internal static TimerCounter OpenWorkspaceItemTimer = InstrumentationService.CreateTimerCounter ("Solution opened in the IDE", "IDE");
 		internal static TimerCounter OpenDocumentTimer = InstrumentationService.CreateTimerCounter ("Document opened", "IDE");
+		internal static TimerCounter DocumentOpened = InstrumentationService.CreateTimerCounter ("Document opened", "IDE", id:"Ide.Shell.DocumentOpened");
 		internal static TimerCounter BuildItemTimer = InstrumentationService.CreateTimerCounter ("Project/Solution built in the IDE", "IDE");
+		internal static Counter PadShown = InstrumentationService.CreateCounter ("Pad focused", "IDE", id:"Ide.Shell.PadShown");
 
 		internal static class ParserService {
 			public static TimerCounter FileParsed = InstrumentationService.CreateTimerCounter ("File parsed", "Parser Service");

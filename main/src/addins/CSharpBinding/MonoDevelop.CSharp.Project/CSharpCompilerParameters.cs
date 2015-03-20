@@ -277,6 +277,7 @@ namespace MonoDevelop.CSharp.Project
 			case "3": return LangVersion.Version3;
 			case "4": return LangVersion.Version4;
 			case "5": return LangVersion.Version5;
+			case "6": return LangVersion.Version6;
 			default: return null;
 			}
 		}
@@ -290,6 +291,7 @@ namespace MonoDevelop.CSharp.Project
 			case LangVersion.Version3: return "3";
 			case LangVersion.Version4: return "4";
 			case LangVersion.Version5: return "5";
+			case LangVersion.Version6: return "6";
 			default: return null;
 			}
 		}

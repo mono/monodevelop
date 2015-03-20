@@ -48,7 +48,8 @@ namespace MonoDevelop.Ide
 		bool showProgress;
 		Pad sourcePad;
 		bool autoPulse;
-		protected StatusArea statusBar;
+		protected StatusBar statusBar;
+		protected StatusBarContextHandler statusHandler;
 
 		// The last time any status bar context changed the status area message
 		static DateTime globalLastChangeTime;
@@ -60,26 +61,27 @@ namespace MonoDevelop.Ide
 
 		internal bool StatusChanged { get; set; }
 
-		internal StatusBarContextImpl (StatusArea statusBar)
+		internal StatusBarContextImpl (StatusBarContextHandler statusHandler)
 		{
-			this.statusBar = statusBar;
+			this.statusHandler = statusHandler;
+			this.statusBar = statusHandler.StatusBar;
 		}
 		
 		public void Dispose ()
 		{
-			statusBar.Remove (this);
+			statusHandler.Remove (this);
 		}
 		
 		public void ShowError (string error)
 		{
-			ShowMessage (StockIcons.StatusError, error);
+			ShowMessage (StockIcons.StatusError, error, false, (icon, message, markup) => statusBar.ShowError (message));
 		}
 		
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (StockIcons.StatusWarning, warning);
+			ShowMessage (StockIcons.StatusWarning, warning, false, (icon, message, markup) => statusBar.ShowWarning (message));
 		}
-		
+
 		public void ShowMessage (string message)
 		{
 			ShowMessage (null, message, false);
@@ -99,13 +101,18 @@ namespace MonoDevelop.Ide
 		{
 			if (!StatusChanged) {
 				StatusChanged = true;
-				statusBar.UpdateActiveContext ();
+				statusHandler.UpdateActiveContext ();
 				return true;
 			} else
 				return false;
 		}
 		
 		public void ShowMessage (IconId image, string message, bool isMarkup)
+		{
+			ShowMessage (image, message, isMarkup, statusBar.ShowMessage);
+		}
+
+		void ShowMessage (IconId image, string message, bool isMarkup, Action<IconId, string, bool> action)
 		{
 			if (!showProgress)
 				messageShownAfterProgress = true;
@@ -114,10 +121,10 @@ namespace MonoDevelop.Ide
 			this.isMarkup = isMarkup;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this)) {
+			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
 				globalLastChangeTime = DateTime.Now;
-				statusBar.ShowMessage (image, message, isMarkup);
+				action (image, message, isMarkup);
 				statusBar.SetMessageSourcePad (sourcePad);
 				if (showProgress)
 					lastMessageIsTransient = true;
@@ -139,7 +146,7 @@ namespace MonoDevelop.Ide
 			showProgress = true;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this)) {
+			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
@@ -157,7 +164,7 @@ namespace MonoDevelop.Ide
 			showProgress = true;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this)) {
+			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
@@ -170,7 +177,7 @@ namespace MonoDevelop.Ide
 			progressFraction = work;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusHandler.IsCurrentContext (this))
 				statusBar.SetProgressFraction (work);
 		}
 		
@@ -181,7 +188,7 @@ namespace MonoDevelop.Ide
 			progressFraction = 0;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusHandler.IsCurrentContext (this))
 				statusBar.EndProgress ();
 		}
 		
@@ -190,7 +197,7 @@ namespace MonoDevelop.Ide
 			showProgress = true;
 			if (InitialSetup ())
 				return;
-			if (statusBar.IsCurrentContext (this))
+			if (statusHandler.IsCurrentContext (this))
 				statusBar.Pulse ();
 		}
 		
@@ -204,7 +211,7 @@ namespace MonoDevelop.Ide
 				autoPulse = value;
 				if (InitialSetup ())
 					return;
-				if (statusBar.IsCurrentContext (this))
+				if (statusHandler.IsCurrentContext (this))
 					statusBar.AutoPulse = value;
 			}
 		}

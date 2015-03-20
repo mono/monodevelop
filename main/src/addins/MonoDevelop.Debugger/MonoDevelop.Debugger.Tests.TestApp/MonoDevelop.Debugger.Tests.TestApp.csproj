@@ -42,6 +42,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TestEvaluation.cs" />
     <Compile Include="BreakpointsAndStepping.cs" />
+    <Compile Include="AdvancedEvaluation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

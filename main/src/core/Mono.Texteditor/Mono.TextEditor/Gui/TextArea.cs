@@ -1297,6 +1297,12 @@ namespace Mono.TextEditor
 			scrollWindowTimer_mod = mod;
 			if (scrollWindowTimer == 0) {
 				scrollWindowTimer = GLib.Timeout.Add (50, delegate {
+					//'If' below shouldn't be needed, but after reproducing bug with FireMotionEvent being called
+					//when it shouldn't and attaching with debugger it turned out that it's called from here
+					//even when scrollWindowTimer was 0, looks like GLib bug
+					if (scrollWindowTimer == 0) {
+						return false;
+					}
 					FireMotionEvent (scrollWindowTimer_x, scrollWindowTimer_y, scrollWindowTimer_mod);
 					return true;
 				});
@@ -1631,17 +1637,28 @@ namespace Mono.TextEditor
 			var hasZoomModifier = (evnt.State & modifier) != 0;
 			if (hasZoomModifier && lastScrollTime != 0 && (evnt.Time - lastScrollTime) < 100)
 				hasZoomModifier = false;
-
+			
 			if (hasZoomModifier) {
 				if (evnt.Direction == ScrollDirection.Up)
 					Options.ZoomIn ();
 				else if (evnt.Direction == ScrollDirection.Down)
 					Options.ZoomOut ();
-				
+
 				this.QueueDraw ();
 				if (isMouseTrapped)
 					FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 				return true;
+			}
+
+			if (!Platform.IsMac) {
+				if ((evnt.State & ModifierType.ShiftMask) == ModifierType.ShiftMask) {
+					if (evnt.Direction == ScrollDirection.Down)
+						HAdjustment.Value = System.Math.Min (HAdjustment.Upper - HAdjustment.PageSize, HAdjustment.Value + HAdjustment.StepIncrement * 3);
+					else if (evnt.Direction == ScrollDirection.Up)
+						HAdjustment.Value -= HAdjustment.StepIncrement * 3;
+					
+					return true;
+				}
 			}
 			lastScrollTime = evnt.Time;
 			return base.OnScrollEvent (evnt); 
@@ -1740,8 +1757,10 @@ namespace Mono.TextEditor
 			double curY = startY - this.textEditorData.VAdjustment.Value;
 			bool setLongestLine = false;
 			foreach (var margin in this.margins) {
-				if (margin.BackgroundRenderer != null)
-					margin.BackgroundRenderer.Draw (cr, cairoRectangle);
+				if (margin.BackgroundRenderer != null) {
+					var area = new Cairo.Rectangle(0, 0, Allocation.Width, Allocation.Height);
+					margin.BackgroundRenderer.Draw (cr, area);
+				}
 			}
 
 

@@ -874,7 +874,11 @@ namespace MonoDevelop.Projects
 				// Get the references list from the msbuild project
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (configuration);
-				foreach (var r in builder.ResolveAssemblyReferences (configs))
+
+				string[] refs;
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata ()))
+					refs = builder.ResolveAssemblyReferences (configs);
+				foreach (var r in refs)
 					yield return r;
 			} else {
 				foreach (ProjectReference pref in References) {

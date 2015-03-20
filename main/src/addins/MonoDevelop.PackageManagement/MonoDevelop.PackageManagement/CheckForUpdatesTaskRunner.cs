@@ -112,8 +112,10 @@ namespace MonoDevelop.PackageManagement
 				} else {
 					LoggingService.LogInternalError ("Check for updates task error.", task.Exception);
 				}
-			} else if (task.IsCancelled || !IsCurrentTask (task.Result)) {
+			} else if (task.IsCancelled) {
 				// Ignore.
+				return;
+			} else if (!IsCurrentTask (task.Result)) {
 				task.Result.Dispose ();
 				return;
 			} else {

@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.IO;
 
 namespace MonoDevelop.Debugger
 {
@@ -169,15 +170,42 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Run ()
 		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Application to Debug")) {
-				TransientFor = IdeApp.Workbench.RootWindow,
-			};
-			if (dialog.Run ()) {
-				if (IdeApp.ProjectOperations.CanDebugFile (dialog.SelectedFile))
-					IdeApp.ProjectOperations.DebugApplication (dialog.SelectedFile);
-				else
-					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' can't be debugged", dialog.SelectedFile));
+			var dlg = new DebugApplicationDialog ();
+
+			try {
+				bool isOK;
+
+				while ((isOK = (MessageService.RunCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)) 
+					&& !Validate (dlg));
+
+				if (isOK)
+					IdeApp.ProjectOperations.DebugApplication (dlg.SelectedFile, dlg.Arguments, dlg.WorkingDirectory, dlg.EnvironmentVariables);
+
+			} finally {
+				dlg.Destroy ();
 			}
+
+
+		}
+
+		bool Validate (DebugApplicationDialog dlg)
+		{
+			if (String.IsNullOrEmpty (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("Please select the application to debug"));
+				return false;
+			}
+
+			if (!File.Exists (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' does not exist", dlg.SelectedFile));
+				return false;
+			}
+
+			if (!IdeApp.ProjectOperations.CanDebugFile (dlg.SelectedFile)) {
+				MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' can't be debugged", dlg.SelectedFile));
+				return false;
+			}
+
+			return true;
 		}
 		
 		protected override void Update (CommandInfo info)

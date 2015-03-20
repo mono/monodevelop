@@ -165,7 +165,7 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "xamarin" {
+    engine "quartz" {
     }
 }
 
@@ -364,7 +364,7 @@ class "GtkScrollbar" style "scrollbar"
 class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
-class "GtkButton" style "dialog-button"
+class "GtkButton" style "button"
 class "GtkToggleButton" style "toggle-button"
 
 class "GtkScale" style "scale"
@@ -373,6 +373,7 @@ class "GtkScale" style "scale"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
 
+widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
 widget_class "<GtkDialog>*<GtkCheckButton>" style "radio-or-check-box"
 widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
 widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"

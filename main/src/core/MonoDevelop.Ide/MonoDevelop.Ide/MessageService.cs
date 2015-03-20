@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError (msg, ex);
 			}
 
-			if (string.IsNullOrEmpty (secondaryText))
+			if (string.IsNullOrEmpty (secondaryText) && (ex != null))
 				secondaryText = ex.Message;
 
 			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, buttons);

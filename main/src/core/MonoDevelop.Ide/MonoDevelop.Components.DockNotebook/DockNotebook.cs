@@ -251,13 +251,13 @@ namespace MonoDevelop.Components.DockNotebook
 			foreach (string individualFile in fullData.Split ('\n')) {
 				string file = individualFile.Trim ();
 				if (file.StartsWith ("file://")) {
-					file = new Uri(file).LocalPath;
+					var filePath = new FilePath (file);
 
 					try {
-						if (Services.ProjectService.IsWorkspaceItemFile (file))
-							IdeApp.Workspace.OpenWorkspaceItem(file);
+						if (Services.ProjectService.IsWorkspaceItemFile (filePath))
+							IdeApp.Workspace.OpenWorkspaceItem(filePath);
 						else
-							IdeApp.Workbench.OpenDocument (file, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
+							IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
 					} catch (Exception e) {
 						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
 					}
