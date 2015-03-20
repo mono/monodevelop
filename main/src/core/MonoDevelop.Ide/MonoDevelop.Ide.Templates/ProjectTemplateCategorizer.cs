@@ -36,10 +36,15 @@ namespace MonoDevelop.Ide.Templates
 		List<TemplateCategory> categories;
 		TemplateCategory defaultCategory;
 		Dictionary<string, TemplateCategory> mappedCategories = new Dictionary<string, TemplateCategory> ();
+		Predicate<SolutionTemplate> templateMatch;
 
-		public ProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories)
+		public static readonly Predicate<SolutionTemplate> MatchNewProjectTemplates = template => template.IsMatch (SolutionTemplateVisibility.NewProject);
+		public static readonly Predicate<SolutionTemplate> MatchNewSolutionTemplates = template => template.IsMatch (SolutionTemplateVisibility.NewSolution);
+
+		public ProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories, Predicate<SolutionTemplate> templateMatch)
 		{
 			this.categories = categories.Select (category => category.Clone ()).ToList ();
+			this.templateMatch = templateMatch;
 			PopulateMappedCategories ();
 			defaultCategory = GetDefaultCategory ();
 		}
@@ -86,7 +91,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public void CategorizeTemplates (IEnumerable<SolutionTemplate> templates)
 		{
-			foreach (SolutionTemplate template in templates) {
+			foreach (SolutionTemplate template in GetFilteredTemplates (templates)) {
 				TemplateCategory category = GetCategory (template);
 				if (category != null) {
 					category.AddTemplate (template);
@@ -95,6 +100,11 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			RemoveEmptyCategories ();
+		}
+
+		IEnumerable<SolutionTemplate> GetFilteredTemplates (IEnumerable<SolutionTemplate> templates)
+		{
+			return templates.Where (template => templateMatch (template));
 		}
 
 		TemplateCategory GetCategory (SolutionTemplate template)

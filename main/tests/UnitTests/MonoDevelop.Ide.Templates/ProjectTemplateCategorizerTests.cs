@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -56,6 +57,11 @@ namespace MonoDevelop.Ide.Templates
 		void CreateCategorizer ()
 		{
 			categorizer = new TestableProjectTemplateCategorizer (categories);
+		}
+
+		void CreateCategorizer (Predicate<SolutionTemplate> templateFilter)
+		{
+			categorizer = new TestableProjectTemplateCategorizer (categories, templateFilter);
 		}
 
 		TemplateCategory AddTemplateCategory (string categoryName)
@@ -458,6 +464,66 @@ namespace MonoDevelop.Ide.Templates
 			TemplateCategory generalCategory = appCategory.Categories.First ();
 			Assert.That (generalCategory.Templates.ToList (), Contains.Item (csharpTemplate));
 			Assert.That (generalCategory.Templates.ToList (), Contains.Item (vbnetTemplate));
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplatesAndFilterShouldRemoveOneTemplate_TemplatesFiltered ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer (solutionTemplate => {
+				return solutionTemplate.Id == "template-id2";
+			});
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.Language = "C#";
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			Assert.AreEqual (1, generalCategory.Templates.Count ());
+			Assert.AreEqual ("template-id2", firstTemplate.Id);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplatesAndFilterByNewProject_TemplatesFiltered ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer (ProjectTemplateCategorizer.MatchNewProjectTemplates);
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.Language = "C#";
+			template1.Visibility = SolutionTemplateVisibility.NewProject;
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.Language = "C#";
+			template2.Visibility = SolutionTemplateVisibility.NewSolution;
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			Assert.AreEqual (1, generalCategory.Templates.Count ());
+			Assert.AreEqual ("template-id1", firstTemplate.Id);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplatesAndFilterByNewSolution_TemplatesFiltered ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer (ProjectTemplateCategorizer.MatchNewSolutionTemplates);
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.Language = "C#";
+			template1.Visibility = SolutionTemplateVisibility.NewProject;
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.Language = "C#";
+			template2.Visibility = SolutionTemplateVisibility.All;
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			Assert.AreEqual (1, generalCategory.Templates.Count ());
+			Assert.AreEqual ("template-id2", firstTemplate.Id);
 		}
 	}
 }
