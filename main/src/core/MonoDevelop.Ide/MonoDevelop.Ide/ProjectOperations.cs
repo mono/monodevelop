@@ -261,8 +261,11 @@ namespace MonoDevelop.Ide
 				var dn = project as DotNetProject;
 				if (dn == null)
 					return;
+				var metadataDllName = location.MetadataModule.Name;
+				if (metadataDllName == "CommonLanguageRuntimeLibrary")
+					metadataDllName = "corlib.dll";
 				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf (location.MetadataModule.Name) > 0) {
+					if (assembly.IndexOf (metadataDllName) > 0) {
 						fileName = dn.GetAbsoluteChildPath (assembly);
 						break;
 					}
