@@ -77,6 +77,8 @@ namespace MonoDevelop.SourceEditor
 			
 			var root = unit.SyntaxTree.GetRoot ();
 			var token = root.FindToken (offset);
+			if (!token.Span.IntersectsWith (offset))
+				return null;
 			if (token == lastNode)
 				return lastResult;
 			lastNode = token;

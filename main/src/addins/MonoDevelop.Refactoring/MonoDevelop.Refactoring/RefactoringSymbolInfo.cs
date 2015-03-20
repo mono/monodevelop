@@ -79,6 +79,8 @@ namespace MonoDevelop.Refactoring
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 				try {
 					var token = root.FindToken (offset);
+					if (!token.Span.IntersectsWith (offset))
+						return RefactoringSymbolInfo.Empty;
 					var symbol = unit.GetSymbolInfo (token.Parent);
 					return new RefactoringSymbolInfo (symbol) {
 						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
