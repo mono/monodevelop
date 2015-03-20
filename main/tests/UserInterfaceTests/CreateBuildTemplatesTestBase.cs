@@ -56,22 +56,12 @@ namespace UserInterfaceTests
 				var newProject = new NewProjectController ();
 				newProject.Open ();
 
-				Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
-				Thread.Sleep (3000);
-				Assert.IsTrue (newProject.SelectTemplate (kind));
-				Thread.Sleep (3000);
+				SelectTemplate (newProject, kind, category, categoryRoot);
 
 				Assert.IsTrue (newProject.Next ());
 				Thread.Sleep (3000);
 
-				Assert.IsTrue (newProject.SetProjectName (projectName));
-				Thread.Sleep (2000);
-
-				Assert.IsTrue (newProject.SetSolutionName (projectName));
-				Thread.Sleep (2000);
-
-				Assert.IsTrue (newProject.SetSolutionLocation (solutionParentDirectory));
-				Thread.Sleep (2000);
+				EnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory);
 
 				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
 				Thread.Sleep (2000);
@@ -90,6 +80,26 @@ namespace UserInterfaceTests
 				Directory.Delete (solutionParentDirectory, true);
 				Ide.CloseAll ();
 			}
+		}
+
+		public void SelectTemplate (NewProjectController newProject, string kind, string category, string categoryRoot)
+		{
+			Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
+			Thread.Sleep (3000);
+			Assert.IsTrue (newProject.SelectTemplate (kind));
+			Thread.Sleep (3000);
+		}
+
+		public void EnterProjectDetails (NewProjectController newProject, string projectName, string solutionName, string solutionLocation)
+		{
+			Assert.IsTrue (newProject.SetProjectName (projectName));
+			Thread.Sleep (2000);
+
+			Assert.IsTrue (newProject.SetSolutionName (solutionName));
+			Thread.Sleep (2000);
+
+			Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
+			Thread.Sleep (2000);
 		}
 	}
 }
