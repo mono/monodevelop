@@ -35,12 +35,24 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Refactoring
 {
 	sealed class PackageCodeDiagnosticProvider : CodeDiagnosticProvider
 	{
-		static readonly Dictionary<Project, WeakReference<AnalyzersFromAssembly>> diagnosticCache = new Dictionary<Project, WeakReference<AnalyzersFromAssembly>> ();
+		static readonly Dictionary<Project, AnalyzersFromAssembly> diagnosticCache = new Dictionary<Project, WeakReference<AnalyzersFromAssembly>> ();
+
+		static PackageCodeDiagnosticProvider ()
+		{
+			IdeApp.Workspace.SolutionUnloaded += delegate {
+				diagnosticCache.Clear ();
+			};
+			IdeApp.Workspace.ActiveConfigurationChanged += delegate {
+				diagnosticCache.Clear ();
+			};
+		}
 
 		public async override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -64,9 +76,8 @@ namespace MonoDevelop.PackageManagement.Refactoring
 		{
 			if (project == null)
 				return Task.FromResult (AnalyzersFromAssembly.Empty);
-			WeakReference<AnalyzersFromAssembly> r;
 			AnalyzersFromAssembly result;
-            if (diagnosticCache.TryGetValue(project, out r) && r.TryGetTarget(out result)) 
+            if (diagnosticCache.TryGetValue(project, out result)) 
 				return Task.FromResult (result);
 
 			result = new AnalyzersFromAssembly ();
@@ -86,7 +97,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 					}
 				}
 			}
-			diagnosticCache[project] = new WeakReference<AnalyzersFromAssembly> (result);
+			diagnosticCache[project] = result;
 			return Task.FromResult (result);
 		}
 	}
