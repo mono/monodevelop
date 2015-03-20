@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					curLine = curComment.Region.BeginLine;
 				}
 				
-				if (j - i > 1) {
+				if (j - i > 1 || (comment.IsDocumentation && comment.Region.BeginLine < comment.Region.EndLine)) {
 					string txt;
 					if (comment.IsDocumentation) {
 						txt = "/// ..."; 

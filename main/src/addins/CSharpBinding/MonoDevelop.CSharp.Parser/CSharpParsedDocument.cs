@@ -85,7 +85,15 @@ namespace MonoDevelop.CSharp.Parser
 
 			static DocumentRegion GetRegion (SyntaxTrivia trivia)
 			{
-				var lineSpan = trivia.GetLocation ().GetLineSpan ();
+				var fullSpan = trivia.FullSpan;
+				var text = trivia.ToString ();
+				if (text.Length > 2) {
+					if (text [text.Length - 2] == '\r' && text [text.Length - 1] == '\n')
+						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 2);
+					else if (ICSharpCode.NRefactory6.NewLine.IsNewLine (text [text.Length - 1]))
+						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 1);
+				}
+				var lineSpan = trivia.SyntaxTree.GetLineSpan (fullSpan);
 				return (DocumentRegion)lineSpan;
 			}
 
@@ -104,7 +112,12 @@ namespace MonoDevelop.CSharp.Parser
 				} catch (ArgumentOutOfRangeException) {
 					return false;
 				}
-				for (int i = textLine.Start; i < trivia.SpanStart; i++) {
+				//We need start of trivia.FullSpan and not trivia.SpanStart
+				//because in case of documentation /// <summary...
+				//trivia.SpanStart is space after /// and not 1st /
+				//so with trivia.FullSpan.Start we get index of 1st /
+				var startSpan = trivia.FullSpan.Start;
+				for (int i = textLine.Start; i < startSpan; i++) {
 					char ch = sourceText [i];
 					if (!char.IsWhiteSpace (ch))
 						return false;
