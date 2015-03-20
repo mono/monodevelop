@@ -105,12 +105,12 @@ Special Environment Variables
 Known Problems
 -----------------------------
 
-"The type `GLib.IIcon' is defined in an assembly that is not referenced"
-This happens when you accidentally installed gtk-sharp3 instead of the 2.12.x branch version.
-Make sure to 'make uninstall' or otherwise remove the gtk-sharp3 version and install the older one.
+  * ``The type `GLib.IIcon' is defined in an assembly that is not referenced``
+This happens when you accidentally installed `gtk-sharp3` instead of the 2.12.x branch version.
+Make sure to `make uninstall` or otherwise remove the `gtk-sharp3` version and install the older one.
 
-xbuild may still cache a reference to assemblies that you may have accidentally installed into your mono installation,
-like the gtk-sharp3 as described before. You can delete the cache in $HOME/.config/xbuild/pkgconfig-cache-2.xml
+  * `xbuild` may still cache a reference to assemblies that you may have accidentally installed into your `mono` installation,
+like the `gtk-sharp3` as described before. You can delete the cache in `$HOME/.config/xbuild/pkgconfig-cache-2.xml`
 
 
 
