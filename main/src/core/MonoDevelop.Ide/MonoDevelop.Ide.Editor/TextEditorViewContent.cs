@@ -677,7 +677,7 @@ namespace MonoDevelop.Ide.Editor
 			do {
 				yield return line;
 				line = line.PreviousLine;
-			} while (line.EndOffset > selection.Offset);
+			} while (line != null && line.EndOffset > selection.Offset);
 		}
 
 		[CommandHandler (EditCommands.AddCodeComment)]
