@@ -484,7 +484,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null) {
 				return;
 			}
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
+			if (IsDocumentOpen (documentId))
+				InformDocumentClose (documentId, document.FilePath);
+            var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
 			lock (openDocuments) {
 				openDocuments.Add (monoDevelopSourceTextContainer);
 			}
@@ -717,6 +719,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				var id = data.GetDocumentId (fargs.OldName); 
 				if (id != null) {
+					if (this.IsDocumentOpen (id)) {
+						this.InformDocumentClose (id, fargs.OldName);
+					}
 					OnDocumentRemoved (id);
 					data.RemoveDocument (fargs.OldName);
 				}

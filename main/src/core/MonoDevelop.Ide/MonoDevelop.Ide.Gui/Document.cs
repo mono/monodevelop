@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		IWorkbenchWindow window;
 		ParsedDocument parsedDocument;
+		FilePath analysisDocumentFileName;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -155,6 +156,9 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
+			window.ViewContent.ContentNameChanged += delegate {
+				analysisDocument = null;
+			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
 
@@ -791,6 +795,7 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 				return;
 			}
+			analysisDocumentFileName = FileName;
 			if (Project != null) {
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {

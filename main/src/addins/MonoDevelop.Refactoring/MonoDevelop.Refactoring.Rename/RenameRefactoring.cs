@@ -214,7 +214,7 @@ namespace MonoDevelop.Refactoring.Rename
 						continue;
 					int idx = oldFileName.IndexOf (symbol.Name, StringComparison.Ordinal);
 					if (idx >= 0) {
-						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + filePath.Length);
+						newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + symbol.Name.Length);
 					} else {
 						newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
 						currentPart++;

@@ -100,9 +100,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
-					var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
-					foreach (var w in Workspaces)
-						w.UpdateFileContent (file.FileName, text);
+					try {
+						var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file.FileName).Text;
+						foreach (var w in Workspaces)
+							w.UpdateFileContent (file.FileName, text);
+					} catch (FileNotFoundException) {}
 				}
 				foreach (var w in IdeApp.Workbench.Documents)
 					w.StartReparseThread ();
