@@ -90,13 +90,20 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
-				if (DocumentContext == null || SemanticModel == null || DocumentContext.AnalysisDocument == null)
+				if (DocumentContext == null || Editor == null || SemanticModel == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
 				
-				var type = SemanticModel.Compilation.GetTypeByMetadataName (ns + "." + name);
+				var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+
+				if (model == null)
+					return ns + "." + name;
+
+				var type = model.Compilation.GetTypeByMetadataName (ns + "." + name);
 				if (type == null)
 					return ns + "." + name;
-				return type.ToMinimalDisplayString (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result, Editor.CaretOffset); 
+
+
+				return type.ToMinimalDisplayString (model, Editor.CaretOffset); 
 			}
 		}
 
@@ -180,11 +187,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
 			//			SetIndentTo (part);
+			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
-				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
+				DocumentContext = document,
+				Editor = document.Editor
 			};
 
 			if (member is IMethodSymbol)
@@ -201,11 +210,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
 			//			SetIndentTo (part);
+			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
-				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath),
+				DocumentContext = document,
+				Editor = document.Editor,
 				CreateProtocolMember = true
 			};
 
@@ -223,11 +234,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static CodeGeneratorMemberResult CreatePartialMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
 			//			SetIndentTo (part);
+			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
-				DocumentContext = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath)
+				DocumentContext = document,
+				Editor = document.Editor
 			};
 
 			if (member is IMethodSymbol)
