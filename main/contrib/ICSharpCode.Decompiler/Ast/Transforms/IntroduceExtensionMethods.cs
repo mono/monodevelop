@@ -28,13 +28,10 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 	/// </summary>
 	public class IntroduceExtensionMethods : IAstTransform
 	{
-		readonly DecompilerContext context;
-		
 		public IntroduceExtensionMethods(DecompilerContext context)
 		{
-			this.context = context;
 		}
-		
+
 		public void Run(AstNode compilationUnit)
 		{
 			foreach (InvocationExpression invocation in compilationUnit.Descendants.OfType<InvocationExpression>()) {

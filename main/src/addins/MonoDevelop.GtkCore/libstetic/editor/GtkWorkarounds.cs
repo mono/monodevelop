@@ -222,8 +222,6 @@ namespace Stetic.Editor
 			IsX11 = !IsMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
 		}
 		
-		static Gdk.Keymap keymap = Gdk.Keymap.Default;
-		
 		public static bool IsMac { get; private set; }
 		public static bool IsX11 { get; private set; }
 		public static bool IsWindows { get; private set; }

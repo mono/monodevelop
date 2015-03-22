@@ -23,7 +23,6 @@ namespace MonoDevelop.VersionControl
 	{
 		static Xwt.Drawing.Image overlay_modified;
 		static Xwt.Drawing.Image overlay_removed;
-		static Xwt.Drawing.Image overlay_renamed;
 		static Xwt.Drawing.Image overlay_conflicted;
 		static Xwt.Drawing.Image overlay_added;
 		internal static Xwt.Drawing.Image overlay_controled;
@@ -58,7 +57,6 @@ namespace MonoDevelop.VersionControl
 				try {
 					overlay_modified = Xwt.Drawing.Image.FromResource("modified-overlay-16.png");
 					overlay_removed = Xwt.Drawing.Image.FromResource("removed-overlay-16.png");
-					overlay_renamed = Xwt.Drawing.Image.FromResource("renamed-overlay-16.png");
 					overlay_conflicted = Xwt.Drawing.Image.FromResource("conflict-overlay-16.png");
 					overlay_added = Xwt.Drawing.Image.FromResource("added-overlay-16.png");
 					overlay_controled = Xwt.Drawing.Image.FromResource("versioned-overlay-16.png");

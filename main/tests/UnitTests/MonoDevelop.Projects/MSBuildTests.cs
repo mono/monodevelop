@@ -403,7 +403,6 @@ namespace MonoDevelop.Projects
 				Assert.IsTrue (f.ErrorText.Contains (clientProfileError), "Build failed with: " + f.ErrorText);
 
 			string projectFile = ((Project)sol.Items [0]).FileName;
-			string solXml = Util.ReadAllWithWindowsEndings (solFile);
 			string projectXml = Util.ReadAllWithWindowsEndings (projectFile);
 
 			sol.Save (monitor);

@@ -40,7 +40,6 @@ namespace ICSharpCode.Decompiler.ILAst
 			ta.context = context;
 			ta.module = context.CurrentMethod.Module;
 			ta.typeSystem = ta.module.TypeSystem;
-			ta.method = method;
 			ta.CreateDependencyGraph(method);
 			ta.IdentifySingleLoadVariables();
 			ta.RunInference();
@@ -75,7 +74,6 @@ namespace ICSharpCode.Decompiler.ILAst
 		
 		DecompilerContext context;
 		TypeSystem typeSystem;
-		ILBlock method;
 		ModuleDefinition module;
 		List<ExpressionToInfer> allExpressions = new List<ExpressionToInfer>();
 		DefaultDictionary<ILVariable, List<ExpressionToInfer>> assignmentExpressions = new DefaultDictionary<ILVariable, List<ExpressionToInfer>>(_ => new List<ExpressionToInfer>());

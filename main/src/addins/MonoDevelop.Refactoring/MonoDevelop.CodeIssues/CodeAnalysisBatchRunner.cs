@@ -43,7 +43,6 @@ using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -151,7 +150,7 @@ namespace MonoDevelop.CodeIssues
 				} catch (OperationCanceledException) {
 					// The operation was cancelled, no-op as the user-visible parts are
 					// handled elsewhere
-				} catch (Exception e) {
+				} catch (Exception) {
 					foreach (var job in jobsForProvider) {
 						job.AddError (file, provider);
 					}

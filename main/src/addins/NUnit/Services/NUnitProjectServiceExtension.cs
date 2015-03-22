@@ -42,9 +42,10 @@ namespace MonoDevelop.NUnit
 			} else if (item is IWorkspaceObject) {
 				UnitTest test = NUnitService.Instance.FindRootTest ((IWorkspaceObject)item);
 				if (test != null) {
-					IAsyncOperation oper = null;
+//					IAsyncOperation oper = null;
 					DispatchService.GuiSyncDispatch (delegate {
-						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
+//						oper =
+						NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
 					});
 //					if (oper != null) {
 //						monitor.CancelRequested += delegate {

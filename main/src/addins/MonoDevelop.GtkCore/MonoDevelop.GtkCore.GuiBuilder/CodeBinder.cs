@@ -53,7 +53,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 	public class CodeBinder
 	{
-		ITextFileProvider textFileProvider;
 		Stetic.Component targetObject;
 		Project project;
 		GuiBuilderProject gproject;
@@ -63,7 +62,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public CodeBinder (Project project, ITextFileProvider textFileProvider, Stetic.Component targetObject)
 		{
 			this.project = project;
-			this.textFileProvider = textFileProvider;
 
 			gproject = GtkDesignInfo.FromProject (project).GuiBuilderProject;
 
@@ -254,7 +252,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			
 			var matches = new List<IUnresolvedTypeDefinition> ();
 			ParsedDocument unit = null;
-			var ctx = gproject.GetParserContext ();
 			var doc = TypeSystemService.ParseFile (project, classFile);
 			if (doc != null) {
 				unit = doc;

@@ -43,7 +43,7 @@ namespace MonoDevelop.CodeIssues
 		readonly CancellationTokenSource tokenSource = new CancellationTokenSource();
 
 		/// <summary>
-		/// The jobs to run on the file specified in <see cref="FileName"/>.
+		/// The jobs to run on the file specified in <see cref="File"/>.
 		/// </summary>
 		readonly IList<IAnalysisJob> jobs = new List<IAnalysisJob>();
 

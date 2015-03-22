@@ -50,7 +50,6 @@ namespace MonoDevelop.CodeActions
 		const int menuTimeout = 250;
 		uint smartTagPopupTimeoutId;
 		uint menuCloseTimeoutId;
-		FixMenuDescriptor codeActionMenu;
 
 		public IEnumerable<CodeAction> Fixes {
 			get;
@@ -605,7 +604,6 @@ namespace MonoDevelop.CodeActions
 				if (line == null)
 					return;
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
 				const double xAdditionalSpace = tagMarkerWidth;
 				if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
 					args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
@@ -620,14 +618,11 @@ namespace MonoDevelop.CodeActions
 			public void Popup ()
 			{
 				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
-						codeActionEditorExtension.codeActionMenu = menu;
-					});
+					codeActionEditorExtension.PopupQuickFixMenu (null, menu => { });
 					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
 					return false;
 				});
 			}
-
 
 			#endregion
 		}

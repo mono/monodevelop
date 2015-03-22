@@ -35,7 +35,6 @@ namespace MonoDevelop.Refactoring
 		IssueGroup group;
 		IIssueTreeNode node;
 		MockGroupingProvider nextProvider;
-		MockGroupingProvider sourceProvider;
 
 		static EventHandler<T> Forbidden<T> (string eventName) where T: EventArgs
 		{
@@ -55,7 +54,6 @@ namespace MonoDevelop.Refactoring
 		public void SetUp ()
 		{
 			nextProvider = new MockGroupingProvider ();
-			sourceProvider = new MockGroupingProvider ();
 			group = new IssueGroup (nextProvider, "sut");
 			node = group;
 			group.EnableProcessing ();

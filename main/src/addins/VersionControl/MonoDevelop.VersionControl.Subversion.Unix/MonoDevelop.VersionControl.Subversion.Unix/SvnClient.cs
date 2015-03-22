@@ -1114,7 +1114,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return TextFile.ReadFile (sourcefile, data).Text;
 				// This outputs the contents of the base revision
 				// of a file to a stream.
-			} catch (SubversionException e) {
+			} catch (SubversionException) {
 				// This occurs when we don't have a base file for
 				// the target file. We have no way of knowing if
 				// a file has a base version therefore this will do.
@@ -1524,7 +1524,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				localpool = TryStartOperation (null);
 				CheckError (svn.client_upgrade (path, ctx, localpool));
-			} catch (Exception e) {
+			} catch (Exception) {
 				tryParent = true;
 			} finally {
 				TryEndOperation (localpool);

@@ -403,7 +403,7 @@ namespace CBinding
 		/// </param>
 		/// <param name="items">
 		/// A list of items to search
-		/// <see cref="IEnumerable"/>
+		/// <see cref="System.Collections.IEnumerable"/>
 		/// </param>
 		/// <param name="parent">
 		/// The parent that will be matched
@@ -505,7 +505,7 @@ namespace CBinding
 		/// </param>
 		/// <param name="items">
 		/// A list of items to search
-		/// <see cref="IEnumerable"/>
+		/// <see cref="System.Collections.IEnumerable"/>
 		/// </param>
 		/// <param name="parentName">
 		/// The name of the parent that will be matched

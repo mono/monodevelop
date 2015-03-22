@@ -361,7 +361,6 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language,
 			string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
-			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
 			ILanguageBinding binding = null;
 			if (!string.IsNullOrEmpty (language)) {

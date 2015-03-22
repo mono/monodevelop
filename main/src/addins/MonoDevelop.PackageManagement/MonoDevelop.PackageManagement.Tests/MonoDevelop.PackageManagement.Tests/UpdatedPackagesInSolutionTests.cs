@@ -314,7 +314,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddPackageReference ("MyPackage", "1.0");
 
 			updatedPackagesInSolution.CheckForUpdates ();
-			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+			updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.IsInstanceOf<PackageManagementLogger> (project.Logger);
 		}
@@ -445,7 +445,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddPackageReference ("MyPackage", "1.0");
 
 			updatedPackagesInSolution.CheckForUpdates ();
-			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+			updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.IsFalse (updatedPackagesInSolution.AnyUpdates ());
 			Assert.AreEqual (GettextCatalog.GetString ("Packages are up to date."), progressMonitorFactory.ProgressMonitor.ReportedSuccessMessage);

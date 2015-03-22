@@ -133,7 +133,6 @@ namespace ICSharpCode.Decompiler.ILAst
 	class StateRangeAnalysis
 	{
 		readonly StateRangeAnalysisMode mode;
-		readonly FieldDefinition stateField;
 		internal DefaultDictionary<ILNode, StateRange> ranges;
 		SymbolicEvaluationContext evalContext;
 		
@@ -146,7 +145,6 @@ namespace ICSharpCode.Decompiler.ILAst
 		public StateRangeAnalysis(ILNode entryPoint, StateRangeAnalysisMode mode, FieldDefinition stateField)
 		{
 			this.mode = mode;
-			this.stateField = stateField;
 			if (mode == StateRangeAnalysisMode.IteratorDispose) {
 				finallyMethodToStateInterval = new Dictionary<MethodDefinition, Interval>();
 			}

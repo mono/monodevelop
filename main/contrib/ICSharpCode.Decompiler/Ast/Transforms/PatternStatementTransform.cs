@@ -357,7 +357,6 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 				// if there are variables outside the loop, we need to put those into the parent block, and that won't work if the direct parent isn't a block
 				return null;
 			}
-			VariableInitializer enumeratorVar = m.Get<VariableInitializer>("enumeratorVariable").Single();
 			IdentifierExpression itemVar = m.Get<IdentifierExpression>("itemVariable").Single();
 			WhileStatement loop = m.Get<WhileStatement>("loop").Single();
 			

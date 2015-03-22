@@ -41,13 +41,12 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		readonly string PROJECT_ROOT = "../../../";
 		readonly Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
 		FileRepository repo;
-		RevWalk walker;
 		
 		[SetUp]
 		public void Setup() {
 			var gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
 			repo = new FileRepository (gitDir.FullName);
-			walker = new RevWalk (repo);
+			new RevWalk (repo);
 		}
 
 		[Test]

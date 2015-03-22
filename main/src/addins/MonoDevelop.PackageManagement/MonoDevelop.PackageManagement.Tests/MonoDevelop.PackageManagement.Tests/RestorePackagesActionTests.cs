@@ -308,7 +308,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolutionWithOneProject ();
 			solution.AddPackageReference ("MyPackage", "1.0");
-			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			AddPackageToPriorityRepository ("MyPackage", "1.0");
 			FakePackageManagementProject project1 = solution.AddFakeProject ("MyProject1");
 			FakePackageManagementProject project2 = solution.AddFakeProject ("MyProject2");
 			project1.AddPackageReference ("MyPackage1", "1.2.3.4");

@@ -32,7 +32,6 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
-using NUnit.Framework;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects
