@@ -46,6 +46,19 @@ directory containing a list of the directories to build.
 
 Disclaimer: Please be aware that the 'extras/JavaBinding' and 'extras/ValaBinding' packages do not currently work. When prompted or by manually selecting them during the './configure --select' step, make sure they stay deselected. (deselected by default)
 
+## Missing certificates
+In case you experience errors in the form of
+
+    WARNUNG: The initialization function tries to access Value on this instance
+				    WARNUNG: Error getting response stream (Write: The authentication or decryption has failed.): SendFailure
+				    Unable to find version '2.6.3' of package 'NUnit'.
+				    Unable to find version '2.6.3' of package 'NUnit.Runners'.
+    /path/to/monodevelop/main/src/addins/NUnit/NUnitRunner/NUnitRunner.csproj: error : Command 'mono /path/to/monodevelop/main//external/nuget-binary/NuGet.exe restore -SolutionDirectory /path/to/monodevelop/main/' exited with code: 1.
+
+install the missing certificates with `mozroots --import --ask-remove` and checkout [the security FAQ of the mono project][1] in case experience further trouble.
+
+[1]:http://www.mono-project.com/docs/faq/security/
+
 Running
 -------
 
@@ -92,12 +105,12 @@ Special Environment Variables
 Known Problems
 -----------------------------
 
-"The type `GLib.IIcon' is defined in an assembly that is not referenced"
-This happens when you accidentally installed gtk-sharp3 instead of the 2.12.x branch version.
-Make sure to 'make uninstall' or otherwise remove the gtk-sharp3 version and install the older one.
+  * ``The type `GLib.IIcon' is defined in an assembly that is not referenced``
+This happens when you accidentally installed `gtk-sharp3` instead of the 2.12.x branch version.
+Make sure to `make uninstall` or otherwise remove the `gtk-sharp3` version and install the older one.
 
-xbuild may still cache a reference to assemblies that you may have accidentally installed into your mono installation,
-like the gtk-sharp3 as described before. You can delete the cache in $HOME/.config/xbuild/pkgconfig-cache-2.xml
+  * `xbuild` may still cache a reference to assemblies that you may have accidentally installed into your `mono` installation,
+like the `gtk-sharp3` as described before. You can delete the cache in `$HOME/.config/xbuild/pkgconfig-cache-2.xml`
 
 
 
