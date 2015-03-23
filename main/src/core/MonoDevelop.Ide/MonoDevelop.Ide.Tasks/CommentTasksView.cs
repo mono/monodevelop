@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Tasks
 				typeof (string),     // desc
 				typeof (string),     // file
 				typeof (string),     // path
-				typeof (UserTask),       // task
+				typeof (TaskListEntry),       // task
 				typeof (Gdk.Color),  // foreground color
 				typeof (int));       // font weight
 
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Tasks
 			PropertyService.PropertyChanged += DispatchService.GuiDispatch<EventHandler<PropertyChangedEventArgs>> (OnPropertyUpdated);
 			
 			// Initialize with existing tags.
-			foreach (UserTask t in comments)
+			foreach (TaskListEntry t in comments)
 				AddGeneratedTask (t);
 
 			view.Destroyed += delegate {
@@ -278,7 +278,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			fileName = fileName.FullPath;
 			
-			List<UserTask> newTasks = new List<UserTask> ();
+			List<TaskListEntry> newTasks = new List<TaskListEntry> ();
 			if (tagComments != null) {  
 				foreach (Tag tag in tagComments) {
 					TaskPriority priority;
@@ -299,13 +299,13 @@ namespace MonoDevelop.Ide.Tasks
 						}
 					}
 					
-					UserTask t = new UserTask (fileName, desc, tag.Region.BeginColumn, tag.Region.BeginLine,
+					TaskListEntry t = new TaskListEntry (fileName, desc, tag.Region.BeginColumn, tag.Region.BeginLine,
 					                   TaskSeverity.Information, priority, wob);
 					newTasks.Add (t);
 				}
 			}
 			
-			List<UserTask> oldTasks = new List<UserTask> (comments.GetFileTasks (fileName));
+			List<TaskListEntry> oldTasks = new List<TaskListEntry> (comments.GetFileTasks (fileName));
 
 			for (int i = 0; i < newTasks.Count; ++i) {
 				for (int j = 0; j < oldTasks.Count; ++j) {
@@ -341,11 +341,11 @@ namespace MonoDevelop.Ide.Tasks
 		
 		void GeneratedTaskAdded (object sender, TaskEventArgs e)
 		{
-			foreach (UserTask t in e.Tasks)
+			foreach (TaskListEntry t in e.Tasks)
 				AddGeneratedTask (t);
 		}
 
-		void AddGeneratedTask (UserTask t)
+		void AddGeneratedTask (TaskListEntry t)
 		{
 			FilePath tmpPath = t.FileName;
 			if (t.WorkspaceObject != null)
@@ -356,25 +356,25 @@ namespace MonoDevelop.Ide.Tasks
 
 		void GeneratedTaskRemoved (object sender, TaskEventArgs e)
 		{
-			foreach (UserTask t in e.Tasks)
+			foreach (TaskListEntry t in e.Tasks)
 				RemoveGeneratedTask (t);
 		}
 
-		void RemoveGeneratedTask (UserTask t)
+		void RemoveGeneratedTask (TaskListEntry t)
 		{
 			TreeIter iter = FindTask (store, t);
 			if (!iter.Equals (TreeIter.Zero))
 				store.Remove (ref iter);
 		}
 
-		static TreeIter FindTask (ListStore store, UserTask task)
+		static TreeIter FindTask (ListStore store, TaskListEntry task)
 		{
 			TreeIter iter;
 			if (!store.GetIterFirst (out iter))
 				return TreeIter.Zero;
 			
 			do {
-				UserTask t = store.GetValue (iter, (int)Columns.Task) as UserTask;
+				TaskListEntry t = store.GetValue (iter, (int)Columns.Task) as TaskListEntry;
 				if (t == task)
 					return iter;
 			}
@@ -468,7 +468,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		void OnGenTaskCopied (object o, EventArgs args)
 		{
-			UserTask task = SelectedTask;
+			TaskListEntry task = SelectedTask;
 			if (task != null) {
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				clipboard.Text = task.Description;
@@ -477,14 +477,14 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 
-		UserTask SelectedTask
+		TaskListEntry SelectedTask
 		{
 			get {
 				TreeModel model;
 				TreeIter iter;
 				if (view.Selection.GetSelected (out model, out iter))
 				{
-					return (UserTask)model.GetValue (iter, (int)Columns.Task);
+					return (TaskListEntry)model.GetValue (iter, (int)Columns.Task);
 				}
 				else return null; // no one selected
 			}
@@ -492,7 +492,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		void OnGenTaskJumpto (object o, EventArgs args)
 		{
-			UserTask task = SelectedTask;
+			TaskListEntry task = SelectedTask;
 			if (task != null)
 				task.JumpToPosition ();
 		}
@@ -504,7 +504,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		void OnGenTaskDelete (object o, EventArgs args)
 		{
-			UserTask task = SelectedTask;
+			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
 				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
@@ -595,7 +595,7 @@ namespace MonoDevelop.Ide.Tasks
 				{
 					do
 					{
-						UserTask task = (UserTask) store.GetValue (iter, (int)Columns.Task);
+						TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.Task);
 						store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
 					} while (store.IterNext (ref iter));
 				}

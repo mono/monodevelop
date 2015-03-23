@@ -45,18 +45,18 @@ using MonoDevelop.Ide.TextEditing;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class TaskStore: IEnumerable<UserTask>, ILocationList
+	public class TaskStore: IEnumerable<TaskListEntry>, ILocationList
 	{
 		int taskUpdateCount;
-		List<UserTask> tasks = new List<UserTask> ();
-		Dictionary<FilePath,UserTask[]> taskIndex = new Dictionary<FilePath, UserTask[]> ();
+		List<TaskListEntry> tasks = new List<TaskListEntry> ();
+		Dictionary<FilePath,TaskListEntry[]> taskIndex = new Dictionary<FilePath, TaskListEntry[]> ();
 		
 		public event TaskEventHandler TasksAdded;
 		public event TaskEventHandler TasksRemoved;
 		public event TaskEventHandler TasksChanged;
 		
-		List<UserTask> tasksAdded;
-		List<UserTask> tasksRemoved;
+		List<TaskListEntry> tasksAdded;
+		List<TaskListEntry> tasksRemoved;
 		
 		public TaskStore ()
 		{
@@ -64,13 +64,13 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workspace.FileRemovedFromProject += ProjectFileRemoved;
 			
 			TextEditorService.LineCountChangesCommitted += delegate (object sender, TextFileEventArgs args) {
-				foreach (UserTask task in GetFileTasks (args.TextFile.Name.FullPath))
+				foreach (TaskListEntry task in GetFileTasks (args.TextFile.Name.FullPath))
 					task.SavedLine = -1;
 			};
 			
 			TextEditorService.LineCountChangesReset += delegate (object sender, TextFileEventArgs args) {
-				UserTask[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
-				foreach (UserTask task in ctasks) {
+				TaskListEntry[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
+				foreach (TaskListEntry task in ctasks) {
 					if (task.SavedLine != -1) {
 						task.Line = task.SavedLine;
 						task.SavedLine = -1;
@@ -82,8 +82,8 @@ namespace MonoDevelop.Ide.Tasks
 			TextEditorService.LineCountChanged += delegate (object sender, LineCountEventArgs args) {
 				if (args.TextFile == null || args.TextFile.Name.IsNullOrEmpty)
 					return;
-				UserTask[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
-				foreach (UserTask task in ctasks) {
+				TaskListEntry[] ctasks = GetFileTasks (args.TextFile.Name.FullPath);
+				foreach (TaskListEntry task in ctasks) {
 					if (task.Line > args.LineNumber || (task.Line == args.LineNumber && task.Column >= args.Column)) {
 						if (task.SavedLine == -1)
 							task.SavedLine = task.Line;
@@ -94,17 +94,17 @@ namespace MonoDevelop.Ide.Tasks
 			};
 		}
 		
-		public void Add (UserTask task)
+		public void Add (TaskListEntry task)
 		{
 			tasks.Add (task);
 			OnTaskAdded (task);
 		}
 		
-		public void AddRange (IEnumerable<UserTask> newTasks)
+		public void AddRange (IEnumerable<TaskListEntry> newTasks)
 		{
 			BeginTaskUpdates ();
 			try {
-				foreach (UserTask t in newTasks) {
+				foreach (TaskListEntry t in newTasks) {
 					tasks.Add (t);
 					OnTaskAdded (t);
 				}
@@ -113,11 +113,11 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public void RemoveRange (IEnumerable<UserTask> tasks)
+		public void RemoveRange (IEnumerable<TaskListEntry> tasks)
 		{
 			BeginTaskUpdates ();
 			try {
-				foreach (UserTask t in tasks) {
+				foreach (TaskListEntry t in tasks) {
 					if (this.tasks.Remove (t))
 						OnTaskRemoved (t);
 				}
@@ -128,20 +128,20 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public void RemoveItemTasks (WorkspaceObject parent)
 		{
-			RemoveRange (new List<UserTask> (GetItemTasks (parent)));
+			RemoveRange (new List<TaskListEntry> (GetItemTasks (parent)));
 		}
 		
 		public void RemoveItemTasks (WorkspaceObject parent, bool checkHierarchy)
 		{
-			RemoveRange (new List<UserTask> (GetItemTasks (parent, checkHierarchy)));
+			RemoveRange (new List<TaskListEntry> (GetItemTasks (parent, checkHierarchy)));
 		}
 		
 		public void RemoveFileTasks (FilePath file)
 		{
-			RemoveRange (new List<UserTask> (GetFileTasks (file)));
+			RemoveRange (new List<TaskListEntry> (GetFileTasks (file)));
 		}
 		
-		public void Remove (UserTask task)
+		public void Remove (TaskListEntry task)
 		{
 			if (tasks.Remove (task))
 				OnTaskRemoved (task);
@@ -151,9 +151,9 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			try {
 				BeginTaskUpdates ();
-				List<UserTask> toRemove = tasks;
-				tasks = new List<UserTask> ();
-				foreach (UserTask t in toRemove)
+				List<TaskListEntry> toRemove = tasks;
+				tasks = new List<TaskListEntry> ();
+				foreach (TaskListEntry t in toRemove)
 					OnTaskRemoved (t);
 			} finally {
 				EndTaskUpdates ();
@@ -164,8 +164,8 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			try {
 				BeginTaskUpdates ();
-				List<UserTask> toRemove = new List<UserTask> (GetOwnerTasks (owner));
-				foreach (UserTask t in toRemove)
+				List<TaskListEntry> toRemove = new List<TaskListEntry> (GetOwnerTasks (owner));
+				foreach (TaskListEntry t in toRemove)
 					Remove (t);
 			} finally {
 				EndTaskUpdates ();
@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Tasks
 			get { return tasks.Count; }
 		}
 		
-		public IEnumerator<UserTask> GetEnumerator ()
+		public IEnumerator<TaskListEntry> GetEnumerator ()
 		{
 			return tasks.GetEnumerator ();
 		}
@@ -186,31 +186,31 @@ namespace MonoDevelop.Ide.Tasks
 			return ((IEnumerable)tasks).GetEnumerator ();
 		}
 
-		public IEnumerable<UserTask> GetOwnerTasks (object owner)
+		public IEnumerable<TaskListEntry> GetOwnerTasks (object owner)
 		{
-			foreach (UserTask t in tasks) {
+			foreach (TaskListEntry t in tasks) {
 				if (t.Owner == owner)
 					yield return t;
 			}
 		}
 
-		public UserTask[] GetFileTasks (FilePath file)
+		public TaskListEntry[] GetFileTasks (FilePath file)
 		{
-			UserTask[] ta;
+			TaskListEntry[] ta;
 			if (taskIndex.TryGetValue (file, out ta))
 				return ta;
 			else
-				return new UserTask [0];
+				return new TaskListEntry [0];
 		}
 		
-		public IEnumerable<UserTask> GetItemTasks (WorkspaceObject parent)
+		public IEnumerable<TaskListEntry> GetItemTasks (WorkspaceObject parent)
 		{
 			return GetItemTasks (parent, true);
 		}
 		
-		public IEnumerable<UserTask> GetItemTasks (WorkspaceObject parent, bool checkHierarchy)
+		public IEnumerable<TaskListEntry> GetItemTasks (WorkspaceObject parent, bool checkHierarchy)
 		{
-			foreach (UserTask t in tasks) {
+			foreach (TaskListEntry t in tasks) {
 				if (t.BelongsToItem (parent, checkHierarchy))
 					yield return t;
 			}
@@ -220,16 +220,16 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			if (taskUpdateCount++ != 0)
 				return;
-			tasksAdded = new List<UserTask> ();
-			tasksRemoved = new List<UserTask> ();
+			tasksAdded = new List<TaskListEntry> ();
+			tasksRemoved = new List<TaskListEntry> ();
 		}
 		
 		public void EndTaskUpdates ()
 		{
 			if (--taskUpdateCount != 0)
 				return;
-			List<UserTask> oldAdded = tasksAdded;
-			List<UserTask> oldRemoved = tasksRemoved;
+			List<TaskListEntry> oldAdded = tasksAdded;
+			List<TaskListEntry> oldRemoved = tasksRemoved;
 			tasksAdded = null;
 			tasksRemoved = null;
 			if (oldRemoved.Count > 0)
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Tasks
 				NotifyTasksAdded (oldAdded);
 		}
 		
-		void NotifyTasksAdded (IEnumerable<UserTask> ts)
+		void NotifyTasksAdded (IEnumerable<TaskListEntry> ts)
 		{
 			try {
 				if (TasksAdded != null)
@@ -248,7 +248,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		void NotifyTasksChanged (IEnumerable<UserTask> ts)
+		void NotifyTasksChanged (IEnumerable<TaskListEntry> ts)
 		{
 			try {
 				if (TasksChanged != null)
@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		void NotifyTasksRemoved (IEnumerable<UserTask> ts)
+		void NotifyTasksRemoved (IEnumerable<TaskListEntry> ts)
 		{
 			try {
 				if (TasksRemoved != null)
@@ -268,28 +268,28 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		internal void OnTaskAdded (UserTask t)
+		internal void OnTaskAdded (TaskListEntry t)
 		{
 			if (t.FileName != FilePath.Null) {
-				UserTask[] ta;
+				TaskListEntry[] ta;
 				if (taskIndex.TryGetValue (t.FileName, out ta)) {
 					Array.Resize (ref ta, ta.Length + 1);
 					ta [ta.Length - 1] = t;
 				} else {
-					ta = new UserTask [] { t };
+					ta = new TaskListEntry [] { t };
 				}
 				taskIndex [t.FileName] = ta;
 			}
 			if (tasksAdded != null)
 				tasksAdded.Add (t);
 			else
-				NotifyTasksAdded (new UserTask [] { t });
+				NotifyTasksAdded (new TaskListEntry [] { t });
 		}
 		
-		internal void OnTaskRemoved (UserTask t)
+		internal void OnTaskRemoved (TaskListEntry t)
 		{
 			if (t.FileName != FilePath.Null) {
-				UserTask[] ta;
+				TaskListEntry[] ta;
 				if (taskIndex.TryGetValue (t.FileName, out ta)) {
 					if (ta.Length == 1) {
 						if (ta [0] == t)
@@ -297,7 +297,7 @@ namespace MonoDevelop.Ide.Tasks
 					} else {
 						int i = Array.IndexOf (ta, t);
 						if (i != -1) {
-							UserTask[] newTa = new UserTask [ta.Length - 1];
+							TaskListEntry[] newTa = new TaskListEntry [ta.Length - 1];
 							Array.Copy (ta, 0, newTa, 0, i);
 							Array.Copy (ta, i+1, newTa, i, ta.Length - i - 1);
 							taskIndex [t.FileName] = newTa;
@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.Tasks
 			if (tasksRemoved != null)
 				tasksRemoved.Add (t);
 			else
-				NotifyTasksRemoved (new UserTask [] { t });
+				NotifyTasksRemoved (new TaskListEntry [] { t });
 		}
 		
 		void ProjectFileRemoved (object sender, ProjectFileEventArgs args)
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.Tasks
 			BeginTaskUpdates ();
 			try {
 				foreach (ProjectFileEventInfo e in args) {
-					foreach (UserTask curTask in new List<UserTask> (GetFileTasks (e.ProjectFile.FilePath))) {
+					foreach (TaskListEntry curTask in new List<TaskListEntry> (GetFileTasks (e.ProjectFile.FilePath))) {
 						Remove (curTask);
 					}
 				}
@@ -330,8 +330,8 @@ namespace MonoDevelop.Ide.Tasks
 			BeginTaskUpdates ();
 			try {
 				foreach (ProjectFileRenamedEventInfo e in args) {
-					UserTask[] ctasks = GetFileTasks (e.OldName);
-					foreach (UserTask curTask in ctasks)
+					TaskListEntry[] ctasks = GetFileTasks (e.OldName);
+					foreach (TaskListEntry curTask in ctasks)
 						curTask.FileName = e.NewName;
 					taskIndex.Remove (e.OldName);
 					taskIndex [e.NewName] = ctasks;
@@ -345,7 +345,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		#region ILocationList implementation
 		
-		UserTask currentLocationTask;
+		TaskListEntry currentLocationTask;
 		TaskSeverity iteratingSeverity;
 		
 		public void ResetLocationList ()
@@ -356,7 +356,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public event EventHandler CurrentLocationTaskChanged;
 		
-		public UserTask CurrentLocationTask {
+		public TaskListEntry CurrentLocationTask {
 			get { return currentLocationTask; }
 			set {
 				currentLocationTask = value;
@@ -371,9 +371,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		class TaskNavigationPoint : TextFileNavigationPoint
 		{
-			UserTask task;
+			TaskListEntry task;
 			
-			public TaskNavigationPoint (UserTask task) : base (task.FileName, task.Line, task.Column)
+			public TaskNavigationPoint (TaskListEntry task) : base (task.FileName, task.Line, task.Column)
 			{
 				this.task = task;
 			}
@@ -405,7 +405,7 @@ namespace MonoDevelop.Ide.Tasks
 				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFile (tasks [n])))
 				n++;
 			
-			UserTask ct = n != -1 && n < tasks.Count ? tasks [n] : null;
+			TaskListEntry ct = n != -1 && n < tasks.Count ? tasks [n] : null;
 			if (ct == null) {
 				if (iteratingSeverity != TaskSeverity.Comment) {
 					iteratingSeverity++;
@@ -428,7 +428,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public static bool IsProjectTaskFile (UserTask t)
+		public static bool IsProjectTaskFile (TaskListEntry t)
 		{
 			if (t.FileName.IsNullOrEmpty)
 				return false;
@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Tasks
 			while (n != -1 && n < tasks.Count && (iteratingSeverity != tasks [n].Severity || string.IsNullOrEmpty (tasks [n].FileName)))
 				n--;
 			
-			UserTask ct = n != -1 && n < tasks.Count ? tasks [n] : null;
+			TaskListEntry ct = n != -1 && n < tasks.Count ? tasks [n] : null;
 			if (ct == null) {
 				if (iteratingSeverity != TaskSeverity.Error) {
 					iteratingSeverity--;
@@ -484,7 +484,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		int IndexOfTask (UserTask t)
+		int IndexOfTask (TaskListEntry t)
 		{
 			for (int n=0; n<tasks.Count; n++) {
 				if (tasks [n] == t)
@@ -504,18 +504,18 @@ namespace MonoDevelop.Ide.Tasks
 	
 	public class TaskEventArgs : EventArgs
 	{
-		IEnumerable<UserTask> tasks;
+		IEnumerable<TaskListEntry> tasks;
 		
-		public TaskEventArgs (UserTask task) : this (new UserTask[] { task })
+		public TaskEventArgs (TaskListEntry task) : this (new TaskListEntry[] { task })
 		{
 		}
 		
-		public TaskEventArgs (IEnumerable<UserTask> tasks)
+		public TaskEventArgs (IEnumerable<TaskListEntry> tasks)
 		{
 			this.tasks = tasks;
 		}
 		
-		public IEnumerable<UserTask> Tasks
+		public IEnumerable<TaskListEntry> Tasks
 		{
 			get { return tasks; }
 		}

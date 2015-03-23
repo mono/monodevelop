@@ -1327,7 +1327,7 @@ namespace MonoDevelop.Ide
 		
 		void BuildDone (ProgressMonitor monitor, BuildResult result, IBuildTarget entry, ITimeTracker tt)
 		{
-			UserTask[] tasks = null;
+			TaskListEntry[] tasks = null;
 			tt.Trace ("Begin reporting build result");
 			try {
 				if (result != null) {
@@ -1336,9 +1336,9 @@ namespace MonoDevelop.Ide
 					monitor.Log.WriteLine (GettextCatalog.GetString ("---------------------- Done ----------------------"));
 					
 					tt.Trace ("Updating task service");
-					tasks = new UserTask [result.Errors.Count];
+					tasks = new TaskListEntry [result.Errors.Count];
 					for (int n=0; n<tasks.Length; n++) {
-						tasks [n] = new UserTask (result.Errors [n]);
+						tasks [n] = new TaskListEntry (result.Errors [n]);
 						tasks [n].Owner = this;
 					}
 
@@ -1394,7 +1394,7 @@ namespace MonoDevelop.Ide
 				} catch {}
 				
 				if (tasks != null) {
-					UserTask jumpTask = null;
+					TaskListEntry jumpTask = null;
 					switch (IdeApp.Preferences.JumpToFirstErrorOrWarning) {
 					case JumpToFirst.Error:
 						jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error && TaskStore.IsProjectTaskFile (t));

@@ -40,11 +40,11 @@ namespace MonoDevelop.SourceEditor
 {
 	public class ErrorText
 	{
-		public UserTask Task { get; set; }
+		public TaskListEntry Task { get; set; }
 		public bool IsError { get; set; }
 		public string ErrorMessage { get; set; }
 
-		public ErrorText (UserTask task, bool isError, string errorMessage)
+		public ErrorText (TaskListEntry task, bool isError, string errorMessage)
 		{
 			this.Task = task;
 			this.IsError = isError;

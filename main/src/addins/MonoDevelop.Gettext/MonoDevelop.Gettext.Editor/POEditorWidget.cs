@@ -976,7 +976,7 @@ namespace MonoDevelop.Gettext
 			base.OnDestroyed ();
 		}
 #region Tasks
-		public class TranslationTask : UserTask
+		public class TranslationTask : TaskListEntry
 		{
 			POEditorWidget widget;
 			CatalogEntry entry;
@@ -1000,7 +1000,7 @@ namespace MonoDevelop.Gettext
 			TaskService.Errors.ClearByOwner (this);
 		}
 		
-		static bool CompareTasks (List<UserTask> list1, List<UserTask> list2)
+		static bool CompareTasks (List<TaskListEntry> list1, List<TaskListEntry> list2)
 		{
 			if (list1.Count != list2.Count)
 				return false;
@@ -1128,7 +1128,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		
-		List<UserTask> currentTasks = new List<UserTask> ();
+		List<TaskListEntry> currentTasks = new List<TaskListEntry> ();
 		
 		BackgroundWorker updateTaskThread = null;
 		
@@ -1140,7 +1140,7 @@ namespace MonoDevelop.Gettext
 				return;
 			}
 			
-			List<UserTask> tasks = new List<UserTask> ();
+			List<TaskListEntry> tasks = new List<TaskListEntry> ();
 			try {
 				foreach (CatalogEntryRule rule in rules) {
 					foreach (CatalogEntry entry in catalog) {
