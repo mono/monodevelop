@@ -75,8 +75,8 @@ namespace MonoDevelop.Ide.Gui
 					return 100;
 				}
 				else if (n == 2) {
-					t = DateTime.Now;
 					t1 = (int)(DateTime.Now - t).TotalMilliseconds;
+					t = DateTime.Now;
 					return 200;
 				}
 				else {
