@@ -559,6 +559,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						string responseKey = "[MonoDevelop]";
 						string sref = null;
 						p.ErrorDataReceived += (sender, e) => {
+							if (e.Data == null)
+								return;
+
 							if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
 								sref = e.Data.Substring (responseKey.Length);
 								ev.Set ();
