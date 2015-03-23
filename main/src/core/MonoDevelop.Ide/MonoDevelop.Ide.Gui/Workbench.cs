@@ -761,23 +761,8 @@ namespace MonoDevelop.Ide.Gui
 				    GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 				    AlertButton.CloseWithoutSave, AlertButton.Cancel, window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
-					if (window.ViewContent.ContentName == null) {
-						FindDocument (window).Save ();
-						args.Cancel = window.ViewContent.IsDirty;
-					} else {
-						try {
-							if (window.ViewContent.IsFile)
-								window.ViewContent.Save (window.ViewContent.ContentName);
-							else
-								window.ViewContent.Save ();
-							args.Cancel |= window.ViewContent.IsDirty;
-
-						}
-						catch (Exception ex) {
-							args.Cancel = true;
-							MessageService.ShowError (GettextCatalog.GetString ("The document could not be saved."), ex);
-						}
-					}
+					FindDocument (window).Save ();
+					args.Cancel = window.ViewContent.IsDirty;
 					if (args.Cancel)
 						FindDocument (window).Select ();
 				} else {
