@@ -435,7 +435,33 @@ namespace FormatSelectionTest
 			});
 		}
 
+		[Test]
+		public void TestAfterCommentLine ()
+		{
+			Simulate (@"class Foo
+{
+	void Test ()
+	{
+		//random comment
+		Console.WriteLine ()      ;$
 	}
-
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+	{
+		//random comment
+		Console.WriteLine();
+	}
+}", newText);
+			});
+		}
+	}
 }
 

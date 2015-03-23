@@ -295,8 +295,6 @@ namespace MonoDevelop.CSharp.Formatting
 			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
-		internal ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine StateTracker { get { return stateTracker; } }
-
 		public bool DoInsertTemplate ()
 		{
 			string word = CodeTemplate.GetWordBeforeCaret (Editor);
@@ -369,8 +367,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			bool skipFormatting = StateTracker.IsInsideOrdinaryCommentOrString ||
-			                      StateTracker.IsInsidePreprocessorDirective;
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
 			bool isSomethingSelected = Editor.IsSomethingSelected;
 			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {
@@ -498,7 +494,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				HandleOnTheFlyFormatting (skipFormatting, descriptor);
+				HandleOnTheFlyFormatting (descriptor);
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				lastCharInserted = '\0';
 				CheckXmlCommentCloseTag (descriptor.KeyChar);
@@ -522,15 +518,17 @@ namespace MonoDevelop.CSharp.Formatting
 
 			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
-			HandleOnTheFlyFormatting (skipFormatting, descriptor);
+			HandleOnTheFlyFormatting (descriptor);
 			
 			return result;
 		}
 
-		void HandleOnTheFlyFormatting (bool skipFormatting, KeyDescriptor descriptor)
+		void HandleOnTheFlyFormatting (KeyDescriptor descriptor)
 		{
 			if (descriptor.KeyChar == '{')
 				return;
+			SafeUpdateIndentEngine (Editor.CaretOffset);
+			bool skipFormatting = stateTracker.IsInsideOrdinaryCommentOrString || stateTracker.IsInsidePreprocessorDirective;
 			if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.GetAst<SemanticModel> () == null)
 					return;
