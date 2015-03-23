@@ -539,12 +539,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				await Task.Factory.StartNew (() => LoadSolution (sol, fileName, monitor));
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Could not load solution: {0}", fileName), ex);
-				throw;
-			} finally {
-				monitor.EndTask ();
-				await sol.OnEndLoad ();
+				sol.OnEndLoad ().Wait ();
 				sol.NotifyItemReady ();
+				monitor.EndTask ();
+				throw;
 			}
+			await sol.OnEndLoad ();
+			sol.NotifyItemReady ();
+			monitor.EndTask ();
 			return sol;
 		}
 
