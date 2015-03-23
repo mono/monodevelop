@@ -65,6 +65,10 @@ namespace MonoDevelop.Tests.TestRunner
 				}
 			}
 			if (useGuiUnit) {
+				Xwt.XwtSynchronizationContext.AutoInstall = false;
+				var sc = new Xwt.XwtSynchronizationContext ();
+				System.Threading.SynchronizationContext.SetSynchronizationContext (sc);
+				Runtime.MainSynchronizationContext = sc;
 				var runnerType = Type.GetType ("GuiUnit.TestRunner, GuiUnit");
 				var method = runnerType.GetMethod ("Main", BindingFlags.Public | BindingFlags.Static);
 				return Task.FromResult ((int)method.Invoke (null, new [] { args.ToArray () }));
