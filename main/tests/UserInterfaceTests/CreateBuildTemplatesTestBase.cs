@@ -52,6 +52,7 @@ namespace UserInterfaceTests
 		public void CreateBuildProject (string projectName, string kind, string category, string categoryRoot, Action beforeBuild)
 		{
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
+			string actualSolutionDirectory = string.Empty;
 			try {
 				var newProject = new NewProjectController ();
 				newProject.Open ();
@@ -72,13 +73,18 @@ namespace UserInterfaceTests
 				Assert.IsTrue (newProject.Next ());
 				Thread.Sleep (2000);
 
+				actualSolutionDirectory = GetSolutionDirectory ();
+
 				beforeBuild ();
 				Thread.Sleep (1000);
 
 				Assert.IsTrue (Ide.BuildSolution ());
 			} finally {
-				Directory.Delete (solutionParentDirectory, true);
 				Ide.CloseAll ();
+				try {
+					if (Directory.Exists (actualSolutionDirectory))
+						Directory.Delete (actualSolutionDirectory, true);
+				} catch (IOException) { }
 			}
 		}
 
@@ -95,11 +101,20 @@ namespace UserInterfaceTests
 			Assert.IsTrue (newProject.SetProjectName (projectName));
 			Thread.Sleep (2000);
 
-			Assert.IsTrue (newProject.SetSolutionName (solutionName));
-			Thread.Sleep (2000);
+			if (!string.IsNullOrEmpty (solutionName)) {
+				Assert.IsTrue (newProject.SetSolutionName (solutionName));
+				Thread.Sleep (2000);
+			}
 
-			Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
-			Thread.Sleep (2000);
+			if (!string.IsNullOrEmpty (solutionLocation)) {
+				Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
+				Thread.Sleep (2000);
+			}
+		}
+
+		public string GetSolutionDirectory ()
+		{
+			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
 		}
 	}
 }

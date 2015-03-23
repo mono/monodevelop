@@ -24,18 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
-
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	/*
-	 * Project templates to be tested - Console Project, Library, Portable Library, NUnit Library, F# Tutorial
-	 * Projects which cannot be tested
-	 *  - Empty Project: They do not have a build target set
-	 *  - Gtk# 2.0 Project - Throws an error when created, though builds fine
-	 */
 	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		readonly static string DotNetProjectKind = ".NET";

@@ -92,20 +92,28 @@ namespace UserInterfaceTests
 			return gitSelectionSuccess;
 		}
 
-		bool SetCheckBox (string checkBoxName, bool active)
+		public bool SetCheckBox (string checkBoxName, bool active)
 		{
-			var widgetSelected = Session.SelectWidget (checkBoxName);
-			if (widgetSelected)
-				Session.SetPropertyValue ("Active", active);
-			return widgetSelected;
+			var setSuccess = Session.SelectWidget (checkBoxName);
+			if (setSuccess)
+				return setSuccess && Session.SetPropertyValue ("Active", active);
+			return setSuccess;
 		}
 
-		bool TypeTextInGtkEntry (string widgetName, string text)
+		public bool GetSensitivity (string widgetName)
 		{
-			var widgetSelected = Session.SelectWidget (widgetName);
-			if (widgetSelected)
+			var sensitiveSuccess = Session.SelectWidget (widgetName);
+			if (sensitiveSuccess)
+				return sensitiveSuccess && (bool)Session.GetPropertyValue ("Sensitive");
+			return sensitiveSuccess;
+		}
+
+		public bool TypeTextInGtkEntry (string widgetName, string text)
+		{
+			var typeSuccess = Session.SelectWidget (widgetName);
+			if (typeSuccess)
 				Session.TypeText (text);
-			return widgetSelected;
+			return typeSuccess;
 		}
 	}
 }

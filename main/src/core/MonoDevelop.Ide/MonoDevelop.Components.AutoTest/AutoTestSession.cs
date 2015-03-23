@@ -326,6 +326,20 @@ namespace MonoDevelop.Components.AutoTest
 			});
 		}
 
+		public object GetPropertyValue (string propertyName)
+		{
+			return Sync (delegate {
+				PropertyInfo propertyInfo = CurrentObject.GetType().GetProperty(propertyName);
+				if (propertyInfo != null) {
+					var propertyValue = propertyInfo.GetValue (CurrentObject);
+					if (propertyValue != null)
+						return propertyValue;
+				}
+
+				return false;
+			});
+		}
+
 		public bool SetPropertyValue (string propertyName, object value, object[] index = null)
 		{
 			return (bool)Sync (delegate {
