@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 		{
 			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
 				if (f.CanReadFile (fileName, typeof(SolutionItem)))
-					return await MSBuildProjectService.LoadItem (monitor, fileName, expectedFormat, typeGuid, itemGuid, ctx);
+					return await MSBuildProjectService.LoadItem (monitor, fileName, f, typeGuid, itemGuid, ctx);
 			}
 			return await base.LoadSolutionItem (monitor, ctx, fileName, expectedFormat, typeGuid, itemGuid);
 		}

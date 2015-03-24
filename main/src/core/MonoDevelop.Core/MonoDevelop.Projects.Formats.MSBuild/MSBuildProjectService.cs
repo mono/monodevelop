@@ -135,10 +135,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (itemType != null)
 				item = (SolutionItem)Activator.CreateInstance (itemType);
-			else {
+			else
 				item = await node.CreateSolutionItem (monitor, fileName);
-				item.EnsureInitialized ();
-			}
+
+			item.EnsureInitialized ();
 
 			item.BeginLoad ();
 			ctx.LoadCompleted += delegate {

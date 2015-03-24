@@ -1958,8 +1958,12 @@ namespace MonoDevelop.Projects
 		void InitFormatProperties ()
 		{
 			ToolsVersion = FileFormat.DefaultToolsVersion;
-			productVersion = FileFormat.DefaultProductVersion;
 			schemaVersion = FileFormat.DefaultSchemaVersion;
+
+			// Don't change the product version if it is already set. We don't really use this,
+			// and we can avoid unnecessary changes in the proj file.
+			if (string.IsNullOrEmpty (productVersion))
+				productVersion = FileFormat.DefaultProductVersion;
 		}
 
 		internal ProjectItem ReadItem (IMSBuildItemEvaluated buildItem)
