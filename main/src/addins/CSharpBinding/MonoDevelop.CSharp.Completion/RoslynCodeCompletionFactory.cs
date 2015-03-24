@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -59,10 +60,10 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 		
-		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, IFieldSymbol field)
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol alias, IFieldSymbol field)
 		{
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-			return new RoslynSymbolCompletionData (keyHandler, ext, field, field.Type.ToMinimalDisplayString (model, ext.Editor.CaretOffset, SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + field.Name);
+			return new RoslynSymbolCompletionData (keyHandler, ext, field, (alias ?? field.Type).ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
 		}
 		
 		class FormatItemCompletionData : RoslynCompletionData
