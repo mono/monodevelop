@@ -362,6 +362,8 @@ namespace MonoDevelop.Platform
 							apps[defaultProgid] = defaultApp = WindowsAppFromName (defaultProgid, true, AssociationFlags.None);
 					}
 					using (var sk = key.OpenSubKey ("OpenWithProgids")) {
+						if (sk == null)
+							continue;
 						foreach (var progid in sk.GetValueNames ()) {
 							if (!apps.ContainsKey (progid))
 								apps[progid] = WindowsAppFromName (progid, false, AssociationFlags.None);
@@ -400,6 +402,39 @@ namespace MonoDevelop.Platform
 			}
 			return null;
 		}
+
+		#region OpenFolder
+
+		[DllImport ("shell32.dll")]
+		static extern int SHOpenFolderAndSelectItems (
+			IntPtr pidlFolder,
+			uint cidl,
+			[In, MarshalAs (UnmanagedType.LPArray)] IntPtr[] apidl,
+			uint dwFlags);
+
+		[DllImport ("shell32.dll")]
+		static extern IntPtr ILCreateFromPath ([MarshalAs (UnmanagedType.LPTStr)] string pszPath);
+
+		[DllImport ("shell32.dll")]
+		static extern void ILFree (IntPtr pidl);
+
+		public override void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
+		{
+			if (selectFiles.Length == 0) {
+				Process.Start (folderPath);
+			} else {
+				var dir = ILCreateFromPath (folderPath);
+				var files = selectFiles.Select ((f) => ILCreateFromPath (f)).ToArray ();
+				try {
+					SHOpenFolderAndSelectItems (dir, (uint)files.Length, files, 0);
+				} finally {
+					ILFree (dir);
+					files.ToList ().ForEach (ILFree);
+				}
+			}
+		}
+
+		#endregion
 
 		class WindowsDesktopApplication : DesktopApplication
 		{

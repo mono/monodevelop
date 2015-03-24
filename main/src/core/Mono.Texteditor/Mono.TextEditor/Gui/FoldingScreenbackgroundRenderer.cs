@@ -139,7 +139,7 @@ namespace Mono.TextEditor
 				}
 
 				y = editor.LineToY (segment.StartLine.LineNumber);
-				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1);
+				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1) + (segment.EndLine.LineNumber == editor.LineCount ? editor.LineHeight : 0);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
 				rectangleHeight = yEnd - y;
@@ -148,6 +148,7 @@ namespace Mono.TextEditor
 			}
 
 			for (int i = 0; i < foldSegments.Count; i++) {
+				Cairo.Rectangle clampedRect;
 				var rect = rectangles[i];
 
 				if (i == foldSegments.Count - 1) {
@@ -187,13 +188,15 @@ namespace Mono.TextEditor
 
 					var bg = editor.ColorStyle.PlainText.Foreground;
 					cr.SetSourceRGBA (bg.R, bg.G, bg.B, alpha);
-					DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
+					clampedRect = ClampRect (rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2, area);
+					DrawRoundRectangle (cr, true, true, clampedRect.X, clampedRect.Y, editor.LineHeight / 2, clampedRect.Width, clampedRect.Height);
 					cr.Fill ();
 
 					if (age < animationLength) {
 						var animationState = age / (double)animationLength;
 						curPadSize = (int)(2 + System.Math.Sin (System.Math.PI * animationState) * 2);
-						DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value - curPadSize, rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2);
+						clampedRect = ClampRect (rect.X - editor.HAdjustment.Value - curPadSize, rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2, area);
+						DrawRoundRectangle (cr, true, true, clampedRect.X, clampedRect.Y, editor.LineHeight / 2, clampedRect.Width, clampedRect.Height);
 						cr.SetSourceColor (GetColor (i, brightness, colorCount));
 						cr.Fill ();
 
@@ -201,7 +204,8 @@ namespace Mono.TextEditor
 					}
 				}
 
-				DrawRoundRectangle (cr, true, true, rect.X - editor.HAdjustment.Value, rect.Y - editor.VAdjustment.Value, editor.LineHeight / 2, rect.Width, rect.Height);
+				clampedRect = ClampRect (rect.X - editor.HAdjustment.Value, rect.Y - editor.VAdjustment.Value, editor.LineHeight / 2, rect.Width, rect.Height, area);
+				DrawRoundRectangle (cr, true, true,  clampedRect.X, clampedRect.Y, editor.LineHeight / 2, clampedRect.Width, clampedRect.Height);
 				
 				cr.SetSourceColor (GetColor (i, brightness, colorCount));
 				cr.Fill ();
@@ -268,7 +272,19 @@ namespace Mono.TextEditor
 			}
 			cr.ClosePath ();
 		}
-		
+
+		public static Cairo.Rectangle ClampRect (double x, double y, double r, double w, double h, Cairo.Rectangle area){
+			var x1 = x;
+			var y1 = y;
+			var x2 = x + w;
+			var y2 = y + h;
+			x1 = System.Math.Max (x1, area.X - r);
+			y1 = System.Math.Max (y1, area.Y - r);
+			x2 = System.Math.Min (x2, area.Width + r);
+			y2 = System.Math.Min (y2, area.Height + r);
+			return new Cairo.Rectangle (x1, y1, x2-x1, y2-y1);
+		}
+
 		int GetFirstNonWsIdx (string text)
 		{
 			for (int i = 0; i < text.Length; i++) {

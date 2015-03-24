@@ -674,12 +674,6 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		protected override void OnLineDeleted ()
-		{
-			base.OnLineDeleted ();
-			Line++;
-		}
-
 		public override Widget CreateWidget ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
@@ -766,12 +760,6 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnLineChanged ();
 			dlg.Line = Line;
-		}
-
-		protected override void OnLineDeleted ()
-		{
-			base.OnLineDeleted ();
-			Line++;
 		}
 
 		public override Widget CreateWidget ()

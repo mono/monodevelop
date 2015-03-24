@@ -8,7 +8,7 @@
     <ProjectGuid>{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>console-with-libs</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

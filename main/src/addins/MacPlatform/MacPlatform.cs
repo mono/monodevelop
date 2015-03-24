@@ -837,5 +837,14 @@ namespace MonoDevelop.MacIntegration
 			}
 			return desktopBounds;
 		}
+
+		public override void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
+		{
+			if (selectFiles.Length == 0) {
+				System.Diagnostics.Process.Start (folderPath);
+			} else {
+				NSWorkspace.SharedWorkspace.ActivateFileViewer (selectFiles.Select ((f) => NSUrl.FromFilename (f)).ToArray ());
+			}
+		}
 	}
 }

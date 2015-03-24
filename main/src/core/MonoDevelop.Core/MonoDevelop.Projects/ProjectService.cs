@@ -245,13 +245,13 @@ namespace MonoDevelop.Projects
 					return sol.GetSolutionItem (reference.Id);
 			}
 		}
-		
-		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, string file)
+
+		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, FilePath file)
 		{
-			file = Path.GetFullPath (file);
+			string fullpath = FileService.ResolveFullPath (file).FullPath;
 			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
-				file = GetTargetFile (file);
-				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, file) as WorkspaceItem;
+				fullpath = GetTargetFile (fullpath);
+				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
 				if (item != null)
 					item.NeedsReload = false;
 				else
@@ -533,23 +533,45 @@ namespace MonoDevelop.Projects
 				return tempSolution;
 			}
 		}
-		
+
+		public bool IsSolutionItemFile (FilePath file)
+		{
+			return IsSolutionItemFileImpl (file.ToString ());
+		}
+
+		[Obsolete ("Use IsSolutionItemFile (FilePath file)")]
 		public bool IsSolutionItemFile (string filename)
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			return IsSolutionItemFileImpl (filename);
+		}
+
+		private bool IsSolutionItemFileImpl (string filename)
+		{
 			filename = GetTargetFile (filename);
 			return GetExtensionChain (null).IsSolutionItemFile (filename);
 		}
-		
+
+		public bool IsWorkspaceItemFile (FilePath file)
+		{
+			return IsWorkspaceItemFileImpl (file.ToString ());
+		}
+
+		[Obsolete ("Use IsWorkspaceItemFile (FilePath file)")]
 		public bool IsWorkspaceItemFile (string filename)
 		{
 			if (filename.StartsWith ("file://"))
 				filename = new Uri(filename).LocalPath;
+			return IsWorkspaceItemFileImpl (filename);
+		}
+
+		private bool IsWorkspaceItemFileImpl (string filename)
+		{
 			filename = GetTargetFile (filename);
 			return GetExtensionChain (null).IsWorkspaceItemFile (filename);
 		}
-		
+
 		internal bool IsSolutionItemFileInternal (string filename)
 		{
 			return formatManager.GetFileFormats (filename, typeof(SolutionItem)).Length > 0;

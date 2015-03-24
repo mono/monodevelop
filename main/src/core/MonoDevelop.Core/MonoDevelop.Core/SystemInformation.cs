@@ -102,6 +102,9 @@ namespace MonoDevelop.Core
 				}
 			}
 
+			if (!string.IsNullOrEmpty (MonoDevelop.BuildInfo.BuildLane))
+				sb.Append ("Build lane: ").AppendLine (MonoDevelop.BuildInfo.BuildLane);
+
 			if (sb.Length == 0)
 				sb.AppendLine ("Build information unavailable");
 

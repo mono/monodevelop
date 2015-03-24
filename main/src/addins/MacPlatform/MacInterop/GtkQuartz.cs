@@ -49,6 +49,9 @@ namespace MonoDevelop.MacInterop
 
 		public static Gtk.Window GetGtkWindow (NSWindow window)
 		{
+			if (window == null)
+				return null;
+
 			var toplevels = Gtk.Window.ListToplevels ();
 			return toplevels.FirstOrDefault (w => w.IsRealized && (gdk_quartz_window_get_nswindow (w.GdkWindow.Handle) == window.Handle));
 		}

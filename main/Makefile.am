@@ -155,6 +155,9 @@ check-addins:
 test:
 	cd tests && $(MAKE) test assembly=$(assembly)
 
+coverage:
+	cd tests && $(MAKE) coverage
+
 app-dir: all
 	cd build && make app-dir
 #mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}

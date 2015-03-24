@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
@@ -31,7 +32,12 @@ namespace MonoDevelop.Ide.Templates
 	class TestableProjectTemplateCategorizer : ProjectTemplateCategorizer
 	{
 		public TestableProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories)
-			: base (categories)
+			: this (categories, solutionTemplate => true)
+		{
+		}
+
+		public TestableProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories, Predicate<SolutionTemplate> templateFilter)
+			: base (categories, templateFilter)
 		{
 		}
 

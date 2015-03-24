@@ -169,6 +169,13 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CopyClipboard (clipboard);
 					return;
 				}
+				#if MAC
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+				if (mactv != null) {
+					mactv.Copy (mactv);
+					return;
+				}
+				#endif
 			}
 		}
 		
@@ -176,6 +183,10 @@ namespace MonoDevelop.Ide.Commands
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
+			#if MAC
+			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			info.Enabled |= macfocus is AppKit.NSText;
+			#endif
 			info.Bypass = !info.Enabled;
 		}
 	}	
@@ -196,6 +207,13 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.CutClipboard (clipboard, true);
 					return;
 				}
+				#if MAC
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+				if (mactv != null) {
+					mactv.Cut (mactv);
+					return;
+				}
+				#endif
 			}
 		}
 		
@@ -208,7 +226,12 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
 				info.Enabled = false;
-			
+
+			#if MAC
+			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			info.Enabled |= macfocus is AppKit.NSText;
+			#endif
+
 			info.Bypass = !info.Enabled;
 		}
 	}
@@ -229,6 +252,13 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.PasteClipboard (clipboard);
 					return;
 				}
+				#if MAC
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+				if (mactv != null) {
+					mactv.Paste (mactv);
+					return;
+				}
+				#endif
 			}
 		}
 		
@@ -241,7 +271,12 @@ namespace MonoDevelop.Ide.Commands
 				info.Enabled = ((Gtk.TextView)focus).Editable;
 			else
 				info.Enabled = false;
-			
+
+			#if MAC
+			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			info.Enabled |= macfocus is AppKit.NSText;
+			#endif
+
 			info.Bypass = !info.Enabled;
 		}
 	}
@@ -280,6 +315,13 @@ namespace MonoDevelop.Ide.Commands
 					tv.Buffer.SelectRange (tv.Buffer.StartIter, tv.Buffer.EndIter);
 					return;
 				}
+				#if MAC
+				var mactv = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder as AppKit.NSText;
+				if (mactv != null) {
+					mactv.SelectAll (mactv);
+					return;
+				}
+				#endif
 			}
 		}
 		
@@ -287,6 +329,11 @@ namespace MonoDevelop.Ide.Commands
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView); 
+
+			#if MAC
+			var macfocus = AppKit.NSApplication.SharedApplication.KeyWindow.FirstResponder;
+			info.Enabled |= macfocus is AppKit.NSText;
+			#endif
 		}
 	}	
 }

@@ -27,7 +27,11 @@ if test "x$MCS" = "x" ; then
   AC_MSG_ERROR([Can't find "mcs" in your PATH])
 fi
 
+dnl Find pkg-config
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test "x$PKG_CONFIG" = "xno"; then
+        AC_MSG_ERROR([You need to install pkg-config])
+fi
 
 MONO_REQUIRED_VERSION=3.0.4
 
@@ -79,12 +83,6 @@ if test "x$enable_update_desktopdb" = "xyes"; then
   fi
 fi
 AC_SUBST(UPDATE_DESKTOP_DB)
-
-dnl Find pkg-config
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-if test "x$PKG_CONFIG" = "xno"; then
-        AC_MSG_ERROR([You need to install pkg-config])
-fi
 
 dnl Find msgfmt for translations
 # Find msgfmt and msgmerge for translations

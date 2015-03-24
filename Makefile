@@ -111,6 +111,9 @@ run-gdb:
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
+coverage:
+	cd main && $(MAKE) coverage
+
 check-addins:
 	cd main && $(MAKE) check-addins
 

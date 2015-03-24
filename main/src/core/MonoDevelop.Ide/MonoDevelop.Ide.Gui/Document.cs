@@ -384,7 +384,9 @@ namespace MonoDevelop.Ide.Gui
 				if (doc != null) {
 					string fileName = Window.ViewContent.ContentName;
 					try {
-						doc.LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName);
+						// filename could be null if the user cancelled SaveAs and this is a new & unsaved file
+						if (fileName != null)
+							doc.LastWriteTimeUtc = File.GetLastWriteTimeUtc (fileName);
 					} catch (Exception e) {
 						doc.LastWriteTimeUtc = DateTime.UtcNow;
 						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 

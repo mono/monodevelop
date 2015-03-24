@@ -64,7 +64,7 @@
 	<StockIcon stockid="gtk-undo" resource="undo-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-16.png" size="Menu" />
-  
+
   <!-- MD icons -->
 	<StockIcon stockid="md-add" resource="add-16.png" size="Menu" />
 	<StockIcon stockid="md-assembly-project" resource="assembly-project-16.png" size="Menu" />
@@ -129,7 +129,6 @@
 	<StockIcon stockid="md-other-declaration" resource="element-other-declaration-16.png" size="Menu" />
 	<StockIcon stockid="md-output-icon" resource="pad-application-output-16.png" size="Menu" />
 	<StockIcon stockid="md-package-source" resource="package-source-16.png" size="Menu" />
-	<StockIcon stockid="md-parser" resource="parser-16.png" size="Menu" />
 	<StockIcon stockid="md-pin-down" resource="pin-down-16.png" size="Menu" />
 	<StockIcon stockid="md-pin-up" resource="pin-up-16.png" size="Menu" />
 	<StockIcon stockid="md-platform-android" resource="platform-android-light-16.png" size="Menu" />
@@ -220,7 +219,7 @@
 	<StockIcon stockid="gtk-dialog-info" resource="information-24.png" size="LargeToolbar" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-32.png" size="Dnd" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-48.png" size="Dialog" />
-  
+
 	<StockIcon stockid="gtk-dialog-question" resource="question-16.png" />
 	<StockIcon stockid="gtk-dialog-question" resource="question-16.png" size="Menu" />
 	<StockIcon stockid="gtk-dialog-question" resource="question-24.png" size="Button" />
@@ -302,6 +301,7 @@
 		<StockIcon stockid="md-status-warning-count" resource="status-warning-count-16.png" size="Menu" />
 		<StockIcon stockid="md-status-error-count" resource="status-error-count-16.png" size="Menu" />
 		<StockIcon stockid="md-updates" resource="status-updates-ready-16.png" size="Menu" />
+		<StockIcon stockid="md-parser" resource="status-parsing-16.png" size="Menu" />
 	</Condition>
 	<Condition id="Platform" value="!mac">
 		<StockIcon stockid="md-status-build" animation="res:status-building-1-14.png;res:status-building-2-14.png;res:status-building-3-14.png;res:status-building-4-14.png;res:status-building-5-14.png" size="Menu" />
@@ -316,6 +316,7 @@
 		<StockIcon stockid="md-status-warning" resource="status-warning-14.png" size="Menu" />
 		<StockIcon stockid="md-status-error" resource="status-failure-14.png" size="Menu" />
 		<StockIcon stockid="md-updates" resource="updates-16.png" size="Menu" />
+		<StockIcon stockid="md-parser" resource="parser-16.png" size="Menu" />
 	</Condition>
 
 	<!-- Spinners -->

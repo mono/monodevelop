@@ -55,9 +55,13 @@ namespace MonoDevelop.Debugger.Visualizer
 		public override bool CanVisualize (ObjectValue val)
 		{
 			switch (val.TypeName) {
-			case "sbyte[]": return true;
-			case "byte[]": return true;
-			default: return false;
+			case "System.IO.MemoryStream":
+			case "Foundation.NSData":
+			case "sbyte[]":
+			case "byte[]":
+				return true;
+			default:
+				return false;
 			}
 		}
 
@@ -73,7 +77,7 @@ namespace MonoDevelop.Debugger.Visualizer
 			case 0x0D: text.Append ("\\r"); break;
 			default:
 				if (c < 020 || c > 0x7e) {
-					text.AppendFormat ("\\x{0:x,2}", c);
+					text.AppendFormat ("\\x{0:x2}", c);
 				} else {
 					text.Append ((char) c);
 				}
@@ -141,10 +145,23 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		void PopulateTextView (ObjectValue value)
 		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			var session = DebuggingService.DebuggerSession;
+			var ops = session.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
 
-			rawArray = value.GetRawValue (ops) as RawValueArray;
+			switch (value.TypeName) {
+			case "MonoTouch.Foundation.NSData":
+			case "MonoMac.Foundation.NSData":
+			case "System.IO.MemoryStream":
+			case "Foundation.NSData":
+				var stream = value.GetRawValue (ops) as RawValue;
+				rawArray = stream.CallMethod ("ToArray") as RawValueArray;
+				break;
+			default:
+				rawArray = value.GetRawValue (ops) as RawValueArray;
+				break;
+			}
+
 			length = rawArray.Length;
 			offset = 0;
 
@@ -153,6 +170,10 @@ namespace MonoDevelop.Debugger.Visualizer
 				case "sbyte[]":
 					idle_id = GLib.Idle.Add (GetNextSByteArrayChunk);
 					break;
+				case "MonoTouch.Foundation.NSData":
+				case "MonoMac.Foundation.NSData":
+				case "System.IO.MemoryStream":
+				case "Foundation.NSData":
 				case "byte[]":
 					idle_id = GLib.Idle.Add (GetNextByteArrayChunk);
 					break;
@@ -171,7 +192,7 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
-			textView = new TextView () { WrapMode = WrapMode.Char };
+			textView = new TextView { WrapMode = WrapMode.Char };
 
 			var scrolled = new ScrolledWindow () {
 				HscrollbarPolicy = PolicyType.Automatic,

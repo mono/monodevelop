@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Desktop
 			Process.Start (filename);
 		}
 		
-		public virtual void OpenFolder (FilePath folderPath)
+		public virtual void OpenFolder (FilePath folderPath, FilePath[] selectFiles)
 		{
 			Process.Start (folderPath);
 		}

@@ -77,7 +77,10 @@ namespace MonoDevelop.Components.MainToolbar
 			ToolbarView.SearchEntryActivated += HandleSearchEntryActivated;
 			ToolbarView.SearchEntryKeyPressed += HandleSearchEntryKeyPressed;
 			ToolbarView.SearchEntryResized += (o, e) => PositionPopup ();
-			ToolbarView.SearchEntryLostFocus += (o, e) => ToolbarView.SearchText = "";
+			ToolbarView.SearchEntryLostFocus += (o, e) => {
+				ToolbarView.SearchText = "";
+				DestroyPopup ();
+			};
 
 			toolbarView.ConfigurationChanged += HandleConfigurationChanged;
 			toolbarView.RuntimeChanged += HandleRuntimeChanged;
@@ -95,6 +98,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
 
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();
 			IdeApp.Workspace.ConfigurationsChanged += (sender, e) => UpdateCombos ();
 
@@ -198,7 +202,7 @@ namespace MonoDevelop.Components.MainToolbar
 									list.Add (parent);
 
 									foreach (var version in versions) {
-										parent.AddChild (new RuntimeModel (this, version, parent));
+										list.Add (new RuntimeModel (this, version, parent));
 										runtimes++;
 									}
 								} else {
@@ -771,6 +775,7 @@ namespace MonoDevelop.Components.MainToolbar
 				else {
 					HasParent = true;
 					parent.HasChildren = true;
+					parent.AddChild (this);
 				}
 			}
 

@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.Addins;
@@ -306,25 +307,31 @@ namespace MonoDevelop.Components.Commands
 		
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
 
-		bool IsShortcutHandledByEmbeddedNSView (Gdk.Window window, KeyboardShortcut[] accels)
-		{
-			if (GtkWorkarounds.HasNSTextFieldFocus (window)) {
-				foreach (KeyboardShortcut ks in accels) {
-					if (ks.Modifier == Gdk.ModifierType.MetaMask && (
-					        ks.Key == Gdk.Key.a || ks.Key == Gdk.Key.c ||
-					        ks.Key == Gdk.Key.x || ks.Key == Gdk.Key.v ||
-					        ks.Key == Gdk.Key.z)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
 		#if MAC
 		AppKit.NSEvent OnNSEventKeyPress (AppKit.NSEvent ev)
 		{
+			// If we have a native window that can handle this command, let it process
+			// the keys itself and do not go through the command manager.
+			// Events in Gtk windows do not pass through here except when they're done
+			// in native NSViews. PerformKeyEquivalent for them will not return true,
+			// so we're always going to fallback to the command manager for them.
+			// If no window is focused, it's probably because a gtk window had focus
+			// and the focus didn't go to any other window on close. (debug popup on hover
+			// that gets closed on unhover). So if no keywindow is focused, events will
+			// pass through here and let us use the command manager.
+			var window = AppKit.NSApplication.SharedApplication.KeyWindow;
+			if (window != null) {
+				// Try the handler in the native window.
+				if (window.PerformKeyEquivalent (ev))
+					return null;
+
+				// If the window is a gtk window and is registered in the command manager
+				// process the events through the handler.
+				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
+				if (gtkWindow == null || !TopLevelWindowStack.Contains (gtkWindow))
+					return null;
+			}
+
 			var gdkev = MonoDevelop.Components.Mac.GtkMacInterop.ConvertKeyEvent (ev);
 			if (gdkev != null) {
 				if (ProcessKeyEvent (gdkev))
@@ -349,9 +356,6 @@ namespace MonoDevelop.Components.Commands
 			
 			bool complete;
 			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (ev, out complete);
-
-			if (ev.Window != null && IsShortcutHandledByEmbeddedNSView (ev.Window, accels))
-				return true;
 
 			if (!complete) {
 				// incomplete accel
@@ -390,7 +394,8 @@ namespace MonoDevelop.Components.Commands
 				NotifyKeyPressed (ev);
 				return false;
 			}
-			
+
+			var toplevelFocus = IdeApp.Workbench.HasToplevelFocus;
 			bool bypass = false;
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
@@ -398,6 +403,7 @@ namespace MonoDevelop.Components.Commands
 					bypass = true;
 					continue;
 				}
+
 				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
 					return result;
 			}

@@ -62,16 +62,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			var p = (NSPathControl)Subviews [0];
-			var size = new CGSize (16 +
+			var size = new CGSize (10 +
 				p.PathComponentCells [ConfigurationIdx].CellSize.Width +
-				p.PathComponentCells [RuntimeIdx].CellSize.Width,
+				p.PathComponentCells [RuntimeIdx].CellSize.Width + p.Frame.Left,
 				Frame.Size.Height);
 			if (ResizeRequested != null)
 				ResizeRequested (this, new SizeRequestedEventArgs (size));
 
 			SetFrameSize (size);
 			p.SetFrameSize (size);
-			base.DrawRect (dirtyRect);
+			p.SetNeedsDisplay ();
+			base.DrawRect (new CGRect (CGPoint.Empty, size));
 		}
 
 		#region PathSelectorView
@@ -200,7 +201,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (Window.Screen.BackingScaleFactor == 2)
 							offs.Y += 0.5f; // fine tune menu position on retinas
 
-						menu.PopUpMenu (menu.ItemAt (idx), offs, this);
+						menu.PopUpMenu (null, offs, this);
 					}
 				};
 			}

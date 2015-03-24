@@ -67,16 +67,33 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			var paths = new HashSet<string> ();
-			foreach (ITreeNavigator node in CurrentNodes) {
-				FilePath path = GetDir (node.DataItem);
-
-				//if folder doesn't exist, walk up to parent that does
-				while (!path.IsNullOrEmpty && !path.IsDirectory)
-					path = path.ParentDirectory;
-
-				if (!path.IsNullOrEmpty && paths.Add (path))
-					DesktopService.OpenFolder (path);
+			var paths = new Dictionary<string, HashSet<string>> ();
+			foreach (var ob in CurrentNodes.Select(node => node.DataItem)) {
+				if (ob is IFileItem) {
+					string path = ((IFileItem)ob).FileName;
+					if (!string.IsNullOrEmpty (path)) {
+						var dirPath = (FilePath)System.IO.Path.GetDirectoryName (path);
+						//if folder doesn't exist, walk up to parent that does
+						while (!dirPath.IsNullOrEmpty && !dirPath.IsDirectory)
+							dirPath = dirPath.ParentDirectory;
+						if (!string.IsNullOrEmpty (dirPath)) {
+							if (!paths.ContainsKey (dirPath))
+								paths.Add (dirPath, new HashSet<string> ());
+							paths [dirPath].Add (path);
+						}
+					}
+				} else if (ob is IFolderItem) {
+					var path = ((IFolderItem)ob).BaseDirectory;
+					//if folder doesn't exist, walk up to parent that does
+					while (!path.IsNullOrEmpty && !path.IsDirectory)
+						path = path.ParentDirectory;
+					if (!paths.ContainsKey (path)) {
+						paths.Add (path, new HashSet<string> ());
+					}
+				}
+			}
+			foreach (var folder in paths) {
+				DesktopService.OpenFolder (folder.Key, folder.Value.Select ((f) => (FilePath)f).ToArray ());
 			}
 		}
 		
