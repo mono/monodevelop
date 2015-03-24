@@ -36,6 +36,9 @@ type FSharpTooltipProvider() =
         if activeDoc = null then null else
 
         let fileName = activeDoc.FileName.FullPath.ToString()
+        
+        let supported = MDLanguageService.SupportedFileName (fileName)
+        if supported <> true then null else
 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
