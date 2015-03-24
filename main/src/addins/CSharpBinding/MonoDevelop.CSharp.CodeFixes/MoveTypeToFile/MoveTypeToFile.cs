@@ -42,6 +42,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.StandardHeader;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 {

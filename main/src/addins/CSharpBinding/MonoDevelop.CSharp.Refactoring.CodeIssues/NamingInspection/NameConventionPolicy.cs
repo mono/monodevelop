@@ -28,7 +28,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using ICSharpCode.NRefactory6.CSharp.Diagnostics;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
@@ -55,11 +55,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			rules = new List<NameConventionRule> (DefaultRules.GetFdgRules ().Select (r => new NameConventionRule (r))).ToArray ();
 		}
 
-		class NamingConventionService : ICSharpCode.NRefactory6.CSharp.Refactoring.NamingConventionService
+		class NamingConventionService : ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingConventionService
 		{
 			NameConventionPolicy policy;
 			NamingRule[] rules = null;
-			public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Refactoring.NamingRule> Rules {
+			public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule> Rules {
 				get {
 					if (rules == null) {
 						this.rules = policy.Rules.Select (r => r.GetNRefactoryRule ()).ToArray ();
@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			
 		}
 
-		public ICSharpCode.NRefactory6.CSharp.Refactoring.NamingConventionService CreateNRefactoryService ()
+		public ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingConventionService CreateNRefactoryService ()
 		{
 			return new NamingConventionService (this);
 		}

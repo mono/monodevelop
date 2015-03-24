@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeIssues
 {

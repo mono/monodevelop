@@ -27,9 +27,9 @@ using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeIssues
 {
