@@ -807,25 +807,27 @@ namespace MonoDevelop.Ide.Gui
 				lock (adhocProjectLock) {
 					if (adhocProject != null)
 						return;
-					var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
-					this.adhocProject = newProject;
+					if (Editor != null && Editor.MimeType == "text/x-csharp") {
+						var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+						this.adhocProject = newProject;
 
-					newProject.Name = "InvisibleProject";
-					newProject.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
-					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-					newProject.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+						newProject.Name = "InvisibleProject";
+						newProject.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
+						newProject.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+						newProject.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
 
-					newProject.FileName = "test.csproj";
-					adHocFile = Platform.IsWindows ? "C:\\a.cs" : "/a.cs";
-					newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile)); 
+						newProject.FileName = "test.csproj";
+						adHocFile = Platform.IsWindows ? "C:\\a.cs" : "/a.cs";
+						newProject.Files.Add (new ProjectFile (adHocFile, BuildAction.Compile));
 
-					var solution = new Solution ();
-					solution.AddConfiguration ("", true); 
-					solution.DefaultSolutionFolder.AddItem (newProject);
-					using (var monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
-						TypeSystemService.Load (solution, monitor, false);
-					analysisDocument = TypeSystemService.GetDocumentId (adhocProject, adHocFile);
-					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+						var solution = new Solution ();
+						solution.AddConfiguration ("", true);
+						solution.DefaultSolutionFolder.AddItem (newProject);
+						using (var monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+							TypeSystemService.Load (solution, monitor, false);
+						analysisDocument = TypeSystemService.GetDocumentId (adhocProject, adHocFile);
+						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+					}
 				}
 			}
 		}
