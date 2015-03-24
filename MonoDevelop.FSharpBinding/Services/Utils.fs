@@ -351,9 +351,7 @@ module Pervasive =
         match o with
         | null -> None
         | :? 'T as a -> Some a
-        | _ -> 
-            fail "Cannot cast %O to %O" (o.GetType()) typeof<'T>.Name
-            None
+        | _ -> None
 
     /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
     /// Not yet sure if this works for scripts.
