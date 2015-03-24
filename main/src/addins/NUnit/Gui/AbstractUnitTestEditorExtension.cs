@@ -87,16 +87,16 @@ namespace MonoDevelop.NUnit
 						Application.Invoke (delegate {
 							foreach (var oldMarker in currentMarker)
 								Editor.RemoveMarker (oldMarker);
-							currentMarker = new List<IUnitTestMarker> ();
+							var newMarkers = new List<IUnitTestMarker> ();
 							foreach (var foundTest in foundTests) {
-								if (token.IsCancellationRequested)
-									return;
 								var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
-								currentMarker.Add (unitTestMarker);
-								var line = Editor.GetLine (foundTest.LineNumber);
-								if (line != null)
+								newMarkers.Add (unitTestMarker);
+								var line = Editor.GetLineByOffset (foundTest.Offset);
+								if (line != null) {
 									Editor.AddMarker (line, unitTestMarker);
+								}
 							}
+							this.currentMarker = newMarkers;
 						});
 
 					}, TaskContinuationOptions.ExecuteSynchronously | 
@@ -139,7 +139,7 @@ namespace MonoDevelop.NUnit
 				var test = NUnitService.Instance.SearchTestById (unitTestIdentifier + caseId);
 				if (test != null)
 					return test.StatusIcon;
-				return null;
+				return TestStatusIcon.None;
 			}
 
 			public override bool IsFailure (string unitTestIdentifier, string caseId = null)

@@ -22,16 +22,16 @@ namespace MonoDevelop.Ide.Editor
 
 	public class UnitTestLocation
 	{
-		public int LineNumber { get; set; }
+		public int Offset { get; set; }
 		public bool IsFixture { get; set; }
 		public string UnitTestIdentifier { get; set; }
 		public bool IsIgnored { get; set; }
 
 		public List<string> TestCases = new List<string> ();
 
-		public UnitTestLocation (int lineNumber)
+		public UnitTestLocation (int offset)
 		{
-			LineNumber = lineNumber;
+			Offset = offset;
 		}
 	}
 }

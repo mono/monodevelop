@@ -174,7 +174,8 @@ namespace MonoDevelop.CSharp.Project
 				ReportDiagnostic.Default,
 				WarningLevel,
 				null,
-				false
+				false,
+				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default
 			);
 		}
 
