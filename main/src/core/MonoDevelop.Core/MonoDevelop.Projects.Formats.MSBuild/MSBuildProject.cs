@@ -33,8 +33,6 @@ using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Utility;
-using Microsoft.Build.BuildEngine;
-using MSProject = Microsoft.Build.BuildEngine.Project;
 using System.Linq;
 using MonoDevelop.Projects.Text;
 using System.Threading.Tasks;
@@ -223,28 +221,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Evaluate ()
 		{
 			try {
-				Engine e = new Engine ();
-				MSProject project = new MSProject (e);
-				project.FullFileName = FileName;
+				MSBuildEngine e = MSBuildEngine.Create ();
 
 				// Use a private metadata property to assign an id to each item. This id is used to match
 				// evaluated items with the items that generated them.
 				int id = 0;
 				List<XmlElement> idElems = new List<XmlElement> ();
-				foreach (XmlElement item in doc.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager)) {
-					var c = doc.CreateElement (NodeIdPropertyName);
-					c.InnerXml = (id++).ToString ();
-					item.AppendChild (c);
+
+				var currentItems = new Dictionary<string,MSBuildItem> ();
+				foreach (var it in GetAllItems ()) {
+					var c = doc.CreateElement (NodeIdPropertyName, Schema);
+					string nid = (id++).ToString ();
+					c.InnerXml = nid;
+					it.Element.AppendChild (c);
+					currentItems [nid] = it;
 					idElems.Add (c);
 				}
 
-				project.LoadXml (doc.OuterXml);
+				var project = e.LoadProjectFromXml (FileName, doc.OuterXml);
 
 				// Now remove the item id property
 				foreach (var el in idElems)
 					el.ParentNode.RemoveChild (el);
 
-				SyncBuildProject (project);
+				SyncBuildProject (currentItems, e, project);
 			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
@@ -253,72 +253,51 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal const string NodeIdPropertyName = "__MD_NodeId";
 
-		void SyncBuildProject (MSProject project)
+		void SyncBuildProject (Dictionary<string,MSBuildItem> currentItems, MSBuildEngine e, object project)
 		{
-			var xmlGroups = PropertyGroups.ToArray ();
-			var buildGroups = project.PropertyGroups.Cast<BuildPropertyGroup> ().ToArray ();
-			for (int n=0; n<xmlGroups.Length && n<buildGroups.Length; n++)
-				SyncBuildPropertyGroup (xmlGroups [n], buildGroups [n]);
-
-			var allItems = new Dictionary<string,MSBuildItem> ();
 			var xmlItems = ItemGroups.ToArray ();
-			var buildItems = project.ItemGroups.Cast<BuildItemGroup> ().Where (g => !g.IsImported).ToArray ();
-			for (int n=0; n<xmlItems.Length && n<buildItems.Length; n++)
-				SyncBuildItemGroup (xmlItems [n], buildItems [n], allItems);
+			foreach (var it in e.GetAllItems (project, false)) {
+				string name, include, finalItemSpec;
+				bool imported;
+				e.GetItemInfo (it, out name, out include, out finalItemSpec, out imported);
+				var xit = currentItems [e.GetItemMetadata (it, NodeIdPropertyName)];
+				xit.SetEvalResult (finalItemSpec);
+				((MSBuildPropertyGroupEvaluated)xit.EvaluatedMetadata).Sync (e, it);
+			}
 
 			var xmlImports = Imports.ToArray ();
-			var buildImports = project.Imports.Cast<Import> ().ToArray ();
+			var buildImports = e.GetImports (project).ToArray ();
 			for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
-				xmlImports [n].SetEvalResult (buildImports [n].EvaluatedProjectPath);
+				xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (buildImports [n]));
 
-			foreach (BuildItem it in project.EvaluatedItems) {
-				var xit = new MSBuildItemEvaluated (this, it.Name, it.Include, it.FinalItemSpec);
-				xit.IsImported = it.IsImported;
-				((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (it);
-				var itemId = it.GetMetadata (NodeIdPropertyName);
+			foreach (var it in e.GetEvaluatedItems (project)) {
+				var xit = CreateEvaluatedItem (e, it);
+				var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
 				MSBuildItem pit;
-				if (!string.IsNullOrEmpty (itemId) && allItems.TryGetValue (itemId, out pit)) {
+				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
 					pit.AddChildItem (xit);
 					xit.SourceItem = pit;
 				}
 				evaluatedItems.Add (xit);
 			}
 
-			foreach (BuildItem it in project.EvaluatedItemsIgnoringCondition) {
-				var xit = new MSBuildItemEvaluated (this, it.Name, it.Include, it.FinalItemSpec);
-				xit.IsImported = it.IsImported;
-				((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (it);
+			foreach (var it in e.GetEvaluatedItemsIgnoringCondition (project)) {
+				var xit = CreateEvaluatedItem (e, it);
 				evaluatedItemsIgnoringCondition.Add (xit);
 			}
 
-			evaluatedProperties.Sync (project.EvaluatedProperties);
+			evaluatedProperties.Sync (e, project);
 		}
 
-		void SyncBuildPropertyGroup (MSBuildPropertyGroup xmlGroup, BuildPropertyGroup buildGroup)
+		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)
 		{
-			var xmlProps = xmlGroup.GetProperties ().ToArray ();
-			var buildProps = buildGroup.Cast<BuildProperty> ().ToArray ();
-			for (int n = 0; n < xmlProps.Length && n < buildProps.Length; n++)
-				SyncBuildProperty (xmlProps [n], buildProps [n]);
-		}
-
-		void SyncBuildProperty (MSBuildProperty xmlProp, BuildProperty buildProp)
-		{
-		}
-
-		void SyncBuildItemGroup (MSBuildItemGroup xmlGroup, BuildItemGroup buildGroup, Dictionary<string,MSBuildItem> allItems)
-		{
-			var xmlItems = xmlGroup.Items.ToArray ();
-			var buildItems = buildGroup.Cast<BuildItem> ().ToArray ();
-			for (int n = 0; n < xmlItems.Length && n < buildItems.Length; n++)
-				SyncBuildItem (xmlItems [n], buildItems [n], allItems);
-		}
-
-		void SyncBuildItem (MSBuildItem xmlItem, BuildItem buildItem, Dictionary<string,MSBuildItem> allItems)
-		{
-			xmlItem.SetEvalResult (buildItem.FinalItemSpec);
-			((MSBuildPropertyGroupEvaluated)xmlItem.EvaluatedMetadata).Sync (buildItem);
-			allItems [buildItem.GetMetadata (NodeIdPropertyName)] = xmlItem;
+			string name, include, finalItemSpec;
+			bool imported;
+			e.GetEvaluatedItemInfo (it, out name, out include, out finalItemSpec, out imported);
+			var xit = new MSBuildItemEvaluated (this, name, include, finalItemSpec);
+			xit.IsImported = imported;
+			((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (e, it);
+			return xit;
 		}
 
 		public string DefaultTargets {

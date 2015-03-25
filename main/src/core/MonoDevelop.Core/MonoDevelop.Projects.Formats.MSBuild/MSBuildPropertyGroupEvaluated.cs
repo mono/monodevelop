@@ -27,8 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Core;
-using Microsoft.Build.BuildEngine;
-using MSProject = Microsoft.Build.BuildEngine.Project;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -36,16 +34,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		internal Dictionary<string,MSBuildPropertyEvaluated> properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
 		internal MSBuildProject parent;
-		BuildItem sourceItem;
+		object sourceItem;
+		MSBuildEngine engine;
 
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
 		{
 			this.parent = parent;
 		}
 
-		internal void Sync (BuildItem item)
+		internal void Sync (MSBuildEngine engine, object item)
 		{
 			properties.Clear ();
+			this.engine = engine;
 			sourceItem = item;
 		}
 
@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (!properties.ContainsKey (name)) {
 				if (sourceItem != null)
-					return sourceItem.HasMetadata (name);
+					return engine.GetItemHasMetadata (sourceItem, name);
 			}
 			return false;
 		}
@@ -63,8 +63,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildPropertyEvaluated prop;
 			if (!properties.TryGetValue (name, out prop)) {
 				if (sourceItem != null) {
-					if (sourceItem.HasMetadata (name)) {
-						prop = new MSBuildPropertyEvaluated (parent, name, sourceItem.GetMetadata (name), sourceItem.GetEvaluatedMetadata (name));
+					if (engine.GetItemHasMetadata (sourceItem, name)) {
+						prop = new MSBuildPropertyEvaluated (parent, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedMetadata (sourceItem, name));
 						properties [name] = prop;
 					}
 				}
@@ -135,11 +135,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal void Sync (BuildPropertyGroup msgroup)
+		internal void Sync (MSBuildEngine e, object project)
 		{
 			properties.Clear ();
-			foreach (BuildProperty p in msgroup)
-				properties [p.Name] = new MSBuildPropertyEvaluated (parent, p.Name, p.Value, p.FinalValue);
+			foreach (var p in e.GetEvaluatedProperties (project)) {
+				string name, value, finalValue;
+				e.GetPropertyInfo (p, out name, out value, out finalValue);
+				properties [name] = new MSBuildPropertyEvaluated (parent, name, value, finalValue);
+			}
 		}
 
 		public IEnumerable<IMSBuildPropertyEvaluated> Properties {
