@@ -59,21 +59,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.evaluatedInclude = value;
 		}
 
-		internal void AddChildItem (MSBuildItemEvaluated xit)
-		{
-			if (childItems == null)
-				childItems = new List<IMSBuildItemEvaluated> ();
-			childItems.Add (xit);
-		}
-
-		public IEnumerable<IMSBuildItemEvaluated> GetEvaluatedItems ()
-		{
-			if (childItems != null)
-				return childItems;
-			else
-				return new IMSBuildItemEvaluated [0];
-		}
-
 		public bool IsImported {
 			get;
 			set;

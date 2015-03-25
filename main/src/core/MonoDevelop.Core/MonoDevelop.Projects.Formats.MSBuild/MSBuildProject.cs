@@ -255,7 +255,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void SyncBuildProject (Dictionary<string,MSBuildItem> currentItems, MSBuildEngine e, object project)
 		{
-			var xmlItems = ItemGroups.ToArray ();
+			evaluatedItemsIgnoringCondition.Clear ();
+			evaluatedItems.Clear ();
+
 			foreach (var it in e.GetAllItems (project, false)) {
 				string name, include, finalItemSpec;
 				bool imported;
@@ -270,19 +272,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
 				xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (buildImports [n]));
 
+			var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 			foreach (var it in e.GetEvaluatedItems (project)) {
 				var xit = CreateEvaluatedItem (e, it);
 				var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
 				MSBuildItem pit;
 				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
-					pit.AddChildItem (xit);
 					xit.SourceItem = pit;
+					evalItems [itemId] = xit;
 				}
 				evaluatedItems.Add (xit);
 			}
 
 			foreach (var it in e.GetEvaluatedItemsIgnoringCondition (project)) {
-				var xit = CreateEvaluatedItem (e, it);
+				var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
+				MSBuildItemEvaluated xit;
+				if (!string.IsNullOrEmpty (itemId) && evalItems.TryGetValue (itemId, out xit)) {
+					evaluatedItemsIgnoringCondition.Add (xit);
+					continue;
+				}
+				xit = CreateEvaluatedItem (e, it);
+				MSBuildItem pit;
+				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit))
+					xit.SourceItem = pit;
 				evaluatedItemsIgnoringCondition.Add (xit);
 			}
 

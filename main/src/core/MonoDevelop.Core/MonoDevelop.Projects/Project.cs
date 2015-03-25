@@ -1928,12 +1928,14 @@ namespace MonoDevelop.Projects
 
 		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags)
 		{
-			foreach (var buildItem in msproject.GetAllItems ()) {
+			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
+				if (buildItem.IsImported)
+					continue;
 				ProjectItem it = ReadItem (buildItem);
 				if (it == null)
 					continue;
 				it.Flags = flags;
-				if (it is ProjectFile) {
+/*				if (it is ProjectFile) {
 					var file = (ProjectFile)it;
 					if (file.Name.IndexOf ('*') > -1) {
 						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
@@ -1945,7 +1947,7 @@ namespace MonoDevelop.Projects
 						continue;
 					}
 				}
-				Items.Add (it);
+*/				Items.Add (it);
 			}
 		}
 
