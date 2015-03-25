@@ -231,7 +231,7 @@ namespace MonoDevelop.Components
 
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
-			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (x, y));
+			Gdk.Rectangle geometry = GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (caret.X, caret.Y));
 
 			// Add some spacing between the screen border and the popover window
 			geometry.Inflate (-5, -5);
