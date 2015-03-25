@@ -1915,6 +1915,12 @@
     <EmbeddedResource Include="icons\done-48%402x.png">
       <LogicalName>done-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-nunit-overlay-32.png">
+      <LogicalName>project-nunit-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-nunit-overlay-32%402x.png">
+      <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\status-building-1-14.png">
