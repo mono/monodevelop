@@ -49,6 +49,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public override int PriorityGroup { get { return int.MinValue; } }
+
 		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, INamedTypeSymbol type, bool useFullName) : base (null, type.Name)
 		{
 			this.ext = ext;

@@ -115,9 +115,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 				src.Cancel ();
 				try {
 					oldTask.Wait ();
-				} catch (TaskCanceledException) {
+				} catch (OperationCanceledException) {
 				} catch (AggregateException ex) {
-					ex.Handle (e => e is TaskCanceledException);
+					ex.Handle (e => e is OperationCanceledException);
 				}
 			}
 		}

@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 			} catch (OperationCanceledException) {
 				return Enumerable.Empty<Result> ();
 			}  catch (AggregateException ae) {
-				ae.Flatten ().Handle (ix => ix is TaskCanceledException);
+				ae.Flatten ().Handle (ix => ix is OperationCanceledException);
 				return Enumerable.Empty<Result> ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e); 

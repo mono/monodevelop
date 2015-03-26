@@ -43,6 +43,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string Description { get; set; }
 		public virtual string CompletionText { get; set; }
 
+		/// <summary>
+		/// int.MaxValue == highest prioriy,
+		/// -int.MaxValue == lowest priority
+		/// </summary>
+		/// <value>The priority group.</value>
+		public virtual int PriorityGroup { get { return 0; } }
+
 		public virtual string GetDisplayDescription (bool isSelected)
 		{
 			return null;

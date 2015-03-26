@@ -76,9 +76,9 @@ namespace MonoDevelop.CSharp.Parser
 						unit = model.SyntaxTree;
 						result.Ast = model;
 					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (x => x is TaskCanceledException); 
+						ae.Flatten ().Handle (x => x is OperationCanceledException); 
 						return Task.FromResult ((ParsedDocument)result);
-					} catch (TaskCanceledException) {
+					} catch (OperationCanceledException) {
 						return Task.FromResult ((ParsedDocument)result);
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while getting the semantic model for " + fileName, e); 

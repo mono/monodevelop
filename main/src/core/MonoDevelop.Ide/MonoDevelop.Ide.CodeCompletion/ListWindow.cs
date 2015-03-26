@@ -566,20 +566,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 				string bestWord = null;
 				int bestRank = int.MinValue;
 				int bestIndex = 0;
+				int bestIndexPriority = int.MinValue;
+
 				if (!string.IsNullOrEmpty (partialWord)) {
 					for (int i = 0; i < list.filteredItems.Count; i++) {
 						int index = list.filteredItems [i];
-						string text = DataProvider.GetText (index);
+						var data = DataProvider.GetCompletionData (index);
+						if (bestIndexPriority > data.PriorityGroup)
+							continue;
+						string text = data.DisplayText;
 						int rank;
 						if (!matcher.CalcMatchRank (text, out rank))
 							continue;
-						if (rank > bestRank) {
+						if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
 							bestWord = text;
 							bestRank = rank;
 							bestIndex = i;
+							bestIndexPriority = data.PriorityGroup;
 						}
 					}
 				}
+
 				if (bestWord != null) {
 					idx = bestIndex;
 					hasMismatches = false;
@@ -692,6 +699,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		CompletionCategory GetCompletionCategory (int n);
 		bool HasMarkup (int n);
 		string GetCompletionText (int n);
+		CompletionData GetCompletionData (int n);
 		string GetDescription (int n, bool isSelected);
 		string GetRightSideDescription (int n, bool isSelected);
 		Xwt.Drawing.Image GetIcon (int n);

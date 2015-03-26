@@ -716,6 +716,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ((CompletionData)completionDataList[n]).CompletionText;
 		}
 
+		CompletionData IListDataProvider.GetCompletionData (int n)
+		{
+			return completionDataList[n];
+		}
+
 		IComparer<CompletionData> defaultComparer;
 
 		int IListDataProvider.CompareTo (int n, int m)

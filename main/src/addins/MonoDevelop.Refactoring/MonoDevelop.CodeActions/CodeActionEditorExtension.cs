@@ -214,7 +214,7 @@ namespace MonoDevelop.CodeActions
 							} catch (OperationCanceledException) {
 								return CodeActionContainer.Empty;
 							} catch (AggregateException ae) {
-								ae.Flatten ().Handle (aex => aex is TaskCanceledException);
+								ae.Flatten ().Handle (aex => aex is OperationCanceledException);
 								return CodeActionContainer.Empty;
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex);
@@ -238,9 +238,9 @@ namespace MonoDevelop.CodeActions
 						return codeActionContainer;
 
 					} catch (AggregateException ae) {
-						ae.Flatten ().Handle (aex => aex is TaskCanceledException);
+						ae.Flatten ().Handle (aex => aex is OperationCanceledException);
 						return CodeActionContainer.Empty;
-					} catch (TaskCanceledException) {
+					} catch (OperationCanceledException) {
 						return CodeActionContainer.Empty;
 					}
 				}, token);

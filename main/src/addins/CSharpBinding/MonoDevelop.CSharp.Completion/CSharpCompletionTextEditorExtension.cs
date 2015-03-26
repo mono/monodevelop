@@ -409,7 +409,7 @@ namespace MonoDevelop.CSharp.Completion
 				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
 				if (ctrlSpace)
 					list.AutoCompleteUniqueMatch = true;
-			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 				return null;
 			} catch (AggregateException e) {
 				foreach (var inner in e.Flatten ().InnerExceptions)

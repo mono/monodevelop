@@ -99,9 +99,9 @@ namespace MonoDevelop.CSharp.Highlighting
 							NotifySemanticHighlightingUpdate ();
 						});
 					}
-				} catch (TaskCanceledException) {
+				} catch (OperationCanceledException) {
 				} catch (AggregateException ae) {
-					ae.Flatten ().Handle (x => x is TaskCanceledException); 
+					ae.Flatten ().Handle (x => x is OperationCanceledException); 
 				}
 			}, token);
 		}
