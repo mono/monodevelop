@@ -129,7 +129,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			widget.ShowStatus (statusText);
 		}
-		
+
+		public void SetPattern(string pattern)
+		{
+			Window.Title = pattern;
+		}
+
 		#region CommandHandler
 		[CommandHandler (ViewCommands.Open)]
 		protected void OnOpen ()

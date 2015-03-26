@@ -790,6 +790,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
 					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
+					searchMonitor.SetPattern(pattern);
 
 					lock (searchesInProgress)
 						searchesInProgress.Add (searchMonitor);

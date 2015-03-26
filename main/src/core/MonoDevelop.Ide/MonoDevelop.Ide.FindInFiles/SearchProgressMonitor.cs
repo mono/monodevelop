@@ -84,6 +84,14 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			outputPad.ReportStatus (resultMessage);
 		}
+
+		[AsyncDispatch]
+		public void SetPattern (string pattern)
+		{
+			outputPad.SetPattern (pattern);
+		}
+
+
 		
 		protected override void OnWriteLog (string text)
 		{
