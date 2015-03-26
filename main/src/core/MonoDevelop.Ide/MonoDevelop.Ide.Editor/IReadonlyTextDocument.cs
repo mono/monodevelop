@@ -198,7 +198,7 @@ namespace MonoDevelop.Ide.Editor
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			if (offset < 0 || offset > document.Length)
-				throw new ArgumentNullException ("offset");
+				throw new ArgumentOutOfRangeException ("offset", string.Format ("offset should be between 0 and <={0} but was {1}.", document.Length, offset));
 			return document.OffsetToLocation (offset).Line;
 		}
 

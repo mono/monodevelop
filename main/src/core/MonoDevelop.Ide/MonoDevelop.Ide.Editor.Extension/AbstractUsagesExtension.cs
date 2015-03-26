@@ -218,6 +218,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 							continue;
 						var start = r.Offset;
 						var end = r.Offset + r.Length;
+						if (end > editor.Length)
+							continue;
 						var usage = new Usage (TextSegment.FromBounds (start, end), r.ReferenceUsageType);
 						usages.Add (usage);
 						var marker = TextMarkerFactory.CreateUsageMarker (editor, usage);

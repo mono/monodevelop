@@ -50,6 +50,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return rope [offset];
 		}
 
+		char ITextSource.this [int offset] {
+			get {
+				return rope [offset];
+			}
+		}
+
 		string ITextSource.GetTextAt (int offset, int length)
 		{
 			return rope.ToString (offset, length);

@@ -328,6 +328,12 @@ namespace MonoDevelop.Ide.Editor.Util
 			return textSource.GetCharAt (offset);
 		}
 
+		public char this [int offset] {
+			get {
+				return textSource.GetCharAt (offset);
+			}
+		}
+
 		/// <inheritdoc/>
 		public string GetTextAt (int offset, int length)
 		{
@@ -403,5 +409,6 @@ namespace MonoDevelop.Ide.Editor.Util
 			return new StringTextSource (Text.Substring (offset, length));
 		}
 		#endregion
+
 	}
 }

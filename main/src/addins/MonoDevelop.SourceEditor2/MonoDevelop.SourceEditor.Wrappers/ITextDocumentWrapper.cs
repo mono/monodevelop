@@ -216,6 +216,22 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return document.IsInAtomicUndo;
 			}
 		}
+
+		char ITextDocument.this [int offset] {
+			get {
+				return document.GetCharAt (offset);
+			}
+			set {
+				document.Replace (offset, 1, value.ToString ());
+			}
+		}
+
+		char MonoDevelop.Core.Text.ITextSource.this [int offset] {
+			get {
+				return document.GetCharAt (offset);
+			}
+		}
+
 		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineChanged;
 		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineInserted;
 		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineRemoved;

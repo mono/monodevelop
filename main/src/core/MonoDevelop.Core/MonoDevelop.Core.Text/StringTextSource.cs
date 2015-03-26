@@ -112,6 +112,12 @@ namespace MonoDevelop.Core.Text
 			return text [offset];
 		}
 
+		public char this [int offset] {
+			get {
+				return text [offset];
+			}
+		}
+
 		/// <inheritdoc/>
 		public string GetTextAt (int offset, int length)
 		{

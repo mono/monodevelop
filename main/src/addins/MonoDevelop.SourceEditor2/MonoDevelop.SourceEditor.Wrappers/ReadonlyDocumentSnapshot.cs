@@ -98,6 +98,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return snapshot.GetCharAt (offset);
 		}
 
+		char MonoDevelop.Core.Text.ITextSource.this [int offset] {
+			get {
+				return snapshot.GetCharAt (offset);
+			}
+		}
+
 		string MonoDevelop.Core.Text.ITextSource.GetTextAt (int offset, int length)
 		{
 			return snapshot.GetTextAt (offset, length);

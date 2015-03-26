@@ -108,6 +108,15 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.BeginMouseHover -= value; }
 		}
 
+		public char this[int offset] {
+			get {
+				return ReadOnlyTextDocument [offset];
+			}
+			set {
+				ReadWriteTextDocument [offset] = value;
+			}
+		}
+
 //		public event EventHandler<LineEventArgs> LineChanged {
 //			add { textEditorImpl.LineChanged += value; }
 //			remove { textEditorImpl.LineChanged -= value; }
