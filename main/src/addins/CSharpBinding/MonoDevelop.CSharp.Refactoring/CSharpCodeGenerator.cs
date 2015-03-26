@@ -184,16 +184,14 @@ namespace MonoDevelop.CSharp.Refactoring
 //			throw new NotSupportedException ("member " +  member + " is not supported.");
 //		}
 		
-		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
-			//			SetIndentTo (part);
-			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = document,
-				Editor = document.Editor
+				Editor = editor
 			};
 
 			if (member is IMethodSymbol)
@@ -207,16 +205,15 @@ namespace MonoDevelop.CSharp.Refactoring
 			throw new NotSupportedException ("member " +  member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
 			//			SetIndentTo (part);
-			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = document,
-				Editor = document.Editor,
+				Editor = editor,
 				CreateProtocolMember = true
 			};
 
@@ -231,16 +228,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			throw new NotSupportedException ("member " +  member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreatePartialMemberImplementation (ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		public static CodeGeneratorMemberResult CreatePartialMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
 		{
-			//			SetIndentTo (part);
-			var document = IdeApp.Workbench.GetDocument (part.SourceTree.FilePath);
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = document,
-				Editor = document.Editor
+				Editor = editor
 			};
 
 			if (member is IMethodSymbol)

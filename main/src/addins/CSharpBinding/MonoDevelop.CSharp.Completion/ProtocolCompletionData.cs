@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Completion
 			//			if (ext.Project != null)
 			//				generator.PolicyParent = ext.Project.Policies;
 
-			var result = CSharpCodeGenerator.CreateProtocolMemberImplementation (currentType, currentType.Locations.First (), Symbol, isExplicit);
+			var result = CSharpCodeGenerator.CreateProtocolMemberImplementation (ext.DocumentContext, ext.Editor, currentType, currentType.Locations.First (), Symbol, isExplicit);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();
