@@ -660,11 +660,11 @@ namespace MonoDevelop.Ide.Gui
 				}
 			};
 			
-			Editor.BeginUndo += delegate {
+			Editor.BeginAtomicUndoOperation += delegate {
 				wasEdited = false;
 			};
 			
-			Editor.EndUndo += delegate {
+			Editor.EndAtomicUndoOperation += delegate {
 				if (wasEdited)
 					StartReparseThread ();
 			};

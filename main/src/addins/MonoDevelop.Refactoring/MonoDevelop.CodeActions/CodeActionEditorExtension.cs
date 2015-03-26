@@ -105,6 +105,7 @@ namespace MonoDevelop.CodeActions
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
 			Editor.BeginMouseHover -= HandleBeginHover;
 			Editor.TextChanged -= Editor_TextChanged;
+			Editor.EndAtomicUndoOperation -= Editor_EndAtomicUndoOperation;
 			RemoveWidget ();
 			base.Dispose ();
 		}
@@ -144,6 +145,8 @@ namespace MonoDevelop.CodeActions
 
 		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
+			if (Editor.IsInAtomicUndo)
+				return;
 			CancelQuickFixTimer ();
 			if (AnalysisOptions.EnableFancyFeatures && DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				var token = quickFixCancellationTokenSource.Token;
@@ -717,10 +720,19 @@ namespace MonoDevelop.CodeActions
 			Editor.BeginMouseHover += HandleBeginHover;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			Editor.TextChanged += Editor_TextChanged;
+			Editor.EndAtomicUndoOperation += Editor_EndAtomicUndoOperation;
+		}
+
+		void Editor_EndAtomicUndoOperation (object sender, EventArgs e)
+		{
+			RemoveWidget ();
+			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		void Editor_TextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
+			if (Editor.IsInAtomicUndo)
+				return;
 			RemoveWidget ();
 			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}

@@ -2439,30 +2439,39 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		public event EventHandler CaretPositionChanged;
-
+		bool hasCaretPositionChanged;
 		protected virtual void OnCaretPositionChanged (EventArgs e)
 		{
+			if (widget.TextEditor.Document.IsInAtomicUndo) {
+				hasCaretPositionChanged = true;
+				return;
+			}
 			var handler = CaretPositionChanged;
 			if (handler != null)
 				handler (this, e);
 		}
 
-		public event EventHandler BeginUndo;
+		public event EventHandler BeginAtomicUndoOperation;
 
 		protected virtual void OnBeginUndo (EventArgs e)
 		{
-			var handler = BeginUndo;
+			hasCaretPositionChanged = false;
+			var handler = BeginAtomicUndoOperation;
 			if (handler != null)
 				handler (this, e);
 		}
 
-		public event EventHandler EndUndo;
+		public event EventHandler EndAtomicUndoOperation;
 
 		protected virtual void OnEndUndo (EventArgs e)
 		{
-			var handler = EndUndo;
+			var handler = EndAtomicUndoOperation;
 			if (handler != null)
 				handler (this, e);
+			if (hasCaretPositionChanged) {
+				OnCaretPositionChanged (e);
+				hasCaretPositionChanged = false;
+			}
 		}
 
 		void ITextEditorImpl.SetSelection (int anchorOffset, int leadOffset)

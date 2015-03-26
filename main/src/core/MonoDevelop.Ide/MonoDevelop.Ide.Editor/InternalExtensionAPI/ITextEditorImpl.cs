@@ -123,9 +123,9 @@ namespace MonoDevelop.Ide.Editor
 
 		ITextMarkerFactory TextMarkerFactory { get; }
 
-		event EventHandler BeginUndo;
+		event EventHandler BeginAtomicUndoOperation;
 
-		event EventHandler EndUndo;
+		event EventHandler EndAtomicUndoOperation;
 
 		object CreateNativeControl ();
 

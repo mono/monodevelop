@@ -83,14 +83,14 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.CaretPositionChanged -= value; }
 		}
 
-		public event EventHandler BeginUndo {
-			add { textEditorImpl.BeginUndo += value; }
-			remove { textEditorImpl.BeginUndo -= value; }
+		public event EventHandler BeginAtomicUndoOperation {
+			add { textEditorImpl.BeginAtomicUndoOperation += value; }
+			remove { textEditorImpl.BeginAtomicUndoOperation -= value; }
 		}
 
-		public event EventHandler EndUndo {
-			add { textEditorImpl.EndUndo += value; }
-			remove { textEditorImpl.EndUndo -= value; }
+		public event EventHandler EndAtomicUndoOperation {
+			add { textEditorImpl.EndAtomicUndoOperation += value; }
+			remove { textEditorImpl.EndAtomicUndoOperation -= value; }
 		}
 
 		public event EventHandler<TextChangeEventArgs> TextChanging {

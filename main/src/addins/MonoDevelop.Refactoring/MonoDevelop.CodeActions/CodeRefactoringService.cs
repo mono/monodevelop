@@ -38,6 +38,7 @@ using MonoDevelop.CodeIssues;
 using Mono.Addins;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Core.Text;
+using System.Linq;
 
 namespace MonoDevelop.CodeActions
 {
@@ -100,31 +101,44 @@ namespace MonoDevelop.CodeActions
 			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
 				return actions;
-			var root = await model.SyntaxTree.GetRootAsync(cancellationToken);
+			var root = await model.SyntaxTree.GetRootAsync(cancellationToken).ConfigureAwait (false);
 			if (span.End > root.Span.End)
 				return actions;
 			TextSpan tokenSegment = span;
 			var token = root.FindToken (span.Start);
 			if (!token.IsMissing)
 				tokenSegment = token.Span;
-			
-			foreach (var descriptor in await GetCodeActionsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken)) {
-				try {
-					await descriptor.GetProvider ().ComputeRefactoringsAsync (
-						new CodeRefactoringContext (doc.AnalysisDocument, span, delegate (CodeAction ca) {
-							var nrca = ca as NRefactoryCodeAction;
-							var validSegment = tokenSegment;
-							if (nrca != null)
-								validSegment = nrca.TextSpan;
-							actions.Add (new ValidCodeAction (ca, validSegment));
-						}, cancellationToken)
-					);
-				} catch (OperationCanceledException) {
-					break;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
-					continue;
+			try {
+				foreach (var descriptor in await GetCodeActionsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)) {
+					if (cancellationToken.IsCancellationRequested)
+						return Enumerable.Empty<ValidCodeAction> ();
+					try {
+						await descriptor.GetProvider ().ComputeRefactoringsAsync (
+							new CodeRefactoringContext (doc.AnalysisDocument, span, delegate (CodeAction ca) {
+								var nrca = ca as NRefactoryCodeAction;
+								var validSegment = tokenSegment;
+								if (nrca != null)
+									validSegment = nrca.TextSpan;
+								actions.Add (new ValidCodeAction (ca, validSegment));
+							}, cancellationToken)
+						).ConfigureAwait (false);
+					} catch (OperationCanceledException) {
+						if (cancellationToken.IsCancellationRequested)
+							return Enumerable.Empty<ValidCodeAction> ();
+					} catch (AggregateException) {
+						if (cancellationToken.IsCancellationRequested)
+							return Enumerable.Empty<ValidCodeAction> ();
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
+						continue;
+					}
 				}
+			} catch (OperationCanceledException) {
+				if (cancellationToken.IsCancellationRequested)
+					return Enumerable.Empty<ValidCodeAction> ();
+			} catch (AggregateException) {
+				if (cancellationToken.IsCancellationRequested)
+					return Enumerable.Empty<ValidCodeAction> ();
 			}
 			return actions;
 		}

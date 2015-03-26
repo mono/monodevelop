@@ -653,11 +653,11 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			bool comment = false;
 			foreach (var line in GetSelectedLines (textEditor)) {
-				if (line.GetIndentation (textEditor).Length == line.Length)
-					continue;
-				string text = textEditor.GetTextAt (line);
-				string trimmedText = text.TrimStart ();
-				if (!trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
+				int startOffset;
+				int offset = line.Offset;
+				if (!StartsWith (textEditor, offset, line.Length, commentTag, out startOffset)) {
+					if (startOffset - offset == line.Length) // case: line consists only of white spaces
+						continue;
 					comment = true;
 					break;
 				}
@@ -668,6 +668,25 @@ namespace MonoDevelop.Ide.Editor
 			} else {
 				RemoveCodeComment ();
 			}
+		}
+
+		static bool StartsWith (ITextSource text, int offset, int length, string commentTag, out int startOffset)
+		{
+			int max = Math.Min (offset + length, text.Length);
+			int i = offset;
+			for (; i < max; i++) {
+				char ch = text.GetCharAt (i);
+				if (ch != ' ' && ch != '\t')
+					break;
+			}
+			startOffset = i;
+			for (int j = 0; j < commentTag.Length; j++) {
+				if (text.GetCharAt (i) != commentTag [j])
+					return false;
+				i++;
+			}
+
+			return true;
 		}
 
 		static IEnumerable<IDocumentLine> GetSelectedLines (TextEditor textEditor)
@@ -734,21 +753,20 @@ namespace MonoDevelop.Ide.Editor
 				IDocumentLine last  = null;
 				var oldVersion = textEditor.Version;
 				foreach (var line in GetSelectedLines (textEditor)) {
-					string text = textEditor.GetTextAt (line);
-					string trimmedText = text.TrimStart ();
-					if (trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
-						textEditor.RemoveText (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+					int startOffset;
+					if (StartsWith (textEditor, line.Offset, line.Length, commentTag, out startOffset)) {
+						textEditor.RemoveText (startOffset, commentTag.Length);
 						lines++;
 					}
 					
-					last = line;
-					if (first == null)
-						first = line;
+					first = line;
+					if (last == null)
+						last = line;
 				}
 
 				if (wasSelected) {
-					if (IdeApp.Workbench != null)
-						CodeFormatterService.Format (textEditor, IdeApp.Workbench.ActiveDocument, TextSegment.FromBounds (first.Offset, last.EndOffset));
+//					if (IdeApp.Workbench != null)
+//						CodeFormatterService.Format (textEditor, IdeApp.Workbench.ActiveDocument, TextSegment.FromBounds (first.Offset, last.EndOffset));
 
 					textEditor.SelectionAnchorOffset = oldVersion.MoveOffsetTo (textEditor.Version, anchor);
 					textEditor.SelectionLeadOffset = oldVersion.MoveOffsetTo (textEditor.Version, lead);
