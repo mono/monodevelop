@@ -174,6 +174,22 @@ namespace MonoDevelop.NUnit
 			UnitTest test = CurrentNode.DataItem as UnitTest;
 			info.Enabled = test.SourceCodeLocation != null;
 		}
+
+		[CommandUpdateHandler (TestCommands.GoToFailure)]
+		protected void OnUpdateGoToFailure (CommandInfo info)
+		{
+			UnitTest test = CurrentNode.DataItem as UnitTest;
+			info.Enabled = IsGoToFailureEnabled (test);
+		}
+
+		bool IsGoToFailureEnabled (UnitTest test)
+		{
+			if (test.SourceCodeLocation == null || test is UnitTestGroup)
+				return false;
+
+			UnitTestResult res = test.GetLastResult ();
+			return res != null && res.IsFailure;
+		}
 		
 		[CommandUpdateHandler (ProjectCommands.Options)]
 		protected void OnUpdateShowOptions (CommandInfo info)

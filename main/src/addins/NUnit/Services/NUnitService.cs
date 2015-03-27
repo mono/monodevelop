@@ -49,17 +49,18 @@ namespace MonoDevelop.NUnit
 		
 		private NUnitService ()
 		{
-			IdeApp.Workspace.ReferenceAddedToProject += OnWorkspaceChanged;
-			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
+
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
-		
+
 		public static NUnitService Instance {
 			get {
 				if (instance == null) {
@@ -69,7 +70,7 @@ namespace MonoDevelop.NUnit
 				return instance;
 			}
 		}
-		
+
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
@@ -166,7 +167,9 @@ namespace MonoDevelop.NUnit
 					resultsPad.Sticky = false;
 				});
 			};
-			
+
+			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
+
 			session.Start ();
 			
 			IdeApp.ProjectOperations.CurrentRunOperation = session;
@@ -261,7 +264,34 @@ namespace MonoDevelop.NUnit
 		{
 			RebuildTests ();
 		}
-		
+
+		void OnReferenceChangedInProject (object sender, ProjectReferenceEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Project.ParentSolution, rootTests))
+				RebuildTests ();
+		}
+
+		void OnItemsChangedInSolution (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Solution, rootTests))
+				RebuildTests ();
+		}
+
+		bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
+		{
+			foreach (var t in tests) {
+				var tg = t as SolutionFolderTestGroup;
+				if (tg != null && ((SolutionFolder)tg.OwnerObject).ParentSolution == sol)
+					return true;
+				var g = t as UnitTestGroup;
+				if (g != null && g.HasTests) {
+					if (IsSolutionGroupPresent (sol, g.Tests))
+						return true;
+				}
+			}
+			return false;
+		}
+
 		void RebuildTests ()
 		{
 			if (rootTests != null) {
@@ -332,6 +362,17 @@ namespace MonoDevelop.NUnit
 		}
 
 		public event EventHandler TestSessionCompleted;
+
+		void OnTestSessionStarting (TestSessionEventArgs args)
+		{
+			if (TestSessionStarting != null)
+				TestSessionStarting (this, args);
+		}
+
+		/// <summary>
+		/// Occurs just before a test session is started
+		/// </summary>
+		public event EventHandler<TestSessionEventArgs> TestSessionStarting;
 	}
 	
 
@@ -454,6 +495,12 @@ namespace MonoDevelop.NUnit
 			add { monitor.CancelRequested += value; }
 			remove { monitor.CancelRequested -= value; }
 		}
+	}
+
+	public class TestSessionEventArgs: EventArgs
+	{
+		public IAsyncOperation Session { get; set; }
+		public UnitTest Test { get; set; }
 	}
 }
 
