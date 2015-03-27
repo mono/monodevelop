@@ -283,6 +283,9 @@ namespace MonoDevelop.Ide.Templates
 				string localCopy = elem.GetAttribute ("LocalCopy");
 				if (!string.IsNullOrEmpty (localCopy) && ProjectReference.CanSetLocalCopy)
 					ProjectReference.LocalCopy = bool.Parse (localCopy);
+				string referenceOutputAssembly = elem.GetAttribute ("ReferenceOutputAssembly");
+				if (!string.IsNullOrEmpty (referenceOutputAssembly))
+					ProjectReference.ReferenceOutputAssembly = bool.Parse (referenceOutputAssembly);
 			}
 
 			public ProjectReference ProjectReference { get; private set; }

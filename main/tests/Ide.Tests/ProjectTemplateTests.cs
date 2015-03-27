@@ -64,6 +64,8 @@ namespace MonoDevelop.Ide
 					cinfo.Parameters ["UseUniversal"] = "True";
 					cinfo.Parameters ["UseIPad"] = "False";
 					cinfo.Parameters ["UseIPhone"] = "False";
+					cinfo.Parameters ["CreateiOSUITest"] = "False";
+					cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {

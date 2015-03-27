@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		IBuildTarget currentSelection;
 		HashSet<IBuildTarget> activeItems = new HashSet<IBuildTarget> ();
 		HashSet<Type> selectableTypes = new HashSet<Type> ();
+		Func<IBuildTarget,bool> selectableFilter;
 		
 		public event EventHandler SelectionChanged;
 		public event EventHandler ActiveChanged;
@@ -82,10 +83,20 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
 		}
+
+		public Func<IBuildTarget,bool> SelectableFilter {
+			get {
+				return selectableFilter;
+			}
+			set {
+				selectableFilter = value;
+				Fill ();
+			}
+		}
 		
 		public IBuildTarget SelectedItem {
 			get {
-				if (currentSelection != null && selectableTypes.Count > 0 && !selectableTypes.Any (t => t.IsAssignableFrom (currentSelection.GetType ())))
+				if (currentSelection != null && !IsSelectable (currentSelection))
 					return null;
 				else
 					return currentSelection;
@@ -169,17 +180,22 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			bool checkVisible = IsCheckboxVisible (item);
 			bool selected = activeItems.Contains (item);
+			bool isRoot = iter.Equals (TreeIter.Zero);
 			
-			if (!iter.Equals (TreeIter.Zero))
+			if (!isRoot)
 				iter = store.AppendValues (iter, icon, item.Name, item, selected && checkVisible, checkVisible);
 			else
 				iter = store.AppendValues (icon, item.Name, item, selected && checkVisible, checkVisible);
-			
+
 			if (selected)
 				tree.ExpandToPath (store.GetPath (iter));
 			
 			foreach (IBuildTarget ce in GetChildren (item))
 				AddEntry (iter, ce);
+
+			// Expand all root items by default
+			if (isRoot)
+				tree.ExpandRow (store.GetPath (iter), false);
 		}
 		
 		void SetSelection (IBuildTarget selected, HashSet<IBuildTarget> active)
@@ -271,6 +287,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		protected bool IsCheckboxVisible (IBuildTarget item)
 		{
 			if (!ShowCheckboxes)
+				return false;
+			return IsSelectable (item);
+		}
+
+		bool IsSelectable (IBuildTarget item)
+		{
+			if (SelectableFilter != null && !SelectableFilter (item))
 				return false;
 			if (selectableTypes.Count > 0)
 				return selectableTypes.Any (t => t.IsAssignableFrom (item.GetType ()));
