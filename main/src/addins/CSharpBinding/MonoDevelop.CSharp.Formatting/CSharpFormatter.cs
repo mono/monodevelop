@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textPolicy.GetEolMarker () != "\r\n")
 				result = result.Replace ("\r", "");
 			
-			return result.Substring (startOffset, endOffset + result.Length - input.Length);
+			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
