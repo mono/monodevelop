@@ -402,7 +402,7 @@ namespace MonoDevelop.CSharp.Completion
 					AddImportCompletionData (list, semanticModel, offset, token);
 				}
 
-				list.AutoCompleteEmptyMatch = true; // completionResult.AutoCompleteEmptyMatch;
+				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
 				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
 				list.AutoSelect = completionResult.AutoSelect;
 				list.DefaultCompletionString = completionResult.DefaultCompletionString;

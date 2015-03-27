@@ -561,29 +561,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 			hasMismatches = true;
 			int idx = -1;
 
-			if (partialWord != null) {
-				var matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
+			StringMatcher matcher = null;
+			if (!string.IsNullOrEmpty (partialWord)) {
+				matcher = CompletionMatcher.CreateCompletionMatcher (partialWord);
 				string bestWord = null;
 				int bestRank = int.MinValue;
 				int bestIndex = 0;
 				int bestIndexPriority = int.MinValue;
-
-				if (!string.IsNullOrEmpty (partialWord)) {
-					for (int i = 0; i < list.filteredItems.Count; i++) {
-						int index = list.filteredItems [i];
-						var data = DataProvider.GetCompletionData (index);
-						if (bestIndexPriority > data.PriorityGroup)
-							continue;
-						string text = data.DisplayText;
-						int rank;
-						if (!matcher.CalcMatchRank (text, out rank))
-							continue;
-						if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
-							bestWord = text;
-							bestRank = rank;
-							bestIndex = i;
-							bestIndexPriority = data.PriorityGroup;
-						}
+				for (int i = 0; i < list.filteredItems.Count; i++) {
+					int index = list.filteredItems [i];
+					var data = DataProvider.GetCompletionData (index);
+					if (bestIndexPriority > data.PriorityGroup)
+						continue;
+					string text = data.DisplayText;
+					int rank;
+					if (!matcher.CalcMatchRank (text, out rank))
+						continue;
+					if (rank > bestRank || data.PriorityGroup > bestIndexPriority) {
+						bestWord = text;
+						bestRank = rank;
+						bestIndex = i;
+						bestIndexPriority = data.PriorityGroup;
 					}
 				}
 
@@ -596,23 +594,33 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 
+			CompletionData currentData;
 			int bestMruIndex;
-
 			if (idx >= 0) {
-				bestMruIndex = cache.GetIndex (completionDataList [list.filteredItems [idx]]);
+				currentData = completionDataList [list.filteredItems [idx]];
+				bestMruIndex = cache.GetIndex (currentData);
 			} else {
 				bestMruIndex = int.MaxValue;
+				currentData = null;
 			}
 
 			for (int i = 0; i < list.filteredItems.Count; i++) {
-				int curMruIndex = cache.GetIndex (completionDataList[list.filteredItems[i]]);
+				var mruData = completionDataList [list.filteredItems [i]];
+				int curMruIndex = cache.GetIndex (mruData);
 				if (curMruIndex == 1)
 					continue;
 				if (curMruIndex < bestMruIndex) {
-					bestMruIndex = curMruIndex;
-					idx = i;
+					int r1 = 0, r2 = 0;
+					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
+						if (r1 >= r2) {
+							bestMruIndex = curMruIndex;
+							idx = i;
+							currentData = mruData;
+						}
+					}
 				}
 			}
+
 			return idx;
 		}
 

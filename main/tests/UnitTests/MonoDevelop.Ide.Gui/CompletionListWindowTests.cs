@@ -865,20 +865,21 @@ namespace MonoDevelop.Ide.Gui
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
 				AutoCompleteEmptyMatch = true,
-				CompletionData = new[] { "Foo", "Bar", "FooBar"}
+				CompletionData = new[] { "FooBar1", "Bar", "FooFoo2"}
 			};
 
 			var listWindow = CreateListWindow (settings);
 			var list = listWindow.CompletionDataList;
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			SimulateInput (listWindow, "F\t");
-			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
 
-			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FBar\t");
-			Assert.AreEqual ("FooBar", testCompletionWidget.CompletedWord);
+			SimulateInput (listWindow, "FooBar\t");
+			Assert.AreEqual ("FooBar1", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FooFoo\t");
+			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
 
 			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
-			Assert.AreEqual ("FooBar", testCompletionWidget.CompletedWord);
+			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
 		}
 
 		[Test]
@@ -910,6 +911,13 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var output = RunSimulation ("", "\"\t", true, true, false, punctuationData);
 			Assert.AreEqual (null, output);
+		}
+
+		[Test]
+		public void TestPreference ()
+		{
+			string output = RunSimulation ("", "expr\t", true, true, false, "expression", "PostfixExpressionStatementSyntax");
+			Assert.AreEqual ("expression", output);
 		}
 
 
