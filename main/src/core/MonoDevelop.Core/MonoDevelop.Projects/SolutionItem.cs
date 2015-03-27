@@ -435,6 +435,9 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public virtual void Dispose ()
 		{
+			if (Disposing != null)
+				Disposing (this, EventArgs.Empty);
+			
 			Disposed = true;
 			
 			if (extendedProperties != null) {
@@ -459,7 +462,7 @@ namespace MonoDevelop.Projects
 			// internalChildren = null;
 			// policies = null;
 		}
-		
+
 		/// <summary>
 		/// Gets solution items referenced by this instance (items on which this item depends)
 		/// </summary>
@@ -1156,6 +1159,11 @@ namespace MonoDevelop.Projects
 		/// Occurs when the item is modified.
 		/// </summary>
 		public event SolutionItemModifiedEventHandler Modified;
+
+		/// <summary>
+		/// Occurs when the object is being disposed
+		/// </summary>
+		public event EventHandler Disposing;
 	}
 	
 	[Mono.Addins.Extension]

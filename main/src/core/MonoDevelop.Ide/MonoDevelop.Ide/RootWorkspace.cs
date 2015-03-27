@@ -136,7 +136,22 @@ namespace MonoDevelop.Ide
 				ActiveConfigurationChanged (this, EventArgs.Empty);
 		}
 
-		public ExecutionTarget ActiveExecutionTarget { get; set; }
+		ExecutionTarget activeExecutionTarget;
+		public ExecutionTarget ActiveExecutionTarget {
+			get { return activeExecutionTarget; }
+			set {
+				if (activeExecutionTarget != value) {
+					activeExecutionTarget = value;
+					OnActiveExecutionTargetChanged ();
+				}
+			}
+		}
+
+		void OnActiveExecutionTargetChanged ()
+		{
+			if (ActiveExecutionTargetChanged != null)
+				ActiveExecutionTargetChanged (this, EventArgs.Empty);
+		}
 
 		internal string PreferredActiveExecutionTarget {
 			get { return ActiveExecutionTarget != null ? ActiveExecutionTarget.Id : preferredActiveExecutionTarget; }
@@ -1380,6 +1395,11 @@ namespace MonoDevelop.Ide
 		/// Fired when the active solution configuration has changed
 		/// </summary>
 		public event EventHandler ActiveConfigurationChanged;
+
+		/// <summary>
+		/// Fired when the active execution target has changed
+		/// </summary>
+		public event EventHandler ActiveExecutionTargetChanged;
 		
 		/// <summary>
 		/// Fired when the list of solution configurations has changed
