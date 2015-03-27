@@ -55,12 +55,15 @@ namespace MonoDevelop.CSharp.CodeFixes.GenerateType
 			{
 				return true;
 			}
-
+			if (node.IsKind (SyntaxKind.ObjectCreationExpression))
+				return true;
 			return false;
 		}
 
 		protected override SyntaxNode GetTargetNode(SyntaxNode node)
 		{
+			if (node.IsKind (SyntaxKind.ObjectCreationExpression))
+				node = ((ObjectCreationExpressionSyntax)node).Type;
 			return ((ExpressionSyntax)node).GetRightmostName();
 		}
 
