@@ -79,9 +79,13 @@ namespace MonoDevelop.CodeIssues
 				if (analyzerAttr != null) {
 					var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
 					foreach (var diag in analyzer.SupportedDiagnostics) {
-						Analyzers.Add (new CodeDiagnosticDescriptor (diag.Title.ToString (), new[] {
-							"C#"
-						}, type, nrefactoryAnalyzerAttribute));
+						try {
+							Analyzers.Add (new CodeDiagnosticDescriptor ((diag.Title ?? "unnamed").ToString (), new[] {
+								"C#"
+							}, type, nrefactoryAnalyzerAttribute));
+						} catch (Exception e) {
+							LoggingService.LogError ("error while adding diagnostic analyzer: " + diag.Id, e);
+						}
 					}
 				}
 

@@ -357,6 +357,19 @@
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.ReferenceRewriter.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\ExtractMethodCodeRefactoringProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateType\GenerateTypeCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\DiagnosticCustomTags.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.SimplifyTypeNamesFixAllProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\RemoveUnnecessaryUsingsCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\CSharpRemoveUnnecessaryCastDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\RemoveUnnecessaryImportsDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\SimplifyTypeNamesDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\CSharpSimplifyTypeNamesDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.RemoveUnnecessaryCastFixAllProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -409,5 +422,12 @@
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateType\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\" />
   </ItemGroup>
 </Project>

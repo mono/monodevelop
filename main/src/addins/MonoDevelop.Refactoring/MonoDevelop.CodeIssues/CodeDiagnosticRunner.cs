@@ -90,7 +90,7 @@ namespace MonoDevelop.CodeIssues
 				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
 
 				return diagnosticList
-					.Where (d => !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
+					.Where (d => d.Id.StartsWith ("IDE") || !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

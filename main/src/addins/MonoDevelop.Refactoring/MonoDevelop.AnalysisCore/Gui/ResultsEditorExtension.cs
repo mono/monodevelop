@@ -244,7 +244,6 @@ namespace MonoDevelop.AnalysisCore.Gui
 					if (cancellationToken.IsCancellationRequested)
 						return false;
 					var currentResult = (Result)enumerator.Current;
-
 					if (currentResult.InspectionMark != IssueMarker.None) {
 						int start = currentResult.Region.Start;
 						int end = currentResult.Region.End;
