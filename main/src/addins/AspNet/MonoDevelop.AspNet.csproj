@@ -328,6 +328,7 @@
     <Compile Include="Projects\AspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizardPage.cs" />
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
+    <Compile Include="Commands\MethodDeclarationAtCaret.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

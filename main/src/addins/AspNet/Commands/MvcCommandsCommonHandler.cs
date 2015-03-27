@@ -42,18 +42,12 @@ namespace MonoDevelop.AspNet.Commands
 				info.Enabled = info.Visible = false;
 				return;
 			}
-			// TODO: Roslyn port
-//			var currentLocation = doc.Editor.CaretLocation;
-//			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-//			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
-//				info.Enabled = info.Visible = false;
-//				return;
-//			}
-//
-//			var correctReturnTypes = new [] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
-//			var member = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)) as IUnresolvedMethod;
-//			if (member == null || !member.IsPublic || correctReturnTypes.All (t => t != member.ReturnType.ToString ()))
-//				info.Enabled = info.Visible = false;
+
+			var method = MethodDeclarationAtCaret.Create (doc);
+			if (method.IsMethodFound && method.IsParentMvcController () && method.IsMvcViewMethod ())
+				return;
+
+			info.Enabled = info.Visible = false;
 		}
 	}
 }
