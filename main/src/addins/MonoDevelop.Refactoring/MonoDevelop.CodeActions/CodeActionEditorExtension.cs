@@ -31,7 +31,6 @@ using System.Linq;
 using MonoDevelop.Refactoring;
 using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using Microsoft.CodeAnalysis.CodeFixes;
 using MonoDevelop.CodeIssues;
 using System.Threading.Tasks;
@@ -47,12 +46,10 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
-using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeActions
 {
-
-	class CodeActionEditorExtension : TextEditorExtension 
+	class CodeActionEditorExtension : TextEditorExtension
 	{
 		uint quickFixTimeout;
 
@@ -85,7 +82,7 @@ namespace MonoDevelop.CodeActions
 				menuCloseTimeoutId = 0;
 			}
 		}
-		
+
 		void RemoveWidget ()
 		{
 			if (currentSmartTag != null) {
@@ -95,7 +92,7 @@ namespace MonoDevelop.CodeActions
 			}
 			CancelSmartTagPopupTimeout ();
 		}
-		
+
 		public override void Dispose ()
 		{
 			CancelMenuCloseTimer ();
@@ -128,7 +125,7 @@ namespace MonoDevelop.CodeActions
 		internal static int GetUsage (string id)
 		{
 			int result;
-			if (id == null || !CodeActionUsages.TryGetValue (id, out result)) 
+			if (id == null || !CodeActionUsages.TryGetValue (id, out result))
 				return 0;
 			return result;
 		}
@@ -172,7 +169,7 @@ namespace MonoDevelop.CodeActions
 				} else {
 					span = TextSpan.FromBounds (loc, loc);
 				}
-				
+
 				var diagnosticsAtCaret =
 					Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
 						.OfType<IGenericTextSegmentMarker> ()
@@ -180,7 +177,7 @@ namespace MonoDevelop.CodeActions
 						.OfType<DiagnosticResult> ()
 						.Select (dr => dr.Diagnostic)
 						.ToList ();
-				
+
 				var errorList = Editor
 					.GetTextSegmentMarkersAt (Editor.CaretOffset)
 					.OfType<IErrorMarker> ()
@@ -252,8 +249,8 @@ namespace MonoDevelop.CodeActions
 		internal static bool IsAnalysisOrErrorFix (Microsoft.CodeAnalysis.CodeActions.CodeAction act)
 		{
 			return false;
-		} 
-			
+		}
+
 
 		internal class FixMenuEntry
 		{
@@ -273,8 +270,10 @@ namespace MonoDevelop.CodeActions
 		{
 			readonly List<FixMenuEntry> items = new List<FixMenuEntry> ();
 
-			public IReadOnlyList<FixMenuEntry> Items {
-				get {
+			public IReadOnlyList<FixMenuEntry> Items
+			{
+				get
+				{
 					return items;
 				}
 			}
@@ -289,10 +288,11 @@ namespace MonoDevelop.CodeActions
 
 			public void Add (FixMenuEntry entry)
 			{
-				items.Add (entry); 
+				items.Add (entry);
 			}
 
-			public object MotionNotifyEvent {
+			public object MotionNotifyEvent
+			{
 				get;
 				set;
 			}
@@ -326,13 +326,13 @@ namespace MonoDevelop.CodeActions
 			var p = Editor.LocationToPoint (Editor.OffsetToLocation (currentSmartTagBegin));
 			Gtk.Widget widget = Editor;
 			var rect = new Gdk.Rectangle (
-				(int)p.X + widget.Allocation.X , 
+				(int)p.X + widget.Allocation.X,
 				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);
 
 			ShowFixesMenu (widget, rect, menu);
 		}
 
-		#if MAC
+#if MAC
 		class ClosingMenuDelegate : AppKit.NSMenuDelegate
 		{
 			readonly TextEditor data;
@@ -352,11 +352,11 @@ namespace MonoDevelop.CodeActions
 				//data.SuppressTooltips = false;
 			}
 		}
-		#endif
+#endif
 
 		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
 		{
-			#if MAC
+#if MAC
 			parent.GrabFocus ();
 			int x, y;
 			x = (int)evt.X;
@@ -386,13 +386,13 @@ namespace MonoDevelop.CodeActions
 
 			AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
 			});
-			#else
+#else
 			var menu = CreateGtkMenu (entrySet);
 			menu.Events |= Gdk.EventMask.AllEventsMask;
 			menu.SelectFirst (true);
 
 			menu.Hidden += delegate {
-//				document.Editor.SuppressTooltips = false;
+				//				document.Editor.SuppressTooltips = false;
 			};
 			menu.ShowAll ();
 			menu.SelectFirst (true);
@@ -406,11 +406,11 @@ namespace MonoDevelop.CodeActions
 			};
 
 			GtkWorkarounds.ShowContextMenu (menu, parent, null, evt);
-			#endif
+#endif
 			return true;
 		}
 
-		#if MAC
+#if MAC
 
 		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
 		{
@@ -435,28 +435,28 @@ namespace MonoDevelop.CodeActions
 			}
 			return menu;
 		}
-		#endif
+#endif
 
 		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
 		{
 			var menu = new Menu ();
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
-					menu.Add (new SeparatorMenuItem ()); 
+					menu.Add (new SeparatorMenuItem ());
 					continue;
 				}
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
 					var gtkSubMenu = new Gtk.MenuItem (item.Label);
 					gtkSubMenu.Submenu = CreateGtkMenu (subMenu);
-					menu.Add (gtkSubMenu); 
+					menu.Add (gtkSubMenu);
 					continue;
 				}
 				var menuItem = new Gtk.MenuItem (item.Label);
 				menuItem.Activated += delegate {
 					item.Action ();
 				};
-				menu.Add (menuItem); 
+				menu.Add (menuItem);
 			}
 			return menu;
 		}
@@ -465,11 +465,11 @@ namespace MonoDevelop.CodeActions
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.CodeAction))
 					gotImportantFix = true;
-				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_.CodeAction)) {
+				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix (fix_.CodeAction)) {
 					menu.Add (FixMenuEntry.Separator);
 					addedSeparator = true;
 				}
@@ -508,7 +508,7 @@ namespace MonoDevelop.CodeActions
 			}
 
 			first = false;
-			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
 				var subMenu = new FixMenuDescriptor (label);
@@ -520,19 +520,19 @@ namespace MonoDevelop.CodeActions
 					menu.Add (FixMenuEntry.Separator);
 					first = false;
 				}
-//				if (inspector.CanSuppressWithAttribute) {
-//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
-//						delegate {
-//							
-//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
-//						});
-//					subMenu.Add (menuItem);
-//				}
+				//				if (inspector.CanSuppressWithAttribute) {
+				//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
+				//						delegate {
+				//							
+				//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
+				//						});
+				//					subMenu.Add (menuItem);
+				//				}
 
 				if (inspector.CanDisableWithPragma) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
 						delegate {
-							inspector.DisableWithPragma (Editor, DocumentContext, fix.ValidSegment); 
+							inspector.DisableWithPragma (Editor, DocumentContext, fix.ValidSegment);
 						});
 					subMenu.Add (menuItem);
 				}
@@ -540,7 +540,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableOnce) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Disable Once"),
 						delegate {
-							inspector.DisableOnce (Editor, DocumentContext, fix.ValidSegment); 
+							inspector.DisableOnce (Editor, DocumentContext, fix.ValidSegment);
 						});
 					subMenu.Add (menuItem);
 				}
@@ -548,19 +548,19 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableAndRestore) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("Disable _and Restore"),
 						delegate {
-							inspector.DisableAndRestore (Editor, DocumentContext, fix.ValidSegment); 
+							inspector.DisableAndRestore (Editor, DocumentContext, fix.ValidSegment);
 						});
 					subMenu.Add (menuItem);
 				}
 
 				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
 					delegate {
-					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-						var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-						if (panel == null)
-							return;
-						panel.Widget.SelectCodeIssue (inspector.IdString);
-					});
+						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
+							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
+							if (panel == null)
+								return;
+							panel.Widget.SelectCodeIssue (inspector.IdString);
+						});
 					});
 				subMenu.Add (optionsMenuItem);
 
@@ -611,43 +611,77 @@ namespace MonoDevelop.CodeActions
 								if (!point.Success)
 									return;
 
-								var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
+											 var node = Formatter.Format (insertion.Node, TypeSystemService.Workspace, document.GetOptionSet (), token);
 
-								point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
-								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
+											 point.InsertionPoint.Insert (document.Editor, document, node.ToString ());
+											 // document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
 
-							}
-						             );
+										 }
+									 );
 
 						document.Editor.StartInsertionMode (options);
 						return;
 					}
 				}
 
-				foreach (var op in act.GetOperationsAsync (token).Result) {
-					op.Apply (documentContext.RoslynWorkspace, token); 
+				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
+				var updatedSolution = oldSolution;
+				foreach (var operation in act.GetOperationsAsync (token).Result) {
+					var applyChanges = operation as ApplyChangesOperation;
+					if (applyChanges == null) {
+						operation.Apply (documentContext.RoslynWorkspace, token);
+						continue;
+					}
+					if (updatedSolution == oldSolution) {
+						updatedSolution = applyChanges.ChangedSolution;
+					}
+					operation.Apply (documentContext.RoslynWorkspace, token);
 				}
+				TryStartRenameSession (documentContext.RoslynWorkspace, oldSolution, updatedSolution, token);
+			}
 
-				var dca = act as DocumentChangeAction;
-
-				if (dca != null && dca.NodesToRename != null) {
-					var model = await documentContext.AnalysisDocument.GetSemanticModelAsync (token).ConfigureAwait (false);
-					var root = await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false);
-					foreach (var snt in dca.NodesToRename) {
-						var node = root.FindNode (snt.Span, false, false);
-						var info = model.GetSymbolInfo (node);
-						var sym = info.Symbol ?? model.GetDeclaredSymbol (node);
-						if (sym != null) {
-							new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym); 
-							break;
+			static IEnumerable<DocumentId> GetChangedDocuments (Solution newSolution, Solution oldSolution)
+			{
+				if (newSolution != null) {
+					var solutionChanges = newSolution.GetChanges (oldSolution);
+					foreach (var projectChanges in solutionChanges.GetProjectChanges ()) {
+						foreach (var documentId in projectChanges.GetChangedDocuments ()) {
+							yield return documentId;
 						}
 					}
 				}
 			}
 
-			public void BatchRun (object sender, EventArgs e)
+			async void TryStartRenameSession (Workspace workspace, Solution oldSolution, Solution newSolution, CancellationToken cancellationToken)
 			{
-				//act.BatchRun (editor, documentContext, loc);
+				var changedDocuments = GetChangedDocuments (newSolution, oldSolution);
+				foreach (var documentId in changedDocuments) {
+					var document = newSolution.GetDocument (documentId);
+					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+					var renameTokenOpt = root.GetAnnotatedNodesAndTokens (RenameAnnotation.Kind)
+											 .Where (s => s.IsToken)
+											 .Select (s => s.AsToken ())
+											 .FirstOrDefault ();
+
+					if (!renameTokenOpt.IsMissing) {
+						var latestDocument = workspace.CurrentSolution.GetDocument (documentId);
+						var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+						var latestRoot = await latestDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+						Application.Invoke (delegate {
+							try {
+								var node = latestRoot.FindNode (renameTokenOpt.Parent.Span, false, false);
+								var info = latestModel.GetSymbolInfo (node);
+								var sym = info.Symbol ?? latestModel.GetDeclaredSymbol (node);
+								if (sym != null) 
+									new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error while renaming " + renameTokenOpt.Parent, ex);
+							}
+						});
+						return;
+					}
+				}
 			}
 		}
 
@@ -705,9 +739,9 @@ namespace MonoDevelop.CodeActions
 			}
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
-			var realLoc  = Editor.OffsetToLocation (smartTagLocBegin);
+			var realLoc = Editor.OffsetToLocation (smartTagLocBegin);
 
-			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, smartTagLocBegin, realLoc); 
+			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, smartTagLocBegin, realLoc);
 			currentSmartTag.Tag = fixes;
 			editor.AddMarker (currentSmartTag);
 		}
@@ -765,7 +799,7 @@ namespace MonoDevelop.CodeActions
 		{
 			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
-		
+
 		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
 		public void UpdateQuickFixCommand (CommandInfo ci)
 		{
@@ -787,14 +821,14 @@ namespace MonoDevelop.CodeActions
 				return false;
 			});
 		}
-		
+
 		[CommandHandler(RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
 			if (!AnalysisOptions.EnableFancyFeatures) {
 				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 				currentSmartTagBegin = Editor.CaretOffset;
-				PopupQuickFixMenu (null, null); 
+				PopupQuickFixMenu (null, null);
 
 				return;
 			}
