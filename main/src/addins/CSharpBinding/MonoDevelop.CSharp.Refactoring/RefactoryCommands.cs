@@ -61,16 +61,16 @@ namespace MonoDevelop.CSharp.Refactoring
 				throw new ArgumentNullException ("container");
 			var result = new CommandInfoSet ();
 			result.Text = GettextCatalog.GetString ("Fix");
-			foreach (var diagnostic in container.CodeDiagnosticActions) {
+			foreach (var diagnostic in container.CodeFixActions) {
 				var info = new CommandInfo (diagnostic.CodeAction.Title);
 				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run));
 			}
 			if (result.CommandInfos.Count == 0)
 				return result;
 			bool firstDiagnosticOption = true;
-			foreach (var fix in container.CodeDiagnosticActions) {
+			foreach (var fix in container.DiagnosticsAtCaret) {
 
-				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null); 
+				var inspector = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
 				if (inspector == null)
 					continue;
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					firstDiagnosticOption = false;
 				}
 
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.GetMessage ());
 				var subMenu = new CommandInfoSet ();
 				subMenu.Text = label;
 
@@ -94,17 +94,17 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.ValidSegment)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.Location.SourceSpan)));
 				}
 
 				if (inspector.CanDisableOnce) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Disable Once"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, fix.ValidSegment)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, fix.Location.SourceSpan)));
 				}
 
 				if (inspector.CanDisableAndRestore) {
 					var info = new CommandInfo (GettextCatalog.GetString ("Disable _and Restore"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, fix.ValidSegment)));
+					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, fix.Location.SourceSpan)));
 				}
 
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));

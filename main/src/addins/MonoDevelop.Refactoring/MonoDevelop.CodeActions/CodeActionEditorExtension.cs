@@ -222,7 +222,7 @@ namespace MonoDevelop.CodeActions
 						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
 							codeActions.Add (action);
 						}
-						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions);
+						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
 								return;
@@ -465,7 +465,7 @@ namespace MonoDevelop.CodeActions
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.CodeAction))
 					gotImportantFix = true;
@@ -508,13 +508,13 @@ namespace MonoDevelop.CodeActions
 			}
 
 			first = false;
-			foreach (var fix_ in GetCurrentFixes ().CodeDiagnosticActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
+			foreach (var fix_ in GetCurrentFixes ().DiagnosticsAtCaret) {
 				var fix = fix_;
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.CodeAction.Title);
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.GetMessage ());
 				var subMenu = new FixMenuDescriptor (label);
 
-				var inspector = fix.Diagnostic.GetCodeDiagnosticDescriptor (null);
-				if (inspector == null)
+				CodeDiagnosticDescriptor descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
+				if (descriptor == null)
 					continue;
 				if (first) {
 					menu.Add (FixMenuEntry.Separator);
@@ -529,26 +529,26 @@ namespace MonoDevelop.CodeActions
 				//					subMenu.Add (menuItem);
 				//				}
 
-				if (inspector.CanDisableWithPragma) {
+				if (descriptor.CanDisableWithPragma) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
 						delegate {
-							inspector.DisableWithPragma (Editor, DocumentContext, fix.ValidSegment);
+							descriptor.DisableWithPragma (Editor, DocumentContext, fix.Location.SourceSpan);
 						});
 					subMenu.Add (menuItem);
 				}
 
-				if (inspector.CanDisableOnce) {
+				if (descriptor.CanDisableOnce) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Disable Once"),
 						delegate {
-							inspector.DisableOnce (Editor, DocumentContext, fix.ValidSegment);
+							descriptor.DisableOnce (Editor, DocumentContext, fix.Location.SourceSpan);
 						});
 					subMenu.Add (menuItem);
 				}
 
-				if (inspector.CanDisableAndRestore) {
+				if (descriptor.CanDisableAndRestore) {
 					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("Disable _and Restore"),
 						delegate {
-							inspector.DisableAndRestore (Editor, DocumentContext, fix.ValidSegment);
+							descriptor.DisableAndRestore (Editor, DocumentContext, fix.Location.SourceSpan);
 						});
 					subMenu.Add (menuItem);
 				}
@@ -559,7 +559,7 @@ namespace MonoDevelop.CodeActions
 							var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
 							if (panel == null)
 								return;
-							panel.Widget.SelectCodeIssue (inspector.IdString);
+							panel.Widget.SelectCodeIssue (descriptor.IdString);
 						});
 					});
 				subMenu.Add (optionsMenuItem);
@@ -714,7 +714,7 @@ namespace MonoDevelop.CodeActions
 //			}
 			bool first = true;
 			var smartTagLocBegin = offset;
-			foreach (var fix in fixes.CodeDiagnosticActions.Concat (fixes.CodeRefactoringActions)) {
+			foreach (var fix in fixes.CodeFixActions.Concat (fixes.CodeRefactoringActions)) {
 				var textSpan = fix.ValidSegment;
 				if (textSpan.IsEmpty)
 					continue;

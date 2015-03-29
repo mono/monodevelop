@@ -60,6 +60,15 @@ namespace MonoDevelop.CodeIssues
 			});
 		}
 
+		internal static CodeDiagnosticDescriptor GetCodeDiagnosticDescriptor (string diagnosticId)
+		{
+			foreach (var builtInDescriptor in BuiltInCodeDiagnosticProvider.GetBuiltInCodeIssuesAsync (null).Result) {
+				if (builtInDescriptor.GetProvider ().SupportedDiagnostics.Any (diagnostic => diagnosticId == diagnostic.Id))
+					return builtInDescriptor;
+			}
+			return null;
+		}
+
 		internal async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeIssuesAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var diags = await builtInDiagnostics.ConfigureAwait (false);
