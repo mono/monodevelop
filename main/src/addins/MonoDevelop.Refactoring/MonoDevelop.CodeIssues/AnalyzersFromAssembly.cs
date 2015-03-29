@@ -69,6 +69,7 @@ namespace MonoDevelop.CodeIssues
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
 				if (assemblyName == "MonoDevelop.AspNet" ||
+					assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
 					assemblyName != "ICSharpCode.NRefactory6.CSharp.Refactoring" &&
 					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
 					return;
@@ -84,7 +85,7 @@ namespace MonoDevelop.CodeIssues
 								"C#"
 							}, type, nrefactoryAnalyzerAttribute));
 						} catch (Exception e) {
-							LoggingService.LogError ("error while adding diagnostic analyzer: " + diag.Id, e);
+							LoggingService.LogError ("error while adding diagnostic analyzer: " + diag.Id + " from assembly " + asm.FullName, e);
 						}
 					}
 				}

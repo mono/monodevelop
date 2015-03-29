@@ -91,7 +91,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 						cancellationToken.ThrowIfCancellationRequested ();
 						try {
 							var asm = Assembly.LoadFrom (file);
-							result.AddAssembly (asm, true);
+							result.AddAssembly (asm);
 						} catch (Exception) {
 						}
 					}
