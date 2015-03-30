@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 
-namespace MonoDevelop.CSharp.Refactoring.CodeIssues
+namespace MonoDevelop.CSharp.Diagnostics.NamingInspection
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class NameConventionPanelWidget : Gtk.Bin

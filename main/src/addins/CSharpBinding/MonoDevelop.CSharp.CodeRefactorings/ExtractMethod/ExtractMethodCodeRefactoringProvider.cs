@@ -97,7 +97,5 @@ namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 
 			return document.WithSyntaxRoot(finalRoot);
 		}
-
-
 	}
 }

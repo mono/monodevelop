@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory6.CSharp.Diagnostics;
 
-namespace MonoDevelop.CSharp.Refactoring.CodeIssues
+namespace MonoDevelop.CSharp.Diagnostics.NamingInspection
 {
 	partial class NameConventionEditRuleDialog : Gtk.Dialog
 	{

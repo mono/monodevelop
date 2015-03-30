@@ -30,7 +30,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using ICSharpCode.NRefactory6.CSharp.Diagnostics;
 
-namespace MonoDevelop.CSharp.Refactoring.CodeIssues
+namespace MonoDevelop.CSharp.Diagnostics.NamingInspection
 {
 	[PolicyType ("Naming Conventions Policy")]
 	class NameConventionPolicy : IEquatable<NameConventionPolicy>
@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				}
 			}
 
-			public NamingConventionService (MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPolicy policy)
+			public NamingConventionService (NameConventionPolicy policy)
 			{
 				this.policy = policy;
 			}

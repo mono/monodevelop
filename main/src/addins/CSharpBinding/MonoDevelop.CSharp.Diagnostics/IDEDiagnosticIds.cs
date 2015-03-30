@@ -34,6 +34,10 @@ namespace MonoDevelop.CSharp.Diagnostics
 		public const string SimplifyThisOrMeDiagnosticId = "IDE0003";
 		public const string RemoveUnnecessaryCastDiagnosticId = "IDE0004";
 		public const string RemoveUnnecessaryImportsDiagnosticId = "IDE0005";
+
+		public const string MonoTODODiagnosticDiagnosticId = "XS0001";
+
+
 	}
 }
 

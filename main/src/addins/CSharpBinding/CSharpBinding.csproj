@@ -231,6 +231,9 @@
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\MonoNameConventionPolicy.xml">
+      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
@@ -285,8 +288,6 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\AstAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\AstStockIcons.cs" />
@@ -306,11 +307,6 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs">
       <DependentUpon>ProtocolMemberContextHandler.cs</DependentUpon>
     </Compile>
@@ -370,6 +366,15 @@
     <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\CSharpSimplifyTypeNamesDiagnosticAnalyzer.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.RemoveUnnecessaryCastFixAllProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\NameConventionPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\NameConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\NameConventionPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\NamingInspection\NameConventionRule.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.NamingInspection.NameConventionEditRuleDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.NamingInspection.NameConventionPanelWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -377,11 +382,8 @@
     <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
-    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml" />
-    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <None Include="packages.config" />
+    <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -395,13 +397,8 @@
     <Folder Include="MonoDevelop.CSharp.Completion\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
     <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
     <Folder Include="MonoDevelop.CSharp.Tooltips\" />
     <Folder Include="MonoDevelop.CSharp.UnitTests\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\" />
     <Folder Include="icons\" />
     <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
     <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
@@ -429,5 +426,7 @@
     <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\" />
     <Folder Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
   </ItemGroup>
 </Project>
