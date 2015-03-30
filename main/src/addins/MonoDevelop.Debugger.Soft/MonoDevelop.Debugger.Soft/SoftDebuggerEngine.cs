@@ -112,7 +112,7 @@ namespace MonoDevelop.Debugger.Soft
 				if (!File.Exists (file)) {
 					dsi.LogMessage = GettextCatalog.GetString ("User assembly '{0}' is missing. " +
 						"Debugger will now debug all code, not just user code.", file);
-					return;
+					continue;
 				}
 				
 				try {
@@ -128,7 +128,7 @@ namespace MonoDevelop.Debugger.Soft
 					dsi.LogMessage = GettextCatalog.GetString ("Could not get assembly name for user assembly '{0}'. " +
 						"Debugger will now debug all code, not just user code.", file);
 					LoggingService.LogError ("Error getting assembly name for user assembly '" + file + "'", ex);
-					return;
+					continue;
 				}
 			}
 			
