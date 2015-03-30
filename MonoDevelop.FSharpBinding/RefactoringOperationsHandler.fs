@@ -216,67 +216,76 @@ type CurrentRefactoringOperationsHandler() =
         if doc = null || doc.FileName = FilePath.Null || doc.ParsedDocument = null then None
         else Some doc
 
+    override x.Run () =
+        base.Run ()
+
     override x.Run (data) =
         let del =  data :?> Action
         if del <> null
         then del.Invoke ()
-        
+    
+    override x.Update (ci:CommandInfo) =
+        base.Update (ci)
+          
     override x.Update (ainfo:CommandArrayInfo) =
         match tryGetValidDoc with
         | None -> ()
         | Some doc ->
-        match doc.ParsedDocument.TryGetAst () with
-        | None -> ()
-        | Some ast ->
-        match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
-        | (_line, col, lineTxt), Some symbolUse ->
-            let ciset = new CommandInfoSet (Text = GettextCatalog.GetString ("Refactor"))
-
-            //last ident part of surrent symbol
-            let lastIdent = Symbols.lastIdent col lineTxt
-
-            //rename refactoring
-            let canRename = Refactoring.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
-            if canRename then
-                let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
-                commandInfo.Enabled <- true
-
-                ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (FSharpRefactoring (doc.Editor, doc)).Rename (lastIdent, symbolUse)))
-
-            // jump to declaration
-            if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
-
-//                let roslynLocs =
-//                    Symbols.getTextSpanForDeclarations lastIdent symbol
-//                    |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
-//                        //|>  System.Collections.Immutable.ImmutableArray.ToImmutableArray
-//                let roslynSymbol = Roslyn.FsharpSymbol (symbol, roslynLocs |>  System.Collections.Immutable.ImmutableArray.ToImmutableArray)
-                let locations = Roslyn.getSymbolLocations symbolUse
-                match locations with
-                | [] -> ()
-                | [location] ->
-                    ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration),
-                                                                     Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, location) ))
-                | locations ->
-                    let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
-                    for location in locations do
-      
-                        let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                        declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbolUse, location)))
-                        |> ignore
-                    ainfo.Add (declSet)
+            if not (MDLanguageService.SupportedFileName (doc.FileName.ToString()))
+            then ainfo.Bypass <- true
+            else
+                match doc.ParsedDocument.TryGetAst () with
+                | None -> ()
+                | Some ast ->
+                    match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
+                    | (_line, col, lineTxt), Some symbolUse ->
+                        let ciset = new CommandInfoSet (Text = GettextCatalog.GetString ("Refactor"))
             
-            //TODO
-            // goto base
-            // find refenenaces
-            // find derived symbols
-            // find overloads
-            // find extension methods
-            // find type extensions?
-
-            if ciset.CommandInfos.Count > 0 then
-                ainfo.Add (ciset, null)
-        | _ -> ()
+                        //last ident part of surrent symbol
+                        let lastIdent = Symbols.lastIdent col lineTxt
+            
+                        //rename refactoring
+                        let canRename = Refactoring.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
+                        if canRename then
+                            let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
+                            commandInfo.Enabled <- true
+            
+                            ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (FSharpRefactoring (doc.Editor, doc)).Rename (lastIdent, symbolUse)))
+            
+                        // jump to declaration
+                        if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
+            
+            //                let roslynLocs =
+            //                    Symbols.getTextSpanForDeclarations lastIdent symbol
+            //                    |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
+            //                        //|>  System.Collections.Immutable.ImmutableArray.ToImmutableArray
+            //                let roslynSymbol = Roslyn.FsharpSymbol (symbol, roslynLocs |>  System.Collections.Immutable.ImmutableArray.ToImmutableArray)
+                            let locations = Roslyn.getSymbolLocations symbolUse
+                            match locations with
+                            | [] -> ()
+                            | [location] ->
+                                ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration),
+                                                                                 Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, location) ))
+                            | locations ->
+                                let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
+                                for location in locations do
+                  
+                                    let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
+                                    declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbolUse, location)))
+                                    |> ignore
+                                ainfo.Add (declSet)
+                        
+                        //TODO
+                        // goto base
+                        // find refenenaces
+                        // find derived symbols
+                        // find overloads
+                        // find extension methods
+                        // find type extensions?
+            
+                        if ciset.CommandInfos.Count > 0 then
+                            ainfo.Add (ciset, null)
+                    | _ -> ()
 
 type RenameHandler() =
     inherit CommandHandler()
@@ -284,48 +293,71 @@ type RenameHandler() =
     override x.Update (ci:CommandInfo) =
         let doc = IdeApp.Workbench.ActiveDocument
         let editor = doc.Editor
-        //disable if theres no editor or filename
+        //skip if theres no editor or filename
         if editor = null || editor.FileName = FilePath.Null
-        then ci.Enabled <- false
+        then ci.Bypass <- false
         else
-            match doc.ParsedDocument.TryGetAst() with
-            | Some ast ->
-                match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
-                //set bypass is we cant rename
-                | _lineinfo, Some sym when not (Refactoring.canRename sym editor.FileName doc.Project.ParentSolution) ->
+            if not (MDLanguageService.SupportedFileName (editor.FileName.ToString())) then ci.Bypass <- true
+            else
+                match doc.ParsedDocument.TryGetAst() with
+                | Some ast ->
+                    match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
+                    //set bypass is we cant rename
+                    | _lineinfo, Some sym when not (Refactoring.canRename sym editor.FileName doc.Project.ParentSolution) ->
+                        ci.Bypass <- true
+                    | _lineinfo, _symbol -> ()
+                //disable for no ast
+                | None ->
                     ci.Bypass <- true
-                    ci.Enabled <- false
-                | _lineinfo, _symbol -> ()
-            //disable for no ast
-            | None -> ci.Enabled <- false
+
+    member x.UpdateCommandInfo(ci:CommandInfo) = x.Update(ci)
         
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc = null || doc.FileName = FilePath.Null then ()
-        else x.Run (doc.Editor, doc)
+        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
+            x.Run (doc.Editor, doc)
 
     member x.Run ( editor:TextEditor, ctx:DocumentContext) =
-        match ctx.ParsedDocument.TryGetAst() with
-        | Some ast ->
-            match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
-                                              //Is this a double check, i.e. isnt update checking can rename?
-            | (_line, col, lineTxt), Some sym when Refactoring.canRename sym editor.FileName ctx.Project.ParentSolution ->
-                let rr = FSharpRefactoring(editor, ctx)
-                let lastIdent = Symbols.lastIdent col lineTxt
-                rr.Rename (lastIdent, sym)
+        if MDLanguageService.SupportedFileName (editor.FileName.ToString()) then 
+            match ctx.ParsedDocument.TryGetAst() with
+            | Some ast ->
+                match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
+                //Is this a double check, i.e. isnt update checking can rename?
+                | (_line, col, lineTxt), Some sym when Refactoring.canRename sym editor.FileName ctx.Project.ParentSolution ->
+                    let rr = FSharpRefactoring(editor, ctx)
+                    let lastIdent = Symbols.lastIdent col lineTxt
+                    rr.Rename (lastIdent, sym)
+                | _ -> ()
             | _ -> ()
-        | _ -> ()
 
 
+type RenameTextEditorExtension () =
+    inherit MonoDevelop.Ide.Editor.Extension.TextEditorExtension ()
+
+    override x.IsValidInContext (context) =
+        context.Name <> null && context.Name.EndsWith (".fs", FilePath.PathComparison)
+    
+    [<CommandUpdateHandler(MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    member x.RenameCommand_Update(ci:CommandInfo) =
+        RenameHandler().UpdateCommandInfo (ci)
+    
+    [<CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    member x.RenameCommand () =
+        RenameHandler().Run (x.Editor, x.DocumentContext)
+
+open ExtCore
 type GotoDeclarationHandler() =
     inherit CommandHandler()
+
+    member x.UpdateCommandInfo(ci:CommandInfo) =
+        x.Update(ci)
 
     override x.Update (ci:CommandInfo) =
         let doc = IdeApp.Workbench.ActiveDocument
         let editor = doc.Editor
-        //disable if theres no editor or filename
-        if editor = null || editor.FileName = FilePath.Null
-        then ci.Enabled <- false
+        //skip if theres no editor or filename
+        if editor = null || editor.FileName = FilePath.Null then ci.Bypass <- true
+        elif not (MDLanguageService.SupportedFileName (editor.FileName.ToString())) then ci.Bypass <- true
         else
             match doc.ParsedDocument.TryGetAst() with
             | Some ast ->
@@ -333,28 +365,41 @@ type GotoDeclarationHandler() =
                 //set bypass as we cant jump
                 | _lineinfo, Some sym when not (Refactoring.canJump sym editor.FileName doc.Project.ParentSolution) ->
                     ci.Bypass <- true
-                    ci.Enabled <- false
                 | _lineinfo, _symbol -> ()
             //disable for no ast
-            | None -> ci.Enabled <- false
+            | None -> ci.Bypass <- true
 
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc = null || doc.FileName = FilePath.Null then ()
-        else
-            match doc.ParsedDocument.TryGetAst() with
+        if doc <> null || doc.FileName <> FilePath.Null then
+            x.Run(doc.Editor, doc)
+            
+    member x.Run(editor, context:DocumentContext) =
+        if MDLanguageService.SupportedFileName (editor.FileName.ToString()) then
+            match context.ParsedDocument.TryGetAst() with
             | Some ast ->
-                match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
-                | (_line, col, lineTxt), Some symbolUse when Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution ->
-                    let lastIdent = Symbols.lastIdent col lineTxt
-                    match Roslyn.getSymbolLocations symbolUse with
-                    //We only jump to the first declaration location with this command handler, which is invoked via Cmd D
-                    //We could intelligently swich by jumping to the second location if we are already at the first
-                    //We could also provide a selection like context menu does.  For now though, we mirror C#
-                    | first :: _ -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, first)
-                    | _ -> ()
+                match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
+                | (_line, col, lineTxt), Some symbolUse when Refactoring.canJump symbolUse editor.FileName context.Project.ParentSolution ->
+                        let lastIdent = Symbols.lastIdent col lineTxt
+                        match Roslyn.getSymbolLocations symbolUse with
+                        //We only jump to the first declaration location with this command handler, which is invoked via Cmd D
+                        //We could intelligently swich by jumping to the second location if we are already at the first
+                        //We could also provide a selection like context menu does.  For now though, we mirror C#
+                        | first :: _ -> FSharpRefactoring(editor, context).JumpToDeclaration (lastIdent, symbolUse, first)
+                        | [] -> ()
                 | _ -> ()
             | _ -> ()
 
+type GotoDeclarationTextEditorExtension () =
+    inherit MonoDevelop.Ide.Editor.Extension.TextEditorExtension ()
 
-        
+    override x.IsValidInContext (context) =
+        context.Name <> null && context.Name.EndsWith (".fs", FilePath.PathComparison)
+
+    [<CommandUpdateHandler(MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
+    member x.RenameCommand_Update(ci:CommandInfo) =
+        GotoDeclarationHandler().UpdateCommandInfo (ci)
+    
+    [<CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
+    member x.RenameCommand () =
+        GotoDeclarationHandler().Run(x.Editor, x.DocumentContext)
