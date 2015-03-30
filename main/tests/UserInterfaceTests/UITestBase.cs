@@ -36,12 +36,21 @@ namespace UserInterfaceTests
 			get { return TestService.Session; }
 		}
 
+		public string MonoDevelopBinPath { get; set; }
+
+		public UITestBase () {}
+
+		public UITestBase (string mdBinPath)
+		{
+			MonoDevelopBinPath = mdBinPath;
+		}
+
 		[SetUp]
 		public virtual void SetUp ()
 		{
 			Util.ClearTmpDir ();
 
-			TestService.StartSession ();
+			TestService.StartSession (MonoDevelopBinPath);
 		}
 
 		[TearDown]
