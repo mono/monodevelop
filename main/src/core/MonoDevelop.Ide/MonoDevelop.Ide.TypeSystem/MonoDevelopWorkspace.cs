@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
 		object addLock = new object();
 		bool added;
+		bool internalChanges;
 
 		public MonoDevelop.Projects.Solution MonoDevelopSolution {
 			get {
@@ -502,10 +503,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyProjectChanges (ProjectChanges projectChanges)
 		{
-			base.ApplyProjectChanges (projectChanges);
-			var data = GetMonoProject (projectChanges.NewProject);
-			if (data != null)
-				data.Save (new NullProgressMonitor ());
+			try {
+				internalChanges = true;
+				base.ApplyProjectChanges (projectChanges);
+				var data = GetMonoProject (projectChanges.NewProject);
+				if (data != null)
+					data.Save (new NullProgressMonitor ());
+			} finally {
+				internalChanges = false;
+			}
 		}
 
 		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
@@ -623,12 +629,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			if (mdProject != null) {
-				var file = new MonoDevelop.Projects.ProjectFile (info.FilePath);
+				var file = new MonoDevelop.Projects.ProjectFile (path);
 				mdProject.Files.Add (file);
 				IdeApp.ProjectOperations.Save (mdProject);
 			}
 
-			OnDocumentAdded (info);
+			OnDocumentAdded (info.WithTextLoader (new MonoDevelopTextLoader (path)));
 		}
 		#endregion
 
@@ -677,11 +683,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				project.Modified -= OnProjectModified;
 			}
 		}
-	
+
 		#region Project modification handlers
 
 		void OnFileAdded (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
+			if (internalChanges)
+				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 				if (!TypeSystemParserNode.IsCompileBuildAction (fargs.ProjectFile.BuildAction))
@@ -694,6 +702,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnFileRemoved (object sender, MonoDevelop.Projects.ProjectFileEventArgs args)
 		{
+			if (internalChanges)
+				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
 				var projectId = GetProjectId (project);
@@ -709,6 +719,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnFileRenamed (object sender, MonoDevelop.Projects.ProjectFileRenamedEventArgs args)
 		{
+			if (internalChanges)
+				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			foreach (MonoDevelop.Projects.ProjectFileRenamedEventInfo fargs in args) {
 				if (!TypeSystemParserNode.IsCompileBuildAction (fargs.ProjectFile.BuildAction))
@@ -733,6 +745,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
+			if (internalChanges)
+				return;
 			if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References"))
 				return;
 			var project = (MonoDevelop.Projects.Project)sender;
