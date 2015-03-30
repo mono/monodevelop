@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.CodeIssues;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using System.Collections;
 
 namespace MonoDevelop.CodeActions
 {
@@ -76,7 +77,22 @@ namespace MonoDevelop.CodeActions
 				return diagnosticsAtCaret ?? new Diagnostic[0];
 			}
 			private set {
-				diagnosticsAtCaret = value;
+				diagnosticsAtCaret = value.Distinct (new DiagnosticComparer()).ToList ();
+			}
+		}
+
+		class DiagnosticComparer : IEqualityComparer<Diagnostic>
+		{
+			bool IEqualityComparer<Diagnostic>.Equals (Diagnostic x, Diagnostic y)
+			{
+				if (x.Id != null && y.Id != null)
+					return x.Id == y.Id;
+				return x.Equals (y);
+			}
+
+			int IEqualityComparer<Diagnostic>.GetHashCode (Diagnostic obj)
+			{
+				return obj.Id != null ? obj.Id.GetHashCode () : obj.GetHashCode ();
 			}
 		}
 
