@@ -80,9 +80,12 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 				var contiguousSpans = unncessaryImports.GetContiguousSpans(getLastTokenFunc);
 				var diagnostics = CreateClassificationDiagnostics(contiguousSpans, tree).Concat(
 					CreateFixableDiagnostics(unncessaryImports, tree));
-
+				var spans = new List<TextSpan> ();
 				foreach (var diagnostic in diagnostics)
 				{
+					if (spans.Any (s => s.OverlapsWith (diagnostic.Location.SourceSpan)))
+						continue;
+					spans.Add (diagnostic.Location.SourceSpan);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

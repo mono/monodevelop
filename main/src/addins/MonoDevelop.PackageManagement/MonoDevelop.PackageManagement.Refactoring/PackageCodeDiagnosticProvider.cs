@@ -54,19 +54,19 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			};
 		}
 
-		public async override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
+		public async override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var diags = await GetProjectDiagnosticsAsync (document.Project, language, cancellationToken).ConfigureAwait (false);
 			return diags.Fixes;
 		}
 
-		public async override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
+		public async override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var diags = await GetProjectDiagnosticsAsync (document.Project, language, cancellationToken).ConfigureAwait (false);
 			return diags.Analyzers;
 		}
 
-		public async override Task<IEnumerable<MonoDevelop.CodeActions.CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext document, string language, CancellationToken cancellationToken)
+		public async override Task<IEnumerable<MonoDevelop.CodeActions.CodeRefactoringDescriptor>> GetCodeRefactoringDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken)
 		{
 			var diags = await GetProjectDiagnosticsAsync (document.Project, language, cancellationToken).ConfigureAwait (false);
 			return diags.Refactorings;

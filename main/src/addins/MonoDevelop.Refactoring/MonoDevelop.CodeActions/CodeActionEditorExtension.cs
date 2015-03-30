@@ -188,7 +188,7 @@ namespace MonoDevelop.CodeActions
 					try {
 						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
 						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
-						foreach (var cfp in CodeRefactoringService.GetCodeFixDescriptorAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
+						foreach (var cfp in CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
 							if (token.IsCancellationRequested)
 								return CodeActionContainer.Empty;
 							var provider = cfp.GetCodeFixProvider ();
@@ -250,7 +250,6 @@ namespace MonoDevelop.CodeActions
 		{
 			return false;
 		}
-
 
 		internal class FixMenuEntry
 		{

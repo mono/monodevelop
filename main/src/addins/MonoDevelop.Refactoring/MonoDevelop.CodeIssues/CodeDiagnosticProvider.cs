@@ -38,8 +38,8 @@ namespace MonoDevelop.CodeIssues
 	/// </summary>
 	abstract class CodeDiagnosticProvider 
 	{
-		public abstract Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
-		public abstract Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		public abstract Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		public abstract Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
+		public abstract Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken));
 	}
 }

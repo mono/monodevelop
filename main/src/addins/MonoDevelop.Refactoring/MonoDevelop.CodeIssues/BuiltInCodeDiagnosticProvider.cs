@@ -62,49 +62,50 @@ namespace MonoDevelop.CodeIssues
 
 		internal static CodeDiagnosticDescriptor GetCodeDiagnosticDescriptor (string diagnosticId)
 		{
-			foreach (var builtInDescriptor in BuiltInCodeDiagnosticProvider.GetBuiltInCodeIssuesAsync (null).Result) {
+			foreach (var builtInDescriptor in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDecsriptorsAsync (null).Result) {
 				if (builtInDescriptor.GetProvider ().SupportedDiagnostics.Any (diagnostic => diagnosticId == diagnostic.Id))
 					return builtInDescriptor;
 			}
 			return null;
 		}
 
-		internal async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeIssuesAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
+		internal async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetBuiltInCodeDiagnosticDecsriptorsAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var diags = await builtInDiagnostics.ConfigureAwait (false);
+			builtInDiagnostics.Wait (cancellationToken);
+			var diags = await builtInDiagnostics;
 			var builtInCodeDiagnostics = diags.Analyzers;
 			if (string.IsNullOrEmpty (language))
 				return includeDisabledNodes ? builtInCodeDiagnostics : builtInCodeDiagnostics.Where (act => act.IsEnabled);
 			return includeDisabledNodes ? builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language)) : builtInCodeDiagnostics.Where (ca => ca.Languages.Contains (language) && ca.IsEnabled);
 		}
 
-		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetBuiltInCodeFixDescriptorAsync (string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetBuiltInCodeFixDescriptorsAsync (string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var diags = await builtInDiagnostics.ConfigureAwait (false);
 			var builtInCodeFixes = diags.Fixes;
 			return string.IsNullOrEmpty (language) ? builtInCodeFixes : builtInCodeFixes.Where (cfp => cfp.Languages.Contains (language));
 		}
 
-		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetBuiltInCodeActionsAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetBuiltInCodeRefactoringDescriptorsAsync (string language, bool includeDisabledNodes = false, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var diags = await builtInDiagnostics.ConfigureAwait (false);
 			var builtInCodeFixes = diags.Refactorings;
 			return string.IsNullOrEmpty (language) ? builtInCodeFixes : builtInCodeFixes.Where (cfp => cfp.Language.Contains (language));
 		}
 
-		public override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext document, string language, CancellationToken cancellationToken)
+		public override Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken)
 		{
-			return GetBuiltInCodeFixDescriptorAsync (language, cancellationToken);
+			return GetBuiltInCodeFixDescriptorsAsync (language, cancellationToken);
 		}
 
-		public override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext document, string language, CancellationToken cancellationToken)
+		public override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken)
 		{
-			return GetBuiltInCodeIssuesAsync (language, false, cancellationToken);
+			return GetBuiltInCodeDiagnosticDecsriptorsAsync (language, false, cancellationToken);
 		}
 
-		public override Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken))
+		public override Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return GetBuiltInCodeActionsAsync (language, false, cancellationToken);
+			return GetBuiltInCodeRefactoringDescriptorsAsync (language, false, cancellationToken);
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace MonoDevelop.CodeIssues
 {
 	class CodeDiagnosticDescriptor
 	{
-		readonly Type codeIssueType;
+		readonly Type diagnosticAnalyzerType;
 		readonly NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr;
 
 		DiagnosticAnalyzer instance;
@@ -45,13 +45,13 @@ namespace MonoDevelop.CodeIssues
 		/// </summary>
 		internal string IdString {
 			get {
-				return codeIssueType.FullName;
+				return diagnosticAnalyzerType.FullName;
 			}
 		}
 
-		public Type CodeIssueType {
+		public Type DiagnosticAnalyzerType {
 			get {
-				return codeIssueType;
+				return diagnosticAnalyzerType;
 			}
 		}
 
@@ -145,7 +145,7 @@ namespace MonoDevelop.CodeIssues
 				throw new ArgumentNullException ("codeIssueType");
 			Name = name;
 			Languages = languages;
-			this.codeIssueType = codeIssueType;
+			this.diagnosticAnalyzerType = codeIssueType;
 			this.nrefactoryAttr = nrefactoryAttr;
 		}
 
@@ -155,7 +155,7 @@ namespace MonoDevelop.CodeIssues
 		public DiagnosticAnalyzer GetProvider ()
 		{
 			if (instance == null)
-				instance = (DiagnosticAnalyzer)Activator.CreateInstance(codeIssueType);
+				instance = (DiagnosticAnalyzer)Activator.CreateInstance(diagnosticAnalyzerType);
 
 			return instance;
 		}

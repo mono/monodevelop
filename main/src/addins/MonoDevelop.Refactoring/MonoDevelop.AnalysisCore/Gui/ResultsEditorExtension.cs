@@ -111,13 +111,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		void CancelTask ()
 		{
-			if (src != null) {
-				src.Cancel ();
-				try {
-					oldTask.Wait ();
-				} catch (OperationCanceledException) {
-				} catch (AggregateException ex) {
-					ex.Handle (e => e is OperationCanceledException);
+			lock (updateLock) {
+				if (src != null) {
+					src.Cancel ();
 				}
 			}
 		}
@@ -146,18 +142,21 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (doc == null)
 				return;
 			var ad = new AnalysisDocument (Editor, DocumentContext);
-
 			updateTimeout = GLib.Timeout.Add (250, delegate {
 				lock (updateLock) {
 					CancelTask ();
 					src = new CancellationTokenSource ();
 					var token = src.Token;
 					oldTask = Task.Run (() => {
-						var result = CodeDiagnosticRunner.Check (ad, token);
-						if (token.IsCancellationRequested)
-							return;
-						var updater = new ResultsUpdater (this, result, token);
-						updater.Update ();
+						try {
+							var result = CodeDiagnosticRunner.Check (ad, token);
+							if (token.IsCancellationRequested)
+								return;
+							var updater = new ResultsUpdater (this, result, token);
+							updater.Update ();
+						} catch (OperationCanceledException) {
+						} catch (AggregateException) {
+						}
 					});
 					updateTimeout = 0;
 					return false;

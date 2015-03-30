@@ -58,16 +58,15 @@ namespace MonoDevelop.CodeIssues
 
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				var codeIssues = CodeRefactoringService.GetCodeIssuesAsync (analysisDocument.DocumentContext, language);
-				foreach (var issue in codeIssues.Result) {
-					if (alreadyAdded.Contains (issue.CodeIssueType))
+				var diagnostics = CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
+				foreach (var diagnostic in diagnostics.Result) {
+					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
 						continue;
-					alreadyAdded.Add (issue.CodeIssueType);
-					var provider = issue.GetProvider ();
+					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
+					var provider = diagnostic.GetProvider ();
 					providers.Add (provider);
 				}
-
-				if (providers.Count == 0)
+				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
 				
 				var localCompilation = CSharpCompilation.Create (
@@ -84,11 +83,10 @@ namespace MonoDevelop.CodeIssues
 					return Enumerable.Empty<Result> ();
 				}
 
-				if (input.ParsedDocument == null)
+				if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
 				var diagnosticList = new List<Diagnostic> ();
 				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
-
 				return diagnosticList
 					.Where (d => d.Id.StartsWith ("IDE") || !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
 					.Select (diagnostic => {

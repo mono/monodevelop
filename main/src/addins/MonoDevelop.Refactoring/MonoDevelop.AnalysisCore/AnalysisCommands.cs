@@ -293,7 +293,7 @@ namespace MonoDevelop.AnalysisCore
 
 			Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> ();
 
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeIssuesAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
+			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeDiagnosticDecsriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
 				severities [node] = node.DiagnosticSeverity;
 //				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 //					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
@@ -328,7 +328,7 @@ namespace MonoDevelop.AnalysisCore
 				}
 
 				var providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
-				foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeActionsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
+				foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeRefactoringDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(lang), true).Result) {
 					providerStates [node] = node.IsEnabled;
 				}
 

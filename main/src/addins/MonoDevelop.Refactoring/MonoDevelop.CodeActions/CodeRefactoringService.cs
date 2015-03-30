@@ -60,30 +60,32 @@ namespace MonoDevelop.CodeActions
 			});
 		}
 
-		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeIssuesAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var result = new List<CodeDiagnosticDescriptor> ();
-			foreach (var provider in providers) {
-				result.AddRange (await provider.GetCodeIssuesAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
-			}
 
+			foreach (var provider in providers) {
+				if (cancellationToken.IsCancellationRequested)
+					return Enumerable.Empty<CodeDiagnosticDescriptor> ();
+				result.AddRange (await provider.GetCodeDiagnosticDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+			}
 			return result;
 		}
 
-		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixDescriptorAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeDiagnosticFixDescriptor>> GetCodeFixesAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var result = new List<CodeDiagnosticFixDescriptor> ();
 			foreach (var provider in providers) {
-				result.AddRange (await provider.GetCodeFixDescriptorAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+				result.AddRange (await provider.GetCodeFixDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
 			}
 			return result;
 		}
 
-		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeActionsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
+		public async static Task<IEnumerable<CodeRefactoringDescriptor>> GetCodeRefactoringsAsync (DocumentContext documentContext, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var result = new List<CodeRefactoringDescriptor> ();
 			foreach (var provider in providers) {
-				result.AddRange (await provider.GetCodeActionsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
+				result.AddRange (await provider.GetCodeRefactoringDescriptorsAsync (documentContext, language, cancellationToken).ConfigureAwait (false));
 			}
 			return result;
 		}
@@ -109,7 +111,7 @@ namespace MonoDevelop.CodeActions
 			if (!token.IsMissing)
 				tokenSegment = token.Span;
 			try {
-				foreach (var descriptor in await GetCodeActionsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)) {
+				foreach (var descriptor in await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)) {
 					if (cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<ValidCodeAction> ();
 					try {

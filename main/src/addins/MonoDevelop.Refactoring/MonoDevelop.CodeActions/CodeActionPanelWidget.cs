@@ -61,7 +61,7 @@ namespace MonoDevelop.CodeActions
 		void GetAllProviderStates ()
 		{
 			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
-			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeActionsAsync (CodeRefactoringService.MimeTypeToLanguage(language), true).Result) {
+			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeRefactoringDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(language), true).Result) {
 				providerStates [node] = node.IsEnabled;
 			}
 		}
