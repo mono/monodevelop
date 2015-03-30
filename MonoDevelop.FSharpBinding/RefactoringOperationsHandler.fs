@@ -182,21 +182,6 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
                     use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
                     for part in locations do
                         ignore <| monitor.ReportResult (x.GetJumpTypePartSearchResult (lastIdent, symbolUse, part))
-            
-
-//        member x.JumpToDeclaration(lastIdent, symbolUse, location) =
-//            match ctx.ParsedDocument.TryGetAst() with
-//            | Some ast ->
-//                match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
-//                | (_line, _col, _lineTxt), Some sym when Refactoring.canRename sym editor.FileName ctx.Project.ParentSolution ->
-//                    let roslynLocs =
-//                        Symbols.getTextSpanForDeclarations lastIdent symbol
-//                        |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
-//                        //|>  System.Collections.Immutable.ImmutableArray.ToImmutableArray
-//                    let roslynSymbol = Roslyn.FsharpSymbol (symbol, roslynLocs |>  System.Collections.Immutable.ImmutableArray.ToImmutableArray)
-//                    IdeApp.ProjectOperations.JumpToDeclaration (roslynSymbol, ctx.Project)
-//                | _ -> ()
-//            | _ -> ()
 
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
@@ -231,8 +216,7 @@ type CurrentRefactoringOperationsHandler() =
         match tryGetValidDoc with
         | None -> ()
         | Some doc ->
-            if not (MDLanguageService.SupportedFileName (doc.FileName.ToString()))
-            then ainfo.Bypass <- true
+            if not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
             else
                 match doc.ParsedDocument.TryGetAst () with
                 | None -> ()
@@ -254,12 +238,6 @@ type CurrentRefactoringOperationsHandler() =
             
                         // jump to declaration
                         if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
-            
-            //                let roslynLocs =
-            //                    Symbols.getTextSpanForDeclarations lastIdent symbol
-            //                    |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
-            //                        //|>  System.Collections.Immutable.ImmutableArray.ToImmutableArray
-            //                let roslynSymbol = Roslyn.FsharpSymbol (symbol, roslynLocs |>  System.Collections.Immutable.ImmutableArray.ToImmutableArray)
                             let locations = Roslyn.getSymbolLocations symbolUse
                             match locations with
                             | [] -> ()
@@ -275,13 +253,7 @@ type CurrentRefactoringOperationsHandler() =
                                     |> ignore
                                 ainfo.Add (declSet)
                         
-                        //TODO
-                        // goto base
-                        // find refenenaces
-                        // find derived symbols
-                        // find overloads
-                        // find extension methods
-                        // find type extensions?
+                        //TODO:goto base, find references, find derived symbols, find overloads, find extension methods, find type extensions
             
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
