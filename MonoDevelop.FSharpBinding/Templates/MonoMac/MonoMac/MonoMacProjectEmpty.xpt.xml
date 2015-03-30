@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<Category>other/unsupported/monomac</Category>
+		<Category>other/misc/monomac</Category>
 		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>An empty Mac project.</_Description>
