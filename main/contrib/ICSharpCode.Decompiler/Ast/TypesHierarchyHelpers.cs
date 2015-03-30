@@ -278,7 +278,7 @@ namespace ICSharpCode.Decompiler.Ast
 				var gMethod = methodContext.ApplyTo(method);
 				return MatchMethod(gCandidate, gMethod);
 			} else {
-				var methodContext = CreateGenericContext(interfaceContextType.Resolve());
+				CreateGenericContext(interfaceContextType.Resolve());
 				var gMethod = candidateContext.ApplyTo(method);
 				return MatchMethod(gCandidate, gMethod);
 			}

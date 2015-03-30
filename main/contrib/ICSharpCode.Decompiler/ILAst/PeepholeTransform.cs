@@ -637,7 +637,7 @@ namespace ICSharpCode.Decompiler.ILAst
 			
 			ILExpression addExpr = expr.Arguments[expr.Arguments.Count - 1];
 			int incrementAmount;
-			ILCode incrementCode = GetIncrementCode(addExpr, out incrementAmount);
+			GetIncrementCode(addExpr, out incrementAmount);
 			ILVariable helperVar;
 			ILExpression initialValue;
 			if (!(incrementAmount != 0 && addExpr.Arguments[0].Match(ILCode.Stloc, out helperVar, out initialValue)))

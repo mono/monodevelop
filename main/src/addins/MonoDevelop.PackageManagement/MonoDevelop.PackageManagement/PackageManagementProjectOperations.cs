@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		BackgroundPackageActionRunner backgroundActionRunner;
-		IPackageManagementEvents packageManagementEvents;
 
 		public PackageManagementProjectOperations (
 			IPackageManagementSolution solution,
@@ -50,7 +49,6 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.backgroundActionRunner = backgroundActionRunner;
-			this.packageManagementEvents = packageManagementEvents;
 
 			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
 			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;

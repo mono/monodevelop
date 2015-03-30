@@ -246,10 +246,9 @@ namespace MonoDevelop.Ide.Desktop
 			MimeTypeNode mt = FindMimeType (type);
 			if (mt != null)
 				return mt.Icon;
-			else if (UsePlatformFileIcons)
+			if (UsePlatformFileIcons)
 				return OnGetIconIdForType (type);
-			else
-				return null;
+			return null;
 		}
 
 		static List<MimeTypeNode> mimeTypeNodes = new List<MimeTypeNode> ();

@@ -1144,7 +1144,6 @@ namespace MonoDevelop.Debugger
 	
 	class GtkConnectionDialog : IConnectionDialog
 	{
-		static readonly string DefaultListenMessage = GettextCatalog.GetString ("Waiting for debugger to connect...");
 		System.Threading.CancellationTokenSource cts;
 		bool disposed;
 		

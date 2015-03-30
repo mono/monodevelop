@@ -42,20 +42,18 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 		
 		public static Expression TryConvert(DecompilerContext context, Expression expr)
 		{
-			Expression converted = new ExpressionTreeConverter(context).Convert(expr);
+			Expression converted = new ExpressionTreeConverter().Convert(expr);
 			if (converted != null) {
 				converted.AddAnnotation(new ExpressionTreeLambdaAnnotation());
 			}
 			return converted;
 		}
 		#endregion
-		
-		readonly DecompilerContext context;
+
 		Stack<LambdaExpression> activeLambdas = new Stack<LambdaExpression>();
-		
-		private ExpressionTreeConverter(DecompilerContext context)
+
+		private ExpressionTreeConverter()
 		{
-			this.context = context;
 		}
 		
 		#region Main Convert method

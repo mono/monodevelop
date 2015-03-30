@@ -62,7 +62,7 @@ namespace CBinding.Parser
 		/// Regex for deriving the type of a variable, 
 		/// and whether it's a pointer, 
 		/// from an expression, e.g. 
-		/// static Foo::bar<string> *blah = NULL;
+		/// static Foo::bar&lt;string&gt; *blah = NULL;
 		/// </summary>
 		public static Regex InstanceTypeExpression = new Regex (
 		  @"^\s*((static|friend|const|mutable|extern|struct|union|\w*::|<[\w><:]*>)\s*)*(?<type>\w[\w\d]*)\s*(<.*>)?\s*(?<pointer>[*])?", 

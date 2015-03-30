@@ -164,7 +164,6 @@ namespace ICSharpCode.Decompiler.Ast.Transforms
 			
 			public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
 			{
-				HashSet<string> oldMemberTypes = currentMemberTypes;
 				currentMemberTypes = currentMemberTypes != null ? new HashSet<string>(currentMemberTypes) : new HashSet<string>();
 				
 				Dictionary<string, MemberReference> oldMembers = currentMembers;

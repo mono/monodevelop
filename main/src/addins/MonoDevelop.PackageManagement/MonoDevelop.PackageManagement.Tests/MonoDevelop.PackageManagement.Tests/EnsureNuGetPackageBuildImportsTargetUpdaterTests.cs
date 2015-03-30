@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			SaveProject ();
 
-			MSBuildTarget target = msbuildProject.Targets.FirstOrDefault ();
+			msbuildProject.Targets.FirstOrDefault ();
 			Assert.AreEqual (1, targetCountBeforeSave);
 			Assert.AreEqual (0, msbuildProject.Targets.Count ());
 		}
@@ -100,7 +100,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			SaveProject ();
 
-			MSBuildTarget target = msbuildProject.Targets.FirstOrDefault ();
+			msbuildProject.Targets.FirstOrDefault ();
 			Assert.AreEqual (1, targetCountBeforeSave);
 			Assert.AreEqual (0, msbuildProject.Targets.Count ());
 		}

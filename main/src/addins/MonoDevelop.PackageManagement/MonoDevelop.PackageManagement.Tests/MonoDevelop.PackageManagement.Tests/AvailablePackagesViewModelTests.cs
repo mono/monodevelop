@@ -1170,7 +1170,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var recentPackage = new FakePackage ("A", "1.0.0.0");
 			recentPackageRepository.AddPackage (recentPackage);
 			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
-			FakePackage installedPackage = AddPackageToSolution ("A", "1.0.0.0");
+			AddPackageToSolution ("A", "1.0.0.0");
 
 			viewModel.ReadPackages ();
 			CompleteReadPackagesTask ();
@@ -1188,7 +1188,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddOnePackageSourceToRegisteredSources ();
 			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
 			var package2 = new FakePackage ("A", "0.2.0.0");
-			FakePackage installedPackage = AddPackageToSolution ("A", "1.0.0.0");
+			AddPackageToSolution ("A", "1.0.0.0");
 			var packages = new [] { package1, package2 };
 			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
 			SearchForAllPackageVersions ("A");

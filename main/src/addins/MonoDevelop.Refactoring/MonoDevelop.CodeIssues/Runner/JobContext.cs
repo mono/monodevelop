@@ -33,8 +33,6 @@ namespace MonoDevelop.CodeIssues
 
 		readonly AnalysisJobQueue queue;
 
-		readonly CodeAnalysisBatchRunner runner;
-
 		public JobContext(IAnalysisJob job, AnalysisJobQueue queue, CodeAnalysisBatchRunner runner)
 		{
 			if (job == null)
@@ -45,7 +43,6 @@ namespace MonoDevelop.CodeIssues
 				throw new ArgumentNullException ("runner");
 			this.job = job;
 			this.queue = queue;
-			this.runner = runner;
 		}
 
 		#region IJobContext implementation

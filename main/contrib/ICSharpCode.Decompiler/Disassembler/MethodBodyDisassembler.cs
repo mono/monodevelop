@@ -36,17 +36,15 @@ namespace ICSharpCode.Decompiler.Disassembler
 	{
 		readonly ITextOutput output;
 		readonly bool detectControlStructure;
-		readonly CancellationToken cancellationToken;
-		
+
 		public MethodBodyDisassembler(ITextOutput output, bool detectControlStructure, CancellationToken cancellationToken)
 		{
 			if (output == null)
 				throw new ArgumentNullException("output");
 			this.output = output;
 			this.detectControlStructure = detectControlStructure;
-			this.cancellationToken = cancellationToken;
 		}
-		
+
 		public void Disassemble(MethodBody body, MethodDebugSymbols debugSymbols)
 		{
 			// start writing IL code

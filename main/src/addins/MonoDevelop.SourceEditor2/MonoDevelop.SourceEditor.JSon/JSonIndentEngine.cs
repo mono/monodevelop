@@ -37,7 +37,6 @@ namespace MonoDevelop.SourceEditor.JSon
 		int offset, line, column;
 		internal Indent thisLineIndent, nextLineIndent;
 		StringBuilder currentIndent;
-		char previousNewline = '\0';
 		char previousChar = '\0';
 		bool isLineStart;
 		bool isInString;
@@ -181,7 +180,6 @@ namespace MonoDevelop.SourceEditor.JSon
 
 			offset++;
 			if (!isNewLine) {
-				previousNewline = '\0';
 
 				isLineStart &= char.IsWhiteSpace (ch);
 
@@ -195,7 +193,6 @@ namespace MonoDevelop.SourceEditor.JSon
 					column++;
 				}
 			} else {
-				previousNewline = ch;
 				currentIndent.Length = 0;
 				isLineStart = true;
 				column = 1;
@@ -212,7 +209,6 @@ namespace MonoDevelop.SourceEditor.JSon
 			thisLineIndent = new Indent (CreateNRefactoryTextEditorOptions (data));
 			nextLineIndent = new Indent (CreateNRefactoryTextEditorOptions (data));
 			currentIndent = new StringBuilder ();
-			previousNewline = '\0';
 			previousChar = '\0';
 			isLineStart = true;
 			isInString = false;

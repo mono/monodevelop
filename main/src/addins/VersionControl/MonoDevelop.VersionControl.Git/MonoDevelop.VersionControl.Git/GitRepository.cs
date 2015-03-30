@@ -1009,7 +1009,6 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			NGit.Repository repo = GetRepository (localPath);
-			NGit.Api.Git git = new NGit.Api.Git (repo);
 			GitRevision gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.

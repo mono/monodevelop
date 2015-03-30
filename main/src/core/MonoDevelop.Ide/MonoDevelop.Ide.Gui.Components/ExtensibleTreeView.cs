@@ -2527,8 +2527,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 	class ZoomableCellRendererPixbuf: CellRendererImage
 	{
-		Dictionary<Xwt.Drawing.Image,Xwt.Drawing.Image> resizedCache = new Dictionary<Xwt.Drawing.Image, Xwt.Drawing.Image> ();
-
 		Xwt.Drawing.Image overlayBottomLeft;
 		Xwt.Drawing.Image overlayBottomRight;
 		Xwt.Drawing.Image overlayTopLeft;

@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.Projects
 		StringMatcher stringMatcher;
 		List<AssemblyInfo> assemblies = new List<AssemblyInfo> ();
 		FilePath basePath;
-		FilePath baseSolutionPath;
 
 		class AssemblyInfo
 		{

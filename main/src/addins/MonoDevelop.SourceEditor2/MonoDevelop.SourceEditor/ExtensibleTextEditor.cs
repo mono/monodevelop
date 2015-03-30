@@ -498,12 +498,9 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			}
 		}
-		
-		int           oldOffset = -1;
 
 		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
-			oldOffset = offset;
 			region = DomRegion.Empty;
 
 			if (textEditorResolverProvider != null) {
@@ -531,8 +528,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public ResolveResult GetLanguageItem (int offset, string expression)
 		{
-			oldOffset = offset;
-			
 			if (textEditorResolverProvider != null) {
 				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
 			}

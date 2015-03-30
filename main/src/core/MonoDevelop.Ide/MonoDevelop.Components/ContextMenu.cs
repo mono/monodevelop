@@ -34,7 +34,7 @@ namespace MonoDevelop.Components
 
 		public ContextMenu ()
 		{
-			items = new ContextMenuItemCollection (this);
+			items = new ContextMenuItemCollection ();
 		}
 
 		public ContextMenuItemCollection Items {

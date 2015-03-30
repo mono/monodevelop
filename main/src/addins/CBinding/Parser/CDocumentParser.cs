@@ -173,7 +173,7 @@ namespace CBinding.Parser
 		/// A <see cref="LanguageItem"/>: The item to convert.
 		/// </param>
 		/// <param name="contentLines">
-		/// A <see cref="System.String[]"/>: The document in which item is defined.
+		/// A <see cref="string[]"/>: The document in which item is defined.
 		/// </param>
 		static DefaultUnresolvedTypeDefinition LanguageItemToIType (ProjectInformation pi, LanguageItem item, string[] contentLines)
 		{

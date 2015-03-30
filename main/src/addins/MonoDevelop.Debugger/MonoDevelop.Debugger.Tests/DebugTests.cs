@@ -49,7 +49,6 @@ namespace MonoDevelop.Debugger.Tests
 		readonly ManualResetEvent targetStoppedEvent = new ManualResetEvent (false);
 		readonly string EngineId;
 		DebuggerEngine engine;
-		string TestName = "";
 		TextFile SourceFile;
 
 		SourceLocation lastStoppedPosition;
@@ -179,7 +178,6 @@ namespace MonoDevelop.Debugger.Tests
 
 			path = path.ParentDirectory.ParentDirectory.Combine ("src", "addins", "MonoDevelop.Debugger", "MonoDevelop.Debugger.Tests.TestApp", test + ".cs").FullPath;
 			SourceFile = TextFile.ReadFile (path);
-			TestName = test;
 			AddBreakpoint ("break");
 			
 			var done = new ManualResetEvent (false);

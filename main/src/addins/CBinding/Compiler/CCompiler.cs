@@ -124,7 +124,7 @@ namespace CBinding
 				string line;
 				while ((line = proc.StandardOutput.ReadLine ()) != null)
 					output.WriteLine (line);
-			} catch (Exception ex) {
+			} catch (Exception) {
 				MessageService.ShowError ("You need to have pkg-config installed");
 			} finally {
 				proc.Close ();

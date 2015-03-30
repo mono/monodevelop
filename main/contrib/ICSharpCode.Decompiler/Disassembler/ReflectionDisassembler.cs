@@ -37,7 +37,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 		CancellationToken cancellationToken;
 		bool isInType; // whether we are currently disassembling a whole type (-> defaultCollapsed for foldings)
 		MethodBodyDisassembler methodBodyDisassembler;
-		MemberReference currentMember;
 		
 		public ReflectionDisassembler(ITextOutput output, bool detectControlStructure, CancellationToken cancellationToken)
 		{
@@ -101,9 +100,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 		
 		public void DisassembleMethod(MethodDefinition method)
 		{
-			// set current member
-			currentMember = method;
-			
 			// write method header
 			output.WriteDefinition(".method ", method);
 			DisassembleMethodInternal(method);
@@ -716,9 +712,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 		
 		public void DisassembleProperty(PropertyDefinition property)
 		{
-			// set current member
-			currentMember = property;
-			
 			output.WriteDefinition(".property ", property);
 			WriteFlags(property.Attributes, propertyAttributes);
 			if (property.HasThis)
@@ -767,9 +760,6 @@ namespace ICSharpCode.Decompiler.Disassembler
 		
 		public void DisassembleEvent(EventDefinition ev)
 		{
-			// set current member
-			currentMember = ev;
-			
 			output.WriteDefinition(".event ", ev);
 			WriteFlags(ev.Attributes, eventAttributes);
 			ev.EventType.WriteTo(output, ILNameSyntax.TypeName);
