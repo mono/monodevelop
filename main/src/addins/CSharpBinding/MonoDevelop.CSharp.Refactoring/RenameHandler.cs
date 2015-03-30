@@ -34,8 +34,10 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Refactoring.Rename;
 
-namespace MonoDevelop.Refactoring.Rename
+namespace MonoDevelop.CSharp.Refactoring
 {
 	class RenameHandler : CommandHandler
 	{

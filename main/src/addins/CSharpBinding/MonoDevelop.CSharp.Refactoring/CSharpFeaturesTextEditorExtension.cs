@@ -30,10 +30,15 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
+using MonoDevelop.Refactoring.Rename;
+using ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring.Rename
+namespace MonoDevelop.CSharp.Refactoring
 {
-	public class RenameTextEditorExtension : TextEditorExtension
+	public class CSharpFeaturesTextEditorExtension : TextEditorExtension
 	{
 		public override bool IsValidInContext (MonoDevelop.Ide.Editor.DocumentContext context)
 		{
@@ -50,6 +55,25 @@ namespace MonoDevelop.Refactoring.Rename
 		public void RenameCommand ()
 		{
 			new RenameHandler ().Run (Editor, DocumentContext);
+		}
+
+		[CommandUpdateHandler(RefactoryCommands.GotoDeclaration)]
+		public void GotoDeclaration_Update(CommandInfo ci)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
+				ci.Enabled = false;
+			}
+			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			ci.Enabled = info.Symbol != null;
+		}
+
+		[CommandHandler (RefactoryCommands.GotoDeclaration)]
+		public void GotoDeclaration ()
+		{
+			GoToDefinitionService.TryGoToDefinition (base.DocumentContext.AnalysisDocument, Editor.CaretOffset, default(CancellationToken));
 		}
 	}
 }

@@ -27,7 +27,6 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands/CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
-						defaultHandler = "MonoDevelop.CSharp.Refactoring.GotoDeclarationHandler"
 						_label = "_Go to Declaration" 
 						shortcut = "F12"
 						macShortcut = "Meta|D"/>
@@ -129,6 +128,7 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.ClassOutline.CSharpOutlineTextEditorExtension" />
 		<Class fileExtensions = ".json" class = "MonoDevelop.JSon.JSonTextEditorExtension" />
+		<Class class = "MonoDevelop.CSharp.Refactoring.CSharpFeaturesTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

@@ -386,6 +386,8 @@
     <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionRule.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFeaturesTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

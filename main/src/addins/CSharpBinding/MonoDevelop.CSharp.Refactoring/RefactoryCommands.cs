@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
-			bool canRename = MonoDevelop.Refactoring.Rename.RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
+			bool canRename = RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
 					new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);

@@ -94,7 +94,6 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class class = "MonoDevelop.Refactoring.Rename.RenameTextEditorExtension" />
 		<Class class = "MonoDevelop.CodeActions.CodeActionEditorExtension" />
 	</Extension>
 	
