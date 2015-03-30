@@ -29,7 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.CSharp.Diagnostics.NamingInspection
+namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 {
 	class NameConventionPanel : PolicyOptionsPanel<NameConventionPolicy>
 	{

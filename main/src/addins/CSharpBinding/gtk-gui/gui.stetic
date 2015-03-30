@@ -1407,7 +1407,7 @@ None</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Diagnostics.NamingInspection.NameConventionPanelWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanelWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>
@@ -1577,7 +1577,7 @@ None</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Diagnostics.NamingInspection.NameConventionEditRuleDialog" design-size="804 508">
+  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog" design-size="804 508">
     <property name="MemberName" />
     <property name="WidthRequest">640</property>
     <property name="HeightRequest">480</property>

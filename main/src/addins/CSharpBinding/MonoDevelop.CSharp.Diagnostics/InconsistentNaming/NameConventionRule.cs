@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
 
-namespace MonoDevelop.CSharp.Diagnostics.NamingInspection
+namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 {
 	[DataItem ("NamingRule")]
 	public class NameConventionRule
