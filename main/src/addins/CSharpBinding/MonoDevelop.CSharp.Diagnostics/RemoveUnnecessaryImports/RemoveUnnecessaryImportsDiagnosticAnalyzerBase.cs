@@ -113,9 +113,7 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 		private IEnumerable<Diagnostic> CreateFixableDiagnostics(IEnumerable<SyntaxNode> nodes, SyntaxTree tree, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var spans = GetFixableDiagnosticSpans(nodes, tree, cancellationToken);
-
-			foreach (var span in spans)
-			{
+			foreach (var span in spans) {
 				yield return Diagnostic.Create(GetClassificationIdDescriptor(), tree.GetLocation(span));
 			}
 		}

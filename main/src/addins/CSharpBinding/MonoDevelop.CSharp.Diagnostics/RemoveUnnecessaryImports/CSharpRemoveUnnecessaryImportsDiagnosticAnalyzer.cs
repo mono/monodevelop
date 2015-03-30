@@ -32,19 +32,18 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 
 		protected override IEnumerable<TextSpan> GetFixableDiagnosticSpans(IEnumerable<SyntaxNode> nodes, SyntaxTree tree, CancellationToken cancellationToken = default(CancellationToken))
 		{
-
 			var nodesContainingUnnecessaryUsings = new HashSet<SyntaxNode>();
-			foreach (var node in nodes)
-			{
-				var nodeContainingUnnecessaryUsings = node.GetAncestors().First(n => n is NamespaceDeclarationSyntax || n is CompilationUnitSyntax);
-				if (!nodesContainingUnnecessaryUsings.Add(nodeContainingUnnecessaryUsings))
-				{
-					continue;
-				}
-
-				yield return nodeContainingUnnecessaryUsings is NamespaceDeclarationSyntax ?
-					((NamespaceDeclarationSyntax)nodeContainingUnnecessaryUsings).Usings.GetContainedSpan() :
-					((CompilationUnitSyntax)nodeContainingUnnecessaryUsings).Usings.GetContainedSpan();
+			foreach (var node in nodes) {
+				yield return node.Span;
+//				var nodeContainingUnnecessaryUsings = node.GetAncestors().First(n => n is NamespaceDeclarationSyntax || n is CompilationUnitSyntax);
+//				if (!nodesContainingUnnecessaryUsings.Add(nodeContainingUnnecessaryUsings))
+//				{
+//					continue;
+//				}
+//
+//				yield return nodeContainingUnnecessaryUsings is NamespaceDeclarationSyntax ?
+//					((NamespaceDeclarationSyntax)nodeContainingUnnecessaryUsings).Usings.GetContainedSpan() :
+//					((CompilationUnitSyntax)nodeContainingUnnecessaryUsings).Usings.GetContainedSpan();
 			}
 		}
 	}
