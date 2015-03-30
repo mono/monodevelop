@@ -150,7 +150,7 @@ namespace MonoDevelop.Ide.Templates
 					if (!projectCreateInformation.ShouldCreate (desc.CreateCondition))
 						continue;
 					if (desc.ProjectReference.ReferenceType == ReferenceType.Project) {
-						string referencedProjectName = StringParserService.Parse (desc.ProjectReference.Reference, substitution);
+						string referencedProjectName = ReplaceParameters (desc.ProjectReference.Reference, substitution, projectCreateInformation);
 						var parsedReference = ProjectReference.RenameReference (desc.ProjectReference, referencedProjectName);
 						dnp.References.Add (parsedReference);
 					} else
@@ -196,6 +196,12 @@ namespace MonoDevelop.Ide.Templates
 			}
 			return projectCreateInformation.SolutionName;
 		}
+
+		static string ReplaceParameters (string input, string[,] substitution, ProjectCreateInformation projectCreateInformation)
+		{
+			string updatedText = StringParserService.Parse (input, substitution);
+			return StringParserService.Parse (updatedText, projectCreateInformation.Parameters);
+		}
 		
 		static void SetClosestSupportedTargetFramework (FileFormat format, DotNetProject project)
 		{
@@ -227,12 +233,12 @@ namespace MonoDevelop.Ide.Templates
 			var projectCreateInformation = new ProjectCreateInformation (projectCI);
 			var substitution = new string[,] { { "ProjectName", projectCreateInformation.ProjectName } };
 
-			projectCreateInformation.ProjectName = StringParserService.Parse (name, substitution);
+			projectCreateInformation.ProjectName = ReplaceParameters (name, substitution, projectCreateInformation);
 
 			if (string.IsNullOrEmpty (directory) || directory == ".")
 				return projectCreateInformation;
 
-			string dir = StringParserService.Parse (directory, substitution);
+			string dir = ReplaceParameters (directory, substitution, projectCreateInformation);
 			projectCreateInformation.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
 
 			if (ShouldCreateProject (projectCreateInformation) && !Directory.Exists (projectCreateInformation.ProjectBasePath))
