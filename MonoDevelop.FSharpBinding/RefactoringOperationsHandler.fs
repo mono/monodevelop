@@ -17,7 +17,7 @@ module Refactoring =
     type SymbolDeclarationLocation =
     | CurrentFile
     | Projects of Project seq * isSymbolLocal:bool
-    | External
+    | External of string
     | Unknown      
 
     let performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
@@ -42,6 +42,10 @@ module Refactoring =
                         :> Change) |]
   
         results :> IList<Change> )
+
+    let getDocumentationId (symbolUse:FSharpSymbolUse) =
+        let id = ""
+        id
 
     let getSymbolDeclarationLocation (symbolUse: FSharpSymbolUse) (currentFile: FilePath) (solution: Solution) =
         let isPrivateToFile = 
@@ -72,13 +76,13 @@ module Refactoring =
                     match allProjects
                           |> Seq.filter (fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = filePath)) with
                     | projects when projects |> Seq.isEmpty ->
-                        External
+                        External (getDocumentationId symbolUse)
                     | projects -> SymbolDeclarationLocation.Projects (projects, isSymbolLocalForProject)
             | None -> SymbolDeclarationLocation.Unknown
 
     let canRename (symbolUse:FSharpSymbolUse) fileName project =
         match getSymbolDeclarationLocation symbolUse fileName project with
-        | SymbolDeclarationLocation.External -> false
+        | SymbolDeclarationLocation.External _ -> false
         | SymbolDeclarationLocation.Unknown -> false
         | _ -> true
 
@@ -96,7 +100,7 @@ module Refactoring =
         | :? FSharpParameter
         | :? FSharpStaticParameter ->
             match getSymbolDeclarationLocation symbolUse currentFile solution with
-            | SymbolDeclarationLocation.External -> false
+            | SymbolDeclarationLocation.External _ -> true
             | SymbolDeclarationLocation.Unknown -> false
             | _ -> true
 
@@ -109,6 +113,18 @@ module Refactoring =
         // These cases cover misc. corned cases (non-symbol types)
         // Types, DelegateCtor
         | _ -> false
+        
+    let canGotoBase (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot -> true
+            | :? FSharpUnionCase as unioncase -> true
+            | :? FSharpActivePatternCase as apc -> true
+            | :? FSharpEntity as ent when ent.BaseType.IsSome -> true
+            //| :? FSharpField 
+            //| :? FSharpGenericParameter
+            //| :? FSharpParameter
+            //| :? FSharpStaticParameter ->
+            | _ -> false
     
     let getSymbolAndLineInfoAtCaret (ast: ParseAndCheckResults) (editor:TextEditor) =
         let lineInfo = editor.GetLineInfoByCaretOffset ()
@@ -160,20 +176,25 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
             MonoDevelop.Ide.FindInFiles.SearchResult (provider, 0, 0)
         
 
-        member x.JumpTo (lastIdent:string, symbolUse, (location:Microsoft.FSharp.Compiler.Range.range)) =
-            let doc = IdeApp.Workbench.OpenDocument (MonoDevelop.Ide.Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project))
-
-            if (*isExternal*) false then
-                if (doc <> null) then
-                    doc.RunWhenLoaded (fun () ->
-                        //this is the assembly browser widget
-                        let handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ()
-                        let roslynSymbol = Unchecked.defaultof<_>
-                        if handler <> null then handler.Open (roslynSymbol))
-            else
+        member x.JumpTo (lastIdent:string, symbolUse, location:Microsoft.FSharp.Compiler.Range.range) =
+            match Refactoring.getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
+            | Refactoring.SymbolDeclarationLocation.CurrentFile ->
+                IdeApp.Workbench.OpenDocument (MonoDevelop.Ide.Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
+                |> ignore
+                
+            | Refactoring.SymbolDeclarationLocation.Projects (_projects, isSymbolLocal) when isSymbolLocal ->
                 IdeApp.Workbench.OpenDocument (MonoDevelop.Ide.Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
                 |> ignore
 
+            | Refactoring.SymbolDeclarationLocation.External docId ->
+                if (editor <> null) then
+                    editor.RunWhenLoaded (fun () ->
+                        //this is the assembly browser widget
+                        let handler = editor.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ()
+                        if handler <> null then handler.Open (docId))
+            | _ -> ()    
+
+                
         member x.JumpToDeclaration (lastIdent:string, symbolUse:FSharpSymbolUse, location) =
             match Roslyn.getSymbolLocations symbolUse with
             | [] -> ()
@@ -269,7 +290,7 @@ type RenameHandler() =
         if editor = null || editor.FileName = FilePath.Null
         then ci.Bypass <- false
         else
-            if not (MDLanguageService.SupportedFileName (editor.FileName.ToString())) then ci.Bypass <- true
+            if not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
             else
                 match doc.ParsedDocument.TryGetAst() with
                 | Some ast ->
@@ -286,11 +307,11 @@ type RenameHandler() =
         
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then
+        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFilePath doc.FileName) then
             x.Run (doc.Editor, doc)
 
     member x.Run ( editor:TextEditor, ctx:DocumentContext) =
-        if MDLanguageService.SupportedFileName (editor.FileName.ToString()) then 
+        if MDLanguageService.SupportedFilePath editor.FileName then 
             match ctx.ParsedDocument.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
@@ -302,20 +323,6 @@ type RenameHandler() =
                 | _ -> ()
             | _ -> ()
 
-
-type RenameTextEditorExtension () =
-    inherit MonoDevelop.Ide.Editor.Extension.TextEditorExtension ()
-
-    override x.IsValidInContext (context) =
-        context.Name <> null && context.Name.EndsWith (".fs", FilePath.PathComparison)
-    
-    [<CommandUpdateHandler(MonoDevelop.Ide.Commands.EditCommands.Rename)>]
-    member x.RenameCommand_Update(ci:CommandInfo) =
-        RenameHandler().UpdateCommandInfo (ci)
-    
-    [<CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)>]
-    member x.RenameCommand () =
-        RenameHandler().Run (x.Editor, x.DocumentContext)
 
 open ExtCore
 type GotoDeclarationHandler() =
@@ -329,7 +336,7 @@ type GotoDeclarationHandler() =
         let editor = doc.Editor
         //skip if theres no editor or filename
         if editor = null || editor.FileName = FilePath.Null then ci.Bypass <- true
-        elif not (MDLanguageService.SupportedFileName (editor.FileName.ToString())) then ci.Bypass <- true
+        elif not (MDLanguageService.SupportedFilePath editor.FileName) then ci.Bypass <- true
         else
             match doc.ParsedDocument.TryGetAst() with
             | Some ast ->
@@ -343,7 +350,7 @@ type GotoDeclarationHandler() =
 
     override x.Run (_data) =
         let doc = IdeApp.Workbench.ActiveDocument
-        if doc <> null || doc.FileName <> FilePath.Null then
+        if doc <> null || doc.FileName <> FilePath.Null || not (MDLanguageService.SupportedFilePath doc.FileName) then
             x.Run(doc.Editor, doc)
             
     member x.Run(editor, context:DocumentContext) =
@@ -362,16 +369,24 @@ type GotoDeclarationHandler() =
                 | _ -> ()
             | _ -> ()
 
-type GotoDeclarationTextEditorExtension () =
+type FSharpCommandsTextEditorExtension () =
     inherit MonoDevelop.Ide.Editor.Extension.TextEditorExtension ()
 
     override x.IsValidInContext (context) =
-        context.Name <> null && context.Name.EndsWith (".fs", FilePath.PathComparison)
+        context.Name <> null && MDLanguageService.SupportedFileName context.Name
 
     [<CommandUpdateHandler(MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
-    member x.RenameCommand_Update(ci:CommandInfo) =
+    member x.GotoDeclarationCommand_Update(ci:CommandInfo) =
         GotoDeclarationHandler().UpdateCommandInfo (ci)
     
     [<CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
-    member x.RenameCommand () =
+    member x.GotoDeclarationCommand () =
         GotoDeclarationHandler().Run(x.Editor, x.DocumentContext)
+        
+    [<CommandUpdateHandler(MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    member x.RenameCommand_Update(ci:CommandInfo) =
+        RenameHandler().UpdateCommandInfo (ci)
+    
+    [<CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    member x.RenameCommand () =
+        RenameHandler().Run (x.Editor, x.DocumentContext)

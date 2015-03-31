@@ -98,11 +98,18 @@ type MDLanguageService() =
   // Call this before Instance is called
   static member DisableVirtualFileSystem() =
         vfs <- lazy (Shim.FileSystem)
+        
+  static member SupportedFileExtensions =
+    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
 
-          /// Is the specified extension supported F# file?
+  /// Is the specified extension supported F# file?
   static member SupportedFileName fileName =
-    let ext = Path.GetExtension fileName
-    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"] |> List.exists ((=) ext)
+    let ext = Path.GetExtension(fileName).ToLower()
+    MDLanguageService.SupportedFileExtensions
+    |> List.exists ((=) ext)
+    
+  static member SupportedFilePath (filePath:FilePath) = 
+      MDLanguageService.SupportedFileName (filePath.ToString())
 
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
