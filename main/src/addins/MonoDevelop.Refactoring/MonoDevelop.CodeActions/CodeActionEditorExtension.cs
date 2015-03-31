@@ -201,7 +201,8 @@ namespace MonoDevelop.CodeActions
 									.GroupBy (d => d.Location.SourceSpan);
 								foreach (var g in groupedDiagnostics) {
 									var diagnosticSpan = g.Key;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, g.ToImmutableArray (), (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
+
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray (), (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
 
 									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
 									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
