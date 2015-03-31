@@ -368,6 +368,8 @@
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectReferenceEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

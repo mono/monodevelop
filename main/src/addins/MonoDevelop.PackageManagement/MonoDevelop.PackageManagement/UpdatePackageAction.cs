@@ -75,7 +75,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (ShouldUpdatePackage ()) {
 				using (IDisposable monitor = CreateFileMonitor ()) {
-					Project.UpdatePackage (Package, this);
+					using (IDisposable referenceMaintainer = new LocalCopyReferenceMaintainer (packageManagementEvents)) {
+						Project.UpdatePackage (Package, this);
+					}
 				}
 				OnParentPackageInstalled ();
 			} else {
