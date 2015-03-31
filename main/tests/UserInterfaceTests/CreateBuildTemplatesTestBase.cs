@@ -39,6 +39,15 @@ namespace UserInterfaceTests
 	{
 		public readonly static Action EmptyAction = () => { };
 
+		public readonly static Action WaitForPackageUpdate = delegate {
+			Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.",
+				pollStep: 1000, timeout: 30000);
+		};
+
+		public CreateBuildTemplatesTestBase () {}
+
+		public CreateBuildTemplatesTestBase (string mdBinPath) : base (mdBinPath) {}
+
 		public void AssertExeHasOutput (string exe, string expectedOutput)
 		{
 			var sw = new StringWriter ();

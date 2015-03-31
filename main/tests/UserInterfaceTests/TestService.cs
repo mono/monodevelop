@@ -34,7 +34,7 @@ namespace UserInterfaceTests
 	{
 		public static AutoTestClientSession Session { get; private set; }
 
-		public static void StartSession ()
+		public static void StartSession (string monoDevelopBinPath = null)
 		{
 			Console.WriteLine ("Starting application");
 
@@ -42,7 +42,7 @@ namespace UserInterfaceTests
 
 			//TODO: support for testing the installed app
 
-			Session.StartApplication (environment: new Dictionary<string,string> {
+			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
 				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
 			});
 
