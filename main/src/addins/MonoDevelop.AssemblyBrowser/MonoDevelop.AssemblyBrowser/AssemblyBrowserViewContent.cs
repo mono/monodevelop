@@ -113,7 +113,12 @@ namespace MonoDevelop.AssemblyBrowser
 			var url = element.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
 			widget.Open (url);
 		}
-		
+
+		public void Open (string documentationCommentId)
+		{
+			widget.Open (documentationCommentId);
+		}
+
 		#endregion 
 
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
