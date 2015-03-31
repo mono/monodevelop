@@ -203,6 +203,17 @@ namespace MonoDevelop.Projects
 					ownerProject.NotifyModified (null);
 			}
 		}
+
+		bool referenceOutputAssembly = true;
+		public bool ReferenceOutputAssembly {
+			get { return referenceOutputAssembly; }
+			set {
+				if (referenceOutputAssembly != value) {
+					referenceOutputAssembly = value;
+					OnStatusChanged ();
+				}
+			}
+		}
 		
 		internal bool DefaultLocalCopy {
 			get {
@@ -275,7 +286,7 @@ namespace MonoDevelop.Projects
 						return GettextCatalog.GetString ("Assembly not found");
 					}
 				} else if (ReferenceType == ReferenceType.Project) {
-					if (ownerProject != null && ownerProject.ParentSolution != null) {
+					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
 						if (p != null) {
 							if (!ownerProject.TargetFramework.CanReferenceAssembliesTargetingFramework (p.TargetFramework))

@@ -81,12 +81,11 @@ namespace UserInterfaceTests
 
 		public static FilePath CreateTmpDir (string hint)
 		{
-			FilePath tmpDir = TmpDir.Combine (hint + "-" + projectId);
-			projectId++;
+			string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), hint);
 
-			if (!Directory.Exists (tmpDir))
-				Directory.CreateDirectory (tmpDir);
-			return tmpDir;
+			if (!Directory.Exists (tempDirectory))
+				Directory.CreateDirectory (tempDirectory);
+			return tempDirectory;
 		}
 
 		static void CopyDir (string src, string dst)

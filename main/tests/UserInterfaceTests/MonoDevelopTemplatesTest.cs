@@ -1,10 +1,10 @@
 ﻿//
-// UserInterfaceTest.cs
+// MonoDevelopTemplatesTest.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,38 +25,39 @@
 // THE SOFTWARE.
 
 using NUnit.Framework;
-using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
-	public abstract class UITestBase
+	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		public AutoTestClientSession Session {
-			get { return TestService.Session; }
+		readonly static string DotNetProjectKind = ".NET";
+
+		readonly static string CategoryRoot = "Other";
+
+		[Test]
+		public void TestCreateBuildConsoleProject ()
+		{
+			CreateBuildProject ("ConsoleProject", "Console Project", DotNetProjectKind, CategoryRoot, EmptyAction);
 		}
 
-		public string MonoDevelopBinPath { get; set; }
-
-		public UITestBase () {}
-
-		public UITestBase (string mdBinPath)
+		[Test]
+		public void TestCreateBuildGtkSharp20Project ()
 		{
-			MonoDevelopBinPath = mdBinPath;
+			CreateBuildProject ("Gtk20Project", "Gtk# 2.0 Project", DotNetProjectKind, CategoryRoot, EmptyAction);
 		}
 
-		[SetUp]
-		public virtual void SetUp ()
+		[Test]
+		public void TestCreateBuildLibrary ()
 		{
-			Util.ClearTmpDir ();
-
-			TestService.StartSession (MonoDevelopBinPath);
+			CreateBuildProject ("Library", "Library", DotNetProjectKind, CategoryRoot, EmptyAction);
 		}
 
-		[TearDown]
-		public virtual void Teardown ()
+		[Test]
+		public void TestCreateBuildNUnitLibraryProject ()
 		{
-			TestService.EndSession ();
+			CreateBuildProject ("NUnitLibraryProject", "NUnit Library Project", DotNetProjectKind, CategoryRoot, delegate {
+				Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.", pollStep: 1000);
+			});
 		}
 	}
 }
