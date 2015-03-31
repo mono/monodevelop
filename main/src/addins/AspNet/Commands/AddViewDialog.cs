@@ -29,14 +29,15 @@ using System.IO;
 using System.Collections.Generic;
 using PP = System.IO.Path;
 
-using MonoDevelop.Ide;
+using Gtk;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms;
-using Gtk;
-using Microsoft.CodeAnalysis;
+using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -474,7 +475,7 @@ namespace MonoDevelop.AspNet.Commands
 			{
 				TypeNamesList = new List<string> ();
 				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
-				TypesList = new List<INamedTypeSymbol> (ctx.Assembly.GlobalNamespace.GetTypeMembers ());
+				TypesList = new List<INamedTypeSymbol> (ctx.GetAllTypesInMainAssembly ());
 				foreach (var typeDef in TypesList) {
 					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				}
@@ -482,5 +483,3 @@ namespace MonoDevelop.AspNet.Commands
 		}
 	}
 }
-
-		

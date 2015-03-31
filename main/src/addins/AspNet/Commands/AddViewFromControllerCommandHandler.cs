@@ -42,16 +42,12 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var project = (AspNetAppProject)doc.Project;
-			var currentLocation = doc.Editor.CaretLocation;
-			// TODO: Roslyn port
-//			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
-//			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
-//			if (pos > 0)
-//				controllerName = controllerName.Remove (pos);
-//
-//			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
-//			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
-//			AddView (project, path, actionName);
+
+			var method = MethodDeclarationAtCaret.Create (doc);
+			string controllerName = method.GetParentMvcControllerName ();
+			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
+
+			AddView (project, path, method.Name);
 		}
 
 		public static void AddView (AspNetAppProject project, string path, string name)
