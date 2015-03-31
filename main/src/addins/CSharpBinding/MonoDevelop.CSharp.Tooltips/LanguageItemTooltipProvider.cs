@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 			var analysisDocument = ctx.ParsedDocument;
 			if (analysisDocument == null)
 				return null;
-			var unit = analysisDocument.GetAst<SemanticModel> ();;
+			var unit = analysisDocument.GetAst<SemanticModel> ();
 			if (unit == null)
 				return null;
 			
@@ -79,16 +79,11 @@ namespace MonoDevelop.SourceEditor
 			var token = root.FindToken (offset);
 			if (!token.Span.IntersectsWith (offset))
 				return null;
-			if (token == lastNode)
-				return lastResult;
-			lastNode = token;
 			var symbolInfo = unit.GetSymbolInfo (token.Parent); 
-			return lastResult = new TooltipItem (new ToolTipData (symbolInfo, token), token.Span.Start, token.Span.Length);
+			return new TooltipItem (new ToolTipData (symbolInfo, token), token.Span.Start, token.Span.Length);
 		}
 		
-		SyntaxToken lastNode;
 		static TooltipInformationWindow lastWindow = null;
-		TooltipItem lastResult;
 
 		static void DestroyLastTooltipWindow ()
 		{
@@ -103,8 +98,6 @@ namespace MonoDevelop.SourceEditor
 		public void Dispose ()
 		{
 			DestroyLastTooltipWindow ();
-			lastNode = new SyntaxToken ();
-			lastResult = null;
 		}
 
 		#endregion

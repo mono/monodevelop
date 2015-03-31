@@ -32,6 +32,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 	class TooltipProviderWrapper : TooltipProvider
 	{
 		readonly MonoDevelop.Ide.Editor.TooltipProvider provider;
+		TooltipItem lastWrappedItem;
+		Ide.Editor.TooltipItem lastUnwrappedItem;
 
 		public MonoDevelop.Ide.Editor.TooltipProvider OriginalProvider {
 			get {
@@ -62,7 +64,13 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var item = provider.GetItem (WrapEditor (editor), IdeApp.Workbench.ActiveDocument, offset);
 			if (item == null)
 				return null;
-			return new TooltipItem (item.Item, item.Offset, item.Length);
+			if (lastUnwrappedItem != null) {
+				if (lastUnwrappedItem.Offset == item.Offset && lastUnwrappedItem.Length == item.Length) {
+					return lastWrappedItem;
+				}
+			}
+			lastUnwrappedItem = item;
+			return lastWrappedItem = new TooltipItem (item.Item, item.Offset, item.Length);
 		}
 
 		public override bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
