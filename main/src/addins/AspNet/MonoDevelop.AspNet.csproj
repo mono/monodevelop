@@ -171,6 +171,12 @@
     <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml">
       <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project.png">
+      <LogicalName>aspnet-empty-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
+      <LogicalName>aspnet-empty-project@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
@@ -523,6 +529,7 @@
     <Folder Include="Commands\" />
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
+    <Folder Include="Templates\images\" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <PropertyGroup>
