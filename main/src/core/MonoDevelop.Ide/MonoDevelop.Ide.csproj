@@ -3469,6 +3469,7 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\IButtonBarButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MruCache.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TooltipExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -57,11 +57,19 @@ namespace MonoDevelop.Ide.Editor
 
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 
+		List<TooltipExtensionNode> allProviders = new List<TooltipExtensionNode> ();
+
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
 			TooltipProvider provider;
 			try {
-				provider = (TooltipProvider) a.ExtensionObject;
+				var extensionNode = a.ExtensionNode as TooltipExtensionNode;
+				allProviders.Add (extensionNode);
+				if (extensionNode.IsValidFor (MimeType))
+					return;
+				provider = (TooltipProvider) extensionNode.CreateInstance ();
+
+
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
 				return;
@@ -845,6 +853,14 @@ namespace MonoDevelop.Ide.Editor
 
 			FileNameChanged += delegate {
 				fileTypeCondition.SetFileName (FileName);
+			};
+
+			MimeTypeChanged += delegate {
+				textEditorImpl.ClearTooltipProviders ();
+				foreach (var extensionNode in allProviders) {
+					if (extensionNode.IsValidFor (MimeType))
+						textEditorImpl.AddTooltipProvider ((TooltipProvider) extensionNode.CreateInstance ());
+				}
 			};
 		}
 
