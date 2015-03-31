@@ -44,14 +44,14 @@ namespace MonoDevelop.NUnit
 				if (test != null) {
 					IAsyncOperation oper = null;
 					DispatchService.GuiSyncDispatch (delegate {
-						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false);
+						oper = NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false);
 					});
-//					if (oper != null) {
-//						monitor.CancelRequested += delegate {
-//							oper.Cancel ();
-//						};
-//						oper.WaitForCompleted ();
-//					}
+					if (oper != null) {
+						monitor.CancelRequested += delegate {
+							oper.Cancel ();
+						};
+						oper.WaitForCompleted ();
+					}
 				}
 			}
 		}

@@ -108,6 +108,11 @@ namespace MonoDevelop.NUnit
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
 		{
+			return RunTest (test, context, buildOwnerObject, true);
+		}
+
+		internal IAsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject, bool checkCurrentRunOperation)
+		{
 			string testName = test.FullName;
 			
 			if (buildOwnerObject) {
@@ -146,7 +151,7 @@ namespace MonoDevelop.NUnit
 				}
 			}
 			
-			if (!IdeApp.ProjectOperations.ConfirmExecutionOperation ())
+			if (checkCurrentRunOperation && !IdeApp.ProjectOperations.ConfirmExecutionOperation ())
 				return NullProcessAsyncOperation.Failure;
 			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
@@ -171,8 +176,9 @@ namespace MonoDevelop.NUnit
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
 			session.Start ();
-			
-			IdeApp.ProjectOperations.CurrentRunOperation = session;
+
+			if (checkCurrentRunOperation)
+				IdeApp.ProjectOperations.CurrentRunOperation = session;
 			
 			return session;
 		}
