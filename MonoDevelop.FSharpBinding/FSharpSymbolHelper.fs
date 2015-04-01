@@ -9,6 +9,20 @@ open MonoDevelop.Ide
 open MonoDevelop.Components
 
 module Symbols =
+
+    let getLocationFromSymbolUse (s: FSharpSymbolUse) =
+        [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
+        |> List.choose id
+        |> Seq.distinctBy (fun r -> r.FileName)
+        |> Seq.toList
+        
+    let getLocationFromSymbol (s:FSharpSymbol) =
+        [s.DeclarationLocation; s.SignatureLocation]
+        |> List.choose id
+        |> Seq.distinctBy (fun r -> r.FileName)
+        |> Seq.toList 
+    
+        
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
         match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
@@ -33,7 +47,7 @@ module Symbols =
 
     let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
         symbolUse
-        |> Roslyn.getSymbolLocations
+        |> getLocationFromSymbolUse
         |> List.map (fun range -> 
             let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
             range.FileName, start, finish)

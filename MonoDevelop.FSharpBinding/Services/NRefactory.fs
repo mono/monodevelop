@@ -197,12 +197,6 @@ module NRefactory =
 
 module Roslyn =
 
-    let getSymbolLocations (s: FSharpSymbolUse) =
-        [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
-        |> List.choose id
-        |> Seq.distinctBy (fun r -> r.FileName)
-        |> Seq.toList
-
     ///Barebones symbol
     type FsharpSymbol (symbolUse:FSharpSymbolUse, locations) =
         interface Microsoft.CodeAnalysis.ISymbol with

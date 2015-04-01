@@ -28,7 +28,7 @@ module Refactoring =
                 if renameProperties.RenameFile && symbol.IsFromType then
                     yield!
                         // TODO check .fsi file in renames?
-                        Roslyn.getSymbolLocations symbol
+                        Symbols.getLocationFromSymbolUse symbol
                         |> List.map (fun part -> RenameFileChange (part.FileName, renameProperties.NewName) :> Change)
                 
                 yield!
@@ -43,13 +43,13 @@ module Refactoring =
   
         results :> IList<Change> )
 
-    let getDocumentationId (symbolUse:FSharpSymbolUse) =
+    let getDocumentationId (symbol:FSharpSymbol) =
         let id = ""
         id
 
-    let getSymbolDeclarationLocation (symbolUse: FSharpSymbolUse) (currentFile: FilePath) (solution: Solution) =
+    let getSymbolDeclarationLocation (symbol: FSharpSymbol) (currentFile: FilePath) (solution: Solution) =
         let isPrivateToFile = 
-            match symbolUse.Symbol with
+            match symbol with
             | :? FSharpMemberOrFunctionOrValue as m -> not m.IsModuleValueOrMember
             | :? FSharpEntity as m -> m.Accessibility.IsPrivate
             | :? FSharpGenericParameter -> true
@@ -60,8 +60,8 @@ module Refactoring =
         if isPrivateToFile then 
             SymbolDeclarationLocation.CurrentFile 
         else
-            let isSymbolLocalForProject = TypedAstUtils.isSymbolLocalForProject symbolUse.Symbol 
-            match Option.orElse symbolUse.Symbol.ImplementationLocation symbolUse.Symbol.DeclarationLocation with
+            let isSymbolLocalForProject = TypedAstUtils.isSymbolLocalForProject symbol 
+            match Option.orElse symbol.ImplementationLocation symbol.DeclarationLocation with
             | Some loc ->
                 let filePath = Path.GetFullPathSafe loc.FileName
                 if filePath = currentFile.ToString () then //Or if script?
@@ -76,12 +76,12 @@ module Refactoring =
                     match allProjects
                           |> Seq.filter (fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = filePath)) with
                     | projects when projects |> Seq.isEmpty ->
-                        External (getDocumentationId symbolUse)
+                        External (getDocumentationId symbol)
                     | projects -> SymbolDeclarationLocation.Projects (projects, isSymbolLocalForProject)
             | None -> SymbolDeclarationLocation.Unknown
 
     let canRename (symbolUse:FSharpSymbolUse) fileName project =
-        match getSymbolDeclarationLocation symbolUse fileName project with
+        match getSymbolDeclarationLocation symbolUse.Symbol fileName project with
         | SymbolDeclarationLocation.External _ -> false
         | SymbolDeclarationLocation.Unknown -> false
         | _ -> true
@@ -99,7 +99,7 @@ module Refactoring =
         | :? FSharpActivePatternCase
         | :? FSharpParameter
         | :? FSharpStaticParameter ->
-            match getSymbolDeclarationLocation symbolUse currentFile solution with
+            match getSymbolDeclarationLocation symbolUse.Symbol currentFile solution with
             | SymbolDeclarationLocation.External _ -> true
             | SymbolDeclarationLocation.Unknown -> false
             | _ -> true
@@ -116,15 +116,41 @@ module Refactoring =
         
     let canGotoBase (symbolUse:FSharpSymbolUse) =
         match symbolUse.Symbol with
-            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot -> true
-            | :? FSharpUnionCase as unioncase -> true
-            | :? FSharpActivePatternCase as apc -> true
-            | :? FSharpEntity as ent when ent.BaseType.IsSome -> true
-            //| :? FSharpField 
-            //| :? FSharpGenericParameter
-            //| :? FSharpParameter
-            //| :? FSharpStaticParameter ->
+            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
+                match mfv.EnclosingEntity.BaseType with
+                | Some bt -> bt.HasTypeDefinition
+                | _ -> false
+            | :? FSharpEntity as ent ->
+                match ent.BaseType with
+                | Some bt -> bt.HasTypeDefinition
+                | _ -> false
             | _ -> false
+         
+    type BaseSymbol =
+        | Member of FSharpMemberOrFunctionOrValue
+        | Type of FSharpEntity
+        
+    let getBaseSymbol (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
+            match mfv.EnclosingEntity.BaseType with
+            | Some bt when bt.HasTypeDefinition ->
+                let baseDefs = bt.TypeDefinition.MembersFunctionsAndValues
+                
+                //TODO check for more than one match?
+                let matches = baseDefs |> Seq.filter (fun btd -> btd.DisplayName = mfv.DisplayName) |> Seq.toList
+                assert (matches.Length <= 1)
+                
+                //assume just the first for now
+                match baseDefs |> Seq.tryFind (fun btd -> btd.DisplayName = mfv.DisplayName) with
+                | Some bm -> Some (Member(bm))
+                | _ -> None
+            | _ -> None
+        | :? FSharpEntity as ent ->
+            match ent.BaseType with
+            | Some bt when bt.HasTypeDefinition -> Some (Type(bt.TypeDefinition))
+            | _ -> None
+        | _ -> None
     
     let getSymbolAndLineInfoAtCaret (ast: ParseAndCheckResults) (editor:TextEditor) =
         let lineInfo = editor.GetLineInfoByCaretOffset ()
@@ -196,9 +222,9 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
 
                 
         member x.JumpToDeclaration (lastIdent:string, symbolUse:FSharpSymbolUse, location) =
-            match Roslyn.getSymbolLocations symbolUse with
+            match Symbols.getLocationFromSymbolUse symbolUse with
             | [] -> ()
-            | [loc] -> x.JumpTo (lastIdent, symbolUse, loc)
+            | [loc] -> x.JumpTo (lastIdent, symbolUse.Symbol, loc)
             | locations ->
                     use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
                     for part in locations do
@@ -254,27 +280,53 @@ type CurrentRefactoringOperationsHandler() =
                         if canRename then
                             let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
                             commandInfo.Enabled <- true
-            
                             ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (FSharpRefactoring (doc.Editor, doc)).Rename (lastIdent, symbolUse)))
             
-                        // jump to declaration
+                        // goto to declaration
                         if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
-                            let locations = Roslyn.getSymbolLocations symbolUse
+                            let locations = Symbols.getLocationFromSymbolUse symbolUse
                             match locations with
                             | [] -> ()
                             | [location] ->
-                                ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration),
-                                                                                 Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, location) ))
+                                let commandInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration)
+                                commandInfo.Enabled <- true
+                                ainfo.Add (commandInfo, Action (fun _ -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, location) ))
                             | locations ->
                                 let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
                                 for location in locations do
-                  
                                     let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                    declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbolUse, location)))
+                                    declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbolUse.Symbol, location)))
                                     |> ignore
                                 ainfo.Add (declSet)
                         
-                        //TODO:goto base, find references, find derived symbols, find overloads, find extension methods, find type extensions
+                        //goto base
+                        if Refactoring.canGotoBase symbolUse then
+                            let baseSymbol = Refactoring.getBaseSymbol symbolUse
+                            match baseSymbol with
+                            | Some bs ->
+                                let symbol = 
+                                    match bs with
+                                    | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
+                                    | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
+
+                                let locations = Symbols.getLocationFromSymbol symbol
+                                match locations with
+                                | [] -> ()
+                                | [location] -> 
+                                    let description = GettextCatalog.GetString ("Go to _Base Symbol")
+                                    ainfo.Add (description, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbol, location)))
+                                    |> ignore
+                                    
+                                | locations ->
+                                    let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
+                                    for location in locations do
+                                        let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
+                                        declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbol, location)))
+                                        |> ignore
+                                    ainfo.Add (declSet)
+                            | _ -> ()
+ 
+                        //TODO:find references, find derived symbols, find overloads, find extension methods, find type extensions
             
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
@@ -360,7 +412,7 @@ type GotoDeclarationHandler() =
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 | (_line, col, lineTxt), Some symbolUse when Refactoring.canJump symbolUse editor.FileName context.Project.ParentSolution ->
                         let lastIdent = Symbols.lastIdent col lineTxt
-                        match Roslyn.getSymbolLocations symbolUse with
+                        match Symbols.getLocationFromSymbolUse symbolUse with
                         //We only jump to the first declaration location with this command handler, which is invoked via Cmd D
                         //We could intelligently swich by jumping to the second location if we are already at the first
                         //We could also provide a selection like context menu does.  For now though, we mirror C#
