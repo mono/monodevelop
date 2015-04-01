@@ -26,9 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -81,6 +81,11 @@ namespace ICSharpCode.PackageManagement
 		protected void OnParentPackageInstalled ()
 		{
 			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
+		}
+
+		protected LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (packageManagementEvents);
 		}
 	}
 }

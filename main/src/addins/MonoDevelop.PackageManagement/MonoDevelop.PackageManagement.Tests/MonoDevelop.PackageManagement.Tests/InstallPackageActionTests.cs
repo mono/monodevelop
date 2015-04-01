@@ -31,6 +31,7 @@ using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -517,6 +518,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			installPackageHelper.InstallTestPackage ();
 
 			CollectionAssert.AreEqual (action.Operations, actualOperations);
+		}
+
+		[Test]
+		public void Execute_PackageAlreadyExistsWhenInstallingItAgainAndReferenceBeingInstalledOriginallyHadLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateAction ();
+			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
+			action.Package = new FakePackage ("Test", "1.1");
+			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			fakeProject.InstallPackageAction = (p, a) => {
+				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
+					LocalCopy = false
+				};
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
 		}
 	}
 }

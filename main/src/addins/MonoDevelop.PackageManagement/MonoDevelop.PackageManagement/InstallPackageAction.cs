@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -51,7 +50,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, this);
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				Project.InstallPackage (Package, this);
+			}
 			OnParentPackageInstalled ();
 		}
 

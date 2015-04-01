@@ -28,8 +28,8 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
 using MonoDevelop.PackageManagement;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -75,7 +75,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (ShouldUpdatePackage ()) {
 				using (IDisposable monitor = CreateFileMonitor ()) {
-					using (IDisposable referenceMaintainer = new LocalCopyReferenceMaintainer (packageManagementEvents)) {
+					using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
 						Project.UpdatePackage (Package, this);
 					}
 				}
