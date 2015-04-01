@@ -117,6 +117,10 @@ namespace MonoDevelop.Ide.Templates
 			get { return description; }
 		}
 
+		/// <summary>
+		/// The name of the template before localization, used for the instantiation counter
+		/// </summary>
+		private string nonLocalizedName;
 		private string name;
 		public string Name
 		{
@@ -239,7 +243,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			if (xmlConfiguration ["_Name"] != null) {
-				this.name = addin.Localizer.GetString (xmlConfiguration ["_Name"].InnerText);
+				this.nonLocalizedName = xmlConfiguration ["_Name"].InnerText;
+				this.name = addin.Localizer.GetString (this.nonLocalizedName);
 			}
 
 			if (xmlConfiguration ["_Description"] != null) {
@@ -327,7 +332,7 @@ namespace MonoDevelop.Ide.Templates
 
 			var metadata = new Dictionary<string, string> ();
 			metadata ["Id"] = this.Id;
-			metadata ["Name"] = this.Name;
+			metadata ["Name"] = this.nonLocalizedName;
 			metadata ["Language"] = this.LanguageName;
 			metadata ["Platform"] = pDesc.Count == 1 ? pDesc[0].ProjectType : "Multiple";
 			TemplateCounter.Inc (1, null, metadata);
@@ -360,7 +365,7 @@ namespace MonoDevelop.Ide.Templates
 			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().FirstOrDefault ();
 			var metadata = new Dictionary<string, string> ();
 			metadata ["Id"] = this.Id;
-			metadata ["Name"] = this.Name;
+			metadata ["Name"] = this.nonLocalizedName;
 			metadata ["Language"] = this.LanguageName;
 			metadata ["Platform"] = pDesc != null ? pDesc.ProjectType : "Unknown";
 			TemplateCounter.Inc (1, null, metadata);
