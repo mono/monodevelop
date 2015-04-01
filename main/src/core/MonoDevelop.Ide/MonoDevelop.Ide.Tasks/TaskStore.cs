@@ -42,6 +42,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -427,15 +428,33 @@ namespace MonoDevelop.Ide.Tasks
 				return null;
 			}
 		}
-		
+
+		/// <summary>
+		/// Determines whether the task's file should be opened automatically when jumping to the next error.
+		/// </summary>
 		public static bool IsProjectTaskFile (Task t)
 		{
 			if (t.FileName.IsNullOrEmpty)
 				return false;
+
+			//only files that are part of project
 			Project p = t.WorkspaceObject as Project;
 			if (p == null)
 				return false;
-			return p.GetProjectFile (t.FileName) != null;
+			if (p.GetProjectFile (t.FileName) == null)
+				return false;
+
+			//only text files
+			var mimeType = DesktopService.GetMimeTypeForUri (t.FileName);
+			if (!DesktopService.GetMimeTypeIsText (mimeType))
+				return false;
+
+			//only files for which we have a default internal display binding
+			var binding = DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
+			if (binding == null || !binding.CanUseAsDefault || binding is IExternalDisplayBinding)
+				return false;
+
+			return true;
 		}
 		
 		
