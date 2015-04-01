@@ -1651,7 +1651,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem.UnsetMetadata ("HintPath");
 			}
 			else if (pref.ReferenceType == ReferenceType.Project) {
-				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
+				Project refProj = Item.ParentSolution != null ? Item.ParentSolution.FindProjectByName (pref.Reference) : null;
 				if (refProj != null) {
 					buildItem = AddOrGetBuildItem (msproject, oldItems, "ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName), pref.Condition);
 					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
