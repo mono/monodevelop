@@ -41,11 +41,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected override void ExecuteCore ()
 		{
 			IsExecuted = true;
+			ExecuteAction ();
 		}
 
 		protected override void BeforeExecute ()
 		{
 		}
+
+		public Action ExecuteAction = () => { };
 	}
 }
 

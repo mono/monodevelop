@@ -39,9 +39,11 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			PreserveLocalCopyReferences = true;
 		}
 		
 		public bool IgnoreDependencies { get; set; }
+		public bool PreserveLocalCopyReferences { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -50,7 +52,11 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+			if (PreserveLocalCopyReferences) {
+				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+					Project.InstallPackage (Package, this);
+				}
+			} else {
 				Project.InstallPackage (Package, this);
 			}
 			OnParentPackageInstalled ();

@@ -82,10 +82,5 @@ namespace ICSharpCode.PackageManagement
 		{
 			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
 		}
-
-		protected LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
-		{
-			return new LocalCopyReferenceMaintainer (packageManagementEvents);
-		}
 	}
 }

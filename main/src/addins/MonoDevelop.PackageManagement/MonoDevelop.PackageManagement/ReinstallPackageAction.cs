@@ -51,8 +51,10 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void ExecuteCore ()
 		{
-			UninstallPackage ();
-			InstallPackage ();
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				UninstallPackage ();
+				InstallPackage ();
+			}
 		}
 
 		void UninstallPackage ()
@@ -67,6 +69,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
+			action.PreserveLocalCopyReferences = false;
 			action.Execute ();
 		}
 	}
