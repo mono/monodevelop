@@ -45,6 +45,7 @@ using System.Reflection;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -103,9 +104,8 @@ namespace MonoDevelop.AspNet.WebForms
 		void UpdateCompilation ()
 		{
 			const string dummyAsmName = "CompiledAspNetPage";
-			// TODO: Roslyn port!
-//			IUnresolvedAssembly asm = new DefaultUnresolvedAssembly (dummyAsmName);
-//			compilation = new SimpleCompilation (asm, GetReferencedAssemblies ());
+			compilation = CSharpCompilation.Create (dummyAsmName)
+				.AddReferences (GetReferencedAssemblies ());
 		}
 		
 		public INamedTypeSymbol GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
@@ -149,7 +149,7 @@ namespace MonoDevelop.AspNet.WebForms
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
-					foreach (var cls in ListControlClasses (baseType, ard.Namespace))
+					foreach (var cls in ListControlClasses (baseType, ard.Namespace, Compilation))
 						if (names.Add (prefix + cls.Name))
 							yield return new AspTagCompletionData (prefix, cls);
 					continue;
@@ -374,67 +374,75 @@ namespace MonoDevelop.AspNet.WebForms
 
 			return usings;
 		}
-// TODO: Roslyn port
-//		IEnumerable<IAssemblyReference> GetReferencedAssemblies ()
-//		{
-//			var references = new HashSet<IAssemblyReference> ();
-//
-//			if (project != null)
-//				references.Add (TypeSystemService.GetCompilation (project).MainAssembly.UnresolvedAssembly);
-//
-//			if (doc != null)
-//				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
-//					references.Add (asm);
-//
-//			foreach (var asm in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name)))
-//				references.Add (asm);
-//
-//			references.Remove (null);
-//
-//			return references;
-// 		}
-//
-//		IAssemblyReference GetReferencedAssembly (string assemblyName)
-//		{
-//			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
-//			if (string.IsNullOrEmpty (parsed.Name))
-//				return null;
-//
-//			var r = GetProjectReference (parsed);
-//			if (r != null)
-//				return r;
-//
-//			string path = GetAssemblyPath (assemblyName);
-//			if (path != null)
-//				return TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path);
-//
-//			return null;
-//		}
-//
-//		IAssemblyReference GetProjectReference (AssemblyName parsed)
-//		{
-//			if (project == null)
-//				return null;
-//
-//			var dllName = parsed.Name + ".dll";
-//
-//			foreach (var reference in project.References) {
-//				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
-//					foreach (string refPath in reference.GetReferencedFileNames (null))
-//						if (Path.GetFileName (refPath) == dllName)
-//							return TypeSystemService.LoadAssemblyContext (project.TargetRuntime, project.TargetFramework, refPath);
-//				}
-//				else
-//					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
-//						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
-//						if (p == null)
-//							continue;
-//						return TypeSystemService.GetCompilation (p).MainAssembly.UnresolvedAssembly;
-//					}
-//			}
-//
-//			return null;
-//		}
+
+		IEnumerable<MetadataReference> GetReferencedAssemblies ()
+		{
+			var references = new HashSet<MetadataReference> ();
+
+			if (project != null)
+				references.Add (TypeSystemService.GetCompilationAsync (project).Result.ToMetadataReference ());
+			if (doc != null)
+				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
+					references.Add (asm);
+
+			foreach (var asm in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name)))
+				references.Add (asm);
+
+			references.Remove (null);
+
+			return references;
+		}
+
+		MetadataReference GetReferencedAssembly (string assemblyName)
+		{
+			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
+			if (string.IsNullOrEmpty (parsed.Name))
+				return null;
+
+			var r = GetProjectReference (parsed);
+			if (r != null)
+				return r;
+
+			string path = GetAssemblyPath (assemblyName);
+			if (path != null)
+				return LoadMetadataReference (path);
+
+			return null;
+		}
+
+		MetadataReference GetProjectReference (AssemblyName parsed)
+		{
+			if (project == null)
+				return null;
+
+			var dllName = parsed.Name + ".dll";
+
+			foreach (var reference in project.References) {
+				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
+					foreach (string refPath in reference.GetReferencedFileNames (null))
+						if (Path.GetFileName (refPath) == dllName)
+							return LoadMetadataReference (refPath);
+				}
+				else
+					if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
+						var p = project.ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
+						if (p == null)
+							continue;
+						return TypeSystemService.GetCompilationAsync (p).Result.ToMetadataReference ();
+					}
+			}
+
+			return null;
+		}
+
+		MetadataReference LoadMetadataReference (string path)
+		{
+			var projectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("WebFormsTypeContext");
+			var reference = MetadataReferenceCache.LoadReference (projectId, path);
+			MetadataReferenceCache.RemoveReferences (projectId);
+
+			return reference;
+		}
 
 		string GetAssemblyPath (string assemblyName)
 		{
@@ -553,28 +561,37 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 
-		static IEnumerable<INamedTypeSymbol> ListControlClasses (INamedTypeSymbol baseType, string namespac)
+		static IEnumerable<INamedTypeSymbol> ListControlClasses (INamedTypeSymbol baseType, string namespac, Compilation compilation)
 		{
 			var baseTypeDefinition = baseType;
 			if (baseTypeDefinition == null)
 				yield break;
 
 			//return classes if they derive from system.web.ui.control
-			// TODO: Roslyn port!
-//			foreach (var type in baseTypeDefinition.GetSubTypeDefinitions ().Where (t => t.Namespace == namespac))
-//				if (!type.IsAbstract && type.IsPublic)
-//					yield return type;
-//
-//			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.IsPublic && baseTypeDefinition.Namespace == namespac) {
-//				yield return baseType;
-//			}
+			foreach (var type in GetSubTypes (baseTypeDefinition, compilation).Where (t => TypeHasNamespace (t, namespac)))
+				if (!type.IsAbstract && type.DeclaredAccessibility == Accessibility.Public)
+					yield return type;
+
+			if (!baseTypeDefinition.IsAbstract && baseTypeDefinition.DeclaredAccessibility == Accessibility.Public && TypeHasNamespace (baseTypeDefinition, namespac)) {
+				yield return baseType;
+			}
+		}
+
+		static IEnumerable<INamedTypeSymbol> GetSubTypes (INamedTypeSymbol baseType, Compilation compilation)
+		{
+			return compilation.GlobalNamespace.GetAllTypes().Where (t => t.IsDerivedFromClass (baseType));
+		}
+
+		static bool TypeHasNamespace (INamedTypeSymbol type, string namespac)
+		{
+			return type.ContainingNamespace != null && type.ContainingNamespace.GetFullName () == namespac;
 		}
 
 		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
 			var type = Compilation.GetTypeByMetadataName (fullName);
-			if (type.Kind == SymbolKind.ErrorType)
+			if (type == null || type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
 		}

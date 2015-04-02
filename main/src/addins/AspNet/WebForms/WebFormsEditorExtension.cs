@@ -217,7 +217,7 @@ namespace MonoDevelop.AspNet.WebForms
 				sourceText += ch;
 			string textAfterCaret = Editor.GetTextBetween (caretOffset, Math.Min (Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
-			if (documentBuilder == null){
+			if (documentBuilder == null) {
 				localDocumentProjection = null;
 				return;
 			}
@@ -254,9 +254,6 @@ namespace MonoDevelop.AspNet.WebForms
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocumentContext = DocumentContext;
 			defaultEditor = Editor;
-			defaultEditor.CaretPositionChanged += delegate {
-				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
-			};
 			defaultDocumentContext.Saved += AsyncUpdateDesignerFile;
 			OnParsedDocumentUpdated ();
 		}
@@ -353,41 +350,41 @@ namespace MonoDevelop.AspNet.WebForms
 
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
+			XName parentName = GetParentElementName (0);
+
+			INamedTypeSymbol controlClass = null;
+
+			if (parentName.HasPrefix) {
+				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
+			} else {
+				XName grandparentName = GetParentElementName (1);
+				if (grandparentName.IsValid && grandparentName.HasPrefix)
+					controlClass = refman.GetControlType (grandparentName.Prefix, grandparentName.Name);
+			}
+
+			//we're just in HTML
+			if (controlClass == null) {
+				//root element?
+				if (!parentName.IsValid) {
+					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
+						AddHtmlTagCompletionData (list, Schema, new XName ("div"));
+						AddAspBeginExpressions (list);
+						list.AddRange (refman.GetControlCompletionData ());
+						AddMiscBeginTags (list);
+					} else if (!string.IsNullOrEmpty (aspDoc.Info.MasterPageFile)) {
+						//FIXME: add the actual region names
+						list.Add (new CompletionData ("asp:Content"));
+					}
+				} else {
+					AddAspBeginExpressions (list);
+					list.AddRange (refman.GetControlCompletionData ());
+					base.GetElementCompletions (list);
+				}
+				return;
+			}
+
 			// TODO: Roslyn port!	
 
-//			XName parentName = GetParentElementName (0);
-//			
-//			IType controlClass = null;
-//			
-//			if (parentName.HasPrefix) {
-//				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
-//			} else {
-//				XName grandparentName = GetParentElementName (1);
-//				if (grandparentName.IsValid && grandparentName.HasPrefix)
-//					controlClass = refman.GetControlType (grandparentName.Prefix, grandparentName.Name);
-//			}
-//			
-//			//we're just in HTML
-//			if (controlClass == null) {
-//				//root element?
-//				if (!parentName.IsValid) {
-//					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
-//						AddHtmlTagCompletionData (list, Schema, new XName ("div"));
-//						AddAspBeginExpressions (list);
-//						list.AddRange (refman.GetControlCompletionData ());
-//						AddMiscBeginTags (list);
-//					} else if (!string.IsNullOrEmpty (aspDoc.Info.MasterPageFile)) {
-//						//FIXME: add the actual region names
-//						list.Add (new CompletionData ("asp:Content"));
-//					}
-//				} else {
-//					AddAspBeginExpressions (list);
-//					list.AddRange (refman.GetControlCompletionData ());
-//					base.GetElementCompletions (list);
-//				}
-//				return;
-//			}
-//			
 //			string defaultProp;
 //			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
 //			if (defaultProp != null && defaultProp.Length == 0)
@@ -561,22 +558,21 @@ namespace MonoDevelop.AspNet.WebForms
 		#region ASP.NET data
 		void AddAspBeginExpressions (CompletionDataList list)
 		{
-			// TODO: Roslyn port
-//			list.Add ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"));
-//			list.Add ("%=", "md-literal", GettextCatalog.GetString ("ASP.NET render expression"));
-//			list.Add ("%@", "md-literal", GettextCatalog.GetString ("ASP.NET directive"));
-//			list.Add ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"));
-//			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
-//			
-//			//valid on 2.0+ runtime only
-//			if (ProjClrVersion != ClrVersion.Net_1_1) {
-//				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
-//			}
-//			
-//			//valid on 4.0+ runtime only
-//			if (ProjClrVersion != ClrVersion.Net_4_0) {
-//				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
-//			}
+			list.Add ("%",  "md-literal", GettextCatalog.GetString ("ASP.NET render block"));
+			list.Add ("%=", "md-literal", GettextCatalog.GetString ("ASP.NET render expression"));
+			list.Add ("%@", "md-literal", GettextCatalog.GetString ("ASP.NET directive"));
+			list.Add ("%#", "md-literal", GettextCatalog.GetString ("ASP.NET databinding expression"));
+			list.Add ("%--", "md-literal", GettextCatalog.GetString ("ASP.NET server-side comment"));
+
+			//valid on 2.0+ runtime only
+			if (ProjClrVersion != ClrVersion.Net_1_1) {
+				list.Add ("%$", "md-literal", GettextCatalog.GetString ("ASP.NET resource expression"));
+			}
+
+			//valid on 4.0+ runtime only
+			if (ProjClrVersion != ClrVersion.Net_4_0) {
+				list.Add ("%:", "md-literal", GettextCatalog.GetString ("ASP.NET HTML encoded expression"));
+			}
 		}
 		
 		void AddAspAttributeCompletionData (CompletionDataList list, XName name, Dictionary<string, string> existingAtts)
