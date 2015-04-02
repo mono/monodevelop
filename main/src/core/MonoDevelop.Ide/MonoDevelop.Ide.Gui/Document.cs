@@ -164,7 +164,8 @@ namespace MonoDevelop.Ide.Gui
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			analysisDocument = null;
+			if (adhocProject == null)
+				analysisDocument = null;
 			EnsureAnalysisDocumentIsOpen ();
 			if (analysisDocument != null)
 				StartReparseThread ();
@@ -710,7 +711,8 @@ namespace MonoDevelop.Ide.Gui
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
 			UnloadAdhocProject ();
-			analysisDocument = null;
+			if (adhocProject == null) 
+				analysisDocument = null;
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
 				// Unsubscribe project events
@@ -799,14 +801,16 @@ namespace MonoDevelop.Ide.Gui
 			}
 			analysisDocumentFileName = FileName;
 			if (Project != null) {
+				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			} else {
 				lock (adhocProjectLock) {
-					if (adhocProject != null)
+					if (adhocProject != null) {
 						return;
+					}
 					if (Editor != null && Editor.MimeType == "text/x-csharp") {
 						var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 						this.adhocProject = newProject;
@@ -824,9 +828,9 @@ namespace MonoDevelop.Ide.Gui
 						solution.AddConfiguration ("", true);
 						solution.DefaultSolutionFolder.AddItem (newProject);
 						using (var monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
-							TypeSystemService.Load (solution, monitor, false);
-						analysisDocument = TypeSystemService.GetDocumentId (adhocProject, adHocFile);
-						TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
+							RoslynWorkspace = TypeSystemService.Load (solution, monitor, false);
+						analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
+						TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
 					}
 				}
 			}
@@ -859,15 +863,17 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			Interlocked.Increment (ref reparseQueue);
 			Application.Invoke (delegate {
-				if (Interlocked.Decrement (ref reparseQueue) != 0) 
+				if (Interlocked.Decrement (ref reparseQueue) != 0) {
 					return;
+				}
 				// Don't directly parse the document because doing it at every key press is
 				// very inefficient. Do it after a small delay instead, so several changes can
 				// be parsed at the same time.
 				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
-				if (analysisDocument == null)
+				if (analysisDocument == null) {
 					return;
+				}
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
 				CancelOldParsing ();

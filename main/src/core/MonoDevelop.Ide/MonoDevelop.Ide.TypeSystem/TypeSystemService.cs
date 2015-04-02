@@ -659,6 +659,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		internal static void InformDocumentOpen (Microsoft.CodeAnalysis.Workspace ws, Microsoft.CodeAnalysis.DocumentId analysisDocument, TextEditor editor)
+		{
+			((MonoDevelopWorkspace)ws).InformDocumentOpen (analysisDocument, editor); 
+		}
+
 		static bool gotDocumentRequestError = false;
 
 		public static Microsoft.CodeAnalysis.ProjectId GetProjectId (MonoDevelop.Projects.Project project)

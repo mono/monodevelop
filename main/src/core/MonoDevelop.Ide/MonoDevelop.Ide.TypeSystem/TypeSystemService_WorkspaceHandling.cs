@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		internal static void Load (WorkspaceItem item, IProgressMonitor progressMonitor, bool loadInBackground = true)
+		internal static Microsoft.CodeAnalysis.Workspace Load (WorkspaceItem item, IProgressMonitor progressMonitor, bool loadInBackground = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var workspace = new MonoDevelopWorkspace ();
@@ -131,6 +131,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				InternalLoad (item, progressMonitor, workspace, loadInBackground).ContinueWith (t => {
 					workspace.HideStatusIcon ();
 				});
+				return workspace;
 			}
 		}
 
@@ -208,6 +209,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return null;
 		}
+
+		public static DocumentId GetDocumentId (Microsoft.CodeAnalysis.Workspace workspace, MonoDevelop.Projects.Project project, string fileName)
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
+			fileName = FileService.GetFullPath (fileName);
+			var projectId = ((MonoDevelopWorkspace)workspace).GetProjectId (project);
+			if (projectId != null)
+				return ((MonoDevelopWorkspace)workspace).GetDocumentId (projectId, fileName);
+			return null;
+		}
+
 
 		public static DocumentId GetDocumentId (ProjectId projectId, string fileName)
 		{
