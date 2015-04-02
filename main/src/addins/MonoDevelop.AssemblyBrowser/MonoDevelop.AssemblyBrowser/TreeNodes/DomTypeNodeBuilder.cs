@@ -88,7 +88,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, type);
-				nodeInfo.Label = Ambience.ConvertType (resolved);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = type.Name;
 			}
@@ -135,7 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, type);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.ConvertType (resolved));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved)));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
@@ -208,7 +208,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, type);
 			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.ConvertType (resolved));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
 			

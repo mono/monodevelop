@@ -110,7 +110,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public void Open (Microsoft.CodeAnalysis.ISymbol element)
 		{
-			var url = element.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
+			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
 			widget.Open (url);
 		}
 

@@ -284,7 +284,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.ConvertSymbol (resolved));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
 

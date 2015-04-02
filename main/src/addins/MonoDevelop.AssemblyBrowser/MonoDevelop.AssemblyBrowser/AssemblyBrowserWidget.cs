@@ -1045,7 +1045,7 @@ namespace MonoDevelop.AssemblyBrowser
 			underlineMarkers.Clear ();
 		}
 		
-		public void SetReferencedSegments (List<ReferenceSegment> refs)
+		internal void SetReferencedSegments (List<ReferenceSegment> refs)
 		{
 			ReferencedSegments = refs;
 			if (ReferencedSegments == null)
@@ -1170,7 +1170,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.hpaned1.Position = Math.Min (350, this.Allocation.Width * 2 / 3);
 		}
 		
-		public void Open (string url, AssemblyLoader currentAssembly = null)
+		internal void Open (string url, AssemblyLoader currentAssembly = null)
 		{
 			ITreeNavigator nav = SearchMember (url);
 			if (definitions == null) // we've been disposed
@@ -1396,12 +1396,12 @@ namespace MonoDevelop.AssemblyBrowser
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();
 		
-		public AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference)
+		internal AssemblyLoader AddReferenceByAssemblyName (AssemblyNameReference reference)
 		{
 			return AddReferenceByAssemblyName (reference.Name);
 		}
 		
-		public AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName)
+		internal AssemblyLoader AddReferenceByAssemblyName (string assemblyFullName)
 		{
 			string assemblyFile = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assemblyFullName, null);
 			if (assemblyFile == null || !System.IO.File.Exists (assemblyFile)) {
@@ -1417,7 +1417,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return AddReferenceByFileName (assemblyFile);
 		}
 		
-		public AssemblyLoader AddReferenceByFileName (string fileName)
+		internal AssemblyLoader AddReferenceByFileName (string fileName)
 		{
 			var result = definitions.FirstOrDefault (d => d.FileName == fileName);
 			if (result != null) {

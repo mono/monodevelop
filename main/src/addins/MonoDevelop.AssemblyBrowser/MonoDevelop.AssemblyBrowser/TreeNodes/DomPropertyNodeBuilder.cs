@@ -66,7 +66,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var property = (IUnresolvedProperty)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, property);
-				nodeInfo.Label = Ambience.ConvertSymbol (resolved);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = property.Name;
 			}
@@ -129,7 +129,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, property);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.ConvertSymbol (resolved));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
 
