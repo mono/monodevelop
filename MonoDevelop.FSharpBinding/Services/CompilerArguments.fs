@@ -131,10 +131,12 @@ module CompilerArguments =
         for file in projectReferences do 
           yield "-r:" + wrapf(file) ]
 
+  ///Use the IdeApp.Workspace active configuration failing back to proj.DefaultConfiguration then ConfigurationSelector.Default
   let getCurrentConfigurationOrDefault (proj:Project) =
      match IdeApp.Workspace with
      | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
-     | _ -> ConfigurationSelector.Default
+     | _ -> if proj <> null then proj.DefaultConfiguration.Selector
+            else ConfigurationSelector.Default
 
   let generateDebug (config:FSharpCompilerParameters) =
       match config.DebugSymbols, config.DebugType with

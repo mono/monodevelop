@@ -10,6 +10,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open MonoDevelop.Refactoring
 open FSharp.CompilerBinding
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Refactoring =
@@ -20,7 +21,7 @@ module Refactoring =
     | External of string
     | Unknown      
 
-    let performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
+    let private performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
         Func<_,_>(fun (renameProperties:Rename.RenameRefactoring.RenameProperties) -> 
         let results =
             use monitor = new ProgressMonitoring.MessageDialogProgressMonitor (true, false, false, true)
@@ -107,15 +108,6 @@ module Refactoring =
             | SymbolDeclarationLocation.External _ -> true
             | SymbolDeclarationLocation.Unknown -> false
             | _ -> true
-
-        //The following are represented by a basic FSharpSymbol, do we want to have goto on these?
-        // ImplicitOp, ILField , FakeInterfaceCtor, NewDef
-
-        // These cases cover unreachable cases
-        // CustomOperation, UnqualifiedType, ModuleOrNamespaces, Property, MethodGroup, CtorGroup
-
-        // These cases cover misc. corned cases (non-symbol types)
-        // Types, DelegateCtor
         | _ -> false
         
     let canGotoBase (symbolUse:FSharpSymbolUse) =
@@ -161,14 +153,13 @@ module Refactoring =
         let symbol = ast.GetSymbolAtLocation lineInfo |> Async.RunSynchronously
         lineInfo, symbol
 
-type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
-
-    member x.Rename (lastIdent, symbol:FSharpSymbolUse) =         
+    let rename (editor:TextEditor, ctx:DocumentContext, lastIdent, symbol:FSharpSymbolUse) =         
         let symbols = 
             let activeDocFileName = editor.FileName.ToString ()
             let projectFilename, projectFiles, projectArgs = MonoDevelop.getCheckerArgs(ctx.Project, activeDocFileName)
-            MDLanguageService.Instance.GetUsesOfSymbolInProject (projectFilename, activeDocFileName, editor.Text, projectFiles, projectArgs, symbol.Symbol)
-            |> Async.RunSynchronously
+            Async.RunSynchronously
+                (MDLanguageService.Instance.GetUsesOfSymbolInProject (projectFilename, activeDocFileName, editor.Text, projectFiles, projectArgs, symbol.Symbol),
+                 ServiceSettings.maximumTimeout)
 
         let locations =
             symbols |> Array.map (Symbols.getTextSpanTrimmed lastIdent)
@@ -191,32 +182,32 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
 
             links.Add (link)
             editor.StartTextLinkMode (TextLinkModeOptions (links))
-        else 
-            MessageService.ShowCustomDialog (new Rename.RenameItemDialog ("Rename Item", symbol.Symbol.DisplayName, Refactoring.performChanges symbol locations))
+        else
+            MessageService.ShowCustomDialog (new Rename.RenameItemDialog("Rename Item", symbol.Symbol.DisplayName, performChanges symbol locations))
             |> ignore
 
-        member x.GetJumpTypePartSearchResult (lastIdent, symbolUse:FSharpSymbolUse, location: Microsoft.FSharp.Compiler.Range.range) =
+    let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, lastIdent, symbolUse:FSharpSymbolUse, location: Range.range) =
         
-            let provider = MonoDevelop.Ide.FindInFiles.FileProvider (location.FileName)
+            let provider = FindInFiles.FileProvider (location.FileName)
             let doc = TextEditorFactory.CreateNewDocument ()
             //TODO: This is unfinished...
             //(doc :> ITextDocument).Text <- provider.ReadString ()
             //let fileName, start, finish = Symbols.getTrimmedRangesForDeclarations lastIdent symbolUse
                         
-            MonoDevelop.Ide.FindInFiles.SearchResult (provider, 0, 0)
+            FindInFiles.SearchResult (provider, 0, 0)
         
 
-        member x.JumpTo (lastIdent:string, symbolUse, location:Microsoft.FSharp.Compiler.Range.range) =
-            match Refactoring.getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
-            | Refactoring.SymbolDeclarationLocation.CurrentFile ->
-                IdeApp.Workbench.OpenDocument (MonoDevelop.Ide.Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
+    let jumpTo (editor:TextEditor, ctx:DocumentContext, lastIdent:string, symbolUse, location:Range.range) =
+            match getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
+            | SymbolDeclarationLocation.CurrentFile ->
+                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
                 |> ignore
                 
-            | Refactoring.SymbolDeclarationLocation.Projects (_projects, isSymbolLocal) when isSymbolLocal ->
-                IdeApp.Workbench.OpenDocument (MonoDevelop.Ide.Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
+            | SymbolDeclarationLocation.Projects (_projects, isSymbolLocal) ->
+                IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
                 |> ignore
 
-            | Refactoring.SymbolDeclarationLocation.External docId ->
+            | SymbolDeclarationLocation.External docId ->
                 match symbolUse.Assembly.FileName with
                 | Some filename ->
                     IdeApp.ProjectOperations.JumpToMetadata(filename, docId)
@@ -225,14 +216,15 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
             | _ -> ()    
 
                 
-        member x.JumpToDeclaration (lastIdent:string, symbolUse:FSharpSymbolUse, location) =
+    let jumpToDeclaration (editor:TextEditor, ctx:DocumentContext, lastIdent:string, symbolUse:FSharpSymbolUse, location) =
             match Symbols.getLocationFromSymbolUse symbolUse with
             | [] -> ()
-            | [loc] -> x.JumpTo (lastIdent, symbolUse.Symbol, loc)
+            | [loc] -> jumpTo (editor, ctx, lastIdent, symbolUse.Symbol, loc)
             | locations ->
                     use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
                     for part in locations do
-                        ignore <| monitor.ReportResult (x.GetJumpTypePartSearchResult (lastIdent, symbolUse, part))
+                        monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, lastIdent, symbolUse, part))
+                        |> ignore
 
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
@@ -284,7 +276,7 @@ type CurrentRefactoringOperationsHandler() =
                         if canRename then
                             let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
                             commandInfo.Enabled <- true
-                            ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (FSharpRefactoring (doc.Editor, doc)).Rename (lastIdent, symbolUse)))
+                            ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (Refactoring.rename (doc.Editor, doc, lastIdent, symbolUse))))
             
                         // goto to declaration
                         if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
@@ -294,12 +286,12 @@ type CurrentRefactoringOperationsHandler() =
                             | [location] ->
                                 let commandInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration)
                                 commandInfo.Enabled <- true
-                                ainfo.Add (commandInfo, Action (fun _ -> FSharpRefactoring(doc.Editor, doc).JumpToDeclaration (lastIdent, symbolUse, location) ))
+                                ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, lastIdent, symbolUse, location) ))
                             | locations ->
                                 let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
                                 for location in locations do
                                     let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                    declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbolUse.Symbol, location)))
+                                    declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, lastIdent, symbolUse.Symbol, location)))
                                     |> ignore
                                 ainfo.Add (declSet)
                         
@@ -318,14 +310,14 @@ type CurrentRefactoringOperationsHandler() =
                                 | [] -> ()
                                 | [location] -> 
                                     let description = GettextCatalog.GetString ("Go to _Base Symbol")
-                                    ainfo.Add (description, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (ident, symbol, location)))
+                                    ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, ident, symbol, location)))
                                     |> ignore
                                     
                                 | locations ->
                                     let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
                                     for location in locations do
                                         let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                        declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (ident, symbol, location)))
+                                        declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, ident, symbol, location)))
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
@@ -373,9 +365,8 @@ type RenameHandler() =
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //Is this a double check, i.e. isnt update checking can rename?
                 | (_line, col, lineTxt), Some sym when Refactoring.canRename sym editor.FileName ctx.Project.ParentSolution ->
-                    let rr = FSharpRefactoring(editor, ctx)
                     let lastIdent = Symbols.lastIdent col lineTxt
-                    rr.Rename (lastIdent, sym)
+                    Refactoring.rename (editor, ctx, lastIdent, sym)
                 | _ -> ()
             | _ -> ()
 
@@ -420,29 +411,29 @@ type GotoDeclarationHandler() =
                         //We only jump to the first declaration location with this command handler, which is invoked via Cmd D
                         //We could intelligently swich by jumping to the second location if we are already at the first
                         //We could also provide a selection like context menu does.  For now though, we mirror C#
-                        | first :: _ -> FSharpRefactoring(editor, context).JumpToDeclaration (lastIdent, symbolUse, first)
+                        | first :: _ -> Refactoring.jumpToDeclaration (editor, context, lastIdent, symbolUse, first)
                         | [] -> ()
                 | _ -> ()
             | _ -> ()
 
 type FSharpCommandsTextEditorExtension () =
-    inherit MonoDevelop.Ide.Editor.Extension.TextEditorExtension ()
+    inherit Editor.Extension.TextEditorExtension ()
 
     override x.IsValidInContext (context) =
         context.Name <> null && MDLanguageService.SupportedFileName context.Name
 
-    [<CommandUpdateHandler(MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
+    [<CommandUpdateHandler(RefactoryCommands.GotoDeclaration)>]
     member x.GotoDeclarationCommand_Update(ci:CommandInfo) =
         GotoDeclarationHandler().UpdateCommandInfo (ci)
     
-    [<CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)>]
+    [<CommandHandler (RefactoryCommands.GotoDeclaration)>]
     member x.GotoDeclarationCommand () =
         GotoDeclarationHandler().Run(x.Editor, x.DocumentContext)
         
-    [<CommandUpdateHandler(MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    [<CommandUpdateHandler(Commands.EditCommands.Rename)>]
     member x.RenameCommand_Update(ci:CommandInfo) =
         RenameHandler().UpdateCommandInfo (ci)
     
-    [<CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Rename)>]
+    [<CommandHandler (Commands.EditCommands.Rename)>]
     member x.RenameCommand () =
         RenameHandler().Run (x.Editor, x.DocumentContext)
