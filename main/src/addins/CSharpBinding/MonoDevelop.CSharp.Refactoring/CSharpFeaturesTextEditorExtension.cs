@@ -75,6 +75,32 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			GoToDefinitionService.TryGoToDefinition (base.DocumentContext.AnalysisDocument, Editor.CaretOffset, default(CancellationToken));
 		}
+
+		static readonly FindReferencesHandler findReferencesHandler = new FindReferencesHandler ();
+		[CommandUpdateHandler(RefactoryCommands.FindReferences)]
+		public void FindReferences_Update(CommandInfo ci)
+		{
+			findReferencesHandler.Update (ci);
+		}
+
+		[CommandHandler (RefactoryCommands.FindReferences)]
+		public void FindReferences ()
+		{
+			findReferencesHandler.Run (null);
+		}
+
+		static readonly FindAllReferencesHandler findAllReferencesHandler = new FindAllReferencesHandler ();
+		[CommandUpdateHandler(RefactoryCommands.FindAllReferences)]
+		public void FindAllReferencesHandler_Update(CommandInfo ci)
+		{
+			findAllReferencesHandler.Update (ci);
+		}
+
+		[CommandHandler (RefactoryCommands.FindAllReferences)]
+		public void FindAllReferencesHandler ()
+		{
+			findAllReferencesHandler.Run (null);
+		}
 	}
 }
 

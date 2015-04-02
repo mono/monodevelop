@@ -37,9 +37,9 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
-	public class FindReferencesHandler : CommandHandler
+	class FindReferencesHandler
 	{
 		public static void FindRefs (ISymbol symbol)
 		{
@@ -72,9 +72,8 @@ namespace MonoDevelop.Refactoring
 			});
 		}
 
-		protected override void Update (CommandInfo info)
+		public void Update (CommandInfo info)
 		{
-			base.Update (info);
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
 				info.Enabled = false;
@@ -84,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			info.Enabled = pd != null;
 		}
 
-		protected override void Run (object data)
+		public void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
@@ -97,7 +96,7 @@ namespace MonoDevelop.Refactoring
 		}
 	}
 
-	public class FindAllReferencesHandler : CommandHandler
+	class FindAllReferencesHandler
 	{
 		public static void FindRefs (ISymbol obj, Compilation compilation)
 		{
@@ -130,9 +129,8 @@ namespace MonoDevelop.Refactoring
 			});
 		}
 
-		protected override void Update (CommandInfo info)
+		public void Update (CommandInfo info)
 		{
-			base.Update (info);
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
 				info.Enabled = false;
@@ -142,7 +140,7 @@ namespace MonoDevelop.Refactoring
 			info.Enabled = pd != null;
 		}
 
-		protected override void Run (object data)
+		public void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)

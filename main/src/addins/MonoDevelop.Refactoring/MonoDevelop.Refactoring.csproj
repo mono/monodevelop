@@ -162,7 +162,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\Fixes\GenericFix.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringService.cs" />
     <Compile Include="MonoDevelop.Refactoring\Change.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameRefactoring.cs" />
     <Compile Include="MonoDevelop.Refactoring.Rename\RenameItemDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.Rename.RenameItemDialog.cs" />

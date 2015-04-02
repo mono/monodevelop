@@ -61,12 +61,10 @@
 
 		<Category _name = "Code Navigation" id = "CodeNavigation">
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
-					defaultHandler = "MonoDevelop.Refactoring.FindReferencesHandler"
 					_label = "_Find References" 
 					shortcut = "Shift|F12"
 					macShortcut = "Shift|Meta|R"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"
-					defaultHandler = "MonoDevelop.Refactoring.FindAllReferencesHandler"
 					_label = "_Find References of All Overloads" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
 					defaultHandler = "MonoDevelop.Refactoring.FindDerivedSymbolsHandler"
