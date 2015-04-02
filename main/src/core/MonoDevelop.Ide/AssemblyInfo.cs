@@ -21,3 +21,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Xamarin.Ide")]
 [assembly: InternalsVisibleTo("MonoDevelop.SourceEditor")]
 [assembly: InternalsVisibleTo("MonoDevelop.SourceEditor2")]
+[assembly: InternalsVisibleTo("MonoDevelop.AssemblyBrowser")]
