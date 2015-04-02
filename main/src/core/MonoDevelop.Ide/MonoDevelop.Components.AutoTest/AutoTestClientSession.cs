@@ -252,6 +252,14 @@ namespace MonoDevelop.Components.AutoTest
 				Monitor.PulseAll (eventQueue);
 			}
 		}
+
+		public AppResult[] Query (Func<AppQuery, AppQuery> query)
+		{
+			AppQuery c = session.CreateNewQuery ();
+			c = query (c);
+
+			return session.ExecuteQuery (c);
+		}
 	}
 
 	public interface IAutoTestClient

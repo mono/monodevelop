@@ -472,6 +472,16 @@ namespace MonoDevelop.Components.AutoTest
 			if (!syncEvent.WaitOne (timeout))
 				throw new Exception ("Timeout while executing synchronized call");
 		}
+
+		public AppQuery CreateNewQuery ()
+		{
+			return new AppQuery (Gtk.Window.ListToplevels ());
+		}
+
+		public AppResult[] ExecuteQuery (AppQuery query)
+		{
+			return query.Execute ();
+		}
 	}
 
 	[StructLayout (LayoutKind.Sequential)] 
