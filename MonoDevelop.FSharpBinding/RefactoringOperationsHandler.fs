@@ -44,8 +44,12 @@ module Refactoring =
         results :> IList<Change> )
 
     let getDocumentationId (symbol:FSharpSymbol) =
-        let id = ""
-        id
+        match symbol with
+        | :? FSharpEntity as ent ->
+            ent.XmlDocSig
+        | :? FSharpMemberOrFunctionOrValue as meth ->
+            meth.XmlDocSig
+        | _ -> ""
 
     let getSymbolDeclarationLocation (symbol: FSharpSymbol) (currentFile: FilePath) (solution: Solution) =
         let isPrivateToFile = 
@@ -213,11 +217,11 @@ type FSharpRefactoring(editor:TextEditor, ctx:DocumentContext) =
                 |> ignore
 
             | Refactoring.SymbolDeclarationLocation.External docId ->
-                if (editor <> null) then
-                    editor.RunWhenLoaded (fun () ->
-                        //this is the assembly browser widget
-                        let handler = editor.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ()
-                        if handler <> null then handler.Open (docId))
+                match symbolUse.Assembly.FileName with
+                | Some filename ->
+                    IdeApp.ProjectOperations.JumpToMetadata(filename, docId)
+                | None -> 
+                    ()
             | _ -> ()    
 
                 
@@ -243,7 +247,7 @@ type CurrentRefactoringOperationsHandler() =
         | [||] -> fileName
         | xs -> xs |> Array.last
 
-    let tryGetValidDoc =
+    let tryGetValidDoc() =
         let doc = IdeApp.Workbench.ActiveDocument
         if doc = null || doc.FileName = FilePath.Null || doc.ParsedDocument = null then None
         else Some doc
@@ -260,7 +264,7 @@ type CurrentRefactoringOperationsHandler() =
         base.Update (ci)
           
     override x.Update (ainfo:CommandArrayInfo) =
-        match tryGetValidDoc with
+        match tryGetValidDoc() with
         | None -> ()
         | Some doc ->
             if not (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
@@ -308,20 +312,20 @@ type CurrentRefactoringOperationsHandler() =
                                     match bs with
                                     | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
                                     | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
-
+                                let ident = symbol.DisplayName
                                 let locations = Symbols.getLocationFromSymbol symbol
                                 match locations with
                                 | [] -> ()
                                 | [location] -> 
                                     let description = GettextCatalog.GetString ("Go to _Base Symbol")
-                                    ainfo.Add (description, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbol, location)))
+                                    ainfo.Add (description, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (ident, symbol, location)))
                                     |> ignore
                                     
                                 | locations ->
                                     let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
                                     for location in locations do
                                         let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                        declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (lastIdent, symbol, location)))
+                                        declSet.CommandInfos.Add (commandText, Action (fun () -> FSharpRefactoring(doc.Editor, doc).JumpTo (ident, symbol, location)))
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
