@@ -390,6 +390,9 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindReferencesHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindExtensionMethodHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberOverloadsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\GotoBaseDeclarationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

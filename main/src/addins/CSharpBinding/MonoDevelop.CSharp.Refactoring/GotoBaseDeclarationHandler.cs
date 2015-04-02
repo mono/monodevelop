@@ -29,7 +29,7 @@ using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
 	static class GotoBaseDeclarationHandler
 	{

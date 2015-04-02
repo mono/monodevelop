@@ -173,9 +173,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GotoBaseDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeRefactoringDescriptor.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeRefactoringService.cs" />

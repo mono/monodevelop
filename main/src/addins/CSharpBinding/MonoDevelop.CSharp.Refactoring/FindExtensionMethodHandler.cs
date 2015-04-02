@@ -31,7 +31,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
 	class FindExtensionMethodHandler 
 	{

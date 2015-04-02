@@ -37,8 +37,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Refactoring;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
 	class FindDerivedSymbolsHandler
 	{

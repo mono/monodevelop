@@ -30,7 +30,7 @@ using MonoDevelop.Ide.FindInFiles;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Refactoring
+namespace MonoDevelop.CSharp.Refactoring
 {
 	static class FindMemberOverloadsHandler
 	{
