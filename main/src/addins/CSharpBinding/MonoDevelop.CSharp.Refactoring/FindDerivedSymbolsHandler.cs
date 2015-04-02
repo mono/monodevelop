@@ -40,7 +40,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Refactoring
 {
-	class FindDerivedSymbolsHandler : CommandHandler
+	class FindDerivedSymbolsHandler
 	{
 		public static bool CanFindDerivedSymbols (ISymbol symbol, out string description)
 		{
@@ -59,7 +59,7 @@ namespace MonoDevelop.Refactoring
 
 		public static void FindDerivedSymbols (ISymbol symbol)
 		{
-			Task.Factory.StartNew (delegate {
+			Task.Run (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					IEnumerable<ISymbol> task;
 
@@ -82,8 +82,19 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 		}
-		
-		protected async override void Run (object data)
+
+		public async void Update (CommandInfo info)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
+				info.Enabled = false;
+				return;
+			}
+			var rinfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
+			info.Enabled = rinfo.DeclaredSymbol != null;
+		}
+
+		public async void Run (object data)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)

@@ -67,7 +67,6 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"
 					_label = "_Find References of All Overloads" />
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses"
-					defaultHandler = "MonoDevelop.Refactoring.FindDerivedSymbolsHandler"
 					_label = "Find _Derived Symbols" />
 		</Category>
 		
