@@ -330,20 +330,12 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\CommitDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\EditRepositoryDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\SelectRepositoryDialog.cs" />
-    <Compile Include="MonoDevelop.VersionControl\AddRemoveMoveCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeSet.cs" />
-    <Compile Include="MonoDevelop.VersionControl\CheckoutCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\Commands.cs" />
-    <Compile Include="MonoDevelop.VersionControl\CommitCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\CommitDialogExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl\CommitEventHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl\PublishCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Repository.cs" />
-    <Compile Include="MonoDevelop.VersionControl\RevertCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\Revision.cs" />
-    <Compile Include="MonoDevelop.VersionControl\Task.cs" />
     <Compile Include="MonoDevelop.VersionControl\UnknownRepository.cs" />
-    <Compile Include="MonoDevelop.VersionControl\UpdateCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\UrlBasedRepository.cs" />
     <Compile Include="MonoDevelop.VersionControl\UrlBasedRepositoryEditor.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlConfiguration.cs" />
@@ -358,9 +350,6 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Dialogs.EditRepositoryDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Dialogs.CommitDialog.cs" />
-    <Compile Include="MonoDevelop.VersionControl\RevertRevisionsCommands.cs" />
-    <Compile Include="MonoDevelop.VersionControl\LockCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\UnlockCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeLogWriter.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlItem.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlCommandHandler.cs" />
@@ -371,7 +360,6 @@
     <Compile Include="MonoDevelop.VersionControl\CommitMessageFormat.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlPolicy.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlPolicyPanel.cs" />
-    <Compile Include="MonoDevelop.VersionControl\CreatePatchCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DiffParser.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BlameView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ComparisonWidget.cs" />
@@ -390,13 +378,7 @@
     <Compile Include="MonoDevelop.VersionControl\IRepositoryEditor.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlOperation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\VersionControlDocumentInfo.cs" />
-    <Compile Include="MonoDevelop.VersionControl\LogCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\DiffCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\MergeCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\BlameCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionInfoCache.cs" />
-    <Compile Include="MonoDevelop.VersionControl\IgnoreCommand.cs" />
-    <Compile Include="MonoDevelop.VersionControl\ResolveConflictsCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlGeneralOptionsPanel.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
@@ -405,9 +387,30 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlItemListExtensions.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\IVersionControlViewHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\DefaultVersionControlViewHandlers.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\UpdateCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\UnlockCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\RevertRevisionsCommands.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\RevertCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\ResolveConflictsCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\PublishCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\MergeCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\LogCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\LockCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\CreatePatchCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\IgnoreCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\AddRemoveMoveCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\BlameCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\CheckoutCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\CommitCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\DiffCommand.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\Task.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Commands\Commands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="MonoDevelop.VersionControl.Commands\" />
+  </ItemGroup>
 </Project>

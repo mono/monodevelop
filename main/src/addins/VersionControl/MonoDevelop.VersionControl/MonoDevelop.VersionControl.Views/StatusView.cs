@@ -16,6 +16,7 @@ using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
 using MonoDevelop.Components;
 using System.Text;
+using MonoDevelop.VersionControl.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {

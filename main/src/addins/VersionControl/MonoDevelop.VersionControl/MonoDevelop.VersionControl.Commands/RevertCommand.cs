@@ -6,7 +6,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	internal class RevertCommand
 	{

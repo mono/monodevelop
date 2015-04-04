@@ -4,9 +4,9 @@ using Gtk;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	internal abstract class Task 
+	abstract class Task 
 	{
 		IProgressMonitor tracker;
 		ThreadNotify threadnotify;

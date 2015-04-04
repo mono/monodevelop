@@ -28,7 +28,7 @@ using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	public class ResolveConflictsCommand
 	{
