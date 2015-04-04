@@ -1,11 +1,12 @@
 using System.Linq;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	internal class UpdateCommand
 	{
-		public static bool Update (VersionControlItemList items, bool test)
+		public static bool Update (List<VersionControlItem> items, bool test)
 		{
 			if (!items.All (i => i.VersionInfo.CanUpdate))
 				return false;
@@ -17,9 +18,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		private class UpdateWorker : Task {
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public UpdateWorker (VersionControlItemList items) {
+			public UpdateWorker (List<VersionControlItem> items) {
 				this.items = items;
 				OperationType = VersionControlOperationType.Pull;
 			}
@@ -30,8 +31,8 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ()) {
-					list[0].Repository.Update (list.Paths, true, Monitor);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ()) {
+					list[0].Repository.Update (list.GetPaths (), true, Monitor);
 				}
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Update operation completed."));
 				Gtk.Application.Invoke (delegate {

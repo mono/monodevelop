@@ -82,7 +82,7 @@ namespace MonoDevelop.VersionControl.Views
 		bool updatingComment;
 		ChangeSet changeSet;
 		bool firstLoad = true;
-		VersionControlItemList fileList;
+		List<VersionControlItem> fileList;
 
 		const int ColIcon = 0;
 		const int ColStatus = 1;
@@ -102,7 +102,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		delegate void DiffDataHandler (List<DiffData> diffdata);
 
-		public static bool Show (VersionControlItemList items, bool test, bool solution)
+		public static bool Show (List<VersionControlItem> items, bool test, bool solution)
 		{
 			FilePath path = items.FindMostSpecificParent ();
 			bool isSingleDirectory = false;
@@ -275,7 +275,7 @@ namespace MonoDevelop.VersionControl.Views
 			StartUpdate();
 		}
 
-		public StatusView (string filepath, Repository vc, VersionControlItemList list)
+		public StatusView (string filepath, Repository vc, List<VersionControlItem> list)
 			: base (Path.GetFileName (filepath) + " Status")
 		{
 			this.vc = vc;
@@ -789,7 +789,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			object commandChain = this;
 			CommandEntrySet opset = new CommandEntrySet ();
-			VersionControlItemList items = GetSelectedItems ();
+			List<VersionControlItem> items = GetSelectedItems ();
 
 			foreach (object ob in AddinManager.GetExtensionNodes ("/MonoDevelop/VersionControl/StatusViewCommands")) {
 				if (ob is TypeExtensionNode) {
@@ -810,10 +810,10 @@ namespace MonoDevelop.VersionControl.Views
 			IdeApp.CommandService.ShowContextMenu (filelist, evnt, opset, commandChain);
 		}
 
-		public VersionControlItemList GetSelectedItems ()
+		public List<VersionControlItem> GetSelectedItems ()
 		{
 			string[] files = GetCurrentFiles ();
-			VersionControlItemList items = new VersionControlItemList ();
+			List<VersionControlItem> items = new List<VersionControlItem> ();
 			foreach (string file in files) {
 				Project prj = IdeApp.Workspace.GetProjectContainingFile (file);
 				items.Add (new VersionControlItem (vc, prj, file, Directory.Exists (file), null));

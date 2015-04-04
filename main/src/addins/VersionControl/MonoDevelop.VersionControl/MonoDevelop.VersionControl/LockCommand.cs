@@ -27,12 +27,13 @@
 
 using System.Linq;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	public class LockCommand
 	{
-		public static bool Lock (VersionControlItemList items, bool test)
+		public static bool Lock (List<VersionControlItem> items, bool test)
 		{
 			if (!items.All (i => i.VersionInfo.CanLock))
 				return false;
@@ -45,9 +46,9 @@ namespace MonoDevelop.VersionControl
 
 		private class LockWorker : Task 
 		{
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public LockWorker (VersionControlItemList items) {
+			public LockWorker (List<VersionControlItem> items) {
 				this.items = items;
 			}
 			
@@ -57,8 +58,8 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Lock (Monitor, list.Paths);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Lock (Monitor, list.GetPaths ());
 				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
 				

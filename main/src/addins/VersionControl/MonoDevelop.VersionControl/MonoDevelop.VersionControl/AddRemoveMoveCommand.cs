@@ -1,12 +1,13 @@
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl 
 {
 	internal class AddCommand
 	{
-		public static bool Add (VersionControlItemList items, bool test)
+		public static bool Add (List<VersionControlItem> items, bool test)
 		{
 			if (!items.All (i => i.VersionInfo.CanAdd))
 				return false;
@@ -18,9 +19,9 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		private class AddWorker : Task {
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public AddWorker (VersionControlItemList items) 
+			public AddWorker (List<VersionControlItem> items)
 			{
 				this.items = items;
 			}
@@ -34,8 +35,8 @@ namespace MonoDevelop.VersionControl
 			{
 				IProgressMonitor monitor = Monitor;
 				
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Add (list.Paths, true, monitor);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Add (list.GetPaths (), true, monitor);
 				
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
@@ -94,7 +95,7 @@ namespace MonoDevelop.VersionControl
 	
 	internal class RemoveCommand
 	{
-		public static bool Remove (VersionControlItemList items, bool test)
+		public static bool Remove (List<VersionControlItem> items, bool test)
 		{
 			if (!items.All (i => i.VersionInfo.CanRemove))
 				return false;
@@ -109,9 +110,9 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		private class RemoveWorker : Task {
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public RemoveWorker (VersionControlItemList items) {
+			public RemoveWorker (List<VersionControlItem> items) {
 				this.items = items;
 			}
 			
@@ -121,13 +122,13 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ()) {
-					VersionControlItemList files = list.GetFiles ();
+				foreach (List<VersionControlItem> list in items.SplitByRepository ()) {
+					List<VersionControlItem> files = list.GetFiles ();
 					if (files.Count > 0)
-						files[0].Repository.DeleteFiles (files.Paths, true, Monitor, true);
-					VersionControlItemList dirs = list.GetDirectories ();
+						files[0].Repository.DeleteFiles (files.GetPaths (), true, Monitor, true);
+					List<VersionControlItem> dirs = list.GetDirectories ();
 					if (dirs.Count > 0)
-						dirs[0].Repository.DeleteDirectories (dirs.Paths, true, Monitor, true);
+						dirs[0].Repository.DeleteDirectories (dirs.GetPaths (), true, Monitor, true);
 				}
 				
 				Gtk.Application.Invoke (delegate {

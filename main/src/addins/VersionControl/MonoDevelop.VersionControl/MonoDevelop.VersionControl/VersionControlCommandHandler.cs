@@ -29,14 +29,15 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	public class VersionControlCommandHandler : NodeCommandHandler 
 	{
-		VersionControlItemList items;
+		List<VersionControlItem> items;
 		
-		public void Init (VersionControlItemList items)
+		public void Init (List<VersionControlItem> items)
 		{
 			this.items = items;
 		}
@@ -50,14 +51,14 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		public VersionControlItemList GetItems (bool projRecurse = true)
+		public List<VersionControlItem> GetItems (bool projRecurse = true)
 		{
 			// Cached items are used only in the status view, not in the project pad.
 			if (items != null)
 				return items;
 
 			// Don't cache node items because they can change
-			VersionControlItemList nodeItems = new VersionControlItemList ();
+			List<VersionControlItem> nodeItems = new List<VersionControlItem> ();
 			foreach (ITreeNavigator node in CurrentNodes) {
 				VersionControlItem item = CreateItem (node.DataItem, projRecurse);
 				if (item != null)

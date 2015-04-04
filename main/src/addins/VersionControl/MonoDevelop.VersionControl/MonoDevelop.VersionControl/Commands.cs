@@ -5,6 +5,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Views;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
@@ -32,9 +33,9 @@ namespace MonoDevelop.VersionControl
 	
 	class SolutionVersionControlCommandHandler: CommandHandler
 	{
-		static VersionControlItemList GetItems ()
+		static List<VersionControlItem> GetItems ()
 		{
-			VersionControlItemList list = new VersionControlItemList ();
+			List<VersionControlItem> list = new List<VersionControlItem> ();
 			
 			WorkspaceItem wob;
 			SolutionItem sol;
@@ -56,7 +57,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run ()
 		{
-			VersionControlItemList items = GetItems ();
+			List<VersionControlItem> items = GetItems ();
 			RunCommand (items, false);
 		}
 		
@@ -67,11 +68,11 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			VersionControlItemList items = GetItems ();
+			List<VersionControlItem> items = GetItems ();
 			info.Enabled = items.Count > 0 && RunCommand (items, true);
 		}
 		
-		protected virtual bool RunCommand (VersionControlItemList items, bool test)
+		protected virtual bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return true;
 		}
@@ -79,9 +80,9 @@ namespace MonoDevelop.VersionControl
 	
 	class FileVersionControlCommandHandler: CommandHandler
 	{
-		protected static VersionControlItemList GetItems ()
+		protected static List<VersionControlItem> GetItems ()
 		{
-			VersionControlItemList list = new VersionControlItemList ();
+			List<VersionControlItem> list = new List<VersionControlItem> ();
 			VersionControlItem it = GetItem ();
 
 			if (it != null)
@@ -108,7 +109,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected override void Run ()
 		{
-			VersionControlItemList items = GetItems ();
+			List<VersionControlItem> items = GetItems ();
 			RunCommand (items, false);
 		}
 		
@@ -119,11 +120,11 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			VersionControlItemList items = GetItems ();
+			List<VersionControlItem> items = GetItems ();
 			info.Enabled = items.Count > 0 && RunCommand (items, true);
 		}
 		
-		protected virtual bool RunCommand (VersionControlItemList items, bool test)
+		protected virtual bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return true;
 		}
@@ -131,7 +132,7 @@ namespace MonoDevelop.VersionControl
 
 	class UpdateCommandHandler: SolutionVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return UpdateCommand.Update (items, test);
 		}
@@ -139,7 +140,7 @@ namespace MonoDevelop.VersionControl
 	
 	class StatusCommandHandler: SolutionVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return StatusView.Show (items, test, true);
 		}
@@ -147,7 +148,7 @@ namespace MonoDevelop.VersionControl
 
 	class AddCommandHandler: FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return AddCommand.Add (items, test);
 		}
@@ -161,7 +162,7 @@ namespace MonoDevelop.VersionControl
 	
 	class RemoveCommandHandler: FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return RemoveCommand.Remove (items, test);
 		}
@@ -175,7 +176,7 @@ namespace MonoDevelop.VersionControl
 	
 	class RevertCommandHandler: FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return RevertCommand.Revert (items, test);
 		}
@@ -189,7 +190,7 @@ namespace MonoDevelop.VersionControl
 	
 	class LockCommandHandler: FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return LockCommand.Lock (items, test);
 		}
@@ -203,7 +204,7 @@ namespace MonoDevelop.VersionControl
 	
 	class UnlockCommandHandler: FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return UnlockCommand.Unlock (items, test);
 		}
@@ -217,7 +218,7 @@ namespace MonoDevelop.VersionControl
 
 	class IgnoreCommandHandler : FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return IgnoreCommand.Ignore (items, test);
 		}
@@ -231,7 +232,7 @@ namespace MonoDevelop.VersionControl
 
 	class UnignoreCommandHandler : FileVersionControlCommandHandler
 	{
-		protected override bool RunCommand (VersionControlItemList items, bool test)
+		protected override bool RunCommand (List<VersionControlItem> items, bool test)
 		{
 			return UnignoreCommand.Unignore (items, test);
 		}

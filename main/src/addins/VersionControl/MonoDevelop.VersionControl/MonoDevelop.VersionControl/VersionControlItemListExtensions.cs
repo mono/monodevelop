@@ -1,4 +1,4 @@
-// VersionControlItemList.cs
+// List<VersionControlItem>.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -31,15 +31,15 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlItemList: List<VersionControlItem>
+	public static class VersionControlItemListExtensions
 	{
-		public VersionControlItemList[] SplitByRepository ()
+		public static List<VersionControlItem>[] SplitByRepository (this IList<VersionControlItem> items)
 		{
-			Dictionary<Repository, VersionControlItemList> t = new Dictionary<Repository, VersionControlItemList> ();
-			foreach (VersionControlItem it in this) {
-				VersionControlItemList list;
+			var t = new Dictionary<Repository, List<VersionControlItem>> ();
+			foreach (VersionControlItem it in items) {
+				List<VersionControlItem> list;
 				if (!t.TryGetValue (it.Repository, out list)) {
-					list = new VersionControlItemList ();
+					list = new List<VersionControlItem> ();
 					t [it.Repository] = list;
 				}
 				list.Add (it);
@@ -48,37 +48,36 @@ namespace MonoDevelop.VersionControl
 			return t.Values.ToArray ();
 		}
 
-		public VersionControlItemList GetFiles ()
+		public static List<VersionControlItem> GetFiles (this IList<VersionControlItem> items)
 		{
-			VersionControlItemList paths = new VersionControlItemList ();
-			foreach (VersionControlItem it in this) {
+			var paths = new List<VersionControlItem> ();
+			foreach (VersionControlItem it in items) {
 				if (!it.IsDirectory)
 					paths.Add (it);
 			}
 			return paths;
 		}
 
-		public VersionControlItemList GetDirectories ()
+		public static List<VersionControlItem> GetDirectories (this IList<VersionControlItem> items)
 		{
-			VersionControlItemList paths = new VersionControlItemList ();
-			foreach (VersionControlItem it in this) {
+			var paths = new List<VersionControlItem> ();
+			foreach (VersionControlItem it in items) {
 				if (it.IsDirectory)
 					paths.Add (it);
 			}
 			return paths;
 		}
 
-		public FilePath[] Paths {
-			get {
-				return this.Select (v => v.Path).ToArray ();
-			}
+		public static FilePath[] GetPaths (this IList<VersionControlItem> items)
+		{
+			return items.Select (v => v.Path).ToArray ();
 		}
 
 		// Finds the most specific ancestor path of a set of version control items.
 		// Returns FilePath.Null if no parent is found.
-		public FilePath FindMostSpecificParent ()
+		public static FilePath FindMostSpecificParent (this IList<VersionControlItem> items)
 		{
-			return FilePath.GetCommonRootPath (Paths);
+			return FilePath.GetCommonRootPath (items.GetPaths ());
 		}
 	}
 }
