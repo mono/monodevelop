@@ -239,7 +239,7 @@ namespace Mono.TextTemplating
 			var test = Path.Combine (dir, path);
 			if (File.Exists (test) || Directory.Exists (test))
 				return test;
-			return null;
+			return path;
 		}
 		
 		#endregion
