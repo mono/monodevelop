@@ -199,8 +199,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal MonoDevelop.Projects.Project GetMonoProject (Project project)
 		{
+			return GetMonoProject (project.Id);
+		}
+
+		internal MonoDevelop.Projects.Project GetMonoProject (ProjectId projectId)
+		{
 			foreach (var kv in projectIdMap) {
-				if (kv.Value == project.Id)
+				if (kv.Value == projectId)
 					return kv.Key;
 			}
 			return null;
@@ -348,9 +353,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
-		static DocumentInfo CreateDocumentInfo (ProjectData id, MonoDevelop.Projects.ProjectFile f)
+		static DocumentInfo CreateDocumentInfo (string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
-			return DocumentInfo.Create (id.GetOrCreateDocumentId (f.Name), f.FilePath, null, SourceCodeKind.Regular, CreateTextLoader (f.Name), f.Name, false);
+			return DocumentInfo.Create (
+				id.GetOrCreateDocumentId (f.Name), 
+				f.FilePath,
+				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
+				SourceCodeKind.Regular, 
+				CreateTextLoader (f.Name), 
+				f.Name, 
+				false
+			);
 		}
 
 		IEnumerable<DocumentInfo> CreateDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
@@ -362,7 +375,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
 					if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (id, f);
+					yield return CreateDocumentInfo (p.Name, id, f);
 					continue;
 				}
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
@@ -472,7 +485,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 			IdeApp.Workbench.OpenDocument (new MonoDevelop.Ide.Gui.FileOpenInformation (
-				document.FilePath,
+				DetermineFilePath(document.Id, document.Name, document.FilePath, document.Folders),
 				prj,
 				activate
 			)); 
@@ -516,8 +529,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyAdditionalDocumentAdded (DocumentInfo info, SourceText text)
 		{
-			Console.WriteLine ("apply additional doc added");
-
 			base.ApplyAdditionalDocumentAdded (info, text);
 		}
 
@@ -602,7 +613,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
 			var id = info.Id;
-			var path = info.FilePath;
+			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, true);
 
 			MonoDevelop.Projects.Project mdProject = null;
 
@@ -635,6 +646,36 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			OnDocumentAdded (info.WithTextLoader (new MonoDevelopTextLoader (path)));
+		}
+
+		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, bool createDirectory = false)
+		{
+			var path = filePath;
+
+			if (string.IsNullOrEmpty (path)) {
+				var monoProject = GetMonoProject (id.ProjectId);
+
+				// If the first namespace name matches the name of the project, then we don't want to
+				// generate a folder for that.  The project is implicitly a folder with that name.
+				IEnumerable<string> folders;
+				if (docFolders.FirstOrDefault () == monoProject.Name) {
+					folders = docFolders.Skip (1);
+				} else {
+					folders = docFolders;
+				}
+
+				if (folders.Any ()) {
+					string baseDirectory = Path.Combine (monoProject.BaseDirectory, Path.Combine (folders.ToArray ()));
+					try {
+						if (createDirectory && !Directory.Exists (baseDirectory))
+							Directory.CreateDirectory (baseDirectory);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while creating directory for a new file : " + baseDirectory, e);
+					}
+                    path = Path.Combine (baseDirectory, name);
+				}
+			}
+			return path;
 		}
 		#endregion
 
@@ -695,7 +736,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!TypeSystemParserNode.IsCompileBuildAction (fargs.ProjectFile.BuildAction))
 					continue;
 				var projectId = GetProjectId (project);
-				var newDocument = CreateDocumentInfo (GetProjectData (projectId), fargs.ProjectFile);
+				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), fargs.ProjectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
@@ -738,7 +779,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					data.RemoveDocument (fargs.OldName);
 				}
 
-				var newDocument = CreateDocumentInfo (GetProjectData (projectId), fargs.ProjectFile);
+				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), fargs.ProjectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
