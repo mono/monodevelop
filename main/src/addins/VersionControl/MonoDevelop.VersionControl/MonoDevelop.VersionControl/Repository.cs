@@ -133,7 +133,10 @@ namespace MonoDevelop.VersionControl
 			VersionControlOperation operations = VersionControlOperation.None;
 			bool exists = !vinfo.LocalPath.IsNullOrEmpty && (File.Exists (vinfo.LocalPath) || Directory.Exists (vinfo.LocalPath));
 			if (vinfo.IsVersioned) {
-				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
+				operations = VersionControlOperation.Commit | VersionControlOperation.Update;
+				if (!vinfo.HasLocalChange (VersionStatus.ScheduledAdd))
+					operations |= VersionControlOperation.Log;
+
 				if (exists) {
 					if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
 						operations |= VersionControlOperation.Remove;
