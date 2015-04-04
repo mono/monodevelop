@@ -390,11 +390,6 @@
     <Compile Include="MonoDevelop.VersionControl\IRepositoryEditor.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlOperation.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\VersionControlDocumentInfo.cs" />
-    <Compile Include="MonoDevelop.VersionControl\IVersionControlViewHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl\DefaultDiffViewHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl\DefaultBlameViewHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl\DefaultLogViewHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl\DefaultMergeViewHandler.cs" />
     <Compile Include="MonoDevelop.VersionControl\LogCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\DiffCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\MergeCommand.cs" />
@@ -408,6 +403,8 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlItemListExtensions.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\IVersionControlViewHandler.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\DefaultVersionControlViewHandlers.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
