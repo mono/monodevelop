@@ -58,8 +58,8 @@ namespace MonoDevelop.VersionControl.Commands
 			
 			protected override void Run ()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Lock (Monitor, list.GetPaths ());
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Lock (Monitor, list.Value.GetPaths ());
 				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
 				

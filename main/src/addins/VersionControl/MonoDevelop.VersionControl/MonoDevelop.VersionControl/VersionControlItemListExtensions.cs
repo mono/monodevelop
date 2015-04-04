@@ -33,7 +33,7 @@ namespace MonoDevelop.VersionControl
 {
 	public static class VersionControlItemListExtensions
 	{
-		public static List<VersionControlItem>[] SplitByRepository (this IList<VersionControlItem> items)
+		public static Dictionary<Repository, List<VersionControlItem>> SplitByRepository (this IList<VersionControlItem> items)
 		{
 			var t = new Dictionary<Repository, List<VersionControlItem>> ();
 			foreach (VersionControlItem it in items) {
@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl
 				list.Add (it);
 			}
 
-			return t.Values.ToArray ();
+			return t;
 		}
 
 		public static List<VersionControlItem> GetFiles (this IList<VersionControlItem> items)

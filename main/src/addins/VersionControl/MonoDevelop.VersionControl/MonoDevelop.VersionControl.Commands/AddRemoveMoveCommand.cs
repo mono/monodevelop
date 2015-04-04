@@ -35,8 +35,8 @@ namespace MonoDevelop.VersionControl.Commands
 			{
 				IProgressMonitor monitor = Monitor;
 				
-				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Add (list.GetPaths (), true, monitor);
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Add (list.Value.GetPaths (), true, Monitor);
 				
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
@@ -122,13 +122,14 @@ namespace MonoDevelop.VersionControl.Commands
 			
 			protected override void Run()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ()) {
-					List<VersionControlItem> files = list.GetFiles ();
+				foreach (var list in items.SplitByRepository ()) {
+					List<VersionControlItem> files = list.Value.GetFiles ();
 					if (files.Count > 0)
-						files[0].Repository.DeleteFiles (files.GetPaths (), true, Monitor, true);
-					List<VersionControlItem> dirs = list.GetDirectories ();
+						list.Key.DeleteFiles (files.GetPaths (), true, Monitor);
+					
+					List<VersionControlItem> dirs = list.Value.GetDirectories ();
 					if (dirs.Count > 0)
-						dirs[0].Repository.DeleteDirectories (dirs.GetPaths (), true, Monitor, true);
+						list.Key.DeleteDirectories (dirs.GetPaths (), true, Monitor);
 				}
 				
 				Gtk.Application.Invoke (delegate {
