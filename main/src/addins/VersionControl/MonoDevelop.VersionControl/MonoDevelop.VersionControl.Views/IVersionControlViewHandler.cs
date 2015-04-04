@@ -1,10 +1,10 @@
 // 
-// DefaultBlameViewHandler.cs
+// IVersionControlViewHandler.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
 // 
-// Copyright 2011, Xamarin Inc.
+// Copyright 2011, Xamarin Inc. 
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.VersionControl.Views;
-using MonoDevelop.Projects.Text;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Views
 {
-	public class DefaultBlameViewHandler : IBlameViewHandler
+	public interface IVersionControlViewHandler<T>
+		where T : IAttachableViewContent
 	{
-		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
-		{
-			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
-				&& DesktopService.GetFileIsText (item.Path);
-		}
+		bool CanHandle (VersionControlItem item, DocumentView primaryView);
+		T CreateView (VersionControlDocumentInfo info);
+	}
 
-		public IBlameView CreateView (VersionControlDocumentInfo info)
-		{
-			return new BlameView (info);
-		}
+	public interface IDiffViewHandler : IVersionControlViewHandler<IDiffView>
+	{
+	}
+
+	public interface IBlameViewHandler : IVersionControlViewHandler<IBlameView>
+	{
+	}
+
+	public interface ILogViewHandler : IVersionControlViewHandler<ILogView>
+	{
+	}
+
+	public interface IMergeViewHandler : IVersionControlViewHandler<IMergeView>
+	{
 	}
 }
+

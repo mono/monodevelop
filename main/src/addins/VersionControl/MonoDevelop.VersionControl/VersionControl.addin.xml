@@ -27,38 +27,38 @@
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffViewHandler" name = "Diff view handler">
 		<Description>Handler used to create the a diff view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IDiffViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IDiffViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.DefaultDiffViewHandler" />
+		<Handler class = "MonoDevelop.VersionControl.Views.DefaultDiffViewHandler" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
 		<Description>Handler used to create the a blame view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IBlameViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IBlameViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/BlameViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.DefaultBlameViewHandler" />
+		<Handler class = "MonoDevelop.VersionControl.Views.DefaultBlameViewHandler" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/LogViewHandler" name = "Log view handler">
 		<Description>Handler used to create the a log view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.ILogViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.ILogViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/LogViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.DefaultLogViewHandler" />
+		<Handler class = "MonoDevelop.VersionControl.Views.DefaultLogViewHandler" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/MergeViewHandler" name = "Merge view handler">
 		<Description>Handler used to create the a merge view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.IMergeViewHandler" />
+		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IMergeViewHandler" />
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/VersionControl/MergeViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.DefaultMergeViewHandler" />
+		<Handler class = "MonoDevelop.VersionControl.Views.DefaultMergeViewHandler" />
 	</Extension>
 
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffView/ContextMenu" name = "Diff view context menu">
