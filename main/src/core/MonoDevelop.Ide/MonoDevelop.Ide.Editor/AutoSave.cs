@@ -97,12 +97,10 @@ namespace MonoDevelop.Ide.Editor
 				return;
 			try {
 				// Directory may have removed/unmounted. Therefore this operation is not guaranteed to work.
-				string tmpFile = Path.GetTempFileName ();
-				content.WriteTextTo (tmpFile);
 				var autosaveFileName = GetAutoSaveFileName (fileName);
 				if (File.Exists (autosaveFileName))
 					File.Delete (autosaveFileName);
-				File.Move (tmpFile, autosaveFileName);
+				content.WriteTextTo (autosaveFileName);
 				Counters.AutoSavedFiles++;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in auto save while creating: " + fileName +". Disableing auto save.", e);

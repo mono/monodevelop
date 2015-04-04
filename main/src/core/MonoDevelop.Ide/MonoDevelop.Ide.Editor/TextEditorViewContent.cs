@@ -72,9 +72,7 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor = textEditor;
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
-			this.textEditor.TextChanged += HandleTextChanged;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
 			this.textEditor.DocumentContextChanged += delegate {
 				if (currentContext != null)
 					currentContext.DocumentParsed -= HandleDocumentParsed;
@@ -360,14 +358,22 @@ namespace MonoDevelop.Ide.Editor
 
 		void IViewContent.Load (FileOpenInformation fileOpenInformation)
 		{
+			this.textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			this.textEditor.TextChanged -= HandleTextChanged;
 			textEditorImpl.Load (fileOpenInformation);
 			RunFirstTimeFoldUpdate (textEditor.Text);
+			this.textEditor.TextChanged += HandleTextChanged;
+			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
 		}
 		
 		void IViewContent.Load (string fileName)
 		{
+			this.textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			this.textEditor.TextChanged -= HandleTextChanged;
 			textEditorImpl.Load (new FileOpenInformation (fileName));
 			RunFirstTimeFoldUpdate (textEditor.Text);
+			this.textEditor.TextChanged += HandleTextChanged;
+			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
 		}
 
 		void IViewContent.LoadNew (System.IO.Stream content, string mimeType)
@@ -409,6 +415,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void IViewContent.DiscardChanges ()
 		{
+			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.DiscardChanges ();
 		}
 
@@ -488,7 +496,6 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		#region IBaseViewContent implementation
-
 		object IBaseViewContent.GetContent (Type type)
 		{
 			if (type.IsAssignableFrom (typeof(TextEditor)))

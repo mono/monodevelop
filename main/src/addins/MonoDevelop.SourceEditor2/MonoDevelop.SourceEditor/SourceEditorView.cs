@@ -722,12 +722,6 @@ namespace MonoDevelop.SourceEditor
 			IsDirty = false;
 		}
 		
-		public override void DiscardChanges ()
-		{
-			if (!string.IsNullOrEmpty (ContentName))
-				AutoSave.RemoveAutoSaveFile (ContentName);
-		}
-
 		public void InformLoadComplete ()
 		{
 		/*
@@ -773,9 +767,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			
-			// Handle the "reload" case.
-			if (ContentName == fileName)
-				AutoSave.RemoveAutoSaveFile (fileName);
 			if (warnOverwrite) {
 				warnOverwrite = false;
 				widget.RemoveMessageBar ();
