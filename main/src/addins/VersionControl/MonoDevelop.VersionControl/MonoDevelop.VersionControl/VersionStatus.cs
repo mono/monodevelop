@@ -6,8 +6,8 @@ namespace MonoDevelop.VersionControl
 	[Flags]
 	public enum VersionStatus
 	{
-		Unversioned      = 0x00000000,
-		Versioned        = 0x00000001,
+		Unmodified       = 0x00000000,
+		Unversioned      = 0x00000001,
 		Ignored          = 0x00000002,
 		LockRequired     = 0x00000004,  // A lock is required to edit this file
 		LockOwned        = 0x00000008,  // File locked by the current user

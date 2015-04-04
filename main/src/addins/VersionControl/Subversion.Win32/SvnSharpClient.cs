@@ -477,23 +477,23 @@ namespace SubversionAddinWindows
 		static VersionStatus ConvertStatus (SvnSchedule schedule, SvnStatus status)
 		{
 			switch (schedule) {
-				case SvnSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-				case SvnSchedule.Delete: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
-				case SvnSchedule.Replace: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+				case SvnSchedule.Add: return VersionStatus.ScheduledAdd;
+				case SvnSchedule.Delete: return VersionStatus.ScheduledDelete;
+				case SvnSchedule.Replace: return VersionStatus.ScheduledReplace;
 			}
 
 			switch (status) {
-				case SvnStatus.None: return VersionStatus.Versioned;
-				case SvnStatus.Normal: return VersionStatus.Versioned;
-				case SvnStatus.NotVersioned: return VersionStatus.Unversioned;
-				case SvnStatus.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
-				case SvnStatus.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
-				case SvnStatus.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
-				case SvnStatus.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
-				case SvnStatus.Obstructed: return VersionStatus.Versioned;
-				case SvnStatus.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-				case SvnStatus.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
-				case SvnStatus.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+			case SvnStatus.None: return VersionStatus.Unmodified;
+			case SvnStatus.Normal: return VersionStatus.Unmodified;
+			case SvnStatus.NotVersioned: return VersionStatus.Unversioned;
+			case SvnStatus.Modified: return VersionStatus.Modified;
+			case SvnStatus.Merged: return VersionStatus.Modified;
+			case SvnStatus.Conflicted: return VersionStatus.Conflicted;
+			case SvnStatus.Ignored: return VersionStatus.Ignored;
+			case SvnStatus.Obstructed: return VersionStatus.Unmodified;
+			case SvnStatus.Added: return VersionStatus.ScheduledAdd;
+			case SvnStatus.Deleted: return VersionStatus.ScheduledDelete;
+			case SvnStatus.Replaced: return VersionStatus.ScheduledReplace;
 			}
 
 			return VersionStatus.Unversioned;

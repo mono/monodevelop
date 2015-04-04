@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl.Commands
 			try {
 				// NGit doesn't return a version info for ignored files.
 				if (test)
-					return items.All (x => (x.VersionInfo.Status & (VersionStatus.ScheduledIgnore | VersionStatus.Ignored)) != VersionStatus.Unversioned);
+					return items.All (x => (x.VersionInfo.Status & (VersionStatus.ScheduledIgnore | VersionStatus.Ignored)) != 0);
 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to unignore the selected files?"),
 				                                AlertButton.No, AlertButton.Yes) != AlertButton.Yes)

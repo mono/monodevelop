@@ -151,7 +151,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		// Subversion does an initial query.
 		protected virtual VersionStatus InitialValue {
-			get { return VersionStatus.Versioned; }
+			get { return VersionStatus.Unmodified; }
 		}
 
 		protected int QueryTimer {
@@ -208,7 +208,6 @@ namespace MonoDevelop.VersionControl.Tests
 
 			VersionInfo vi = Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache);
 
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
 			Assert.IsFalse (vi.CanAdd);
 		}
@@ -222,7 +221,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 			VersionInfo vi = Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
 			// TODO: Fix Win32 Svn Remote status check.
-			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
+			Assert.AreEqual (VersionStatus.Unmodified, (VersionStatus.Unmodified & vi.Status));
 		}
 
 		protected virtual void PostCommit (Repository repo)

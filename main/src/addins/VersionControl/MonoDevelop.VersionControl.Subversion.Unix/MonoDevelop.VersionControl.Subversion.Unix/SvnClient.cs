@@ -1179,23 +1179,23 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		static VersionStatus ConvertStatus (LibSvnClient.NodeSchedule schedule, LibSvnClient.svn_wc_status_kind status) {
 			switch (schedule) {
-				case LibSvnClient.NodeSchedule.Add: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
-				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+				case LibSvnClient.NodeSchedule.Add: return VersionStatus.ScheduledAdd;
+				case LibSvnClient.NodeSchedule.Delete: return VersionStatus.ScheduledDelete;
+				case LibSvnClient.NodeSchedule.Replace: return VersionStatus.ScheduledReplace;
 			}
 			
 			switch (status) {
-			case LibSvnClient.svn_wc_status_kind.None: return VersionStatus.Versioned;
-			case LibSvnClient.svn_wc_status_kind.Normal: return VersionStatus.Versioned;
+			case LibSvnClient.svn_wc_status_kind.None: return VersionStatus.Unmodified;
+			case LibSvnClient.svn_wc_status_kind.Normal: return VersionStatus.Unmodified;
 			case LibSvnClient.svn_wc_status_kind.Unversioned: return VersionStatus.Unversioned;
-			case LibSvnClient.svn_wc_status_kind.Modified: return VersionStatus.Versioned | VersionStatus.Modified;
-			case LibSvnClient.svn_wc_status_kind.Merged: return VersionStatus.Versioned | VersionStatus.Modified;
-			case LibSvnClient.svn_wc_status_kind.Conflicted: return VersionStatus.Versioned | VersionStatus.Conflicted;
-			case LibSvnClient.svn_wc_status_kind.Ignored: return VersionStatus.Unversioned | VersionStatus.Ignored;
-			case LibSvnClient.svn_wc_status_kind.Obstructed: return VersionStatus.Versioned;
-			case LibSvnClient.svn_wc_status_kind.Added: return VersionStatus.Versioned | VersionStatus.ScheduledAdd;
-			case LibSvnClient.svn_wc_status_kind.Deleted: return VersionStatus.Versioned | VersionStatus.ScheduledDelete;
-			case LibSvnClient.svn_wc_status_kind.Replaced: return VersionStatus.Versioned | VersionStatus.ScheduledReplace;
+			case LibSvnClient.svn_wc_status_kind.Modified: return VersionStatus.Modified;
+			case LibSvnClient.svn_wc_status_kind.Merged: return VersionStatus.Modified;
+			case LibSvnClient.svn_wc_status_kind.Conflicted: return VersionStatus.Conflicted;
+			case LibSvnClient.svn_wc_status_kind.Ignored: return VersionStatus.Ignored;
+			case LibSvnClient.svn_wc_status_kind.Obstructed: return Unmodified;
+			case LibSvnClient.svn_wc_status_kind.Added: return VersionStatus.ScheduledAdd;
+			case LibSvnClient.svn_wc_status_kind.Deleted: return VersionStatus.ScheduledDelete;
+			case LibSvnClient.svn_wc_status_kind.Replaced: return VersionStatus.ScheduledReplace;
 			}
 			
 			return VersionStatus.Unversioned;
