@@ -2,7 +2,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	internal class UpdateCommand
 	{

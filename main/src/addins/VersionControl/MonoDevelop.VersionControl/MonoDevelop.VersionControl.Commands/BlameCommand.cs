@@ -1,5 +1,5 @@
 // 
-// LogCommand.cs
+// BlameCommand.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -31,18 +31,17 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public class LogCommand
+	public class BlameCommand
 	{
-		internal static readonly string LogViewHandlers = "/MonoDevelop/VersionControl/LogViewHandler";
+		internal static readonly string BlameViewHandlers = "/MonoDevelop/VersionControl/BlameViewHandler";
 		
 		static bool CanShow (VersionControlItem item)
 		{
-			// We want directories to be able to view the log for an entire directory
-			// by selecting it from the solution pane
-			return item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<ILogViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
+			return !item.IsDirectory
+				&& item.VersionInfo.IsVersioned
+				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
 		public static bool Show (List<VersionControlItem> items, bool test)
@@ -51,18 +50,9 @@ namespace MonoDevelop.VersionControl
 				return items.All (CanShow);
 			
 			foreach (var item in items) {
-				Document document = null;
-				if (!item.IsDirectory)
-					document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-
-				if (document != null) {
-					document.Window.SwitchView (document.Window.FindView<ILogView> ());
-				} else {
-					VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
-					LogView logView = new LogView (info);
-					info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
-					logView.Selected ();	
-				}
+				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+				if (document != null)
+					document.Window.SwitchView (document.Window.FindView<IBlameView> ());
 			}
 			
 			return true;

@@ -10,6 +10,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide;
+using MonoDevelop.VersionControl.Commands;
 
 
 namespace MonoDevelop.VersionControl
@@ -221,170 +222,170 @@ namespace MonoDevelop.VersionControl
 	class AddinCommandHandler : VersionControlCommandHandler 
 	{
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Update)]
+		[CommandHandler (VersionControlCommands.Update)]
 		protected void OnUpdate() {
-			RunCommand(Commands.Update, false);
+			RunCommand(VersionControlCommands.Update, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Update)]
+		[CommandUpdateHandler (VersionControlCommands.Update)]
 		protected void UpdateUpdate(CommandInfo item) {
-			TestCommand(Commands.Update, item);
+			TestCommand(VersionControlCommands.Update, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Diff)]
+		[CommandHandler (VersionControlCommands.Diff)]
 		protected void OnDiff() {
-			RunCommand(Commands.Diff, false);
+			RunCommand(VersionControlCommands.Diff, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Diff)]
+		[CommandUpdateHandler (VersionControlCommands.Diff)]
 		protected void UpdateDiff(CommandInfo item) {
-			TestCommand(Commands.Diff, item);
+			TestCommand(VersionControlCommands.Diff, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Log)]
+		[CommandHandler (VersionControlCommands.Log)]
 		protected void OnLog() {
-			RunCommand(Commands.Log, false);
+			RunCommand(VersionControlCommands.Log, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Log)]
+		[CommandUpdateHandler (VersionControlCommands.Log)]
 		protected void UpdateLog(CommandInfo item) {
-			TestCommand(Commands.Log, item);
+			TestCommand(VersionControlCommands.Log, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Status)]
+		[CommandHandler (VersionControlCommands.Status)]
 		protected void OnStatus() {
-			RunCommand(Commands.Status, false);
+			RunCommand(VersionControlCommands.Status, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Status)]
+		[CommandUpdateHandler (VersionControlCommands.Status)]
 		protected void UpdateStatus(CommandInfo item) {
-			TestCommand(Commands.Status, item);
+			TestCommand(VersionControlCommands.Status, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Add)]
+		[CommandHandler (VersionControlCommands.Add)]
 		protected void OnAdd() {
-			RunCommand(Commands.Add, false);
+			RunCommand(VersionControlCommands.Add, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Add)]
+		[CommandUpdateHandler (VersionControlCommands.Add)]
 		protected void UpdateAdd(CommandInfo item) {
-			TestCommand(Commands.Add, item);
+			TestCommand(VersionControlCommands.Add, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Remove)]
+		[CommandHandler (VersionControlCommands.Remove)]
 		protected void OnRemove() {
-			RunCommand(Commands.Remove, false);
+			RunCommand(VersionControlCommands.Remove, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Remove)]
+		[CommandUpdateHandler (VersionControlCommands.Remove)]
 		protected void UpdateRemove(CommandInfo item) {
-			TestCommand(Commands.Remove, item);
+			TestCommand(VersionControlCommands.Remove, item);
 		}
 		
-		[CommandHandler (Commands.Publish)]
+		[CommandHandler (VersionControlCommands.Publish)]
 		protected void OnPublish() 
 		{
-			RunCommand(Commands.Publish, false);
+			RunCommand(VersionControlCommands.Publish, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Publish)]
+		[CommandUpdateHandler (VersionControlCommands.Publish)]
 		protected void UpdatePublish(CommandInfo item) {
-			TestCommand(Commands.Publish, item);
+			TestCommand(VersionControlCommands.Publish, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Revert)]
+		[CommandHandler (VersionControlCommands.Revert)]
 		protected void OnRevert() {
-			RunCommand(Commands.Revert, false, false);
+			RunCommand(VersionControlCommands.Revert, false, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Revert)]
+		[CommandUpdateHandler (VersionControlCommands.Revert)]
 		protected void UpdateRevert(CommandInfo item) {
-			TestCommand(Commands.Revert, item, false);
+			TestCommand(VersionControlCommands.Revert, item, false);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Lock)]
+		[CommandHandler (VersionControlCommands.Lock)]
 		protected void OnLock() {
-			RunCommand(Commands.Lock, false);
+			RunCommand(VersionControlCommands.Lock, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Lock)]
+		[CommandUpdateHandler (VersionControlCommands.Lock)]
 		protected void UpdateLock(CommandInfo item) {
-			TestCommand(Commands.Lock, item);
+			TestCommand(VersionControlCommands.Lock, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Unlock)]
+		[CommandHandler (VersionControlCommands.Unlock)]
 		protected void OnUnlock() {
-			RunCommand(Commands.Unlock, false);
+			RunCommand(VersionControlCommands.Unlock, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Unlock)]
+		[CommandUpdateHandler (VersionControlCommands.Unlock)]
 		protected void UpdateUnlock(CommandInfo item) {
-			TestCommand(Commands.Unlock, item);
+			TestCommand(VersionControlCommands.Unlock, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Annotate)]
+		[CommandHandler (VersionControlCommands.Annotate)]
 		protected void OnAnnotate() {
-			RunCommand(Commands.Annotate, false);
+			RunCommand(VersionControlCommands.Annotate, false);
 		}
 		
-		[CommandUpdateHandler (Commands.Annotate)]
+		[CommandUpdateHandler (VersionControlCommands.Annotate)]
 		protected void UpdateAnnotate(CommandInfo item) {
-			TestCommand(Commands.Annotate, item);
+			TestCommand(VersionControlCommands.Annotate, item);
 		}
 		
 		[AllowMultiSelection]
-		[CommandHandler (Commands.CreatePatch)]
+		[CommandHandler (VersionControlCommands.CreatePatch)]
 		protected void OnCreatePatch() {
-			RunCommand(Commands.CreatePatch, false);
+			RunCommand(VersionControlCommands.CreatePatch, false);
 		}
 		
-		[CommandUpdateHandler (Commands.CreatePatch)]
+		[CommandUpdateHandler (VersionControlCommands.CreatePatch)]
 		protected void UpdateCreatePatch(CommandInfo item) {
-			TestCommand(Commands.CreatePatch, item);
+			TestCommand(VersionControlCommands.CreatePatch, item);
 		}
 
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Ignore)]
+		[CommandHandler (VersionControlCommands.Ignore)]
 		protected void OnIgnore ()
 		{
-			RunCommand(Commands.Ignore, false);
+			RunCommand(VersionControlCommands.Ignore, false);
 		}
 
-		[CommandUpdateHandler (Commands.Ignore)]
+		[CommandUpdateHandler (VersionControlCommands.Ignore)]
 		protected void UpdateIgnore (CommandInfo item)
 		{
-			TestCommand(Commands.Ignore, item);
+			TestCommand(VersionControlCommands.Ignore, item);
 		}
 
 		[AllowMultiSelection]
-		[CommandHandler (Commands.Unignore)]
+		[CommandHandler (VersionControlCommands.Unignore)]
 		protected void OnUnignore ()
 		{
-			RunCommand(Commands.Unignore, false);
+			RunCommand(VersionControlCommands.Unignore, false);
 		}
 
-		[CommandUpdateHandler (Commands.Unignore)]
+		[CommandUpdateHandler (VersionControlCommands.Unignore)]
 		protected void UpdateUnignore (CommandInfo item)
 		{
-			TestCommand(Commands.Unignore, item);
+			TestCommand(VersionControlCommands.Unignore, item);
 		}
 
-		[CommandHandler (Commands.ResolveConflicts)]
+		[CommandHandler (VersionControlCommands.ResolveConflicts)]
 		protected void OnResolveConflicts ()
 		{
-			RunCommand (Commands.ResolveConflicts, false, false);
+			RunCommand (VersionControlCommands.ResolveConflicts, false, false);
 		}
 
-		[CommandUpdateHandler (Commands.ResolveConflicts)]
+		[CommandUpdateHandler (VersionControlCommands.ResolveConflicts)]
 		protected void UpdateResolveConflicts (CommandInfo item)
 		{
 			if (!(CurrentNode.DataItem is UnknownSolutionItem)) {
@@ -392,13 +393,13 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			TestCommand (Commands.ResolveConflicts, item, false);
+			TestCommand (VersionControlCommands.ResolveConflicts, item, false);
 		}
 
-		private void TestCommand(Commands cmd, CommandInfo item, bool projRecurse = true)
+		private void TestCommand(VersionControlCommands cmd, CommandInfo item, bool projRecurse = true)
 		{
 			TestResult res = RunCommand(cmd, true, projRecurse);
-			if (res == TestResult.NoVersionControl && cmd == Commands.Log) {
+			if (res == TestResult.NoVersionControl && cmd == VersionControlCommands.Log) {
 				// Use the update command to show the "not available" message
 				item.Icon = null;
 				item.Enabled = false;
@@ -410,13 +411,13 @@ namespace MonoDevelop.VersionControl
 				item.Visible = res == TestResult.Enable;
 		}
 		
-		private TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
+		private TestResult RunCommand (VersionControlCommands cmd, bool test, bool projRecurse = true)
 		{
 			List<VersionControlItem> items = GetItems (projRecurse);
 
 			foreach (VersionControlItem it in items) {
 				if (it.Repository == null) {
-					if (cmd != Commands.Publish)
+					if (cmd != VersionControlCommands.Publish)
 						return TestResult.NoVersionControl;
 				} else if (it.Repository.VersionControlSystem != null && !it.Repository.VersionControlSystem.IsInstalled) {
 					return TestResult.Disable;
@@ -427,51 +428,51 @@ namespace MonoDevelop.VersionControl
 			
 			try {
 				switch (cmd) {
-				case Commands.Update:
+				case VersionControlCommands.Update:
 					res = UpdateCommand.Update (items, test);
 					break;
-				case Commands.Diff:
+				case VersionControlCommands.Diff:
 					res = DiffCommand.Show (items, test);
 					break;
-				case Commands.Log:
+				case VersionControlCommands.Log:
 					res = LogCommand.Show (items, test);
 					break;
-				case Commands.Status:
+				case VersionControlCommands.Status:
 					res = StatusView.Show (items, test, false);
 					break;
-				case Commands.Add:
+				case VersionControlCommands.Add:
 					res = AddCommand.Add (items, test);
 					break;
-				case Commands.Remove:
+				case VersionControlCommands.Remove:
 					res = RemoveCommand.Remove (items, test);
 					break;
-				case Commands.Revert:
+				case VersionControlCommands.Revert:
 					res = RevertCommand.Revert (items, test);
 					break;
-				case Commands.Lock:
+				case VersionControlCommands.Lock:
 					res = LockCommand.Lock (items, test);
 					break;
-				case Commands.Unlock:
+				case VersionControlCommands.Unlock:
 					res = UnlockCommand.Unlock (items, test);
 					break;
-				case Commands.Publish:
+				case VersionControlCommands.Publish:
 					VersionControlItem it = items [0];
 					if (items.Count == 1 && it.IsDirectory && it.WorkspaceObject != null)
 						res = PublishCommand.Publish (it.WorkspaceObject, it.Path, test);
 					break;
-				case Commands.Annotate:
+				case VersionControlCommands.Annotate:
 					res = BlameCommand.Show (items, test);
 					break;
-				case Commands.CreatePatch:
+				case VersionControlCommands.CreatePatch:
 					res = CreatePatchCommand.CreatePatch (items, test);
 					break;
-				case Commands.Ignore:
+				case VersionControlCommands.Ignore:
 					res = IgnoreCommand.Ignore (items, test);
 					break;
-				case Commands.Unignore:
+				case VersionControlCommands.Unignore:
 					res = UnignoreCommand.Unignore (items, test);
 					break;
-				case Commands.ResolveConflicts:
+				case VersionControlCommands.ResolveConflicts:
 					res = ResolveConflictsCommand.ResolveConflicts (items, test);
 					break;
 				}

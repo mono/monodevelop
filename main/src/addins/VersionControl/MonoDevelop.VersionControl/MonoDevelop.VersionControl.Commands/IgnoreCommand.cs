@@ -30,7 +30,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	class IgnoreCommand
 	{

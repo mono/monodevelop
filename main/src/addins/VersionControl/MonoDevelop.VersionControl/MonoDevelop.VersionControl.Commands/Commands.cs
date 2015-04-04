@@ -7,9 +7,9 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Views;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public enum Commands {
+	public enum VersionControlCommands {
 		Update,
 		Diff,
 		Log,

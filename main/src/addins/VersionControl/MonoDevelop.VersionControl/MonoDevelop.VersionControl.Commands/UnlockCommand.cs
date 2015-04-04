@@ -1,21 +1,20 @@
-// 
-// BlameCommand.cs
-//  
+// UnlockCommand.cs
+//
 // Author:
-//       Alan McGovern <alan@xamarin.com>
-// 
-// Copyright 2011, Xamarin Inc.
-// 
+//   Lluis Sanchez Gual <lluis@novell.com>
+//
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,40 +22,52 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
+//
 
 using System.Linq;
-using Mono.Addins;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.VersionControl.Views;
+using MonoDevelop.Core;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public class BlameCommand
+	
+	
+	public class UnlockCommand
 	{
-		internal static readonly string BlameViewHandlers = "/MonoDevelop/VersionControl/BlameViewHandler";
-		
-		static bool CanShow (VersionControlItem item)
+		public static bool Unlock (List<VersionControlItem> items, bool test)
 		{
-			return !item.IsDirectory
-				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
-		}
-		
-		public static bool Show (List<VersionControlItem> items, bool test)
-		{
+			if (!items.All (i => i.VersionInfo.CanUnlock))
+				return false;
 			if (test)
-				return items.All (CanShow);
+				return true;
 			
-			foreach (var item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IBlameView> ());
+			new UnlockWorker (items).Start();
+			return true;
+		}
+
+		private class UnlockWorker : Task 
+		{
+			List<VersionControlItem> items;
+						
+			public UnlockWorker (List<VersionControlItem> items) {
+				this.items = items;
 			}
 			
-			return true;
+			protected override string GetDescription() {
+				return GettextCatalog.GetString ("Unlocking...");
+			}
+			
+			protected override void Run ()
+			{
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Unlock (Monitor, list.GetPaths ());
+				
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				Gtk.Application.Invoke (delegate {
+					VersionControlService.NotifyFileStatusChanged (items);
+				});
+			}
 		}
 	}
 }
-

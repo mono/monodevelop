@@ -1,4 +1,4 @@
-// UnlockCommand.cs
+// Lock.cs
 //
 // Author:
 //   Lluis Sanchez Gual <lluis@novell.com>
@@ -29,41 +29,40 @@ using System.Linq;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	
-	
-	public class UnlockCommand
+	public class LockCommand
 	{
-		public static bool Unlock (List<VersionControlItem> items, bool test)
+		public static bool Lock (List<VersionControlItem> items, bool test)
 		{
-			if (!items.All (i => i.VersionInfo.CanUnlock))
+			if (!items.All (i => i.VersionInfo.CanLock))
 				return false;
 			if (test)
 				return true;
 			
-			new UnlockWorker (items).Start();
+			new LockWorker (items).Start();
 			return true;
 		}
 
-		private class UnlockWorker : Task 
+		private class LockWorker : Task 
 		{
 			List<VersionControlItem> items;
 						
-			public UnlockWorker (List<VersionControlItem> items) {
+			public LockWorker (List<VersionControlItem> items) {
 				this.items = items;
 			}
 			
 			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Unlocking...");
+				return GettextCatalog.GetString ("Locking...");
 			}
 			
 			protected override void Run ()
 			{
 				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Unlock (Monitor, list.GetPaths ());
+					list[0].Repository.Lock (Monitor, list.GetPaths ());
 				
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
+				
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);
 				});

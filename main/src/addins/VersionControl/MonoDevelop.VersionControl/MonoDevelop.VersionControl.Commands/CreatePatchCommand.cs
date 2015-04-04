@@ -34,7 +34,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	/// <summary>
 	/// Class for creating patches from VersionControlItems
