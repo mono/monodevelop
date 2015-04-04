@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl
 		internal bool RequiresRefresh { get; set; }
 		
 		public bool IsVersioned {
-			get { return (Status & VersionStatus.Versioned) != 0; }
+			get { return (Status & VersionStatus.Unversioned) == 0; }
 		}
 		
 		public bool HasLocalChanges {

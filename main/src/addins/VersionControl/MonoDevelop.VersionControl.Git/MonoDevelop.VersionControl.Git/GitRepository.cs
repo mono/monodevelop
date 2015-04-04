@@ -284,7 +284,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (Directory.Exists (p)) {
 							if (recursive)
 								versions.AddRange (GetDirectoryVersionInfo (p, getRemoteStatus, true));
-							versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+							versions.Add (new VersionInfo (p, "", true, VersionStatus.Unmodified, arev, VersionStatus.Unmodified, null));
 						}
 						else {
 							localFiles.Add (p);
@@ -311,7 +311,7 @@ namespace MonoDevelop.VersionControl.Git
 						versionInfoCacheEmptyRevision.Add (repository, arev);
 					}
 					foreach (var p in group)
-						versions.Add (new VersionInfo (p, "", true, VersionStatus.Versioned, arev, VersionStatus.Versioned, null));
+						versions.Add (new VersionInfo (p, "", true, VersionStatus.Unmodified, arev, VersionStatus.Unmodified, null));
 				}
 			}
 
@@ -348,7 +348,7 @@ namespace MonoDevelop.VersionControl.Git
 				
 				// Existing files for which git did not report a status are supposed to be tracked
 				foreach (FilePath file in existingFiles.Where (f => group.Contains (f))) {
-					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null);
+					VersionInfo vi = new VersionInfo (file, "", false, VersionStatus.Unmodified, rev, VersionStatus.Unmodified, null);
 					versions.Add (vi);
 				}
 			}
@@ -373,16 +373,16 @@ namespace MonoDevelop.VersionControl.Git
 					FilePath statFile = repository.FromGitPath (file);
 					existingFiles.Remove (statFile.CanonicalPath);
 					nonVersionedMissingFiles.Remove (statFile.CanonicalPath);
-					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
+					versions.Add (new VersionInfo (statFile, "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Unmodified, null));
 				}
 			};
 
-			AddFiles (status.GetAdded (), VersionStatus.Versioned | VersionStatus.ScheduledAdd);
-			AddFiles (status.GetChanged (), VersionStatus.Versioned | VersionStatus.Modified);
-			AddFiles (status.GetModified (), VersionStatus.Versioned | VersionStatus.Modified);
-			AddFiles (status.GetRemoved (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.GetMissing (), VersionStatus.Versioned | VersionStatus.ScheduledDelete);
-			AddFiles (status.GetConflicting (), VersionStatus.Versioned | VersionStatus.Conflicted);
+			AddFiles (status.GetAdded (), VersionStatus.ScheduledAdd);
+			AddFiles (status.GetChanged (), VersionStatus.Modified);
+			AddFiles (status.GetModified (), VersionStatus.Modified);
+			AddFiles (status.GetRemoved (), VersionStatus.ScheduledDelete);
+			AddFiles (status.GetMissing (), VersionStatus.ScheduledDelete);
+			AddFiles (status.GetConflicting (), VersionStatus.Conflicted);
 			AddFiles (status.GetUntracked (), VersionStatus.Unversioned);
 			AddFiles (filteredStatus.GetIgnoredNotInIndex (), VersionStatus.Ignored);
 		}
@@ -1541,7 +1541,7 @@ namespace MonoDevelop.VersionControl.Git
 					status = VersionStatus.Modified;
 					break;
 				}
-				VersionInfo vi = new VersionInfo (RootRepository.FromGitPath (change.GetNewPath ()), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
+				VersionInfo vi = new VersionInfo (RootRepository.FromGitPath (change.GetNewPath ()), "", false, status, null, VersionStatus.Unmodified, null);
 				cset.AddFile (vi);
 			}
 			return cset;

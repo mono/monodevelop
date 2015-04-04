@@ -116,11 +116,11 @@ namespace MonoDevelop.VersionControl
 		
 		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
 		{
+			if ((status & VersionStatus.Unversioned) != 0)
+				return overlay_unversioned;
+
 			if ((status & VersionStatus.Ignored) != 0)
 				return overlay_ignored;
-
-			if ((status & VersionStatus.Versioned) == 0)
-				return overlay_unversioned;
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
@@ -167,7 +167,7 @@ namespace MonoDevelop.VersionControl
 
 		public static string GetStatusLabel (VersionStatus status)
 		{
-			if ((status & VersionStatus.Versioned) == 0)
+			if ((status & VersionStatus.Unversioned) != 0)
 				return GettextCatalog.GetString ("Unversioned");
 			
 			switch (status & VersionStatus.LocalChangesMask) {
