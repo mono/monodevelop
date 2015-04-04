@@ -31,9 +31,9 @@ namespace MonoDevelop.VersionControl.Commands
 			
 			protected override void Run ()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ()) {
-					list[0].Repository.Update (list.GetPaths (), true, Monitor);
-				}
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Update (list.Value.GetPaths (), true, Monitor);
+
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Update operation completed."));
 				Gtk.Application.Invoke (delegate {
 					VersionControlService.NotifyFileStatusChanged (items);

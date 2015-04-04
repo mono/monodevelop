@@ -60,8 +60,8 @@ namespace MonoDevelop.VersionControl.Commands
 			
 			protected override void Run ()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Unlock (Monitor, list.GetPaths ());
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Unlock (Monitor, list.Value.GetPaths ());
 				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
 				Gtk.Application.Invoke (delegate {

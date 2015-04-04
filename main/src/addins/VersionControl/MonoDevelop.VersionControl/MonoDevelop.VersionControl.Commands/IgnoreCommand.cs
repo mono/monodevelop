@@ -79,8 +79,8 @@ namespace MonoDevelop.VersionControl.Commands
 
 			protected override void Run ()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Ignore (list.GetPaths ());
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Ignore (list.Value.GetPaths ());
 
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Ignore operation completed."));
 				Gtk.Application.Invoke (delegate {
@@ -142,8 +142,8 @@ namespace MonoDevelop.VersionControl.Commands
 
 			protected override void Run ()
 			{
-				foreach (List<VersionControlItem> list in items.SplitByRepository ())
-					list[0].Repository.Unignore (list.GetPaths ());
+				foreach (var list in items.SplitByRepository ())
+					list.Key.Unignore (list.Value.GetPaths ());
 
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Unignore operation completed."));
 				Gtk.Application.Invoke (delegate {
