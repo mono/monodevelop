@@ -262,7 +262,7 @@ namespace Mono.TextTemplating
 			content = "";
 			location = ResolvePath (requestFileName);
 			
-			if (location == null) {
+			if (location == null || !File.Exists (location)) {
 				foreach (string path in includePaths) {
 					string f = Path.Combine (path, requestFileName);
 					if (File.Exists (f)) {
