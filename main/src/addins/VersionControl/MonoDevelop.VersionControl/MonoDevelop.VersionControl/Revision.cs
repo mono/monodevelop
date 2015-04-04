@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Mono.TextEditor;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -101,14 +102,24 @@ namespace MonoDevelop.VersionControl
 	
 	public class RevisionPath
 	{
-		public RevisionPath (string path, RevisionAction action, string actionDescription)
+		public RevisionPath (FilePath oldPath, FilePath path, RevisionAction action, string actionDescription)
 		{
-			this.Path = path;
-			this.Action = action;
-			this.ActionDescription = actionDescription;
+			OldPath = oldPath;
+			Path = path;
+			Action = action;
+			ActionDescription = actionDescription;
+		}
+
+		public RevisionPath (FilePath path, RevisionAction action, string actionDescription) : this (path, path, action, actionDescription)
+		{
 		}
 		
-		public string Path {
+		public FilePath OldPath {
+			get;
+			set;
+		}
+
+		public FilePath Path {
 			get;
 			set;
 		}
