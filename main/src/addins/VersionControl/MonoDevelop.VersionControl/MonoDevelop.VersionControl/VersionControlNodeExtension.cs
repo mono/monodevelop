@@ -412,7 +412,7 @@ namespace MonoDevelop.VersionControl
 		
 		private TestResult RunCommand (Commands cmd, bool test, bool projRecurse = true)
 		{
-			VersionControlItemList items = GetItems (projRecurse);
+			List<VersionControlItem> items = GetItems (projRecurse);
 
 			foreach (VersionControlItem it in items) {
 				if (it.Repository == null) {

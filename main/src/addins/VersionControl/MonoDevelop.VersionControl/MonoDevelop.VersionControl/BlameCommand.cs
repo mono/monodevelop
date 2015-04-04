@@ -29,6 +29,7 @@ using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.VersionControl
 				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
-		public static bool Show (VersionControlItemList items, bool test)
+		public static bool Show (List<VersionControlItem> items, bool test)
 		{
 			if (test)
 				return items.All (CanShow);

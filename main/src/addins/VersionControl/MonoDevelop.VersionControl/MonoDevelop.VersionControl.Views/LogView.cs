@@ -6,6 +6,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -26,7 +27,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public static bool CanShow (VersionControlItemList items, Revision since)
+		public static bool CanShow (List<VersionControlItem> items, Revision since)
 		{
 			return items.All (i => i.VersionInfo.CanLog);
 		}

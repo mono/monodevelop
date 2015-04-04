@@ -363,7 +363,6 @@
     <Compile Include="MonoDevelop.VersionControl\UnlockCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl\ChangeLogWriter.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlItem.cs" />
-    <Compile Include="MonoDevelop.VersionControl\VersionControlItemList.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlCommandHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl.Dialogs\CommitMessageStylePanelWidget.cs" />
@@ -408,6 +407,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlItemListExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

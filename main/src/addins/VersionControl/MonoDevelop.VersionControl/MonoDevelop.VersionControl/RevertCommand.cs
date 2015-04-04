@@ -4,23 +4,24 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	internal class RevertCommand
 	{
 
-		public static bool Revert (VersionControlItemList items, bool test)
+		public static bool Revert (List<VersionControlItem> items, bool test)
 		{
 			if (RevertInternal (items, test)) {
-				foreach (var itemPath in items.Paths)
+				foreach (var itemPath in items.GetPaths ())
 					VersionControlService.SetCommitComment (itemPath, string.Empty, true);
 				return true;
 			}
 			return false;
 		}
 		
-		private static bool RevertInternal (VersionControlItemList items, bool test)
+		private static bool RevertInternal (List<VersionControlItem> items, bool test)
 		{
 			try {
 				if (test)
@@ -44,9 +45,9 @@ namespace MonoDevelop.VersionControl
 		}
 
 		private class RevertWorker : Task {
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public RevertWorker (VersionControlItemList items) {
+			public RevertWorker (List<VersionControlItem> items) {
 				this.items = items;
 			}
 			
@@ -56,8 +57,8 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Revert (list.Paths, true, Monitor);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Revert (list.GetPaths (), true, Monitor);
 				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Revert operation completed."));
 				Gtk.Application.Invoke (delegate {

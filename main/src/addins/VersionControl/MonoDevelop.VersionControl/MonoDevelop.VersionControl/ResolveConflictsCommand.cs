@@ -26,12 +26,13 @@
 using MonoDevelop.Ide;
 using MonoDevelop.VersionControl.Views;
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	public class ResolveConflictsCommand
 	{
-		public static bool ResolveConflicts (VersionControlItemList list, bool test)
+		public static bool ResolveConflicts (List<VersionControlItem> list, bool test)
 		{
 			VersionStatus status = list [0].VersionInfo.Status;
 			bool conflicted = (status & VersionStatus.Conflicted) == VersionStatus.Conflicted;

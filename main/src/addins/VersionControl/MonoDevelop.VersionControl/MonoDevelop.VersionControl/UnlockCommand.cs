@@ -27,6 +27,7 @@
 
 using System.Linq;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
@@ -34,7 +35,7 @@ namespace MonoDevelop.VersionControl
 	
 	public class UnlockCommand
 	{
-		public static bool Unlock (VersionControlItemList items, bool test)
+		public static bool Unlock (List<VersionControlItem> items, bool test)
 		{
 			if (!items.All (i => i.VersionInfo.CanUnlock))
 				return false;
@@ -47,9 +48,9 @@ namespace MonoDevelop.VersionControl
 
 		private class UnlockWorker : Task 
 		{
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 						
-			public UnlockWorker (VersionControlItemList items) {
+			public UnlockWorker (List<VersionControlItem> items) {
 				this.items = items;
 			}
 			
@@ -59,8 +60,8 @@ namespace MonoDevelop.VersionControl
 			
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unlock (Monitor, list.Paths);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Unlock (Monitor, list.GetPaths ());
 				
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Unlock operation completed."));
 				Gtk.Application.Invoke (delegate {

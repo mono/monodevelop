@@ -28,19 +28,20 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
 	class IgnoreCommand
 	{
-		public static bool Ignore (VersionControlItemList items, bool test)
+		public static bool Ignore (List<VersionControlItem> items, bool test)
 		{
 			if (IgnoreInternal (items, test)) 
 				return true;
 			return false;
 		}
 
-		static bool IgnoreInternal (VersionControlItemList items, bool test)
+		static bool IgnoreInternal (List<VersionControlItem> items, bool test)
 		{
 			try {
 				if (test)
@@ -64,9 +65,9 @@ namespace MonoDevelop.VersionControl
 
 		private class IgnoreWorker : Task
 		{
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 
-			public IgnoreWorker (VersionControlItemList items)
+			public IgnoreWorker (List<VersionControlItem> items)
 			{
 				this.items = items;
 			}
@@ -78,8 +79,8 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Ignore (list.Paths);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Ignore (list.GetPaths ());
 
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Ignore operation completed."));
 				Gtk.Application.Invoke (delegate {
@@ -95,14 +96,14 @@ namespace MonoDevelop.VersionControl
 
 	class UnignoreCommand
 	{
-		public static bool Unignore (VersionControlItemList items, bool test)
+		public static bool Unignore (List<VersionControlItem> items, bool test)
 		{
 			if (UnignoreInternal (items, test))
 				return true;
 			return false;
 		}
 
-		static bool UnignoreInternal (VersionControlItemList items, bool test)
+		static bool UnignoreInternal (List<VersionControlItem> items, bool test)
 		{
 			try {
 				// NGit doesn't return a version info for ignored files.
@@ -127,9 +128,9 @@ namespace MonoDevelop.VersionControl
 
 		private class UnignoreWorker : Task
 		{
-			VersionControlItemList items;
+			List<VersionControlItem> items;
 
-			public UnignoreWorker (VersionControlItemList items)
+			public UnignoreWorker (List<VersionControlItem> items)
 			{
 				this.items = items;
 			}
@@ -141,8 +142,8 @@ namespace MonoDevelop.VersionControl
 
 			protected override void Run ()
 			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Unignore (list.Paths);
+				foreach (List<VersionControlItem> list in items.SplitByRepository ())
+					list[0].Repository.Unignore (list.GetPaths ());
 
 				Monitor.ReportSuccess (GettextCatalog.GetString ("Unignore operation completed."));
 				Gtk.Application.Invoke (delegate {
