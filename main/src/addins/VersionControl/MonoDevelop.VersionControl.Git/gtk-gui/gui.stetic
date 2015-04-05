@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
   <configuration>
     <images-root-path>..</images-root-path>
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../build/MonoDevelop.VersionControl.Git.dll" internal="true" />
+    <widget-library name="../../../../../build/bin/Mono.TextEditor.dll" />
+    <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
+    <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
+    <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.PushDialog" design-size="730 540">
     <property name="MemberName" />
@@ -623,6 +626,7 @@
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
                             <property name="Label" translatable="yes">_Push</property>
+                            <signal name="Clicked" handler="OnButtonPushTagClicked" />
                             <property name="UseUnderline">True</property>
                           </widget>
                           <packing>
@@ -639,6 +643,7 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-delete</property>
+                            <signal name="Clicked" handler="OnButtonRemoveTagClicked" />
                             <property name="label">gtk-delete</property>
                           </widget>
                           <packing>
@@ -878,7 +883,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnEntryNameChanged" />
                   </widget>
                   <packing>
@@ -1058,7 +1063,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnEntryNameChanged" />
                   </widget>
                   <packing>
@@ -1079,7 +1084,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnEntryUrlChanged" />
                   </widget>
                   <packing>
@@ -1709,7 +1714,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="IsEditable">True</property>
-                <property name="InvisibleChar">   </property>
+                <property name="InvisibleChar">●</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -1827,7 +1832,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
@@ -1850,7 +1855,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
@@ -1952,7 +1957,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
@@ -1991,7 +1996,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">   </property>
+                    <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
                   </widget>
                   <packing>
