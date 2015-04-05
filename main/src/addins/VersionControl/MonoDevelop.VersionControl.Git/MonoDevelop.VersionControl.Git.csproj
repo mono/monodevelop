@@ -119,6 +119,10 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\libgit2sharp\LibGit2Sharp\LibGit2Sharp.csproj">
+      <Project>{EE6ED99F-CB12-4683-B055-D28FC7357A34}</Project>
+      <Name>LibGit2Sharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml">
@@ -136,4 +140,27 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+    <Choose>
+    <When Condition=" '$(Configuration)' == 'DebugMac' ">
+      <ItemGroup>
+        <NativeBinaries Include="..\external\libgit-binary\mac\*.dylib" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)' == 'DebugWin32' ">
+      <ItemGroup>
+        <NativeBinaries Include="..\external\libgit-binary\windows\*.*" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)' == 'DebugLinux' ">
+      <ItemGroup>
+        <NativeBinaries Include="..\external\libgit2sharp\libgit2\build\*.*" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Target Name="BeforeBuild">
+    <Exec Command="sh build_libgit2.sh" Condition=" '$(Configuration)' == 'DebugLinux' " />
+  </Target>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
