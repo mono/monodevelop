@@ -31,7 +31,7 @@ namespace MonoDevelop.Ide.Editor.Util
 {
 	public static class SimpleBracketMatcher
 	{
-		const string openBrackets    = "([{<";
+		const string openBrackets = "([{<";
 		const string closingBrackets = ")]}>";
 
 
@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Editor.Util
 			int bracket = openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
-				result =  SearchMatchingBracketForward (document, offset + 1, openBrackets[bracket], closingBrackets[bracket]);
+				result = SearchMatchingBracketForward (document, offset + 1, openBrackets [bracket], closingBrackets [bracket]);
 			} else {
 				bracket = closingBrackets.IndexOf (ch);
 				if (bracket >= 0) {
-					result = SearchMatchingBracketBackward (document, offset - 1, closingBrackets[bracket], openBrackets[bracket]);
+					result = SearchMatchingBracketBackward (document, offset - 1, closingBrackets [bracket], openBrackets [bracket]);
 				} else {
 					result = -1;
 				}
@@ -55,18 +55,22 @@ namespace MonoDevelop.Ide.Editor.Util
 			return result;
 		}
 
-
-		static string[] GetList (IReadonlyTextDocument document, string name)
+		static readonly string [] emptyList = new string [0];
+		static string [] GetList (IReadonlyTextDocument document, string name)
 		{
-			return TextEditorFactory.GetSyntaxProperties (document.MimeType, name);
+			return TextEditorFactory.GetSyntaxProperties (document.MimeType, name) ?? emptyList;
 		}
 
 		static int StartsWithListMember (IReadonlyTextDocument document, IList<string> list, int offset)
 		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (list == null)
+				throw new ArgumentNullException ("list");
 			for (int i = 0; i < list.Count; i++) {
-				string item = list[i];
+				string item = list [i];
 				if (offset + item.Length < document.Length) {
-					if (document.GetTextAt (offset, item.Length) == item) 
+					if (document.GetTextAt (offset, item.Length) == item)
 						return i;
 				}
 			}
@@ -76,25 +80,25 @@ namespace MonoDevelop.Ide.Editor.Util
 		static int SearchMatchingBracketForward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
-			bool isInLineComment  = false;
-			int  curStringQuote   = -1;
+			bool isInLineComment = false;
+			int curStringQuote = -1;
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 
-			var lineComments       = GetList (document, "LineComment");
+			var lineComments = GetList (document, "LineComment");
 			var blockCommentStarts = GetList (document, "BlockCommentStart");
-			var blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			var stringQuotes       = GetList (document, "StringQuote");
+			var blockCommentEnds = GetList (document, "BlockCommentEnd");
+			var stringQuotes = GetList (document, "StringQuote");
 			int depth = -1;
 			while (offset >= 0 && offset < document.Length) {
 				if (curStringQuote < 0) {
 					// check line comments
-					if (!isInBlockComment && !isInLineComment) 
+					if (!isInBlockComment && !isInLineComment)
 						isInLineComment = StartsWithListMember (document, lineComments, offset) >= 0;
 
 					// check block comments
 					if (!isInLineComment) {
-						if (!isInBlockComment) { 
+						if (!isInBlockComment) {
 							isInBlockComment = StartsWithListMember (document, blockCommentStarts, offset) >= 0;
 						} else {
 							isInBlockComment = StartsWithListMember (document, blockCommentEnds, offset) < 0;
@@ -122,14 +126,14 @@ namespace MonoDevelop.Ide.Editor.Util
 						return -1;
 					isInLineComment = false;
 					break;
-				default :
+				default:
 					if (ch == closingBracket) {
-						if (!(isInLineComment || curStringQuote >= 0 || isInBlockComment)) 
+						if (!(isInLineComment || curStringQuote >= 0 || isInBlockComment))
 							--depth;
 					} else if (ch == openBracket) {
 						if (!(isInLineComment || curStringQuote >= 0 || isInBlockComment)) {
 							++depth;
-							if (depth == 0) 
+							if (depth == 0)
 								return offset;
 						}
 					}
@@ -144,7 +148,7 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			IList<string> lineComments = GetList (document, "LineComment");
 			var line = document.GetLineByOffset (offset);
-			for (int i = line.Offset ; i < offset; i++) {
+			for (int i = line.Offset; i < offset; i++) {
 				if (StartsWithListMember (document, lineComments, i) >= 0)
 					return true;
 			}
@@ -155,25 +159,25 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			var line = document.GetLineByOffset (lineOffset);
 			bool isInBlockComment = false;
-			bool isInLineComment  = false;
-			int  curStringQuote   = -1;
+			bool isInLineComment = false;
+			int curStringQuote = -1;
 
-			IList<string> lineComments       = GetList (document, "LineComment");
+			IList<string> lineComments = GetList (document, "LineComment");
 			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			IList<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			IList<string> stringQuotes       = GetList (document, "StringQuote");
+			IList<string> blockCommentEnds = GetList (document, "BlockCommentEnd");
+			IList<string> stringQuotes = GetList (document, "StringQuote");
 
-			for (int i = 0 ; i < line.Length; i++) {
+			for (int i = 0; i < line.Length; i++) {
 				int offset = line.Offset + i;
 				// check line comments
 				if (!isInBlockComment && curStringQuote < 0) {
 					isInLineComment = StartsWithListMember (document, lineComments, offset) >= 0;
-					if (isInLineComment) 
+					if (isInLineComment)
 						return System.Math.Min (offset, lineOffset);
 				}
 				// check block comments
 				if (!isInLineComment && curStringQuote < 0) {
-					if (!isInBlockComment) { 
+					if (!isInBlockComment) {
 						isInBlockComment = StartsWithListMember (document, blockCommentStarts, offset) >= 0;
 					} else {
 						isInBlockComment = StartsWithListMember (document, blockCommentEnds, offset) < 0;
@@ -198,12 +202,12 @@ namespace MonoDevelop.Ide.Editor.Util
 		static int SearchMatchingBracketBackward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
-			bool isInLineComment  = false;
-			int  curStringQuote   = -1;
+			bool isInLineComment = false;
+			int curStringQuote = -1;
 
 			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			IList<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			IList<string> stringQuotes       = GetList (document, "StringQuote");
+			IList<string> blockCommentEnds = GetList (document, "BlockCommentEnd");
+			IList<string> stringQuotes = GetList (document, "StringQuote");
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 			int depth = -1;
@@ -216,7 +220,7 @@ namespace MonoDevelop.Ide.Editor.Util
 
 				// check block comments
 				if (!isInLineComment && curStringQuote < 0) {
-					if (!isInBlockComment) { 
+					if (!isInBlockComment) {
 						isInBlockComment = StartsWithListMember (document, blockCommentEnds, offset) >= 0;
 					} else {
 						isInBlockComment = StartsWithListMember (document, blockCommentStarts, offset) < 0;
@@ -248,12 +252,12 @@ namespace MonoDevelop.Ide.Editor.Util
 					break;
 				default:
 					if (ch == closingBracket) {
-						if (!(curStringQuote >= 0 || isInBlockComment)) 
+						if (!(curStringQuote >= 0 || isInBlockComment))
 							--depth;
 					} else if (ch == openBracket) {
 						if (!(curStringQuote >= 0 || isInBlockComment)) {
 							++depth;
-							if (depth == 0) 
+							if (depth == 0)
 								return offset;
 						}
 					}
