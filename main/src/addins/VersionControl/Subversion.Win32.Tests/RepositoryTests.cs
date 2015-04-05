@@ -120,6 +120,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			Assert.IsTrue (repo2.IsUrlValid ("file:///c:/dir/repo"));
 		}
 
+		[Test]
+		[Ignore ("Url gets broken. ")]
+		public override void CorrectTextAtRevision ()
+		{
+			base.CorrectTextAtRevision ();
+		}
+
 		protected override Repository GetRepo (string path, string url)
 		{
 			return new SubversionRepository (new SvnSharpClient (), url, path);
