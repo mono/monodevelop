@@ -40,8 +40,8 @@ namespace MonoDevelop.VersionControl.Git
 			HasSeparator = false;
 			
 			changeList.DiffLoader = DiffLoader;
-			
-			List<string> list = new List<string> (repo.GetRemotes ().Select (r => r.Name));
+
+			var list = new List<string> (repo.GetRemotes ().Select (r => r.Name));
 			foreach (string s in list)
 				remoteCombo.AppendText (s);
 			remoteCombo.Active = list.IndexOf (repo.GetCurrentRemote ());

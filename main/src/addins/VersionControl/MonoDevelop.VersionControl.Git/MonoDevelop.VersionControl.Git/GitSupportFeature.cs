@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public Gtk.Widget CreateFeatureEditor (SolutionFolder parentCombine, SolutionItem entry)
 		{
-			Gtk.Label label = new Gtk.Label (GettextCatalog.GetString ("A new local Git Repository for the solution will be created"));
+			var label = new Gtk.Label (GettextCatalog.GetString ("A new local Git Repository for the solution will be created"));
 			label.Show ();
 			return label;
 		}
@@ -62,11 +62,11 @@ namespace MonoDevelop.VersionControl.Git
 		
 		static void OnSolutionSaved (object o, EventArgs a)
 		{
-			Solution sol = (Solution)o;
+			var sol = (Solution)o;
 			sol.Saved -= OnSolutionSaved;
 			GitUtil.Init (sol.BaseDirectory, null);
 			
-			GitRepository gitRepo = new GitRepository (sol.BaseDirectory, null);
+			var gitRepo = new GitRepository (sol.BaseDirectory, null);
 			gitRepo.Add (sol.GetItemFiles (true).ToArray (), false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 		}
 

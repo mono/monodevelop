@@ -23,28 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using LibGit2Sharp;
 
 
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class EditRemoteDialog : Gtk.Dialog
 	{
-		readonly RemoteSource remote;
-		readonly bool updating;
-		
-		public EditRemoteDialog (RemoteSource remote, bool isNew)
+		// TODO: Add user possibility to choose refspecs.
+		public EditRemoteDialog () : this (null)
+		{
+		}
+
+		public EditRemoteDialog (Remote remote)
 		{
 			this.Build ();
-			this.remote = remote;
-			
-			updating = true;
-			entryName.Text = remote.Name;
-			entryUrl.Text = remote.FetchUrl ?? "";
-			entryPushUrl.Text = string.IsNullOrEmpty (remote.PushUrl) ? remote.FetchUrl : remote.PushUrl;
-			if (!isNew)
-				checkImportTags.Visible = false;
-			updating = false;
+			if (remote != null) {
+				entryName.Text = remote.Name;
+				entryUrl.Text = remote.Url ?? "";
+			}
+			checkImportTags.Visible = remote == null;
 			UpdateButtons ();
+		}
+
+		public string RemoteName {
+			get { return entryName.Text; }
+		}
+
+		public string RemoteUrl {
+			get { return entryUrl.Text; }
 		}
 		
 		public bool ImportTags {
@@ -58,27 +65,11 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
 		{
-			if (updating)
-				return;
-			remote.Name = entryName.Text;
 			UpdateButtons ();
 		}
 		
 		protected virtual void OnEntryUrlChanged (object sender, System.EventArgs e)
 		{
-			if (updating)
-				return;
-			if (remote.FetchUrl == remote.PushUrl)
-				entryPushUrl.Text = entryUrl.Text;
-			remote.FetchUrl = entryUrl.Text;
-			UpdateButtons ();
-		}
-		
-		protected virtual void OnEntryPushUrlChanged (object sender, System.EventArgs e)
-		{
-			if (updating)
-				return;
-			remote.PushUrl = entryPushUrl.Text;
 			UpdateButtons ();
 		}
 	}

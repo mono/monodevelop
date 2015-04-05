@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl.Git
 			// matches the user information configured in MonoDevelop. If the configurations
 			// don't match, it shows a dialog asking the user what to do.
 
-			GitRepository repo = (GitRepository) changeSet.Repository;
+			var repo = (GitRepository) changeSet.Repository;
 			Solution sol = null;
 
 			// Locate the solution to which the changes belong
@@ -112,7 +112,7 @@ namespace MonoDevelop.VersionControl.Git
 					string gitInfo = GetDesc (user, email);
 					string mdInfo = GetDesc (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
 					
-					UserInfoConflictDialog dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
+					var dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
 					try {
 						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 							if (dlg.UseMonoDevelopConfig) {
@@ -176,7 +176,7 @@ namespace MonoDevelop.VersionControl.Git
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
 				textView.TooltipText = String.Format (GettextCatalog.GetString (
-					"When using GIT, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+					"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
 					maxLengthConventionForFirstLineOfCommitMessage);
 				textView.HasTooltip = true;
 

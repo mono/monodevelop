@@ -27,8 +27,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
-using NGit.Revwalk;
-using NGit;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -63,11 +62,11 @@ namespace MonoDevelop.VersionControl.Git
 		
 		void Fill ()
 		{
-			TreeViewState tvs = new TreeViewState (list, 0);
+			var tvs = new TreeViewState (list, 0);
 			tvs.Save ();
 			store.Clear ();
 			foreach (var s in stashes) {
-				string name = s.Comment;
+				string name = s.Name;
 				string branch = GitRepository.GetStashBranchName (name);
 				if (branch != null) {
 					if (branch == "_tmp_")
@@ -75,7 +74,7 @@ namespace MonoDevelop.VersionControl.Git
 					else
 						name = GettextCatalog.GetString ("Local changes of branch '{0}'", branch);
 				}
-				store.AppendValues (s, s.DateTime.LocalDateTime.ToString (), name);
+				store.AppendValues (s, s.Index.Author.When.LocalDateTime.ToString (), name);
 			}
 			tvs.Load ();
 		}
@@ -96,7 +95,7 @@ namespace MonoDevelop.VersionControl.Git
 		void ApplyStashAndRemove(Stash s)
 		{
 			using (IdeApp.Workspace.GetFileStatusTracker ()) {
-				GitService.ApplyStash (s).Completed += delegate(IAsyncOperation op) {
+				GitService.ApplyStash (repository, s).Completed += delegate(IAsyncOperation op) {
 					if (op.Success)
 						stashes.Remove (s);
 				};
@@ -107,7 +106,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Stash s = GetSelected ();
 			if (s != null) {
-				GitService.ApplyStash (s);
+				GitService.ApplyStash (repository, s);
 				Respond (ResponseType.Ok);
 			}
 		}
@@ -116,15 +115,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Stash s = GetSelected ();
 			if (s != null) {
-				var dlg = new EditBranchDialog (repository, null, true);
+				var dlg = new EditBranchDialog (repository);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-						ObjectId commit = repository.RootRepository.Resolve (s.CommitId);
-						var rw = new RevWalk (repository.RootRepository);
-						RevCommit c = rw.ParseCommit (commit);
-						RevCommit old = c.GetParent (0);
-						rw.ParseHeaders (old);
-						repository.CreateBranchFromCommit (dlg.BranchName, old);
+						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
 						GitService.SwitchToBranch (repository, dlg.BranchName);
 						ApplyStashAndRemove (s);
 					}
