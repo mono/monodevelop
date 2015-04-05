@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				SvnServe.Start ();
 
 				// Create user to auth.
-				using (var perm = File. CreateText (RemotePath.Combine("repo", "conf", "svnserve.conf") {
+				using (var perm = File. CreateText (RemotePath.Combine("repo", "conf", "svnserve.conf"))) {
 					perm.WriteLine ("[general]");
 					perm.WriteLine ("anon-access = write");
 					perm.WriteLine ("[sasl]");
