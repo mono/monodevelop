@@ -36,15 +36,8 @@ namespace MonoDevelop.Refactoring
 		FindAllReferences,
 		FindDerivedClasses,
 		DeclareLocal,
-		RemoveUnusedImports,
-		SortImports,
-		RemoveSortImports,
-		CreateMethod,
-		IntroduceConstant,
-		IntegrateTemporaryVariable,
 		ImportSymbol,
-		QuickFix,
-		Resolve
+		QuickFix
 	}
 
 }
