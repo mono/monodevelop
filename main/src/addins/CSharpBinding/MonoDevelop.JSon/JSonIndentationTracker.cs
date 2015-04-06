@@ -33,10 +33,10 @@ namespace MonoDevelop.JSon
 {
 	class JSonIndentationTracker : IndentationTracker
 	{
-		readonly IReadonlyTextDocument data;
+		readonly TextEditor data;
 		readonly CacheIndentEngine stateTracker;
 
-		public JSonIndentationTracker(IReadonlyTextDocument data, CacheIndentEngine stateTracker)
+		public JSonIndentationTracker(TextEditor data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
@@ -51,7 +51,7 @@ namespace MonoDevelop.JSon
 			var offset = line.Offset;
 			string curIndent = line.GetIndentation (data);
 			try {
-				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
+				stateTracker.Update (data, Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
 				int nlwsp = curIndent.Length;
 				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.GetCharAt (offset + nlwsp) == '*'))
 					return stateTracker.ThisLineIndent;

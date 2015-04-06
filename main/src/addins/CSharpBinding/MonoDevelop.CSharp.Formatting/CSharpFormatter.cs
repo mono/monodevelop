@@ -62,9 +62,9 @@ namespace MonoDevelop.CSharp.Formatting
 			try {
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
 				var textpolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
-				var tracker = new CSharpIndentEngine (IdeApp.Workbench.ActiveDocument.Editor, policy.CreateOptions (textpolicy));
+				var tracker = new CSharpIndentEngine (policy.CreateOptions (textpolicy));
 
-				tracker.Update (lineSegment.Offset);
+				tracker.Update (IdeApp.Workbench.ActiveDocument.Editor, lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
 					tracker.Push (data.GetCharAt (i));
 				}

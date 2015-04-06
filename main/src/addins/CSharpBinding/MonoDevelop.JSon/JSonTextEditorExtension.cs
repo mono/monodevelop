@@ -115,7 +115,7 @@ namespace MonoDevelop.JSon
 		internal void SafeUpdateIndentEngine (int offset)
 		{
 			try {
-				stateTracker.Update (offset);
+				stateTracker.Update (Editor, offset);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while updating the indentation engine", e);
 			}

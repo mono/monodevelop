@@ -45,12 +45,12 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override string FormatPlainText (int offset, string text, byte[] copyData)
 		{
-			return engine.FormatPlainText (offset, text, copyData);
+			return engine.FormatPlainText (indent.Editor, offset, text, copyData);
 		}
 
 		public override byte[] GetCopyData (int offset, int length)
 		{
-			return engine.GetCopyData (new TextSpan (offset, length));
+			return engine.GetCopyData (indent.Editor, new TextSpan (offset, length));
 		}
 
 		public override void PostFomatPastedText (int insertionOffset, int insertedChars)

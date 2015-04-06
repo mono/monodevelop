@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal void SafeUpdateIndentEngine (int offset)
 		{
 			try {
-				stateTracker.Update (offset);
+				stateTracker.Update (Editor, offset);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while updating the indentation engine", e);
 			}
@@ -152,7 +152,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
-				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (Editor, policy);
+				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (policy);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
 				foreach (var symbol in GetDefinedSymbols (DocumentContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
@@ -160,7 +160,7 @@ namespace MonoDevelop.CSharp.Formatting
 				indentEngine = csharpIndentEngine;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
-				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine (Editor);
+				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine ();
 			}
 			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			stateTracker.ResetEngineToPosition (e.Offset); 
+			stateTracker.ResetEngineToPosition (Editor, e.Offset); 
 			if (wasInVerbatimString == null)
 				return;
 			if (e.RemovalLength != 1 /*|| textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format*/)

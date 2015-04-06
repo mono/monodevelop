@@ -212,13 +212,13 @@ namespace MonoDevelop.JSon
 			isInString = false;
 		}
 
-		public void Update (int offset)
+		public void Update (SourceText sourceText, int offset)
 		{
 			if (Offset > offset)
 				Reset ();
 
 			while (Offset < offset) {
-				Push (editor.GetCharAt (Offset));
+				Push (sourceText [Offset]);
 			}
 		}
 
