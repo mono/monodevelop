@@ -325,19 +325,23 @@ namespace MonoDevelop.Debugger
 
 			MessageService.ShowCustomDialog (dlg);
 		}
-		
+
 		public static void ShowExceptionCaughtDialog ()
 		{
 			var ops = session.EvaluationOptions.Clone ();
 			ops.MemberEvaluationTimeout = 0;
 			ops.EvaluationTimeout = 0;
 			ops.EllipsizeStrings = false;
-			
+
 			var val = CurrentFrame.GetException (ops);
 			if (val != null) {
 				HideExceptionCaughtDialog ();
 				exceptionDialog = new ExceptionCaughtMessage (val, CurrentFrame.SourceLocation.FileName, CurrentFrame.SourceLocation.Line, CurrentFrame.SourceLocation.Column);
-				exceptionDialog.ShowButton ();
+				if (CurrentFrame.SourceLocation.FileName != null) {
+					exceptionDialog.ShowButton ();
+				} else {
+					exceptionDialog.ShowDialog ();
+				}
 				exceptionDialog.Closed += (o, args) => exceptionDialog = null;
 			}
 		}
