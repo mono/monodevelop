@@ -81,7 +81,16 @@ namespace MonoDevelop.VersionControl.Git
 
 		void UpdateButtons ()
 		{
-			vboxButtons.Sensitive = GetSelected () != null;
+			vboxButtons.Sensitive = GetSelectedIndex () != -1;
+		}
+
+		int GetSelectedIndex ()
+		{
+			TreeIter it;
+			if (!list.Selection.GetSelected (out it))
+				return -1;
+
+			return list.Selection.GetSelectedRows () [0].Indices [0];
 		}
 
 		Stash GetSelected ()
@@ -89,10 +98,11 @@ namespace MonoDevelop.VersionControl.Git
 			TreeIter it;
 			if (!list.Selection.GetSelected (out it))
 				return null;
+
 			return (Stash) store.GetValue (it, 0);
 		}
 
-		void ApplyStashAndRemove(Stash s)
+		void ApplyStashAndRemove(int s)
 		{
 			using (IdeApp.Workspace.GetFileStatusTracker ()) {
 				GitService.ApplyStash (repository, s).Completed += delegate(IAsyncOperation op) {
@@ -104,8 +114,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected void OnButtonApplyClicked (object sender, System.EventArgs e)
 		{
-			Stash s = GetSelected ();
-			if (s != null) {
+			int s = GetSelectedIndex ();
+			if (s != -1) {
 				GitService.ApplyStash (repository, s);
 				Respond (ResponseType.Ok);
 			}
@@ -114,13 +124,14 @@ namespace MonoDevelop.VersionControl.Git
 		protected void OnButtonBranchClicked (object sender, System.EventArgs e)
 		{
 			Stash s = GetSelected ();
+			int stashIndex = GetSelectedIndex ();
 			if (s != null) {
 				var dlg = new EditBranchDialog (repository);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
 						GitService.SwitchToBranch (repository, dlg.BranchName);
-						ApplyStashAndRemove (s);
+						ApplyStashAndRemove (stashIndex);
 					}
 				} finally {
 					dlg.Destroy ();
@@ -141,8 +152,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected void OnButtonApplyRemoveClicked (object sender, System.EventArgs e)
 		{
-			Stash s = GetSelected ();
-			if (s != null) {
+			int s = GetSelectedIndex ();
+			if (s != -1) {
 				ApplyStashAndRemove (s);
 				Respond (ResponseType.Ok);
 			}
