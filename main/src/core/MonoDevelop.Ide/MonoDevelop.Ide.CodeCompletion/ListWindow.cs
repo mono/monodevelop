@@ -313,8 +313,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-				if (keyChar == '.')
-					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
+//				if (keyChar == '.')
+//					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
 
 				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {

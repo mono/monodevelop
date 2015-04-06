@@ -380,8 +380,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool SelectionEnabled {
 			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+				return AutoSelect && (AutoCompleteEmptyMatch || !IsEmptyMatch (CompletionString));
 			}
+		}
+
+		static bool IsEmptyMatch (string completionString)
+		{
+			if (string.IsNullOrEmpty (completionString))
+				return true;
+			var ch = completionString [0];
+			return char.IsDigit (ch);
 		}
 		
 		protected override bool OnButtonPressEvent (EventButton e)

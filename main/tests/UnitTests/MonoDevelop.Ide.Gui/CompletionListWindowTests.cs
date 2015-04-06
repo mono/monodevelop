@@ -498,7 +498,6 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("/AbAb", output);
 		}
 
-		[Ignore("Behavior was changed - commit with '.' now works everytime")]
 		[Test]
 		public void TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
 		{
@@ -843,6 +842,15 @@ namespace MonoDevelop.Ide.Gui
 				"override foo");
 
 			Assert.AreEqual ("override", output);
+		}
+
+
+
+		[Test]
+		public void TestNumberInput ()
+		{
+			string output = RunSimulation ("", "1.", true, true, false, "foo1");
+			Assert.IsTrue (string.IsNullOrEmpty (output), "output was " + output);
 		}
 
 		static void ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, ref TestCompletionWidget testCompletionWidget, string simulatedInput)
