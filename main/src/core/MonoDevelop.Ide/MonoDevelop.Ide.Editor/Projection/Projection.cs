@@ -29,6 +29,7 @@ using System.Collections.Immutable;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
@@ -36,7 +37,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 	{
 		public ITextDocument Document { get; private set; }
 
-		public ImmutableList<ProjectedSegment> ProjectedSegments { get; private set; }
+		public IReadOnlyList<ProjectedSegment> ProjectedSegments {
+			get;
+			private set;
+		}
 
 		TextEditor projectedEditor;
 
@@ -64,8 +68,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedEditor;
 		}
 
-
-		public Projection (ITextDocument document, ImmutableList<ProjectedSegment> projectedSegments)
+		public Projection (ITextDocument document, IReadOnlyList<ProjectedSegment> projectedSegments)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
