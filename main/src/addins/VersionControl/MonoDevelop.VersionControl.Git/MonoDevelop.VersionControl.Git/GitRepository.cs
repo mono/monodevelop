@@ -88,7 +88,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override bool IsUrlValid (string url)
 		{
-			return Remote.IsSupportedUrl (url);
+			if (url.Contains (':')) {
+				var tokens = url.Split (new[] { ':' }, 2);
+				if (Uri.IsWellFormedUriString (tokens [0], UriKind.RelativeOrAbsolute) ||
+					Uri.IsWellFormedUriString (tokens [1], UriKind.RelativeOrAbsolute))
+					return true;
+			}
+
+			return base.IsUrlValid (url);
 		}
 		
 		/*public override string[] SupportedNonUrlProtocols {
@@ -140,43 +147,24 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Stashes;
 		}
 
-		public MergeStatus ApplyStash (IProgressMonitor monitor, Stash stash)
+		public StashApplyStatus ApplyStash (IProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
 
-			RootRepository.Merge (stash.Untracked, GetSignature (), new MergeOptions { CommitOnSuccess = false, FastForwardStrategy = FastForwardStrategy.NoFastFoward });
-			RootRepository.Reset ();
-
-			MergeResult result = RootRepository.Merge (stash.Index, GetSignature (), new MergeOptions { CommitOnSuccess = false, FastForwardStrategy = FastForwardStrategy.NoFastFoward });
-			RootRepository.Reset ();
-
-			var toStage = new List<string> ();
-			var conflicts = RootRepository.Index.Conflicts;
-
-			// Stage back stash items.
-			foreach (var change in RootRepository.Diff.Compare<TreeChanges> (RootRepository.Head.Tip.Tree, DiffTargets.WorkingDirectory))
-				if (change.Status != ChangeKind.Untracked)
-					toStage.Add (change.Path);
-
-			toStage.RemoveAll (p => conflicts[p] != null);
-
-			// Stage needed files.
-			foreach (var p in toStage)
-				RootRepository.Index.Stage (p);
-
+			var res = RootRepository.Stashes.Apply (stashIndex);
 			if (monitor != null)
 				monitor.EndTask ();
-			return result.Status;
+			
+			return res;
 		}
 
-		public MergeStatus PopStash (IProgressMonitor monitor)
+		public StashApplyStatus PopStash (IProgressMonitor monitor)
 		{
-			var stash = RootRepository.Stashes [0];
-			MergeStatus ms = ApplyStash (monitor, stash);
+			StashApplyStatus res = ApplyStash (monitor, 0);
 			RootRepository.Stashes.Remove (0);
 
-			return ms;
+			return res;
 		}
 
 		public Stash CreateStash (IProgressMonitor monitor, string message)
@@ -378,7 +366,7 @@ namespace MonoDevelop.VersionControl.Git
 		static void GetFilesVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, List<FilePath> localPaths, List<VersionInfo> versions)
 		{
 			foreach (var file in repo.ToGitPath (localPaths)) {
-				var status = repo.Index.RetrieveStatus (file);
+				var status = repo.RetrieveStatus (file);
 				VersionStatus fstatus = VersionStatus.Versioned;
 
 				if (status != FileStatus.Unaltered) {
@@ -405,7 +393,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		static void GetDirectoryVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, FilePath directory, List<VersionInfo> versions, bool recursive)
 		{
-			var status = repo.Index.RetrieveStatus (new StatusOptions {
+			var status = repo.RetrieveStatus (new StatusOptions {
 				PathSpec = new [] { repo.ToGitPath (directory) },
 				IncludeUnaltered = true,
 			});
@@ -471,7 +459,7 @@ namespace MonoDevelop.VersionControl.Git
 			// Add the project files
 			ChangeSet cs = CreateChangeSet (localPath);
 			foreach (FilePath fp in files) {
-				RootRepository.Index.Stage (RootRepository.ToGitPath (fp));
+				RootRepository.Stage (RootRepository.ToGitPath (fp));
 				cs.AddFile (fp);
 			}
 
@@ -549,9 +537,9 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.Step (1);
 		}
 
-		bool CommonPreMergeRebase (GitUpdateOptions options, IProgressMonitor monitor, out Stash stash)
+		bool CommonPreMergeRebase (GitUpdateOptions options, IProgressMonitor monitor, out int stashIndex)
 		{
-			stash = null;
+			stashIndex = -1;
 			monitor.Step (1);
 
 			if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
@@ -574,7 +562,9 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-				stash = CreateStash (monitor, GetStashName ("_tmp_"));
+				Stash stash = CreateStash (monitor, GetStashName ("_tmp_"));
+				if (stash != null)
+					stashIndex = 0;
 				monitor.Step (1);
 			}
 			return true;
@@ -599,16 +589,16 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Commit (message);
 		}
 
-		void CommonPostMergeRebase(Stash stash, GitUpdateOptions options, IProgressMonitor monitor)
+		void CommonPostMergeRebase(int stashIndex, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Step (1);
 
 				// Restore local changes
-				if (stash != null) {
+				if (stashIndex != -1) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (monitor, stash);
-					RootRepository.Stashes.Remove (stash);
+					ApplyStash (monitor, stashIndex);
+					RootRepository.Stashes.Remove (stashIndex);
 					monitor.Step (1);
 				}
 			}
@@ -617,10 +607,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
-			Stash stash = null;
+			int stashIndex = -1;
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
-				if (!CommonPreMergeRebase (options, monitor, out stash))
+				if (!CommonPreMergeRebase (options, monitor, out stashIndex))
 					return;
 
 				// Do a rebase.
@@ -649,17 +639,17 @@ namespace MonoDevelop.VersionControl.Git
 					++i;
 				}
 			} finally {
-				CommonPostMergeRebase (stash, options, monitor);
+				CommonPostMergeRebase (stashIndex, options, monitor);
 			}
 		}
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
-			Stash stash = null;
+			int stashIndex = -1;
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
-				CommonPreMergeRebase (options, monitor, out stash);
+				CommonPreMergeRebase (options, monitor, out stashIndex);
 
 				// Do a merge.
 				MergeResult mergeResult = RootRepository.Merge (branch, GetSignature (), new MergeOptions {
@@ -673,7 +663,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (mergeResult.Status == MergeStatus.Conflicts)
 					ConflictResolver (monitor, RootRepository.Head.Tip, RootRepository.Info.Message);
 			} finally {
-				CommonPostMergeRebase (stash, GitUpdateOptions.SaveLocalChanges, monitor);
+				CommonPostMergeRebase (stashIndex, GitUpdateOptions.SaveLocalChanges, monitor);
 			}
 		}
 
@@ -712,7 +702,7 @@ namespace MonoDevelop.VersionControl.Git
 				throw new ArgumentException ("Commit message must not be null or empty!", "message");
 
 			var repo = (GitRepository)changeSet.Repository;
-			repo.RootRepository.Index.Stage (changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
+			repo.RootRepository.Stage (changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
 
 			if (changeSet.ExtendedProperties.Contains ("Git.AuthorName"))
 				repo.RootRepository.Commit (message, new Signature (
@@ -823,7 +813,7 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				var files = group.Where (f => !f.IsDirectory);
 				if (files.Any ())
-					repository.Index.Stage (repository.ToGitPath (files));
+					repository.Stage (repository.ToGitPath (files));
 			}
 		}
 
@@ -883,7 +873,7 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				var files = repository.ToGitPath (group);
 
-				repository.Index.Remove (files, !keepLocal);
+				repository.Remove (files, !keepLocal);
 			}
 		}
 
@@ -1206,9 +1196,9 @@ namespace MonoDevelop.VersionControl.Git
 
 			vi = GetVersionInfo (localDestPath, VersionInfoQueryFlags.IgnoreCache);
 			if (vi != null && ((vi.Status & (VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace)) != VersionStatus.Unversioned))
-				RootRepository.Index.Unstage (localDestPath);
+				RootRepository.Unstage (localDestPath);
 
-			RootRepository.Index.Move (localSrcPath, localDestPath);
+			RootRepository.Move (localSrcPath, localDestPath);
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
@@ -1268,7 +1258,7 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			RootRepository.Index.Stage (".gitignore");
+			RootRepository.Stage (".gitignore");
 		}
 
 		protected override void OnUnignore (FilePath[] localPath)
@@ -1289,7 +1279,7 @@ namespace MonoDevelop.VersionControl.Git
 				sb.AppendLine (path);
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
-			RootRepository.Index.Stage (".gitignore");
+			RootRepository.Stage (".gitignore");
 		}
 	}
 	

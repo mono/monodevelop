@@ -137,7 +137,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public static IAsyncOperation ApplyStash (GitRepository repo, Stash s)
+		public static IAsyncOperation ApplyStash (GitRepository repo, int s)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
@@ -156,9 +156,9 @@ namespace MonoDevelop.VersionControl.Git
 			return monitor.AsyncOperation;
 		}
 		
-		public static void ReportStashResult (MergeStatus status)
+		public static void ReportStashResult (StashApplyStatus status)
 		{
-			if (status == MergeStatus.Conflicts) {
+			if (status == StashApplyStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
