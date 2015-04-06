@@ -435,7 +435,7 @@ namespace Mono.TextEditor.Utils
 			
 			internal bool IsInside(int offset)
 			{
-				return offset >= nodeStartIndex && offset < nodeStartIndex + node.length;
+				return node != null && offset >= nodeStartIndex && offset < nodeStartIndex + node.length;
 			}
 		}
 		
