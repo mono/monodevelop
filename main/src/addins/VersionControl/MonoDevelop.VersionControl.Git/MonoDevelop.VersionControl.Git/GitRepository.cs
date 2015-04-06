@@ -161,9 +161,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public StashApplyStatus PopStash (IProgressMonitor monitor)
 		{
-			StashApplyStatus res = ApplyStash (monitor, 0);
-			if (res == StashApplyStatus.Applied)
-				RootRepository.Stashes.Remove (0);
+			if (monitor != null)
+				monitor.BeginTask ("Applying stash", 1);
+
+			var res = RootRepository.Stashes.Pop (0);
+			if (monitor != null)
+				monitor.EndTask ();
 
 			return res;
 		}
