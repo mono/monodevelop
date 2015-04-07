@@ -63,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 
 			var csi = new JSonIndentEngine (content.Data, doc);
 			var result = new CacheIndentEngine (csi);
-			result.Update (offset);
+			result.Update (content.Data, offset);
 			return result;
 		}
 
