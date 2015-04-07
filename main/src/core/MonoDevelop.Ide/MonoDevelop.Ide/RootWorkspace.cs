@@ -616,6 +616,10 @@ namespace MonoDevelop.Ide
 
 				if (!File.Exists (file)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", file), null);
+					// Notify the RecentFiles that this item does not exist anymore.
+					// Possible other solution would be to check the recent projects list on focus in
+					// and update them accordingly.
+					FileService.NotifyFileRemoved (file);
 					monitor.Dispose ();
 					return;
 				}
