@@ -37,6 +37,7 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.AspNet.Html;
@@ -471,8 +472,9 @@ namespace MonoDevelop.AspNet.WebForms
 //			}
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
-		                                                 Dictionary<string, string> existingAtts)
+		protected override CompletionDataList GetAttributeCompletions (
+			IAttributedXObject attributedOb,
+			Dictionary<string, string> existingAtts)
 		{
 			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
 			if (attributedOb is XElement) {
@@ -577,32 +579,41 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		void AddAspAttributeCompletionData (CompletionDataList list, XName name, Dictionary<string, string> existingAtts)
 		{
-			// TODO: Roslyn port
-//			Debug.Assert (name.IsValid);
-//			Debug.Assert (name.HasPrefix);
-//			
-//			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
-//			if(controlClass != null)
-//				AddControlMembers (list, controlClass, existingAtts);
+			Debug.Assert (name.IsValid);
+			Debug.Assert (name.HasPrefix);
+
+			INamedTypeSymbol controlClass = refman.GetControlType (name.Prefix, name.Name);
+			if(controlClass != null)
+				AddControlMembers (list, controlClass, existingAtts);
 		}
-		
-		// TODO: Roslyn port
-//		void AddControlMembers (CompletionDataList list, IType controlClass, Dictionary<string, string> existingAtts)
-//		{
-//			//add atts only if they're not already in the tag
-//			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
-//				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
-//				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-//					list.Add (new AspAttributeCompletionData (prop));
-//			
-//			//similarly add events
-//			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
-//				string eveName = "On" + eve.Name;
-//				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-//					list.Add (new AspAttributeCompletionData (eve, eveName));
-//			}
-//		}
-//		
+
+		void AddControlMembers (CompletionDataList list, INamedTypeSymbol controlClass, Dictionary<string, string> existingAtts)
+		{
+			//add atts only if they're not already in the tag
+			foreach (var prop in GetUniqueMembers<IPropertySymbol> (GetAllMembers<IPropertySymbol> (controlClass)))
+				if (prop.DeclaredAccessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
+					if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
+						list.Add (new AspAttributeCompletionData (prop));
+
+			//similarly add events
+			foreach (var eve in GetUniqueMembers<IEventSymbol> (GetAllMembers<IEventSymbol> (controlClass))) {
+				string eveName = "On" + eve.Name;
+				if (eve.DeclaredAccessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
+					list.Add (new AspAttributeCompletionData (eve, eveName));
+			}
+		}
+
+		IEnumerable<T> GetAllMembers<T> (INamedTypeSymbol type)
+		{
+			INamedTypeSymbol currentType = type;
+			while (currentType != null) {
+				foreach (T member in currentType.GetMembers ().OfType<T> ())
+					yield return member;
+
+				currentType = currentType.BaseType;
+			}
+		}
+
 		void AddAspAttributeValueCompletionData (CompletionDataList list, XName tagName, XName attName, string id)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
@@ -685,17 +696,17 @@ namespace MonoDevelop.AspNet.WebForms
 //				}
 //			}
 		}
-//		
-//		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : IMember
-//		{
-//			var existingItems = new Dictionary<string,bool> ();
-//			foreach (T item in members) {
-//				if (existingItems.ContainsKey (item.Name))
-//					continue;
-//				existingItems[item.Name] = true;
-//				yield return item;
-//			}
-//		}
+
+		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : ISymbol
+		{
+			var existingItems = new Dictionary<string,bool> ();
+			foreach (T item in members) {
+				if (existingItems.ContainsKey (item.Name))
+					continue;
+				existingItems[item.Name] = true;
+				yield return item;
+			}
+		}
 		
 		static void AddBooleanCompletionData (CompletionDataList list)
 		{
@@ -703,28 +714,28 @@ namespace MonoDevelop.AspNet.WebForms
 			list.Add ("false", "md-literal");
 		}
 		#endregion
-		
+
 		#region Querying types' attributes
-		/* TODO : Roslyn port
-		static System.Web.UI.PersistenceMode GetPersistenceMode (IProperty prop)
+		static System.Web.UI.PersistenceMode GetPersistenceMode (IPropertySymbol prop)
 		{
-			foreach (var att in prop.Attributes) {
-				if (att.AttributeType.ReflectionName == "System.Web.UI.PersistenceModeAttribute") {
-					var expr = att.PositionalArguments.FirstOrDefault ();
-					if (expr == null) {
-						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
+			foreach (var att in prop.GetAttributes ()) {
+				if (att.AttributeClass.GetFullName () == "System.Web.UI.PersistenceModeAttribute") {
+					var expr = att.ConstructorArguments.FirstOrDefault ();
+					if (expr.IsNull) {
+						LoggingService.LogWarning ("Unknown expression type {0} in Attribute parameter", expr);
 						return System.Web.UI.PersistenceMode.Attribute;
 					}
 					
-					return (System.Web.UI.PersistenceMode) expr.ConstantValue;
+					return (System.Web.UI.PersistenceMode) expr.Value;
 				}
-				if (att.AttributeType.ReflectionName == "System.Web.UI.TemplateContainerAttribute") {
+				if (att.AttributeClass.GetFullName () == "System.Web.UI.TemplateContainerAttribute") {
 					return System.Web.UI.PersistenceMode.InnerProperty;
 				}
 			}
 			return System.Web.UI.PersistenceMode.Attribute;
 		}
-		
+
+		/* TODO : Roslyn port
 		static bool AreChildrenAsProperties (IType type, out string defaultProperty)
 		{
 			bool childrenAsProperties = false;
