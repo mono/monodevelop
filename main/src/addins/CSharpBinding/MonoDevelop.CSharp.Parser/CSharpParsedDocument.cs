@@ -183,9 +183,13 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			IReadOnlyList<Tag> result;
 			if (weakTags == null || !weakTags.TryGetTarget (out result)) {
-				var visitor = new SemanticTagVisitor ();
-				if (Unit != null)
-					visitor.Visit (Unit.GetRoot (cancellationToken));
+				var visitor = new SemanticTagVisitor (cancellationToken);
+				if (Unit != null) {
+					try {
+						visitor.Visit (Unit.GetRoot (cancellationToken));
+					} catch {
+					}
+				}
 				result = visitor.Tags;
 
 				var newRef = new WeakReference<IReadOnlyList<Tag>> (result);
@@ -200,6 +204,7 @@ namespace MonoDevelop.CSharp.Parser
 		{
 			string[] tagComments;
 			public List<Tag> Tags =  new List<Tag> ();
+			CancellationToken cancellationToken;
 
 			public SemanticTagVisitor () : base (SyntaxWalkerDepth.Trivia)
 			{
@@ -207,8 +212,20 @@ namespace MonoDevelop.CSharp.Parser
 
 			}
 
+			public SemanticTagVisitor (CancellationToken cancellationToken)
+			{
+				this.cancellationToken = cancellationToken;
+			}
+
+			public override void VisitBlock (BlockSyntax node)
+			{
+				cancellationToken.ThrowIfCancellationRequested ();
+				base.VisitBlock (node);
+			}
+
 			public override void VisitTrivia (SyntaxTrivia trivia)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				if (trivia.IsKind (SyntaxKind.SingleLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.MultiLineCommentTrivia) || 
 					trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
@@ -225,6 +242,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitThrowStatement (Microsoft.CodeAnalysis.CSharp.Syntax.ThrowStatementSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				base.VisitThrowStatement (node);
 				var createExpression = node.Expression as ObjectCreationExpressionSyntax;
 				if (createExpression == null)
@@ -264,9 +282,12 @@ namespace MonoDevelop.CSharp.Parser
 			foreach (var fold in GetCommentsAsync().Result.ToFolds ())
 				yield return fold;
 
-			var visitor = new FoldingVisitor ();
-			if (Unit != null)
-				visitor.Visit (Unit.GetRoot (cancellationToken));
+			var visitor = new FoldingVisitor (cancellationToken);
+			if (Unit != null) {
+				try {
+					visitor.Visit (Unit.GetRoot (cancellationToken));
+				} catch (Exception) { }
+			}
 			foreach (var fold in visitor.Foldings)
 				yield return fold;
 		}
@@ -274,6 +295,12 @@ namespace MonoDevelop.CSharp.Parser
 		class FoldingVisitor : CSharpSyntaxWalker
 		{
 			public readonly List<FoldingRegion> Foldings = new List<FoldingRegion> ();
+			CancellationToken cancellationToken;
+
+			public FoldingVisitor (CancellationToken cancellationToken)
+			{
+				this.cancellationToken = cancellationToken;
+			}
 
 			void AddUsings (SyntaxNode parent)
 			{
@@ -317,7 +344,6 @@ namespace MonoDevelop.CSharp.Parser
 				} catch (ArgumentOutOfRangeException) {}
 			}
 
-
 			public override void VisitNamespaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax node)
 			{
 				AddUsings (node);
@@ -351,6 +377,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 			{
+				cancellationToken.ThrowIfCancellationRequested ();
 				AddFolding (node.OpenBraceToken, node.CloseBraceToken);
 				base.VisitBlock (node);
 			}
@@ -386,8 +413,12 @@ namespace MonoDevelop.CSharp.Parser
 
 		static DocumentRegion GetRegion (Diagnostic diagnostic)
 		{
-			var lineSpan = diagnostic.Location.GetLineSpan ();
-			return new DocumentRegion (lineSpan.StartLinePosition, lineSpan.EndLinePosition);
+			try {
+				var lineSpan = diagnostic.Location.GetLineSpan ();
+				return new DocumentRegion (lineSpan.StartLinePosition, lineSpan.EndLinePosition);
+			} catch (Exception) {
+				return DocumentRegion.Empty;
+			}
 		}
 
 		static ErrorType GetErrorType (DiagnosticSeverity severity)

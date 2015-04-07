@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp.Completion
 
 				if (sym is IMethodSymbol) {
 					var method = (IMethodSymbol)sym;
-					if (method.IsExtensionMethod) {
+					if (method.IsExtensionMethod && method.ReducedFrom != null && method.ReducedFrom.ContainingType != null) {
 						tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ReducedFrom.ContainingType.Name);
 					}
 				}
