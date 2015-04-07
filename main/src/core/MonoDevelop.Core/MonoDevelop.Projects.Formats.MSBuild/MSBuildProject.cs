@@ -262,9 +262,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string name, include, finalItemSpec;
 				bool imported;
 				e.GetItemInfo (it, out name, out include, out finalItemSpec, out imported);
-				var xit = currentItems [e.GetItemMetadata (it, NodeIdPropertyName)];
-				xit.SetEvalResult (finalItemSpec);
-				((MSBuildPropertyGroupEvaluated)xit.EvaluatedMetadata).Sync (e, it);
+				var iid = e.GetItemMetadata (it, NodeIdPropertyName);
+				MSBuildItem xit;
+				if (currentItems.TryGetValue (iid, out xit)) {
+					xit.SetEvalResult (finalItemSpec);
+					((MSBuildPropertyGroupEvaluated)xit.EvaluatedMetadata).Sync (e, it);
+				}
 			}
 
 			var xmlImports = Imports.ToArray ();
@@ -279,6 +282,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MSBuildItem pit;
 				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
 					xit.SourceItem = pit;
+					xit.Condition = pit.Condition;
 					evalItems [itemId] = xit;
 				}
 				evaluatedItems.Add (xit);
@@ -293,8 +297,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				xit = CreateEvaluatedItem (e, it);
 				MSBuildItem pit;
-				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit))
+				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
 					xit.SourceItem = pit;
+					xit.Condition = pit.Condition;
+				}
 				evaluatedItemsIgnoringCondition.Add (xit);
 			}
 

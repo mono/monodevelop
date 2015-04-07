@@ -102,20 +102,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	class MSBuildItemEvaluated: MSBuildObject, IMSBuildItemEvaluated
+	class MSBuildItemEvaluated: IMSBuildItemEvaluated
 	{
 		MSBuildPropertyGroupEvaluated metadata;
 		MSBuildProject parent;
 		string evaluatedInclude;
 		string include;
 
-		internal MSBuildItemEvaluated (MSBuildProject parent, string name, string include, string evaluatedInclude): base (null)
+		internal MSBuildItemEvaluated (MSBuildProject parent, string name, string include, string evaluatedInclude)
 		{
 			this.include = include;
 			this.evaluatedInclude = evaluatedInclude;
 			this.parent = parent;
 			Name = name;
 		}
+
+		public string Label { get; internal set; }
+
+		public string Condition { get; internal set; }
 
 		public string Include {
 			get { return evaluatedInclude; }
