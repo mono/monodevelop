@@ -145,7 +145,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.CreateStash (new NullProgressMonitor (), "meh");
 			Assert.IsTrue (!File.Exists (LocalPath + "file1"), "Stash creation failure");
 			AddFile ("file4", "conflict", true, true);
-			repo2.PopStash (new NullProgressMonitor ());
+			repo2.PopStash (new NullProgressMonitor (), 0);
 
 			VersionInfo vi = repo2.GetVersionInfo (LocalPath + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Stash pop staged failure");
@@ -170,7 +170,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			int commitCount = repo2.GetHistory (repo2.RootPath, null).Length;
 			repo2.CreateStash (new NullProgressMonitor (), "stash1");
-			repo2.PopStash (new NullProgressMonitor ());
+			repo2.PopStash (new NullProgressMonitor (), 0);
 			Assert.AreEqual (commitCount, repo2.GetHistory (repo2.RootPath, null).Length, "stash1 added extra commit.");
 
 			repo2.CreateStash (new NullProgressMonitor (), "stash2");
@@ -178,7 +178,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			AddFile ("file4", null, true, true);
 			commitCount = repo2.GetHistory (repo2.RootPath, null).Length;
 
-			repo2.PopStash (new NullProgressMonitor ());
+			repo2.PopStash (new NullProgressMonitor (), 0);
 			Assert.AreEqual (commitCount, repo2.GetHistory (repo2.RootPath, null).Length, "stash2 added extra commit.");
 		}
 
@@ -198,7 +198,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.CreateBranch ("branch2", null);
 			repo2.SwitchToBranch (new NullProgressMonitor (), "branch2");
 			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
-			repo2.PopStash (new NullProgressMonitor ());
+			repo2.PopStash (new NullProgressMonitor (), 0);
 
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
 

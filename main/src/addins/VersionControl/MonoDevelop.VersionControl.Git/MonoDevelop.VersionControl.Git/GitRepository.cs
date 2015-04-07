@@ -147,24 +147,42 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Stashes;
 		}
 
+		const CheckoutNotifyFlags refreshFlags = CheckoutNotifyFlags.Updated | CheckoutNotifyFlags.Conflict | CheckoutNotifyFlags.Untracked | CheckoutNotifyFlags.Dirty;
+		bool RefreshFile (string path, CheckoutNotifyFlags flags)
+		{
+			FilePath fp = RootRepository.FromGitPath (path);
+			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
+			if (doc != null)
+				doc.Reload ();
+			FileService.NotifyFileChanged (fp);
+			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, fp, false));
+			return true;
+		}
+
 		public StashApplyStatus ApplyStash (IProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
 
-			var res = RootRepository.Stashes.Apply (stashIndex);
+			var res = RootRepository.Stashes.Apply (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
+				OnCheckoutNotify = RefreshFile,
+				CheckoutNotifyFlags = refreshFlags,
+			});
 			if (monitor != null)
 				monitor.EndTask ();
 
 			return res;
 		}
 
-		public StashApplyStatus PopStash (IProgressMonitor monitor)
+		public StashApplyStatus PopStash (IProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
 
-			var res = RootRepository.Stashes.Pop (0);
+			var res = RootRepository.Stashes.Pop (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
+				OnCheckoutNotify = RefreshFile,
+				CheckoutNotifyFlags = refreshFlags,
+			});
 			if (monitor != null)
 				monitor.EndTask ();
 
@@ -601,8 +619,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stashIndex != -1) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (monitor, stashIndex);
-					RootRepository.Stashes.Remove (stashIndex);
+					PopStash (monitor, stashIndex);
 					monitor.Step (1);
 				}
 			}
@@ -632,11 +649,8 @@ namespace MonoDevelop.VersionControl.Git
 				foreach (var com in toApply) {
 					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
 					CherryPickResult cherryRes = RootRepository.CherryPick (com, com.Author, new CherryPickOptions {
-						CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
-						OnCheckoutNotify = (path, flags) => {
-							FileService.NotifyFileChanged (RootRepository.FromGitPath (path));
-							return true;
-						}
+						CheckoutNotifyFlags = refreshFlags,
+						OnCheckoutNotify = RefreshFile,
 					});
 					if (cherryRes.Status == CherryPickStatus.Conflicts)
 						ConflictResolver(monitor, toApply.Last(), RootRepository.Info.Message ?? com.Message);
@@ -657,11 +671,8 @@ namespace MonoDevelop.VersionControl.Git
 
 				// Do a merge.
 				MergeResult mergeResult = RootRepository.Merge (branch, GetSignature (), new MergeOptions {
-					CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
-					OnCheckoutNotify = (path, flags) => {
-						FileService.NotifyFileChanged (RootRepository.FromGitPath (path));
-						return true;
-					}
+					CheckoutNotifyFlags = refreshFlags,
+					OnCheckoutNotify = RefreshFile,
 				});
 
 				if (mergeResult.Status == MergeStatus.Conflicts)
@@ -779,13 +790,12 @@ namespace MonoDevelop.VersionControl.Git
 
 				repository.CheckoutPaths ("HEAD", group.ToPathStrings (), new CheckoutOptions {
 					CheckoutModifiers = CheckoutModifiers.Force,
-					CheckoutNotifyFlags = CheckoutNotifyFlags.Updated | CheckoutNotifyFlags.Untracked,
+					CheckoutNotifyFlags = refreshFlags,
 					OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
-						var file = repository.FromGitPath (path);
 						if ((notifyFlags & CheckoutNotifyFlags.Untracked) != 0)
-							FileService.NotifyFileRemoved (file);
+							FileService.NotifyFileRemoved (repository.FromGitPath (path));
 						else
-							FileService.NotifyFileChanged (file);
+							RefreshFile (path, notifyFlags);
 						return true;
 					}
 				});
