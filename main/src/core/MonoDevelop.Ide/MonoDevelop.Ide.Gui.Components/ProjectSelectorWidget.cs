@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		WorkspaceObject currentSelection;
 		HashSet<WorkspaceObject> activeItems = new HashSet<WorkspaceObject> ();
 		HashSet<Type> selectableTypes = new HashSet<Type> ();
-		Func<IBuildTarget,bool> selectableFilter;
+		Func<WorkspaceObject,bool> selectableFilter;
 		
 		public event EventHandler SelectionChanged;
 		public event EventHandler ActiveChanged;
@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				SelectionChanged (this, EventArgs.Empty);
 		}
 
-		public Func<IBuildTarget,bool> SelectableFilter {
+		public Func<WorkspaceObject,bool> SelectableFilter {
 			get {
 				return selectableFilter;
 			}
@@ -291,7 +291,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return IsSelectable (item);
 		}
 
-		bool IsSelectable (IBuildTarget item)
+		bool IsSelectable (WorkspaceObject item)
 		{
 			if (SelectableFilter != null && !SelectableFilter (item))
 				return false;

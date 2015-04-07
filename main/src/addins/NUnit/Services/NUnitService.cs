@@ -133,7 +133,7 @@ namespace MonoDevelop.NUnit
 					await RefreshTests (cs.Token);
 					test = SearchTest (testName);
 					if (test != null)
-						await RunTest (test, context, false, cs);
+						await RunTest (test, context, false, checkCurrentRunOperation, cs);
 					return;
 				}
 			}

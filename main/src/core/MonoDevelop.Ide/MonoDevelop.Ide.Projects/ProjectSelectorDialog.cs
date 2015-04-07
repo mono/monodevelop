@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Projects
 			set { selector.SelectableItemTypes = value; }
 		}
 
-		public Func<IBuildTarget,bool> SelectableFilter {
+		public Func<WorkspaceObject,bool> SelectableFilter {
 			get { return selector.SelectableFilter; }
 			set { selector.SelectableFilter = value; }
 		}

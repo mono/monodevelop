@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui
 			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
 		}
 
-		public IProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible)
+		public ProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible)
 		{
 			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = visible;
