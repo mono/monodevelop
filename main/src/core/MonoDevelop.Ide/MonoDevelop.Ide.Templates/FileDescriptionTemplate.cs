@@ -111,5 +111,10 @@ namespace MonoDevelop.Ide.Templates
 		{
 			ProjectTagModel = tagModel;
 		}
+
+		internal bool EvaluateCreateCondition ()
+		{
+			return ProjectTagModel.EvaluateCondition (CreateCondition);
+		}
 	}
 }

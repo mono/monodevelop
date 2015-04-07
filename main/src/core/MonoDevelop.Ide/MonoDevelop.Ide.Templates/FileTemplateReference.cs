@@ -78,8 +78,10 @@ namespace MonoDevelop.Ide.Templates
 			string substName = StringParserService.Parse (this.name, customTags);
 			
 			foreach (FileDescriptionTemplate fdt in innerTemplate.Files) {
-				if (!fdt.AddToProject (policyParent, project, language, directory, substName))
-					return false;
+				if (fdt.EvaluateCreateCondition ()) {
+					if (!fdt.AddToProject (policyParent, project, language, directory, substName))
+						return false;
+				}
 			}
 			return true;
 		}
