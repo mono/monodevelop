@@ -4,6 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ProjectGuid>{8E25B644-45CA-457C-A08B-0F1C9AA51E71}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>TestConfigurationMerging</AssemblyName>

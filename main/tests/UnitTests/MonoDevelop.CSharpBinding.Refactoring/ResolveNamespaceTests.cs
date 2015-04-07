@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
 
 			project.FileName = "test.csproj";
