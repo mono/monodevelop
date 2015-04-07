@@ -668,6 +668,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			switch ((SearchScope) comboboxScope.Active) {
 			case SearchScope.CurrentDocument:
+				if (IdeApp.Workbench.ActiveDocument == null) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
+					return null;
+				}
 				scope = new DocumentScope ();
 				break;
 			case SearchScope.Selection:
@@ -699,6 +703,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				return null;
 			case SearchScope.AllOpenFiles:
+				if (IdeApp.Workbench.Documents.Count == 0) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open documents."));
+					return null;
+				}
 				scope = new AllOpenFilesScope ();
 				break;
 			case SearchScope.Directories: 
