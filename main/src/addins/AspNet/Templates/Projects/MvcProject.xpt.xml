@@ -12,7 +12,7 @@
 		<_Description>Creates an ASP.NET MVC Web Project with Razor Views.</_Description>
 		<Wizard>MonoDevelop.AspNet.ProjectTemplateWizard</Wizard>
 		<DefaultParameters>UsesAspNetMvc=true</DefaultParameters>
-		<SupportedParameters>UsesAspNetWebApi;UsesAspNetWebForms</SupportedParameters>
+		<SupportedParameters>UsesAspNetWebApi</SupportedParameters>
 	</TemplateConfiguration>
 
 

@@ -11,7 +11,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty ASP.NET Web Project.</_Description>
 		<Wizard>MonoDevelop.AspNet.ProjectTemplateWizard</Wizard>
-		<SupportedParameters>UsesAspNetMvc;UsesAspNetWebApi;UsesAspNetWebForms</SupportedParameters>
+		<SupportedParameters>UsesAspNetMvc;UsesAspNetWebApi</SupportedParameters>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
