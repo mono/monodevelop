@@ -675,6 +675,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				scope = new DocumentScope ();
 				break;
 			case SearchScope.Selection:
+				if (IdeApp.Workbench.ActiveDocument == null) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
+					return null;
+				}
 				scope = new SelectionScope ();
 				break;
 			case SearchScope.WholeWorkspace:
