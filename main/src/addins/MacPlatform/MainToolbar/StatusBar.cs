@@ -198,6 +198,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
+				if (Window == null)
+					return;
+
 				ReconstructString ();
 				foreach (var layer in Layer.Sublayers) {
 					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))

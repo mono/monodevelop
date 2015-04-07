@@ -115,6 +115,9 @@ namespace MonoDevelop.Components.MainToolbar
 			renderer.Xpad = (uint)(runtime.IsIndented ? 18 : 3);
 
 			if (!runtimeCombo.PopupShown) {
+				// no need to ident text when the combo dropdown is not showing
+				if (Platform.IsWindows)
+					renderer.Xpad = 3;
 				renderer.Text = runtime.FullDisplayString;
 				renderer.Attributes = normalAttributes;
 			} else {
@@ -274,7 +277,8 @@ namespace MonoDevelop.Components.MainToolbar
 		void SetDefaultSizes (int comboHeight, int height)
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
-			runtimeCombo.SetSizeRequest (150, comboHeight);
+			// make the windows runtime slightly wider to accomodate select devices text
+			runtimeCombo.SetSizeRequest (Platform.IsWindows ? 175 : 150, comboHeight);
 			statusArea.SetSizeRequest (32, 32);
 			matchEntry.HeightRequest = height + 4;
 			buttonBar.HeightRequest = height + 2;
