@@ -151,9 +151,11 @@ namespace MonoDevelop.VersionControl.Git
 		bool RefreshFile (string path, CheckoutNotifyFlags flags)
 		{
 			FilePath fp = RootRepository.FromGitPath (path);
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
-			if (doc != null)
-				doc.Reload ();
+			if (IdeApp.IsInitialized) {
+				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
+				if (doc != null)
+					doc.Reload ();
+			}
 			FileService.NotifyFileChanged (fp);
 			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, fp, false));
 			return true;
