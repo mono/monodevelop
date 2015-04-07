@@ -384,92 +384,90 @@ namespace MonoDevelop.AspNet.WebForms
 				return;
 			}
 
-			// TODO: Roslyn port!	
+			string defaultProp;
+			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
+			if (defaultProp != null && defaultProp.Length == 0)
+				defaultProp = null;
+			
+			//parent permits child controls directly
+			if (!childrenAsProperties) {
+				AddAspBeginExpressions (list);
+				list.AddRange (refman.GetControlCompletionData ());
+				AddMiscBeginTags (list);
+				//TODO: get correct parent for Content tags
+				AddHtmlTagCompletionData (list, Schema, new XName ("body"));
+				return;
+			}
+			
+			//children of properties
+			if (childrenAsProperties && (!parentName.HasPrefix || defaultProp != null)) {
+				string propName = defaultProp ?? parentName.Name;
+				IPropertySymbol property =
+					controlClass.GetMembers ().OfType<IPropertySymbol> ()
+						.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
+				
+				if (property == null)
+					return;
+				
+				//sanity checks on attributes
+				switch (GetPersistenceMode (property)) {
+				case System.Web.UI.PersistenceMode.Attribute:
+				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
+					return;
+					
+				case System.Web.UI.PersistenceMode.InnerDefaultProperty:
+					if (!parentName.HasPrefix)
+						return;
+					break;
+					
+				case System.Web.UI.PersistenceMode.InnerProperty:
+					if (parentName.HasPrefix)
+						return;
+					break;
+				}
+				
+				//check if allows freeform ASP/HTML content
+				if (property.GetReturnType ().GetFullName () == "System.Web.UI.ITemplate") {
+					AddAspBeginExpressions (list);
+					AddMiscBeginTags (list);
+					AddHtmlTagCompletionData (list, Schema, new XName ("body"));
+					list.AddRange (refman.GetControlCompletionData ());
+					return;
+				}
 
-//			string defaultProp;
-//			bool childrenAsProperties = AreChildrenAsProperties (controlClass, out defaultProp);
-//			if (defaultProp != null && defaultProp.Length == 0)
-//				defaultProp = null;
-//			
-//			//parent permits child controls directly
-//			if (!childrenAsProperties) {
-//				AddAspBeginExpressions (list);
-//				list.AddRange (refman.GetControlCompletionData ());
-//				AddMiscBeginTags (list);
-//				//TODO: get correct parent for Content tags
-//				AddHtmlTagCompletionData (list, Schema, new XName ("body"));
-//				return;
-//			}
-//			
-//			//children of properties
-//			if (childrenAsProperties && (!parentName.HasPrefix || defaultProp != null)) {
-//				string propName = defaultProp ?? parentName.Name;
-//				IProperty property =
-//					controlClass.GetProperties ()
-//						.FirstOrDefault (x => string.Equals (propName, x.Name, StringComparison.OrdinalIgnoreCase));
-//				
-//				if (property == null)
-//					return;
-//				
-//				//sanity checks on attributes
-//				switch (GetPersistenceMode (property)) {
-//				case System.Web.UI.PersistenceMode.Attribute:
-//				case System.Web.UI.PersistenceMode.EncodedInnerDefaultProperty:
-//					return;
-//					
-//				case System.Web.UI.PersistenceMode.InnerDefaultProperty:
-//					if (!parentName.HasPrefix)
-//						return;
-//					break;
-//					
-//				case System.Web.UI.PersistenceMode.InnerProperty:
-//					if (parentName.HasPrefix)
-//						return;
-//					break;
-//				}
-//				
-//				//check if allows freeform ASP/HTML content
-//				if (property.ReturnType.ToString () == "System.Web.UI.ITemplate") {
-//					AddAspBeginExpressions (list);
-//					AddMiscBeginTags (list);
-//					AddHtmlTagCompletionData (list, Schema, new XName ("body"));
-//					list.AddRange (refman.GetControlCompletionData ());
-//					return;
-//				}
-//				
-//				//FIXME:unfortunately ASP.NET doesn't seem to have enough type information / attributes
-//				//to be able to resolve the correct child types here
-//				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
-//				
-//				IType collectionType = property.ReturnType;
-//				if (collectionType == null) {
-//					list.AddRange (refman.GetControlCompletionData ());
-//					return;
-//				}
-//				
-//				string addStr = "Add";
-//				IMethod meth = collectionType.GetMethods ().FirstOrDefault (m => m.Parameters.Count == 1 && m.Name == addStr);
-//				
-//				if (meth != null) {
-//					IType argType = meth.Parameters [0].Type;
-//					var type = ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (argType.GetDefinition ().Compilation);
-//					if (argType != null && argType.IsBaseType (type)) {
-//						list.AddRange (refman.GetControlCompletionData (argType));
-//						return;
-//					}
-//				}
-//				
-//				list.AddRange (refman.GetControlCompletionData ());
-//				return;
-//			}
-//			
-//			//properties as children of controls
-//			if (parentName.HasPrefix && childrenAsProperties) {
-//				foreach (IProperty prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
-//					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
-//						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
-//				return;
-//			}
+				//FIXME:unfortunately ASP.NET doesn't seem to have enough type information / attributes
+				//to be able to resolve the correct child types here
+				//so we assume it's a list and have a quick hack to find arguments of strongly typed ILists
+				
+				ITypeSymbol collectionType = property.GetReturnType ();
+				if (collectionType == null) {
+					list.AddRange (refman.GetControlCompletionData ());
+					return;
+				}
+
+				string addStr = "Add";
+				IMethodSymbol meth = collectionType.GetMembers ().OfType<IMethodSymbol> ().FirstOrDefault (m => m.Parameters.Length == 1 && m.Name == addStr);
+
+				if (meth != null) {
+					var argType = meth.Parameters [0].Type as INamedTypeSymbol;
+					INamedTypeSymbol type = refman.Compilation.GetTypeByMetadataName ("System.Web.UI.Control");
+					if (argType != null && type != null && argType.IsDerivedFromClass (type)) {
+						list.AddRange (refman.GetControlCompletionData (argType));
+						return;
+					}
+				}
+				
+				list.AddRange (refman.GetControlCompletionData ());
+				return;
+			}
+			
+			//properties as children of controls
+			if (parentName.HasPrefix && childrenAsProperties) {
+				foreach (IPropertySymbol prop in GetUniqueMembers<IPropertySymbol> (controlClass.GetMembers ().OfType <IPropertySymbol> ()))
+					if (GetPersistenceMode (prop) != System.Web.UI.PersistenceMode.Attribute)
+						list.Add (prop.Name, prop.GetStockIcon (), Ambience.GetSummaryMarkup (prop));
+				return;
+			}
 		}
 		
 		protected override CompletionDataList GetAttributeCompletions (
@@ -735,30 +733,29 @@ namespace MonoDevelop.AspNet.WebForms
 			return System.Web.UI.PersistenceMode.Attribute;
 		}
 
-		/* TODO : Roslyn port
-		static bool AreChildrenAsProperties (IType type, out string defaultProperty)
+		static bool AreChildrenAsProperties (INamedTypeSymbol type, out string defaultProperty)
 		{
 			bool childrenAsProperties = false;
 			defaultProperty = "";
 			
-			IAttribute att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
+			AttributeData att = GetAttributes (type, "System.Web.UI.ParseChildrenAttribute").FirstOrDefault ();
 
 			if (att == null)
 				return childrenAsProperties;
 
-			var posArgs = att.PositionalArguments;
-			if (posArgs.Count == 0)
+			var posArgs = att.ConstructorArguments;
+			if (posArgs.Length == 0)
 				return childrenAsProperties;
 			
-			if (posArgs.Count > 0) {
+			if (posArgs.Length > 0) {
 				var expr = posArgs [0];
-				if (expr == null) {
-					LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
+				if (expr.IsNull) {
+					LoggingService.LogWarning ("Unknown expression type {0} in Attribute parameter", expr);
 					return false;
 				}
 				
-				if (expr.ConstantValue is bool) {
-					childrenAsProperties = (bool)expr.ConstantValue;
+				if (expr.Value is bool) {
+					childrenAsProperties = (bool)expr.Value;
 				} else {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
@@ -766,34 +763,34 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 			}
 			
-			if (posArgs.Count > 1) {
+			if (posArgs.Length > 1) {
 				var expr = posArgs [1];
-				if (expr == null || !(expr.ConstantValue is string)) {
+				if (expr.IsNull || !(expr.Value is string)) {
 					LoggingService.LogWarning ("Unknown expression '{0}' in IAttribute parameter", expr);
 					return false;
 				}
-				defaultProperty = (string)expr.ConstantValue;
+				defaultProperty = (string)expr.Value;
 			}
 			
 			var namedArgs = att.NamedArguments;
-			if (namedArgs.Count > 0) {
-				if (namedArgs.Any (p => p.Key.Name == "ChildrenAsProperties")) {
-					var expr = namedArgs.First (p => p.Key.Name == "ChildrenAsProperties").Value;
-					if (expr == null) {
+			if (namedArgs.Length > 0) {
+				if (namedArgs.Any (p => p.Key == "ChildrenAsProperties")) {
+					var expr = namedArgs.First (p => p.Key == "ChildrenAsProperties").Value;
+					if (expr.IsNull) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					childrenAsProperties = (bool)expr.ConstantValue;
+					childrenAsProperties = (bool)expr.Value;
 				}
-				if (namedArgs.Any (p => p.Key.Name == "DefaultProperty")) {
-					var expr = namedArgs.First (p => p.Key.Name == "DefaultProperty").Value;
-					if (expr == null) {
+				if (namedArgs.Any (p => p.Key == "DefaultProperty")) {
+					var expr = namedArgs.First (p => p.Key == "DefaultProperty").Value;
+					if (expr.IsNull) {
 						LoggingService.LogWarning ("Unknown expression type {0} in IAttribute parameter", expr);
 						return false;
 					}
-					defaultProperty = (string)expr.ConstantValue;
+					defaultProperty = (string)expr.Value;
 				}
-				if (namedArgs.Any (p => p.Key.Name == "ChildControlType")) {
+				if (namedArgs.Any (p => p.Key == "ChildControlType")) {
 					//TODO: implement this
 					LoggingService.LogWarning ("ASP.NET completion does not yet handle ParseChildrenAttribute (Type)");
 					return false;
@@ -803,20 +800,19 @@ namespace MonoDevelop.AspNet.WebForms
 			return childrenAsProperties;
 		}
 		
-		static IEnumerable<IAttribute> GetAttributes (IType type, string attName)
+		static IEnumerable<AttributeData> GetAttributes (INamedTypeSymbol type, string attName)
 		{
-			foreach (var att in type.GetDefinition ().Attributes) {
-				if (att.AttributeType.ReflectionName == attName)
+			foreach (AttributeData att in type.GetAttributes()) {
+				if (att.AttributeClass.GetFullName () == attName)
 					yield return att;
 			}
 			
-			foreach (IType t2 in type.GetAllBaseTypes ()) {
-				foreach (IAttribute att in t2.GetDefinition ().Attributes)
-					if (att.AttributeType.ReflectionName == attName)
+			foreach (INamedTypeSymbol t2 in type.GetAllBaseClasses ()) {
+				foreach (AttributeData att in t2.GetAttributes ())
+					if (att.AttributeClass.GetFullName () == attName)
 						yield return att;
 			}
 		}
-		*/
 		#endregion
 	}
 }
