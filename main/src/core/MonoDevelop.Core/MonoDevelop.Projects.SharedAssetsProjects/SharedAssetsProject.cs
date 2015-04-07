@@ -231,12 +231,12 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return false;
 		}
 
-		protected override IEnumerable<string> GetStandardBuildActions ()
+		protected override IEnumerable<string> OnGetStandardBuildActions ()
 		{
 			return BuildAction.DotNetActions;
 		}
 
-		protected override IList<string> GetCommonBuildActions ()
+		protected override IList<string> OnGetCommonBuildActions ()
 		{
 			return BuildAction.DotNetCommonActions;
 		}

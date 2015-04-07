@@ -73,6 +73,8 @@ namespace MonoDevelop.Projects
 		ProjectItemCollection items;
 		ProjectItemCollection wildcardItems;
 
+		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
+
 		protected Project ()
 		{
 			items = new ProjectItemCollection (this);
@@ -552,19 +554,17 @@ namespace MonoDevelop.Projects
 				return buildActions;
 
 			// find all the actions in use and add them to the list of standard actions
-			Hashtable actions = new Hashtable ();
-			object marker = new object (); //avoid using bools as they need to be boxed. re-use single object instead
+			HashSet<string> actions = new HashSet<string> ();
 			//ad the standard actions
-			foreach (string action in GetStandardBuildActions ())
-				actions[action] = marker;
+			foreach (string action in ProjectExtension.OnGetStandardBuildActions ().Concat (loadedAvailableItemNames))
+				actions.Add (action);
 
 			//add any more actions that are in the project file
 			foreach (ProjectFile pf in files)
-				if (!actions.ContainsKey (pf.BuildAction))
-					actions[pf.BuildAction] = marker;
+				actions.Add (pf.BuildAction);
 
 			//remove the "common" actions, since they're handled separately
-			IList<string> commonActions = GetCommonBuildActions ();
+			IList<string> commonActions = ProjectExtension.OnGetCommonBuildActions ();
 			foreach (string action in commonActions)
 				if (actions.Contains (action))
 					actions.Remove (action);
@@ -584,7 +584,7 @@ namespace MonoDevelop.Projects
 			if (hasDash)
 				buildActions[dashPos] = "--";
 			if (actions.Count > 0)
-				actions.Keys.CopyTo (buildActions, uncommonStart);
+				actions.CopyTo (buildActions, uncommonStart);
 
 			//sort the actions
 			if (hasDash) {
@@ -600,17 +600,17 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets a list of standard build actions.
 		/// </summary>
-		protected virtual IEnumerable<string> GetStandardBuildActions ()
+		protected virtual IEnumerable<string> OnGetStandardBuildActions ()
 		{
-			return ProjectExtension.OnGetStandardBuildActions ();
+			return BuildAction.StandardActions;
 		}
 
 		/// <summary>
 		/// Gets a list of common build actions (common actions are shown first in the project build action list)
 		/// </summary>
-		protected virtual IList<string> GetCommonBuildActions ()
+		protected virtual IList<string> OnGetCommonBuildActions ()
 		{
-			return ProjectExtension.OnGetCommonBuildActions ();
+			return BuildAction.StandardActions;
 		}
 
 		public override void Dispose ()
@@ -1781,6 +1781,10 @@ namespace MonoDevelop.Projects
 			timer.Trace ("Read extended properties");
 
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
+
+			// Read available item types
+
+			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
 		}
 
 		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeGlobalGroups)
@@ -1931,6 +1935,8 @@ namespace MonoDevelop.Projects
 		{
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
 				if (buildItem.IsImported)
+					continue;
+				if (BuildAction.ReserverIdeActions.Contains (buildItem.Name))
 					continue;
 				ProjectItem it = ReadItem (buildItem);
 				if (it == null)
@@ -2490,12 +2496,12 @@ namespace MonoDevelop.Projects
 
 			internal protected override IEnumerable<string> OnGetStandardBuildActions ()
 			{
-				return BuildAction.StandardActions;
+				return Project.OnGetStandardBuildActions ();
 			}
 
 			internal protected override IList<string> OnGetCommonBuildActions ()
 			{
-				return BuildAction.StandardActions;
+				return Project.OnGetCommonBuildActions ();
 			}
 
 			internal protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)

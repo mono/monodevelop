@@ -783,7 +783,21 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
 		}
+
+		[Test]
+		public async Task LoadAvailableItemName ()
+		{
+			// Unknown data should be kept in the file
+
+			string projFile = Util.GetSampleProject ("console-project-with-item-types", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project) p;
+			Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "ItemOne", "ItemTwo"}, mp.GetBuildActions ());
+		}
 	}
+
 
 	class MyProjectTypeNode: ProjectTypeNode
 	{

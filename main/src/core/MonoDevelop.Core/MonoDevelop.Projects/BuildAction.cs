@@ -77,5 +77,13 @@ namespace MonoDevelop.Projects
 				};
 			}
 		}
+
+		internal static string[] ReserverIdeActions {
+			get {
+				return new string[] {
+					"AvailableItemName"
+				};
+			}
+		}
 	}
 }
