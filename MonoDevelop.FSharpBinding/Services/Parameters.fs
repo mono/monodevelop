@@ -59,13 +59,13 @@ type FSharpCompilerParameters() =
 
   override x.RemoveDefineSymbol(symbol) =
     if x.DefineConstants = symbol then
-      x.DefineConstants <- null
-    elif x.DefineConstants <> null then
-      x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, null)
+      x.DefineConstants <- ""
+    elif (String.IsNullOrWhiteSpace >> not) x.DefineConstants then
+      x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, "")
       
   override x.GetDefineSymbols () =
     x.DefineConstants.Split (';', ',', ' ', '\t')
-    |> Seq.where (not << String.IsNullOrWhiteSpace)
+    |> Seq.where (String.IsNullOrWhiteSpace >> not)
 
   override x.HasDefineSymbol(symbol) =
     x.DefineConstants.Split(';', ',', ' ', '\t') |> Array.exists (fun s -> symbol = s)
