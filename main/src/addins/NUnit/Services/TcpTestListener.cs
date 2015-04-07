@@ -73,6 +73,7 @@ namespace MonoDevelop.NUnit.External
 					using (var socketStream = client.GetStream ())
 					using (var reader = new StreamReader (socketStream, Encoding.UTF8)) {
 
+						HasReceivedConnection = true;
 						string line = null;
 						while ((line = reader.ReadLine ()) != null) {
 							var element = XElement.Parse (line);

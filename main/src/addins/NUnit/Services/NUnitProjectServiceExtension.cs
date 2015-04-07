@@ -29,29 +29,34 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.NUnit
 {
 	public class NUnitProjectServiceExtension: ProjectExtension
 	{
-		protected override Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (Project.CanExecute (context, configuration)) {
 				// It is executable by default
-				return base.OnExecute (monitor, context, configuration);
+				base.OnExecute (monitor, context, configuration);
+				return;
 			}
 			UnitTest test = NUnitService.Instance.FindRootTest (Project);
-			if (test != null)
-				return NUnitService.Instance.RunTest (test, context.ExecutionHandler, false).Task;
-			else
-				return Task.FromResult (0);
+			if (test != null) {
+				var cs = new CancellationTokenSource ();
+				using (monitor.CancellationToken.Register (cs.Cancel))
+					await NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
+			}
 		}
 		
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
 			bool res = base.OnGetCanExecute (context, configuration);
+			if (res)
+				return true;
 			UnitTest test = NUnitService.Instance.FindRootTest (Project);
 			return (test != null) && test.CanRun (context.ExecutionHandler);
 		}

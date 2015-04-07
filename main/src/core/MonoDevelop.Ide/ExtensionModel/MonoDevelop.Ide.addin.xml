@@ -297,4 +297,5 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
+
 </ExtensionModel>

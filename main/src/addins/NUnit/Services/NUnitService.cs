@@ -51,17 +51,18 @@ namespace MonoDevelop.NUnit
 		
 		private NUnitService ()
 		{
-			IdeApp.Workspace.ReferenceAddedToProject += OnWorkspaceChanged;
-			IdeApp.Workspace.ReferenceRemovedFromProject += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemOpened += OnWorkspaceChanged;
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
-			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
+
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
-		
+
 		public static NUnitService Instance {
 			get {
 				if (instance == null) {
@@ -71,7 +72,7 @@ namespace MonoDevelop.NUnit
 				return instance;
 			}
 		}
-		
+
 		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
@@ -110,10 +111,10 @@ namespace MonoDevelop.NUnit
 		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
-			return new AsyncOperation (RunTestAsync (test, context, buildOwnerObject, cs), cs);
+			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
 		}
 
-		async Task RunTestAsync (UnitTest test, IExecutionHandler context, bool buildOwnerObject, CancellationTokenSource cs)
+		internal async Task RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -132,12 +133,12 @@ namespace MonoDevelop.NUnit
 					await RefreshTests (cs.Token);
 					test = SearchTest (testName);
 					if (test != null)
-						await RunTestAsync (test, context, false, cs);
+						await RunTest (test, context, false, cs);
 					return;
 				}
 			}
 			
-			if (!IdeApp.ProjectOperations.ConfirmExecutionOperation ())
+			if (checkCurrentRunOperation && !IdeApp.ProjectOperations.ConfirmExecutionOperation ())
 				return;
 			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
@@ -152,11 +153,17 @@ namespace MonoDevelop.NUnit
 			resultsPad.BringToFront ();
 			
 			TestSession session = new TestSession (test, context, (TestResultsPad) resultsPad.Content, cs);
-			IdeApp.ProjectOperations.CurrentRunOperation = session;
+			
+			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
-			await session.Start ();
+			try {
+				await session.Start ();
+			} finally {
+				resultsPad.Sticky = false;
+			}
 
-			resultsPad.Sticky = false;
+			if (checkCurrentRunOperation)
+				IdeApp.ProjectOperations.CurrentRunOperation = session;
 		}
 		
 		public Task RefreshTests (CancellationToken ct)
@@ -245,7 +252,34 @@ namespace MonoDevelop.NUnit
 		{
 			RebuildTests ();
 		}
-		
+
+		void OnReferenceChangedInProject (object sender, ProjectReferenceEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Project.ParentSolution, rootTests))
+				RebuildTests ();
+		}
+
+		void OnItemsChangedInSolution (object sender, SolutionItemChangeEventArgs e)
+		{
+			if (!IsSolutionGroupPresent (e.Solution, rootTests))
+				RebuildTests ();
+		}
+
+		bool IsSolutionGroupPresent (Solution sol, IEnumerable<UnitTest> tests)
+		{
+			foreach (var t in tests) {
+				var tg = t as SolutionFolderTestGroup;
+				if (tg != null && ((SolutionFolder)tg.OwnerObject).ParentSolution == sol)
+					return true;
+				var g = t as UnitTestGroup;
+				if (g != null && g.HasTests) {
+					if (IsSolutionGroupPresent (sol, g.Tests))
+						return true;
+				}
+			}
+			return false;
+		}
+
 		void RebuildTests ()
 		{
 			if (rootTests != null) {
@@ -316,6 +350,17 @@ namespace MonoDevelop.NUnit
 		}
 
 		public event EventHandler TestSessionCompleted;
+
+		void OnTestSessionStarting (TestSessionEventArgs args)
+		{
+			if (TestSessionStarting != null)
+				TestSessionStarting (this, args);
+		}
+
+		/// <summary>
+		/// Occurs just before a test session is started
+		/// </summary>
+		public event EventHandler<TestSessionEventArgs> TestSessionStarting;
 	}
 	
 
@@ -391,6 +436,12 @@ namespace MonoDevelop.NUnit
 			add { monitor.CancelRequested += value; }
 			remove { monitor.CancelRequested -= value; }
 		}
+	}
+
+	public class TestSessionEventArgs: EventArgs
+	{
+		public AsyncOperation Session { get; set; }
+		public UnitTest Test { get; set; }
 	}
 }
 

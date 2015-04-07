@@ -119,6 +119,9 @@ namespace MonoDevelop.Projects
 
 		public override void Dispose ()
 		{
+			if (Disposing != null)
+				Disposing (this, EventArgs.Empty);
+			
 			base.Dispose ();
 			Counters.ItemsLoaded--;
 
@@ -1240,6 +1243,11 @@ namespace MonoDevelop.Projects
 		}
 
 		public event SolutionItemEventHandler Saved;
+
+		/// <summary>
+		/// Occurs when the object is being disposed
+		/// </summary>
+		public event EventHandler Disposing;
 	
 		class DefaultMSBuildItemExtension: SolutionItemExtension
 		{

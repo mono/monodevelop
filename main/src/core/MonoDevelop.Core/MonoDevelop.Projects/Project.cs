@@ -700,6 +700,7 @@ namespace MonoDevelop.Projects
 					return BuildResult.Success;
 				}
 			} else if (target == ProjectService.CleanTarget) {
+				SetFastBuildCheckDirty ();
 				SolutionItemConfiguration config = GetConfiguration (configuration);
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					if (!await config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration)) {

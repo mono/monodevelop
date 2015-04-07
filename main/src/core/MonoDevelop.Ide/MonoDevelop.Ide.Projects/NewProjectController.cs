@@ -500,10 +500,14 @@ namespace MonoDevelop.Ide.Projects
 
 			if (OpenSolution) {
 				DisposeExistingNewItems ();
+				TemplateWizard wizard = wizardProvider.CurrentWizard;
 				if (await OpenCreatedSolution (processedTemplate)) {
 					var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-					if (sol != null)
+					if (sol != null) {
+						if (wizard != null)
+							wizard.ItemsCreated (new [] { sol });
 						InstallProjectTemplatePackages (sol);
+					}
 				}
 			}
 			else {
@@ -511,6 +515,8 @@ namespace MonoDevelop.Ide.Projects
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
 				RunTemplateActions (processedTemplate);
+				if (wizardProvider.HasWizard)
+					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}

@@ -212,6 +212,7 @@ namespace MonoDevelop.Projects
 				ReadProjectReference (project, buildItem);
 
 			LocalCopy = buildItem.Metadata.GetValue ("Private", DefaultLocalCopy);
+			ReferenceOutputAssembly = buildItem.Metadata.GetValue ("ReferenceOutputAssembly", true);
 		}
 
 		void ReadReference (Project project, IMSBuildItemEvaluated buildItem)
@@ -298,10 +299,11 @@ namespace MonoDevelop.Projects
 				buildItem.Metadata.SetValue ("HintPath", originalMSBuildReferenceHintPath, "");
 			}
 			else if (ReferenceType == ReferenceType.Project) {
-				Project refProj = OwnerProject.ParentSolution.FindProjectByName (Reference);
+				Project refProj = OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
 				if (refProj != null) {
 					buildItem.Metadata.SetValue ("Project", refProj.ItemId);
 					buildItem.Metadata.SetValue ("Name", refProj.Name);
+					buildItem.Metadata.SetValue ("ReferenceOutputAssembly", ReferenceOutputAssembly, true);
 				}
 			}
 
@@ -378,6 +380,17 @@ namespace MonoDevelop.Projects
 					ownerProject.NotifyModified (null);
 			}
 		}
+
+		bool referenceOutputAssembly = true;
+		public bool ReferenceOutputAssembly {
+			get { return referenceOutputAssembly; }
+			set {
+				if (referenceOutputAssembly != value) {
+					referenceOutputAssembly = value;
+					OnStatusChanged ();
+				}
+			}
+		}
 		
 		internal bool DefaultLocalCopy {
 			get {
@@ -449,7 +462,7 @@ namespace MonoDevelop.Projects
 						return GettextCatalog.GetString ("Assembly not found");
 					}
 				} else if (ReferenceType == ReferenceType.Project) {
-					if (ownerProject != null && ownerProject.ParentSolution != null) {
+					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
 						DotNetProject p = ownerProject.ParentSolution.FindProjectByName (reference) as DotNetProject;
 						if (p != null) {
 							if (!ownerProject.TargetFramework.CanReferenceAssembliesTargetingFramework (p.TargetFramework))
