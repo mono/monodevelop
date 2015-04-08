@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.IO;
+using System.Text;
 
 #if WINDOWS
 using Microsoft.Build.Evaluation;
@@ -214,7 +215,44 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override string GetEvaluatedMetadata (object item, string name)
 		{
-			return ((BuildItem)item).GetEvaluatedMetadata (name);
+			var it = (BuildItem)item;
+			var val = it.GetEvaluatedMetadata (name);
+			if (val.IndexOf ('%') != -1)
+				return ReplaceMetadata (it, val);
+			else
+				return val;
+		}
+
+		string ReplaceMetadata (BuildItem it, string value)
+		{
+			// Workaround to xbuild bug. xbuild does not replace well known item metadata
+
+			var sb = new StringBuilder ();
+			int i = value.IndexOf ("%(", StringComparison.Ordinal);
+			int lastPos = 0;
+			while (i != -1) {
+				int j = value.IndexOf (')', i + 3);
+				if (j != -1) {
+					var val = EvaluateMetadata (it, value.Substring (i + 2, j - (i + 2)));
+					if (val != null) {
+						sb.Append (value, lastPos, i - lastPos);
+						sb.Append (val);
+						lastPos = j + 1;
+					}
+				}
+				i = value.IndexOf ("%(", i + 2, StringComparison.Ordinal);
+			}
+			sb.Append (value, lastPos, value.Length - lastPos);
+			return sb.ToString ();
+		}
+
+		string EvaluateMetadata (BuildItem it, string metadata)
+		{
+			var d = it.GetEvaluatedMetadata (metadata);
+			if (string.IsNullOrEmpty (d))
+				return null;
+			else
+				return d;
 		}
 
 		public override IEnumerable<object> GetEvaluatedItems (object project)

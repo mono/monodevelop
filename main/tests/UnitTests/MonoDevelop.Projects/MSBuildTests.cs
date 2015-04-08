@@ -892,8 +892,52 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved2"), Util.GetXmlFileInfoset (p.FileName));
 		}
-	}
 
+		[Test]
+		[Ignore ("xbuild bug: RecursiveDir metadata returns the wrong value")]
+		public async Task LoadProjectWithWildcardLinks ()
+		{
+			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var mp = (Project) sol.Items [0];
+			Assert.AreEqual (2, mp.Files.Count);
+
+			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_1.png");
+			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Xamagon_2.png");
+
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "Xamagon_1.png")), Path.GetFullPath (f1.FilePath));
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "Subdir", "Xamagon_2.png")), Path.GetFullPath (f2.FilePath));
+
+			Assert.AreEqual ("Xamagon_1.png", f1.Link);
+			Assert.AreEqual (Path.Combine ("Subdir", "Xamagon_2.png"), f2.Link);
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcardLinks2 ()
+		{
+			// Merge with LoadProjectWithWildcardLinks test when the xbuild issue is fixed
+
+			string solFile = Util.GetSampleProject ("project-with-wildcard-links", "PortableTest.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var mp = (Project) sol.Items [0];
+
+			var f1 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "t1.txt");
+			Assert.IsNotNull (f1);
+
+			var f2 = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "t2.txt");
+			Assert.IsNotNull (f2);
+
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "t1.txt")), Path.GetFullPath (f1.FilePath));
+			Assert.AreEqual (Path.GetFullPath (Path.Combine (mp.BaseDirectory, "..","test", "t2.txt")), Path.GetFullPath (f2.FilePath));
+
+			Assert.AreEqual (Path.Combine ("Data", "t1.txt"), f1.Link.ToString ());
+			Assert.AreEqual (Path.Combine ("Data", "t2.txt"), f2.Link.ToString ());
+		}
+	}
 
 	class MyProjectTypeNode: ProjectTypeNode
 	{
