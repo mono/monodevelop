@@ -61,11 +61,5 @@
     <Compile Include="Program6_$(FFF).cs" />
     <Compile Include="Program7_$(AAA).cs" Condition=" '$(Foo)' == 'Bar' " />
   </ItemGroup>
-  <ItemGroup Condition=" '$(Foo)' == 'Bar' ">
-    <Compile Include="Program8_$(AAA).cs" />
-    <Compile Include="Program9_$(GGG).cs" />
-    <Compile Include="Program10_$(AAA" />
-    <Compile Include="Program11_$(HHH).cs" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

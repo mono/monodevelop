@@ -71,14 +71,12 @@ namespace MonoDevelop.Projects
 		List<string> defaultImports;
 
 		ProjectItemCollection items;
-		ProjectItemCollection wildcardItems;
 
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
 		protected Project ()
 		{
 			items = new ProjectItemCollection (this);
-			wildcardItems = new ProjectItemCollection (this);
 			FileService.FileChanged += OnFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 			files = new ProjectFileCollection ();
@@ -88,10 +86,6 @@ namespace MonoDevelop.Projects
 
 		public ProjectItemCollection Items {
 			get { return items; }
-		}
-
-		internal ProjectItemCollection WildcardItems {
-			get { return wildcardItems; }
 		}
 
 		protected Project (params string[] flavorGuids): this()
@@ -115,7 +109,6 @@ namespace MonoDevelop.Projects
 		{
 			base.SetShared ();
 			items.SetShared ();
-			wildcardItems.SetShared ();
 			files.SetShared ();
 		}
 
@@ -614,7 +607,7 @@ namespace MonoDevelop.Projects
 
 		public override void Dispose ()
 		{
-			foreach (var item in items.Concat (wildcardItems)) {
+			foreach (var item in items) {
 				IDisposable disp = item as IDisposable;
 				if (disp != null)
 					disp.Dispose ();
@@ -2008,7 +2001,8 @@ namespace MonoDevelop.Projects
 				string gg = string.Join (";", flavorGuids);
 				gg += ";" + TypeGuid;
 				globalGroup.SetValue ("ProjectTypeGuids", gg.ToUpper (), preserveExistingCase:true);
-			} else {
+			} else if (!string.Equals (globalGroup.GetValue ("ProjectTypeGuids"), TypeGuid, StringComparison.OrdinalIgnoreCase)) {
+				// Keep the property if it already was there with the same value, remove otherwise
 				globalGroup.RemoveProperty ("ProjectTypeGuids");
 			}
 
@@ -2185,7 +2179,7 @@ namespace MonoDevelop.Projects
 
 			// Add the new items
 
-			foreach (ProjectItem ob in Items.Concat (WildcardItems).Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
+			foreach (ProjectItem ob in Items.Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
 				SaveProjectItem (monitor, msproject, ob, expandedItems, unusedItems, pathPrefix);
 
 			// Process items generated from wildcards

@@ -351,6 +351,46 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
+		public async Task SaveItemsWithProperties ()
+		{
+			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
+			Environment.SetEnvironmentVariable ("HHH", "EnvTest");
+			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
+
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject) sol.GetAllProjects ().First ();
+
+			string projectXml1 = Util.GetXmlFileInfoset (p.FileName);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+
+			Assert.AreEqual (projectXml1, projectXml2);
+		}
+
+		[Test]
+		public async Task SaveItemsWithProperties2 ()
+		{
+			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
+			Environment.SetEnvironmentVariable ("HHH", "EnvTest");
+			Environment.SetEnvironmentVariable ("SOME_PLACE", dir);
+
+			string projFile = Util.GetSampleProject ("property-save-test", "property-save-test.csproj");
+			Project p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
+
+			string projectXml1 = Util.GetXmlFileInfoset (p.FileName);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+
+			Assert.AreEqual (projectXml1, projectXml2);
+		}
+
+		[Test]
 		public async Task EvaluateProperties ()
 		{
 			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
@@ -373,7 +413,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
-		[Ignore ("xbuild bug. It is not returning correct values for evaluated items without condition list")]
+		[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		[Test]
 		public async Task EvaluatePropertiesWithConditionalGroup ()
 		{
