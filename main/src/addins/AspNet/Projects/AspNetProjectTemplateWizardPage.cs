@@ -26,6 +26,7 @@
 
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.AspNet.Projects
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetMvcEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetMvc); }
+			get { return wizard.Parameters.GetBoolValue (aspNetMvc); }
 			set {
 				wizard.Parameters [aspNetMvc] = value.ToString ();
 				UpdateCanMoveNext ();
@@ -86,7 +87,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetWebFormsEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetWebForms); }
+			get { return wizard.Parameters.GetBoolValue (aspNetWebForms); }
 			set {
 				wizard.Parameters [aspNetWebForms] = value.ToString ();
 				UpdateCanMoveNext ();
@@ -98,7 +99,7 @@ namespace MonoDevelop.AspNet.Projects
 		}
 
 		public bool AspNetWebApiEnabled {
-			get { return wizard.Parameters.GetBoolean (aspNetWebApi); }
+			get { return wizard.Parameters.GetBoolValue (aspNetWebApi); }
 			set {
 				wizard.Parameters [aspNetWebApi] = value.ToString ();
 				UpdateCanMoveNext ();
