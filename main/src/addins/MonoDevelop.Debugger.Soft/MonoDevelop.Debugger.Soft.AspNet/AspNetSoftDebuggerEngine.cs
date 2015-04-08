@@ -75,6 +75,11 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 				if (!evars.ContainsKey (v.Key))
 					evars.Add (v.Key, v.Value);
 			}
+
+			//HACK: work around Mono trying to create registry in non-writable location
+			if (cmd.TargetRuntime is MonoTargetRuntime && !Platform.IsWindows) {
+				evars ["MONO_REGISTRY_PATH"] = UserProfile.Current.TempDir.Combine ("aspnet-registry");
+			}
 			
 			var startInfo = new SoftDebuggerStartInfo (runtime.Prefix, evars) {
 				WorkingDirectory = cmd.BaseDirectory,
