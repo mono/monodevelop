@@ -161,10 +161,6 @@
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.GtkCore.GuiBuilder.ComponentToolboxNode" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Class class = "MonoDevelop.GtkCore.Dialogs.GtkProjectFeature" />
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
 		<Panel _label = "GTK# Designer" class = "MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionPanel" />
