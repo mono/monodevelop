@@ -52,6 +52,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			it.Include = include;
 			return it;
 		}
+
+		public void AddItem (MSBuildItem item)
+		{
+			XmlElement elem = item.Element;
+			Element.AppendChild (elem);
+			parent.AddToItemCache (item);
+		}
 		
 		public IEnumerable<MSBuildItem> Items {
 			get {

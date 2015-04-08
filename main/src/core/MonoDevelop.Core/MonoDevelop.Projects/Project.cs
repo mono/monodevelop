@@ -248,7 +248,6 @@ namespace MonoDevelop.Projects
 		protected override Task OnLoad (ProgressMonitor monitor)
 		{
 			MSBuildProject p = sourceProject;
-			sourceProject = null;
 
 			return Task.Run (delegate {
 				if (p == null)
@@ -1592,24 +1591,19 @@ namespace MonoDevelop.Projects
 			NeedsReload = false;
 		}
 
-		bool newProject;
-
 		internal MSBuildProject WriteProject (ProgressMonitor monitor)
 		{
-			MSBuildProject msproject = new MSBuildProject ();
-			newProject = FileName == null || !File.Exists (FileName);
-			if (newProject) {
+			if (sourceProject == null) {
+				sourceProject = new MSBuildProject ();
 				if (SupportsBuild ())
-					msproject.DefaultTargets = "Build";
-				msproject.FileName = FileName;
-			} else {
-				msproject.Load (FileName);
+					sourceProject.DefaultTargets = "Build";
+				sourceProject.FileName = FileName;
 			}
 
-			OnWriteProjectHeader (monitor, msproject);
-			ProjectExtension.OnWriteProject (monitor, msproject);
+			OnWriteProjectHeader (monitor, sourceProject);
+			ProjectExtension.OnWriteProject (monitor, sourceProject);
 
-			return msproject;
+			return sourceProject;
 		}
 
 		class ConfigData
@@ -1942,19 +1936,7 @@ namespace MonoDevelop.Projects
 				if (it == null)
 					continue;
 				it.Flags = flags;
-/*				if (it is ProjectFile) {
-					var file = (ProjectFile)it;
-					if (file.Name.IndexOf ('*') > -1) {
-						// Thanks to IsOriginatedFromWildcard, these expanded items will not be saved back to disk.
-						foreach (var expandedItem in ResolveWildcardItems (file))
-							Items.Add (expandedItem);
-						// Add to wildcard items (so it can be re-saved) instead of Items (where tools will 
-						// try to compile and display these nonstandard items
-						WildcardItems.Add (it);
-						continue;
-					}
-				}
-*/				Items.Add (it);
+				Items.Add (it);
 			}
 		}
 
@@ -1979,68 +1961,8 @@ namespace MonoDevelop.Projects
 		{
 			var item = CreateProjectItem (buildItem);
 			item.Read (this, buildItem);
+			item.BackingItem = buildItem;
 			return item;
-		}
-
-		const string RecursiveDirectoryWildcard = "**";
-		static readonly char[] directorySeparators = new [] {
-			Path.DirectorySeparatorChar,
-			Path.AltDirectorySeparatorChar
-		};
-
-		static string GetWildcardDirectoryName (string path)
-		{
-			int indexOfLast = path.LastIndexOfAny (directorySeparators);
-			if (indexOfLast < 0)
-				return String.Empty;
-			return path.Substring (0, indexOfLast);
-		}
-
-		static string GetWildcardFileName (string path)
-		{
-			int indexOfLast = path.LastIndexOfAny (directorySeparators);
-			if (indexOfLast < 0)
-				return path;
-			if (indexOfLast == path.Length)
-				return String.Empty;
-			return path.Substring (indexOfLast + 1, path.Length - (indexOfLast + 1));
-		}
-
-
-		static IEnumerable<string> ExpandWildcardFilePath (string filePath)
-		{
-			if (String.IsNullOrWhiteSpace (filePath))
-				throw new ArgumentException ("Not a wildcard path");
-
-			string dir = GetWildcardDirectoryName (filePath);
-			string file = GetWildcardFileName (filePath);
-
-			if (String.IsNullOrEmpty (dir) || String.IsNullOrEmpty (file))
-				return null;
-
-			SearchOption searchOption = SearchOption.TopDirectoryOnly;
-			if (dir.EndsWith (RecursiveDirectoryWildcard, StringComparison.Ordinal)) {
-				dir = dir.Substring (0, dir.Length - RecursiveDirectoryWildcard.Length);
-				searchOption = SearchOption.AllDirectories;
-			}
-
-			if (!Directory.Exists (dir))
-				return null;
-
-			return Directory.GetFiles (dir, file, searchOption);
-		}
-
-		static IEnumerable<ProjectFile> ResolveWildcardItems (ProjectFile wildcardFile)
-		{
-			var paths = ExpandWildcardFilePath (wildcardFile.Name);
-			if (paths == null)
-				yield break;
-			foreach (var resolvedFilePath in paths) {
-				var projectFile = (ProjectFile)wildcardFile.Clone ();
-				projectFile.Name = resolvedFilePath;
-				projectFile.Flags |= ProjectItemFlags.DontPersist;
-				yield return projectFile;
-			}
 		}
 
 		struct MergedPropertyValue
@@ -2251,53 +2173,92 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		struct ItemInfo {
-			public MSBuildItem Item;
-			public bool Added;
+		class ExpandedItemList: List<MSBuildItem>
+		{
+			public bool Modified { get; set; }
 		}
 
 		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, string pathPrefix = null)
 		{
-			// Remove old items
-			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
-			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.UnevaluatedInclude + "<" + item.Condition] = new ItemInfo () {
-				Item = item
-			};
+			HashSet<MSBuildItem> unusedItems = new HashSet<MSBuildItem> (msproject.GetAllItems ());
+			Dictionary<MSBuildItem,ExpandedItemList> expandedItems = new Dictionary<MSBuildItem, ExpandedItemList> ();
+
 			// Add the new items
+
 			foreach (ProjectItem ob in Items.Concat (WildcardItems).Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
-				SaveProjectItem (monitor, msproject, ob, oldItems, pathPrefix);
-			foreach (ItemInfo itemInfo in oldItems.Values) {
-				if (!itemInfo.Added)
-					msproject.RemoveItem (itemInfo.Item);
+				SaveProjectItem (monitor, msproject, ob, expandedItems, unusedItems, pathPrefix);
+
+			// Process items generated from wildcards
+
+			foreach (var itemInfo in expandedItems) {
+				if (itemInfo.Value.Modified || msproject.EvaluatedItemsIgnoringCondition.Where (i => i.SourceItem == itemInfo.Key).Count () != itemInfo.Value.Count) {
+					// Expand the list
+					unusedItems.Add (itemInfo.Key);
+					foreach (var it in itemInfo.Value)
+						msproject.AddItem (it);
+				}
 			}
+
+			// Remove unused items
+
+			foreach (var it in unusedItems)
+				msproject.RemoveItem (it);
 		}
 
-		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<string,ItemInfo> oldItems, string pathPrefix = null)
+		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, string pathPrefix = null)
 		{
-			var include = item.UnevaluatedInclude ?? item.Include;
-			if (pathPrefix != null && !include.StartsWith (pathPrefix))
-				include = pathPrefix + include;
+			if (item.IsFromWildcardItem) {
+				// Store the item in the list of expanded items
+				ExpandedItemList items;
+				if (!expandedItems.TryGetValue (item.BackingItem.SourceItem, out items))
+					items = expandedItems [item.BackingItem.SourceItem] = new ExpandedItemList ();
 
-			MSBuildItem buildItem = AddOrGetBuildItem (msproject, oldItems, item.ItemName, include, item.Condition);
+				// We need to check if the item has changed, in which case all the items included by the wildcard
+				// must be individually included
+				var bitem = msproject.CreateItem (item.ItemName, GetPrefixedInclude (pathPrefix, item.Include));
+				item.Write (this, bitem);
+				items.Add (bitem);
+
+				unusedItems.Remove (item.BackingItem.SourceItem);
+
+				if (!items.Modified && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingItem)))
+					items.Modified = true;
+				return;
+			}
+
+			var include = GetPrefixedInclude (pathPrefix, item.UnevaluatedInclude ?? item.Include);
+
+			MSBuildItem buildItem;
+			if (item.BackingItem != null) {
+				buildItem = item.BackingItem.SourceItem;
+			} else {
+				buildItem = msproject.AddNewItem (item.ItemName, include);
+			}
+
+			unusedItems.Remove (buildItem);
+
 			item.Write (this, buildItem);
 			if (pathPrefix != null)
 				buildItem.Include = include;
 		}
 
-		MSBuildItem AddOrGetBuildItem (MSBuildProject msproject, Dictionary<string,ItemInfo> oldItems, string name, string include, string condition)
+		bool ItemsAreEqual (MSBuildItem item, IMSBuildItemEvaluated evalItem)
 		{
-			ItemInfo itemInfo;
-			string key = name + "<" + include + "<" + condition;
-			if (oldItems.TryGetValue (key, out itemInfo)) {
-				if (!itemInfo.Added) {
-					itemInfo.Added = true;
-					oldItems [key] = itemInfo;
-				}
-				return itemInfo.Item;
-			} else {
-				return msproject.AddNewItem (name, include);
+			// Compare only metadata, since item name and include can't change
+
+			foreach (var p in item.Metadata.GetProperties ()) {
+				if (!object.Equals (p.Value, evalItem.Metadata.GetValue (p.Name)))
+					return false;
 			}
+			return true;
+		}
+
+		string GetPrefixedInclude (string pathPrefix, string include)
+		{
+			if (pathPrefix != null && !include.StartsWith (pathPrefix))
+				return pathPrefix + include;
+			else
+				return include;
 		}
 
 		ConfigData FindPropertyGroup (List<ConfigData> configData, SolutionItemConfiguration config)

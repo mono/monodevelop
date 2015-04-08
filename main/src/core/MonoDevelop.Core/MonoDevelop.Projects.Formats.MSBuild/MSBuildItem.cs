@@ -27,6 +27,7 @@
 using System.Xml;
 using System.Collections.Generic;
 using System;
+using System.Collections.Immutable;
 
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -37,7 +38,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		MSBuildPropertyGroupEvaluated evaluatedMetadata;
 		MSBuildProject parent;
 		string evaluatedInclude;
-		List<IMSBuildItemEvaluated> childItems;
 
 		internal MSBuildItem (MSBuildProject parent, XmlElement elem): base (elem)
 		{
@@ -99,6 +99,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			metadata.WriteDataObjects ();
 			if (!Element.HasChildNodes)
 				Element.IsEmpty = true;
+		}
+
+		internal int EvaluatedItemCount { get; set; }
+
+		internal bool IsWildcardItem {
+			get { return EvaluatedItemCount > 1 && UnevaluatedInclude.Contains ("*"); }
 		}
 	}
 

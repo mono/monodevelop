@@ -46,6 +46,14 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		internal IMSBuildItemEvaluated BackingItem { get; set; }
+
+		internal bool IsFromWildcardItem {
+			get {
+				return BackingItem != null && BackingItem.SourceItem.IsWildcardItem;
+			}
+		}
+
 		internal string Condition { get; set; }
 
 		public string ItemName { get; protected set; }

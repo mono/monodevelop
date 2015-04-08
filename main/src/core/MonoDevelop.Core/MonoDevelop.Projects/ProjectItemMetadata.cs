@@ -37,6 +37,7 @@ namespace MonoDevelop.Projects
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
 		string toolsVersion;
+		int initialMetadataCount;
 
 		public ProjectItemMetadata (string toolsVersion)
 		{
@@ -59,6 +60,11 @@ namespace MonoDevelop.Projects
 				propertyList.Add (prop);
 				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 			}
+			initialMetadataCount = properties.Count;
+		}
+
+		internal bool PropertyCountHasChanged {
+			get { return initialMetadataCount != (properties != null ? properties.Count : 0); }
 		}
 
 		public IMetadataProperty GetProperty (string name)

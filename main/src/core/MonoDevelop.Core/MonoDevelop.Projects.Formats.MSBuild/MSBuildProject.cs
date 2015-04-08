@@ -195,6 +195,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string SaveToString ()
 		{
+			IsNewProject = false;
+
 			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the
 			// XmlDocument will write the UTF8 header.
 			ProjectWriter sw = new ProjectWriter (bom);
@@ -236,6 +238,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					it.Element.AppendChild (c);
 					currentItems [nid] = it;
 					idElems.Add (c);
+					it.EvaluatedItemCount = 0;
 				}
 
 				var project = e.LoadProjectFromXml (FileName, doc.OuterXml);
@@ -279,27 +282,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (var it in e.GetEvaluatedItems (project)) {
 				var xit = CreateEvaluatedItem (e, it);
 				var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
+				var key = itemId + " " + xit.Include;
+				if (evalItems.ContainsKey (key))
+					continue; // xbuild seems to return duplicate items when using wildcards. This is a workaround to avoid the duplicates.
 				MSBuildItem pit;
 				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
 					xit.SourceItem = pit;
 					xit.Condition = pit.Condition;
-					evalItems [itemId] = xit;
+					pit.EvaluatedItemCount++;
+					evalItems [key] = xit;
 				}
 				evaluatedItems.Add (xit);
 			}
 
+			var evalItemsNoCond = new Dictionary<string,MSBuildItemEvaluated> ();
 			foreach (var it in e.GetEvaluatedItemsIgnoringCondition (project)) {
 				var itemId = e.GetItemMetadata (it, NodeIdPropertyName);
-				MSBuildItemEvaluated xit;
-				if (!string.IsNullOrEmpty (itemId) && evalItems.TryGetValue (itemId, out xit)) {
-					evaluatedItemsIgnoringCondition.Add (xit);
+				MSBuildItemEvaluated evItem;
+				var xit = CreateEvaluatedItem (e, it);
+				var key = itemId + " " + xit.Include;
+				if (evalItemsNoCond.ContainsKey (key))
+					continue; // xbuild seems to return duplicate items when using wildcards. This is a workaround to avoid the duplicates.
+				if (!string.IsNullOrEmpty (itemId) && evalItems.TryGetValue (key, out evItem)) {
+					evaluatedItemsIgnoringCondition.Add (evItem);
+					evalItemsNoCond [key] = evItem;
 					continue;
 				}
-				xit = CreateEvaluatedItem (e, it);
 				MSBuildItem pit;
 				if (!string.IsNullOrEmpty (itemId) && currentItems.TryGetValue (itemId, out pit)) {
 					xit.SourceItem = pit;
 					xit.Condition = pit.Condition;
+					pit.EvaluatedItemCount++;
+					evalItemsNoCond [key] = xit;
 				}
 				evaluatedItemsIgnoringCondition.Add (xit);
 			}
@@ -496,6 +510,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildItemGroup grp = FindBestGroupForItem (name);
 			return grp.AddNewItem (name, include);
 		}
+
+		public MSBuildItem CreateItem (string name, string include)
+		{
+			var elem = Document.CreateElement (name, MSBuildProject.Schema);
+			var bitem = new MSBuildItem (this, elem);
+			bitem.Include = include;
+			return bitem;
+		}
+
+		public void AddItem (MSBuildItem it)
+		{
+			MSBuildItemGroup grp = FindBestGroupForItem (it.Name);
+			grp.AddItem (it);
+		}
 		
 		MSBuildItemGroup FindBestGroupForItem (string itemName)
 		{
@@ -637,6 +665,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return it;
 		}
 		
+		internal void AddToItemCache (MSBuildObject it)
+		{
+			elemCache [it.Element] = it;
+		}
+
 		MSBuildPropertyGroup GetGroup (XmlElement elem)
 		{
 			MSBuildObject ob;

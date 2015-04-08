@@ -787,14 +787,70 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task LoadAvailableItemName ()
 		{
-			// Unknown data should be kept in the file
-
 			string projFile = Util.GetSampleProject ("console-project-with-item-types", "ConsoleProject.csproj");
 
 			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 			Assert.IsInstanceOf<Project> (p);
 			var mp = (Project) p;
 			Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "ItemOne", "ItemTwo"}, mp.GetBuildActions ());
+		}
+
+		[Test]
+		public async Task LoadProjectWithWildcards ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project) p;
+			var files = mp.Files.Select (f => f.FilePath.FileName).OrderBy(f => f).ToArray ();
+			Assert.AreEqual(new string[] {
+				"Data1.cs",
+				"Data2.cs",
+				"Data3.cs",
+				"Program.cs",
+				"text1-1.txt",
+				"text1-2.txt",
+				"text2-1.txt",
+				"text2-2.txt",
+				"text3-1.txt",
+				"text3-2.txt",
+			}, files);
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcards ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project) p;
+			mp.AddFile (Path.Combine (p.BaseDirectory, "Test.cs"));
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved1"), Util.GetXmlFileInfoset (p.FileName));
+		}
+
+		[Test]
+		public async Task SaveProjectWithWildcardsRemovingFile ()
+		{
+			string projFile = Util.GetSampleProject ("console-project-with-wildcards", "ConsoleProject.csproj");
+
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<Project> (p);
+			var mp = (Project) p;
+
+			var f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "Data1.cs");
+			mp.Files.Remove(f);
+
+			f = mp.Files.FirstOrDefault (pf => pf.FilePath.FileName == "text1-1.txt");
+			f.CopyToOutputDirectory = FileCopyMode.PreserveNewest;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved2"), Util.GetXmlFileInfoset (p.FileName));
 		}
 	}
 
