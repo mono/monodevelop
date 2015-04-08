@@ -871,9 +871,6 @@ namespace MonoDevelop.Ide.Gui
 				// be parsed at the same time.
 				EnsureAnalysisDocumentIsOpen ();
 				CancelParseTimeout ();
-				if (analysisDocument == null) {
-					return;
-				}
 				var currentParseText = Editor.CreateSnapshot ();
 				string mimeType = Editor.MimeType;
 				CancelOldParsing ();
