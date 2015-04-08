@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
-<Template
-	Originator="Piotr Dowgiallo"
-	Created="2012/05/16"
-	LastModified="2012/05/16">
-
+<Template>
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET MVC Views Configuration</_Name>
@@ -40,7 +36,6 @@
 				<add namespace="System.Web.Mvc" />
 				<add namespace="System.Web.Mvc.Ajax" />
 				<add namespace="System.Web.Mvc.Html" />
-				<add namespace="System.Web.Optimization"/>
 				<add namespace="System.Web.Routing" />
 				<add namespace="${Namespace}" />
 			</namespaces>
