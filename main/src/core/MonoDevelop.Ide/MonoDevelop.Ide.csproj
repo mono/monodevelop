@@ -913,7 +913,6 @@
     <EmbeddedResource Include="icons\tree-popup-button-down%402x.png">
       <LogicalName>tree-popup-button-down@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Components\SearchEntry.cs" />
     <EmbeddedResource Include="icons\clear-all-bookmarks-16.png">
       <LogicalName>clear-all-bookmarks-16.png</LogicalName>
     </EmbeddedResource>
