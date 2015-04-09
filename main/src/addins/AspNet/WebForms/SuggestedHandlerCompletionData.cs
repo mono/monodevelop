@@ -43,14 +43,14 @@ namespace MonoDevelop.AspNet.WebForms
 		readonly MonoDevelop.Projects.Project project;
 		readonly CodeMemberMethod methodInfo;
 		readonly INamedTypeSymbol codeBehindClass;
-		readonly INamedTypeSymbol codeBehindClassPart;
+		readonly Location codeBehindClassLocation;
 		
-		public SuggestedHandlerCompletionData (MonoDevelop.Projects.Project project, CodeMemberMethod methodInfo, INamedTypeSymbol codeBehindClass, INamedTypeSymbol codeBehindClassPart)
+		public SuggestedHandlerCompletionData (MonoDevelop.Projects.Project project, CodeMemberMethod methodInfo, INamedTypeSymbol codeBehindClass, Location codeBehindClassLocation)
 		{
 			this.project = project;
 			this.methodInfo = methodInfo;
 			this.codeBehindClass = codeBehindClass;
-			this.codeBehindClassPart = codeBehindClassPart;
+			this.codeBehindClassLocation = codeBehindClassLocation;
 		}
 		
 		public override IconId Icon {
@@ -86,10 +86,10 @@ namespace MonoDevelop.AspNet.WebForms
 			//generate the codebehind method
 
 			// TODO: Roslyn port.
-//			if (codeBehindClassPart != null && project != null)
-//				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClassPart, methodInfo, false);
+//			if (codeBehindClassLocation != null && project != null)
+//				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassLocation, methodInfo, false);
 //			else
-//				BindingService.AddMemberToClass (project, codeBehindClass.GetDefinition (), codeBehindClass.GetDefinition ().Parts.First (), methodInfo, false);
+//				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass.Locations.First (), methodInfo, false);
 		}
 	}
 }

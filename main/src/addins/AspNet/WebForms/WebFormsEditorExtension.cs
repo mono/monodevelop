@@ -629,36 +629,36 @@ namespace MonoDevelop.AspNet.WebForms
 			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
 				string eventName = attName.Name.Substring (2);
 				
-				foreach (IEventSymbol ev in GetAllMembers<IEventSymbol> (controlClass)) {
-//					if (ev.Name == eventName) {
-//						var domMethod = BindingService.MDDomToCodeDomMethod (ev);
-//						if (domMethod == null)
-//							return;
-//						
-//						foreach (IMethod meth 
-//						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev)) {
-//							list.Add (meth.Name, "md-method",
-//							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
-//						}
-//						
-//						string suggestedIdentifier = ev.Name;
-//						if (id != null) {
-//							suggestedIdentifier = id + "_" + suggestedIdentifier;
-//						} else {
-//							suggestedIdentifier = tagName.Name + "_" + suggestedIdentifier;
-//						}
-//							
-//						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
-//							(codeBehindClass, suggestedIdentifier);
-//						domMethod.Attributes = (domMethod.Attributes & ~System.CodeDom.MemberAttributes.AccessMask)
-//							| System.CodeDom.MemberAttributes.Family;
-//						
-//						list.Add (
-//						    new SuggestedHandlerCompletionData (project, domMethod, codeBehindClass,
-//						        CodeBehind.GetNonDesignerClass (codeBehindClass))
-//						    );
-//						return;
-//					}
+				foreach (IEventSymbol ev in controlClass.GetAccessibleMembersInThisAndBaseTypes<IEventSymbol> (controlClass)) {
+					if (ev.Name == eventName) {
+						var domMethod = BindingService.MDDomToCodeDomMethod (ev);
+						if (domMethod == null)
+							return;
+						
+						foreach (IMethodSymbol meth 
+						    in BindingService.GetCompatibleMethodsInClass (codeBehindClass, ev)) {
+							list.Add (meth.Name, "md-method",
+							    GettextCatalog.GetString ("A compatible method in the CodeBehind class"));
+						}
+						
+						string suggestedIdentifier = ev.Name;
+						if (id != null) {
+							suggestedIdentifier = id + "_" + suggestedIdentifier;
+						} else {
+							suggestedIdentifier = tagName.Name + "_" + suggestedIdentifier;
+						}
+							
+						domMethod.Name = BindingService.GenerateIdentifierUniqueInClass
+							(codeBehindClass, suggestedIdentifier);
+						domMethod.Attributes = (domMethod.Attributes & ~System.CodeDom.MemberAttributes.AccessMask)
+							| System.CodeDom.MemberAttributes.Family;
+						
+						list.Add (
+						    new SuggestedHandlerCompletionData (project, domMethod, codeBehindClass,
+						        CodeBehind.GetNonDesignerClassLocation (codeBehindClass))
+						    );
+						return;
+					}
 				}
 			}
 			

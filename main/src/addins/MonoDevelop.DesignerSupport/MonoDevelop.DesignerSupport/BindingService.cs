@@ -30,29 +30,28 @@
 //
 
 // TODO: Roslyn port. (Maybe move to the ASP.NET binding).
-//using System;
-//using System.CodeDom;
-//using System.Reflection;
-//using System.Collections;
-//using System.Collections.Generic;
-//
-//using MonoDevelop.Projects;
-//using MonoDevelop.Core;
-//using MonoDevelop.Ide;
-//using ICSharpCode.NRefactory.TypeSystem;
-//using ICSharpCode.NRefactory.TypeSystem.Implementation;
-//using System.Linq;
-//using MonoDevelop.Ide.TypeSystem;
-//
-//namespace MonoDevelop.DesignerSupport
-//{
-//	
-//	
-//	public static class BindingService
-//	{
-//		//TODO: currently case-sensitive, so some languages may not like this
-//		const bool ignoreCase = false;
-//		
+using System;
+using System.CodeDom;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+
+namespace MonoDevelop.DesignerSupport
+{
+	
+	
+	public static class BindingService
+	{
+		//TODO: currently case-sensitive, so some languages may not like this
+		const bool ignoreCase = false;
+
 //		public static IUnresolvedMember GetCompatibleMemberInClass (ICompilation ctx, ITypeDefinition cls, CodeTypeMember member)
 //		{
 //			// TODO Type system conversion
@@ -159,10 +158,10 @@
 //			return false;
 //		}
 //		
-//		public static INamedElement AddMemberToClass (Project project, ITypeDefinition cls, IUnresolvedTypeDefinition specificPartToAffect, CodeTypeMember member, bool throwIfExists)
+//		public static void AddMemberToClass (Project project, INamedTypeSymbol cls, Location specificPartToAffect, CodeTypeMember member, bool throwIfExists)
 //		{
 //			bool isChildClass = false;
-//			foreach (var c in cls.Parts)
+//			foreach (var c in cls.Locations)
 //				if (c == specificPartToAffect)
 //					isChildClass = true;
 //			if (!isChildClass)
@@ -187,69 +186,69 @@
 ////			cr.TextFileProvider = MonoDevelop.Ide.TextFileProvider.Instance;
 ////			return cr;
 ////		}
-//		
-//		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (IType cls, IEvent eve)
-//		{
-//			IMethod eveMeth = GetMethodSignature (eve);
-//			if (eveMeth == null)
-//				return new IMethod[0];
-//			return GetCompatibleMethodsInClass (cls, eveMeth);
-//		}
-//		
-//		//TODO: check accessibility
-//		public static IEnumerable<IMethod> GetCompatibleMethodsInClass (IType cls, IMethod matchMeth)
-//		{
-//			IType[] pars = new IType[matchMeth.Parameters.Count];
-//			List<IType>[] baseTypes = new List<IType>[matchMeth.Parameters.Count];
-//			for (int i = 0; i < matchMeth.Parameters.Count; i++) {
-//				pars[i] = matchMeth.Parameters[i].Type;
-//				baseTypes[i] = new List<IType> (pars[i].GetAllBaseTypes ());
-//			}
-//			
-//			var matchMethType = matchMeth.ReturnType;
-//			
-//			foreach (IMethod method in cls.GetMethods ()) {
-//				if (method.IsPrivate || method.Parameters.Count != pars.Length || !method.ReturnType.Equals (matchMethType) 
-//				    || method.IsInternal)
-//					continue;
-//				
-//				bool allCompatible = true;
-//				
-//				//compare each parameter
-//				for (int i = 0; i < pars.Length; i++) {
-//					var pt = method.Parameters[i].Type;
-//					bool parCompatible = pars[i].Equals (pt);
-//					if (!parCompatible && !baseTypes[i].Any (t => t.Equals (pt))) {
-//						allCompatible = false;
-//						break;
-//					}
-//				}
-//				
-//				if (allCompatible)
-//					yield return method;
-//			}
-//		}
-//		
-//		public static bool IdentifierExistsInClass (IType cls, string identifier)
-//		{
-//			return cls.GetMembers ().Any (m => m.Name == identifier);
-//		}
-//		
-//		public static string GenerateIdentifierUniqueInClass (IType cls, string trialIdentifier)
-//		{
-//			string trialValue = trialIdentifier;
-//			
-//			for (int suffix = 1; suffix <= int.MaxValue; suffix++)
-//			{
-//				if (!IdentifierExistsInClass (cls, trialValue))
-//					return trialValue;
-//				
-//				trialValue = trialIdentifier + suffix.ToString ();
-//			}
-//			
-//			throw new Exception ("Tried identifiers up to " + trialValue + " and all already existed");
-//		}
-//		
+		
+		public static IEnumerable<IMethodSymbol> GetCompatibleMethodsInClass (ITypeSymbol cls, IEventSymbol eve)
+		{
+			IMethodSymbol eveMeth = GetMethodSignature (eve);
+			if (eveMeth == null)
+				return new IMethodSymbol[0];
+			return GetCompatibleMethodsInClass (cls, eveMeth);
+		}
+		
+		//TODO: check accessibility
+		public static IEnumerable<IMethodSymbol> GetCompatibleMethodsInClass (ITypeSymbol cls, IMethodSymbol matchMeth)
+		{
+			ITypeSymbol[] pars = new ITypeSymbol[matchMeth.Parameters.Length];
+			List<ITypeSymbol>[] baseTypes = new List<ITypeSymbol>[matchMeth.Parameters.Length];
+			for (int i = 0; i < matchMeth.Parameters.Length; i++) {
+				pars[i] = matchMeth.Parameters[i].Type;
+				baseTypes[i] = new List<ITypeSymbol> (pars[i].GetBaseTypes ());
+			}
+
+			var matchMethType = matchMeth.ReturnType;
+			
+			foreach (IMethodSymbol method in cls.GetAccessibleMembersInThisAndBaseTypes<IMethodSymbol> (cls)) {
+				if (method.DeclaredAccessibility == Accessibility.Private || method.Parameters.Length != pars.Length || !method.ReturnType.Equals (matchMethType) 
+					|| method.DeclaredAccessibility == Accessibility.Internal)
+					continue;
+				
+				bool allCompatible = true;
+				
+				//compare each parameter
+				for (int i = 0; i < pars.Length; i++) {
+					var pt = method.Parameters[i].Type;
+					bool parCompatible = pars[i].Equals (pt);
+					if (!parCompatible && !baseTypes[i].Any (t => t.Equals (pt))) {
+						allCompatible = false;
+						break;
+					}
+				}
+				
+				if (allCompatible)
+					yield return method;
+			}
+		}
+		
+		public static bool IdentifierExistsInClass (ITypeSymbol cls, string identifier)
+		{
+			return cls.GetMembers ().Any (m => m.Name == identifier);
+		}
+		
+		public static string GenerateIdentifierUniqueInClass (ITypeSymbol cls, string trialIdentifier)
+		{
+			string trialValue = trialIdentifier;
+			
+			for (int suffix = 1; suffix <= int.MaxValue; suffix++)
+			{
+				if (!IdentifierExistsInClass (cls, trialValue))
+					return trialValue;
+				
+				trialValue = trialIdentifier + suffix.ToString ();
+			}
+			
+			throw new Exception ("Tried identifiers up to " + trialValue + " and all already existed");
+		}
+		
 //		static DomRegion GetRegion (INamedElement el)
 //		{
 //			if (el is IEntity)
@@ -318,20 +317,20 @@
 //			
 //			return newMethod;
 //		}
-//		
-//		public static IMethod GetMethodSignature (IEvent ev)
-//		{
-//			if (ev.ReturnType == null)
-//				return null;
-//			IType cls = ev.ReturnType;
-//			if (cls.Kind == TypeKind.Unknown)
-//				return null;
-//			foreach (var m in cls.GetMethods ())
-//				if (m.Name == "Invoke")
-//					return m;
-//			return null;
-//		}
-//		
+		
+		public static IMethodSymbol GetMethodSignature (IEventSymbol ev)
+		{
+			if (ev.Type == null)
+				return null;
+			ITypeSymbol cls = ev.Type;
+			if (cls.TypeKind == TypeKind.Unknown)
+				return null;
+			foreach (var m in cls.GetAccessibleMembersInThisAndBaseTypes<IMethodSymbol> (cls))
+				if (m.Name == "Invoke")
+					return m;
+			return null;
+		}
+		
 //		//TODO: handle generics
 //		public static IUnresolvedMethod CodeDomToMDDomMethod (CodeMemberMethod method)
 //		{
@@ -352,13 +351,13 @@
 //			
 //			return meth;
 //		}
-//		
-//		public static CodeMemberMethod MDDomToCodeDomMethod (IEvent eve)
-//		{
-//			IMethod meth = GetMethodSignature (eve);
-//			return meth != null ? MDDomToCodeDomMethod (meth) : null;
-//		}
-//		
+
+		public static CodeMemberMethod MDDomToCodeDomMethod (IEventSymbol eve)
+		{
+			IMethodSymbol meth = GetMethodSignature (eve);
+			return meth != null ? MDDomToCodeDomMethod (meth) : null;
+		}
+		
 //		static void CodeDomModifiersToMDDom (DefaultUnresolvedMethod method, MemberAttributes modifiers)
 //		{
 //			if ((modifiers & MemberAttributes.FamilyOrAssembly) != 0) {
@@ -396,74 +395,74 @@
 ////				initialState = (initialState & ~ScopeMask) | Modifiers.Const;
 ////			}
 //		}
-//		
-//		static MemberAttributes ApplyMDDomModifiersToCodeDom (IEntity entity, MemberAttributes initialState)
-//		{
-//			switch (entity.Accessibility) {
-//			case Accessibility.ProtectedOrInternal:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyOrAssembly;
-//				break;
-//			case Accessibility.ProtectedAndInternal:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyAndAssembly;
-//				break;
-//			case Accessibility.Protected:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Family;
-//				break;
-//			case Accessibility.Internal:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
-//				break;
-//			case Accessibility.Public:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
-//				break;
-//			case Accessibility.Private:
-//				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
-//				break;
-//			}
-//			
-//			
-//			if (entity.IsAbstract) {
-//				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Abstract;
-//			}
-//			else if (entity.IsSealed) {
-//				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
-//			}
-//			else if (entity.IsStatic) {
-//				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Static;
-//			}
-//			else if (entity.IsShadowing) {
-//				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Override;
-//			}
-//			if (entity is IField) {
-//				var f = (IField)entity;
-//				if (f.IsReadOnly && f.IsStatic)
-//					initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Const;
-//			}
-//			
-//			return initialState;
-//		}
-//		
-//		
-//		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethod mi)
-//		{
-//			CodeMemberMethod newMethod = new CodeMemberMethod ();
-//			newMethod.Name = mi.Name;
-//			string returnType = mi.ReturnType.ReflectionName ?? "System.Void";
-//			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (returnType);
-//			newMethod.Attributes = ApplyMDDomModifiersToCodeDom (mi, newMethod.Attributes);
-//			
-//			foreach (IParameter p in mi.Parameters) {
-//				var newPar = new CodeParameterDeclarationExpression (returnType, p.Name);
-//				if (p.IsRef)
-//					newPar.Direction = FieldDirection.Ref;
-//				else if (p.IsOut)
-//					newPar.Direction = FieldDirection.Out;
-//				else
-//					newPar.Direction = FieldDirection.In;
-//				
-//				newMethod.Parameters.Add (newPar);
-//			}
-//			
-//			return newMethod;
-//		}
-//	}
-//}
+		
+		static MemberAttributes ApplyMDDomModifiersToCodeDom (ISymbol entity, MemberAttributes initialState)
+		{
+			switch (entity.DeclaredAccessibility) {
+			case Accessibility.ProtectedOrInternal:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyOrAssembly;
+				break;
+			case Accessibility.ProtectedAndInternal:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.FamilyAndAssembly;
+				break;
+			case Accessibility.Protected:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Family;
+				break;
+			case Accessibility.Internal:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Assembly;
+				break;
+			case Accessibility.Public:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Public;
+				break;
+			case Accessibility.Private:
+				initialState = (initialState & ~MemberAttributes.AccessMask) | MemberAttributes.Private;
+				break;
+			}
+			
+			
+			if (entity.IsAbstract) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Abstract;
+			}
+			else if (entity.IsSealed) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Final;
+			}
+			else if (entity.IsStatic) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Static;
+			}
+			else if (entity.IsOverride) {
+				initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Override;
+			}
+			if (entity is IFieldSymbol) {
+				var f = (IFieldSymbol)entity;
+				if (f.IsReadOnly && f.IsStatic)
+					initialState = (initialState & ~MemberAttributes.ScopeMask) | MemberAttributes.Const;
+			}
+			
+			return initialState;
+		}
+		
+		
+		public static System.CodeDom.CodeMemberMethod MDDomToCodeDomMethod (IMethodSymbol mi)
+		{
+			CodeMemberMethod newMethod = new CodeMemberMethod ();
+			newMethod.Name = mi.Name;
+			string returnType = mi.ReturnType.GetFullMetadataName () ?? "System.Void";
+			newMethod.ReturnType = new System.CodeDom.CodeTypeReference (returnType);
+			newMethod.Attributes = ApplyMDDomModifiersToCodeDom (mi, newMethod.Attributes);
+			
+			foreach (IParameterSymbol p in mi.Parameters) {
+				var newPar = new CodeParameterDeclarationExpression (returnType, p.Name);
+				if (p.RefKind == RefKind.Ref)
+					newPar.Direction = FieldDirection.Ref;
+				else if (p.RefKind == RefKind.Out)
+					newPar.Direction = FieldDirection.Out;
+				else
+					newPar.Direction = FieldDirection.In;
+				
+				newMethod.Parameters.Add (newPar);
+			}
+			
+			return newMethod;
+		}
+	}
+}
