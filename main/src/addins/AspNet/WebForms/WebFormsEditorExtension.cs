@@ -616,20 +616,20 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
-//			
-//			IType controlClass = refman.GetControlType (tagName.Prefix, tagName.Name);
-//			if (controlClass == null)
-//				return;
-//			
-//			//find the codebehind class
-//			IType codeBehindClass;
-//			GetCodeBehind (out codeBehindClass);
-//			
-//			//if it's an event, suggest compatible methods 
-//			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
-//				string eventName = attName.Name.Substring (2);
-//				
-//				foreach (IEvent ev in controlClass.GetEvents ()) {
+
+			INamedTypeSymbol controlClass = refman.GetControlType (tagName.Prefix, tagName.Name);
+			if (controlClass == null)
+				return;
+			
+			//find the codebehind class
+			INamedTypeSymbol codeBehindClass;
+			GetCodeBehind (out codeBehindClass);
+
+			//if it's an event, suggest compatible methods 
+			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
+				string eventName = attName.Name.Substring (2);
+				
+				foreach (IEventSymbol ev in GetAllMembers<IEventSymbol> (controlClass)) {
 //					if (ev.Name == eventName) {
 //						var domMethod = BindingService.MDDomToCodeDomMethod (ev);
 //						if (domMethod == null)
@@ -659,40 +659,40 @@ namespace MonoDevelop.AspNet.WebForms
 //						    );
 //						return;
 //					}
-//				}
-//			}
-//			
-//			//if it's a property and is an enum or bool, suggest valid values
-//			foreach (IProperty prop in controlClass.GetProperties ()) {
-//				if (prop.Name != attName.Name)
-//					continue;
-//				
-//				//boolean completion
-//				if (prop.ReturnType.Equals (refman.Compilation.FindType (KnownTypeCode.Boolean))) {
-//					AddBooleanCompletionData (list);
-//					return;
-//				}
-//				//color completion
-//				if (prop.ReturnType.Equals (refman.Compilation.FindType (typeof(System.Drawing.Color)))) {
-//					var conv = new System.Drawing.ColorConverter ();
-//					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
-//						if (c.IsSystemColor)
-//							continue;
-//						string hexcol = string.Format ("#{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
-//						list.Add (c.Name, hexcol);
-//					}
-//					return;
-//				}
-//				
-//				//enum completion
-//				IType retCls = prop.ReturnType;
-//				if (retCls != null && retCls.Kind == TypeKind.Enum) {
-//					foreach (var enumVal in retCls.GetFields ())
-//						if (enumVal.IsPublic && enumVal.IsStatic)
-//							list.Add (enumVal.Name, "md-literal", AmbienceService.GetSummaryMarkup (enumVal));
-//					return;
-//				}
-//			}
+				}
+			}
+			
+			//if it's a property and is an enum or bool, suggest valid values
+			foreach (IPropertySymbol prop in GetAllMembers<IPropertySymbol> (controlClass)) {
+				if (prop.Name != attName.Name)
+					continue;
+				
+				//boolean completion
+				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Boolean"))) {
+					AddBooleanCompletionData (list);
+					return;
+				}
+				//color completion
+				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Drawing.Color"))) {
+					var conv = new System.Drawing.ColorConverter ();
+					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
+						if (c.IsSystemColor)
+							continue;
+						string hexcol = string.Format ("#{0:x2}{1:x2}{2:x2}", c.R, c.G, c.B);
+						list.Add (c.Name, hexcol);
+					}
+					return;
+				}
+				
+				//enum completion
+				var retCls = prop.GetReturnType () as INamedTypeSymbol;
+				if (retCls != null && retCls.TypeKind == TypeKind.Enum) {
+					foreach (var enumVal in GetAllMembers<IFieldSymbol> (retCls))
+						if (enumVal.DeclaredAccessibility == Accessibility.Public && enumVal.IsStatic)
+							list.Add (enumVal.Name, "md-literal", Ambience.GetSummaryMarkup (enumVal));
+					return;
+				}
+			}
 		}
 
 		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : ISymbol
