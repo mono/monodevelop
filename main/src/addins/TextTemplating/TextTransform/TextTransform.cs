@@ -38,6 +38,17 @@ namespace Mono.TextTemplating
 		
 		public static int Main (string[] args)
 		{
+			try {
+				return MainInternal(args);
+			}
+			catch (Exception e) {
+				Console.Error.WriteLine(e);
+				return -1;
+			}
+		}
+
+		private static int MainInternal (string[] args)
+		{
 			if (args.Length == 0) {
 				ShowHelp (true);
 			}
