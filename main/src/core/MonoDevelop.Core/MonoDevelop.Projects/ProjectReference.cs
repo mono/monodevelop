@@ -301,7 +301,7 @@ namespace MonoDevelop.Projects
 			else if (ReferenceType == ReferenceType.Project) {
 				Project refProj = OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
 				if (refProj != null) {
-					buildItem.Metadata.SetValue ("Project", refProj.ItemId);
+					buildItem.Metadata.SetValue ("Project", refProj.ItemId, preserveExistingCase:true);
 					buildItem.Metadata.SetValue ("Name", refProj.Name);
 					buildItem.Metadata.SetValue ("ReferenceOutputAssembly", ReferenceOutputAssembly, true);
 				}

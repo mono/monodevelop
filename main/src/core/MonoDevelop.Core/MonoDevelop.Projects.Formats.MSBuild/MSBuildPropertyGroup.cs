@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && (defaultValue == null || !string.Equals (defaultValue, prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
+				if (prop != null && (!string.Equals (defaultValue ?? "", prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
 					RemoveProperty (prop);
 				return;
 			}

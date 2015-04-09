@@ -937,6 +937,43 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (Path.Combine ("Data", "t1.txt"), f1.Link.ToString ());
 			Assert.AreEqual (Path.Combine ("Data", "t2.txt"), f2.Link.ToString ());
 		}
+
+		[Test]
+		public async Task VSFormatCompatibility ()
+		{
+			// Specific format compatibility issues tested here:
+			// * Preserve the case of guids in project references
+			// * Preserve the line endings used in the sln files
+			// * Preserve initial blank lines in sln files
+			// * Preserve the product description in the sln file, even if it doesn't match MD's file format
+			// * If an assembly reference has SpecificVersion==false but the actual reference in the csproj
+			//   does have version information, keep it when saving.
+			// * Don't remove ProductVersion and SchemaVersion from csproj even when it is not necessary
+
+			string solFile = Util.GetSampleProject ("project-from-vs", "console-with-libs.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p1 = sol.Items[0];
+			var p2 = sol.Items[1];
+			var p3 = sol.Items[2];
+
+			var solContent = File.ReadAllText (solFile);
+			var refXml1 = Util.GetXmlFileInfoset (p1.FileName);
+			var refXml2 = Util.GetXmlFileInfoset (p2.FileName);
+			var refXml3 = Util.GetXmlFileInfoset (p3.FileName);
+
+			await sol.SaveAsync (Util.GetMonitor());
+
+			var savedSol = File.ReadAllText (solFile);
+			var savedXml1 = Util.GetXmlFileInfoset (p1.FileName);
+			var savedXml2 = Util.GetXmlFileInfoset (p2.FileName);
+			var savedXml3 = Util.GetXmlFileInfoset (p3.FileName);
+
+			Assert.AreEqual (solContent, savedSol);
+			Assert.AreEqual (refXml1, savedXml1);
+			Assert.AreEqual (refXml2, savedXml2);
+			Assert.AreEqual (refXml3, savedXml3);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

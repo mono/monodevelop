@@ -14,6 +14,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		SlnProjectCollection projects = new SlnProjectCollection ();
 		SlnSectionCollection sections = new SlnSectionCollection ();
 		SlnPropertySet metadata = new SlnPropertySet (true);
+		string newLineChars = "\r\n";
+		int prefixBlankLines = 1;
 
 		public string FormatVersion { get; set; }
 		public string ProductDescription { get; set; }
@@ -66,8 +68,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Read (string file)
 		{
-			using (var sr = new StreamReader (file))
+			using (var sr = new StreamReader (file)) {
+				GuessLineEnding (sr);
+			}
+			using (var sr = new StreamReader (file)) {
 				Read (sr);
+			}
+		}
+
+		void GuessLineEnding (StreamReader sr)
+		{
+			int c;
+			bool hasCR = false;
+
+			while ((c = sr.Read ()) != -1 && c != '\n') {
+				if (c == '\r')
+					hasCR = true;
+			}
+			if (hasCR)
+				newLineChars = "\r\n";
+			else
+				newLineChars = "\n";
+			sr.BaseStream.Position = 0;
 		}
 
 		public void Read (TextReader reader)
@@ -85,6 +107,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (i == -1)
 						throw new InvalidSolutionFormatException (curLineNum);
 					FormatVersion = line.Substring (i + 1);
+					prefixBlankLines = curLineNum - 1;
 				}
 				if (line.StartsWith ("# ")) {
 					if (!productRead) {
@@ -129,8 +152,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Write (TextWriter writer)
 		{
-			writer.NewLine = "\r\n";
-			writer.WriteLine ("\r\nMicrosoft Visual Studio Solution File, Format Version " + FormatVersion);
+			writer.NewLine = newLineChars;
+			for (int n=0; n<prefixBlankLines; n++)
+				writer.WriteLine ();
+			writer.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + FormatVersion);
 			writer.WriteLine ("# " + ProductDescription);
 
 			metadata.Write (writer);
