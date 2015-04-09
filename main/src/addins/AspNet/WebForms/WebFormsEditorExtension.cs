@@ -103,9 +103,9 @@ namespace MonoDevelop.AspNet.WebForms
 
 			if (HasDoc) {
 				documentInfo = new DocumentInfo (aspDoc, refman.GetUsings ());
-				localDocumentProjection = new MonoDevelop.AspNet.WebForms.CSharp.CSharpProjector ().CreateProjection (documentInfo, Editor, true).Result;
-				projectedEditor = localDocumentProjection.CreateProjectedEditor (DocumentContext);
-				Editor.SetOrUpdateProjections (DocumentContext, new [] { localDocumentProjection  });
+//				localDocumentProjection = new MonoDevelop.AspNet.WebForms.CSharp.CSharpProjector ().CreateProjection (documentInfo, Editor, true).Result;
+//				projectedEditor = localDocumentProjection.CreateProjectedEditor (DocumentContext);
+//				Editor.SetOrUpdateProjections (DocumentContext, new [] { localDocumentProjection  });
 			}
 		}
 		
