@@ -32,6 +32,26 @@ using AppKit;
 namespace MonoDevelop.Components
 {
 	#if MAC
+	class ClosingDelegate : NSMenuDelegate
+	{
+		Action hide_action;
+
+		public ClosingDelegate (Action hide_action)
+		{
+			this.hide_action = hide_action;
+		}
+
+		public override void MenuWillHighlightItem (NSMenu menu, NSMenuItem item)
+		{
+		}
+
+		public override void MenuDidClose (NSMenu menu)
+		{
+			if (hide_action != null)
+				hide_action ();
+		}
+	}
+
 	static class ContextMenuExtensionsMac
 	{
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu)
@@ -45,12 +65,16 @@ namespace MonoDevelop.Components
 			ShowContextMenu (parent, evt, nsMenu);
 		}
 
-		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu, Action hide_action = null)
 		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
+
+			if (hide_action != null) {
+				menu.Delegate = new ClosingDelegate (hide_action);
+			}
 
 			parent.GrabFocus ();
 			int x, y;

@@ -440,9 +440,15 @@ namespace Mono.TextEditor
 		/// <param name='parent'>The parent widget.</param>
 		/// <param name='evt'>The mouse event. May be null if triggered by keyboard.</param>
 		/// <param name='caret'>The caret/selection position within the parent, if the EventButton is null.</param>
-		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret)
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret, System.Action hide_action = null)
 		{
 			Gtk.MenuPositionFunc posFunc = null;
+
+			menu.Hidden += (sender, e) => {
+				if (hide_action != null) {
+					hide_action ();
+				}
+			};
 
 			if (parent != null) {
 				menu.AttachToWidget (parent, null);
@@ -519,14 +525,14 @@ namespace Mono.TextEditor
 			menu.Popup (null, null, posFunc, button, time);
 		}
 		
-		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt)
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.EventButton evt, System.Action hide_action = null)
 		{
-			ShowContextMenu (menu, parent, evt, Gdk.Rectangle.Zero);
+			ShowContextMenu (menu, parent, evt, Gdk.Rectangle.Zero, hide_action);
 		}
 		
-		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.Rectangle caret)
+		public static void ShowContextMenu (Gtk.Menu menu, Gtk.Widget parent, Gdk.Rectangle caret, System.Action hide_action = null)
 		{
-			ShowContextMenu (menu, parent, null, caret);
+			ShowContextMenu (menu, parent, null, caret, hide_action);
 		}
 		
 		struct MappedKeys

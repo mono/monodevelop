@@ -813,15 +813,15 @@ namespace MonoDevelop.Components.Commands
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
 		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
-			object initialCommandTarget = null)
+			object initialCommandTarget = null, Action hide_action = null)
 		{
 #if MAC
 			var menu = CreateNSMenu (entrySet, initialCommandTarget);
-			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
+			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu, hide_action);
 #else
 			var menu = CreateMenu (entrySet);
 			if (menu != null)
-				ShowContextMenu (parent, evt, menu, initialCommandTarget);
+				ShowContextMenu (parent, evt, menu, initialCommandTarget, hide_action);
 #endif
 			return true;
 		}
@@ -842,13 +842,13 @@ namespace MonoDevelop.Components.Commands
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
 		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
-			object initialCommandTarget = null)
+			object initialCommandTarget = null, Action hide_action = null)
 		{
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt, hide_action);
 		}
 		
 		/// <summary>
