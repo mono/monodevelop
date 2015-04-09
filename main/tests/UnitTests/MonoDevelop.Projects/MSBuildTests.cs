@@ -950,6 +950,9 @@ namespace MonoDevelop.Projects
 			//   does have version information, keep it when saving.
 			// * Don't remove ProductVersion and SchemaVersion from csproj even when it is not necessary
 
+			var sol1 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), "/Users/lluis/temp/SharingXamarinSolution/TestApp.sln");
+			await sol1.SaveAsync (Util.GetMonitor ());
+
 			string solFile = Util.GetSampleProject ("project-from-vs", "console-with-libs.sln");
 
 			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
@@ -995,6 +998,28 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (solContent, savedSol);
 			Assert.AreEqual (refXml1, savedXml1);
+		}
+
+		[Test]
+		public async Task UnsupportedProjectSerializationRoundtrip ()
+		{
+			// Load and save a Windows Phone project.
+
+			string solFile = Util.GetSampleProject ("unsupported-project-roundtrip", "TestApp.WinPhone.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items [0];
+
+			var refSol = File.ReadAllText (solFile);
+			var refProj = File.ReadAllText (p.FileName);
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			var savedSol = File.ReadAllText (solFile);
+			var savedProj = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refSol, savedSol);
+			Assert.AreEqual (refProj, savedProj);
 		}
 	}
 

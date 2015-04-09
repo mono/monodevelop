@@ -161,7 +161,12 @@
 		<Description>Project types not supported by MonoDevelop</Description>
 		<ExtensionNode name="ProjectType" type="MonoDevelop.Projects.Extensions.UnknownProjectTypeNode"/>
 	</ExtensionPoint>
-	
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects" name = "MSBuild import redirects">
+		<Description>Allows replacing an import by another one when a project is evaluated</Description>
+		<ExtensionNode name="Import" type="MonoDevelop.Projects.Extensions.ImportRedirectTypeNode"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	
@@ -323,4 +328,11 @@
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
 		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects">
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props" target="MSBuild/CodeSharing.Common.Default.props" />
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props" target="MSBuild/CodeSharing.Common.props" />
+		<Import project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets" target="MSBuild/CodeSharing.CSharp.targets" />
+	</Extension>
+
 </ExtensionModel>

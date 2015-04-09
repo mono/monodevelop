@@ -43,6 +43,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		IDotNetLanguageBinding languageBinding;
 		string languageName;
 		FilePath projItemsPath;
+		MSBuildProject projitemsProject;
 
 		public SharedAssetsProject ()
 		{
@@ -102,13 +103,25 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				DefaultNamespace = cp.GetValue ("Import_RootNamespace");
 
 			LoadProjectItems (p, ProjectItemFlags.None);
+
+			projitemsProject = p;
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			MSBuildProject projitemsProject = new MSBuildProject ();
+			if (projItemsPath == FilePath.Null)
+				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
+			
+			if (projitemsProject == null) {
+				projitemsProject = new MSBuildProject ();
+				projitemsProject.FileName = projItemsPath;
+				IMSBuildPropertySet grp = projitemsProject.AddNewPropertyGroup (true);
+				grp.SetValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
+				grp.SetValue ("HasSharedItems", true);
+				grp.SetValue ("SharedGUID", ItemId, preserveExistingCase:true);
+			}
 
 			var newProject = FileName == null || !File.Exists (FileName);
 			if (newProject) {
@@ -134,17 +147,6 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				msproject.ToolsVersion = null;
 			else
 				msproject.ToolsVersion = "2.0";
-
-			if (projItemsPath == FilePath.Null)
-				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
-			if (File.Exists (projItemsPath)) {
-				projitemsProject.Load (projItemsPath);
-			} else {
-				IMSBuildPropertySet grp = projitemsProject.AddNewPropertyGroup (true);
-				grp.SetValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
-				grp.SetValue ("HasSharedItems", true);
-				grp.SetValue ("SharedGUID", ItemId, preserveExistingCase:true);
-			}
 
 			IMSBuildPropertySet configGrp = projitemsProject.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
 			if (configGrp == null) {

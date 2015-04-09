@@ -253,7 +253,6 @@ namespace MonoDevelop.Projects
 
 				ProjectExtension.OnPrepareForEvaluation (p);
 
-				p.Evaluate ();
 				ReadProject (monitor, p);
 			});
 		}

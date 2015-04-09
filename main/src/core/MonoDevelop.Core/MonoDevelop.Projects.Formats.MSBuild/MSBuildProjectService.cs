@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static IMSBuildGlobalPropertyProvider[] globalPropertyProviders;
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
+		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
 
 		internal static bool ShutDown { get; private set; }
 		
@@ -90,6 +91,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (var gpp in globalPropertyProviders) {
 				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
 			}
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/MSBuildImportRedirects", (s,a) => {
+				var node = (ImportRedirectTypeNode) a.ExtensionNode;
+				if (a.Change == ExtensionChange.Add)
+					importRedirects [node.Project] = node.Addin.GetFilePath (node.Target);
+				else
+					importRedirects.Remove (node.Project);
+			});
 		}
 
 		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
@@ -109,6 +118,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		internal static MSBuildVerbosity DefaultMSBuildVerbosity { get; private set; }
+
+		/// <summary>
+		/// Given a project referenced in an Import, returns a project that should be loaded instead, or null if there is no redirect
+		/// </summary>
+		internal static string GetImportRedirect (string project)
+		{
+			string target;
+			if (importRedirects.TryGetValue (project, out target))
+				return target;
+			return null;
+		}
 		
 		public async static Task<SolutionItem> LoadItem (ProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid, SolutionLoadContext ctx)
 		{

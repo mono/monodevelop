@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Collections;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -14,8 +15,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		SlnProjectCollection projects = new SlnProjectCollection ();
 		SlnSectionCollection sections = new SlnSectionCollection ();
 		SlnPropertySet metadata = new SlnPropertySet (true);
-		string newLineChars = "\r\n";
 		int prefixBlankLines = 1;
+		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
 
 		public string FormatVersion { get; set; }
 		public string ProductDescription { get; set; }
@@ -68,28 +69,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Read (string file)
 		{
-			using (var sr = new StreamReader (file)) {
-				GuessLineEnding (sr);
-			}
-			using (var sr = new StreamReader (file)) {
+			format = FileUtil.GetTextFormatInfo (file);
+
+			using (var sr = new StreamReader (file))
 				Read (sr);
-			}
-		}
-
-		void GuessLineEnding (StreamReader sr)
-		{
-			int c;
-			bool hasCR = false;
-
-			while ((c = sr.Read ()) != -1 && c != '\n') {
-				if (c == '\r')
-					hasCR = true;
-			}
-			if (hasCR)
-				newLineChars = "\r\n";
-			else
-				newLineChars = "\n";
-			sr.BaseStream.Position = 0;
 		}
 
 		public void Read (TextReader reader)
@@ -146,13 +129,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Write (string file)
 		{
-			using (var sw = new StreamWriter (file))
-				Write (sw);
+			var sw = new StringWriter ();
+			Write (sw);
+			TextFile.WriteFile (file, sw.ToString(), format.ByteOrderMark, true);
 		}
 
 		public void Write (TextWriter writer)
 		{
-			writer.NewLine = newLineChars;
+			writer.NewLine = format.NewLine;
 			for (int n=0; n<prefixBlankLines; n++)
 				writer.WriteLine ();
 			writer.WriteLine ("Microsoft Visual Studio Solution File, Format Version " + FormatVersion);

@@ -391,6 +391,26 @@ namespace MonoDevelop.Projects
 
 			sol2.Dispose ();
 		}
+
+		[Test]
+		public async Task ProjectFromVsRoundtrip ()
+		{
+			string projFile = Util.GetSampleProject ("shared-project-from-vs", "TestApp.shproj");
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+			Assert.IsInstanceOf<SharedAssetsProject> (p);
+			var sp = (SharedAssetsProject) p;
+
+			var refProj = File.ReadAllText (projFile);
+			var refItems = File.ReadAllText (sp.ProjItemsPath);
+
+			await p.SaveAsync (Util.GetMonitor());
+
+			var savedProj = File.ReadAllText (projFile);
+			var savedItems = File.ReadAllText (sp.ProjItemsPath);
+
+			Assert.AreEqual (refProj, savedProj);
+			Assert.AreEqual (refItems, savedItems);
+		}
 	}
 }
 

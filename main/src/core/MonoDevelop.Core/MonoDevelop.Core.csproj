@@ -502,12 +502,24 @@
     <Compile Include="MonoDevelop.Projects\IMSBuildFileObject.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\TypeTagCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectEvaluationException.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\ImportRedirectTypeNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\FileUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
     <None Include="packages.config" />
+    <None Include="MSBuild\CodeSharing.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSBuild\CodeSharing.Common.Default.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="MSBuild\CodeSharing.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
@@ -598,6 +610,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
+    <Folder Include="MSBuild\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />

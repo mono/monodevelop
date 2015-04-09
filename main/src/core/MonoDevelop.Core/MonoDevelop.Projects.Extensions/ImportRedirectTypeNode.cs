@@ -1,10 +1,10 @@
-//
-// MSBuildObject.cs
+﻿//
+// ImportRedirectTypeNode.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,61 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using Mono.Addins;
 
-using System.Xml;
-
-
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.Extensions
 {
-	
-	public class MSBuildObject
+	class ImportRedirectTypeNode: ExtensionNode
 	{
-		XmlElement elem;
+		[NodeAttribute ("project")]
+		public string Project { get; set; }
 
-		public MSBuildObject (XmlElement elem)
-		{
-			this.elem = elem;
-		}
-		
-		public XmlElement Element {
-			get { return elem; }
-		}
-
-		protected XmlElement AddChildElement (string name)
-		{
-			XmlElement e = elem.OwnerDocument.CreateElement (null, name, MSBuildProject.Schema);
-			elem.AppendChild (e);
-			return e;
-		}
-
-		public string Label {
-			get { return Element.GetAttribute ("Label"); }
-			set { Element.SetAttribute ("Label", value); }
-		}
-
-		public string Condition {
-			get {
-				return Element != null ? Element.GetAttribute ("Condition") : null;
-			}
-			set {
-				if (string.IsNullOrEmpty (value))
-					Element.RemoveAttribute ("Condition");
-				else
-					Element.SetAttribute ("Condition", value);
-			}
-		}
-
-		internal virtual void Evaluate (MSBuildEvaluationContext context)
-		{
-		}
-
-		internal virtual void OnEvaluationStarting ()
-		{
-		}
-
-		internal virtual void OnEvaluationFinished ()
-		{
-		}
+		[NodeAttribute ("target")]
+		public string Target { get; set; }
 	}
-
 }
+

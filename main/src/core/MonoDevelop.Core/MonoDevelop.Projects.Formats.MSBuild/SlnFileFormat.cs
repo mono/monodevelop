@@ -661,8 +661,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						var e = UnwrapException (cex).First ();
 
 						bool loadAsProject = false;
+						string unsupportedMessage = e.Message;
 
-						if (e is UnknownSolutionItemTypeException) {
+						if (e is ProjectEvaluationException) {
+							var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
+							var project = ((ProjectEvaluationException)e).Project;
+							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (project.ProjectTypeGuids, sol.FileName);
+							if (projectInfo != null) {
+								loadAsProject = projectInfo.LoadFiles;
+								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+								unsupportedMessage = projectInfo.GetInstructions ();
+							} else {
+								LoggingService.LogWarning (string.Format ("Could not load project '{0}': {1}", relPath, e.Message));
+								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}': {1}'", relPath, e.Message));
+								unsupportedMessage = GettextCatalog.GetString ("Project evaluation failed: " + e.Message);
+							}
+						}
+						else if (e is UnknownSolutionItemTypeException) {
 							var name = ((UnknownSolutionItemTypeException)e).TypeName;
 
 							var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
@@ -696,15 +712,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (loadAsProject) {
 							uitem = new UnknownProject () {
 								FileName = projectPath,
-								UnsupportedProjectMessage = e.Message,
+								UnsupportedProjectMessage = unsupportedMessage,
 							};
 						} else {
 							uitem = new UnknownSolutionItem () {
 								FileName = projectPath,
-								UnsupportedProjectMessage = e.Message,
+								UnsupportedProjectMessage = unsupportedMessage,
 							};
 						}
 						item = uitem;
+						item.ItemId = projectGuid;
+						item.TypeGuid = projTypeGuid;
 					}
 
 					item.UnresolvedProjectDependencies = ReadSolutionItemDependencies (sec);

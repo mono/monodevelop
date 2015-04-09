@@ -51,10 +51,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
-		
-		bool endsWithEmptyLine;
-		string newLine = Environment.NewLine;
-		ByteOrderMark bom;
+
+		TextFormatInfo format = new TextFormatInfo ();
 
 		public static XmlNamespaceManager XmlNamespaceManager {
 			get {
@@ -109,46 +107,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.file = file;
 			IsNewProject = false;
-			using (FileStream fs = File.OpenRead (file)) {
-				byte[] buf = new byte [1024];
-				int nread, i;
-				
-				if ((nread = fs.Read (buf, 0, buf.Length)) <= 0)
-					return;
-				
-				if (ByteOrderMark.TryParse (buf, nread, out bom))
-					i = bom.Length;
-				else
-					i = 0;
-				
-				do {
-					// Read to the first newline to figure out which line endings this file is using
-					while (i < nread) {
-						if (buf[i] == '\r') {
-							newLine = "\r\n";
-							break;
-						} else if (buf[i] == '\n') {
-							newLine = "\n";
-							break;
-						}
-						
-						i++;
-					}
-					
-					if (newLine == null) {
-						if ((nread = fs.Read (buf, 0, buf.Length)) <= 0) {
-							newLine = "\n";
-							break;
-						}
-						
-						i = 0;
-					}
-				} while (newLine == null);
-				
-				// Check for a blank line at the end
-				endsWithEmptyLine = fs.Seek (-1, SeekOrigin.End) > 0 && fs.ReadByte () == (int) '\n';
-			}
-			
+			format = FileUtil.GetTextFormatInfo (file);
+
 			// Load the XML document
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
@@ -182,14 +142,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Save (string fileName)
 		{
 			string content = SaveToString ();
-			TextFile.WriteFile (fileName, content, bom, true);
+			TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
 		}
 		
 		public Task SaveAsync (string fileName)
 		{
 			return Task.Run (() => {
 				string content = SaveToString ();
-				TextFile.WriteFile (fileName, content, bom, true);
+				TextFile.WriteFile (fileName, content, format.ByteOrderMark, true);
 			});
 		}
 
@@ -199,13 +159,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// StringWriter.Encoding always returns UTF16. We need it to return UTF8, so the
 			// XmlDocument will write the UTF8 header.
-			ProjectWriter sw = new ProjectWriter (bom);
-			sw.NewLine = newLine;
+			ProjectWriter sw = new ProjectWriter (format.ByteOrderMark);
+			sw.NewLine = format.NewLine;
 			doc.Save (sw);
 
 			string content = sw.ToString ();
-			if (endsWithEmptyLine && !content.EndsWith (newLine))
-				content += newLine;
+			if (format.EndsWithEmptyLine && !content.EndsWith (format.NewLine))
+				content += format.NewLine;
 
 			return content;
 		}
@@ -241,6 +201,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					it.EvaluatedItemCount = 0;
 				}
 
+				OnEvaluationStarting ();
+
 				var project = e.LoadProjectFromXml (FileName, doc.OuterXml);
 
 				// Now remove the item id property
@@ -248,9 +210,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					el.ParentNode.RemoveChild (el);
 
 				SyncBuildProject (currentItems, e, project);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				// If the project can't be evaluated don't crash
 				LoggingService.LogError ("MSBuild project could not be evaluated", ex);
+				throw new ProjectEvaluationException (this, ex.Message);
+			}
+			finally {
+				OnEvaluationFinished ();
 			}
 		}
 
@@ -330,6 +297,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			xit.IsImported = imported;
 			((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (e, it);
 			return xit;
+		}
+
+		void OnEvaluationStarting ()
+		{
+			foreach (var g in PropertyGroups)
+				g.OnEvaluationStarting ();
+			foreach (var g in ItemGroups)
+				g.OnEvaluationStarting ();
+			foreach (var i in Imports)
+				i.OnEvaluationStarting ();
+		}
+
+		void OnEvaluationFinished ()
+		{
+			foreach (var g in PropertyGroups)
+				g.OnEvaluationFinished ();
+			foreach (var g in ItemGroups)
+				g.OnEvaluationFinished ();
+			foreach (var i in Imports)
+				i.OnEvaluationFinished ();
 		}
 
 		public string DefaultTargets {

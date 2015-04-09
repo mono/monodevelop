@@ -44,6 +44,10 @@ namespace MonoDevelop.Projects.Extensions
 				var migrators = MSBuildProjectService.GetMigrableFlavors (p.ProjectTypeGuids);
 				if (migrators.Count > 0)
 					await MSBuildProjectService.MigrateFlavors (monitor, fileName, Guid, p, migrators);
+
+				// Evaluate the project now. If evaluation fails an exception will be thrown, and when that
+				// happens the solution will create a placeholder project.
+				p.Evaluate ();
 			}
 
 			var project = await base.CreateSolutionItem (monitor, fileName) as Project;

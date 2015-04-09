@@ -111,6 +111,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal virtual void SetPropertyValue (string value)
 		{
+			if (Element.IsEmpty && string.IsNullOrEmpty (value))
+				return;
+			
 			Element.InnerText = value;
 		}
 

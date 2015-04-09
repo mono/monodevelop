@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
@@ -72,6 +73,12 @@ namespace MonoDevelop.Projects
 				return FileName.FileNameWithoutExtension;
 			else
 				return GettextCatalog.GetString ("Unknown entry");
+		}
+
+		internal protected override Task OnSave (ProgressMonitor monitor)
+		{
+			// Do nothing
+			return Task.FromResult (0);
 		}
 
 		protected override bool OnGetSupportsTarget (string target)
