@@ -974,6 +974,28 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refXml2, savedXml2);
 			Assert.AreEqual (refXml3, savedXml3);
 		}
+
+		[Test]
+		public async Task VSFormatCompatibilityFolderOrdering ()
+		{
+			// Test for bug #28668 - Changing a sln from VS in XS re-orders solution folder lines
+
+			string solFile = Util.GetSampleProject ("vs-compat-sln-ordering", "ConsoleApplication.sln");
+
+			var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p1 = sol.Items[0];
+
+			var solContent = File.ReadAllText (solFile);
+			var refXml1 = Util.GetXmlFileInfoset (p1.FileName);
+
+			await sol.SaveAsync (Util.GetMonitor());
+
+			var savedSol = File.ReadAllText (solFile);
+			var savedXml1 = Util.GetXmlFileInfoset (p1.FileName);
+
+			Assert.AreEqual (solContent, savedSol);
+			Assert.AreEqual (refXml1, savedXml1);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
