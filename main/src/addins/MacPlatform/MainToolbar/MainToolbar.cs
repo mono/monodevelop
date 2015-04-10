@@ -204,7 +204,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			gtkWindow = window;
 			widget = new NSToolbar (MainToolbarId) {
-				DisplayMode = NSToolbarDisplayMode.IconAndLabel,
+				DisplayMode = NSToolbarDisplayMode.Icon,
 			};
 			widget.WillInsertItem = (tool, id, send) => {
 				switch (id) {
