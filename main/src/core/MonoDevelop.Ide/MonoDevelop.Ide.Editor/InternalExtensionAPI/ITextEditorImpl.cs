@@ -109,6 +109,10 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler BeginMouseHover;
 
+		event EventHandler VAdjustmentChanged;
+
+		event EventHandler HAdjustmentChanged;
+
 		void ClearSelection ();
 
 		void CenterToCaret ();
