@@ -257,7 +257,8 @@ namespace MonoDevelop.Xml.Editor
 			if (pos <= 0)
 				return null;
 			tracker.UpdateEngine ();
-			return HandleCodeCompletion (completionContext, true, default(CancellationToken)).Result;
+			var task = HandleCodeCompletion (completionContext, true, default(CancellationToken));
+			return task != null ? task.Result : null;
 		}
 
 		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
