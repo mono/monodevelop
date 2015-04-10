@@ -71,7 +71,7 @@ namespace MonoDevelop.Core
 		[DllImport ("libc")]
 		static extern IntPtr realpath (string path, IntPtr buffer);
 
-		public FilePath ResolveFullPath ()
+		public FilePath ResolveLinks ()
 		{
 			if (Platform.IsWindows) {
 				return Path.GetFullPath (this);

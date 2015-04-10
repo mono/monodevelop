@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Projects
 			if (BasePath == null)
 				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 
-			projectConfiguration.Location = FileService.ResolveFullPath (BasePath);
+			projectConfiguration.Location = new FilePath (BasePath).ResolveLinks ();
 		}
 
 		void SetDefaultGitSettings ()
