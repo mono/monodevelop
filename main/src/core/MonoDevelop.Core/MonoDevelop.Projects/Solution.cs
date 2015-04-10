@@ -666,6 +666,11 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.Execute (monitor, context, configuration);
 		}
 
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return SolutionExtension.PrepareExecution (monitor, context, configuration);
+		}
+
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
 			return CanExecute (context, (SolutionConfigurationSelector) configuration);
@@ -748,6 +753,10 @@ namespace MonoDevelop.Projects
 
 				monitor.EndTask ();
 			}
+		}
+
+		/*protected virtual*/ async Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
 		}
 
 		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)
@@ -1086,6 +1095,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 			{
 				return Solution.OnExecute (monitor, context, configuration);
+			}
+
+			internal protected override Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Solution.OnPrepareExecution (monitor, context, configuration);
 			}
 
 			internal protected override bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)

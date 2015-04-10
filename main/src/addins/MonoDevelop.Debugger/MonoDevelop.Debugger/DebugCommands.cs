@@ -88,8 +88,7 @@ namespace MonoDevelop.Debugger
 
 			if (IdeApp.Workspace.IsOpen) {
 				var it = GetRunTarget ();
-				if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (it))
-					ExecuteSolution (it);
+				ExecuteSolution (it);
 				return;
 			}
 		}
@@ -153,8 +152,7 @@ namespace MonoDevelop.Debugger
 		{
 			IBuildTarget entry = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 
-			if (await IdeApp.ProjectOperations.CheckAndBuildForExecute (entry))
-				IdeApp.ProjectOperations.Debug (entry);
+			IdeApp.ProjectOperations.Debug (entry);
 		}
 		
 		protected override void Update (CommandInfo info)

@@ -100,6 +100,11 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (true);
+		}
+
 		public bool NeedsBuilding (ConfigurationSelector configuration)
 		{
 			return false;

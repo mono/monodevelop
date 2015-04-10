@@ -311,6 +311,11 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
+		Task IBuildTarget.PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (0);
+		}
+
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution ?? GetAllSolutions ().FirstOrDefault ();

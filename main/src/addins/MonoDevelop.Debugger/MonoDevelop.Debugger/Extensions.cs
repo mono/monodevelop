@@ -43,14 +43,14 @@ namespace MonoDevelop.Debugger
 			return opers.CanExecute (entry, context);
 		}
 
-		public static AsyncOperation Debug (this ProjectOperations opers, IBuildTarget entry)
+		public static AsyncOperation Debug (this ProjectOperations opers, IBuildTarget entry, bool buildBeforeExecuting = true)
 		{
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;
 
 			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 
-			AsyncOperation op = opers.Execute (entry, context);
+			AsyncOperation op = opers.Execute (entry, context, buildBeforeExecuting);
 			SwitchToDebugLayout (op);
 			return op;
 		}

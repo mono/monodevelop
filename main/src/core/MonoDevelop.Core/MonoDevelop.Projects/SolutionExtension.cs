@@ -66,6 +66,11 @@ namespace MonoDevelop.Projects
 			return next.Execute (monitor, context, configuration);
 		}
 
+		internal protected virtual Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return next.PrepareExecution (monitor, context, configuration);
+		}
+
 		internal protected virtual bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return next.CanExecute (context, configuration);

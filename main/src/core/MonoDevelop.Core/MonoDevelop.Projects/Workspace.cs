@@ -93,6 +93,11 @@ namespace MonoDevelop.Projects
 			throw new NotSupportedException ();
 		}
 
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			throw new NotSupportedException ();
+		}
+
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;

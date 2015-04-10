@@ -210,6 +210,11 @@ namespace MonoDevelop.Projects
 
 		#region Execution
 
+		internal protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return next.OnPrepareExecution (monitor, context, configuration);
+		}
+
 		internal protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return next.OnExecute (monitor, context, configuration);

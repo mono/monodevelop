@@ -916,22 +916,32 @@ namespace MonoDevelop.Ide
 			return entry.CanExecute (context, IdeApp.Workspace.ActiveConfiguration);
 		}
 		
-		public AsyncOperation Execute (IBuildTarget entry)
+		public AsyncOperation Execute (IBuildTarget entry, bool buildBeforeExecuting = true)
 		{
-			return Execute (entry, Runtime.ProcessService.DefaultExecutionHandler);
+			return Execute (entry, Runtime.ProcessService.DefaultExecutionHandler, buildBeforeExecuting);
 		}
 		
-		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler)
+		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler, bool buildBeforeExecuting = true)
 		{
 			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
-			return Execute (entry, context);
+			return Execute (entry, context, buildBeforeExecuting);
 		}
 		
-		public AsyncOperation Execute (IBuildTarget entry, ExecutionContext context)
+		public AsyncOperation Execute (IBuildTarget entry, ExecutionContext context, bool buildBeforeExecuting = true)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
 			var cs = new CancellationTokenSource ();
+			return new AsyncOperation (ExecuteAsync (entry, context, cs, buildBeforeExecuting), cs);
+		}
+
+		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, bool buildBeforeExecuting)
+		{
+			if (buildBeforeExecuting) {
+				if (!await CheckAndBuildForExecute (entry, context))
+					return;
+			}
+
 			ProgressMonitor monitor = new ProgressMonitor (cs);
 
 			var t = ExecuteSolutionItemAsync (monitor, entry, context);
@@ -939,13 +949,13 @@ namespace MonoDevelop.Ide
 			var op = new AsyncOperation (t, cs);
 			CurrentRunOperation = op;
 			currentRunOperationOwner = entry;
-			t.ContinueWith (ta => {
-				var error = monitor.Errors.FirstOrDefault ();
-				if (error != null)
-					IdeApp.Workbench.StatusBar.ShowError (error.Message);
-				currentRunOperationOwner = null;
-			});
-			return currentRunOperation;
+
+			await t;
+
+			var error = monitor.Errors.FirstOrDefault ();
+			if (error != null)
+				IdeApp.Workbench.StatusBar.ShowError (error.Message);
+			currentRunOperationOwner = null;
 		}
 		
 		async Task ExecuteSolutionItemAsync (ProgressMonitor monitor, IBuildTarget entry, ExecutionContext context)
@@ -1098,7 +1108,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget)
+		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				var bres = await currentBuildOperation.Task;
@@ -1126,11 +1136,20 @@ namespace MonoDevelop.Ide
 			}
 
 			if (IdeApp.Preferences.BuildBeforeExecuting) {
+				// Building the project may take some time, so we call PrepareExecution so that the target can
+				// prepare the execution (for example, it could start a simulator).
+				var cs = new CancellationTokenSource ();
+				var prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
 				var result = await Build (buildTarget, true).Task;
-				if (IdeApp.Preferences.RunWithWarnings)
-					return !result.HasErrors;
-				else
-					return !result.HasErrors && !result.HasWarnings;
+
+				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {
+					cs.Cancel ();
+					return false;
+				}
+				else {
+					await prepareExecution;
+					return true;
+				}
 			}
 
 			var bBuild = new AlertButton (GettextCatalog.GetString ("Build"));
@@ -1152,11 +1171,20 @@ namespace MonoDevelop.Ide
 			}
 
 			if (res == bBuild) {
+				// Building the project may take some time, so we call PrepareExecution so that the target can
+				// prepare the execution (for example, it could start a simulator).
+				var cs = new CancellationTokenSource ();
+				var prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
 				var result = await Build (buildTarget, true).Task;
-				if (IdeApp.Preferences.RunWithWarnings)
-					return !result.HasErrors;
-				else
-					return !result.HasErrors && !result.HasWarnings;
+
+				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {
+					cs.Cancel ();
+					return false;
+				}
+				else {
+					await prepareExecution;
+					return true;
+				}
 			}
 
 			return false;

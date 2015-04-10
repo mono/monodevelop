@@ -840,6 +840,22 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Prepares the target for execution
+		/// </summary>
+		/// <returns>The execution.</returns>
+		/// <param name="monitor">Monitor for tracking progress</param>
+		/// <param name="context">Execution context</param>
+		/// <param name="configuration">Configuration to execute</param>
+		/// <remarks>This method can be called (it is not mandatory) before Execute() to give the target a chance
+		/// to asynchronously prepare the execution that is going to be done later on. It can be used for example
+		/// to start the simulator that is going to be used for execution. Calling this method is optional, and
+		/// there is no guarantee that Execute() will actually be called.</remarks>
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return ItemExtension.OnPrepareExecution (monitor, context, configuration);
+		}
+
+		/// <summary>
 		/// Determines whether this solution item can be executed using the specified context and configuration.
 		/// </summary>
 		/// <returns>
@@ -881,6 +897,22 @@ namespace MonoDevelop.Projects
 		protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return Task.FromResult (0);
+		}
+
+		/// <summary>
+		/// Prepares the target for execution
+		/// </summary>
+		/// <returns>The execution.</returns>
+		/// <param name="monitor">Monitor for tracking progress</param>
+		/// <param name="context">Execution context</param>
+		/// <param name="configuration">Configuration to execute</param>
+		/// <remarks>This method can be called (it is not mandatory) before Execute() to give the target a chance
+		/// to asynchronously prepare the execution that is going to be done later on. It can be used for example
+		/// to start the simulator that is going to be used for execution. Calling this method is optional, and
+		/// there is no guarantee that Execute() will actually be called.</remarks>
+		protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (true);
 		}
 
 		/// <summary>
@@ -1309,6 +1341,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 			{
 				return Item.DoExecute (monitor, context, configuration);
+			}
+
+			internal protected override Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			{
+				return Item.OnPrepareExecution (monitor, context, configuration);
 			}
 
 			internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
