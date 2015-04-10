@@ -1266,7 +1266,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = FileService.ResolveFullPath (value.CanonicalPath);
+				fileName = value.CanonicalPath.ResolveFullPath ();
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
