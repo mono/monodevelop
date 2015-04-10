@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class TextOperation
+	public class TextOperation : Operation
 	{
 		string Text;
 		public TextOperation (string text)

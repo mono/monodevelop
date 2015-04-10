@@ -1,5 +1,5 @@
 ﻿//
-// TextfieldOperation.cs
+// ModelOperation.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -28,20 +28,31 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class TextfieldOperation
+	public class ModelOperation : Operation
 	{
+		string ColumnName;
+		public ModelOperation (string columnName)
+		{
+			ColumnName = columnName;
+		}
+
 		public override HashSet<AppResult> Execute (HashSet<AppResult> resultSet)
 		{
 			HashSet<AppResult> newResultSet = new HashSet<AppResult> ();
 
 			foreach (var result in resultSet) {
-				AppResult newResult = result.TextField ();
+				AppResult newResult = result.Model (ColumnName);
 				if (newResult != null) {
-					newResultSet.Add (newResult); 
+					newResultSet.Add (newResult);
 				}
 			}
 
 			return newResultSet;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Model ({0})", ColumnName);
 		}
 	}
 }

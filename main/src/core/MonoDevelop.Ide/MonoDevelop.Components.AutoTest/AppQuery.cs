@@ -28,23 +28,26 @@ using System.Collections.Generic;
 using System.Text;
 using Gtk;
 using MonoDevelop.Components.AutoTest.Operations;
+using MonoDevelop.Components.AutoTest.Results;
 
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AppQuery : MarshalByRefObject
 	{
 		AppResult rootNode;
-		HashSet<AppResult> fullResultSet;
 		List<Operation> operations = new List<Operation> ();
 
-		AppResult GenerateChildrenForContainer (Gtk.Container container)
+		public AutoTestSessionDebug SessionDebug { get; set; }
+
+		AppResult GenerateChildrenForContainer (Gtk.Container container, HashSet<AppResult> resultSet)
 		{
 			AppResult firstChild = null, lastChild = null;
 
 			foreach (var child in container.Children) {
-				AppResult node = new AppResult (child);
-				fullResultSet.Add (node);
+				AppResult node = new GtkWidgetResult (child);
+				resultSet.Add (node);
 
+				// FIXME: Do we need to recreate the tree structure of the AppResults?
 				if (firstChild == null) {
 					firstChild = node;
 					lastChild = node;
@@ -55,7 +58,7 @@ namespace MonoDevelop.Components.AutoTest
 				}
 
 				if (child is Gtk.Container) {
-					AppResult children = GenerateChildrenForContainer ((Gtk.Container)child);
+					AppResult children = GenerateChildrenForContainer ((Gtk.Container)child, resultSet);
 					node.FirstChild = children;
 				}
 			}
@@ -63,16 +66,16 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
-		public AppQuery (Gtk.Window[] windows)
+		HashSet<AppResult> ResultSetFromWindowList (Gtk.Window[] windows)
 		{
 			// null for AppResult signifies root node
-			rootNode = new AppResult (null);
-			fullResultSet = new HashSet<AppResult> ();
+			rootNode = new GtkWidgetResult (null);
+			HashSet<AppResult> fullResultSet = new HashSet<AppResult> ();
 
 			// Build the tree and full result set recursively
 			AppResult lastChild = null;
 			foreach (var window in windows) {
-				AppResult node = new AppResult (window);
+				AppResult node = new GtkWidgetResult (window);
 				fullResultSet.Add (node);
 
 				if (rootNode.FirstChild == null) {
@@ -86,17 +89,27 @@ namespace MonoDevelop.Components.AutoTest
 				}
 
 				// Create the children list and link them onto the node
-				AppResult children = GenerateChildrenForContainer ((Gtk.Container) window);
+				AppResult children = GenerateChildrenForContainer ((Gtk.Container) window, fullResultSet);
 				node.FirstChild = children;
 			}
+
+			return fullResultSet;
+		}
+
+		public AppQuery ()
+		{
 		}
 
 		public AppResult[] Execute ()
 		{
-			HashSet<AppResult> resultSet = fullResultSet;
+			HashSet<AppResult> resultSet = ResultSetFromWindowList (Gtk.Window.ListToplevels ());
 			foreach (var subquery in operations) {
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
+
+				if (resultSet.Count == 0) {
+					break;
+				}
 			}
 
 			AppResult[] results = new AppResult[resultSet.Count];
@@ -111,16 +124,40 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery CheckType (Type desiredType)
+		{
+			operations.Add (new TypeOperation (desiredType));
+			return this;
+		}
+
 		public AppQuery Button ()
 		{
-			operations.Add (new ButtonOperation ());
-			return this;
+			return CheckType (typeof(Button));
 		}
 
 		public AppQuery Textfield ()
 		{
-			operations.Add (new TextfieldOperation ());
-			return this;
+			return CheckType (typeof(Entry));
+		}
+
+		public AppQuery CheckButton ()
+		{
+			return CheckType (typeof(CheckButton));
+		}
+
+		public AppQuery RadioButton ()
+		{
+			return CheckType (typeof(RadioButton));
+		}
+
+		public AppQuery TreeView ()
+		{
+			return CheckType (typeof(TreeView));
+		}
+
+		public AppQuery Window ()
+		{
+			return CheckType (typeof(Window));
 		}
 
 		public AppQuery Text (string text)
@@ -131,6 +168,31 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppQuery Model (string column)
 		{
+			operations.Add (new ModelOperation (column));
+			return this;
+		}
+
+		public AppQuery Sensitivity (bool sensitivity)
+		{
+			operations.Add (new PropertyOperation ("Sensitive", sensitivity));
+			return this;
+		}
+
+		public AppQuery Visibility (bool visibility)
+		{
+			operations.Add (new PropertyOperation ("Visible", visibility));
+			return this;
+		}
+
+		public AppQuery Property (string propertyName, object desiredValue)
+		{
+			operations.Add (new PropertyOperation (propertyName, desiredValue));
+			return this;
+		}
+
+		public AppQuery Toggled (bool toggled)
+		{
+			operations.Add (new PropertyOperation ("Active", toggled));
 			return this;
 		}
 

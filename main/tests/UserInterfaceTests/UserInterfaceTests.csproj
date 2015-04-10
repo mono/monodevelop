@@ -46,11 +46,11 @@
     <Compile Include="TestService.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="ProcessUtils.cs" />
-    <Compile Include="Gui.cs" />
     <Compile Include="Ide.cs" />
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
     <Compile Include="MonoDevelopTemplatesTest.cs" />
     <Compile Include="NewProjectController.cs" />
+    <Compile Include="UITestDebug.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

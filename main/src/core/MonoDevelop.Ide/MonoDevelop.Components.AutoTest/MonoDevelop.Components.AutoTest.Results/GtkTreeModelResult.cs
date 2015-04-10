@@ -33,6 +33,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 		TreeView TView;
 		TreeModel TModel;
 		int Column;
+		TreeIter? resultIter;
+		string DesiredText;
 
 		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column)
 		{
@@ -40,18 +42,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			TModel = treeModel;
 			Column = column;
 		}
-
+			
 		public override AppResult Marked (string mark)
 		{
 			return null;
 		}
 
-		public override AppResult Button ()
-		{
-			return null;
-		}
-
-		public override AppResult TextField ()
+		public override AppResult CheckType (Type desiredType)
 		{
 			return null;
 		}
@@ -61,9 +58,64 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		bool FindText (TreeModel model, TreePath path, TreeIter iter)
+		{
+			string modelText = model.GetValue (iter, Column) as string;
+			if (modelText != null && modelText == DesiredText) {
+				resultIter = iter;
+				return true;
+			}
+
+			return false;
+		}
+
 		public override AppResult Text (string text)
 		{
-			throw new NotImplementedException ();
+			DesiredText = text;
+
+			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
+				TModel.Foreach (FindText);
+
+				if (resultIter.HasValue) {
+					return this;
+				}
+
+				return null;
+			});
+		}
+
+		public override AppResult Property (string propertyName, object value)
+		{
+			return null;
+		}
+
+		public override bool Select ()
+		{
+			if (!resultIter.HasValue) {
+				return false;
+			}
+
+			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
+				TView.Selection.SelectIter ((TreeIter)resultIter);
+
+				return true;
+			});
+		}
+
+		public override bool Click ()
+		{
+			// FIXME: Same as select?
+			return true;
+		}
+
+		public override bool TypeKey (char key, string state)
+		{
+			return false;
+		}
+
+		public override bool Toggle (bool active)
+		{
+			return false;
 		}
 	}
 }

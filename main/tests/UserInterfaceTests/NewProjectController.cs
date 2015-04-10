@@ -40,43 +40,42 @@ namespace UserInterfaceTests
 		public void Open (int delay = 2000)
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
-			Session.WaitForWindow ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend");
-			Thread.Sleep (delay);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
 		}
 
 		public bool SelectTemplateType (string type, string category)
 		{
-			return Session.SelectTreeviewItem ("templateCategoriesTreeView", type, category);
+			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Text (type));
 		}
 
 		public bool SelectTemplate (string templateName)
 		{
-			return Session.SelectTreeviewItem ("templatesTreeView", templateName, null);
+			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Text (templateName));
 		}
 
 		public bool Next ()
 		{
-			return Session.SelectWidget ("nextButton") && (bool)Session.Invoke ("Activate");
+			return Session.ClickElement (c => c.Button ().Marked ("nextButton"));
 		}
 
 		public bool Previous ()
 		{
-			return Session.SelectWidget ("previousButton") && (bool)Session.Invoke ("Activate");
+			return Session.ClickElement (c => c.Button ().Marked ("previousButton"));
 		}
 
 		public bool SetProjectName (string projectName)
 		{
-			return TypeTextInGtkEntry ("projectNameTextBox", projectName);
+			return Session.EnterText (c => c.Textfield ().Marked ("projectNameTextBox"), projectName);
 		}
 
 		public bool SetSolutionName (string solutionName)
 		{
-			return TypeTextInGtkEntry ("solutionNameTextBox", solutionName);
+			return Session.EnterText (c => c.Textfield ().Marked ("solutionNameTextBox"), solutionName);
 		}
 
 		public bool SetSolutionLocation (string solutionLocation)
 		{
-			return TypeTextInGtkEntry ("locationTextBox", solutionLocation);
+			return Session.EnterText (c => c.Textfield ().Marked ("locationTextBox"), solutionLocation);
 		}
 
 		public bool CreateProjectInSolutionDirectory (bool projectInSolution)
@@ -94,26 +93,13 @@ namespace UserInterfaceTests
 
 		public bool SetCheckBox (string checkBoxName, bool active)
 		{
-			var setSuccess = Session.SelectWidget (checkBoxName);
-			if (setSuccess)
-				return setSuccess && Session.SetPropertyValue ("Active", active);
-			return setSuccess;
+			return Session.ToggleElement (c => c.CheckButton ().Marked (checkBoxName), active);
 		}
-
+			
 		public bool GetSensitivity (string widgetName)
 		{
-			var sensitiveSuccess = Session.SelectWidget (widgetName);
-			if (sensitiveSuccess)
-				return sensitiveSuccess && (bool)Session.GetPropertyValue ("Sensitive");
-			return sensitiveSuccess;
-		}
-
-		public bool TypeTextInGtkEntry (string widgetName, string text)
-		{
-			var typeSuccess = Session.SelectWidget (widgetName);
-			if (typeSuccess)
-				Session.TypeText (text);
-			return typeSuccess;
+			AppResult[] results = Session.Query (c => c.Marked (widgetName).Sensitivity (true));
+			return results.Length > 0;
 		}
 	}
 }

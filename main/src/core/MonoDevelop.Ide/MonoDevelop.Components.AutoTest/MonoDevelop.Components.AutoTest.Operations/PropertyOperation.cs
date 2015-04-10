@@ -1,5 +1,5 @@
 ﻿//
-// ButtonOperation.cs
+// PropertyOperation.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -23,19 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class ButtonOperation
+	public class PropertyOperation : Operation
 	{
+		string PropertyName;
+		object DesiredValue;
+
+		public PropertyOperation (string propertyName, object desiredValue)
+		{
+			PropertyName = propertyName;
+			DesiredValue = desiredValue;
+		}
+
 		public override HashSet<AppResult> Execute (HashSet<AppResult> resultSet)
 		{
 			HashSet<AppResult> newResultSet = new HashSet<AppResult> ();
 
 			foreach (var result in resultSet) {
-				AppResult newResult = result.Button ();
+				AppResult newResult = result.Property (PropertyName, DesiredValue);
 				if (newResult != null) {
 					newResultSet.Add (newResult);
 				}

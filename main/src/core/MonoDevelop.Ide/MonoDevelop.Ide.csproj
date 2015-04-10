@@ -3358,11 +3358,15 @@
     <Compile Include="MonoDevelop.Components.AutoTest\AppResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\Operation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\MarkedOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\ButtonOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\TextfieldOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\TextOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\IAutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\SemanticModelAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\ModelOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\PropertyOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

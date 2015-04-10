@@ -1,5 +1,5 @@
 ﻿//
-// AppResult.cs
+// ButtonOperation.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -24,31 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Components.AutoTest
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public abstract class AppResult : MarshalByRefObject
+	public class TypeOperation : Operation
 	{
-		//public Gtk.Widget ResultWidget { get; private set; }
+		Type DesiredType;
 
-		public AppResult ParentNode { get; set; }
-		public AppResult FirstChild { get; set; }
-		public AppResult PreviousSibling { get; set; }
-		public AppResult NextSibling { get; set; }
+		public TypeOperation (Type desiredType)
+		{
+			DesiredType = desiredType;
+		}
 
-		// Operations
-		public abstract AppResult Marked (string mark);
-		public abstract AppResult CheckType (Type desiredType);
-		public abstract AppResult Text (string text);
-		public abstract AppResult Model (string column);
-		public abstract AppResult Property (string propertyName, object value);
+		public override HashSet<AppResult> Execute (HashSet<AppResult> resultSet)
+		{
+			HashSet<AppResult> newResultSet = new HashSet<AppResult> ();
 
-		// Actions
-		public abstract bool Select ();
-		public abstract bool Click ();
-		public abstract bool TypeKey (char key, string state);
-		public abstract bool Toggle (bool active);
+			foreach (var result in resultSet) {
+				AppResult newResult = result.CheckType (DesiredType);
+				if (newResult != null) {
+					newResultSet.Add (newResult);
+				}
+			}
+
+			return newResultSet;
+		}
 	}
 }
 

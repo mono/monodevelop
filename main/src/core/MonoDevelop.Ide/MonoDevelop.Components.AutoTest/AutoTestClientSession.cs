@@ -44,7 +44,19 @@ namespace MonoDevelop.Components.AutoTest
 		Queue<string> eventQueue = new Queue<string> ();
 		IAutoTestService service;
 
-
+		IAutoTestSessionDebug<MarshalByRefObject> debugObject;
+		public IAutoTestSessionDebug<MarshalByRefObject> DebugObject {  
+			get {
+				return debugObject;
+			}
+			set {
+				debugObject = value;
+				if (session != null) {
+					session.DebugObject = debugObject; 
+				}
+			}
+		}
+				
 		public void StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
 		{
 			if (file == null) {
@@ -87,6 +99,9 @@ namespace MonoDevelop.Components.AutoTest
 			BinaryFormatter bf = new BinaryFormatter ();
 			service = (IAutoTestService) bf.Deserialize (ms);
 			session = service.AttachClient (this);
+			if (DebugObject != null) {
+				session.DebugObject = DebugObject;
+			}
 		}
 
 		public override object InitializeLifetimeService ()
@@ -107,24 +122,7 @@ namespace MonoDevelop.Components.AutoTest
 			session.ExecuteCommand (cmd);
 		}
 
-		public void SelectObject (string name)
-		{
-			ClearEventQueue ();
-			session.SelectObject (name);
-		}
-
-		public void SelectActiveWidget ()
-		{
-			ClearEventQueue ();
-			session.SelectActiveWidget ();
-		}
-
-		public bool SelectWidget (string name, bool focus = true)
-		{
-			ClearEventQueue ();
-			return session.SelectWidget (name, focus);
-		}
-
+		/*
 		public object GetPropertyValue (string propertyName)
 		{
 			ClearEventQueue ();
@@ -136,7 +134,7 @@ namespace MonoDevelop.Components.AutoTest
 			ClearEventQueue ();
 			return session.SetPropertyValue (propertyName, value, index);
 		}
-
+		*/
 		public object GlobalInvoke (string name, params object[] args)
 		{
 			ClearEventQueue ();
@@ -164,52 +162,18 @@ namespace MonoDevelop.Components.AutoTest
 			session.SetGlobalValue (name, value);
 		}
 
+		/*
 		public object Invoke (string name, params object[] args)
 		{
 			ClearEventQueue ();
 			return session.Invoke (name, args);
 		}
+		*/
 
-		public void TypeText (string text)
-		{
-			ClearEventQueue ();
-			session.TypeText (text);
-		}
-
-		public bool SelectTreeviewItem (string treeName, string name, string after = null)
-		{
-			ClearEventQueue ();
-			return session.SelectTreeviewItem (treeName, name, after);
-		}
-
-		public string[] GetTreeviewCells ()
-		{
-
-			ClearEventQueue ();
-			return session.GetTreeviewCells ();
-		}
-
+		// FIXME: This shouldn't be here
 		public bool IsBuildSuccessful ()
 		{
 			return session.IsBuildSuccessful ();
-		}
-
-		public void PressKey (Gdk.Key key)
-		{
-			ClearEventQueue ();
-			session.SendKeyPress (key, Gdk.ModifierType.None, null);
-		}
-
-		public void PressKey (Gdk.Key key, Gdk.ModifierType state)
-		{
-			ClearEventQueue ();
-			session.SendKeyPress (key, state, null);
-		}
-
-		public void PressKey (Gdk.Key key, Gdk.ModifierType state, string subWindow)
-		{
-			ClearEventQueue ();
-			session.SendKeyPress (key, state, subWindow);
 		}
 
 		public void WaitForEvent (string name)
@@ -227,11 +191,6 @@ namespace MonoDevelop.Components.AutoTest
 				if (!Monitor.Wait (eventQueue, timeout))
 					throw new Exception ("Expected event '" + name + "' not received");
 			}
-		}
-
-		public void WaitForWindow (string windowName, int timeout = 10000)
-		{
-			session.WaitForWindow (windowName, timeout);
 		}
 
 		void ClearEventQueue ()
@@ -258,7 +217,72 @@ namespace MonoDevelop.Components.AutoTest
 			AppQuery c = session.CreateNewQuery ();
 			c = query (c);
 
+			ClearEventQueue ();
 			return session.ExecuteQuery (c);
+		}
+
+		public AppResult[] WaitForElement (Func<AppQuery, AppQuery> query, int timeout = 5000)
+		{
+			AppQuery c = session.CreateNewQuery ();
+			c = query (c);
+
+			ClearEventQueue ();
+			return session.WaitForElement (c, timeout);
+		}
+
+		public void WaitForNoElement (Func<AppQuery, AppQuery> query, int timeout = 5000)
+		{
+			AppQuery c = session.CreateNewQuery ();
+			c = query (c);
+
+			ClearEventQueue ();
+			session.WaitForNoElement (c, timeout);
+		}
+
+		public bool SelectElement (Func<AppQuery, AppQuery> query)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length > 0) {
+				return session.Select (results [0]);
+			}
+
+			return false;
+		}
+
+		public bool ClickElement (Func<AppQuery, AppQuery> query)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length > 0) {
+				return session.Click (results [0]);
+			}
+
+			return false;
+		}
+
+		public bool EnterText (Func<AppQuery, AppQuery> query, string text)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length > 0) {
+				bool result = session.Select (results [0]);
+				if (!result) {
+					return false;
+				}
+
+				return session.EnterText (results [0], text);
+			}
+
+			return false;
+		}
+
+		// FIXME: Not convinced this is the best name
+		public bool ToggleElement (Func<AppQuery, AppQuery> query, bool active)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length == 0) {
+				return false;
+			}
+
+			return session.Toggle (results [0], active);
 		}
 	}
 

@@ -69,23 +69,23 @@ namespace UserInterfaceTests
 				SelectTemplate (newProject, kind, category, categoryRoot);
 
 				Assert.IsTrue (newProject.Next ());
-				Thread.Sleep (3000);
+
+				// Wait until the next page is displayed
+				Session.WaitForElement (c => c.Textfield ().Marked ("solutionNameTextBox"));
 
 				EnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory);
 
 				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
-				Thread.Sleep (2000);
-
 				Assert.IsTrue (newProject.UseGit (true, false));
-				Thread.Sleep (2000);
 
 				Assert.IsTrue (newProject.Next ());
+
+				// FIXME: We need to listen for a Solution opened signal instead of just waiting for a timeout.
 				Thread.Sleep (2000);
 
 				actualSolutionDirectory = GetSolutionDirectory ();
 
 				beforeBuild ();
-				Thread.Sleep (1000);
 
 				Assert.IsTrue (Ide.BuildSolution ());
 			} finally {
@@ -100,24 +100,19 @@ namespace UserInterfaceTests
 		public void SelectTemplate (NewProjectController newProject, string kind, string category, string categoryRoot)
 		{
 			Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
-			Thread.Sleep (3000);
 			Assert.IsTrue (newProject.SelectTemplate (kind));
-			Thread.Sleep (3000);
 		}
 
 		public void EnterProjectDetails (NewProjectController newProject, string projectName, string solutionName, string solutionLocation)
 		{
 			Assert.IsTrue (newProject.SetProjectName (projectName));
-			Thread.Sleep (2000);
 
 			if (!string.IsNullOrEmpty (solutionName)) {
 				Assert.IsTrue (newProject.SetSolutionName (solutionName));
-				Thread.Sleep (2000);
 			}
 
 			if (!string.IsNullOrEmpty (solutionLocation)) {
 				Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
-				Thread.Sleep (2000);
 			}
 		}
 

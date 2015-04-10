@@ -25,9 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 
@@ -40,6 +42,12 @@ namespace MonoDevelop.Ide.Projects
 		public GtkNewProjectDialogBackend ()
 		{
 			this.Build ();
+
+			// Set up the list store so the test framework can work out the correct columns
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateCategoriesListStore__Name", "templateCategoriesListStore__Icon", "templateCategoriesListStore__Category");
+			TypeDescriptor.AddAttributes (templateCategoriesListStore, modelAttr);
+			modelAttr = new SemanticModelAttribute ("templateListStore__Name", "templateListStore__Icon", "templateListStore__Template");
+			TypeDescriptor.AddAttributes (templatesListStore, modelAttr);
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;

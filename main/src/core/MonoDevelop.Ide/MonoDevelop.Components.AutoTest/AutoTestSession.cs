@@ -37,11 +37,14 @@ using MonoDevelop.Ide.Tasks;
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AutoTestSession: MarshalByRefObject
-	{
-		object currentObject;
-		
+	{		
 		readonly ManualResetEvent syncEvent = new ManualResetEvent (false);
-		
+		public readonly AutoTestSessionDebug SessionDebug = new AutoTestSessionDebug ();
+		public IAutoTestSessionDebug<MarshalByRefObject> DebugObject { 
+			get { return SessionDebug.DebugObject; }
+			set { SessionDebug.DebugObject = value; }
+		}
+
 		public AutoTestSession ()
 		{
 		}
@@ -54,17 +57,19 @@ namespace MonoDevelop.Components.AutoTest
 		public void ExecuteCommand (object cmd)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, CurrentObject);
+				AutoTestService.CommandManager.DispatchCommand (cmd, null, null);
 			});
 		}
 		
-		object Sync (Func<object> del)
+		object Sync (Func<object> del, bool safe)
 		{
 			object res = null;
 			Exception error = null;
 
-			if (DispatchService.IsGuiThread)
-				return SafeObject (del ());
+			if (DispatchService.IsGuiThread) {
+				res = del ();
+				return safe ? SafeObject (res) : res;
+			}
 
 			syncEvent.Reset ();
 			Gtk.Application.Invoke (delegate {
@@ -80,9 +85,23 @@ namespace MonoDevelop.Components.AutoTest
 				throw new Exception ("Timeout while executing synchronized call");
 			if (error != null)
 				throw error;
-			return SafeObject (res);
+			return safe ? SafeObject (res) : res;
 		}
-		
+
+		public object Sync (Func<object> del)
+		{
+			return Sync (del, true);
+		}
+
+		// The difference between Sync and UnsafeSync is that UnsafeSync will return objects
+		// that may not be safe to be serialized across the remoting channel.
+		// But that is ok, so long as we know the places where it is being called from will
+		// not be trying to send the object over the remoting channel.
+		public object UnsafeSync (Func<object> del)
+		{
+			return Sync (del, false);
+		}
+
 		public object GlobalInvoke (string name, object[] args)
 		{
 			return Sync (delegate {
@@ -123,234 +142,13 @@ namespace MonoDevelop.Components.AutoTest
 				return null;
 			});
 		}
-		
-		public void TypeText (string text)
-		{
-			foreach (char c in text) {
-				Gdk.Key key;
-				if (c == '\n')
-					key = Gdk.Key.Return;
-				else
-					key = (Gdk.Key) Gdk.Global.UnicodeToKeyval ((uint)c);
-
-				SendKeyPress (key, Gdk.ModifierType.None);
-			}
-		}
-
-		//TODO: expose ATK API over the session, instead of exposing specific widgets
-		public bool SelectTreeviewItem (string treeViewName, string name, string after = null)
-		{
-			return (bool)Sync (delegate {
-				var itemSelected = SelectWidget (treeViewName, true);
-				if (!itemSelected)
-					return false;
-
-				bool parentFound = after == null;
-				var treeView = currentObject as Gtk.TreeView;
-				bool result = false;
-				if (treeView != null) {
-					treeView.Model.Foreach ((model, path, iter) => {
-						var iterName = (string)model.GetValue (iter, 0);
-						parentFound = parentFound || iterName.Contains (after);
-						if (parentFound && string.Equals (name, iterName)) {
-							treeView.SetCursor (path, treeView.Columns [0], false);
-
-							result = true;
-							return true;
-						}
-						return result;
-					});
-				}
-
-				return result;
-			});
-		}
-
-		public string[] GetTreeviewCells ()
-		{
-			var accessible = ((Gtk.Widget)currentObject).Accessible;
-			return GetAccessibleChildren (accessible)
-				.Where (c => c.Role == Atk.Role.TableCell)
-				.Select (c => c.Name)
-				.ToArray ();
-		}
-
-		IEnumerable<Atk.Object> GetAccessibleChildren (Atk.Object obj, bool recursive = false)
-		{
-			var childrenObjects = new List<Atk.Object> ();
-			var count = obj.NAccessibleChildren;
-			for (int i = 0; i < count; i++) {
-				var child = obj.RefAccessibleChild (i);
-				childrenObjects.Add (child);
-				if (recursive)
-					childrenObjects.AddRange (GetAccessibleChildren (child));
-			}
-
-			return childrenObjects;
-		}
-		
-		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state)
-		{
-			SendKeyPress (key, state, null);
-		}
-		
-		public void SendKeyPress (Gdk.Key key, Gdk.ModifierType state, string subWindow)
-		{
-			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyPress, subWindow);
-				return null;
-			});
-			Thread.Sleep (15);
-			Sync (delegate {
-				SendKeyEvent ((Gtk.Widget)CurrentObject, (uint)key, state, Gdk.EventType.KeyRelease, subWindow);
-				return null;
-			});
-			Thread.Sleep (10);
-		}
-		
-		public void SelectObject (string name)
-		{
-			Sync (delegate {
-				currentObject = GetGlobalObject (name);
-				return null;
-			});
-		}
-		
-		public void SelectActiveWidget ()
-		{
-			Sync (delegate {
-				currentObject = GetActiveWidget ();
-				return null;
-			});
-		}
-
-		public bool SelectWidget (string name, bool focus)
-		{
-			return (bool) Sync (delegate {
-				var widget = GetWidget (GetFocusedWindow (), name);
-				currentObject = widget;
-				return widget != null && (!focus || FocusWidget (widget));
-			});
-		}
-
+			
+		// FIXME: This shouldn't be here.
 		public bool IsBuildSuccessful ()
 		{
 			return TaskService.Errors.Count (x => x.Severity == TaskSeverity.Error) == 0;
 		}
 
-		bool FocusWidget (Gtk.Widget widget)
-		{
-			if (widget.HasFocus)
-				return true;
-			if (widget.CanFocus) {
-				widget.GrabFocus ();
-				return true;
-			}
-			var container = widget as Gtk.Container;
-			if (container != null) {
-				var chain = container.FocusChain;
-				System.Collections.IEnumerable children = chain.Length > 0 ? chain : container.AllChildren;
-				foreach (Gtk.Widget child in children)
-					if (FocusWidget (child))
-						return true;
-			}
-			return false;
-		}
-		
-		object CurrentObject {
-			get { return currentObject; }
-		}
-
-		static Gtk.Window GetFocusedWindow (bool throwIfNotFound = true)
-		{
-			Gtk.Window win = null;
-			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
-				if (w.Visible && w.HasToplevelFocus)
-					win = w;
-
-			if (win == null && throwIfNotFound)
-				throw new Exception ("No window is focused");
-
-			return win;
-		}
-
-		Gtk.Widget GetActiveWidget ()
-		{
-			var win = GetFocusedWindow ();
-
-			Gtk.Widget widget = win;
-			while (widget is Gtk.Container) {
-				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-				if (child != null)
-					widget = child;
-				else
-					break;
-			}
-			return widget;
-		}
-
-		Gtk.Widget GetWidget (Gtk.Container container, string name)
-		{
-			foreach (Gtk.Widget child in container.Children) {
-				if (child.Name == name)
-					return child;
-				var childContainer = child as Gtk.Container;
-				if (childContainer != null) {
-					var c = GetWidget (childContainer, name);
-					if (c != null)
-						return c;
-				}
-			}
-			return null;
-		}
-		
-		public object GetValue (string name)
-		{
-			return Sync (delegate {
-				return GetValue (CurrentObject, CurrentObject.GetType (), name);
-			});
-		}
-		
-		public void SetValue (string name, object value)
-		{
-			Sync (delegate {
-				SetValue (CurrentObject, CurrentObject.GetType (), name, value);
-				return null;
-			});
-		}
-		
-		public object Invoke (string methodName, object[] args)
-		{
-			return Sync (delegate {
-				return Invoke (CurrentObject, CurrentObject.GetType (), methodName, args);
-			});
-		}
-
-		public object GetPropertyValue (string propertyName)
-		{
-			return Sync (delegate {
-				PropertyInfo propertyInfo = CurrentObject.GetType().GetProperty(propertyName);
-				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (CurrentObject);
-					if (propertyValue != null)
-						return propertyValue;
-				}
-
-				return false;
-			});
-		}
-
-		public bool SetPropertyValue (string propertyName, object value, object[] index = null)
-		{
-			return (bool)Sync (delegate {
-				PropertyInfo propertyInfo = CurrentObject.GetType().GetProperty(propertyName);
-				if (propertyInfo != null)
-					propertyInfo.SetValue (CurrentObject, value, index);
-
-				return propertyInfo != null;
-			});
-		}
-		
 		object SafeObject (object ob)
 		{
 			if (ob == null)
@@ -393,7 +191,7 @@ namespace MonoDevelop.Components.AutoTest
 			flags |= BindingFlags.SetField | BindingFlags.SetProperty;
 			type.InvokeMember (name, flags, null, target, new object[] { value });
 		}
-		
+			
 		object GetGlobalObject (string name)
 		{
 			int i = 0;
@@ -421,66 +219,88 @@ namespace MonoDevelop.Components.AutoTest
 			
 			return GetValue (null, type, name.Substring (i));
 		}
-		
-		void SendKeyEvent (Gtk.Widget target, uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, string subWindow)
-		{
-			Gdk.KeymapKey[] keyms = Gdk.Keymap.Default.GetEntriesForKeyval (keyval);
-			if (keyms.Length == 0)
-				throw new Exception ("Keyval not found");
-			
-			Gdk.Window win;
-			if (subWindow == null)
-				win = target.GdkWindow;
-			else
-				win = (Gdk.Window) GetValue (target, target.GetType (), subWindow);
-			
-			var nativeEvent = new NativeEventKeyStruct {
-				type = eventType,
-				send_event = 1,
-				window = win.Handle,
-				state = (uint)state,
-				keyval = keyval,
-				group = (byte)keyms [0].Group,
-				hardware_keycode = (ushort)keyms [0].Keycode,
-				length = 0,
-				time = Gtk.Global.CurrentEventTime
-			};
-			
-			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
-			try {
-				Gdk.EventHelper.Put (new Gdk.EventKey (ptr));
-			} finally {
-				Marshal.FreeHGlobal (ptr);
-			}
-		}
-
-		public void WaitForWindow (string windowName, int timeout)
-		{
-			const int pollTime = 100;
-			syncEvent.Reset ();
-
-			GLib.Timeout.Add ((uint) pollTime, () => {
-				var window = GetFocusedWindow (false);
-				if (window != null && window.GetType ().FullName == windowName) {
-					syncEvent.Set ();
-					return false;
-				}
-				timeout -= pollTime;
-				return timeout > 0;
-			});
-
-			if (!syncEvent.WaitOne (timeout))
-				throw new Exception ("Timeout while executing synchronized call");
-		}
 
 		public AppQuery CreateNewQuery ()
 		{
-			return new AppQuery (Gtk.Window.ListToplevels ());
+			AppQuery query = new AppQuery ();
+			query.SessionDebug = SessionDebug;
+
+			return query;
 		}
 
 		public AppResult[] ExecuteQuery (AppQuery query)
 		{
 			return query.Execute ();
+		}
+
+		public AppResult[] WaitForElement (AppQuery query, int timeout)
+		{
+			const int pollTime = 200;
+			syncEvent.Reset ();
+			AppResult[] resultSet = null;
+
+			GLib.Timeout.Add ((uint)pollTime, () => {
+				resultSet = ExecuteQuery (query);
+
+				if (resultSet.Length > 0) {
+					syncEvent.Set ();
+					return false;
+				}
+
+				timeout -= pollTime;
+				return timeout > 0;
+			});
+
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new Exception ("Timeout while executing synchronized call");
+			}
+
+			return resultSet;
+		}
+
+		public void WaitForNoElement (AppQuery query, int timeout)
+		{
+			const int pollTime = 100;
+			syncEvent.Reset ();
+			AppResult[] resultSet = null;
+
+			GLib.Timeout.Add ((uint)pollTime, () => {
+				resultSet = query.Execute ();
+				if (resultSet.Length == 0) {
+					syncEvent.Set ();
+					return false;
+				}
+
+				timeout -= pollTime;
+				return timeout > 0;
+			});
+
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new Exception ("Timeout while executing synchronized call");
+			}
+		}
+
+		public bool Select (AppResult result)
+		{
+			return result.Select ();
+		}
+
+		public bool Click (AppResult result)
+		{
+			return result.Click ();
+		}
+
+		public bool EnterText (AppResult result, string text)
+		{
+			foreach (char c in text) {
+				result.TypeKey (c, "");
+			}
+			return true;
+		}
+
+		public bool Toggle (AppResult result, bool active)
+		{
+			return result.Toggle (active);
 		}
 	}
 

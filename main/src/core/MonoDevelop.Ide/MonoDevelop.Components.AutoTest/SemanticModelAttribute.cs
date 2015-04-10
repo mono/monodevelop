@@ -1,5 +1,5 @@
 ﻿//
-// AppResult.cs
+// SemanticModelAttribute.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -24,31 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components.AutoTest
 {
-	public abstract class AppResult : MarshalByRefObject
+	[AttributeUsage (AttributeTargets.Class)]
+	public sealed class SemanticModelAttribute : Attribute
 	{
-		//public Gtk.Widget ResultWidget { get; private set; }
-
-		public AppResult ParentNode { get; set; }
-		public AppResult FirstChild { get; set; }
-		public AppResult PreviousSibling { get; set; }
-		public AppResult NextSibling { get; set; }
-
-		// Operations
-		public abstract AppResult Marked (string mark);
-		public abstract AppResult CheckType (Type desiredType);
-		public abstract AppResult Text (string text);
-		public abstract AppResult Model (string column);
-		public abstract AppResult Property (string propertyName, object value);
-
-		// Actions
-		public abstract bool Select ();
-		public abstract bool Click ();
-		public abstract bool TypeKey (char key, string state);
-		public abstract bool Toggle (bool active);
+		public string[] ColumnNames;
+		public SemanticModelAttribute (params string[] columnNames)
+		{
+			ColumnNames = columnNames;
+		}
 	}
 }
 
