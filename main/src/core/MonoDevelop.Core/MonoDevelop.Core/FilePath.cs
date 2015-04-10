@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Core
 {
@@ -60,6 +61,28 @@ namespace MonoDevelop.Core
 
 		public bool IsEmpty {
 			get { return fileName != null && fileName.Length == 0; }
+		}
+
+		const int PATHMAX = 4096 + 1;
+
+		[DllImport ("libc")]
+		static extern IntPtr realpath (string path, IntPtr buffer);
+
+		public FilePath ResolveFullPath ()
+		{
+			if (Platform.IsWindows) {
+				return Path.GetFullPath (this);
+			}
+
+			IntPtr buffer = IntPtr.Zero;
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (this, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
 		}
 
 		public FilePath FullPath {
