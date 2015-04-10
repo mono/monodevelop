@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension != null)
-				projectedExtension.KeyPress (descriptor);
+				return projectedExtension.KeyPress (descriptor);
 			return base.KeyPress (descriptor);
 		}
 
