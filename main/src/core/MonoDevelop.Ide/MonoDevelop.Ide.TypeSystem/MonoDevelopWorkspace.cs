@@ -355,13 +355,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static DocumentInfo CreateDocumentInfo (string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
+			var sourceCodeKind = f.FilePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
-				id.GetOrCreateDocumentId (f.Name), 
+				id.GetOrCreateDocumentId (f.Name),
 				f.FilePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
-				SourceCodeKind.Regular, 
-				CreateTextLoader (f.Name), 
-				f.Name, 
+				sourceCodeKind,
+				CreateTextLoader (f.Name),
+				f.Name,
 				false
 			);
 		}
