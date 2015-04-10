@@ -38,5 +38,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		void ReportResult (SearchResult result);
 		void ReportResults (IEnumerable<SearchResult> result);
 		void ReportStatus (string resultMessage);
+		void SetPattern (string patern);
 	}
 }
