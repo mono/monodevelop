@@ -430,6 +430,16 @@ namespace MonoDevelop.Projects
 			return GetAllItems<Project> ().Where (p => p.HasFlavor<T> ());
 		}
 
+		/// <summary>
+		/// Returns all flavor instances of the specified type that are implemented in projects of the solution
+		/// </summary>
+		/// <returns>All project flavors</returns>
+		/// <typeparam name="T">Type of the flavor</typeparam>
+		public IEnumerable<T> GetAllProjectFlavors<T> () where T:ProjectExtension
+		{
+			return GetAllItems<Project> ().Select (p => p.GetFlavor<T> ()).Where (p => p != null);
+		}
+
 		public ReadOnlyCollection<T> GetAllSolutionItemsWithTopologicalSort<T> (ConfigurationSelector configuration) where T: SolutionItem
 		{
 			return RootFolder.GetAllItemsWithTopologicalSort<T> (configuration);

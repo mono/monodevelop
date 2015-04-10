@@ -2633,4 +2633,17 @@ namespace MonoDevelop.Projects
 			}
 		}
 	}
+
+	public static class ProjectExtensions
+	{
+		/// <summary>
+		/// Given a project, if the project implements the specified flavor type, this
+		/// method returns the flavor instance. It returns null if the project is null or
+		/// if the project doesn't implement the flavor.
+		/// </summary>
+		public static T AsFlavor<T> (this Project project) where T:ProjectExtension
+		{
+			return project != null ? project.GetFlavor<T> () : null;
+		}
+	}
 }
