@@ -86,7 +86,7 @@ namespace MonoDevelop.Components.Extensions
 				};
 				md.VBox.PackStart (responseEntry, false, true, 6);
 				
-				md.AddActionWidget (new Button (Gtk.Stock.Cancel), ResponseType.Cancel);
+				md.AddActionWidget (new Button (Gtk.Stock.Cancel) { CanDefault = true }, ResponseType.Cancel);
 				md.AddActionWidget (new Button (Gtk.Stock.Ok), ResponseType.Ok);
 
 				md.DefaultResponse = ResponseType.Cancel;
