@@ -39,6 +39,7 @@ using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
@@ -248,7 +249,7 @@ namespace MonoDevelop.Projects
 
 		public WorkspaceItem ReadWorkspaceItem (IProgressMonitor monitor, FilePath file)
 		{
-			string fullpath = FileService.ResolveFullPath (file).FullPath;
+			string fullpath = file.ResolveLinks ().FullPath;
 			using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 				fullpath = GetTargetFile (fullpath);
 				WorkspaceItem item = GetExtensionChain (null).LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
