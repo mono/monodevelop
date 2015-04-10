@@ -31,6 +31,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport; 
@@ -127,79 +129,78 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 
-// TODO: Roslyn port
-//		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-//		                                                            bool forced, ref int triggerWordLength)
-//		{
-//			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-//			char currentChar = completionContext.TriggerOffset < 1? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
-//			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
-//			
-//			
-//			//directive names
-//			if (Tracker.Engine.CurrentState is WebFormsDirectiveState) {
-//				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
-//				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
-//				    directive.Region.BeginColumn + 3 == completionContext.TriggerLineOffset)
-//				{
-//					return WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type);
-//				}
-//				return null;
-//			}
-//			if (Tracker.Engine.CurrentState is XmlNameState && Tracker.Engine.CurrentState.Parent is WebFormsDirectiveState) {
-//				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
-//				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
-//				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
-//				{
-//					triggerWordLength = 1;
-//					return WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type);
-//				}
-//				return null;
-//			}
-//			
-//			bool isAspExprState =  Tracker.Engine.CurrentState is WebFormsExpressionState;
-//			
-//			//non-xml tag completion
-//			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is XmlRootState)) {
-//				var list = new CompletionDataList ();
-//				AddAspBeginExpressions (list);
-//				return list;
-//			}
-//			
-//			if (!HasDoc || aspDoc.Info.DocType == null) {
-//				//FIXME: get doctype from master page
-//				DocType = null;
-//			} else {
-//				DocType = new XDocType (TextLocation.Empty);
-//				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
-//				DocType.PublicFpi = matches.Groups["fpi"].Value;
-//				DocType.Uri = matches.Groups["uri"].Value;
-//			}
-//			
-//			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
-//				var el = Tracker.Engine.Nodes.Peek () as XElement;
-//				if (el != null) {
-//					if (el.IsRunatServer ()) {
-//						if (documentBuilder != null) {
-//							// TODO: C# completion
-//						}
-//					}
-//					/*
-//					else {
-//						att = GetHtmlAtt (el, "language");
-//						if (att == null || "javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
-//						    att = GetHtmlAtt (el, "type");
-//							if (att == null || "text/javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
-//								// TODO: JS completion
-//							}
-//						}
-//					}*/
-//				}
-//				
-//			}
-//			
-//			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
-//		}
+		protected override Task<ICompletionDataList> HandleCodeCompletion (
+			CodeCompletionContext completionContext, bool forced, CancellationToken token)
+		{
+			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
+			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
+
+			//directive names
+			if (Tracker.Engine.CurrentState is WebFormsDirectiveState) {
+				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
+				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
+				    directive.Region.BeginColumn + 3 == completionContext.TriggerLineOffset)
+				{
+					return Task.FromResult ((ICompletionDataList)WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type));
+				}
+				return null;
+			}
+			if (Tracker.Engine.CurrentState is XmlNameState && Tracker.Engine.CurrentState.Parent is WebFormsDirectiveState) {
+				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
+				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
+				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
+				{
+					completionContext.TriggerWordLength = 1;
+					completionContext.TriggerOffset -= 1;
+					return Task.FromResult ((ICompletionDataList)WebFormsDirectiveCompletion.GetDirectives (aspDoc.Type));
+				}
+				return null;
+			}
+			
+			bool isAspExprState =  Tracker.Engine.CurrentState is WebFormsExpressionState;
+			
+			//non-xml tag completion
+			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is XmlRootState)) {
+				var list = new CompletionDataList ();
+				AddAspBeginExpressions (list);
+				return Task.FromResult ((ICompletionDataList)list);
+			}
+			
+			if (!HasDoc || aspDoc.Info.DocType == null) {
+				//FIXME: get doctype from master page
+				DocType = null;
+			} else {
+				DocType = new XDocType (DocumentLocation.Empty);
+				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
+				DocType.PublicFpi = matches.Groups["fpi"].Value;
+				DocType.Uri = matches.Groups["uri"].Value;
+			}
+			
+			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
+				var el = Tracker.Engine.Nodes.Peek () as XElement;
+				if (el != null) {
+					if (el.IsRunatServer ()) {
+						if (documentBuilder != null) {
+							// TODO: C# completion
+						}
+					}
+					/*
+					else {
+						att = GetHtmlAtt (el, "language");
+						if (att == null || "javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+						    att = GetHtmlAtt (el, "type");
+							if (att == null || "text/javascript".Equals (att.Value, StringComparison.OrdinalIgnoreCase)) {
+								// TODO: JS completion
+							}
+						}
+					}*/
+				}
+				
+			}
+			
+			return base.HandleCodeCompletion (completionContext, forced, token);
+		}
 		
 		//case insensitive, no prefix
 		static XAttribute GetHtmlAtt (XElement el, string name)
