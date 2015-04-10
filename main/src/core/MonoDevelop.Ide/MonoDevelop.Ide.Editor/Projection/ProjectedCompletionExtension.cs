@@ -300,7 +300,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			projections = ctx.GetPartialProjectionsAsync ().Result;
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension != null)
-				projectedExtension.KeyPress (descriptor);
+				return projectedExtension.KeyPress (descriptor);
 			return base.KeyPress (descriptor);
 		}
 
