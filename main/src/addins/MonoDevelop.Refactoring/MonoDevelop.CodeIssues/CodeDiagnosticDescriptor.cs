@@ -36,9 +36,10 @@ namespace MonoDevelop.CodeIssues
 	class CodeDiagnosticDescriptor
 	{
 		readonly Type diagnosticAnalyzerType;
-		readonly NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr;
+		readonly Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor;
 
 		DiagnosticAnalyzer instance;
+
 
 		/// <summary>
 		/// Gets the identifier string.
@@ -63,11 +64,6 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets the description of the issue provider (used in the option panel).
 		/// </summary>
-
-		public string AnalysisDisableKeyword { get { return nrefactoryAttr != null ? nrefactoryAttr.AnalysisDisableKeyword : null; } }
-		public string SuppressMessageCategory { get { return nrefactoryAttr != null ? nrefactoryAttr.SuppressMessageCategory : null; } }
-		public string SuppressMessageCheckId { get { return nrefactoryAttr != null ? nrefactoryAttr.SuppressMessageCheckId : null; } }
-		public int PragmaWarning { get { return nrefactoryAttr != null ? nrefactoryAttr.PragmaWarning : 0; }}
 
 		/// <summary>
 		/// Gets the languages for this issue.
@@ -135,18 +131,18 @@ namespace MonoDevelop.CodeIssues
 			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
-		internal CodeDiagnosticDescriptor (string name, string[] languages, Type codeIssueType, NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr)
+		internal CodeDiagnosticDescriptor (Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor, string[] languages, Type codeIssueType)
 		{
-			if (string.IsNullOrEmpty (name))
-				throw new ArgumentNullException ("name");
+			if (descriptor == null)
+				throw new ArgumentNullException ("descriptor");
 			if (languages == null)
 				throw new ArgumentNullException ("languages");
 			if (codeIssueType == null)
 				throw new ArgumentNullException ("codeIssueType");
-			Name = name;
+			Name = descriptor.Title.ToString () ?? "unnamed";
 			Languages = languages;
+			this.descriptor = descriptor;
 			this.diagnosticAnalyzerType = codeIssueType;
-			this.nrefactoryAttr = nrefactoryAttr;
 		}
 
 		/// <summary>
@@ -165,40 +161,9 @@ namespace MonoDevelop.CodeIssues
 			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Languages);
 		}
 
-		public bool CanDisableOnce { get { return !string.IsNullOrEmpty (AnalysisDisableKeyword); } }
-
-		public bool CanDisableAndRestore { get { return !string.IsNullOrEmpty (AnalysisDisableKeyword); } }
-
-		public bool CanDisableWithPragma { get { return PragmaWarning > 0; } }
-
-		public bool CanSuppressWithAttribute { get { return !string.IsNullOrEmpty (SuppressMessageCheckId); } }
+		public bool CanDisableWithPragma { get { return !string.IsNullOrEmpty (descriptor.Id); } }
 
 		const string analysisDisableTag = "Analysis ";
-
-		public void DisableOnce (TextEditor editor, DocumentContext context, TextSpan span)
-		{
-			var start =editor.OffsetToLocation (span.Start);
-			editor.InsertText (
-				editor.LocationToOffset (start.Line, 1), 
-				editor.GetVirtualIndentationString (start.Line) + "// " + analysisDisableTag + "disable once " + AnalysisDisableKeyword + editor.EolMarker
-			); 
-		}
-
-		public void DisableAndRestore (TextEditor editor, DocumentContext context, TextSpan span)
-		{
-			using (editor.OpenUndoGroup ()) {
-				var start = editor.OffsetToLocation (span.Start);
-				var end = editor.OffsetToLocation (span.End);
-				editor.InsertText (
-					editor.LocationToOffset (end.Line + 1, 1),
-					editor.GetVirtualIndentationString (end.Line) + "// " + analysisDisableTag + "restore " + AnalysisDisableKeyword + editor.EolMarker
-				); 
-				editor.InsertText (
-					editor.LocationToOffset (start.Line, 1),
-					editor.GetVirtualIndentationString (start.Line) + "// " + analysisDisableTag + "disable " + AnalysisDisableKeyword + editor.EolMarker
-				); 
-			}
-		}
 
 		public void DisableWithPragma (TextEditor editor, DocumentContext context, TextSpan span)
 		{
@@ -207,11 +172,11 @@ namespace MonoDevelop.CodeIssues
 				var end = editor.OffsetToLocation (span.End);
 				editor.InsertText (
 					editor.LocationToOffset (end.Line + 1, 1),
-					editor.GetVirtualIndentationString (end.Line) + "#pragma warning restore " + PragmaWarning + editor.EolMarker
+					editor.GetVirtualIndentationString (end.Line) + "#pragma warning restore " + descriptor.Id + editor.EolMarker
 				); 
 				editor.InsertText (
 					editor.LocationToOffset (start.Line, 1),
-					editor.GetVirtualIndentationString (start.Line) + "#pragma warning disable " + PragmaWarning + editor.EolMarker
+					editor.GetVirtualIndentationString (start.Line) + "#pragma warning disable " + descriptor.Id + editor.EolMarker
 				); 
 			}
 		}

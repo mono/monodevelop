@@ -540,22 +540,6 @@ namespace MonoDevelop.CodeActions
 					subMenu.Add (menuItem);
 				}
 
-				if (descriptor.CanDisableOnce) {
-					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Disable Once"),
-						delegate {
-							descriptor.DisableOnce (Editor, DocumentContext, fix.Location.SourceSpan);
-						});
-					subMenu.Add (menuItem);
-				}
-
-				if (descriptor.CanDisableAndRestore) {
-					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("Disable _and Restore"),
-						delegate {
-							descriptor.DisableAndRestore (Editor, DocumentContext, fix.Location.SourceSpan);
-						});
-					subMenu.Add (menuItem);
-				}
-
 				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
 					delegate {
 						IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {

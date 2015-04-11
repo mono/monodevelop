@@ -68,7 +68,6 @@ namespace MonoDevelop.CodeIssues
 				}
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
-				
 				var localCompilation = CSharpCompilation.Create (
 					compilation.AssemblyName, 
 					new[] { model.SyntaxTree }, 
@@ -88,7 +87,7 @@ namespace MonoDevelop.CodeIssues
 				var diagnosticList = new List<Diagnostic> ();
 				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
 				return diagnosticList
-					.Where (d => d.Id.StartsWith ("IDE") || !string.IsNullOrEmpty (d.Descriptor.Description.ToString ()))
+					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

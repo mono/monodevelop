@@ -97,16 +97,6 @@ namespace MonoDevelop.CSharp.Refactoring
 					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix.Location.SourceSpan)));
 				}
 
-				if (inspector.CanDisableOnce) {
-					var info = new CommandInfo (GettextCatalog.GetString ("_Disable Once"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableOnce (editor, ctx, fix.Location.SourceSpan)));
-				}
-
-				if (inspector.CanDisableAndRestore) {
-					var info = new CommandInfo (GettextCatalog.GetString ("Disable _and Restore"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableAndRestore (editor, ctx, fix.Location.SourceSpan)));
-				}
-
 				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
 				subMenu.CommandInfos.Add (configInfo, new Action (() => {
 					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {

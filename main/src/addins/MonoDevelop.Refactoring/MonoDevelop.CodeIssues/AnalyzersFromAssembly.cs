@@ -76,14 +76,11 @@ namespace MonoDevelop.CodeIssues
 			}
 			foreach (var type in asm.GetTypes ()) {
 				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				var nrefactoryAnalyzerAttribute = (NRefactoryCodeDiagnosticAnalyzerAttribute)type.GetCustomAttributes (typeof(NRefactoryCodeDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
 					var analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
 					foreach (var diag in analyzer.SupportedDiagnostics) {
 						try {
-							Analyzers.Add (new CodeDiagnosticDescriptor ((diag.Title ?? "unnamed").ToString (), new[] {
-								"C#"
-							}, type, nrefactoryAnalyzerAttribute));
+							Analyzers.Add (new CodeDiagnosticDescriptor (diag, analyzerAttr.Languages, type));
 						} catch (Exception e) {
 							LoggingService.LogError ("error while adding diagnostic analyzer: " + diag.Id + " from assembly " + asm.FullName, e);
 						}

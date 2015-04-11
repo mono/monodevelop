@@ -16,7 +16,6 @@ using ICSharpCode.NRefactory6.CSharp;
 namespace MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	[NRefactoryCodeDiagnosticAnalyzerAttribute()]
 	internal sealed class CSharpSimplifyTypeNamesDiagnosticAnalyzer : SimplifyTypeNamesDiagnosticAnalyzerBase<SyntaxKind>
 	{
 		private static readonly ImmutableArray<SyntaxKind> s_kindsOfInterest = ImmutableArray.Create(SyntaxKind.QualifiedName,
