@@ -176,6 +176,7 @@ end tell", tabId, windowId);
 		
 		public int ExitCode {
 			get {
+				// Find a way to capture $? before closing the tab.
 				//FIXME: implement. is it possible?
 				return 0;
 			}
@@ -183,6 +184,8 @@ end tell", tabId, windowId);
 		
 		public int ProcessId {
 			get {
+				// Find a way to capture $! after starting it in bg and bringing it back.
+				// telling Terminal to run something doesn't return the output.
 				//FIXME: implement. is it possible?
 				return 0;
 			}
@@ -210,8 +213,7 @@ end tell", tabId, windowId);
 		
 		public bool IsCompleted {
 			get {
-				//FIXME: get the status of the process, not the whole script
-				return !TabExists (tabId, windowId);
+				return AppleScript.Run ("tell app \"Terminal\" to get busy of {0} of {1}", tabId, windowId) == "false";
 			}
 		}
 		
