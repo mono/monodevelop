@@ -96,7 +96,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var doc = TypeSystemService.GetCodeAnysisDocument (docId);
 			if (doc == null)
 				return null;
-			var semanticModel = doc.GetSemanticModelAsync ().Result;
+			Microsoft.CodeAnalysis.SemanticModel semanticModel;
+			try {
+				semanticModel = doc.GetSemanticModelAsync ().Result;
+			} catch {
+				return null;
+			}
 			if (semanticModel == null)
 				return null;
 			var root = semanticModel.SyntaxTree.GetRoot ();
