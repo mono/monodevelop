@@ -47,7 +47,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.spinbutton1 = new global::Gtk.SpinButton (0, 100, 1);
+			this.spinbutton1 = new global::Gtk.SpinButton (5, 100, 1);
 			this.spinbutton1.CanFocus = true;
 			this.spinbutton1.Name = "spinbutton1";
 			this.spinbutton1.Adjustment.PageIncrement = 10;
