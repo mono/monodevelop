@@ -37,9 +37,9 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			DesiredType = desiredType;
 		}
 
-		public override HashSet<AppResult> Execute (HashSet<AppResult> resultSet)
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			HashSet<AppResult> newResultSet = new HashSet<AppResult> ();
+			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
 				AppResult newResult = result.CheckType (DesiredType);

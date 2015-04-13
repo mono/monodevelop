@@ -39,7 +39,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AutoTestSessionDebug SessionDebug { get; set; }
 
-		AppResult GenerateChildrenForContainer (Gtk.Container container, HashSet<AppResult> resultSet)
+		AppResult GenerateChildrenForContainer (Gtk.Container container, List<AppResult> resultSet)
 		{
 			AppResult firstChild = null, lastChild = null;
 
@@ -66,11 +66,11 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
-		HashSet<AppResult> ResultSetFromWindowList (Gtk.Window[] windows)
+		List<AppResult> ResultSetFromWindowList (Gtk.Window[] windows)
 		{
 			// null for AppResult signifies root node
 			rootNode = new GtkWidgetResult (null);
-			HashSet<AppResult> fullResultSet = new HashSet<AppResult> ();
+			List<AppResult> fullResultSet = new List<AppResult> ();
 
 			// Build the tree and full result set recursively
 			AppResult lastChild = null;
@@ -102,7 +102,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppResult[] Execute ()
 		{
-			HashSet<AppResult> resultSet = ResultSetFromWindowList (Gtk.Window.ListToplevels ());
+			List<AppResult> resultSet = ResultSetFromWindowList (Gtk.Window.ListToplevels ());
 			foreach (var subquery in operations) {
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);

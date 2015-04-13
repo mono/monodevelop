@@ -30,7 +30,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 {
 	public abstract class Operation
 	{
-		public abstract HashSet<AppResult> Execute (HashSet<AppResult> resultSet);
+		public abstract List<AppResult> Execute (List<AppResult> resultSet);
 	}
 }
 
