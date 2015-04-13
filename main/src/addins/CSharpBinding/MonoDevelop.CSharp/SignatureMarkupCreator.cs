@@ -107,12 +107,12 @@ namespace MonoDevelop.CSharp
 				if (parsedDocument != null) {
 					model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
 				}
-				//model.SyntaxTree.Length > offset is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
+				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
 				//this is tradeoff between performance and consistency between editor text(offset) and model, since
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
-				//because Length == offset
-				displayString = model != null && model.SyntaxTree.Length > offset ? type.ToMinimalDisplayString (model, offset) : type.Name;
+				//because offset can be >= Length
+				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length, offset)) : type.Name;
 			} else {
 				displayString = type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 			}
