@@ -40,6 +40,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring
 {
@@ -84,40 +87,37 @@ namespace MonoDevelop.Refactoring
 //			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 //		}
 		
-		public static void AddNewMember (ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
+		public static async void AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			bool isOpen;
-			var filePath = part.SourceTree.FilePath;
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (null, data.FileName, data.MimeType, data).Result;
-			
-			var insertionPoints = InsertionPointService.GetInsertionPoints (data, parsedDocument, type, part);
-			
-			var suitableInsertionPoint = InsertionPointService.GetSuitableInsertionPoint (data, insertionPoints, type, part, newMember);
+			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
+			var projectId = ws.GetProjectId (project);
+			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
 
-			/*
-			var generator = CreateCodeGenerator (data, type.Compilation);
+			var document = ws.GetDocument (docId, cancellationToken);
 
-			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
-			var generatedCode = generator.CreateMemberImplementation (type, part, newMember, implementExplicit);
-			*/
-			suitableInsertionPoint.Insert (data, newMember.ToString ());
-			if (!isOpen) {
-				try {
-					File.WriteAllText (filePath, data.Text);
-				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", filePath), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", filePath));
-				}
-			}
+			var root = document.GetSyntaxRootAsync (cancellationToken).Result;
+			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
+
+			// for some reason the reducer doesn't reduce this
+			var systemVoid = newMember.DescendantNodesAndSelf().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
+
+			if (systemVoid != null) newMember = newMember.ReplaceNode(systemVoid, SyntaxFactory.ParseTypeName("void"));
+
+			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation)));
+			document = document.WithSyntaxRoot (newRoot);
+			document = await Formatter.FormatAsync(document, Formatter.Annotation, ws.Options, cancellationToken).ConfigureAwait (false);
+			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, ws.Options, cancellationToken).ConfigureAwait (false);
+			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
+			var newSolution = ws.CurrentSolution.WithDocumentText (docId, text);
+			ws.TryApplyChanges (newSolution);
 		}
 
-		public static Task<bool> InsertMemberWithCursor (string operation, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
-		{
-			//TODO: Add dialog for inserting position
-			AddNewMember (type, part, newMember, implementExplicit);
-			return Task.FromResult (true);
-		}
+		//public static Task<bool> InsertMemberWithCursor (string operation, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
+		//{
+		//	//TODO: Add dialog for inserting position
+		//	AddNewMember (type, part, newMember, implementExplicit);
+		//	return Task.FromResult (true);
+		//}
 //
 //		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 //		{

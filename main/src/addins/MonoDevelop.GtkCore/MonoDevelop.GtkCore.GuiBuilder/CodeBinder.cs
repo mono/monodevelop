@@ -45,6 +45,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Refactoring;
+using System.Xml.XPath;
+using System.IO;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -163,23 +165,35 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var cls = GetClass ();
 			if (cls == null)
 				return;
-			
+
 			if (FindSignalHandler (cls, signal) != null)
 				return;
-			
-			var met = SyntaxFactory.MethodDeclaration (
-				SyntaxFactory.ParseTypeName (signal.SignalDescriptor.HandlerReturnTypeName),
-				signal.Handler
-			).AddModifiers (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword));
-			
+
+			var met = SyntaxFactory.MethodDeclaration (SyntaxFactory.ParseTypeName (signal.SignalDescriptor.HandlerReturnTypeName),
+			                                           signal.Handler)
+								   .WithBody (SyntaxFactory.Block ())
+								   .AddModifiers (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword));
+
 			var parameters = new List<ParameterSyntax> ();
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-				parameters.Add (SyntaxFactory.Parameter (new SyntaxList<AttributeListSyntax>(), new SyntaxTokenList (), SyntaxFactory.ParseTypeName (pinfo.TypeName), SyntaxFactory.Identifier (pinfo.Name), null));
+				parameters.Add (SyntaxFactory.Parameter (new SyntaxList<AttributeListSyntax> (), new SyntaxTokenList (), SyntaxFactory.ParseTypeName (pinfo.TypeName), SyntaxFactory.Identifier (pinfo.Name), null));
 			met = met.AddParameterListParameters (parameters.ToArray ());
-			
-			CodeGenerationService.AddNewMember (cls, cls.Locations.First (), met);
+
+			CodeGenerationService.AddNewMember (project, cls, GetSourceLocation (cls), met);
 		}
-		
+
+		static Location GetSourceLocation (INamedTypeSymbol cls)
+		{
+			foreach (var loc in cls.Locations) {
+				if (loc.IsInSource) {
+					if (!Path.GetDirectoryName (loc.SourceTree.FilePath).EndsWith ("gtk-gui", FilePath.PathComparison))
+						return loc;
+				}
+			}
+			
+			return cls.Locations.First ();
+		}
+
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
 		{
 			if (targetObject == null)
@@ -209,11 +223,12 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (FindField (cls, name) != null)
 				return;
 
-			var doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().SourceTree.FilePath, true);
+			var location = GetSourceLocation(cls);
+			var doc = IdeApp.Workbench.OpenDocument (location.SourceTree.FilePath, project, true);
 			
 			var editor = doc.Editor;
 			if (editor != null) {
-				CodeGenerationService.AddNewMember (cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
+				CodeGenerationService.AddNewMember (project, cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
 			}
 		}
 		
