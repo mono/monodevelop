@@ -71,7 +71,7 @@
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\mono.cecil\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\packages\FSharp.Compiler.Service.0.0.85\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\packages\FSharp.Compiler.Service.0.0.88\lib\net45\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="..\.nuget\NuGet.targets" Condition="Exists('..\.nuget\NuGet.targets')" />
