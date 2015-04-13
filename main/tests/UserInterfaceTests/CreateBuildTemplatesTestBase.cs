@@ -78,10 +78,7 @@ namespace UserInterfaceTests
 				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
 				Assert.IsTrue (newProject.UseGit (true, false));
 
-				Assert.IsTrue (newProject.Next ());
-
-				// FIXME: We need to listen for a Solution opened signal instead of just waiting for a timeout.
-				Thread.Sleep (2000);
+				Session.RunAndWaitForTimer (() => newProject.Next(), "MonoDevelop.Ide.Counters.OpenWorkspaceItemTimer");
 
 				actualSolutionDirectory = GetSolutionDirectory ();
 
