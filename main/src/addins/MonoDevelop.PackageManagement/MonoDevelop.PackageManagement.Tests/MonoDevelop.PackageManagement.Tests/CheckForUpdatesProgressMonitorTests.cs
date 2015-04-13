@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			progressMonitor.ReportError (exception);
 
 			fakeProgressMonitor.AssertMessageIsLogged ("Error");
-			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates. Please see Package Console for details."), fakeProgressMonitor.ReportedErrorMessage);
+			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates."), fakeProgressMonitor.ReportedErrorMessage);
 			Assert.IsTrue (progressMonitor.IsPackageConsoleShown);
 		}
 
@@ -142,7 +142,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			progressMonitor.ReportSuccess (false);
 
-			Assert.AreEqual (GettextCatalog.GetString ("No updates found but warnings were reported. Please see Package Console for details."), fakeProgressMonitor.ReportedWarningMessage);
+			Assert.AreEqual (GettextCatalog.GetString ("No updates found but warnings were reported."), fakeProgressMonitor.ReportedWarningMessage);
 		}
 	}
 }
