@@ -220,6 +220,7 @@
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ReadonlyDocumentSnapshot.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
