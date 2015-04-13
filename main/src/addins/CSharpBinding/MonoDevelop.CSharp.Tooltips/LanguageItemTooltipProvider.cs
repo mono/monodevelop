@@ -76,7 +76,12 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			
 			var root = unit.SyntaxTree.GetRoot ();
-			var token = root.FindToken (offset);
+			SyntaxToken token;
+			try {
+				token = root.FindToken (offset);
+			} catch (ArgumentOutOfRangeException) {
+				return null;
+			}
 			if (!token.Span.IntersectsWith (offset))
 				return null;
 			var symbolInfo = unit.GetSymbolInfo (token.Parent); 
