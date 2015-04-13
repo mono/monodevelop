@@ -202,6 +202,12 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery Index (int index)
+		{
+			operations.Add (new IndexOperation (index));
+			return this;
+		}
+
 		public override string ToString ()
 		{
 			StringBuilder builder = new StringBuilder ();
