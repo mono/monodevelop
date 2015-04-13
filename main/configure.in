@@ -33,7 +33,7 @@ if test "x$PKG_CONFIG" = "xno"; then
         AC_MSG_ERROR([You need to install pkg-config])
 fi
 
-MONO_REQUIRED_VERSION=3.0.4
+MONO_REQUIRED_VERSION=4.0
 
 if ! $PKG_CONFIG --atleast-version=$MONO_REQUIRED_VERSION mono; then
 	AC_MSG_ERROR([You need mono $MONO_REQUIRED_VERSION or newer])
