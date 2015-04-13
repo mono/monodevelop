@@ -775,9 +775,10 @@ namespace MonoDevelop.Ide.Gui
 					if (task.Result != null) {
 						var p = task.Result;
 						this.parsedDocument = p.ParsedDocument;
-						var projection = p.Projection;
-						projection.CreateProjectedEditor (this);
-						Editor.SetOrUpdateProjections (this, new [] { projection }, p.DisabledProjectionFeatures);
+						var projections = p.Projections;
+						foreach (var p2 in projections)
+							p2.CreateProjectedEditor (this);
+						Editor.SetOrUpdateProjections (this, projections, p.DisabledProjectionFeatures);
 					}
 				} else { 
 					this.parsedDocument = TypeSystemService.ParseFile (project, currentParseFile, editor.MimeType, currentParseText).Result ?? this.parsedDocument;
@@ -888,9 +889,10 @@ namespace MonoDevelop.Ide.Gui
 								if (isClosed || taskResult == null || token.IsCancellationRequested)
 									return;
 								this.parsedDocument = taskResult.ParsedDocument;
-								var projection = taskResult.Projection;
-								projection.CreateProjectedEditor (this);
-								Editor.SetOrUpdateProjections (this, new [] { projection }, taskResult.DisabledProjectionFeatures);
+								var projections = taskResult.Projections;
+								foreach (var p2 in projections)
+									p2.CreateProjectedEditor (this);
+								Editor.SetOrUpdateProjections (this, projections, taskResult.DisabledProjectionFeatures);
 								OnDocumentParsed (EventArgs.Empty);
 							});
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -984,6 +986,23 @@ namespace MonoDevelop.Ide.Gui
 		public override OptionSet GetOptionSet ()
 		{
 			return TypeSystemService.Workspace.Options;
+		}
+
+		internal override Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var parser = TypeSystemService.GetParser (Editor.MimeType);
+			if (parser == null)
+				return null;
+			var projectFile = Project.GetProjectFile (Editor.FileName);
+			if (projectFile == null)
+				return null;
+			if (!parser.CanGenerateProjection (Editor.MimeType, projectFile.BuildAction, Project.SupportedLanguages))
+				return null;
+			try {
+				return parser.GetPartialProjectionsAsync (this, Editor, parsedDocument, cancellationToken);
+			} catch (NotSupportedException) {
+				return null;
+			}
 		}
 	}
 	

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Options;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -44,25 +45,29 @@ namespace MonoDevelop.Ide.Editor
 		/// The name of the document. It's the file name for files on disc. 
 		/// For unsaved files that name is different.
 		/// </summary>
-		public abstract string Name {
+		public abstract string Name
+		{
 			get;
 		}
 
 		/// <summary>
 		/// Project != null
 		/// </summary>
-		public virtual bool HasProject {
+		public virtual bool HasProject
+		{
 			get { return Project != null; }
 		}
 
 		/// <summary>
 		/// Gets the project this context is in.
 		/// </summary>
-		public abstract Project Project {
+		public abstract Project Project
+		{
 			get;
 		}
 
-		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace {
+		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
+		{
 			get;
 			protected set;
 		}
@@ -71,27 +76,31 @@ namespace MonoDevelop.Ide.Editor
 		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
 		/// Even if it's a C# file.
 		/// </summary>
-		public abstract Microsoft.CodeAnalysis.Document AnalysisDocument {
+		public abstract Microsoft.CodeAnalysis.Document AnalysisDocument
+		{
 			get;
 		}
-		
+
 		/// <summary>
 		/// The parsed document. Contains all syntax information about the text.
 		/// </summary>
-		public abstract ParsedDocument ParsedDocument {
+		public abstract ParsedDocument ParsedDocument
+		{
 			get;
 		}
 
 		/// <summary>
 		/// If true, the document is part of the ProjectContent.
 		/// </summary>
-		public virtual bool IsCompileableInProject {
-			get {
+		public virtual bool IsCompileableInProject
+		{
+			get
+			{
 				return true;
 			}
 		}
 
-		public virtual T GetContent<T> () where T : class
+		public virtual T GetContent<T>() where T : class
 		{
 			var t = this as T;
 			if (t != null)
@@ -99,7 +108,7 @@ namespace MonoDevelop.Ide.Editor
 			return null;
 		}
 
-		public virtual IEnumerable<T> GetContents<T> () where T : class
+		public virtual IEnumerable<T> GetContents<T>() where T : class
 		{
 			var t = this as T;
 			if (t != null)
@@ -139,6 +148,11 @@ namespace MonoDevelop.Ide.Editor
 			var handler = Saved;
 			if (handler != null)
 				handler (this, e);
+		}
+
+		internal virtual Task<IReadOnlyList<Editor.Projection.Projection>> GetPartialProjectionsAsync (CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return null;
 		}
 	}
 }

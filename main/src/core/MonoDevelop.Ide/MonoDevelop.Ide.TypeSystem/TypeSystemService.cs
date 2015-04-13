@@ -240,9 +240,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					var Workspace = Workspaces.First () ;
 					var projectId = Workspace.GetProjectId (options.Project);
 					if (projectId != null) {
-						var docId = Workspace.GetDocumentId (projectId, result.Result.Projection.Document.FileName);
-						if (docId != null)
-							Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (result.Result.Projection.Document));
+						foreach (var projection in result.Result.Projections) {
+							var docId = Workspace.GetDocumentId (projectId, projection.Document.FileName);
+							if (docId != null)
+								Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+						}
 					}
 				}
 				return result;

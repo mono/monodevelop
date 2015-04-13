@@ -1174,10 +1174,10 @@ namespace MonoDevelop.Ide.Editor
 					}
 				}
 			}
-			InitializeProjectionExtensions (disabledFeatures);
+			InitializeProjectionExtensions (ctx, disabledFeatures);
 		}
 
-		void InitializeProjectionExtensions (DisabledProjectionFeatures disabledFeatures)
+		void InitializeProjectionExtensions (DocumentContext ctx, DisabledProjectionFeatures disabledFeatures)
 		{
 			if (projections.Count == 0)
 				return;
@@ -1191,7 +1191,7 @@ namespace MonoDevelop.Ide.Editor
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Completion) != DisabledProjectionFeatures.Completion) {
 				
-				var projectedCompletionExtension = new ProjectedCompletionExtension (projections);
+				var projectedCompletionExtension = new ProjectedCompletionExtension (ctx, projections);
 				projectedCompletionExtension.Next = textEditorImpl.EditorExtension;
 
 				textEditorImpl.EditorExtension = projectedCompletionExtension;

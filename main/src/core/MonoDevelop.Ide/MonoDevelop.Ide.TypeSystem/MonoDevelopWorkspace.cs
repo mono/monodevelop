@@ -390,16 +390,18 @@ namespace MonoDevelop.Ide.TypeSystem
 					Project = p,
 					Content = StringTextSource.ReadFrom (f.FilePath),
 				};
-				var projection = node.Parser.GenerateProjection (options);
-				yield return DocumentInfo.Create (
-					id.GetOrCreateDocumentId (projection.Result.Document.FileName),
-					projection.Result.Document.FileName, 
-					null, 
-					SourceCodeKind.Regular,
-					TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Result.Document), VersionStamp.Create (), projection.Result.Document.FileName)), 
-					f.Name,
-					false
-				);
+				var projections = node.Parser.GenerateProjections (options);
+				foreach (var projection in projections.Result) {
+					yield return DocumentInfo.Create (
+						id.GetOrCreateDocumentId (projection.Document.FileName),
+						projection.Document.FileName,
+						null,
+						SourceCodeKind.Regular,
+						TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
+						f.Name,
+						false
+					);
+				}
 			}
 		}
 

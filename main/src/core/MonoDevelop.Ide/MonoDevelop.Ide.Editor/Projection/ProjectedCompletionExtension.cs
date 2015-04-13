@@ -34,9 +34,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 {
 	sealed class ProjectedCompletionExtension : CompletionTextEditorExtension
 	{
+		DocumentContext ctx;
 		IReadOnlyList<Projection> projections;
 
-		public ProjectedCompletionExtension (IReadOnlyList<Projection> projections)
+		public ProjectedCompletionExtension (DocumentContext ctx, IReadOnlyList<Projection> projections)
 		{
 			if (projections == null)
 				throw new ArgumentNullException ("projections");
@@ -296,6 +297,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			projections = ctx.GetPartialProjectionsAsync ().Result;
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension != null)
 				projectedExtension.KeyPress (descriptor);

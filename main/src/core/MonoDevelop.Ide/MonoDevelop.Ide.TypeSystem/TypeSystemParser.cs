@@ -32,6 +32,8 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
+using MonoDevelop.Ide.Editor;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -60,14 +62,14 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		public ParsedDocument ParsedDocument { get; private set; }
 
-		public Projection Projection { get; private set;}
+		public IReadOnlyList<Projection> Projections { get; private set;}
 
 		public DisabledProjectionFeatures DisabledProjectionFeatures { get; private set;}
 
-		public ParsedDocumentProjection (ParsedDocument parsedDocument, Projection projection, DisabledProjectionFeatures disabledProjectionFeatures = DisabledProjectionFeatures.None)
+		public ParsedDocumentProjection (ParsedDocument parsedDocument, IReadOnlyList<Projection> projections, DisabledProjectionFeatures disabledProjectionFeatures = DisabledProjectionFeatures.None)
 		{
 			this.ParsedDocument = parsedDocument;
-			this.Projection = projection;
+			this.Projections = projections;
 			this.DisabledProjectionFeatures = disabledProjectionFeatures;
 		}
 	}
@@ -116,7 +118,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <returns>The projection.</returns>
 		/// <param name="options">Options.</param>
 		/// <param name="cancellationToken">Cancellation token.</param>
-		public virtual Task<Projection> GenerateProjection (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
+		public virtual Task<IReadOnlyList<Projection>> GenerateProjections (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotSupportedException ();
 		}
@@ -133,6 +135,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new NotSupportedException ();
 		}
 
+		/// <summary>
+		/// Gets an up to date partial projection used by code completion.
+		/// </summary>
+		public virtual Task<IReadOnlyList<Projection>> GetPartialProjectionsAsync (DocumentContext ctx, TextEditor editor, ParsedDocument currentParsedDocument, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			throw new NotSupportedException ();
+		}
 	}
 }
 
