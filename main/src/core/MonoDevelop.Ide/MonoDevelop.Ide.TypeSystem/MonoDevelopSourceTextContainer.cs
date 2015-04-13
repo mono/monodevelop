@@ -93,28 +93,23 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
-			this.document.TextChanged += HandleTextReplaced;
 		}
 
 		~MonoDevelopSourceTextContainer ()
 		{
-			document.TextChanged -= HandleTextReplaced;
 			document.TextChanging -= HandleTextReplacing;
 		}
 
-		SourceText oldText;
 		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			oldText = new MonoDevelopSourceText (document.CreateSnapshot ());
-		}
-		
-		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
-		{
 			var handler = TextChanged;
-			if (handler != null)
-				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, CurrentText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
+			if (handler != null) {
+				var oldText = CurrentText;
+				var newText = oldText.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
+				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange(TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
+			}
+			
 		}
-
 		#region implemented abstract members of SourceTextContainer
 		public override SourceText CurrentText {
 			get {
