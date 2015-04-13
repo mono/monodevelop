@@ -196,6 +196,12 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery NextSiblings ()
+		{
+			operations.Add (new NextSiblingsOperation ());
+			return this;
+		}
+
 		public override string ToString ()
 		{
 			StringBuilder builder = new StringBuilder ();

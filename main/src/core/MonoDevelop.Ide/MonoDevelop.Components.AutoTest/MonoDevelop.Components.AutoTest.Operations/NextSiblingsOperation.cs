@@ -1,5 +1,5 @@
 ﻿//
-// AppResult.cs
+// NextSiblingsOperation.cs
 //
 // Author:
 //       iain holmes <iain@xamarin.com>
@@ -25,32 +25,24 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
-namespace MonoDevelop.Components.AutoTest
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public abstract class AppResult : MarshalByRefObject
+	public class NextSiblingsOperation : Operation
 	{
-		//public Gtk.Widget ResultWidget { get; private set; }
+		public override List<AppResult> Execute (List<AppResult> resultSet)
+		{
+			List<AppResult> newResultSet = new List<AppResult> ();
 
-		public AppResult ParentNode { get; set; }
-		public AppResult FirstChild { get; set; }
-		public AppResult PreviousSibling { get; set; }
-		public AppResult NextSibling { get; set; }
+			foreach (var result in resultSet) {
+				List<AppResult> newResults = result.NextSiblings ();
+				if (newResults != null) {
+					newResultSet.AddRange (newResults);
+				}
+			}
 
-		// Operations
-		public abstract AppResult Marked (string mark);
-		public abstract AppResult CheckType (Type desiredType);
-		public abstract AppResult Text (string text);
-		public abstract AppResult Model (string column);
-		public abstract AppResult Property (string propertyName, object value);
-		public abstract List<AppResult> NextSiblings ();
-
-		// Actions
-		public abstract bool Select ();
-		public abstract bool Click ();
-		public abstract bool TypeKey (char key, string state);
-		public abstract bool Toggle (bool active);
+			return newResultSet;
+		}
 	}
 }
 

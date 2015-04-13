@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -146,6 +147,36 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override AppResult Property (string propertyName, object value)
 		{
 			return (GetPropertyValue (propertyName) == value) ? this : null;			
+		}
+
+		public override List<AppResult> NextSiblings ()
+		{
+			return (List<AppResult>) AutoTestService.CurrentSession.UnsafeSync (() => {
+				Widget parent = resultWidget.Parent;
+				Gtk.Container container = parent as Gtk.Container;
+
+				// This really shouldn't happen
+				if (container == null) {
+					return null;
+				}
+
+				bool foundSelf = false;
+				List<AppResult> siblingResults = new List<AppResult> ();
+				foreach (Widget child in container.Children) {
+					if (child == resultWidget) {
+						foundSelf = true;
+						continue;
+					}
+
+					if (!foundSelf) {
+						continue;
+					}
+
+					siblingResults.Add (new GtkWidgetResult (child));
+				}
+
+				return siblingResults;
+			});
 		}
 
 		public override bool Select ()

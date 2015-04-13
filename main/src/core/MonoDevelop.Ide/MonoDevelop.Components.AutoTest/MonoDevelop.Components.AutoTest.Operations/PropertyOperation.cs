@@ -38,9 +38,9 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			DesiredValue = desiredValue;
 		}
 
-		public override HashSet<AppResult> Execute (HashSet<AppResult> resultSet)
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			HashSet<AppResult> newResultSet = new HashSet<AppResult> ();
+			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
 				AppResult newResult = result.Property (PropertyName, DesiredValue);

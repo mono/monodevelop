@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -42,6 +43,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 			TModel = treeModel;
 			Column = column;
 		}
+
+		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column, TreeIter iter)
+		{
+			TView = treeView;
+			TModel = treeModel;
+			Column = column;
+			resultIter = iter;
+		}
 			
 		public override AppResult Marked (string mark)
 		{
@@ -58,10 +67,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		bool FindText (TreeModel model, TreePath path, TreeIter iter)
+		bool CheckForText (TreeModel model, TreeIter iter)
 		{
 			string modelText = model.GetValue (iter, Column) as string;
-			if (modelText != null && modelText == DesiredText) {
+			return (modelText != null && modelText == DesiredText);
+		}
+
+		bool FindText (TreeModel model, TreePath path, TreeIter iter)
+		{
+			if (CheckForText (model, iter)) {
 				resultIter = iter;
 				return true;
 			}
@@ -73,20 +87,38 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			DesiredText = text;
 
+			if (resultIter.HasValue) {
+				return (AppResult)AutoTestService.CurrentSession.UnsafeSync (() => CheckForText (TModel, (TreeIter) resultIter) ? this : null);
+			}
+
 			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
 				TModel.Foreach (FindText);
 
-				if (resultIter.HasValue) {
-					return this;
-				}
-
-				return null;
+				return resultIter.HasValue ? this : null;
 			});
 		}
 
 		public override AppResult Property (string propertyName, object value)
 		{
 			return null;
+		}
+
+		public override List<AppResult> NextSiblings ()
+		{
+			if (!resultIter.HasValue) {
+				return null;
+			}
+
+			return (List<AppResult>)AutoTestService.CurrentSession.UnsafeSync (() => {
+				List<AppResult> newList = new List<AppResult> ();
+				TreeIter currentIter = (TreeIter) resultIter;
+
+				while (TModel.IterNext (ref currentIter)) {
+					newList.Add (new GtkTreeModelResult (TView, TModel, Column, currentIter));
+				}
+
+				return newList;
+			});
 		}
 
 		public override bool Select ()
