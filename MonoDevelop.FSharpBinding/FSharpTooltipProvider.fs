@@ -43,13 +43,11 @@ type FSharpTooltipProvider() =
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
 
-        let projFile, files, args = MonoDevelop.getCheckerArgs(context.Project, fileName)
-
         let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
         let result =
             //operate on available results no async gettypeparse results is available quick enough
-            let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (projFile, fileName, docText, files, args, AllowStaleResults.MatchingSource)
+            let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (context.Project.FileName.ToString(), fileName, docText, AllowStaleResults.MatchingSource)
             Async.RunSynchronously (
                 async {
                     try

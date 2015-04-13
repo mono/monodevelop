@@ -182,7 +182,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
 
     member x.GetExtraColorizations() =
         match infoOpt with
-        | Some(parseResults,_checkResults) -> parseResults.GetExtraColorizationsAlternate() |> Some
+        | Some(checkResults,_parseResults) -> checkResults.GetExtraColorizationsAlternate() |> Some
         | None -> None
 
 [<RequireQualifiedAccess>]
@@ -193,10 +193,6 @@ type AllowStaleResults =
     | MatchingSource
     // Don't allow stale results
     | No
-
-  
-// --------------------------------------------------------------------------------------
-// Language service 
 
 /// Provides functionality for working with the F# interactive checker running in background
 type LanguageService(dirtyNotify) =
@@ -249,28 +245,17 @@ type LanguageService(dirtyNotify) =
     async { 
        while true do
             try
-              Debug.WriteLine("LanguageService agent: Awaiting request") 
               let! (fileName, source, options, reply: AsyncReplyChannel<_> ) = mbox.Receive()
-
-              Debug.WriteLine("LanguageService agent: Dequeued request {0} remaining", mbox.CurrentQueueLength) 
               let fileName = fixFileName(fileName)
-
-              Debug.WriteLine("LanguageService agent: start parsing - {0}", box fileName)
               let! parseResults = checker.ParseFileInProject(fileName, source, options)
-              Debug.WriteLine("LanguageService agent: parse completed")
-
-              Debug.WriteLine("LanguageService agent: Typecheck source...")
               let! checkAnswer = checker.CheckFileInProject(parseResults, fileName, 0, source,options, IsResultObsolete(fun () -> false), null )
-              Debug.WriteLine(sprintf "LanguageService agent: Typecheck completed")
-              
+
               // Construct new typed parse result if the task succeeded
               let results =
                 match checkAnswer with
                 | FSharpCheckFileAnswer.Succeeded(checkResults) ->
-                    Debug.WriteLine(sprintf "LanguageService agent: Update typed info - HasFullTypeCheckInfo? %b" checkResults.HasFullTypeCheckInfo)
                     ParseAndCheckResults(checkResults, parseResults)
                 | _ -> 
-                    Debug.WriteLine("LanguageService agent: Update typed info - failed")
                     ParseAndCheckResults.Empty
                     
               reply.Reply results
@@ -282,7 +267,7 @@ type LanguageService(dirtyNotify) =
       [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
-  member x.GetCheckerOptions(fileName, projFilename, source, files, args) =
+  member x.GetCheckerOptions(fileName, projFilename, source) =
     let opts =
       if LanguageService.IsAScript fileName then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
@@ -290,7 +275,7 @@ type LanguageService(dirtyNotify) =
           
       // We are in a project - construct options using current properties
       else
-        x.GetProjectCheckerOptions(projFilename, files, args)
+        x.GetProjectCheckerOptions(projFilename)
     opts
    
   /// Constructs options for the interactive checker for the given script file in the project under the given configuration. 
@@ -325,34 +310,24 @@ type LanguageService(dirtyNotify) =
     opts
    
   /// Constructs options for the interactive checker for a project under the given configuration. 
-  member x.GetProjectCheckerOptions(projFilename, files, args) =
+  member x.GetProjectCheckerOptions(projFilename, ?properties) =
     let opts = 
-      
-      // We are in a project - construct options using current properties
-        Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Creating for project '%s'" projFilename )
-
-        {ProjectFileName = projFilename
-         ProjectFileNames = files
-         OtherOptions = args
-         ReferencedProjects = [| |]
-         IsIncompleteTypeCheckEnvironment = false
-         UseScriptResolutionRules = false   
-         LoadTime = fakeDateTimeRepresentingTimeLoaded projFilename
-         UnresolvedReferences = None } 
-
+        match properties with
+        | Some properties -> checker.GetProjectOptionsFromProjectFile(projFilename, properties = properties)
+        | None -> checker.GetProjectOptionsFromProjectFile(projFilename)
+    opts
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
-    opts
-    
+
   
   /// Parses and checks the given file in the given project under the given configuration. Asynchronously
   /// returns the results of checking the file.
-  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, ?startBgCompile) =
+  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, ?startBgCompile) =
    let startBgCompile = defaultArg startBgCompile true
 
    async {
-    let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args)
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
     let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
     if startBgCompile then
@@ -361,8 +336,8 @@ type LanguageService(dirtyNotify) =
     return results
    }
 
-  member x.ParseFileInProject(projectFilename, fileName:string, src, args) = 
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src, [| |], args)
+  member x.ParseFileInProject(projectFilename, fileName:string, src) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     Debug.WriteLine(sprintf "LanguageService: ParseFileInProject: Get untyped parse result (fileName=%s)" fileName)
     checker.ParseFileInProject(fixFileName fileName, src, opts)
 
@@ -377,10 +352,10 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
-  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, files, args, stale, ?timeout) = 
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout) = 
    async {
     let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     Debug.WriteLine("LanguageService: Parsing: Get typed parse result, fileName={0}", box fileName)
     // Try to get recent results from the F# service
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
@@ -395,19 +370,19 @@ type LanguageService(dirtyNotify) =
         | None -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)))
    }
 
-  member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, files, args, stale) = 
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args)
+  member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, stale) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
     | Some results -> results
     | None -> ParseAndCheckResults.Empty
 
 
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
-  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, files, line:int, col, lineStr, args) =
+  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
    async { 
     match Parsing.findLongIdents(col, lineStr) with 
     | Some(colu, identIsland) ->
-        let! checkResults = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, files, args, stale= AllowStaleResults.MatchingSource)
+        let! checkResults = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
         match checkResults with
         | Some results ->
             let! symbolResults = results.GetSymbolAtLocation(line, colu, lineStr)
@@ -421,9 +396,9 @@ type LanguageService(dirtyNotify) =
     | None -> return None 
    }
 
-  member x.GetUsesOfSymbolInProject(projectFilename, file, source, files, args, symbol:FSharpSymbol) =
+  member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol) =
    async { 
-    let projectOptions = x.GetCheckerOptions(file, projectFilename, source, files, args)
+    let projectOptions = x.GetCheckerOptions(file, projectFilename, source)
 
     //parse and retrieve Checked Project results, this has the entity graph and errors etc
     let! projectResults = checker.ParseAndCheckProject(projectOptions) 

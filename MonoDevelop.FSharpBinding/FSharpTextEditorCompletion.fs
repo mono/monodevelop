@@ -318,13 +318,11 @@ type FSharpTextEditorCompletion() =
         else
         LoggingService.LogDebug("FSharpTextEditorCompletion: Getting Parameter Info, startOffset = {0}", startOffset)
         
-        let projFile, files, args = MonoDevelop.getCheckerArgs(x.DocumentContext.Project, x.DocumentContext.Name)
-        
         // Try to get typed result - within the specified timeout
         let! methsOpt =
             async {let! tyRes =
                        MDLanguageService.Instance.GetTypedParseResultWithTimeout
-                           (projFile, x.DocumentContext.Name, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout) 
+                           (x.DocumentContext.Project.FileName.ToString(), x.DocumentContext.Name, docText, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout) 
                    match tyRes with
                    | Some tyRes ->
                        let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
@@ -413,10 +411,9 @@ type FSharpTextEditorCompletion() =
     let result = CompletionDataList()
     let fileName = x.DocumentContext.Name
     try
-      let projFile, files, args = MonoDevelop.getCheckerArgs(x.DocumentContext.Project, fileName)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
-      let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, fileName, x.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout)
+      let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.DocumentContext.Project.FileName.ToString(), fileName, x.Editor.Text, stale, ServiceSettings.blockingTimeout)
 
       match typedParseResults with
       | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())

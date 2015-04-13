@@ -39,36 +39,10 @@ module MonoDevelop =
                 -> Some ast
             | _ -> None
 
-    ///gets the projectFilename, sourceFiles, commandargs from the project and current config
-    let internal getCheckerArgsFromProject(project:DotNetProject, config) =
-        let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
-        let fileName = project.FileName.ToString()
-        let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
-                   let args = CompilerArguments.generateCompilerOptions(project,
-                                                                        fsconfig,
-                                                                        None,
-                                                                        CompilerArguments.getTargetFramework projConfig.TargetFramework.Id,
-                                                                        config,
-                                                                        false) |> Array.ofList
-                   return args }
-
-        match arguments with
-        | Some args -> fileName, files, args
-        | None -> LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
-                  fileName, files, [||]
-
     let internal getConfig () =
         match MonoDevelop.Ide.IdeApp.Workspace with
         | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
         | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
-
-    let internal getCheckerArgs(project: Project, filename: string) =
-        match project with
-        | :? DotNetProject as dnp when not (FSharp.CompilerBinding.LanguageService.IsAScript filename) ->
-            getCheckerArgsFromProject(dnp, getConfig())
-        | _ -> filename, [|filename|], [||]
 
 /// Provides functionality for working with the F# interactive checker running in background
 type MDLanguageService() =

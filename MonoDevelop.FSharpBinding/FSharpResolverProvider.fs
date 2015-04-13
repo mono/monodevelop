@@ -29,11 +29,9 @@ type FSharpResolverProvider() =
 
         LoggingService.LogInfo "ResolverProvider: Getting results of type checking"
         // Try to get typed result - with the specified timeout
-        let projFile, files, args = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
-
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (doc.Project.FileName.ToString(), doc.FileName.FullPath.ToString(), docText, AllowStaleResults.MatchingSource)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset

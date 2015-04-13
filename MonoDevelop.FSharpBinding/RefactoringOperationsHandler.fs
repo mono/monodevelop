@@ -156,9 +156,8 @@ module Refactoring =
     let rename (editor:TextEditor, ctx:DocumentContext, lastIdent, symbol:FSharpSymbolUse) =         
         let symbols = 
             let activeDocFileName = editor.FileName.ToString ()
-            let projectFilename, projectFiles, projectArgs = MonoDevelop.getCheckerArgs(ctx.Project, activeDocFileName)
             Async.RunSynchronously
-                (MDLanguageService.Instance.GetUsesOfSymbolInProject (projectFilename, activeDocFileName, editor.Text, projectFiles, projectArgs, symbol.Symbol),
+                (MDLanguageService.Instance.GetUsesOfSymbolInProject (ctx.Project.FileName.ToString(), activeDocFileName, editor.Text, symbol.Symbol),
                  ServiceSettings.maximumTimeout)
 
         let locations =
@@ -186,7 +185,7 @@ module Refactoring =
             MessageService.ShowCustomDialog (new Rename.RenameItemDialog("Rename Item", symbol.Symbol.DisplayName, performChanges symbol locations))
             |> ignore
 
-    let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, lastIdent, symbolUse:FSharpSymbolUse, location: Range.range) =
+    let getJumpTypePartSearchResult (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, location: Range.range) =
         
             let provider = FindInFiles.FileProvider (location.FileName)
             let doc = TextEditorFactory.CreateNewDocument ()
@@ -197,13 +196,13 @@ module Refactoring =
             FindInFiles.SearchResult (provider, 0, 0)
         
 
-    let jumpTo (editor:TextEditor, ctx:DocumentContext, lastIdent:string, symbolUse, location:Range.range) =
+    let jumpTo (editor:TextEditor, ctx:DocumentContext, symbolUse, location:Range.range) =
             match getSymbolDeclarationLocation symbolUse editor.FileName ctx.Project.ParentSolution with
             | SymbolDeclarationLocation.CurrentFile ->
                 IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
                 |> ignore
                 
-            | SymbolDeclarationLocation.Projects (_projects, isSymbolLocal) ->
+            | SymbolDeclarationLocation.Projects (_projects, _isSymbolLocal) ->
                 IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), ctx.Project, Line = location.StartLine, Column = location.StartColumn))
                 |> ignore
 
@@ -216,14 +215,14 @@ module Refactoring =
             | _ -> ()    
 
                 
-    let jumpToDeclaration (editor:TextEditor, ctx:DocumentContext, lastIdent:string, symbolUse:FSharpSymbolUse, location) =
+    let jumpToDeclaration (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse) =
             match Symbols.getLocationFromSymbolUse symbolUse with
             | [] -> ()
-            | [loc] -> jumpTo (editor, ctx, lastIdent, symbolUse.Symbol, loc)
+            | [loc] -> jumpTo (editor, ctx, symbolUse.Symbol, loc)
             | locations ->
                     use monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
                     for part in locations do
-                        monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, lastIdent, symbolUse, part))
+                        monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
                         |> ignore
 
 type CurrentRefactoringOperationsHandler() =
@@ -283,15 +282,15 @@ type CurrentRefactoringOperationsHandler() =
                             let locations = Symbols.getLocationFromSymbolUse symbolUse
                             match locations with
                             | [] -> ()
-                            | [location] ->
+                            | [_location] ->
                                 let commandInfo = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.GotoDeclaration)
                                 commandInfo.Enabled <- true
-                                ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, lastIdent, symbolUse, location) ))
+                                ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, symbolUse) ))
                             | locations ->
                                 let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
                                 for location in locations do
                                     let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                    declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, lastIdent, symbolUse.Symbol, location)))
+                                    declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbolUse.Symbol, location)))
                                     |> ignore
                                 ainfo.Add (declSet)
                         
@@ -310,19 +309,21 @@ type CurrentRefactoringOperationsHandler() =
                                 | [] -> ()
                                 | [location] -> 
                                     let description = GettextCatalog.GetString ("Go to _Base Symbol")
-                                    ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, ident, symbol, location)))
+                                    ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
                                     |> ignore
                                     
                                 | locations ->
                                     let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
                                     for location in locations do
                                         let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
-                                        declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, ident, symbol, location)))
+                                        declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
  
-                        //TODO:find references, find derived symbols, find overloads, find extension methods, find type extensions
+                        //TODO:find references
+
+                        //TODO: find derived symbols, find overloads, find extension methods, find type extensions
             
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
@@ -405,14 +406,9 @@ type GotoDeclarationHandler() =
             match context.ParsedDocument.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
-                | (_line, col, lineTxt), Some symbolUse when Refactoring.canJump symbolUse editor.FileName context.Project.ParentSolution ->
-                        let lastIdent = Symbols.lastIdent col lineTxt
-                        match Symbols.getLocationFromSymbolUse symbolUse with
-                        //We only jump to the first declaration location with this command handler, which is invoked via Cmd D
-                        //We could intelligently swich by jumping to the second location if we are already at the first
-                        //We could also provide a selection like context menu does.  For now though, we mirror C#
-                        | first :: _ -> Refactoring.jumpToDeclaration (editor, context, lastIdent, symbolUse, first)
-                        | [] -> ()
+                | (_line, _col, _lineTxt), Some symbolUse when Refactoring.canJump symbolUse editor.FileName context.Project.ParentSolution ->
+                        //let lastIdent = Symbols.lastIdent col lineTxt
+                        Refactoring.jumpToDeclaration (editor, context, symbolUse)
                 | _ -> ()
             | _ -> ()
 

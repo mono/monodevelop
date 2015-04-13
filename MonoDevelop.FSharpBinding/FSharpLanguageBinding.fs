@@ -46,8 +46,8 @@ type FSharpLanguageBinding() =
   let invalidateProjectFile(project:Project) =
     match project with
     | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
-        let projectFilename, files, args  = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
-        let options = langServ.GetProjectCheckerOptions(projectFilename, files, args)
+        //let projectFilename, files, args  = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
+        let options = langServ.GetProjectCheckerOptions(dnp.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
         langServ.InvalidateConfiguration(options)
     | _ -> ()
     

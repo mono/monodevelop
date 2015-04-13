@@ -32,9 +32,7 @@ type HighlightUsagesExtension() =
                 let currentFile = x.DocumentContext.Name
                 let source = x.Editor.Text
 
-                let projectFilename, files, args = MonoDevelop.getCheckerArgs(x.DocumentContext.Project, currentFile)
-
-                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (projectFilename, currentFile, source, files, line, col, lineStr, args)
+                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (x.DocumentContext.Project.FileName.ToString(), currentFile, source, line, col, lineStr)
                 return symbolReferences
             with
             | :? Threading.Tasks.TaskCanceledException -> return None
