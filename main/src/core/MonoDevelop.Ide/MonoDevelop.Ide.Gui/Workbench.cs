@@ -452,6 +452,8 @@ namespace MonoDevelop.Ide.Gui
 					if (info.Offset >= 0) {
 						loc = ipos.OffsetToLocation (info.Offset);
 					}
+					if (loc.IsEmpty)
+						return;
 					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 					if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
 						ipos.CenterToCaret ();
