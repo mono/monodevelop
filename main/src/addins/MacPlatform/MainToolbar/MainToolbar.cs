@@ -186,6 +186,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => {
+				// Skip updates with a null Window. Only crashes on Mavericks.
+				// The View gets updated once again when the window resize finishes.
+				if (bar.Window == null)
+					return;
+
 				double maxSize = Math.Round (bar.Window.Frame.Width * 0.30f);
 				double minSize = Math.Round (bar.Window.Frame.Width * 0.25f);
 				item.MinSize = new CGSize ((nfloat)Math.Max (280, minSize), 22);
