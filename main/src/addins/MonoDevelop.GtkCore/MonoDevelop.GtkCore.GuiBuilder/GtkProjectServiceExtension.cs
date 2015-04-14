@@ -32,6 +32,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
+			if (Project.References.Count == 0 || !GtkDesignInfo.HasDesignedObjects (Project))
+				return await base.OnBuild (monitor, configuration);
+
 			Generator gen = new Generator ();
 			if (!await gen.Run (monitor, Project, configuration)) {
 				BuildResult gr = new BuildResult ();
