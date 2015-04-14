@@ -35,7 +35,7 @@ namespace MonoDevelop.AspNet.Razor
 {
 	// Based on MonoDevelop.AspNet.Gui.ILanguageCompletionBuilder
 
-	public interface IRazorCompletionBuilder
+	interface IRazorCompletionBuilder
 	{
 		bool SupportsLanguage (string language);
 		ICompletionWidget CreateCompletionWidget (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet.Razor
 		public UnderlyingDocument UnderlyingDocument { get; set; }
 	}
 
-	public static class RazorCompletionBuilderService
+	static class RazorCompletionBuilderService
 	{
 		static List<IRazorCompletionBuilder> builder = new List<IRazorCompletionBuilder> ();
 

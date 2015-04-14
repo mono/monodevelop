@@ -76,7 +76,7 @@ namespace CBinding
 		// -1 means the cursor is outside the method parameter list
 		// 0 means no parameter entered
 		// > 0 is the index of the parameter (1-based)
-		public int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
+		internal int GetCurrentParameterIndex (ICompletionWidget widget, CodeCompletionContext ctx)
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = ctx.TriggerOffset;
