@@ -286,9 +286,15 @@ namespace MonoDevelop.Components.AutoTest
 			public TimeSpan TotalTime;
 		};
 
+		Counter GetCounterByIDOrName (string idOrName)
+		{
+			Counter c = InstrumentationService.GetCounterByID (idOrName);
+			return c ?? InstrumentationService.GetCounter (idOrName);
+		}
+
 		public TimerCounterContext CreateNewTimerContext (string counterName)
 		{
-			TimerCounter tc = InstrumentationService.GetCounter (counterName) as TimerCounter;
+			TimerCounter tc = GetCounterByIDOrName (counterName) as TimerCounter;
 			if (tc == null) {
 				throw new Exception ("Unknown timer counter " + counterName);
 			}
@@ -303,7 +309,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void WaitForTimerContext (TimerCounterContext context, int timeout = 20000, int pollStep = 200)
 		{
-			TimerCounter tc = InstrumentationService.GetCounter (context.CounterName) as TimerCounter;
+			TimerCounter tc = GetCounterByIDOrName (context.CounterName) as TimerCounter;
 			if (tc == null) {
 				throw new Exception ("Unknown timer counter " + context.CounterName);
 			}
