@@ -618,7 +618,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
 					if (!skipBody) {
-						if (method.ReturnType.MetadataName != typeof(void).FullName)
+						if (method.ReturnType.SpecialType != SpecialType.System_Void)
 							result.Append ("return ");
 						result.Append ("base.");
 						result.Append (CSharpAmbience.FilterName (method.Name));
