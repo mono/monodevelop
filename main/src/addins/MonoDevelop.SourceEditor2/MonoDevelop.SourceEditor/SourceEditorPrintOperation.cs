@@ -292,8 +292,8 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (Font == null || String.IsNullOrEmpty (Font.Family))
 				Font = Pango.FontDescription.FromString (TextEditorOptions.DEFAULT_FONT);
-			if (Font != null)
-				Font.Size = (int)(Font.Size * DefaultSourceEditorOptions.Instance.Zoom);
+			//if (Font != null)
+			//	Font.Size = (int)(Font.Size * DefaultSourceEditorOptions.Instance.Zoom);
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");

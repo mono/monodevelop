@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (itemFont != null)
 				itemFont.Dispose ();
 			itemFont = FontService.GetFontDescription ("Editor").Copy ();
-			var newSize = (itemFont.Size * DefaultSourceEditorOptions.Instance.Zoom);
+			var newSize = (itemFont.Size * this.completionWidget.ZoomLevel);
 			if (newSize > 0) {
 				itemFont.Size = (int)newSize;
 				layout.FontDescription = itemFont;

@@ -95,6 +95,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 			}
 
 			#region ICompletionWidget implementation
+			public double ZoomLevel {
+				get {
+					return completionWidget.ZoomLevel;
+				}
+			}
+
 			event EventHandler ICompletionWidget.CompletionContextChanged {
 				add {
 					completionWidget.CompletionContextChanged += value;

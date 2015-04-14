@@ -2111,7 +2111,13 @@ namespace MonoDevelop.Debugger
 				return ((ICompletionWidget)this).CreateCodeCompletionContext (editEntry.Position);
 			}
 		}
-		
+
+		public double ZoomLevel {
+			get {
+				return 1;
+			}
+		}
+
 		public event EventHandler CompletionContextChanged;
 
 		protected virtual void OnCompletionContextChanged (EventArgs e)

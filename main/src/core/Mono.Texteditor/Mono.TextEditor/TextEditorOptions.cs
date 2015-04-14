@@ -65,10 +65,11 @@ namespace Mono.TextEditor
 		string colorStyle = DefaultColorStyle;
 		Pango.FontDescription font, gutterFont;
 		
-		double zoom = 1d;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
 
 		#region Zoom
+		static double zoom = 1d;
+		static event EventHandler StaticZoomChanged;
 
 		const double ZOOM_FACTOR = 1.1f;
 		const int ZOOM_MIN_POW = -4;
@@ -76,7 +77,7 @@ namespace Mono.TextEditor
 		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
-		public virtual double Zoom {
+		public double Zoom {
 			get {
 				return zoom;
 			}
@@ -90,15 +91,12 @@ namespace Mono.TextEditor
 				}
 				if (zoom != value) {
 					zoom = value;
-					DisposeFont ();
-					ZoomChanged?.Invoke (this, EventArgs.Empty);
-                    OnChanged (EventArgs.Empty);
+					StaticZoomChanged?.Invoke (this, EventArgs.Empty);
 				}
 			}
 		}
+		public event EventHandler ZoomChanged { add { StaticZoomChanged += value; } remove { StaticZoomChanged -= value; } }
 
-		public event EventHandler ZoomChanged;
-		
 		public bool CanZoomIn {
 			get {
 				return Zoom < ZOOM_MAX - 0.000001d;
@@ -571,11 +569,23 @@ namespace Mono.TextEditor
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}
-		
+
+		public TextEditorOptions ()
+		{
+			StaticZoomChanged += HandleStaticZoomChanged;
+		}
+
 		public virtual void Dispose ()
 		{
+			StaticZoomChanged -= HandleStaticZoomChanged;
 		}
-		
+
+		void HandleStaticZoomChanged (object sender, EventArgs e)
+		{
+			DisposeFont ();
+			OnChanged (EventArgs.Empty);
+		}
+
 		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)

@@ -266,6 +266,12 @@ namespace MonoDevelop.Debugger
 		{
 			// ignore
 		}
+
+		double ICompletionWidget.ZoomLevel {
+			get {
+				return 1;
+			}
+		}
 		#endregion 
 	}
 }

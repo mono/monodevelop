@@ -66,12 +66,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITextEditorOptions implementation
-		public override double Zoom {
-			get { return DefaultSourceEditorOptions.Instance.Zoom; }
-			set { DefaultSourceEditorOptions.Instance.Zoom = value; }
-		}
-	
-
 		static IWordFindStrategy monoDevelopWordFindStrategy = new EmacsWordFindStrategy (false);
 		static IWordFindStrategy emacsWordFindStrategy = new EmacsWordFindStrategy (true);
 		static IWordFindStrategy sharpDevelopWordFindStrategy = new SharpDevelopWordFindStrategy ();

@@ -2942,7 +2942,7 @@ namespace MonoDevelop.SourceEditor
 				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
 		}
 
-		double ITextEditorImpl.ZoomLevel {
+		public double ZoomLevel {
 			get { return TextEditor.Options.Zoom; }
 			set { TextEditor.Options.Zoom = value; } 
 		}

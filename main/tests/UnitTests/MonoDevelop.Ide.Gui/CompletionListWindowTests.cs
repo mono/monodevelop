@@ -116,6 +116,11 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
+			double ICompletionWidget.ZoomLevel {
+				get {
+					return 1;
+				}
+			}
 
 			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
 			{

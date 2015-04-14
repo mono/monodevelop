@@ -377,6 +377,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		double ICompletionWidget.ZoomLevel {
+			get {
+				return 1;
+			}
+		}
+
 		char ICompletionWidget.GetChar (int offset)
 		{
 			string text = TokenText;

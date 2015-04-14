@@ -427,33 +427,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#region ITextEditorOptions
-		
-		double zoom = 1d;
-		const double ZOOM_FACTOR = 1.1f;
-		const int ZOOM_MIN_POW = -4;
-		const int ZOOM_MAX_POW = 8;
-		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
-		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
-
-		public double Zoom {
-			get {
-				return zoom;
-			}
-			set {
-				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
-				if (value > ZOOM_MAX || value < ZOOM_MIN)
-					return;
-				//snap to one, if within 0.001d
-				if ((System.Math.Abs (value - 1d)) < 0.001d) {
-					value = 1d;
-				}
-				if (zoom != value) {
-					zoom = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
 		string defaultEolMarker = Environment.NewLine;
 		public string DefaultEolMarker {
 			get {
