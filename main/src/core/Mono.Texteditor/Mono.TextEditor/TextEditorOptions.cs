@@ -91,10 +91,13 @@ namespace Mono.TextEditor
 				if (zoom != value) {
 					zoom = value;
 					DisposeFont ();
-					OnChanged (EventArgs.Empty);
+					ZoomChanged?.Invoke (this, EventArgs.Empty);
+                    OnChanged (EventArgs.Empty);
 				}
 			}
 		}
+
+		public event EventHandler ZoomChanged;
 		
 		public bool CanZoomIn {
 			get {

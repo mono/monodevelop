@@ -33,7 +33,8 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public enum EditMode {
+	public enum EditMode
+	{
 		Edit,
 		TextLink,
 		CursorInsertion
@@ -84,7 +85,7 @@ namespace MonoDevelop.Ide.Editor
 		ITextEditorOptions Options { get; set; }
 
 		IReadonlyTextDocument Document { get; set; }
-	
+
 		DocumentLocation CaretLocation { get; set; }
 
 		SemanticHighlighting SemanticHighlighting { get; set; }
@@ -155,7 +156,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void CenterTo (int offset);
 
-		IList<SkipChar> SkipChars {
+		IList<SkipChar> SkipChars
+		{
 			get;
 		}
 
@@ -205,12 +207,14 @@ namespace MonoDevelop.Ide.Editor
 
 		#region Internal use only API (do not mirror in TextEditor)
 
-		TextEditorExtension EditorExtension {
+		TextEditorExtension EditorExtension
+		{
 			get;
 			set;
 		}
 
-		IEnumerable<TooltipProvider> TooltipProvider {
+		IEnumerable<TooltipProvider> TooltipProvider
+		{
 			get;
 		}
 
@@ -230,5 +234,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void SetQuickTaskProviders (IEnumerable<IQuickTaskProvider> providers);
 		#endregion
+
+		double ZoomLevel { get; set; }
+		event EventHandler ZoomLevelChanged;
 	}
 }

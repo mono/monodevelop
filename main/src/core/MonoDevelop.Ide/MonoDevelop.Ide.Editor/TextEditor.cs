@@ -68,8 +68,6 @@ namespace MonoDevelop.Ide.Editor
 				if (extensionNode.IsValidFor (MimeType))
 					return;
 				provider = (TooltipProvider) extensionNode.CreateInstance ();
-
-
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
 				return;
@@ -387,6 +385,24 @@ namespace MonoDevelop.Ide.Editor
 		public int Length {
 			get {
 				return ReadOnlyTextDocument.Length;
+			}
+		}
+
+		public double ZoomLevel {
+			get {
+				return textEditorImpl.ZoomLevel;
+			}
+			set {
+				textEditorImpl.ZoomLevel = value;
+			}
+		}
+
+		public event EventHandler ZoomLevelChanged {
+			add {
+				textEditorImpl.ZoomLevelChanged += value;
+			}
+			remove {
+				textEditorImpl.ZoomLevelChanged -= value;
 			}
 		}
 

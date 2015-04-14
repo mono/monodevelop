@@ -2942,6 +2942,20 @@ namespace MonoDevelop.SourceEditor
 				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
 		}
 
+		double ITextEditorImpl.ZoomLevel {
+			get { return TextEditor.Options.Zoom; }
+			set { TextEditor.Options.Zoom = value; } 
+		}
+		event EventHandler ITextEditorImpl.ZoomLevelChanged {
+			add {
+				TextEditor.Options.ZoomChanged += value;
+			}
+			remove {
+				TextEditor.Options.ZoomChanged += value;
+			}
+		}
+
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
