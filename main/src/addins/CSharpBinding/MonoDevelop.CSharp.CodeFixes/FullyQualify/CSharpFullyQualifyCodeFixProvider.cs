@@ -47,7 +47,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 {
-	[NRefactoryCodeRefactoringProvider(Description = "Fully qualify symbol name")]
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = "Fully Qualify")]
 	[ExtensionOrder(After = PredefinedCodeFixProviderNames.AddUsingOrImport)]
 	class CSharpFullyQualifyCodeFixProvider : CodeFixProvider
@@ -134,6 +133,10 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 
 			var project = document.Project;
 			var diagnostic = diagnostics.First();
+			var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
+			
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var node = root.FindToken(span.Start).GetAncestors<SyntaxNode>().First(n => n.Span.Contains(span));
 

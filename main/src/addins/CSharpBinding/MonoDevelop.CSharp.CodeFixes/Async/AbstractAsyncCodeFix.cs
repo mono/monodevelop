@@ -49,6 +49,9 @@ namespace MonoDevelop.CSharp.CodeFixes
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
+			var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			SyntaxNode node;

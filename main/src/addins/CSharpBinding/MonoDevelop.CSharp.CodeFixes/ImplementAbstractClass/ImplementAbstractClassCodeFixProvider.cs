@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.CodeFixes.ImplementAbstractClass
 {
@@ -47,6 +48,9 @@ namespace MonoDevelop.CSharp.CodeFixes.ImplementAbstractClass
 			}
 
 			var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
+			
 			foreach (var baseTypeSyntax in classNode.BaseList.Types)
 			{
 				var node = baseTypeSyntax.Type;

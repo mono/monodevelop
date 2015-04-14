@@ -71,6 +71,8 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryImports
 
 		private void AnalyzeSemanticModel(SemanticModelAnalysisContext context)
 		{
+			if (context.IsFromGeneratedCode ())
+				return;
 			var tree = context.SemanticModel.SyntaxTree;
 			var root = tree.GetRoot();
 			var unncessaryImports = GetUnnecessaryImports(context.SemanticModel, root);

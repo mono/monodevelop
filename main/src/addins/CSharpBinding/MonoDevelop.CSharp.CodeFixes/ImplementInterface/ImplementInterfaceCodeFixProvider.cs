@@ -47,6 +47,8 @@ namespace MonoDevelop.CSharp.CodeFixes.ImplementInterface
 			}
 
 			var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			if (model.IsFromGeneratedCode (cancellationToken))
+				return;
 
 			var actions = token.Parent.GetAncestorsOrThis<TypeSyntax>()
 				.Where(_interfaceName)

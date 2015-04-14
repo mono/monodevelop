@@ -23,7 +23,9 @@ namespace MonoDevelop.CSharp.CodeRefactorings.IntroduceVariable
 			{
 				return;
 			}
-
+			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (cancellationToken))
+				return;
 			var result = await service.IntroduceVariableAsync(document, textSpan, cancellationToken).ConfigureAwait(false);
 
 			if (!result.ContainsChanges)

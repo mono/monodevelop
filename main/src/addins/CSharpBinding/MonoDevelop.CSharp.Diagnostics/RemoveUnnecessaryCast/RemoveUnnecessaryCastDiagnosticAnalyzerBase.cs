@@ -63,7 +63,8 @@ namespace MonoDevelop.CSharp.Diagnostics.RemoveUnnecessaryCast
 			SemanticModel model, SyntaxNode node, out Diagnostic diagnostic, CancellationToken cancellationToken)
 		{
 			diagnostic = default(Diagnostic);
-
+			if (model.IsFromGeneratedCode (cancellationToken))
+				return false;
 			if (!IsUnnecessaryCast(model, node, cancellationToken))
 			{
 				return false;

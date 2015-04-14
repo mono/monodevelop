@@ -32,6 +32,8 @@ namespace MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames
 
 		protected override void AnalyzeNode(SyntaxNodeAnalysisContext context)
 		{
+			if (context.IsFromGeneratedCode ())
+				return;
 			if (context.Node.Ancestors(ascendOutOfTrivia: false).Any(n => s_kindsOfInterest.Contains(n.Kind())))
 			{
 				// Already simplified an ancestor of this node.

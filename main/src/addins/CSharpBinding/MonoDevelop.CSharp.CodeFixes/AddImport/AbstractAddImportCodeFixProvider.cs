@@ -48,6 +48,9 @@ namespace MonoDevelop.CSharp.CodeFixes
 
 			var project = document.Project;
 			var diagnostic = diagnostics.First();
+			var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var ancestors = root.FindToken(span.Start, findInsideTrivia: true).GetAncestors<SyntaxNode>();
 			if (!ancestors.Any())

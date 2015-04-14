@@ -79,7 +79,7 @@ namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 		{
 			var info = semanticModel.GetSymbolInfo (node);
 			diagnostic = default(Diagnostic);
-			if (info.Symbol == null)
+			if (info.Symbol == null || semanticModel.IsFromGeneratedCode (cancellationToken))
 				return false;
 
 			foreach (var attr in info.Symbol.GetAttributes ()) {

@@ -44,7 +44,9 @@ namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary
 			{
 				return;
 			}
-
+			var model = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (cancellationToken))
+				return;
 			var root = await document.GetCSharpSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var token = root.FindToken(textSpan.Start);
 

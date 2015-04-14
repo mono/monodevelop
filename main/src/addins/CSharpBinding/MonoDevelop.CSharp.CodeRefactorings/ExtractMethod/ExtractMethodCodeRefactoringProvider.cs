@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 {
@@ -26,7 +27,6 @@ namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 			{
 				return;
 			}
-
 			var document = context.Document;
 			var cancellationToken = context.CancellationToken;
 
@@ -41,7 +41,10 @@ namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 			{
 				return;
 			}
-
+			var model = await context.Document.GetSemanticModelAsync (context.CancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
+			
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return;

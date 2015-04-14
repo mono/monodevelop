@@ -46,7 +46,6 @@ using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 {
-	[NRefactoryCodeRefactoringProvider(Description = "Move type to file")]
 	[ExportCodeRefactoringProvider(LanguageNames.CSharp, Name = "Move type to file")]
 	class MoveTypeToFile : CodeRefactoringProvider
 	{
@@ -56,7 +55,10 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 			var span = context.Span;
 			var cancellationToken = context.CancellationToken;
 
-			var root = await document.GetSyntaxRootAsync(cancellationToken);
+			var model = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (cancellationToken))
+				return;
+			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait (false);
 			var token = root.FindToken(span.Start);
 
 			var type = token.Parent as BaseTypeDeclarationSyntax;

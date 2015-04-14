@@ -50,8 +50,11 @@ namespace MonoDevelop.CSharp.CodeFixes.GenerateConstructor
 			{
 				return;
 			}
+			var model = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait (false);
+			if (model.IsFromGeneratedCode (context.CancellationToken))
+				return;
 
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			var root = await model.SyntaxTree.GetRootAsync (context.CancellationToken).ConfigureAwait (false);
 			var names = GetTargetNodes(root, context.Span);
 			foreach (var name in names)
 			{
