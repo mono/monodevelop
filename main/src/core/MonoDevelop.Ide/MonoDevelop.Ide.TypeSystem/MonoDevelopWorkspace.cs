@@ -39,6 +39,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core.ProgressMonitoring;
+using Gtk;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -523,8 +524,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				internalChanges = true;
 				base.ApplyProjectChanges (projectChanges);
 				var data = GetMonoProject (projectChanges.NewProject);
-				if (data != null)
-					data.Save (new NullProgressMonitor ());
+				if (data != null) {
+					Application.Invoke (delegate {
+						data.Save (new NullProgressMonitor ());	
+					});
+				}
 			} finally {
 				internalChanges = false;
 			}
@@ -644,8 +648,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			if (mdProject != null) {
 				var file = new MonoDevelop.Projects.ProjectFile (path);
-				mdProject.Files.Add (file);
-				IdeApp.ProjectOperations.Save (mdProject);
+				Application.Invoke (delegate {
+					mdProject.Files.Add (file);
+					IdeApp.ProjectOperations.Save (mdProject);
+				});
 			}
 
 			OnDocumentAdded (info.WithTextLoader (new MonoDevelopTextLoader (path)));
