@@ -106,8 +106,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							w.UpdateFileContent (file.FileName, text);
 					} catch (FileNotFoundException) {}
 				}
-				foreach (var w in IdeApp.Workbench.Documents)
-					w.StartReparseThread ();
+				if (IdeApp.Workbench != null)
+					foreach (var w in IdeApp.Workbench.Documents)
+						w.StartReparseThread ();
 			};
 
 			IntitializeTrackedProjectHandling ();
