@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (doc == null)
 				return false;
-			if (!doc.Editor.IsSomethingSelected)
+			if (doc.Editor == null || !doc.Editor.IsSomethingSelected)
 				return false;
 			var ad = doc.AnalysisDocument;
 			if (ad == null)
