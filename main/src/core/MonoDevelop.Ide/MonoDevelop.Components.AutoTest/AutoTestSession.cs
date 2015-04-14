@@ -280,6 +280,46 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		[Serializable]
+		public struct TimerCounterContext {
+			public string CounterName;
+			public TimeSpan TotalTime;
+		};
+
+		public TimerCounterContext CreateNewTimerContext (string counterName)
+		{
+			TimerCounter tc = InstrumentationService.GetCounter (counterName) as TimerCounter;
+			if (tc == null) {
+				throw new Exception ("Unknown timer counter " + counterName);
+			}
+
+			TimerCounterContext context = new TimerCounterContext {
+				CounterName = counterName,
+				TotalTime = tc.TotalTime
+			};
+
+			return context;
+		}
+
+		public void WaitForTimerContext (TimerCounterContext context, int timeout = 20000, int pollStep = 200)
+		{
+			TimerCounter tc = InstrumentationService.GetCounter (context.CounterName) as TimerCounter;
+			if (tc == null) {
+				throw new Exception ("Unknown timer counter " + context.CounterName);
+			}
+
+			do {
+				if (tc.TotalTime > context.TotalTime) {
+					return;
+				}
+
+				timeout -= pollStep;
+				Thread.Sleep (pollStep);
+			} while (timeout > 0);
+
+			throw new Exception ("Timed out waiting for event");
+		}
+
 		public bool Select (AppResult result)
 		{
 			return result.Select ();

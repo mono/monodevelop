@@ -285,28 +285,11 @@ namespace MonoDevelop.Components.AutoTest
 			return session.Toggle (results [0], active);
 		}
 
-		static void WaitUntil (Func<bool> done, int timeout=20000, int pollStep = 200)
-		{
-			do {
-				if (done ()) {
-					return;
-				}
-
-				timeout -= pollStep;
-				Thread.Sleep (pollStep);
-			} while (timeout > 0);
-
-			throw new Exception ("Timed out waiting for event");
-		}
-
 		public void RunAndWaitForTimer (Action action, string counterName, int timeout = 20000)
 		{
-			var c = GetGlobalValue<TimerCounter> (counterName);
-			var tt = c.TotalTime;
-
+			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);
 			action ();
-
-			WaitUntil (() => c.TotalTime > tt, timeout);
+			session.WaitForTimerContext (context);
 		}
 	}
 
