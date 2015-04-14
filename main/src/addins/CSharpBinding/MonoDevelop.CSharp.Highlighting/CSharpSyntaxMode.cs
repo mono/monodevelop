@@ -186,6 +186,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
 
 			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
+			nameofKeywordColor = ColorScheme.KeywordOtherKey;
 		}
 
 		protected override void Colorize (TextSpan span, string color)
