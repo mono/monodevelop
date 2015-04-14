@@ -78,7 +78,7 @@ namespace UserInterfaceTests
 				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
 				Assert.IsTrue (newProject.UseGit (true, false));
 
-				Session.RunAndWaitForTimer (() => newProject.Next(), "Solution opened in the IDE");
+				Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
 
 				actualSolutionDirectory = GetSolutionDirectory ();
 
