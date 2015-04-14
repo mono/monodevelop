@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		#endregion
 
-		public ICompletionWidget CompletionWidget
+		internal ICompletionWidget CompletionWidget
 		{
 			get;
 			set;

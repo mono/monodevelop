@@ -31,7 +31,7 @@ using Gtk;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICompletionWidget
+	interface ICompletionWidget
 	{
 		CodeCompletionContext CurrentCodeCompletionContext
 		{

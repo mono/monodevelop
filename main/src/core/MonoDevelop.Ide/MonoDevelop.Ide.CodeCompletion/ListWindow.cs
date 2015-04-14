@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 
-		public ICompletionWidget CompletionWidget {
+		internal ICompletionWidget CompletionWidget {
 			get {
 				return list.CompletionWidget;
 			}

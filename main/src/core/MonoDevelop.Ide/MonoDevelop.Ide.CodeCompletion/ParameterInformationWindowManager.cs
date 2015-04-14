@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		// Called when a key is pressed in the editor.
 		// Returns false if the key press has to continue normal processing.
-		public static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
+		internal static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 			if (methods.Count == 0)
 				return false;
@@ -96,11 +96,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
+		internal static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 		}
 
-		public static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void UpdateCursorPosition (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{	
 			// Called after the key has been processed by the editor
 			if (methods.Count == 0)
@@ -125,12 +125,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 
-		public static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterHintingResult provider)
+		internal static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterHintingResult provider)
 		{
 			if (provider.Count == 0)
 				return;
@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
+		internal static void HideWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
 		{
 			methods.Clear ();
 			if (window != null)

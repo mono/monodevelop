@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		// ext may be null, but then parameter completion don't work
-		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		internal static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			try {
 				if (ext != null) {
