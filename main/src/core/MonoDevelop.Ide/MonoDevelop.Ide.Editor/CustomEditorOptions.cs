@@ -148,6 +148,34 @@ namespace MonoDevelop.Ide.Editor
 			this.DefaultEolMarker = "\n";
 		}
 
+		public CustomEditorOptions (ITextEditorOptions initializeFrom)
+		{
+			if (initializeFrom == null)
+				throw new ArgumentNullException (nameof (initializeFrom));
+			WordFindStrategy = initializeFrom.WordFindStrategy;
+			TabsToSpaces = initializeFrom.TabsToSpaces;
+			IndentationSize = initializeFrom.IndentationSize;
+			TabSize = initializeFrom.TabSize;
+			ShowIconMargin = initializeFrom.ShowIconMargin;
+			ShowLineNumberMargin = initializeFrom.ShowLineNumberMargin;
+			ShowFoldMargin = initializeFrom.ShowFoldMargin;
+			HighlightCaretLine = initializeFrom.HighlightCaretLine;
+			RulerColumn = initializeFrom.RulerColumn;
+			ShowRuler = initializeFrom.ShowRuler;
+			IndentStyle = initializeFrom.IndentStyle;
+			OverrideDocumentEolMarker = initializeFrom.OverrideDocumentEolMarker;
+			EnableSyntaxHighlighting = initializeFrom.EnableSyntaxHighlighting;
+			RemoveTrailingWhitespaces = initializeFrom.RemoveTrailingWhitespaces;
+			WrapLines = initializeFrom.WrapLines;
+			FontName = initializeFrom.FontName;
+			GutterFontName = initializeFrom.GutterFontName;
+			ColorScheme = initializeFrom.ColorScheme;
+			DefaultEolMarker = initializeFrom.DefaultEolMarker;
+			GenerateFormattingUndoStep = initializeFrom.GenerateFormattingUndoStep;
+			ShowWhitespaces = initializeFrom.ShowWhitespaces;
+			IncludeWhitespaces = initializeFrom.IncludeWhitespaces;
+		}
+
 		#region IDisposable implementation
 		public void Dispose ()
 		{
