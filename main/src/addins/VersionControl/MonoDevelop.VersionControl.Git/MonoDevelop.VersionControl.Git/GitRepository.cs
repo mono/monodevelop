@@ -546,18 +546,20 @@ namespace MonoDevelop.VersionControl.Git
 
 		static void RetryUntilSuccess (IProgressMonitor monitor, Action func)
 		{
-			bool retry = false;
+			bool retry;
 			do {
 				try {
 					func ();
 					GitCredentials.StoreCredentials ();
+					retry = false;
 				} catch (LibGit2SharpException) {
-					retry = true;
 					GitCredentials.InvalidateCredentials ();
+					retry = true;
 				} catch (VersionControlException e) {
 					GitCredentials.InvalidateCredentials ();
 					if (monitor != null)
 						monitor.ReportError (e.Message, null);
+					retry = false;
 				}
 			} while (retry);
 		}
