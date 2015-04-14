@@ -93,8 +93,12 @@ namespace MonoDevelop.CSharp.Parser
 					else if (ICSharpCode.NRefactory6.NewLine.IsNewLine (text [text.Length - 1]))
 						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 1);
 				}
-				var lineSpan = trivia.SyntaxTree.GetLineSpan (fullSpan);
-				return (DocumentRegion)lineSpan;
+				try {
+					var lineSpan = trivia.SyntaxTree.GetLineSpan (fullSpan);
+					return (DocumentRegion)lineSpan;
+				} catch (Exception) {
+					return DocumentRegion.Empty;
+				}
 			}
 
 			public override void VisitBlock (BlockSyntax node)

@@ -467,9 +467,16 @@ namespace MonoDevelop.CSharp
 		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
-			if (unit == null || !unit.GetUserRegionsAsync().Result.Any ())
+			FoldingRegion reg;
+			try {
+				if (unit == null || !unit.GetUserRegionsAsync ().Result.Any ())
+					return null;
+				reg = unit.GetUserRegionsAsync ().Result.LastOrDefault (r => r.Region.Contains (loc));
+			} catch (AggregateException) {
 				return null;
-			var reg = unit.GetUserRegionsAsync().Result.LastOrDefault (r => r.Region.Contains (loc));
+			} catch (OperationCanceledException) {
+				return null;
+			}
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {
