@@ -43,7 +43,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			get;
 			set;
 		}
-		
+
+		public virtual PathMode PathMode {
+			get { return PathMode.Absolute; }
+		}
+
 		public abstract int GetTotalWork (FilterOptions filterOptions);
 		public abstract IEnumerable<FileProvider> GetFiles (IProgressMonitor monitor, FilterOptions filterOptions);
 		public abstract string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern);
@@ -51,6 +55,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class DocumentScope : Scope
 	{
+		public override PathMode PathMode {
+			get { return PathMode.Hidden; }
+		}
+
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			return 1;
@@ -73,6 +81,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 	public class SelectionScope : Scope
 	{
+		public override PathMode PathMode {
+			get { return PathMode.Hidden; }
+		}
+
 		public override int GetTotalWork (FilterOptions filterOptions)
 		{
 			return 1;

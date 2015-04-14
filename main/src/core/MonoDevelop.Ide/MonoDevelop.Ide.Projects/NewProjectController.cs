@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Projects
 			if (BasePath == null)
 				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 
-			projectConfiguration.Location = FileService.ResolveFullPath (BasePath);
+			projectConfiguration.Location = new FilePath (BasePath).ResolveLinks ();
 		}
 
 		void SetDefaultGitSettings ()
@@ -496,12 +496,16 @@ namespace MonoDevelop.Ide.Projects
 
 			if (OpenSolution) {
 				DisposeExistingNewItems ();
+				TemplateWizard wizard = wizardProvider.CurrentWizard;
 				var op = OpenCreatedSolution (processedTemplate);
 				op.Completed += delegate {
 					if (op.Success) {
 						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
-						if (sol != null)
+						if (sol != null) {
+							if (wizard != null)
+								wizard.ItemsCreated (new [] { sol });
 							InstallProjectTemplatePackages (sol);
+						}
 					}
 				};
 			}
@@ -510,6 +514,8 @@ namespace MonoDevelop.Ide.Projects
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
 				RunTemplateActions (processedTemplate);
+				if (wizardProvider.HasWizard)
+					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}

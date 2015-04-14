@@ -355,6 +355,7 @@ namespace MonoDevelop.Projects
 					return new BuildResult ();
 				}
 			} else if (target == ProjectService.CleanTarget) {
+				SetFastBuildCheckDirty ();
 				SolutionItemConfiguration config = GetConfiguration (configuration) as SolutionItemConfiguration;
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration);

@@ -85,7 +85,12 @@ namespace MonoDevelop.Ide.Projects
 			get { return selector.SelectableItemTypes; }
 			set { selector.SelectableItemTypes = value; }
 		}
-		
+
+		public Func<IBuildTarget,bool> SelectableFilter {
+			get { return selector.SelectableFilter; }
+			set { selector.SelectableFilter = value; }
+		}
+
 		void UpdateOk ()
 		{
 			if (selector.ShowCheckboxes)

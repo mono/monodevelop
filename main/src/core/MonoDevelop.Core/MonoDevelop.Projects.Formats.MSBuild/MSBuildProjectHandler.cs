@@ -1019,6 +1019,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var privateCopy = buildItem.GetBoolMetadata ("Private");
 					if (privateCopy != null)
 						pref.LocalCopy = privateCopy.Value;
+					var roa = buildItem.GetBoolMetadata ("ReferenceOutputAssembly");
+					pref.ReferenceOutputAssembly = roa == null || roa.Value;
 					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					return pref;
 				}
@@ -1649,7 +1651,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem.UnsetMetadata ("HintPath");
 			}
 			else if (pref.ReferenceType == ReferenceType.Project) {
-				Project refProj = Item.ParentSolution.FindProjectByName (pref.Reference);
+				Project refProj = Item.ParentSolution != null ? Item.ParentSolution.FindProjectByName (pref.Reference) : null;
 				if (refProj != null) {
 					buildItem = AddOrGetBuildItem (msproject, oldItems, "ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName), pref.Condition);
 					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
@@ -1658,6 +1660,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					else
 						buildItem.UnsetMetadata ("Project");
 					buildItem.SetMetadata ("Name", refProj.Name);
+					if (pref.ReferenceOutputAssembly)
+						buildItem.UnsetMetadata ("ReferenceOutputAssembly");
+					else
+						buildItem.SetMetadata ("ReferenceOutputAssembly", false);
 				} else {
 					monitor.ReportWarning (GettextCatalog.GetString ("Reference to unknown project '{0}' ignored.", pref.Reference));
 					return;

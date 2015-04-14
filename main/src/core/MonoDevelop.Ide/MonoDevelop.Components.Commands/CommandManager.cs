@@ -328,7 +328,7 @@ namespace MonoDevelop.Components.Commands
 				// If the window is a gtk window and is registered in the command manager
 				// process the events through the handler.
 				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
-				if (gtkWindow == null || !TopLevelWindowStack.Contains (gtkWindow))
+				if (gtkWindow != null && !TopLevelWindowStack.Contains (gtkWindow))
 					return null;
 			}
 

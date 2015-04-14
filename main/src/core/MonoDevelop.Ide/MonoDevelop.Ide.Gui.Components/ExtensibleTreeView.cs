@@ -1320,19 +1320,24 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (root == null)
 				return null;
 
-			var state = root.SaveState ();
+			var rootState = NodeState.CreateRoot ();
+			List<NodeState> children = new List<NodeState> ();
+			rootState.ChildrenState = children;
 
 			var s = new Dictionary<string, bool> ();
 			foreach (TreePadOption opt in options) {
 				bool val;
 				if (globalOptions.TryGetValue (opt.Id, out val) && val != opt.DefaultValue)
-					s[opt.Id] = val;
+					s [opt.Id] = val;
 			}
-			if (s.Count != 0) {
-				state.Options = s;
-			}
+			if (s.Count != 0)
+				rootState.Options = s;
 
-			return state;
+			do {
+				rootState.ChildrenState.Add (root.SaveState ());
+			} while (root.MoveNext ());
+
+			return rootState;
 		}
 
 		public void RestoreTreeState (NodeState state)
@@ -1344,7 +1349,21 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (nav == null)
 				return;
 
-			nav.RestoreState (state);
+			if (state.IsRoot) {
+				if (state.ChildrenState != null) {
+					var pos = nav.CurrentPosition;
+					foreach (NodeState ces in state.ChildrenState) {
+						do {
+							if (nav.NodeName == ces.NodeName) {
+								nav.RestoreState (ces);
+								break;
+							}
+						} while (nav.MoveNext ());
+						nav.MoveToPosition (pos);
+					}
+				}
+			} else
+				nav.RestoreState (state);
 
 			globalOptions = new TreeOptions ();
 			foreach (TreePadOption opt in options) {

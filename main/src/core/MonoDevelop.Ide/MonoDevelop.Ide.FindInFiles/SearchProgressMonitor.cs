@@ -57,7 +57,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			outputPad.BasePath = path;
 		}
-		
+
+		public PathMode PathMode {
+			set { outputPad.PathMode = value; }
+		}
+
 		[AsyncDispatch]
 		public void ReportResult (SearchResult result)
 		{

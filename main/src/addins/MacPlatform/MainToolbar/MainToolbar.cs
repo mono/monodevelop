@@ -186,9 +186,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => {
-				double size = Math.Round (bar.Window.Frame.Width * 0.25f);
-				item.MinSize = new CGSize ((nfloat)Math.Max (300, size), 22);
-				item.MaxSize = new CGSize ((nfloat)Math.Min (600, size), 22);
+				// Skip updates with a null Window. Only crashes on Mavericks.
+				// The View gets updated once again when the window resize finishes.
+				if (bar.Window == null)
+					return;
+
+				double maxSize = Math.Round (bar.Window.Frame.Width * 0.30f);
+				double minSize = Math.Round (bar.Window.Frame.Width * 0.25f);
+				item.MinSize = new CGSize ((nfloat)Math.Max (280, minSize), 22);
+				item.MaxSize = new CGSize ((nfloat)Math.Min (700, maxSize), 22);
 				bar.RepositionStatusLayers ();
 			});
 			return item;
@@ -203,7 +209,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			gtkWindow = window;
 			widget = new NSToolbar (MainToolbarId) {
-				DisplayMode = NSToolbarDisplayMode.IconAndLabel,
+				DisplayMode = NSToolbarDisplayMode.Icon,
 			};
 			widget.WillInsertItem = (tool, id, send) => {
 				switch (id) {

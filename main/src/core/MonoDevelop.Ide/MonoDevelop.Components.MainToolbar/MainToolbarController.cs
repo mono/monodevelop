@@ -288,7 +288,8 @@ namespace MonoDevelop.Components.MainToolbar
 			ExecutionTarget newTarget;
 			string fullConfig;
 
-			configurationMerger.ResolveConfiguration (config.OriginalId, ((RuntimeModel)ToolbarView.ActiveRuntime).ExecutionTarget, out fullConfig, out newTarget);
+			var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
+			configurationMerger.ResolveConfiguration (config.OriginalId, runtime != null ? runtime.ExecutionTarget : null, out fullConfig, out newTarget);
 			settingGlobalConfig = true;
 			try {
 				IdeApp.Workspace.ActiveExecutionTarget = newTarget;

@@ -44,6 +44,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
+using System.Collections.Generic;
 
 namespace MonoDevelop.NUnit
 {
@@ -344,9 +345,11 @@ namespace MonoDevelop.NUnit
 		void OnTestSuiteChanged (object sender, EventArgs e)
 		{
 			if (testService.RootTests.Length > 0) {
+				var s = TreeView.SaveTreeState ();
 				TreeView.Clear ();
 				foreach (UnitTest t in testService.RootTests)
 					TreeView.AddChild (t);
+				TreeView.RestoreTreeState (s);
 			}
 			else {
 				TreeView.Clear ();
@@ -517,7 +520,7 @@ namespace MonoDevelop.NUnit
 			base.OnSelectionChanged (sender, args);
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav != null) {
-				UnitTest test = (UnitTest) nav.DataItem;
+				UnitTest test = nav.DataItem as UnitTest;
 				if (test != null)
 					FillDetails (test, false);
 			}

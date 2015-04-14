@@ -1106,8 +1106,8 @@ namespace MonoDevelop.Debugger
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
 			}
-			
-			strval = strval.Replace (Environment.NewLine, " ");
+
+			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);

@@ -69,12 +69,85 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// </summary>
 		public class LogTextView : TextView
 		{
+			MonoDevelop.Components.ContextMenu context_menu;
+			MonoDevelop.Components.ContextMenuItem cut;
+			MonoDevelop.Components.ContextMenuItem copy;
+			MonoDevelop.Components.ContextMenuItem paste;
+			MonoDevelop.Components.ContextMenuItem select_all;
+
 			public LogTextView (TextBuffer buf) : base (buf)
 			{
+				SetupMenu ();
 			}
 
 			public LogTextView () 
 			{
+				SetupMenu ();
+			}
+
+			void SetupMenu ()
+			{
+				context_menu = new MonoDevelop.Components.ContextMenu ();
+				cut = new MonoDevelop.Components.ContextMenuItem { Label = GettextCatalog.GetString ("Cut") };
+				cut.Clicked += (sender, e) => CopyText ();
+				context_menu.Items.Add (cut);
+
+				copy = new MonoDevelop.Components.ContextMenuItem { Label = GettextCatalog.GetString ("Copy") };
+				copy.Clicked += (sender, e) => CutText ();
+				context_menu.Items.Add (copy);
+
+				paste = new MonoDevelop.Components.ContextMenuItem { Label = GettextCatalog.GetString ("Paste") };
+				paste.Clicked += (sender, e) => PasteText ();
+				context_menu.Items.Add (paste);
+
+				select_all = new MonoDevelop.Components.ContextMenuItem { Label = GettextCatalog.GetString ("Select All") };
+				select_all.Clicked += (sender, e) => SelectAllText ();
+				context_menu.Items.Add (select_all);
+			}
+
+			void UpdateMenuItemSensitivities ()
+			{
+				select_all.Sensitive = (Buffer.CharCount > 0);
+				cut.Sensitive = copy.Sensitive = (Buffer.CharCount > 0 && Buffer.HasSelection);
+				paste.Sensitive = this.Editable;
+			}
+
+			void SelectAllText ()
+			{
+				TextIter start;
+				TextIter end;
+
+				Buffer.GetBounds (out start, out end);
+				Buffer.SelectRange (start, end);
+			}
+
+			void CopyText ()
+			{
+				TextIter start;
+				TextIter end;
+
+				if (Buffer.HasSelection && Buffer.GetSelectionBounds (out start, out end)) {
+					var text = Buffer.GetText (start, end, false);
+					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+					clipboard.Text = text;
+
+					clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+					clipboard.Text = text;
+				}
+			}
+
+			void CutText ()
+			{
+				if (Buffer.HasSelection) {
+					var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+					Buffer.CutClipboard (clipboard, false);
+				}
+			}
+
+			void PasteText ()
+			{
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				Buffer.PasteClipboard (clipboard);
 			}
 
 			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
@@ -95,7 +168,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 			{
-				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
+				if (evnt.Type == Gdk.EventType.ButtonPress && evnt.Button == 3) {
+					UpdateMenuItemSensitivities ();
+					context_menu.Show (this, evnt);
+
+					return false;
+				} else if (evnt.Type == Gdk.EventType.TwoButtonPress) {
 					var cursorPos = Buffer.GetIterAtOffset (Buffer.CursorPosition);
 					TextIter iterStart;
 					TextIter iterEnd;
@@ -173,22 +251,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
 
 			InitSearchWidget ();
-		}
-
-		[CommandHandler (Ide.Commands.EditCommands.Copy)]
-		void CopyText ()
-		{
-			TextIter start;
-			TextIter end;
-
-			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end)) {
-				var text = buffer.GetText (start, end, false);
-				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = text;
-
-				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-				clipboard.Text = text;
-			}
 		}
 
 		#region Searching
