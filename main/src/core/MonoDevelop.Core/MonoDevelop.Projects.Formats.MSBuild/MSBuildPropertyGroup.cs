@@ -35,7 +35,7 @@ using Microsoft.Build.BuildEngine;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildPropertyGroup: MSBuildObject, IMSBuildPropertySet, IMSBuildPropertyGroupEvaluated
+	public class MSBuildPropertyGroup: MSBuildObject, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
@@ -94,6 +94,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		IMSBuildPropertyEvaluated IMSBuildPropertyGroupEvaluated.GetProperty (string name)
 		{
 			return GetProperty (name);
+		}
+
+		IEnumerable<IMSBuildPropertyEvaluated> IMSBuildEvaluatedPropertyCollection.Properties {
+			get { return GetProperties (); }
 		}
 
 		public MSBuildProperty GetProperty (string name)

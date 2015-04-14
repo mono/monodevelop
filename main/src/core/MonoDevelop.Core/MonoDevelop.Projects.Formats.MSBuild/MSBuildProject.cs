@@ -45,8 +45,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		FilePath file;
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
-		List<MSBuildItemEvaluated> evaluatedItems = new List<MSBuildItemEvaluated> ();
-		List<MSBuildItemEvaluated> evaluatedItemsIgnoringCondition;
+		List<IMSBuildItemEvaluated> evaluatedItems = new List<IMSBuildItemEvaluated> ();
+		List<IMSBuildItemEvaluated> evaluatedItemsIgnoringCondition;
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
 
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
@@ -86,8 +86,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProject ()
 		{
-			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (this);
-			evaluatedItemsIgnoringCondition = new List<MSBuildItemEvaluated> ();
+			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
@@ -184,8 +183,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Evaluate ()
 		{
 			try {
-				MSBuildEngine e = MSBuildEngine.Create ();
-
 				// Use a private metadata property to assign an id to each item. This id is used to match
 				// evaluated items with the items that generated them.
 				int id = 0;
@@ -201,6 +198,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					idElems.Add (c);
 					it.EvaluatedItemCount = 0;
 				}
+
+				var prop = GetGlobalPropertyGroup ().GetProperty ("UseMSBuildEngine");
+				if (prop != null && !prop.GetValue<bool> ()) {
+					// If msbuild engine is disabled don't evaluate the msbuild file since it is likely to fail.
+					SyncBuildProject (currentItems);
+					return;
+				}
+				MSBuildEngine e = MSBuildEngine.Create ();
 
 				OnEvaluationStarting ();
 
@@ -286,7 +291,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				evaluatedItemsIgnoringCondition.Add (xit);
 			}
 
-			evaluatedProperties.Sync (e, project);
+			var props = new MSBuildEvaluatedPropertyCollection (this);
+			evaluatedProperties = props;
+			props.Sync (e, project);
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)
@@ -298,6 +305,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			xit.IsImported = imported;
 			((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (e, it);
 			return xit;
+		}
+
+		void SyncBuildProject (Dictionary<string,MSBuildItem> currentItems)
+		{
+			evaluatedItemsIgnoringCondition.Clear ();
+			evaluatedItems.Clear ();
+			evaluatedItems.AddRange (GetAllItems ());
+			evaluatedItemsIgnoringCondition.AddRange (GetAllItems ());
+			evaluatedProperties = null;
 		}
 
 		void OnEvaluationStarting ()
@@ -412,7 +428,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
-			get { return evaluatedProperties; }
+			get { return (IMSBuildEvaluatedPropertyCollection) evaluatedProperties ?? (IMSBuildEvaluatedPropertyCollection) GetGlobalPropertyGroup (); }
 		}
 
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItems {
