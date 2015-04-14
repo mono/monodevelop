@@ -187,6 +187,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
 			nameofKeywordColor = ColorScheme.KeywordOtherKey;
+			whenKeywordColor = ColorScheme.KeywordOtherKey;
 		}
 
 		protected override void Colorize (TextSpan span, string color)
