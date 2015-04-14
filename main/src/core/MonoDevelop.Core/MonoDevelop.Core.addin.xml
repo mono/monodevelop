@@ -99,7 +99,7 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectModelExtensions" name = "Project model extensions">
-		<Description>Project model extensions</Description>
+		<Description>Extensions for project model objects</Description>
 		<ExtensionNode name="Class" type="MonoDevelop.Projects.Extensions.ProjectModelExtensionNode">
 			<Description>A subclass of WorkspaceObjectExtension.</Description>
 		</ExtensionNode>
@@ -109,13 +109,6 @@
 		<ConditionType id="ItemType" type="MonoDevelop.Core.Gui.Dialogs.OptionPanels.ItemTypeCondition">
 			<Description>Type of the item. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 		</ConditionType>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildProjectExtensions" name = "MSBuild project extensions">
-		<Description>MSBuild project extensions. Specified classes must be a subclass of MSBuildProjectExtension</Description>
-		<ExtensionNode name="Class">
-			<Description>A subclass of MSBuildProjectExtension.</Description>
-		</ExtensionNode>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/LanguageBindings" name = "Language bindings">
@@ -141,10 +134,6 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportProviders" name = "MSBuild Import Providers">
-		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders" name = "MSBuild Global Property Providers">
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildGlobalPropertyProvider"/>
 	</ExtensionPoint>
@@ -220,9 +209,6 @@
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
 		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
 		<Class class = "MonoDevelop.Projects.CompiledAssemblyExtension" />

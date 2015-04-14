@@ -326,7 +326,6 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\RemoteProjectBuilder.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildImportProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MergeToProjectAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionAndExpression.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ConditionExpression.cs" />

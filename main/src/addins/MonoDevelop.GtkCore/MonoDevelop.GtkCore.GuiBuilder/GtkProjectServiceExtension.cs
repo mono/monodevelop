@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 
@@ -10,31 +11,32 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GtkProjectServiceExtension: DotNetProjectExtension
 	{
+		[ItemProperty ("GtkDesignInfo", IsExternal = true)]
+		GtkDesignInfo info;
+
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			if (!base.SupportsObject (item) || !IdeApp.IsInitialized)
-				return false;
-			
-			DotNetProject project = item as DotNetProject;
-			return project != null && project.References.Count != 0 && GtkDesignInfo.HasDesignedObjects (project);
+			return base.SupportsObject (item) && IdeApp.IsInitialized;
 		}
 
-		protected override void OnExtensionChainCreated ()
-		{
-			base.OnExtensionChainCreated ();
-			if (!GtkDesignInfo.HasDesignedObjects (Project))
-				Dispose ();
+		public GtkDesignInfo DesignInfo {
+			get {
+				if (info == null)
+					info = new GtkDesignInfo (Project);
+				return info;
+			}
+			set {
+				info = value;
+			}
 		}
 
 		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			GtkDesignInfo info = GtkDesignInfo.FromProject (Project);
-
 			Generator gen = new Generator ();
 			if (!await gen.Run (monitor, Project, configuration)) {
 				BuildResult gr = new BuildResult ();
 				foreach (string s in gen.Messages)
-					gr.AddError (info.GuiBuilderProject.File, 0, 0, null, s);
+					gr.AddError (DesignInfo.GuiBuilderProject.File, 0, 0, null, s);
 				return gr;
 			}
 					
@@ -42,10 +44,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			if (gen.Messages != null) {
 				foreach (string s in gen.Messages)
-					res.AddWarning (info.GuiBuilderProject.File, 0, 0, null, s);
+					res.AddWarning (DesignInfo.GuiBuilderProject.File, 0, 0, null, s);
 						
 				if (gen.Messages.Length > 0)
-					info.ForceCodeGenerationOnBuild ();
+					DesignInfo.ForceCodeGenerationOnBuild ();
 			}
 			
 			if (res.Failed && !Platform.IsWindows && !Platform.IsMac) {

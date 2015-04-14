@@ -12,7 +12,7 @@ namespace MonoDevelop.Deployment.Linux
 	{
 		SolutionFolderItem entry;
 		
-		public BasicOptionPanelWidget (SolutionFolderItem entry, bool creatingProject)
+		public BasicOptionPanelWidget (Project entry, bool creatingProject)
 		{
 			this.Build();
 			

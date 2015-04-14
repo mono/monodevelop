@@ -58,14 +58,12 @@ namespace MonoDevelop.GtkCore
 		[ItemProperty (DefaultValue="Gdk.Pixbuf")]
 		string imageResourceLoaderClass = "Gdk.Pixbuf";
 		
-		GtkDesignInfo ()
+		internal GtkDesignInfo ()
 		{
 		}
 		
-		GtkDesignInfo (DotNetProject project)
+		internal GtkDesignInfo (DotNetProject project)
 		{
-			IExtendedDataItem item = (IExtendedDataItem) project;
-			item.ExtendedProperties ["GtkDesignInfo"] = this;
 			Project = project;
 		}
 		
@@ -348,24 +346,21 @@ namespace MonoDevelop.GtkCore
 			info.CleanGtkFolder (saveFiles);
 			project.Files.Remove (info.ObjectsFile);
 			project.Files.Remove (info.SteticFile);
-			IExtendedDataItem item = (IExtendedDataItem) project;
-			item.ExtendedProperties.Remove ("GtkDesignInfo");
+
+			var ext = project.GetService<GtkProjectServiceExtension> ();
+			if (ext != null)
+				ext.DesignInfo = null;
 			info.Dispose ();
+
 			ProjectNodeBuilder.OnSupportChanged (project);
 		}
 
 		public static GtkDesignInfo FromProject (Project project)
 		{
-			if (!(project is DotNetProject))
-				return new GtkDesignInfo ();
-
-			IExtendedDataItem item = (IExtendedDataItem) project;
-			GtkDesignInfo info = item.ExtendedProperties ["GtkDesignInfo"] as GtkDesignInfo;
-			if (info == null)
-				info = new GtkDesignInfo ((DotNetProject) project);
-			else
-				info.Project = (DotNetProject) project;
-			return info;
+			var ext = project.GetService<GtkProjectServiceExtension> ();
+			if (ext != null)
+				return ext.DesignInfo;
+			return new GtkDesignInfo ();
 		}
 	}	
 }

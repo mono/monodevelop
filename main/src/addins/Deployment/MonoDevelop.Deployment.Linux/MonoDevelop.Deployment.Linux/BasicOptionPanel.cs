@@ -1,6 +1,7 @@
 
  
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Deployment.Linux
 {
@@ -14,7 +15,7 @@ namespace MonoDevelop.Deployment.Linux
 		
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			return (widget = new BasicOptionPanelWidget (ConfiguredSolutionItem, false));
+			return (widget = new BasicOptionPanelWidget ((Project) ConfiguredSolutionItem, false));
 		}
 		
 		public override void ApplyChanges ()
