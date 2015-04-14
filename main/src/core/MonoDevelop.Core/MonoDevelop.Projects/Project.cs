@@ -66,6 +66,7 @@ namespace MonoDevelop.Projects
 		string productVersion;
 		string schemaVersion;
 		bool modifiedInMemory;
+		bool msbuildUpdatePending;
 		ProjectExtension projectExtension;
 
 		List<string> defaultImports;
@@ -91,10 +92,6 @@ namespace MonoDevelop.Projects
 		protected Project (params string[] flavorGuids): this()
 		{
 			this.flavorGuids = flavorGuids;
-		}
-
-		protected Project (string[] flavorIds, MSBuildProject sourceProject): this(flavorIds)
-		{
 		}
 
 		protected Project (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions): this()
@@ -154,9 +151,9 @@ namespace MonoDevelop.Projects
 				TypeGuid = creationContext.TypeGuid;
 
 				string projectTypeGuids;
-				this.sourceProject = creationContext.Project;
 
-				if (this.sourceProject != null) {
+				if (creationContext.Project != null) {
+					this.sourceProject = creationContext.Project;
 					IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
 					projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
 					if (projectTypeGuids != null) {
@@ -168,8 +165,15 @@ namespace MonoDevelop.Projects
 						}
 						flavorGuids = subtypeGuids.ToArray ();
 					}
-				} else
+				} else {
+					this.sourceProject = null;
 					flavorGuids = creationContext.FlavorGuids;
+				}
+			}
+
+			if (sourceProject == null) {
+				sourceProject = new MSBuildProject ();
+				sourceProject.FileName = FileName;
 			}
 		}
 
@@ -192,6 +196,18 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<string> FlavorGuids {
 			get { return flavorGuids; }
+		}
+
+		public IPropertySet GlobalProperties {
+			get { return MSBuildProject.GetGlobalPropertyGroup (); }
+		}
+
+		public MSBuildProject MSBuildProject {
+			get { 
+				if (msbuildUpdatePending)
+					WriteProject (new ProgressMonitor ());
+				return sourceProject;
+			}
 		}
 
 		public List<string> DefaultImports {
@@ -233,8 +249,10 @@ namespace MonoDevelop.Projects
 
 		protected override void OnModified (SolutionItemModifiedEventArgs args)
 		{
-			if (!Loading)
+			if (!Loading) {
 				modifiedInMemory = true;
+				msbuildUpdatePending = true;
+			}
 			base.OnModified (args);
 		}
 
@@ -243,7 +261,7 @@ namespace MonoDevelop.Projects
 			MSBuildProject p = sourceProject;
 
 			return Task.Run (delegate {
-				if (p == null)
+				if (p == null || p.IsNewProject)
 					p = MSBuildProject.LoadAsync (FileName).Result;
 
 				IMSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
@@ -276,12 +294,10 @@ namespace MonoDevelop.Projects
 			modifiedInMemory = false;
 
 			return Task.Run (delegate {
-				var msproject = WriteProject (monitor);
-				if (msproject == null)
-					return;
+				WriteProject (monitor);
 
-				// Don't save the file to disk if the content did not change
-				msproject.Save (FileName);
+				// Doesn't save the file to disk if the content did not change
+				sourceProject.Save (FileName);
 
 				if (projectBuilder != null)
 					projectBuilder.Refresh ();
@@ -831,8 +847,8 @@ namespace MonoDevelop.Projects
 				}
 				if (modifiedInMemory) {
 					modifiedInMemory = false;
-					var p = WriteProject (new ProgressMonitor ());
-					projectBuilder.RefreshWithContent (p.SaveToString ());
+					WriteProject (new ProgressMonitor ());
+					projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
 				}
 			}
 			return projectBuilder;
@@ -1580,22 +1596,17 @@ namespace MonoDevelop.Projects
 			OnReadProjectHeader (monitor, msproject);
 			ProjectExtension.OnReadProject (monitor, msproject);
 			modifiedInMemory = false;
+			msbuildUpdatePending = false;
 			NeedsReload = false;
 		}
 
-		internal MSBuildProject WriteProject (ProgressMonitor monitor)
+		internal void WriteProject (ProgressMonitor monitor)
 		{
-			if (sourceProject == null) {
-				sourceProject = new MSBuildProject ();
-				if (SupportsBuild ())
-					sourceProject.DefaultTargets = "Build";
-				sourceProject.FileName = FileName;
-			}
-
+			msbuildUpdatePending = false;
+			sourceProject.FileName = FileName;
 			OnWriteProjectHeader (monitor, sourceProject);
 			ProjectExtension.OnWriteProject (monitor, sourceProject);
-
-			return sourceProject;
+			sourceProject.IsNewProject = false;
 		}
 
 		class ConfigData
@@ -1973,6 +1984,9 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnWriteProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			if (string.IsNullOrEmpty (sourceProject.DefaultTargets) && SupportsBuild ())
+				sourceProject.DefaultTargets = "Build";
+			
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 			if (globalGroup == null)
 				globalGroup = msproject.AddNewPropertyGroup (false);

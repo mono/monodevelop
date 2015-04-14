@@ -110,7 +110,27 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (solFile)), solXml);
 			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
 		}
-		
+
+		[Test]
+		public async Task SetCustomPropertiesInNewProject ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+			Project p = sol.Items [0] as Project;
+			p.GlobalProperties.SetValue ("TestProperty", "TestValue");
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			string projectXml = Util.GetXmlFileInfoset (((SolutionItem)sol.Items [0]).FileName);
+
+			// Make sure we compare using the same guid
+			projectXml = projectXml.Replace (p.ItemId, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
+
+			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject2.csproj");
+
+			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
+		}
+
 		[Test]
 		public async Task TestCreateLoadSaveConsoleProject ()
 		{
@@ -949,9 +969,6 @@ namespace MonoDevelop.Projects
 			// * If an assembly reference has SpecificVersion==false but the actual reference in the csproj
 			//   does have version information, keep it when saving.
 			// * Don't remove ProductVersion and SchemaVersion from csproj even when it is not necessary
-
-			var sol1 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), "/Users/lluis/temp/SharingXamarinSolution/TestApp.sln");
-			await sol1.SaveAsync (Util.GetMonitor ());
 
 			string solFile = Util.GetSampleProject ("project-from-vs", "console-with-libs.sln");
 

@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set;
 		}
 
-		public bool IsNewProject { get; private set; }
+		public bool IsNewProject { get; internal set; }
 		
 		public XmlDocument Document {
 			get { return doc; }
@@ -92,6 +92,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doc.PreserveWhitespace = false;
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
 			IsNewProject = true;
+			AddNewPropertyGroup (false);
 		}
 
 		public static Task<MSBuildProject> LoadAsync (string file)
@@ -430,7 +431,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			return null;
 		}
-		
+
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd)
 		{
 			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);

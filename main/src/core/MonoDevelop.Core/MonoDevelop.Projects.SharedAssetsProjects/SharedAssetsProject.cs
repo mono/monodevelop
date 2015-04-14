@@ -117,7 +117,9 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (projitemsProject == null) {
 				projitemsProject = new MSBuildProject ();
 				projitemsProject.FileName = projItemsPath;
-				IMSBuildPropertySet grp = projitemsProject.AddNewPropertyGroup (true);
+				var grp = projitemsProject.GetGlobalPropertyGroup ();
+				if (grp == null)
+					grp = projitemsProject.AddNewPropertyGroup (false);
 				grp.SetValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
 				grp.SetValue ("HasSharedItems", true);
 				grp.SetValue ("SharedGUID", ItemId, preserveExistingCase:true);
