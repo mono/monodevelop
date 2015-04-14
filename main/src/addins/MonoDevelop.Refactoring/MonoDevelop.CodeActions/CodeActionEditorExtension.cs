@@ -371,7 +371,7 @@ namespace MonoDevelop.CodeActions
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 				var menu = CreateNSMenu (entrySet);
-				menu.Delegate = new ClosingMenuDelegate (document.Editor);
+				menu.Delegate = new ClosingMenuDelegate (Editor);
 				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
 				var toplevel = parent.Toplevel as Gtk.Window;
 				int trans_x, trans_y;
