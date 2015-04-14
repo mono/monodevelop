@@ -47,10 +47,18 @@ namespace MonoDevelop.Projects.Extensions
 		[NodeAttribute]
 		string migrationHandler;
 
+		[NodeAttribute ("msbuildSupport")]
+		public MSBuildSupport MSBuildSupport { get; set; }
+
 		ProjectMigrationHandler handler;
 
 		[NodeAttribute ("alias", Description = "Friendly id of the extension")]
 		public string TypeAlias { get; set; }
+
+		public SolutionItemExtensionNode ()
+		{
+			MSBuildSupport = MSBuildSupport.Supported;
+		}
 
 		public bool IsMigrationRequired {
 			get { return migrationRequired; }

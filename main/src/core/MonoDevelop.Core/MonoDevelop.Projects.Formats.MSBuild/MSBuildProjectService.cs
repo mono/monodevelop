@@ -204,6 +204,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}
 
+		internal static MSBuildSupport GetMSBuildSupportForFlavors (string[] flavorGuids)
+		{
+			foreach (var node in WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ()) {
+				if (flavorGuids.Any (fid => node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))) {
+					if (node.MSBuildSupport != MSBuildSupport.Supported)
+						return node.MSBuildSupport;
+				}
+			}
+			return MSBuildSupport.Supported;
+		}
+
 		internal static List<SolutionItemExtensionNode> GetMigrableFlavors (string[] flavorGuids)
 		{
 			var list = new List<SolutionItemExtensionNode> ();

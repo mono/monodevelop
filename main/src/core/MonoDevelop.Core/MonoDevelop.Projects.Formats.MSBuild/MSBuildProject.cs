@@ -90,6 +90,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			doc = new XmlDocument ();
 			doc.PreserveWhitespace = false;
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
+			UseMSBuildEngine = true;
 			IsNewProject = true;
 			AddNewPropertyGroup (false);
 		}
@@ -180,6 +181,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this project uses the msbuild engine for evaluation.
+		/// </summary>
+		/// <remarks>When set to false, evaluation support is limited but it allows loading projects
+		/// which are not fully compliant with MSBuild (old MD projects).</remarks>
+		public bool UseMSBuildEngine { get; set; }
+
 		public void Evaluate ()
 		{
 			try {
@@ -200,11 +208,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				var prop = GetGlobalPropertyGroup ().GetProperty ("UseMSBuildEngine");
-				if (prop != null && !prop.GetValue<bool> ()) {
+				if (!UseMSBuildEngine || (prop != null && !prop.GetValue<bool> ())) {
 					// If msbuild engine is disabled don't evaluate the msbuild file since it is likely to fail.
 					SyncBuildProject (currentItems);
 					return;
 				}
+
 				MSBuildEngine e = MSBuildEngine.Create ();
 
 				OnEvaluationStarting ();
