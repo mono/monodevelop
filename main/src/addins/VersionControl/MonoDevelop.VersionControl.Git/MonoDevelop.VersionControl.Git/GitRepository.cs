@@ -161,6 +161,18 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
+		void NotifyFilesChangedForStash (Stash stash)
+		{
+			// HACK: Notify file changes.
+			foreach (var entry in RootRepository.Diff.Compare<TreeChanges> (stash.WorkTree.Tree, stash.Base.Tree)) {
+				if (entry.Status == ChangeKind.Deleted || entry.Status == ChangeKind.Renamed) {
+					FileService.NotifyFileRemoved (RootRepository.FromGitPath (entry.OldPath));
+				} else {
+					FileService.NotifyFileChanged (RootRepository.FromGitPath (entry.Path));
+				}
+			}
+		}
+
 		public StashApplyStatus ApplyStash (IProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
@@ -170,6 +182,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnCheckoutNotify = RefreshFile,
 				CheckoutNotifyFlags = refreshFlags,
 			});
+			NotifyFilesChangedForStash (RootRepository.Stashes [stashIndex]);
 			if (monitor != null)
 				monitor.EndTask ();
 
@@ -180,11 +193,13 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
-
+			
+			var stash = RootRepository.Stashes [stashIndex];
 			var res = RootRepository.Stashes.Pop (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
 				OnCheckoutNotify = RefreshFile,
 				CheckoutNotifyFlags = refreshFlags,
 			});
+			NotifyFilesChangedForStash (stash);
 			if (monitor != null)
 				monitor.EndTask ();
 
