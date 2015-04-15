@@ -58,7 +58,7 @@ namespace UserInterfaceTests
 			Assert.AreEqual (expectedOutput, output.Trim ());
 		}
 
-		public void CreateBuildProject (string projectName, string kind, string category, string categoryRoot, Action beforeBuild)
+		public void CreateBuildProject (string projectName, string categoryRoot, string category, string kindRoot, string kind, Action beforeBuild)
 		{
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
 			string actualSolutionDirectory = string.Empty;
@@ -66,7 +66,7 @@ namespace UserInterfaceTests
 				var newProject = new NewProjectController ();
 				newProject.Open ();
 
-				SelectTemplate (newProject, kind, category, categoryRoot);
+				SelectTemplate (newProject, categoryRoot, category, kindRoot, kind);
 
 				Assert.IsTrue (newProject.Next ());
 
@@ -94,10 +94,10 @@ namespace UserInterfaceTests
 			}
 		}
 
-		public void SelectTemplate (NewProjectController newProject, string kind, string category, string categoryRoot)
+		public void SelectTemplate (NewProjectController newProject, string categoryRoot, string category, string kindRoot, string kind)
 		{
-			Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
-			Assert.IsTrue (newProject.SelectTemplate (kind));
+			Assert.IsTrue (newProject.SelectTemplateType (categoryRoot, category));
+			Assert.IsTrue (newProject.SelectTemplate (kindRoot, kind));
 		}
 
 		public void EnterProjectDetails (NewProjectController newProject, string projectName, string solutionName, string solutionLocation)
