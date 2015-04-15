@@ -1193,10 +1193,24 @@ namespace MonoDevelop.Ide.Editor
 			InitializeProjectionExtensions (ctx, disabledFeatures);
 		}
 
+		bool projectionsAdded = false;
 		void InitializeProjectionExtensions (DocumentContext ctx, DisabledProjectionFeatures disabledFeatures)
 		{
+			if (projectionsAdded) {
+				TextEditorExtension ext = textEditorImpl.EditorExtension;
+				while (ext != null && ext.Next != null) {
+					var pext = (IProjectionExtension)ext;
+					if (pext != null) {
+						pext.Projections = projections;
+					}
+					ext = ext.Next;
+				}
+				return;
+			}
+
 			if (projections.Count == 0)
 				return;
+
 			TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
 			while (lastExtension != null && lastExtension.Next != null)
 				lastExtension = lastExtension.Next;
@@ -1213,6 +1227,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.EditorExtension = projectedCompletionExtension;
 				projectedCompletionExtension.Initialize (this, DocumentContext);
 			}
+			projectionsAdded = true;
 		}
 	}
 }

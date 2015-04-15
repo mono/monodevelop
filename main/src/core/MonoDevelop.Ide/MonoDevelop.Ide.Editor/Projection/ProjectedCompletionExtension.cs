@@ -32,10 +32,19 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
-	sealed class ProjectedCompletionExtension : CompletionTextEditorExtension
+	sealed class ProjectedCompletionExtension : CompletionTextEditorExtension, IProjectionExtension
 	{
 		DocumentContext ctx;
 		IReadOnlyList<Projection> projections;
+
+		public IReadOnlyList<Projection> Projections {
+			get {
+				return projections;
+			}
+			set {
+				projections = value;
+			}
+		}
 
 		public ProjectedCompletionExtension (DocumentContext ctx, IReadOnlyList<Projection> projections)
 		{
