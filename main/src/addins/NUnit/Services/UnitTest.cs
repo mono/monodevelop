@@ -47,7 +47,6 @@ namespace MonoDevelop.NUnit
 		UnitTestResult lastResult;
 		UnitTest parent;
 		TestStatus status;
-		Hashtable options;
 		WorkspaceObject ownerSolutionItem;
 		SolutionItem ownerSolutionEntityItem;
 		UnitTestResultsStore results;
@@ -121,132 +120,7 @@ namespace MonoDevelop.NUnit
 				return new string [] { "default" };
 			}
 		}
-		
-		public ICloneable GetOptions (Type optionsType)
-		{
-			return GetOptions (optionsType, ActiveConfiguration);
-		}
-		
-		public bool HasOptions (Type optionsType, string configuration)
-		{
-			return GetOptions (optionsType, configuration, false) != null;
-		}
-		
-		public void ResetOptions (Type optionsType, string configuration)
-		{
-			if (GetOptions (optionsType, configuration, false) == null)
-				return;
-				
-			if (options == null || !options.ContainsKey (configuration))
-				return;
 
-			Hashtable configOptions = (Hashtable) options [configuration];
-			if (configOptions != null)
-				configOptions.Remove (optionsType);
-			SaveOptions ();
-		}
-		
-		public ICloneable GetOptions (Type optionsType, string configuration)
-		{
-			return GetOptions (optionsType, configuration, true);
-		}
-		
-		public ICollection GetAllOptions (string configuration)
-		{
-			Hashtable localOptions = GetOptionsTable (configuration);
-			if (localOptions == null || localOptions.Count == 0) {
-				if (Parent != null)
-					return Parent.GetAllOptions (configuration);
-				else
-					return new object[0];
-			}
-			if (Parent == null)
-				return localOptions.Values;
-
-			ICollection parentOptions = Parent.GetAllOptions (configuration);
-			if (parentOptions.Count == 0)
-				return localOptions.Values;
-
-			Hashtable t = new Hashtable ();
-			foreach (object ob in parentOptions)
-				t [ob.GetType()] = ob;
-
-			foreach (ICloneable ob in localOptions.Values)
-				t [ob.GetType()] = ob.Clone ();
-
-			return t.Values;
-		}
-
-		ICloneable GetOptions (Type optionsType, string configuration, bool createDefault)
-		{
-			Hashtable configOptions = GetOptionsTable (configuration);
-			
-			if (configOptions != null) {
-				ICloneable ob = (ICloneable) configOptions [optionsType];
-				if (ob != null)
-					return (ICloneable) ob.Clone ();
-			}
-			if (!createDefault)
-				return null;
-			if (parent != null)
-				return parent.GetOptions (optionsType, configuration);
-			else
-				return (ICloneable) Activator.CreateInstance (optionsType);
-		}
-		
-		Hashtable GetOptionsTable (string configuration)
-		{
-			Hashtable configOptions = null;
-			
-			if (options == null || !options.ContainsKey (configuration)) {
-				ICollection col = OnLoadOptions (configuration);
-				if (col != null && col.Count > 0) {
-					if (options == null)
-						options = new Hashtable ();
-					configOptions = (Hashtable) options [configuration];
-					if (configOptions == null) {
-						configOptions = new Hashtable ();
-						options [configuration] = configOptions;
-					}
-					foreach (object op in col)
-						configOptions [op.GetType ()] = op;
-				}
-			} else
-				configOptions = (Hashtable) options [configuration];
-			return configOptions;
-		}
-		
-		public virtual void SetOptions (ICloneable ops, string configuration)
-		{
-			if (options == null)
-				options = new Hashtable ();
-				
-			Hashtable configOptions = (Hashtable) options [configuration];
-			if (configOptions == null) {
-				configOptions = new Hashtable ();
-				options [configuration] = configOptions;
-			}
-			
-			configOptions [ops.GetType ()] = ops.Clone ();
-			SaveOptions ();
-		}
-		
-		void SaveOptions ()
-		{
-			if (options == null) {
-				OnSaveOptions (null);
-				return;
-			}
-			
-			ArrayList list = new ArrayList ();
-			foreach (DictionaryEntry e in options) {
-				OptionsData d = new OptionsData ((string) e.Key, ((Hashtable) e.Value).Values);
-				list.Add (d);
-			}
-			
-			OnSaveOptions ((OptionsData[]) list.ToArray (typeof(OptionsData)));
-		}
-		
 		public UnitTestResultsStore Results {
 			get {
 				if (results == null) {
@@ -487,70 +361,7 @@ namespace MonoDevelop.NUnit
 			if ((res1 == null || res1.IsSuccess) && (res2 != null && !res2.IsSuccess))
 				list.Add (this);
 		}
-		
-		protected virtual void OnSaveOptions (OptionsData[] data)
-		{
-			IConfigurationTarget ce;
-			string path;
-			
-			GetOwnerSolutionItem (this, out ce, out path);
-			
-			if (ce == null)
-				throw new InvalidOperationException ("Options can't be saved.");
-			
-			foreach (OptionsData d in data) {
-				IExtendedDataItem edi = (IExtendedDataItem) ce.Configurations [d.Configuration];
-				if (edi == null)
-					continue;
-				UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
-				if (oset == null) {
-					oset = new UnitTestOptionsSet ();
-					edi.ExtendedProperties ["UnitTestInformation"] = oset;
-				}
-				
-				UnitTestOptionsEntry te = oset.FindEntry (path);
 
-				if (d.Options.Count > 0) {
-					if (te == null) {
-						te = new UnitTestOptionsEntry ();
-						te.Path = path;
-						oset.Tests.Add (te);
-					}
-					te.Options.Clear ();
-					te.Options.AddRange (d.Options);
-				} else if (te != null) {
-					oset.Tests.Remove (te);
-				}
-			}
-
-			IdeApp.ProjectOperations.SaveAsync ((WorkspaceObject)ce);
-		}
-		
-		protected virtual ICollection OnLoadOptions (string configuration)
-		{
-			IConfigurationTarget ce;
-			string path;
-			
-			GetOwnerSolutionItem (this, out ce, out path);
-			
-			if (ce == null)
-				return null;
-			
-			IExtendedDataItem edi = (IExtendedDataItem) ce.Configurations [configuration];
-			if (edi == null)
-				return null;
-
-			UnitTestOptionsSet oset = (UnitTestOptionsSet) edi.ExtendedProperties ["UnitTestInformation"];
-			if (oset == null)
-				return null;
-			
-			UnitTestOptionsEntry te = oset.FindEntry (path);
-			if (te != null)
-				return te.Options;
-			else
-				return null;
-		}
-		
 		void GetOwnerSolutionItem (UnitTest t, out IConfigurationTarget c, out string path)
 		{
 			if (OwnerSolutionItem is SolutionItem) {
@@ -623,51 +434,6 @@ namespace MonoDevelop.NUnit
 		public int Column {
 			get { return column; }
 		}
-	}
-
-	public class OptionsData
-	{
-		string configuration;
-		ICollection options;
-		
-		public OptionsData (string configuration, ICollection options)
-		{
-			this.configuration = configuration;
-			this.options = options;
-		}
-		
-		public string Configuration {
-			get { return configuration; }
-		}
-		
-		public ICollection Options {
-			get { return options; }
-		}
-	}
-	
-	
-	class UnitTestOptionsSet
-	{
-		[ExpandedCollection]
-		[ItemProperty ("Test", ValueType = typeof(UnitTestOptionsEntry))]
-		public ArrayList Tests = new ArrayList ();
-		
-		public UnitTestOptionsEntry FindEntry (string testPath)
-		{
-			foreach (UnitTestOptionsEntry t in Tests)
-				if (t.Path == testPath) return t;
-			return null;
-		}
-	}
-	
-	class UnitTestOptionsEntry
-	{
-		[ItemProperty ("Path")]
-		public string Path;
-
-		[ItemProperty ("Options")]
-		[ExpandedCollection]
-		public ArrayList Options = new ArrayList ();
 	}
 }
 

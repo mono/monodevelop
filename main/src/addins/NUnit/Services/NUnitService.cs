@@ -79,17 +79,6 @@ namespace MonoDevelop.NUnit
 				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Add (provider);
-				
-				Type[] types = provider.GetOptionTypes ();
-				if (types != null) {
-					foreach (Type t in types) {
-						if (!typeof(ICloneable).IsAssignableFrom (t)) {
-							LoggingService.LogError ("Option types must implement ICloneable: " + t);
-							continue;
-						}
-						ps.DataContext.IncludeType (t);
-					}
-				}
 			}
 			else {
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
@@ -369,8 +358,6 @@ namespace MonoDevelop.NUnit
 	{
 		UnitTest test;
 		TestMonitor monitor;
-		Thread runThread;
-		bool success;
 		IExecutionHandler context;
 		TestResultsPad resultsPad;
 
@@ -397,14 +384,11 @@ namespace MonoDevelop.NUnit
 				TestContext ctx = new TestContext (monitor, resultsPad, context, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
-				success = true;
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				monitor.ReportRuntimeError (null, ex);
-				success = false;
 			} finally {
 				monitor.FinishTestRun ();
-				runThread = null;
 			}
 		}
 		

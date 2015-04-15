@@ -54,14 +54,6 @@ namespace MonoDevelop.NUnit
 			
 			return test;
 		}
-		
-		public Type[] GetOptionTypes ()
-		{
-			return new Type[] {
-				typeof(GeneralTestOptions),
-				typeof(NUnitCategoryOptions)
-			};
-		}
 	}
 }
 

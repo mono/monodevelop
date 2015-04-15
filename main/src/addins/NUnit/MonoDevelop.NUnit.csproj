@@ -243,7 +243,6 @@
     <Compile Include="Services\NUnitTestCase.cs" />
     <Compile Include="Services\NUnitTestSuite.cs" />
     <Compile Include="Services\GeneralTestOptions.cs" />
-    <Compile Include="Services\NUnitOptions.cs" />
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
     <Compile Include="Services\WorkspaceTestGroup.cs" />
@@ -251,8 +250,6 @@
     <Compile Include="Services\UnitTestResult.cs" />
     <Compile Include="Services\UnitTestStatus.cs" />
     <Compile Include="Services\NUnitProjectServiceExtension.cs" />
-    <Compile Include="Gui\NUnitOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.NUnit.NUnitOptionsWidget.cs" />
     <Compile Include="Services\TcpTestListener.cs" />
     <Compile Include="Gui\TestStatusIcon.cs" />
     <Compile Include="AddinInfo.cs" />

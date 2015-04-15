@@ -393,15 +393,6 @@ namespace MonoDevelop.NUnit
 				} else {
 					filter = new TestNameFilter (test.TestId);
 				}
-			} else {
-				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
-				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
-					string[] cats = new string [categoryOptions.Categories.Count];
-					categoryOptions.Categories.CopyTo (cats, 0);
-					filter = new CategoryFilter (cats);
-					if (categoryOptions.Exclude)
-						filter = new NotFilter (filter);
-				}
 			}
 
 			RunData rd = new RunData ();

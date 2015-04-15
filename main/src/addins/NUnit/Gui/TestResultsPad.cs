@@ -756,13 +756,11 @@ namespace MonoDevelop.NUnit
 	{
 		ITestProgressMonitor monitor;
 		TestResultsPad pad;
-		CancellationTokenSource cs;
-		
+
 		public TestMonitor (TestResultsPad pad, CancellationTokenSource cs)
 		{
 			this.pad = pad;
 			this.monitor = pad;
-			this.cs = cs;
 			cs.Token.Register (Cancel);
 		}
 		public void InitializeTestRun (UnitTest test)

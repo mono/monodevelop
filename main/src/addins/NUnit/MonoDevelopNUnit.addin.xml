@@ -191,19 +191,6 @@
 		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.SolutionItemConfiguration"
-			name = "UnitTestInformation" type = "MonoDevelop.NUnit.UnitTestOptionsSet" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerType" type = "System.String" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerAssembly" type = "MonoDevelop.Core.FilePath" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerCommand" type = "MonoDevelop.Core.FilePath" external="false" />
-		<ItemProperty class = "MonoDevelop.Projects.DotNetProject"
-			name = "TestRunnerArgs" type = "System.String" external="false" />
-	</Extension>
-
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
 	</Extension>

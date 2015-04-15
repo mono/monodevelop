@@ -39,7 +39,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (Project.CanExecute (context, configuration)) {
 				// It is executable by default
-				base.OnExecute (monitor, context, configuration);
+				await base.OnExecute (monitor, context, configuration);
 				return;
 			}
 			UnitTest test = NUnitService.Instance.FindRootTest (Project);
