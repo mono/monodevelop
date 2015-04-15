@@ -37,7 +37,7 @@ namespace UserInterfaceTests
 			get { return TestService.Session; }
 		}
 
-		public void Open (int delay = 2000)
+		public void Open ()
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));

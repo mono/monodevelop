@@ -27,16 +27,20 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using MonoDevelop.Core;
-
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	public abstract class CreateBuildTemplatesTestBase: UITestBase
 	{
+		public string GeneralKindRoot { get; private set; } = "General";
+
+		public string OtherCategoryRoot { get; private set; } = "Other";
+
 		public readonly static Action EmptyAction = () => { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
@@ -44,9 +48,16 @@ namespace UserInterfaceTests
 				pollStep: 1000, timeout: 30000);
 		};
 
+		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
+
 		public CreateBuildTemplatesTestBase () {}
 
 		public CreateBuildTemplatesTestBase (string mdBinPath) : base (mdBinPath) {}
+
+		public string GenerateProjectName (string templateName)
+		{
+			return cleanSpecialChars.Replace (templateName, string.Empty);
+		}
 
 		public void AssertExeHasOutput (string exe, string expectedOutput)
 		{
