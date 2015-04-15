@@ -43,6 +43,11 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
 using System.Threading;
+using Gtk;
+using MonoDevelop.Ide.CodeFormatting;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Refactoring
 {
@@ -87,7 +92,7 @@ namespace MonoDevelop.Refactoring
 //			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 //		}
 		
-		public static async void AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false, CancellationToken cancellationToken = default(CancellationToken))
+		public static async void AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
 			var projectId = ws.GetProjectId (project);
@@ -95,7 +100,7 @@ namespace MonoDevelop.Refactoring
 
 			var document = ws.GetDocument (docId, cancellationToken);
 
-			var root = document.GetSyntaxRootAsync (cancellationToken).Result;
+			var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
 
 			// for some reason the reducer doesn't reduce this
@@ -105,11 +110,70 @@ namespace MonoDevelop.Refactoring
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation)));
 			document = document.WithSyntaxRoot (newRoot);
-			document = await Formatter.FormatAsync(document, Formatter.Annotation, ws.Options, cancellationToken).ConfigureAwait (false);
-			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, ws.Options, cancellationToken).ConfigureAwait (false);
+			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
+			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
+			var projectOptions = policy.CreateOptions (textPolicy);
+
+			document = await Formatter.FormatAsync(document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
 			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
 			var newSolution = ws.CurrentSolution.WithDocumentText (docId, text);
 			ws.TryApplyChanges (newSolution);
+		}
+
+		readonly static SyntaxAnnotation insertedMemberAnnotation = new SyntaxAnnotation ("INSERTION_ANNOTATAION");
+		public static async void InsertMemberWithCursor (string operation, Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
+			var projectId = ws.GetProjectId (project);
+			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
+
+			var document = ws.GetDocument (docId, cancellationToken);
+
+			var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
+
+			// for some reason the reducer doesn't reduce this
+			var systemVoid = newMember.DescendantNodesAndSelf().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
+
+			if (systemVoid != null) newMember = newMember.ReplaceNode(systemVoid, SyntaxFactory.ParseTypeName("void"));
+
+			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
+			var doc = IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
+
+			var policy = project.Policies.Get<CSharpFormattingPolicy> ("text/x-csharp");
+			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
+			var projectOptions = policy.CreateOptions (textPolicy);
+
+			document = document.WithSyntaxRoot (newRoot);
+			document = await Formatter.FormatAsync(document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+
+			root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+			var node = root.GetAnnotatedNodes (insertedMemberAnnotation).Single ();
+
+			Application.Invoke (delegate {
+
+				var insertionPoints = InsertionPointService.GetInsertionPoints (
+					doc.Editor,
+					doc.UpdateParseDocument (),
+					type,
+					part
+				);
+				var options = new InsertionModeOptions (
+					operation,
+					insertionPoints,
+					async point => {
+						if (!point.Success) 
+							return;
+						var text = node.ToString ();
+						point.InsertionPoint.Insert (doc.Editor, doc, text);
+					}
+				);
+
+				doc.Editor.StartInsertionMode (options);
+			});
 		}
 
 		//public static Task<bool> InsertMemberWithCursor (string operation, ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)

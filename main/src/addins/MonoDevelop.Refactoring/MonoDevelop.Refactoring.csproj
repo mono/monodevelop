@@ -137,7 +137,6 @@
     </Reference>
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -181,7 +180,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
-    <Compile Include="MonoDevelop.Refactoring\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />

@@ -393,6 +393,7 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindExtensionMethodHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoBaseDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
