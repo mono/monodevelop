@@ -704,33 +704,13 @@ namespace MonoDevelop.VersionControl
 		{
 			configuration = null;
 		}
-		
-		public static void StoreRepositoryReference (Repository repo, string path, string id)
-		{
-			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
-		}
-		
+
 		public static bool CheckVersionControlInstalled ()
 		{
 			if (IsGloballyDisabled)
 				return false;
 
 			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
-		}
-		
-		internal static Repository InternalGetRepositoryReference (string path, string id)
-		{
-			string file = InternalGetRepositoryPath (path, id);
-			if (file == null)
-				return null;
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
-			try {
-				return (Repository) ser.Deserialize (reader, typeof(Repository));
-			} finally {
-				reader.Close ();
-			}
 		}
 
 		internal static string InternalGetRepositoryPath (string path, string id)
@@ -741,20 +721,7 @@ namespace MonoDevelop.VersionControl
 
 			return file;
 		}
-		
-		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextWriter tw = new XmlTextWriter (new StreamWriter (file));
-			try {
-				ser.Serialize (tw, repo, typeof(Repository));
-			} finally {
-				tw.Close ();
-			}
-		}
-		
+
 		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
 		{
 			CommitMessageFormat format = new CommitMessageFormat ();
