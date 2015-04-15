@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Git
 			sol.Saved -= OnSolutionSaved;
 			GitUtil.Init (sol.BaseDirectory, null);
 			
-			GitRepository gitRepo = new GitRepository (sol.BaseDirectory, null);
+			GitRepository gitRepo = new GitRepository (null, sol.BaseDirectory, null);
 			gitRepo.Add (sol.GetItemFiles (true).ToArray (), false, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
 		}
 

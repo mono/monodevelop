@@ -56,7 +56,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (path.IsGitRepository ()) {
 				GitRepository repo;
 				if (!repositories.TryGetValue (path.CanonicalPath, out repo))
-					repositories [path.CanonicalPath] = repo = new GitRepository (path, null);
+					repositories [path.CanonicalPath] = repo = new GitRepository (this, path, null);
 				return repo;
 			}
 			return GetRepositoryReference (path.ParentDirectory, id);
