@@ -115,8 +115,8 @@ module Patterns =
         | _ -> true
 
     let (|IdentifierSymbol|_|) ts =
-        if isIdentifier ts.TokenInfo.ColorClass && ts.SymbolUse.IsSome then
-            IdentifierSymbol(ts.SymbolUse.Value) |> Some
+        if isIdentifier ts.TokenInfo.ColorClass then
+            ts.SymbolUse |> Option.map (fun su -> IdentifierSymbol(su))
         else None
 
     let (|Namespace|_|) ts =
@@ -383,7 +383,9 @@ type FSharpSyntaxMode(editor, context) =
             let parseAndCheckResults = localParsedDocument.Ast |> tryCast<ParseAndCheckResults>
             match parseAndCheckResults with
             | Some pd ->
-                let symbolsInFile = pd.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
+                let symbolsInFile =
+                    try Async.RunSynchronously (pd.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
+                    with _ -> None 
                 let colourisations = pd.GetExtraColorizations ()
                 let alllines = editor.GetLines()
 
