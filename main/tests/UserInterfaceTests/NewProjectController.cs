@@ -45,7 +45,7 @@ namespace UserInterfaceTests
 
 		public bool SelectTemplateType (string type, string category)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Text (type));
+			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (category).NextSiblings ().Text (type));
 		}
 
 		public bool SelectTemplate (string templateName)

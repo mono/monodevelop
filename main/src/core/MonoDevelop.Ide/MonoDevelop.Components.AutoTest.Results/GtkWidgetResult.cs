@@ -66,7 +66,16 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		public override AppResult Text (string text)
+		bool CheckForText (string haystack, string needle, bool exact)
+		{
+			if (exact) {
+				return haystack == needle;
+			} else {
+				return (haystack.IndexOf (needle) > -1);
+			}
+		}
+
+		public override AppResult Text (string text, bool exact)
 		{
 			// Entries and Labels have Text, Buttons have Label.
 			// FIXME: Are there other property names?
@@ -76,7 +85,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
 				if (pinfo != null) {
 					string propText = (string)pinfo.GetValue (resultWidget);
-					if (propText == text) {
+					if (CheckForText (propText, text, exact)) {
 						return this;
 					}
 				}
@@ -84,7 +93,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				pinfo = resultWidget.GetType ().GetProperty ("Label");
 				if (pinfo != null) {
 					string propText = (string)pinfo.GetValue (resultWidget);
-					if (propText == text) {
+					if (CheckForText (propText, text, exact)) {
 						return this;
 					}
 				}

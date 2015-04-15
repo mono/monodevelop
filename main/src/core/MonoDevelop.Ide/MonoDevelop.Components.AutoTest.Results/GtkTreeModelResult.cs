@@ -67,12 +67,22 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		bool CheckForText (TreeModel model, TreeIter iter)
+		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
 		{
 			string modelText = model.GetValue (iter, Column) as string;
-			return (modelText != null && modelText == DesiredText);
+			AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("Looking for {0} - Got {1}", DesiredText, modelText);
+			if (modelText == null) {
+				return false;
+			}
+
+			if (exact) {
+				return modelText == DesiredText;
+			} else {
+				return (modelText.IndexOf (DesiredText) > -1);
+			}
 		}
 
+		/*
 		bool FindText (TreeModel model, TreePath path, TreeIter iter)
 		{
 			if (CheckForText (model, iter)) {
@@ -82,17 +92,25 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			return false;
 		}
+		*/
 
-		public override AppResult Text (string text)
+		public override AppResult Text (string text, bool exact)
 		{
 			DesiredText = text;
 
 			if (resultIter.HasValue) {
-				return (AppResult)AutoTestService.CurrentSession.UnsafeSync (() => CheckForText (TModel, (TreeIter) resultIter) ? this : null);
+				return (AppResult)AutoTestService.CurrentSession.UnsafeSync (() => CheckForText (TModel, (TreeIter) resultIter, exact) ? this : null);
 			}
 
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				TModel.Foreach (FindText);
+			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (() => {
+				TModel.Foreach ((m, p, i) => {
+					if (CheckForText (m, i, exact)) {
+						resultIter = i;
+						return true;
+					}
+
+					return false;
+				});
 
 				return resultIter.HasValue ? this : null;
 			});

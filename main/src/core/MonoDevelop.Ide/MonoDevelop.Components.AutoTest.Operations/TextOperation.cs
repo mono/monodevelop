@@ -32,9 +32,12 @@ namespace MonoDevelop.Components.AutoTest.Operations
 	public class TextOperation : Operation
 	{
 		string Text;
-		public TextOperation (string text)
+		bool Exact;
+
+		public TextOperation (string text, bool exact = true)
 		{
 			Text = text;
+			Exact = exact;
 		}
 
 		public override List<AppResult> Execute (List<AppResult> resultSet)
@@ -42,7 +45,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
-				AppResult newResult = result.Text (Text);
+				AppResult newResult = result.Text (Text, Exact);
 				if (newResult != null) {
 					newResultSet.Add (newResult);
 				}

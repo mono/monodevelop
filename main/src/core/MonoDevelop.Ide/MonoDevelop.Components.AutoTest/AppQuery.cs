@@ -166,6 +166,12 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery Contains (string text)
+		{
+			operations.Add (new TextOperation (text, false));
+			return this;
+		}
+
 		public AppQuery Model (string column)
 		{
 			operations.Add (new ModelOperation (column));
