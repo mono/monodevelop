@@ -70,7 +70,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
 		{
 			string modelText = model.GetValue (iter, Column) as string;
-			AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("Looking for {0} - Got {1}", DesiredText, modelText);
 			if (modelText == null) {
 				return false;
 			}
@@ -81,18 +80,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return (modelText.IndexOf (DesiredText) > -1);
 			}
 		}
-
-		/*
-		bool FindText (TreeModel model, TreePath path, TreeIter iter)
-		{
-			if (CheckForText (model, iter)) {
-				resultIter = iter;
-				return true;
-			}
-
-			return false;
-		}
-		*/
 
 		public override AppResult Text (string text, bool exact)
 		{
