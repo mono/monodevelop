@@ -60,7 +60,6 @@ namespace MonoDevelop.Projects
 		public const string CleanTarget = "Clean";
 		
 		const string SerializableClassesExtensionPath = "/MonoDevelop/ProjectModel/SerializableClasses";
-		const string ExtendedPropertiesExtensionPath = "/MonoDevelop/ProjectModel/ExtendedProperties";
 		const string ProjectBindingsExtensionPath = "/MonoDevelop/ProjectModel/ProjectBindings";
 
 		internal const string ProjectModelExtensionsPath = "/MonoDevelop/ProjectModel/ProjectModelExtensions";
@@ -70,7 +69,6 @@ namespace MonoDevelop.Projects
 		internal ProjectService ()
 		{
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
-			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
@@ -409,21 +407,6 @@ namespace MonoDevelop.Projects
 				DataContext.IncludeType (t.Addin, t.TypeName, t.ItemName);
 			}
 			// Types can't be excluded from a DataContext, but that's not a big problem anyway
-			
-			if (DataContextChanged != null)
-				DataContextChanged (this, EventArgs.Empty);
-		}
-		
-		void OnPropertiesExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			if (args.Change == ExtensionChange.Add) {
-				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				DataContext.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
-			}
-			else {
-				ItemPropertyCodon cls = (ItemPropertyCodon) args.ExtensionNode;
-				DataContext.UnregisterProperty (cls.Addin, cls.TypeName, cls.PropertyName);
-			}
 			
 			if (DataContextChanged != null)
 				DataContextChanged (this, EventArgs.Empty);
