@@ -41,9 +41,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			if (projections == null)
 				throw new ArgumentNullException ("projections");
+			this.ctx = ctx;
 			this.projections = projections;
 		}
-		
 
 		public override bool IsValidInContext (DocumentContext context)
 		{
