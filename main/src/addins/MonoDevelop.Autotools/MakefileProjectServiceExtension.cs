@@ -71,6 +71,15 @@ namespace MonoDevelop.Autotools
 	{
 		MakefileData data;
 
+		public MakefileProjectExtension ()
+		{
+		}
+
+		public MakefileData MakefileData {
+			get { return data; }
+			set { data = value; }
+		}
+
 		protected override void OnReadProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
@@ -100,11 +109,14 @@ namespace MonoDevelop.Autotools
 		{
 			base.OnWriteProject (monitor, msproject);
 
-			if (data == null || !data.SupportsIntegration)
+			if (data == null)
 				return;
 
-			msproject.SetProjectExtension ("MonoDevelop.Autotools.MakefileInfo", data.Write ());
+			msproject.SetMonoDevelopProjectExtension ("MonoDevelop.Autotools.MakefileInfo", data.Write ());
 
+			if (!data.SupportsIntegration)
+				return;
+			
 			try {
 				data.UpdateMakefile (monitor);
 			} catch (Exception e) {
@@ -119,7 +131,6 @@ namespace MonoDevelop.Autotools
 		{
 			List<FilePath> col = base.OnGetItemFiles (includeReferencedFiles).ToList ();
 			
-			MakefileData data = Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || string.IsNullOrEmpty (data.AbsoluteMakefileName))
 				return col;
 			
@@ -138,7 +149,6 @@ namespace MonoDevelop.Autotools
 		//FIXME: Check whether autogen.sh is required or not
 		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			MakefileData data = Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.BuildTargetName))
 				return await base.OnBuild (monitor, configuration);
 
@@ -322,7 +332,6 @@ namespace MonoDevelop.Autotools
 
 		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			MakefileData data = Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.CleanTargetName)) {
 				return await base.OnClean (monitor, configuration); 
 			}
@@ -363,7 +372,6 @@ namespace MonoDevelop.Autotools
 
 		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			MakefileData data = Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data != null && data.SupportsIntegration && !String.IsNullOrEmpty (data.ExecuteTargetName))
 				return true;
 			return base.OnGetCanExecute (context, configuration);
@@ -372,9 +380,8 @@ namespace MonoDevelop.Autotools
 
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			MakefileData data = Project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.ExecuteTargetName)) {
-				base.OnExecute (monitor, context, configuration);
+				await base.OnExecute (monitor, context, configuration);
 				return;
 			}
 

@@ -22,8 +22,6 @@ namespace MonoDevelop.Autotools
 	
 	class FileNodeCommandHandler: NodeCommandHandler
 	{
-		const string infoProperty = "MonoDevelop.Autotools.MakefileInfo";
-		
 		[CommandHandler (Commands.SynchWithMakefile)]
 		[AllowMultiSelection]
 		public void OnExclude ()
@@ -34,7 +32,7 @@ namespace MonoDevelop.Autotools
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
 				if (file.Project != null) {
-					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					MakefileData data = file.Project.GetMakefileData ();
 					if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
 						if (data.IsFileExcluded (file.FilePath)) {
 							allChecked = false;
@@ -50,7 +48,7 @@ namespace MonoDevelop.Autotools
 				ProjectFile file = (ProjectFile) node.DataItem;
 				if (file.Project != null) {
 					projects.Add (file.Project);
-					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					MakefileData data = file.Project.GetMakefileData ();
 					if (data != null && data.IntegrationEnabled) {
 						data.SetFileExcluded (file.FilePath, allChecked);
 					}
@@ -71,7 +69,7 @@ namespace MonoDevelop.Autotools
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
 				if (file.Project != null) {
-					MakefileData data = file.Project.ExtendedProperties [infoProperty] as MakefileData;
+					MakefileData data = file.Project.GetMakefileData ();
 					if (data != null && data.IsFileIntegrationEnabled (file.BuildAction)) {
 						anyEnabled = true;
 						if (!data.IsFileExcluded (file.FilePath)) {

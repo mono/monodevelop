@@ -44,11 +44,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.SolutionItem"
-			name = "Deployment.LinuxDeployData" type = "MonoDevelop.Deployment.Linux.LinuxDeployData" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Deployment/DeployDirectories">
 		<Condition id="Platform" value="linux">
 			<DeployDirectory id="Linux.PkgConfig" _label="pkg-config folder" />

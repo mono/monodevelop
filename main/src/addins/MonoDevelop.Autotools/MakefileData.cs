@@ -39,10 +39,11 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
 using System.Xml;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Autotools
 {
-	[DataItem ("MakefileInfo")]
+	[DataItem ("MonoDevelop.Autotools.MakefileInfo")]
 	public class MakefileData : ICloneable
 	{
 		bool integrationEnabled;
@@ -81,6 +82,7 @@ namespace MonoDevelop.Autotools
 		public XmlElement Write ()
 		{
 			XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+			ser.Namespace = MSBuildProject.Schema;
 			var sw = new StringWriter ();
 			ser.Serialize (new XmlTextWriter (sw), this);
 			XmlDocument doc = new XmlDocument ();
@@ -1207,7 +1209,7 @@ namespace MonoDevelop.Autotools
 			}
 
 			foreach (DotNetProject sproj in projects.Values) {
-				MakefileData mdata = sproj.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+				MakefileData mdata = sproj.GetMakefileData ();
 				if (mdata == null)
 					continue;
 
@@ -1856,6 +1858,22 @@ namespace MonoDevelop.Autotools
 		public PackageContent (string name)
 		{
 			this.Name = name;
+		}
+	}
+
+	internal static class MakefileDataExtension
+	{
+		public static MakefileData GetMakefileData (this Project project)
+		{
+			var ex = project.GetService<MakefileProjectExtension> ();
+			return ex != null ? ex.MakefileData : null;
+		}
+
+		public static void SetMakefileData (this Project project, MakefileData data)
+		{
+			var ex = project.GetService<MakefileProjectExtension> ();
+			if (ex != null)
+				ex.MakefileData = data;
 		}
 	}
 }

@@ -105,11 +105,6 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Project"
-			name = "MonoDevelop.Autotools.MakefileInfo" type = "MonoDevelop.Autotools.MakefileData" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/DesignerSupport/PropertyProviders">
 		<Condition id="Platform" value="!windows">
 			<Class class = "MonoDevelop.Autotools.PropertyProvider"/>

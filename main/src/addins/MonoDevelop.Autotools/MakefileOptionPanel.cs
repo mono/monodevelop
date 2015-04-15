@@ -16,7 +16,7 @@ namespace MonoDevelop.Autotools
 		public override Widget CreatePanelWidget()
 		{
 			Project project = ConfiguredProject;
-			MakefileData data = project.ExtendedProperties ["MonoDevelop.Autotools.MakefileInfo"] as MakefileData;
+			MakefileData data = project.GetMakefileData ();
 
 			MakefileData tmpData = null;
 			if (data != null) {
