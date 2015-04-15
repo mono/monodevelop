@@ -302,27 +302,21 @@ module CompilerArguments =
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
 
-  let getArgumentsFromProject (proj:DotNetProject) =
-        let config = getCurrentConfigurationOrDefault proj
-        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
-        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-        generateCompilerOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false) |> Array.ofList
-
   let getDefineSymbols (fileName:string) (project: Project option) =
-    [if (fileName.EndsWith(".fsx") || fileName.EndsWith(".fsscript"))
-     then yield "INTERACTIVE"
-     else yield "COMPILED"
-    
+    [if FSharp.CompilerBinding.LanguageService.IsAScript fileName
+     then yield! ["INTERACTIVE";"EDITING"]
+     else yield! ["COMPILED";"EDITING"]
+     
      let workspace = IdeApp.Workspace |> Option.ofNull
      let configuration =
-        match workspace, project with
+         match workspace, project with
          | None, Some proj ->
              //as there is no workspace use the default configuration for the project
              Some (proj.GetConfiguration(proj.DefaultConfiguration.Selector))
          | Some workspace, Some project ->
-             Some (project.GetConfiguration(workspace.ActiveConfiguration))
+              Some (project.GetConfiguration(workspace.ActiveConfiguration))
          | _ -> None
-
+     
      match configuration with
      | Some config  ->
          match config with
