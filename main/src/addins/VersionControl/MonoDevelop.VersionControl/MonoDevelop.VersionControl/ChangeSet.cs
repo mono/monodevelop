@@ -6,7 +6,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class ChangeSet
+	public sealed class ChangeSet
 	{
 		// Commits should be atomic and small. Therefore having a List instead
 		// of a HashSet should be faster in most cases.
@@ -15,7 +15,7 @@ namespace MonoDevelop.VersionControl
 		readonly FilePath basePath;
 		Hashtable extendedProperties;
 
-		internal protected ChangeSet (Repository repo, FilePath basePath) : this (repo, basePath, Enumerable.Empty<ChangeSetItem> ())
+		internal ChangeSet (Repository repo, FilePath basePath) : this (repo, basePath, Enumerable.Empty<ChangeSetItem> ())
 		{
 		}
 

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlCommandHandler : NodeCommandHandler 
+	public abstract class VersionControlCommandHandler : NodeCommandHandler
 	{
 		List<VersionControlItem> items;
 		

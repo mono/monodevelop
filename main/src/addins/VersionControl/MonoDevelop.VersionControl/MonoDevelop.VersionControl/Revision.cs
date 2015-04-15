@@ -100,7 +100,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 	
-	public class RevisionPath
+	public sealed class RevisionPath
 	{
 		public RevisionPath (FilePath oldPath, FilePath path, RevisionAction action, string actionDescription)
 		{

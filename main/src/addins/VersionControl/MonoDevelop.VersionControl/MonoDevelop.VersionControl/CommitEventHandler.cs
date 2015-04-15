@@ -5,7 +5,7 @@ namespace MonoDevelop.VersionControl
 {
 	public delegate void CommitEventHandler (object sender, CommitEventArgs args);
 	
-	public class CommitEventArgs: EventArgs
+	public sealed class CommitEventArgs: EventArgs
 	{
 		internal CommitEventArgs (Repository repo, ChangeSet cset, bool success)
 		{

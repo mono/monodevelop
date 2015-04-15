@@ -3,7 +3,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionInfo
+	public sealed class VersionInfo
 	{
 		bool opsLoaded;
 		VersionControlOperation operations;
