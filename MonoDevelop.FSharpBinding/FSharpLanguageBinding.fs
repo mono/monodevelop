@@ -46,13 +46,14 @@ type FSharpLanguageBinding() =
   let invalidateProjectFile(project:Project) =
     match project with
     | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
-        //let projectFilename, files, args  = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
-        let options = langServ.GetProjectCheckerOptions(dnp.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
-        langServ.InvalidateConfiguration(options)
+        try
+            let options = langServ.GetProjectCheckerOptions(dnp.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+            langServ.InvalidateConfiguration(options)
+        with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
     | _ -> ()
     
-  let invalidateAll (args:#ProjectFileEventInfo seq) =
-    for projectFileEvent in args do 
+  let invalidateFiles (args:#ProjectFileEventInfo seq) =
+    for projectFileEvent in args do
         if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
             invalidateProjectFile(projectFileEvent.Project)
 
@@ -60,33 +61,23 @@ type FSharpLanguageBinding() =
       IdeApp.Workspace.GetAllProjects()
       |> Seq.iter invalidateProjectFile
 
-  let ensureCorrectEditorOptions _args =
-      let doc = IdeApp.Workbench.ActiveDocument
-      if doc <> null && doc.Editor <> null &&
-        not doc.Editor.Options.TabsToSpaces &&
-        (MDLanguageService.SupportedFileName (doc.FileName.ToString())) then ()
-        //TODO doc.Editor.Options.TabsToSpaces <- true
-      
   let eventDisposer =
       ResizeArray<IDisposable> ()
             
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
   do if IdeApp.IsInitialized then
-      //Ensure correct editor options are enables for F#, enforcing this options with the mime type doesnt appear to work
-      IdeApp.Workbench.ActiveDocumentChanged.Subscribe(ensureCorrectEditorOptions) |> eventDisposer.Add
-
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
       IdeApp.Workspace.ActiveConfigurationChanged.Subscribe(invalidateConfig) |> eventDisposer.Add
-      IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateAll) |> eventDisposer.Add
-      IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateAll) |> eventDisposer.Add
-      IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateAll) |> eventDisposer.Add
+      IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateFiles) |> eventDisposer.Add
+      IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateFiles) |> eventDisposer.Add
+      IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateFiles) |> eventDisposer.Add
+      IdeApp.Workspace.FilePropertyChangedInProject.Subscribe(invalidateFiles) |> eventDisposer.Add
       IdeApp.Workspace.ReferenceAddedToProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
       IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
       IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
-    
   // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
   let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
   interface IDotNetLanguageBinding  with
@@ -132,8 +123,6 @@ type FSharpLanguageBinding() =
       ProjectParameters()
       
     override x.GetCodeDomProvider() : CodeDomProvider =
-        // TODO: Simplify CodeDom provider to generate reasonable template
-        // files at least for some MonoDevelop project types. Then we can recover:
         provider.Value :> CodeDomProvider
       
     override x.GetSupportedClrVersions() =
