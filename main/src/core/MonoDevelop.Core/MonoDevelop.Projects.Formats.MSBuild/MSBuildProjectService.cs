@@ -129,34 +129,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return target;
 			return null;
 		}
-		
+
+		/// <summary>
+		/// Loads a solution item
+		/// </summary>
+		/// <returns>The item.</returns>
+		/// <param name="monitor">Progress monitor</param>
+		/// <param name="fileName">File path to the item file</param>
+		/// <param name="expectedFormat">File format that the project should have</param>
+		/// <param name="typeGuid">Optional item type GUID. If not provided, the type is guessed from the file extension.</param>
+		/// <param name="itemGuid">Optional item Id</param>
+		/// <param name="ctx">Optional solution context</param>
 		public async static Task<SolutionItem> LoadItem (ProgressMonitor monitor, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid, SolutionLoadContext ctx)
 		{
-			foreach (SolutionItemTypeNode node in GetItemTypeNodes ()) {
-				if (node.CanHandleFile (fileName, typeGuid))
-					return await LoadProjectAsync (monitor, fileName, expectedFormat, null, node, ctx);
-			}
-			
-			// If it is a known unsupported project, load it as UnknownProject
-			var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (typeGuid != null ? new [] { typeGuid } : new string[0], fileName);
-			if (projectInfo != null && projectInfo.LoadFiles) {
-				if (typeGuid == null)
-					typeGuid = projectInfo.Guid;
-				var p = (UnknownProject) await LoadProjectAsync (monitor, fileName, expectedFormat, typeof(UnknownProject), null, ctx);
-				p.UnsupportedProjectMessage = projectInfo.GetInstructions ();
-				return p;
-			}
-			return null;
-		}
+			SolutionItem item = null;
 
-		internal static async Task<SolutionItem> LoadProjectAsync (ProgressMonitor monitor, string fileName, MSBuildFileFormat format, Type itemType, SolutionItemTypeNode node, SolutionLoadContext ctx)
-		{
-			SolutionItem item;
+			// Find an extension node that can handle this item type
+			var node = GetItemTypeNodes ().FirstOrDefault (n => n.CanHandleFile (fileName, typeGuid));
 
-			if (itemType != null)
-				item = (SolutionItem)Activator.CreateInstance (itemType);
-			else
+			if (node != null) {
 				item = await node.CreateSolutionItem (monitor, fileName);
+				if (item == null)
+					return null;
+			}
+
+			if (item == null) {
+				// If it is a known unsupported project, load it as UnknownProject
+				item = CreateUnknownSolutionItem (monitor, fileName, typeGuid, typeGuid, ctx);
+				if (item == null)
+					return null;
+			}
 
 			item.EnsureInitialized ();
 
@@ -166,8 +168,67 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				item.NotifyItemReady ();
 			};
 
-			await item.LoadAsync (monitor, fileName, format);
+			await item.LoadAsync (monitor, fileName, expectedFormat);
 			return item;
+		}
+
+		internal static SolutionItem CreateUnknownSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid, string unknownTypeGuid, SolutionLoadContext ctx)
+		{
+			bool loadAsProject = false;
+			string unsupportedMessage;
+
+			var relPath = ctx != null && ctx.Solution != null ? new FilePath (fileName).ToRelative (ctx.Solution.BaseDirectory).ToString() : new FilePath (fileName).FileName;
+			var guids = !string.IsNullOrEmpty (unknownTypeGuid) ? unknownTypeGuid.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries) : new string[0];
+
+			if (!string.IsNullOrEmpty (unknownTypeGuid)) {
+				var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, fileName);
+				if (projectInfo != null) {
+					loadAsProject = projectInfo.LoadFiles;
+					unsupportedMessage = projectInfo.GetInstructions ();
+					LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+					monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+				} else {
+					unsupportedMessage = GettextCatalog.GetString ("Unknown project type: {0}", unknownTypeGuid);
+					LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, unknownTypeGuid));
+					monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, unknownTypeGuid));
+					return null;
+				}
+			} else {
+				unsupportedMessage = GettextCatalog.GetString ("Unknown project type");
+				LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
+				monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
+			}
+			if (loadAsProject) {
+				var project = (Project) CreateUninitializedInstance (typeof(UnknownProject));
+				project.UnsupportedProjectMessage = unsupportedMessage;
+				project.SetCreationContext (Project.CreationContext.Create (typeGuid, new string[0]));
+				return project;
+			} else
+				return null;
+		}
+
+
+		/// <summary>
+		/// Creates an uninitialized solution item instance
+		/// </summary>
+		/// <param name="type">Solution item type</param>
+		/// <remarks>
+		/// Some subclasses (such as ProjectTypeNode) need to assign some data to
+		/// the object before it is initialized. However, by default initialization
+		/// is automatically made by the constructor, so to support this scenario
+		/// the initialization has to be delayed. This is done by setting the
+		/// MonoDevelop.DelayItemInitialization logical context property.
+		/// When this property is set, the object is not initialized, and it has
+		/// to be manually initialized by calling EnsureInitialized.
+		/// </remarks>
+		internal static SolutionItem CreateUninitializedInstance (Type type)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
+				return (SolutionItem)Activator.CreateInstance (type, true);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
+			}
 		}
 
 		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
@@ -211,7 +272,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (node != null) {
 					if (node.MSBuildSupport != MSBuildSupport.Supported)
 						return node.MSBuildSupport;
-				} else
+				} else if (!IsKnownTypeGuid (fid))
 					throw new UnknownSolutionItemTypeException (fid);
 			}
 			return MSBuildSupport.Supported;
@@ -308,6 +369,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Language not supported: " + guid);
 		}
 
+		internal static bool IsKnownFlavorGuid (string guid)
+		{
+			return WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().Any (n => n.Guid.Equals (guid, StringComparison.InvariantCultureIgnoreCase));
+		}
+
 		internal static bool IsKnownTypeGuid (string guid)
 		{
 			foreach (var node in GetItemTypeNodes ()) {
@@ -399,6 +465,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static MSBuildSupport GetMSBuildSupportForProject (Project project)
 		{
+			if (project is UnknownProject)
+				return MSBuildSupport.NotSupported;
+			
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (project.TypeGuid, StringComparison.OrdinalIgnoreCase)) {
 					if (node.MSBuildSupport != MSBuildSupport.Supported)
@@ -406,8 +475,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return GetMSBuildSupportForFlavors (project.FlavorGuids);
 				}
 			}
-			// The generic handler should always be found
-			throw new InvalidOperationException ();
+			return MSBuildSupport.NotSupported;
 		}
 
 		public static void RegisterGenericProjectType (string projectId, Type type)

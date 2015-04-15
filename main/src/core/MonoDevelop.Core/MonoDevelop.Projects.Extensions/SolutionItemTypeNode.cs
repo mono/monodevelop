@@ -109,21 +109,9 @@ namespace MonoDevelop.Projects.Extensions
 				if (factory == null)
 					factory = (SolutionItemFactory)Activator.CreateInstance (ItemType);
 				item = await factory.CreateItem (fileName, Guid);
-			} else {
-				try {
-					// Some subclasses (such as ProjectTypeNode) need to assign some data to
-					// the object before it is initialized. However, by default initialization
-					// is automatically made by the constructor, so to support this scenario
-					// the initialization has to be delayed. This is done by setting the
-					// MonoDevelop.DelayItemInitialization logical context property.
-					// When this property is set, the object is not initialized, and it has
-					// to be manually initialized by calling EnsureInitialized.
-					CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", true);
-					item = (SolutionItem)Activator.CreateInstance (ItemType, true);
-				} finally {
-					CallContext.LogicalSetData ("MonoDevelop.DelayItemInitialization", false);
-				}
-			}
+			} else
+				item = MSBuildProjectService.CreateUninitializedInstance (ItemType);
+			
 			item.TypeGuid = Guid;
 			return item;
 		}

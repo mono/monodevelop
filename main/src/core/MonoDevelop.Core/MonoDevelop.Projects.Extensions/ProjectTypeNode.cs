@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Formats.MSBuild;
@@ -46,6 +47,7 @@ namespace MonoDevelop.Projects.Extensions
 		public override async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName)
 		{
 			MSBuildProject p = null;
+			Project project = null;
 
 			if (!string.IsNullOrEmpty (fileName)) {
 				p = await MSBuildProject.LoadAsync (fileName);
@@ -53,24 +55,26 @@ namespace MonoDevelop.Projects.Extensions
 				if (migrators.Count > 0)
 					await MSBuildProjectService.MigrateFlavors (monitor, fileName, Guid, p, migrators);
 
+				var unsupporedFlavor = p.ProjectTypeGuids.FirstOrDefault (fid => !MSBuildProjectService.IsKnownFlavorGuid (fid) && !MSBuildProjectService.IsKnownTypeGuid (fid));
+				if (unsupporedFlavor != null) {
+					// The project has a flavor that's not supported. Return a fake project (if possible).
+					return MSBuildProjectService.CreateUnknownSolutionItem (monitor, fileName, Guid, unsupporedFlavor, null);
+				}
+
 				if (MSBuildSupport == MSBuildSupport.NotSupported || MSBuildProjectService.GetMSBuildSupportForFlavors (p.ProjectTypeGuids) == MSBuildSupport.NotSupported)
 					p.UseMSBuildEngine = false;
 
 				// Evaluate the project now. If evaluation fails an exception will be thrown, and when that
 				// happens the solution will create a placeholder project.
-				try {
-					p.Evaluate ();
-				} catch (ProjectEvaluationException ex) {
-					if (p.UseMSBuildEngine) {
-						p.UseMSBuildEngine = false;
-						p.Evaluate ();
-					}
-				}
+				p.Evaluate ();
 			}
 
-			var project = await base.CreateSolutionItem (monitor, fileName) as Project;
+			if (project == null)
+				project = await base.CreateSolutionItem (monitor, fileName) as Project;
+			
 			if (project == null)
 				throw new InvalidOperationException ("Project node type is not a subclass of MonoDevelop.Projects.Project");
+			
 			if (p != null)
 				project.SetCreationContext (Project.CreationContext.Create (p, Guid));
 			return project;

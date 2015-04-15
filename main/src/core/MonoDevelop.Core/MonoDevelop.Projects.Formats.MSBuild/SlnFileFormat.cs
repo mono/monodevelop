@@ -643,7 +643,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				DateTime ti = DateTime.Now;
 
 				if (sol.IsSolutionItemEnabled (projectPath)) {
-					Console.WriteLine (">> Start Loading " + Path.GetFileName (projectPath));
 					loadTask = Services.ProjectService.ReadSolutionItem (monitor, projectPath, format, projTypeGuid, projectGuid, ctx);
 				} else {
 					loadTask = Task.FromResult<SolutionItem> (new UnloadedSolutionItem () {
@@ -653,52 +652,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				var ft = loadTask.ContinueWith (ta => {
 					try {
-						Console.WriteLine ("<< End Loading " + Path.GetFileName (projectPath) + " t:" + (DateTime.Now - ti).TotalMilliseconds);
 						item = ta.Result;
 						if (item == null)
 							throw new UnknownSolutionItemTypeException (projTypeGuid);
 					} catch (Exception cex) {
 						var e = UnwrapException (cex).First ();
 
-						bool loadAsProject = false;
 						string unsupportedMessage = e.Message;
 
-						if (e is ProjectEvaluationException) {
-							var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
-							var project = ((ProjectEvaluationException)e).Project;
-							var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (project.ProjectTypeGuids, sol.FileName);
-							if (projectInfo != null) {
-								loadAsProject = projectInfo.LoadFiles;
-								LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-								unsupportedMessage = projectInfo.GetInstructions ();
-							} else {
-								LoggingService.LogWarning (string.Format ("Could not load project '{0}': {1}", relPath, e.Message));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}': {1}'", relPath, e.Message));
-								unsupportedMessage = GettextCatalog.GetString ("Project evaluation failed: " + e.Message);
-							}
-						}
-						else if (e is UnknownSolutionItemTypeException) {
-							var name = ((UnknownSolutionItemTypeException)e).TypeName;
-
-							var relPath = new FilePath (path).ToRelative (sol.BaseDirectory);
-							if (!string.IsNullOrEmpty (name)) {
-								var guids = name.Split (';');
-								var projectInfo = MSBuildProjectService.GetUnknownProjectTypeInfo (guids, sol.FileName);
-								if (projectInfo != null) {
-									loadAsProject = projectInfo.LoadFiles;
-									LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-									monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-								} else {
-									LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-									monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type '{1}'", relPath, name));
-								}
-							} else {
-								LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type", relPath));
-								monitor.ReportWarning (GettextCatalog.GetString ("Could not load project '{0}' with unknown item type", relPath));
-							}
-
-						} else if (e is UserException) {
+						if (e is UserException) {
 							var ex = (UserException) e;
 							LoggingService.LogError ("{0}: {1}", ex.Message, ex.Details);
 							monitor.ReportError (string.Format ("{0}{1}{1}{2}", ex.Message, Environment.NewLine, ex.Details), null);
@@ -709,17 +671,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 
 						SolutionItem uitem;
-						if (loadAsProject) {
-							uitem = new UnknownProject () {
-								FileName = projectPath,
-								UnsupportedProjectMessage = unsupportedMessage,
-							};
-						} else {
-							uitem = new UnknownSolutionItem () {
-								FileName = projectPath,
-								UnsupportedProjectMessage = unsupportedMessage,
-							};
-						}
+						uitem = new UnknownSolutionItem () {
+							FileName = projectPath,
+							UnsupportedProjectMessage = unsupportedMessage,
+						};
 						item = uitem;
 						item.ItemId = projectGuid;
 						item.TypeGuid = projTypeGuid;

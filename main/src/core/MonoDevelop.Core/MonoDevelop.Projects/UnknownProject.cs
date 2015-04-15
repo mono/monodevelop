@@ -75,12 +75,6 @@ namespace MonoDevelop.Projects
 				return GettextCatalog.GetString ("Unknown entry");
 		}
 
-		internal protected override Task OnSave (ProgressMonitor monitor)
-		{
-			// Do nothing
-			return Task.FromResult (0);
-		}
-
 		protected override bool OnGetSupportsTarget (string target)
 		{
 			// We can't do anything with unsupported projects, other than display them in the solution pad

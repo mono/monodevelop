@@ -128,7 +128,8 @@ namespace MonoDevelop.Projects
 				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 					file = GetTargetFile (file);
 					SolutionItem loadedItem = await GetExtensionChain ().LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
-					loadedItem.NeedsReload = false;
+					if (loadedItem != null)
+						loadedItem.NeedsReload = false;
 					return loadedItem;
 				}
 			});

@@ -696,6 +696,8 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (lib1.IsUnsupportedProject);
 			Assert.IsTrue (lib2.IsUnsupportedProject);
 
+			Assert.IsInstanceOf<Project> (lib2);
+
 			var p = (Project)lib2;
 
 			Assert.AreEqual (2, p.Files.Count);

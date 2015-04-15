@@ -166,7 +166,8 @@ namespace MonoDevelop.Projects
 						flavorGuids = subtypeGuids.ToArray ();
 					}
 				} else {
-					this.sourceProject = null;
+					sourceProject = new MSBuildProject ();
+					sourceProject.FileName = FileName;
 					flavorGuids = creationContext.FlavorGuids;
 				}
 			}
@@ -254,20 +255,22 @@ namespace MonoDevelop.Projects
 
 		protected override Task OnLoad (ProgressMonitor monitor)
 		{
-			MSBuildProject p = sourceProject;
-
 			return Task.Run (delegate {
-				if (p == null || p.IsNewProject)
-					p = MSBuildProject.LoadAsync (FileName).Result;
+				if (sourceProject == null || sourceProject.IsNewProject) {
+					sourceProject = MSBuildProject.LoadAsync (FileName).Result;
+					if (MSBuildEngineSupport == MSBuildSupport.NotSupported)
+						sourceProject.UseMSBuildEngine = false;
+					sourceProject.Evaluate ();
+				}
 
-				IMSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
+				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
 				// Avoid crash if there is not global group
 				if (globalGroup == null)
-					p.AddNewPropertyGroup (false);
+					sourceProject.AddNewPropertyGroup (false);
 
-				ProjectExtension.OnPrepareForEvaluation (p);
+				ProjectExtension.OnPrepareForEvaluation (sourceProject);
 
-				ReadProject (monitor, p);
+				ReadProject (monitor, sourceProject);
 			});
 		}
 
