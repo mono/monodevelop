@@ -64,11 +64,6 @@ namespace MonoDevelop.AspNet.Projects
 
 		#region properties
 
-		protected override MSBuildSupport OnGetMSBuildSupport ()
-		{
-			return MSBuildSupport.NotSupported;
-		}
-
 		protected override DotNetProjectFlags OnGetDotNetProjectFlags ()
 		{
 			return base.OnGetDotNetProjectFlags () | DotNetProjectFlags.IsLibrary;

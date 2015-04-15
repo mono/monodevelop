@@ -222,11 +222,6 @@ namespace MonoDevelop.Projects
 			return Runtime.SystemAssemblyService.GetTargetFramework (moniker);
 		}
 
-		protected override MSBuildSupport OnGetMSBuildSupport ()
-		{
-			return MSBuildSupport.Supported;
-		}
-
 		protected override void OnGetTypeTags (HashSet<string> types)
 		{
 			base.OnGetTypeTags (types);

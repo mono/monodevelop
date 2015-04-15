@@ -190,12 +190,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Evaluate ()
 		{
-			try {
-				// Use a private metadata property to assign an id to each item. This id is used to match
-				// evaluated items with the items that generated them.
-				int id = 0;
-				List<XmlElement> idElems = new List<XmlElement> ();
+			// Use a private metadata property to assign an id to each item. This id is used to match
+			// evaluated items with the items that generated them.
+			int id = 0;
+			List<XmlElement> idElems = new List<XmlElement> ();
 
+			try {
 				var currentItems = new Dictionary<string,MSBuildItem> ();
 				foreach (var it in GetAllItems ()) {
 					var c = doc.CreateElement (NodeIdPropertyName, Schema);
@@ -207,22 +207,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					it.EvaluatedItemCount = 0;
 				}
 
-				var prop = GetGlobalPropertyGroup ().GetProperty ("UseMSBuildEngine");
-				if (!UseMSBuildEngine || (prop != null && !prop.GetValue<bool> ())) {
-					// If msbuild engine is disabled don't evaluate the msbuild file since it is likely to fail.
-					SyncBuildProject (currentItems);
-					return;
-				}
+				var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
 
-				MSBuildEngine e = MSBuildEngine.Create ();
+				MSBuildEngine e = MSBuildEngine.Create (supportsMSBuild);
 
 				OnEvaluationStarting ();
 
-				var project = e.LoadProjectFromXml (FileName, doc.OuterXml);
-
-				// Now remove the item id property
-				foreach (var el in idElems)
-					el.ParentNode.RemoveChild (el);
+				var project = e.LoadProjectFromXml (this, FileName, doc.OuterXml);
 
 				SyncBuildProject (currentItems, e, project);
 			}
@@ -232,6 +223,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				throw new ProjectEvaluationException (this, ex.Message);
 			}
 			finally {
+				// Now remove the item id property
+				foreach (var el in idElems)
+					el.ParentNode.RemoveChild (el);
+
 				OnEvaluationFinished ();
 			}
 		}
@@ -258,7 +253,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var xmlImports = Imports.ToArray ();
 			var buildImports = e.GetImports (project).ToArray ();
 			for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
-				xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (buildImports [n]));
+				xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (project, buildImports [n]));
 
 			var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 			foreach (var it in e.GetEvaluatedItems (project)) {
@@ -314,15 +309,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			xit.IsImported = imported;
 			((MSBuildPropertyGroupEvaluated)xit.Metadata).Sync (e, it);
 			return xit;
-		}
-
-		void SyncBuildProject (Dictionary<string,MSBuildItem> currentItems)
-		{
-			evaluatedItemsIgnoringCondition.Clear ();
-			evaluatedItems.Clear ();
-			evaluatedItems.AddRange (GetAllItems ());
-			evaluatedItemsIgnoringCondition.AddRange (GetAllItems ());
-			evaluatedProperties = null;
 		}
 
 		void OnEvaluationStarting ()
@@ -620,6 +606,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				elem.InsertAfter (value, sec);
 				elem.RemoveChild (sec);
 			}
+			var xmlns = value.GetAttribute ("xmlns");
+			if (xmlns == Schema)
+				value.RemoveAttribute ("xmlns");
 		}
 
 		public void RemoveProjectExtension (string section)

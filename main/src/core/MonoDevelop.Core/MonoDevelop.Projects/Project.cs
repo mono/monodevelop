@@ -183,7 +183,8 @@ namespace MonoDevelop.Projects
 			base.OnExtensionChainInitialized ();
 			if (creationContext != null && creationContext.Project != null)
 				FileName = creationContext.Project.FileName;
-			MSBuildEngineSupport = ProjectExtension.OnGetMSBuildSupport ();
+
+			MSBuildEngineSupport = MSBuildProjectService.GetMSBuildSupportForProject (this);
 			InitFormatProperties ();
 		}
 
@@ -241,11 +242,6 @@ namespace MonoDevelop.Projects
 		}
 
 		public MSBuildSupport MSBuildEngineSupport { get; private set; }
-
-		protected virtual MSBuildSupport OnGetMSBuildSupport ()
-		{
-			return MSBuildSupport.Supported;
-		}
 
 		protected override void OnModified (SolutionItemModifiedEventArgs args)
 		{
@@ -2556,11 +2552,6 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration);
-			}
-
-			internal protected override MSBuildSupport OnGetMSBuildSupport ()
-			{
-				return Project.OnGetMSBuildSupport ();
 			}
 		}
 	}

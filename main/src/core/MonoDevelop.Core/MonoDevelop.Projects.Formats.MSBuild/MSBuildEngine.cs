@@ -34,6 +34,7 @@ using System.Text;
 using Microsoft.Build.Evaluation;
 using MSProject = Microsoft.Build.Evaluation.Project;
 using MSProjectItem = Microsoft.Build.Evaluation.ProjectItem;
+
 #else
 using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
@@ -43,31 +44,45 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	abstract class MSBuildEngine
 	{
-		public static MSBuildEngine Create ()
+		public static MSBuildEngine Create (bool supportsMSBuild)
 		{
-			return new MSBuildEngineV4 ();
+			if (!supportsMSBuild)
+				return new DefaultMSBuildEngine ();
+			else
+				return new MSBuildEngineV4 ();
 		}
 
-		public abstract object LoadProjectFromXml (string fileName, string xml);
+		public abstract object LoadProjectFromXml (MSBuildProject project, string fileName, string xml);
+
 		public abstract IEnumerable<object> GetAllItems (object project, bool includeImported);
+
 		public abstract string GetItemMetadata (object item, string name);
+
 		public abstract string GetEvaluatedMetadata (object item, string name);
+
 		public abstract IEnumerable<object> GetImports (object project);
-		public abstract string GetImportEvaluatedProjectPath (object import);
+
+		public abstract string GetImportEvaluatedProjectPath (object project, object import);
+
 		public abstract IEnumerable<object> GetEvaluatedItemsIgnoringCondition (object project);
+
 		public abstract IEnumerable<object> GetEvaluatedProperties (object project);
 
 		public abstract IEnumerable<object> GetEvaluatedItems (object project);
+
 		public abstract void GetItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported);
+
 		public abstract void GetEvaluatedItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported);
+
 		public abstract bool GetItemHasMetadata (object item, string name);
+
 		public abstract void GetPropertyInfo (object property, out string name, out string value, out string finalValue);
 	}
 
-#if WINDOWS
+	#if WINDOWS
 	class MSBuildEngineV4: MSBuildEngine
 	{
-		public override object LoadProjectFromXml (string fileName, string xml)
+	public override object LoadProjectFromXml (MSBuildProject project, string fileName, string xml)
 		{
 			var d = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (fileName);
@@ -100,7 +115,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return ((MSProject)project).Imports.Cast<object> ();
 		}
 
-		public override string GetImportEvaluatedProjectPath (object import)
+		public override string GetImportEvaluatedProjectPath (object project, object import)
 		{
 			return ((ResolvedImport)import).ImportedProject.FullPath;
 		}
@@ -161,11 +176,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
+
 #else
 
 	class MSBuildEngineV4: MSBuildEngine
 	{
-		public override object LoadProjectFromXml (string fileName, string xml)
+		public override object LoadProjectFromXml (MSBuildProject p, string fileName, string xml)
 		{
 			Engine e = new Engine ();
 			MSProject project = new MSProject (e);
@@ -176,7 +192,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<object> GetAllItems (object project, bool includeImported)
 		{
-			return ((MSProject)project).ItemGroups.Cast<BuildItemGroup> ().SelectMany (g => g.Cast<BuildItem>()).Where (it => includeImported || !it.IsImported);
+			return ((MSProject)project).ItemGroups.Cast<BuildItemGroup> ().SelectMany (g => g.Cast<BuildItem> ()).Where (it => includeImported || !it.IsImported);
 		}
 
 		public override string GetItemMetadata (object item, string name)
@@ -189,7 +205,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return ((MSProject)project).Imports.Cast<object> ();
 		}
 
-		public override string GetImportEvaluatedProjectPath (object import)
+		public override string GetImportEvaluatedProjectPath (object project, object import)
 		{
 			return ((Import)import).EvaluatedProjectPath;
 		}
@@ -262,12 +278,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<object> GetEvaluatedItemsIgnoringCondition (object project)
 		{
-			return ((MSProject)project).EvaluatedItemsIgnoringCondition.Cast<object>();
+			return ((MSProject)project).EvaluatedItemsIgnoringCondition.Cast<object> ();
 		}
 
 		public override IEnumerable<object> GetEvaluatedProperties (object project)
 		{
-			return ((MSProject)project).EvaluatedProperties.Cast<object>();
+			return ((MSProject)project).EvaluatedProperties.Cast<object> ();
 		}
 
 		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue)
@@ -278,6 +294,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			finalValue = p.FinalValue;
 		}
 	}
-#endif
+	#endif
+
+
 }
 

@@ -204,13 +204,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}
 
-		internal static MSBuildSupport GetMSBuildSupportForFlavors (string[] flavorGuids)
+		internal static MSBuildSupport GetMSBuildSupportForFlavors (IEnumerable<string> flavorGuids)
 		{
-			foreach (var node in WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ()) {
-				if (flavorGuids.Any (fid => node.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase))) {
+			foreach (var fid in flavorGuids) {
+				var node = WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().FirstOrDefault (n => n.Guid.Equals (fid, StringComparison.InvariantCultureIgnoreCase));
+				if (node != null) {
 					if (node.MSBuildSupport != MSBuildSupport.Supported)
 						return node.MSBuildSupport;
-				}
+				} else
+					throw new UnknownSolutionItemTypeException (fid);
 			}
 			return MSBuildSupport.Supported;
 		}
@@ -393,6 +395,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return node.Guid;
 			}
 			return GenericItemGuid;
+		}
+
+		internal static MSBuildSupport GetMSBuildSupportForProject (Project project)
+		{
+			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
+				if (node.Guid.Equals (project.TypeGuid, StringComparison.OrdinalIgnoreCase)) {
+					if (node.MSBuildSupport != MSBuildSupport.Supported)
+						return node.MSBuildSupport;
+					return GetMSBuildSupportForFlavors (project.FlavorGuids);
+				}
+			}
+			// The generic handler should always be found
+			throw new InvalidOperationException ();
 		}
 
 		public static void RegisterGenericProjectType (string projectId, Type type)
