@@ -24,13 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
+using NUnit.Framework;
+using System.Reflection;
+using System.IO;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
+	[TestFixture]
 	public class BaseContractsTests
 	{
-		public BaseContractsTests ()
+		readonly string AssemblyPath = Path.Combine ("..", "AddIns", "VersionControl", "MonoDevelop.VersionControl.dll");
+		string[] AllowedTypes = {
+			"MonoDevelop.VersionControl.UrlBasedRepositoryEditor",
+			"MonoDevelop.VersionControl.Views.BlameWidget",
+			"MonoDevelop.VersionControl.Views.MergeWidget",
+		};
+
+		void NoVisibleUI (Assembly asm)
 		{
+			var types = asm.ExportedTypes;
+			var gtkType = typeof(Gtk.Widget);
+
+			var uiTypes = types
+				.Where (gtkType.IsAssignableFrom)
+				.Where (t => t.CustomAttributes.All (attr => attr.AttributeType != typeof(System.ComponentModel.ToolboxItemAttribute)))
+				.Where (t => !t.IsAbstract)
+				.Where (t => !AllowedTypes.Contains (t.FullName))
+				;
+			Assert.True (!uiTypes.Any (), "Should not be public:\n" + String.Join ("\n", uiTypes.Select (t => t.FullName)));
+		}
+
+		[Test]
+		public void TestNoVisibleUI ()
+		{
+			NoVisibleUI (Assembly.LoadFrom (AssemblyPath));
 		}
 	}
 }
