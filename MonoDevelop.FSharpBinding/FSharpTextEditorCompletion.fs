@@ -240,15 +240,22 @@ type FSharpTextEditorCompletion() =
                 | Property pr ->
                     Some pr.EnclosingEntity.DisplayName
                 | ActivePatternCase ap ->
-                    ap.Name
-                    |> SymbolTooltips.escapeText
-                    |> Some
+                    if ap.Group.Names.Count > 1 then
+                        match ap.Group.EnclosingEntity with
+                        | Some enclosing ->
+                            enclosing.DisplayName
+                            |> SymbolTooltips.escapeText
+                            |> Some
+                        | None -> None
+                    else None
 
                 | UnionCase uc ->
-                     uc.ReturnType.AbbreviatedType.Format symbolUse.DisplayContext
-                     |> SymbolTooltips.escapeText
-                     |> Some
-
+                    if uc.UnionCaseFields.Count > 1 then
+                        uc.ReturnType.AbbreviatedType.Format symbolUse.DisplayContext
+                        |> SymbolTooltips.escapeText
+                        |> Some
+                    else None
+                     
                 | Function f ->
                     Some f.EnclosingEntity.DisplayName
                 | Operator o ->
@@ -258,8 +265,8 @@ type FSharpTextEditorCompletion() =
                 | ClosureOrNestedFunction _cl ->
                     //Theres no link to a parent type for a closure (FCS limitation)
                     None
-                | Val _ |  Enum _ | Interface _ | Module _ | Namespace _
-                | Record _ | Union _ | ValueType _ | CorePatterns.Entity _ -> None
+                | Val v -> Some v.EnclosingEntity.DisplayName
+                | Enum _ | Interface _ | Module _ | Namespace _ | Record _ | Union _ | ValueType _ | CorePatterns.Entity _ -> None
                 | _ ->
                     None
             with exn ->
