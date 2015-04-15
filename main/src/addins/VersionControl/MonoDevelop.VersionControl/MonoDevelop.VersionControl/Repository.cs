@@ -8,12 +8,15 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.VersionControl
 {
 	[DataItem (FallbackType=typeof(UnknownRepository))]
 	public abstract class Repository: IDisposable
 	{
+		static Counter Repositories = InstrumentationService.CreateCounter ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
+
 		string name;
 		VersionControlSystem vcs;
 		
@@ -38,6 +41,10 @@ namespace MonoDevelop.VersionControl
 		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
+			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
+				{ "Type", vcs.Name },
+				{ "Version", vcs.Version },
+			});
 		}
 		
 		public virtual void CopyConfigurationFrom (Repository other)

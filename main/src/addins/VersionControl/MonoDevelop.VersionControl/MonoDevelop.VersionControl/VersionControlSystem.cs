@@ -37,6 +37,14 @@ namespace MonoDevelop.VersionControl
 		public abstract string Name { get; }
 
 		/// <summary>
+		/// The version of the native version control system compatible with this system.
+		/// </summary>
+		/// <value>The version string.</value>
+		public virtual string Version {
+			get { return "N/A"; }
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether this version control system is available
 		/// </summary>
 		/// <remarks>
