@@ -32,13 +32,13 @@ type FSharpTooltipProvider() =
 
     override x.GetItem (editor, context, offset) =
       try
-        let activeDoc = IdeApp.Workbench.ActiveDocument
-        if activeDoc = null then null else
+        let doc = IdeApp.Workbench.ActiveDocument
+        if doc = null then null else
 
-        let fileName = activeDoc.FileName.FullPath.ToString()
+        let fileName = doc.FileName.FullPath.ToString()
+        let projectFileName = context.Project.FileName.ToString()
         
-        let supported = MDLanguageService.SupportedFileName (fileName)
-        if supported <> true then null else
+        if not <| MDLanguageService.SupportedFileName fileName then null else
 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
@@ -47,20 +47,19 @@ type FSharpTooltipProvider() =
 
         let result =
             //operate on available results no async gettypeparse results is available quick enough
-            let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (context.Project.FileName.ToString(), fileName, docText, AllowStaleResults.MatchingSource)
+            let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (projectFileName, fileName, docText, AllowStaleResults.MatchingSource)
             Async.RunSynchronously (
                 async {
                     try
                         LoggingService.LogInfo "TooltipProvider: Getting tool tip"
                         let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
-                        //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
-                        // to extract the signature, this is only limited in that it deals with only a single tooltip in a group/list
-                        // This should be fine as there are issues with generic tooltip xmldocs anyway
-                        // e.g. generics such as Dictionary<'a,'b>.Contains currently dont work.
-                        let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
-                        //we create the backupSig as lazily as possible we could put the async call in here but I was worried about GC retension.
-                        let backupSig = 
+
+                        let backupSig =
+                            //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
+                            // to extract the signature, this is only limited in that it deals with only a single tooltip in a group/list
+                            // We create the backupSig as lazily as possible.
                             lazy
+                                let tip = parseAndCheckResults.GetToolTip(line, col, lineStr) |> Async.RunSynchronously
                                 match tip with
                                 | Some (FSharpToolTipText (first :: _remainder), (_startCol,_endCol)) ->
                                     match first with
