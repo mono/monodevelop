@@ -76,11 +76,7 @@ namespace UserInterfaceTests
 
 		public static bool BuildSolution (bool isPass = true)
 		{
-			RunAndWaitForTimer (
-				() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"MonoDevelop.Ide.Counters.BuildItemTimer"
-			);
-
+			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt");
 			var status = IsBuildSuccessful ();
 			return isPass == status;
 		}
@@ -117,7 +113,6 @@ namespace UserInterfaceTests
 
 		public static bool IsBuildSuccessful (int timeout = 3000)
 		{
-			Thread.Sleep (timeout);
 			return Session.IsBuildSuccessful ();
 		}
 

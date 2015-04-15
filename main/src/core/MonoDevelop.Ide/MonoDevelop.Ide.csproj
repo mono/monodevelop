@@ -2350,7 +2350,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-pushing-1-16%402x.png">
       <LogicalName>status-pushing-1-16@2x.png</LogicalName>
-   </EmbeddedResource>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\status-pushing-2-16.png">
       <LogicalName>status-pushing-2-16.png</LogicalName>
     </EmbeddedResource>
@@ -3349,6 +3349,21 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusBarContextHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IButtonBarButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppQuery.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\IAutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\SemanticModelAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\IndexOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\MarkedOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\ModelOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\NextSiblingsOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\Operation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\PropertyOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TextOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

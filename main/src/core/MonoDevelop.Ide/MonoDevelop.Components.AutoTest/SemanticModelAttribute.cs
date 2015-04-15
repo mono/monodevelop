@@ -1,10 +1,10 @@
 ﻿//
-// TestService.cs
+// SemanticModelAttribute.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Components.AutoTest;
-using System.Collections.Generic;
 
-namespace UserInterfaceTests
+namespace MonoDevelop.Components.AutoTest
 {
-	public static class TestService
+	[AttributeUsage (AttributeTargets.Class)]
+	public sealed class SemanticModelAttribute : Attribute
 	{
-		public static AutoTestClientSession Session { get; private set; }
-
-		public static void StartSession (string monoDevelopBinPath = null)
+		public string[] ColumnNames;
+		public SemanticModelAttribute (params string[] columnNames)
 		{
-			Session = new AutoTestClientSession ();
-
-			//TODO: support for testing the installed app
-
-			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
-			});
-
-			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
-		}
-
-		public static void EndSession ()
-		{
-			Session.Stop ();
+			ColumnNames = columnNames;
 		}
 	}
 }
+

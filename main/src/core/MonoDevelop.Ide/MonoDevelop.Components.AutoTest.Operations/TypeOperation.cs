@@ -1,10 +1,10 @@
 ﻿//
-// TestService.cs
+// ButtonOperation.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Components.AutoTest;
 using System.Collections.Generic;
 
-namespace UserInterfaceTests
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public static class TestService
+	public class TypeOperation : Operation
 	{
-		public static AutoTestClientSession Session { get; private set; }
+		Type DesiredType;
 
-		public static void StartSession (string monoDevelopBinPath = null)
+		public TypeOperation (Type desiredType)
 		{
-			Session = new AutoTestClientSession ();
-
-			//TODO: support for testing the installed app
-
-			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_TEST_PROFILE", Util.CreateTmpDir ("profile") }
-			});
-
-			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.GrabDesktopFocus");
+			DesiredType = desiredType;
 		}
 
-		public static void EndSession ()
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			Session.Stop ();
+			List<AppResult> newResultSet = new List<AppResult> ();
+
+			foreach (var result in resultSet) {
+				AppResult newResult = result.CheckType (DesiredType);
+				if (newResult != null) {
+					newResultSet.Add (newResult);
+				}
+			}
+
+			return newResultSet;
 		}
 	}
 }
+

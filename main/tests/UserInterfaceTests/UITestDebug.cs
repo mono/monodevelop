@@ -1,10 +1,10 @@
 ﻿//
-// MonoDevelopTemplatesTest.cs
+// UITestDebug.cs
 //
 // Author:
-//       Manish Sinha <manish.sinha@xamarin.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin Inc.
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,44 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using System.Runtime.InteropServices;
 using MonoDevelop.Components.AutoTest;
-using MonoDevelop.Ide.Commands;
-using NUnit.Framework;
-
 namespace UserInterfaceTests
 {
-	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
+	public class UITestDebug : MarshalByRefObject, IAutoTestSessionDebug<MarshalByRefObject>
 	{
-		readonly static string DotNetProjectKind = ".NET";
-
-		readonly static string CategoryRoot = "Other";
-
-		[Test]
-		public void TestCreateBuildConsoleProject ()
+		public void Debug (string message)
 		{
-			CreateBuildProject ("ConsoleProject", "Console Project", DotNetProjectKind, CategoryRoot, EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
-		{
-			CreateBuildProject ("Gtk20Project", "Gtk# 2.0 Project", DotNetProjectKind, CategoryRoot, EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildLibrary ()
-		{
-			CreateBuildProject ("Library", "Library", DotNetProjectKind, CategoryRoot, EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
-		{
-			CreateBuildProject ("NUnitLibraryProject", "NUnit Library Project", DotNetProjectKind, CategoryRoot, delegate {
-				Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.", pollStep: 1000);
-			});
+			Console.WriteLine ("{0}: {1}", DateTime.Now, message);
 		}
 	}
 }
+
