@@ -212,14 +212,24 @@ namespace MonoDevelop.VersionControl
 		
 		public static Repository GetRepositoryReference (string path, string id)
 		{
+			VersionControlSystem detectedVCS = null;
+			FilePath shortestPath = FilePath.Null;
+
 			foreach (VersionControlSystem vcs in GetVersionControlSystems ()) {
-				Repository repo = vcs.GetRepositoryReference (path, id);
-				if (repo != null) {
-					repo.VersionControlSystem = vcs;
-					return repo;
+				var newPath = vcs.GetRepositoryPath (path, id);
+				if (!newPath.IsNullOrEmpty) {
+					if (string.IsNullOrEmpty (shortestPath)) {
+						shortestPath = newPath;
+						detectedVCS = vcs;
+					} else if (shortestPath.CompareTo (newPath) <= 0) {
+						// They are guaranteed to be on the same path segments, so choose by path length.
+						shortestPath = newPath;
+						detectedVCS = vcs;
+					}
 				}
 			}
-			return null;
+			return detectedVCS == null ? null : detectedVCS.GetRepositoryReference (shortestPath, id);
+
 		}
 		
 		internal static void SetCommitComment (string file, string comment, bool save)
@@ -710,8 +720,8 @@ namespace MonoDevelop.VersionControl
 		
 		internal static Repository InternalGetRepositoryReference (string path, string id)
 		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
+			string file = InternalGetRepositoryPath (path, id);
+			if (file == null)
 				return null;
 			
 			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
@@ -721,6 +731,15 @@ namespace MonoDevelop.VersionControl
 			} finally {
 				reader.Close ();
 			}
+		}
+
+		internal static string InternalGetRepositoryPath (string path, string id)
+		{
+			string file = Path.Combine (path, id) + ".mdvcs";
+			if (!File.Exists (file))
+				return null;
+
+			return file;
 		}
 		
 		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)
