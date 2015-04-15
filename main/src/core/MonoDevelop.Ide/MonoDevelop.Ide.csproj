@@ -3356,19 +3356,19 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppQuery.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AppResult.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\Operation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\MarkedOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\TextOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\IAutoTestSessionDebug.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSessionDebug.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\SemanticModelAttribute.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\ModelOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\PropertyOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\NextSiblingsOperation.cs" />
-    <Compile Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\IndexOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\IndexOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\MarkedOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\ModelOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\NextSiblingsOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\Operation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\PropertyOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TextOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -3413,8 +3413,6 @@
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Components.DockNotebook\" />
     <Folder Include="icons\mac\" />
-    <Folder Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Operations\" />
-    <Folder Include="MonoDevelop.Components.AutoTest\MonoDevelop.Components.AutoTest.Results\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">
