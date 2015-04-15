@@ -52,6 +52,7 @@
     <Compile Include="UITestDebug.cs" />
     <Compile Include="MonoDevelopTests\DotNetTemplatesTest.cs" />
     <Compile Include="MonoDevelopTests\ASPNETTemplateTests.cs" />
+    <Compile Include="MonoDevelopTests\MiscTemplatesTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
