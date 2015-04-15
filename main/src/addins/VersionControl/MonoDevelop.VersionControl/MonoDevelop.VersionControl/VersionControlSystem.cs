@@ -83,17 +83,6 @@ namespace MonoDevelop.VersionControl
 		/// repository references and will Dispose the repository only when
 		/// the last reference to the repo is freed.
 		/// </remarks>
-		public virtual Repository GetRepositoryReference (FilePath path, string id)
-		{
-			return VersionControlService.InternalGetRepositoryReference (path, id);
-		}
-		
-		/// <summary>
-		/// Currently unused
-		/// </summary>
-		public virtual void StoreRepositoryReference (Repository repo, FilePath path, string id)
-		{
-			VersionControlService.InternalStoreRepositoryReference (repo, path, id);
-		}
+		public abstract Repository GetRepositoryReference (FilePath path, string id);
 	}
 }
