@@ -883,7 +883,7 @@ namespace MonoDevelop.VersionControl.Git
 						e.InnerException is NGit.Errors.TransportException ||
 						e.InnerException is NGit.Errors.NotSupportedException) {
 						FileService.DeleteDirectory (targetLocalPath);
-						throw new VersionControlException (e.InnerException.Message);
+						throw new GitException ("Failed to clone", e.InnerException);
 					}
 				}
 			}
@@ -1236,7 +1236,7 @@ namespace MonoDevelop.VersionControl.Git
 					res = push.Call ();
 				} catch (NGit.Api.Errors.JGitInternalException e) {
 					if (e.InnerException is NGit.Errors.TransportException)
-						throw new VersionControlException (e.InnerException.Message);
+						throw new GitException ("Failed to push", e.InnerException);
 					throw;
 				}
 			}

@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlItem
+	public sealed class VersionControlItem
 	{
 		VersionInfo versionInfo;
 

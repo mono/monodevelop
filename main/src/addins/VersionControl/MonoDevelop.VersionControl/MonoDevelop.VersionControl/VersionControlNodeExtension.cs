@@ -15,7 +15,7 @@ using MonoDevelop.VersionControl.Commands;
 
 namespace MonoDevelop.VersionControl
 {
-	class VersionControlNodeExtension : NodeBuilderExtension
+	sealed class VersionControlNodeExtension : NodeBuilderExtension
 	{
 		Dictionary<FilePath,object> pathToObject = new Dictionary<FilePath, object> ();
 		
@@ -218,8 +218,7 @@ namespace MonoDevelop.VersionControl
 
 	
 
-	
-	class AddinCommandHandler : VersionControlCommandHandler 
+	sealed class AddinCommandHandler : VersionControlCommandHandler
 	{
 		[AllowMultiSelection]
 		[CommandHandler (VersionControlCommands.Update)]
@@ -498,7 +497,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class OpenCommandHandler : VersionControlCommandHandler 
+	sealed class OpenCommandHandler : VersionControlCommandHandler
 	{
 		[AllowMultiSelection]
 		[CommandHandler (ViewCommands.Open)]
