@@ -419,17 +419,19 @@ namespace MonoDevelop.Projects
 			return SaveAsync (monitor);
 		}
 		
-		public async Task SaveAsync (ProgressMonitor monitor)
+		public Task SaveAsync (ProgressMonitor monitor)
 		{
-			using (await WriteLock ()) {
-				await ItemExtension.OnSave (monitor);
+			return Runtime.RunInMainThread (async () => {
+				using (await WriteLock ()) {
+					await ItemExtension.OnSave (monitor);
 
-				if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
-					// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
-					await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
-					ParentSolution.NeedsReload = false;
+					if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
+						// The project has data that has to be saved in the solution, but the solution is not being saved. Do it now.
+						await SolutionFormat.SlnFileFormat.WriteFile (ParentSolution.FileName, ParentSolution, false, monitor);
+						ParentSolution.NeedsReload = false;
+					}
 				}
-			}
+			});
 		}
 		
 		async Task DoSave (ProgressMonitor monitor)
