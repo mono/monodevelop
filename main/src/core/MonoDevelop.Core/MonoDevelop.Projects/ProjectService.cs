@@ -395,9 +395,6 @@ namespace MonoDevelop.Projects
 			foreach (DataTypeCodon dtc in AddinManager.GetExtensionNodes (SerializableClassesExtensionPath)) {
 				ctx.IncludeType (dtc.Addin, dtc.TypeName, dtc.ItemName);
 			}
-			foreach (ItemPropertyCodon cls in AddinManager.GetExtensionNodes (ExtendedPropertiesExtensionPath)) {
-				ctx.RegisterProperty (cls.Addin, cls.TypeName, cls.PropertyName, cls.PropertyTypeName, cls.External, cls.SkipEmpty);
-			}
 		}
 
 		void OnSerializableExtensionChanged (object s, ExtensionNodeEventArgs args)
