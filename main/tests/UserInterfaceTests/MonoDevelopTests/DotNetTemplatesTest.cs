@@ -33,34 +33,35 @@ namespace UserInterfaceTests
 {
 	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		readonly static string DotNetProjectKind = ".NET";
-
-		readonly static string CategoryRoot = "Other";
+		readonly string dotNetCategory = ".NET";
 
 		[Test]
 		public void TestCreateBuildConsoleProject ()
 		{
-			CreateBuildProject ("ConsoleProject", "Console Project", DotNetProjectKind, CategoryRoot, EmptyAction);
+			RunDotNetTests ("Console Project", EmptyAction);
 		}
 
 		[Test]
 		public void TestCreateBuildGtkSharp20Project ()
 		{
-			CreateBuildProject ("Gtk20Project", "Gtk# 2.0 Project", DotNetProjectKind, CategoryRoot, EmptyAction);
+			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
 		}
 
 		[Test]
 		public void TestCreateBuildLibrary ()
 		{
-			CreateBuildProject ("Library", "Library", DotNetProjectKind, CategoryRoot, EmptyAction);
+			RunDotNetTests ("Library", EmptyAction);
 		}
 
 		[Test]
 		public void TestCreateBuildNUnitLibraryProject ()
 		{
-			CreateBuildProject ("NUnitLibraryProject", "NUnit Library Project", DotNetProjectKind, CategoryRoot, delegate {
-				Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.", pollStep: 1000);
-			});
+			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
+		}
+
+		void RunDotNetTests (string templateName, Action beforeBuild)
+		{
+			CreateBuildProject (GenerateProjectName (templateName), OtherCategoryRoot, dotNetCategory, GeneralKindRoot, templateName, beforeBuild);
 		}
 	}
 }

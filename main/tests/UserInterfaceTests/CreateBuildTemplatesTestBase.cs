@@ -27,16 +27,20 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using MonoDevelop.Core;
-
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	public abstract class CreateBuildTemplatesTestBase: UITestBase
 	{
+		public string GeneralKindRoot { get; private set; } = "General";
+
+		public string OtherCategoryRoot { get; private set; } = "Other";
+
 		public readonly static Action EmptyAction = () => { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
@@ -44,9 +48,16 @@ namespace UserInterfaceTests
 				pollStep: 1000, timeout: 30000);
 		};
 
+		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
+
 		public CreateBuildTemplatesTestBase () {}
 
 		public CreateBuildTemplatesTestBase (string mdBinPath) : base (mdBinPath) {}
+
+		public string GenerateProjectName (string templateName)
+		{
+			return cleanSpecialChars.Replace (templateName, string.Empty);
+		}
 
 		public void AssertExeHasOutput (string exe, string expectedOutput)
 		{
@@ -58,7 +69,7 @@ namespace UserInterfaceTests
 			Assert.AreEqual (expectedOutput, output.Trim ());
 		}
 
-		public void CreateBuildProject (string projectName, string kind, string category, string categoryRoot, Action beforeBuild)
+		public void CreateBuildProject (string projectName, string categoryRoot, string category, string kindRoot, string kind, Action beforeBuild)
 		{
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
 			string actualSolutionDirectory = string.Empty;
@@ -66,7 +77,7 @@ namespace UserInterfaceTests
 				var newProject = new NewProjectController ();
 				newProject.Open ();
 
-				SelectTemplate (newProject, kind, category, categoryRoot);
+				SelectTemplate (newProject, categoryRoot, category, kindRoot, kind);
 
 				Assert.IsTrue (newProject.Next ());
 
@@ -94,10 +105,10 @@ namespace UserInterfaceTests
 			}
 		}
 
-		public void SelectTemplate (NewProjectController newProject, string kind, string category, string categoryRoot)
+		public void SelectTemplate (NewProjectController newProject, string categoryRoot, string category, string kindRoot, string kind)
 		{
-			Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
-			Assert.IsTrue (newProject.SelectTemplate (kind));
+			Assert.IsTrue (newProject.SelectTemplateType (categoryRoot, category));
+			Assert.IsTrue (newProject.SelectTemplate (kindRoot, kind));
 		}
 
 		public void EnterProjectDetails (NewProjectController newProject, string projectName, string solutionName, string solutionLocation)

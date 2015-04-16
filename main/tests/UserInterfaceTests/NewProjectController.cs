@@ -37,20 +37,20 @@ namespace UserInterfaceTests
 			get { return TestService.Session; }
 		}
 
-		public void Open (int delay = 2000)
+		public void Open ()
 		{
 			Session.ExecuteCommand (FileCommands.NewProject);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.GtkNewProjectDialogBackend"));
 		}
 
-		public bool SelectTemplateType (string type, string category)
+		public bool SelectTemplateType (string categoryRoot, string category)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (category).NextSiblings ().Text (type));
+			return Session.SelectElement (c => c.TreeView ().Marked ("templateCategoriesTreeView").Model ("templateCategoriesListStore__Name").Contains (categoryRoot).NextSiblings ().Text (category));
 		}
 
-		public bool SelectTemplate (string templateName)
+		public bool SelectTemplate (string kindRoot, string kind)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Text (templateName));
+			return Session.SelectElement (c => c.TreeView ().Marked ("templatesTreeView").Model ("templateListStore__Name").Contains (kindRoot).NextSiblings ().Text (kind));
 		}
 
 		public bool Next ()
