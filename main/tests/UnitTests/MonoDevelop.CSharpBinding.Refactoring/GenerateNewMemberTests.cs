@@ -30,30 +30,28 @@ using MonoDevelop.CSharpBinding.Tests;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Core.ProgressMonitoring;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
-	[Ignore("Fixme/roslyn port")]
 	[TestFixture()]
 	public class GenerateNewMemberTests : UnitTests.TestBase
 	{
-
 		static void TestInsertionPoints (string text)
 		{
-			
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent sev = new TestViewContent ();
-			var project = new UnknownProject ();
-			project.FileName = "test.csproj";
-
-			// TypeSystemService.LoadProject (project);
-
-			sev.Project = project;
-			tww.ViewContent = sev;
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+			MonoDevelop.AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+
 			var data = doc.Editor;
 			List<InsertionPoint> loc = new List<InsertionPoint> ();
 			for (int i = 0; i < text.Length; i++) {
@@ -63,7 +61,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					ch = text [i];
 					NewLineInsertion insertBefore = NewLineInsertion.None;
 					NewLineInsertion insertAfter = NewLineInsertion.None;
-					
+
 					switch (ch) {
 					case 'n':
 						break;
@@ -85,7 +83,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					case 'S':
 						insertBefore = insertAfter = NewLineInsertion.BlankLine;
 						break;
-						
+
 					case 't':
 						insertBefore = NewLineInsertion.Eol;
 						insertAfter = NewLineInsertion.BlankLine;
@@ -112,16 +110,36 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					data.InsertText (data.Length, ch.ToString ());
 				}
 			}
-			
-			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data);
 
-//			var foundPoints = CodeGenerationService.GetInsertionPoints (doc.Editor, parsedFile, parsedFile.TopLevelTypeDefinitions.First ());
-//			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
-//			for (int i = 0; i < loc.Count; i++) {
-//				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
-//				Assert.AreEqual (loc[i].LineAfter, foundPoints[i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
-//				Assert.AreEqual (loc[i].LineBefore, foundPoints[i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
-//			}
+
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor, false);
+			content.Project = project;
+			doc.SetProject (project);
+			var parsedFile = doc.UpdateParseDocument ();
+			var model = parsedFile.GetAst<SemanticModel> ();
+
+			var sym = model.GetEnclosingSymbol (data.Text.IndexOf ('{'));
+			var type = sym as INamedTypeSymbol ?? sym.ContainingType;
+
+			var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
+			//	Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
+			for (int i = 0; i < loc.Count; i++) {
+				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
+				Assert.AreEqual (loc[i].LineAfter, foundPoints[i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+				Assert.AreEqual (loc[i].LineBefore, foundPoints[i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+			}
+
+			TypeSystemService.Unload (solution);
+
 		}
 		
 		[Test()]
@@ -290,7 +308,36 @@ public class EmptyClass
 ");
 		}
 
-		
+		[Test]
+		public void TestComplexInsertionPOintCase3 ()
+		{
+			TestInsertionPoints (@"using System;
+class vaevle
+{
+@D    int fooBar = 0;
+@u	
+
+    public event EventHandler FooBar;
+@u	
+
+    public vaevle ()
+    {
+        FooBar += HandleEventHandler;
+    }
+@u	
+
+    public static void Main (string [] args)
+    {
+        try {
+            System.Console.WriteLine (nameof (args));
+        } catch (Exception e) when (true) {
+
+        }
+    }
+@s}
+
+");
+		}
 	}
 }
 

@@ -60,78 +60,54 @@ namespace MonoDevelop.Refactoring
 			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
 
-			bool first = true;
-
 			foreach (var member in type.GetMembers ()) {
 				if (member.IsImplicitlyDeclared)
 					continue;
-				var loc = member.Locations.FirstOrDefault (l => l.SourceTree.FilePath == part.SourceTree.FilePath);
-				if (loc == null)
-					continue;
-				if (first) {
-					first = false;
-					continue;
+				//var domLocation = member.BodyRegion.End;
+				var loc = member.DeclaringSyntaxReferences.FirstOrDefault (r => r.SyntaxTree.FilePath == part.SourceTree.FilePath);
+				var domLocation = data.OffsetToLocation (loc.Span.End);
+
+				if (domLocation.Line <= 0) {
+					var lineSegment = data.GetLineByOffset (loc.Span.Start);
+					if (lineSegment == null)
+						continue;
+					domLocation = new DocumentLocation (lineSegment.LineNumber, lineSegment.Length + 1);
 				}
-				var domLocation = (DocumentLocation)loc.GetLineSpan ().StartLinePosition;
 				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
-			foreach (var nestedType in type.GetTypeMembers ()) {
-				if (nestedType.IsImplicitClass)
-					continue;
-				var loc = nestedType.Locations.FirstOrDefault (l => l.SourceTree.FilePath == part.SourceTree.FilePath);
-				if (loc == null)
-					continue;
-
-				if (first) {
-					first = false;
-					continue;
-				}
-				var domLocation = (DocumentLocation)loc.GetLineSpan ().StartLinePosition;
-				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
-			}
-			var node = part.SourceTree.GetRoot ().FindNode (part.SourceSpan) as BaseTypeDeclarationSyntax;
-			if (node != null) {
-				offset = node.CloseBraceToken.SpanStart;
-				while (offset > 0) {
-					char ch = data.GetCharAt (offset);
-					if (ch != ' ' && ch != '\t')
-						break;
-					offset--;
-				}
-				var realEndLocation = data.OffsetToLocation (offset);
-				result.Add (new InsertionPoint (realEndLocation, NewLineInsertion.BlankLine, NewLineInsertion.None));
-			}
-
+			result [result.Count - 1].LineAfter = NewLineInsertion.None;
 			CheckStartPoint (data, result [0], result.Count == 1);
-//			if (result.Count > 1) {
-//				result.RemoveAt (result.Count - 1); 
-//				NewLineInsertion insertLine;
-//				var endLine = data.GetLineByOffset (part.SourceSpan.End);
-//				var lineBefore = endLine.PreviousLine;
-//				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {
-//					insertLine = NewLineInsertion.None;
-//				} else {
-//					insertLine = NewLineInsertion.Eol;
-//				}
-//				// search for line start
-//				int col = part.SourceSpan.End - endLine.Offset;
-//				var line = endLine;
-//				if (line != null) {
-//					var lineOffset = line.Offset;
-//					col = Math.Min (line.Length, col);
-//					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
-//						col--;
-//				}
-//				result.Add (new InsertionPoint (new DocumentLocation (endLine.LineNumber, col), insertLine, NewLineInsertion.Eol));
-//				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
-//			}
-			var bodyRegion = new DocumentRegion (data.OffsetToLocation (part.SourceSpan.Start), data.OffsetToLocation (part.SourceSpan.End));
-			foreach (var region in parsedDocument.GetUserRegionsAsync().Result.Where (r => bodyRegion.Contains (r.Region.Begin))) {
-				result.Add (new InsertionPoint (new DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
-				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
-				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+			if (result.Count > 1) {
+				result.RemoveAt (result.Count - 1); 
+				NewLineInsertion insertLine;
+				var typeSyntaxReference = type.DeclaringSyntaxReferences.FirstOrDefault (r => r.Span.Contains (part.SourceSpan));
+
+				var lineBefore = data.GetLineByOffset (typeSyntaxReference.Span.End).PreviousLine;
+				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {
+					insertLine = NewLineInsertion.None;
+				} else {
+					insertLine = NewLineInsertion.Eol;
+				}
+				// search for line start
+				var line = data.GetLineByOffset (typeSyntaxReference.Span.End);
+				int col = typeSyntaxReference.Span.End - line.Offset;
+				if (line != null) {
+					var lineOffset = line.Offset;
+					col = Math.Min (line.Length, col);
+					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
+						col--;
+				}
+				Console.WriteLine ("add 1");
+				result.Add (new InsertionPoint (new DocumentLocation (line.LineNumber, col), insertLine, NewLineInsertion.Eol));
+				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
+
+//			foreach (var region in parsedDocument.UserRegions.Where (r => type.BodyRegion.IsInside (r.Region.Begin))) {
+//				result.Add (new InsertionPoint (new DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+//				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+//				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+//			}
 			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
 			//			foreach (var res in result)
 			//				Console.WriteLine (res);
