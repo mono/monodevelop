@@ -257,10 +257,10 @@ namespace MonoDevelop.Ide.Gui
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize
-			IdeApp.ProjectOperations.CurrentProjectChanged += (ProjectEventHandler) DispatchService.GuiDispatch (new ProjectEventHandler(SetProjectTitle));
+			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
 
-			FileService.FileRemoved += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs>(CheckRemovedFile));
-			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs>(CheckRenamedFile));
+			FileService.FileRemoved += CheckRemovedFile;
+			FileService.FileRenamed += CheckRenamedFile;
 			
 //			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
 //			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
@@ -730,11 +730,6 @@ namespace MonoDevelop.Ide.Gui
 			return true;
 		}
 		
-		void SetProjectTitle(object sender, ProjectEventArgs e)
-		{
-			SetWorkbenchTitle ();
-		}
-
 		int activeWindowChangeLock = 0;
 
 		public void LockActiveWindowChangeEvent ()

@@ -40,9 +40,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ProjectReferenceFolderNodeBuilder: TypeNodeBuilder
 	{
-		ProjectReferenceEventHandler addedHandler;
-		ProjectReferenceEventHandler removedHandler;
-
 		public override Type NodeDataType {
 			get { return typeof(ProjectReferenceCollection); }
 		}
@@ -58,17 +55,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			addedHandler = DispatchService.GuiDispatch<ProjectReferenceEventHandler> (OnAddReference);
-			removedHandler = DispatchService.GuiDispatch<ProjectReferenceEventHandler> (OnRemoveReference);
-
-			IdeApp.Workspace.ReferenceAddedToProject += addedHandler;
-			IdeApp.Workspace.ReferenceRemovedFromProject += removedHandler;
+			IdeApp.Workspace.ReferenceAddedToProject += OnAddReference;
+			IdeApp.Workspace.ReferenceRemovedFromProject += OnRemoveReference;
 		}
 		
 		public override void Dispose ()
 		{
-			IdeApp.Workspace.ReferenceAddedToProject -= addedHandler;
-			IdeApp.Workspace.ReferenceRemovedFromProject -= removedHandler;
+			IdeApp.Workspace.ReferenceAddedToProject -= OnAddReference;
+			IdeApp.Workspace.ReferenceRemovedFromProject -= OnRemoveReference;
 		}
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)

@@ -497,6 +497,7 @@ namespace MonoDevelop.Debugger
 
 		public static void Resume ()
 		{
+			Runtime.AssertMainThread ();
 			if (CheckIsBusy ())
 				return;
 
@@ -506,6 +507,7 @@ namespace MonoDevelop.Debugger
 
 		public static void RunToCursor (string fileName, int line, int column)
 		{
+			Runtime.AssertMainThread ();
 			if (CheckIsBusy ())
 				return;
 
@@ -518,6 +520,7 @@ namespace MonoDevelop.Debugger
 
 		public static void SetNextStatement (string fileName, int line, int column)
 		{
+			Runtime.AssertMainThread ();
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -800,6 +803,7 @@ namespace MonoDevelop.Debugger
 		
 		static void NotifyLocationChanged ()
 		{
+			Runtime.AssertMainThread ();
 			if (ExecutionLocationChanged != null)
 				ExecutionLocationChanged (null, EventArgs.Empty);
 		}
@@ -834,6 +838,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepInto ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -843,6 +849,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOver ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -852,6 +860,8 @@ namespace MonoDevelop.Debugger
 
 		public static void StepOut ()
 		{
+			Runtime.AssertMainThread ();
+
 			if (!IsDebugging || IsRunning || CheckIsBusy ())
 				return;
 
@@ -941,6 +951,7 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowCurrentExecutionLine ()
 		{
+			Runtime.AssertMainThread ();
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (sf != null && !string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
@@ -952,6 +963,7 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowNextStatement ()
 		{
+			Runtime.AssertMainThread ();
 			var location = NextStatementLocation;
 
 			if (location != null && System.IO.File.Exists (location.FileName)) {

@@ -67,6 +67,7 @@ namespace MonoDevelop.Deployment
 		
 		internal void NotifyPackagesChanged ()
 		{
+			AssertMainThread ();
 			if (PackagesChanged != null)
 				PackagesChanged (this, EventArgs.Empty);
 		}

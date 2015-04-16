@@ -483,11 +483,13 @@ namespace CBinding
 		
 		internal void NotifyPackageRemovedFromProject (Package package)
 		{
+			Runtime.AssertMainThread ();
 			PackageRemovedFromProject (this, new ProjectPackageEventArgs (this, package));
 		}
 		
 		internal void NotifyPackageAddedToProject (Package package)
 		{
+			Runtime.AssertMainThread ();
 			PackageAddedToProject (this, new ProjectPackageEventArgs (this, package));
 		}
 

@@ -45,13 +45,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class ProjectNodeBuilder: FolderNodeBuilder
 	{
-		ProjectFileEventHandler fileAddedHandler;
-		ProjectFileEventHandler fileRemovedHandler;
-		ProjectFileRenamedEventHandler fileRenamedHandler;
-		ProjectFileEventHandler filePropertyChangedHandler;
-		SolutionItemModifiedEventHandler projectChanged;
-		EventHandler<FileEventArgs> deletedHandler;
-
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
@@ -62,43 +55,36 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		protected override void Initialize ()
 		{
-			fileAddedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnAddFile));
-			fileRemovedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnRemoveFile));
-			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
-			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
-			projectChanged = (SolutionItemModifiedEventHandler) DispatchService.GuiDispatch (new SolutionItemModifiedEventHandler (OnProjectModified));
-			deletedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileDeleted));
-
-			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
-			IdeApp.Workspace.FileRenamedInProject += fileRenamedHandler;
-			IdeApp.Workspace.FilePropertyChangedInProject += filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject += OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject += OnRemoveFile;
+			IdeApp.Workspace.FileRenamedInProject += OnRenameFile;
+			IdeApp.Workspace.FilePropertyChangedInProject += OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
-			FileService.FileRemoved += deletedHandler;
+			FileService.FileRemoved += OnSystemFileDeleted;
 		}
 
 		public override void Dispose ()
 		{
-			IdeApp.Workspace.FileAddedToProject -= fileAddedHandler;
-			IdeApp.Workspace.FileRemovedFromProject -= fileRemovedHandler;
-			IdeApp.Workspace.FileRenamedInProject -= fileRenamedHandler;
-			IdeApp.Workspace.FilePropertyChangedInProject -= filePropertyChangedHandler;
+			IdeApp.Workspace.FileAddedToProject -= OnAddFile;
+			IdeApp.Workspace.FileRemovedFromProject -= OnRemoveFile;
+			IdeApp.Workspace.FileRenamedInProject -= OnRenameFile;
+			IdeApp.Workspace.FilePropertyChangedInProject -= OnFilePropertyChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
-			FileService.FileRemoved -= deletedHandler;
+			FileService.FileRemoved -= OnSystemFileDeleted;
 		}
 
 		public override void OnNodeAdded (object dataObject)
 		{
 			base.OnNodeAdded (dataObject);
 			Project project = (Project) dataObject;
-			project.Modified += projectChanged;
+			project.Modified += OnProjectModified;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			base.OnNodeRemoved (dataObject);
 			Project project = (Project) dataObject;
-			project.Modified -= projectChanged;
+			project.Modified -= OnProjectModified;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

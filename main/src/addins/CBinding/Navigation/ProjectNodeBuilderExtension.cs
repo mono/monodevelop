@@ -45,8 +45,6 @@ namespace CBinding.Navigation
 {
 	public class ProjectNodeBuilderExtension : NodeBuilderExtension
 	{
-		public ClassPadEventHandler finishedBuildingTreeHandler;
-		
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(CProject).IsAssignableFrom (dataType);
@@ -58,14 +56,12 @@ namespace CBinding.Navigation
 		
 		protected override void Initialize ()
 		{
-			finishedBuildingTreeHandler = (ClassPadEventHandler)DispatchService.GuiDispatch (new ClassPadEventHandler (OnFinishedBuildingTree));
-
-			TagDatabaseManager.Instance.FileUpdated += finishedBuildingTreeHandler;
+			TagDatabaseManager.Instance.FileUpdated += OnFinishedBuildingTree;
 		}
 		
 		public override void Dispose ()
 		{
-			TagDatabaseManager.Instance.FileUpdated -= finishedBuildingTreeHandler;
+			TagDatabaseManager.Instance.FileUpdated -= OnFinishedBuildingTree;
 		}
 		
 		public static void CreatePadTree (object o)

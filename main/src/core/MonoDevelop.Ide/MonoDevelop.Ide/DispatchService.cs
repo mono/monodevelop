@@ -40,7 +40,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
-	public class DispatchService
+	public static class DispatchService
 	{
 		static Queue<GenericMessageContainer> backgroundQueue = new Queue<GenericMessageContainer> ();
 		static ManualResetEvent backgroundThreadWait = new ManualResetEvent (false);
@@ -211,12 +211,12 @@ namespace MonoDevelop.Ide
 				throw new InvalidOperationException ("This method can only be called in the GUI thread");
 		}
 		
-		public static Delegate GuiDispatch (Delegate del)
+		public static Delegate GuiDispatchDelegate (Delegate del)
 		{
 			return guiContext.CreateSynchronizedDelegate (del);
 		}
 		
-		public static T GuiDispatch<T> (T theDelegate)
+		public static T GuiDispatchDelegate<T> (T theDelegate)
 		{
 			if (guiContext == null)
 				return theDelegate;

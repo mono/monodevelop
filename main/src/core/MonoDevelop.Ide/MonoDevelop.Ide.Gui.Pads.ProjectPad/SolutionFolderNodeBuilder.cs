@@ -39,21 +39,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class SolutionFolderNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler nameChanged;
-		SolutionItemChangeEventHandler entryAdded;
-		SolutionItemChangeEventHandler entryRemoved;
-		EventHandler<SolutionItemFileEventArgs> fileAdded;
-		EventHandler<SolutionItemFileEventArgs> fileRemoved;
-		
-		public SolutionFolderNodeBuilder ()
-		{
-			nameChanged = DispatchService.GuiDispatch<SolutionItemRenamedEventHandler> (OnSolutionFolderRenamed);
-			entryAdded = DispatchService.GuiDispatch<SolutionItemChangeEventHandler> (OnEntryAdded);
-			entryRemoved = DispatchService.GuiDispatch<SolutionItemChangeEventHandler> (OnEntryRemoved);
-			fileAdded = DispatchService.GuiDispatch<EventHandler<SolutionItemFileEventArgs>> (OnFileAdded);
-			fileRemoved =  DispatchService.GuiDispatch<EventHandler<SolutionItemFileEventArgs>> (OnFileRemoved);
-		}
-
 		public override Type NodeDataType {
 			get { return typeof(SolutionFolder); }
 		}
@@ -112,21 +97,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			folder.NameChanged += nameChanged;
-			folder.ItemAdded += entryAdded;
-			folder.ItemRemoved += entryRemoved;
-			folder.SolutionItemFileAdded += fileAdded;
-			folder.SolutionItemFileRemoved += fileRemoved;
+			folder.NameChanged += OnSolutionFolderRenamed;
+			folder.ItemAdded += OnEntryAdded;
+			folder.ItemRemoved += OnEntryRemoved;
+			folder.SolutionItemFileAdded += OnFileAdded;
+			folder.SolutionItemFileRemoved += OnFileRemoved;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			folder.NameChanged -= nameChanged;
-			folder.ItemAdded -= entryAdded;
-			folder.ItemRemoved -= entryRemoved;
-			folder.SolutionItemFileAdded -= fileAdded;
-			folder.SolutionItemFileRemoved -= fileRemoved;
+			folder.NameChanged -= OnSolutionFolderRenamed;
+			folder.ItemAdded -= OnEntryAdded;
+			folder.ItemRemoved -= OnEntryRemoved;
+			folder.SolutionItemFileAdded -= OnFileAdded;
+			folder.SolutionItemFileRemoved -= OnFileRemoved;
 		}
 		
 		void OnSolutionFolderRenamed (object sender, SolutionItemRenamedEventArgs e)

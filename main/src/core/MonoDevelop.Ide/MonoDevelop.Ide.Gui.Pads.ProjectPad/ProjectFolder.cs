@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (trackChanges != value) {
 					trackChanges = value;
 					if (trackChanges)
-						FileService.FileRenamed += new EventHandler<FileCopyEventArgs> (OnFileRenamed);
+						FileService.FileRenamed += OnFileRenamed;
 					else
-						FileService.FileRenamed -= new EventHandler<FileCopyEventArgs> (OnFileRenamed);
+						FileService.FileRenamed -= OnFileRenamed;
 				}
 			}
 		}
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public void Dispose ()
 		{
-			FileService.FileRenamed -= new EventHandler<FileCopyEventArgs> (OnFileRenamed);
+			FileService.FileRenamed -= OnFileRenamed;
 		}
 		
 		public void Remove ()

@@ -47,9 +47,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		Xwt.Drawing.Image folderOpenIcon;
 		Xwt.Drawing.Image folderClosedIcon;
 		
-		EventHandler<FileCopyEventArgs> fileRenamedHandler;
-		EventHandler<FileEventArgs> fileRemovedHandler;
-		
 		public override Type NodeDataType {
 			get { return typeof(ProjectFolder); }
 		}
@@ -74,17 +71,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			folderOpenIcon = Context.GetIcon (Stock.OpenFolder);
 			folderClosedIcon = Context.GetIcon (Stock.ClosedFolder);
-			
-			fileRenamedHandler = DispatchService.GuiDispatch<EventHandler<FileCopyEventArgs>> (OnFolderRenamed);
-			fileRemovedHandler = DispatchService.GuiDispatch<EventHandler<FileEventArgs>> (OnFolderRemoved);
 		}
 		
 		public override void OnNodeAdded (object dataObject)
 		{
 			base.OnNodeAdded (dataObject);
 			ProjectFolder folder = (ProjectFolder) dataObject;
-			folder.FolderRenamed += fileRenamedHandler;
-			folder.FolderRemoved += fileRemovedHandler;
+			folder.FolderRenamed += OnFolderRenamed;
+			folder.FolderRemoved += OnFolderRemoved;
 			folder.TrackChanges = true;
 		}
 		
@@ -92,8 +86,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			base.OnNodeRemoved (dataObject);
 			ProjectFolder folder = (ProjectFolder) dataObject;
-			folder.FolderRenamed -= fileRenamedHandler;
-			folder.FolderRemoved -= fileRemovedHandler;
+			folder.FolderRenamed -= OnFolderRenamed;
+			folder.FolderRemoved -= OnFolderRemoved;
 			folder.Dispose ();
 		}
 		

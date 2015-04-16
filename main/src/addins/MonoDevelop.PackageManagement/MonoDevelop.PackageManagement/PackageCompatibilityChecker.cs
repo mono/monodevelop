@@ -118,7 +118,7 @@ namespace MonoDevelop.PackageManagement
 			return packageReferences.Any (packageReference => packageReference.RequireReinstallation);
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action handler)
 		{
 			DispatchService.GuiDispatch (handler);
 		}

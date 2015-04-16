@@ -95,7 +95,7 @@ namespace MonoDevelop.Components.MainToolbar
 				UpdateSearchEntryLabel ();
 			};
 
-			executionTargetsChanged = DispatchService.GuiDispatch (new EventHandler ((sender, e) => UpdateCombos ()));
+			executionTargetsChanged = (sender, e) => UpdateCombos ();
 
 			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => StatusBar.ShowReady ();
 			IdeApp.Workspace.ActiveConfigurationChanged += (sender, e) => UpdateCombos ();

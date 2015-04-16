@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.Gui
 			Combo.Changed += new EventHandler (OnComboChanged);
 			ShowAll ();
 			
-			IdeApp.Workbench.LayoutChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
+			IdeApp.Workbench.LayoutChanged += OnConfigurationsChanged;
 		}
 		
 		void OnConfigurationsChanged (object sender, EventArgs e)

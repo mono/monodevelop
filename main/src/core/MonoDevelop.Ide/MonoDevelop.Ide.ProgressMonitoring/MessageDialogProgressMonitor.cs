@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 
 		protected override void OnCompleted ()
 		{
-			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			DispatchService.GuiDispatch (ShowDialogs);
 			base.OnCompleted ();
 		}
 

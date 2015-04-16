@@ -41,13 +41,6 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitAssemblyGroupConfigurationNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler assembliesChanged;
-		
-		public NUnitAssemblyGroupConfigurationNodeBuilder ()
-		{
-			assembliesChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnAssembliesChanged));
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(NUnitAssemblyGroupConfigurationNodeCommandHandler); }
 		}
@@ -89,13 +82,13 @@ namespace MonoDevelop.NUnit
 		public override void OnNodeAdded (object dataObject)
 		{
 			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
-			config.AssembliesChanged += assembliesChanged;
+			config.AssembliesChanged += OnAssembliesChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			var config = (NUnitAssemblyGroupProjectConfiguration) dataObject;
-			config.AssembliesChanged -= assembliesChanged;
+			config.AssembliesChanged -= OnAssembliesChanged;
 		}
 		
 		public void OnAssembliesChanged (object sender, EventArgs args)

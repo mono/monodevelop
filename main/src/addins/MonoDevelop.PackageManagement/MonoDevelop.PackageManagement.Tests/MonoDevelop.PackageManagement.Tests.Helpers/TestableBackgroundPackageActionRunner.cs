@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			backgroundDispatcher = handler;
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override void GuiDispatch (Action handler)
 		{
 			handler.Invoke ();
 		}

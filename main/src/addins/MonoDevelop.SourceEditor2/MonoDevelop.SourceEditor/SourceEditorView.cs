@@ -72,11 +72,6 @@ namespace MonoDevelop.SourceEditor
 		TextLineMarker debugStackLineMarker;
 		int lastDebugLine = -1;
 		BreakpointStore breakpoints;
-		EventHandler currentFrameChanged;
-		EventHandler executionLocationChanged;
-		EventHandler<BreakpointEventArgs> breakpointAdded;
-		EventHandler<BreakpointEventArgs> breakpointRemoved;
-		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
 		List<DocumentLine> breakpointSegments = new List<DocumentLine> ();
 		DocumentLine debugStackSegment;
 		DocumentLine currentLineSegment;
@@ -185,11 +180,6 @@ namespace MonoDevelop.SourceEditor
 		public SourceEditorView ()
 		{
 			Counters.LoadedEditors++;
-			currentFrameChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
-			executionLocationChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
-			breakpointAdded = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
-			breakpointRemoved = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
-			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
 
 			widget = new SourceEditorWidget (this);
 			widget.TextEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
@@ -230,14 +220,14 @@ namespace MonoDevelop.SourceEditor
 
 			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
-			DebuggingService.ExecutionLocationChanged += executionLocationChanged;
-			DebuggingService.CurrentFrameChanged += currentFrameChanged;
-			DebuggingService.StoppedEvent += currentFrameChanged;
-			DebuggingService.ResumedEvent += currentFrameChanged;
-			breakpoints.BreakpointAdded += breakpointAdded;
-			breakpoints.BreakpointRemoved += breakpointRemoved;
-			breakpoints.BreakpointStatusChanged += breakpointStatusChanged;
-			breakpoints.BreakpointModified += breakpointStatusChanged;
+			DebuggingService.ExecutionLocationChanged += OnExecutionLocationChanged;
+			DebuggingService.CurrentFrameChanged += OnCurrentFrameChanged;
+			DebuggingService.StoppedEvent += OnCurrentFrameChanged;
+			DebuggingService.ResumedEvent += OnCurrentFrameChanged;
+			breakpoints.BreakpointAdded += OnBreakpointAdded;
+			breakpoints.BreakpointRemoved += OnBreakpointRemoved;
+			breakpoints.BreakpointStatusChanged += OnBreakpointStatusChanged;
+			breakpoints.BreakpointModified += OnBreakpointStatusChanged;
 			DebuggingService.PinnedWatches.WatchAdded += OnWatchAdded;
 			DebuggingService.PinnedWatches.WatchRemoved += OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged += OnWatchChanged;
@@ -1023,15 +1013,15 @@ namespace MonoDevelop.SourceEditor
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
 
-			DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
+			DebuggingService.ExecutionLocationChanged -= OnExecutionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
-			DebuggingService.CurrentFrameChanged -= currentFrameChanged;
-			DebuggingService.StoppedEvent -= currentFrameChanged;
-			DebuggingService.ResumedEvent -= currentFrameChanged;
-			breakpoints.BreakpointAdded -= breakpointAdded;
-			breakpoints.BreakpointRemoved -= breakpointRemoved;
-			breakpoints.BreakpointStatusChanged -= breakpointStatusChanged;
-			breakpoints.BreakpointModified -= breakpointStatusChanged;
+			DebuggingService.CurrentFrameChanged -= OnCurrentFrameChanged;
+			DebuggingService.StoppedEvent -= OnCurrentFrameChanged;
+			DebuggingService.ResumedEvent -= OnCurrentFrameChanged;
+			breakpoints.BreakpointAdded -= OnBreakpointAdded;
+			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
+			breakpoints.BreakpointStatusChanged -= OnBreakpointStatusChanged;
+			breakpoints.BreakpointModified -= OnBreakpointStatusChanged;
 			DebuggingService.PinnedWatches.WatchAdded -= OnWatchAdded;
 			DebuggingService.PinnedWatches.WatchRemoved -= OnWatchRemoved;
 			DebuggingService.PinnedWatches.WatchChanged -= OnWatchChanged;
@@ -1045,12 +1035,6 @@ namespace MonoDevelop.SourceEditor
 			
 			debugStackLineMarker = null;
 			currentDebugLineMarker = null;
-
-			executionLocationChanged = null;
-			currentFrameChanged = null;
-			breakpointAdded = null;
-			breakpointRemoved = null;
-			breakpointStatusChanged = null;
 
 			if (ownerDocument != null) {
 				ownerDocument.DocumentParsed -= HandleDocumentParsed;
@@ -1384,6 +1368,7 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
+				// Make sure this runs in the UI thread.
 				if (!isDisposed)
 					UpdateBreakpoints ();
 				return false;
@@ -1397,6 +1382,7 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
+				// Make sure this runs in the UI thread.
 				if (!isDisposed)
 					UpdateBreakpoints ();
 				return false;
@@ -1410,6 +1396,7 @@ namespace MonoDevelop.SourceEditor
 			// Updated with a delay, to make sure it works when called as a
 			// result of inserting/removing lines before a breakpoint position
 			GLib.Timeout.Add (10, delegate {
+				// Make sure this runs in the UI thread.
 				if (!isDisposed)
 					UpdateBreakpoints (true);
 				return false;

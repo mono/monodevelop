@@ -37,7 +37,6 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageRecentProjectsList : WelcomePageSection
 	{
 		bool destroyed;
-		readonly EventHandler recentChangesHandler;
 		readonly VBox box;
 		int itemCount = 10;
 		readonly Xwt.Drawing.Image openProjectIcon;
@@ -52,8 +51,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			itemCount = count;
 			
-			recentChangesHandler = DispatchService.GuiDispatch (new EventHandler (RecentFilesChanged));
-			DesktopService.RecentFiles.Changed += recentChangesHandler;
+			DesktopService.RecentFiles.Changed += RecentFilesChanged;
 			RecentFilesChanged (null, null);
 
 			SetContent (box);
@@ -66,7 +64,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			destroyed = true;
 			base.OnDestroyed ();
-			DesktopService.RecentFiles.Changed -= recentChangesHandler;
+			DesktopService.RecentFiles.Changed -= RecentFilesChanged;
 		}
 
 		void RecentFilesChanged (object sender, EventArgs e)

@@ -114,7 +114,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (System.IO.File.Exists (fileName)) {
 				watcher.Path = Path.GetDirectoryName (fileName);
 				watcher.Filter = Path.GetFileName (fileName);
-				watcher.Changed += (FileSystemEventHandler) DispatchService.GuiDispatch (new FileSystemEventHandler (OnSteticFileChanged));
+				watcher.Changed += DispatchService.GuiDispatchDelegate (new FileSystemEventHandler (OnSteticFileChanged));
 				watcher.EnableRaisingEvents = true;
 			}
 		}	

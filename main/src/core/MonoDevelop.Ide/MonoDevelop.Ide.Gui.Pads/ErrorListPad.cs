@@ -191,9 +191,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
 			sw.Add (view);
-			TaskService.Errors.TasksRemoved      += DispatchService.GuiDispatch<TaskEventHandler> (ShowResults);
-			TaskService.Errors.TasksAdded        += DispatchService.GuiDispatch<TaskEventHandler> (TaskAdded);
-			TaskService.Errors.TasksChanged      += DispatchService.GuiDispatch<TaskEventHandler> (TaskChanged);
+			TaskService.Errors.TasksRemoved      += ShowResults;
+			TaskService.Errors.TasksAdded        += TaskAdded;
+			TaskService.Errors.TasksChanged      += TaskChanged;
 			TaskService.Errors.CurrentLocationTaskChanged += HandleTaskServiceErrorsCurrentLocationTaskChanged;
 			
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;

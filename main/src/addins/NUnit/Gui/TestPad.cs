@@ -76,7 +76,6 @@ namespace MonoDevelop.NUnit
 		int TestResultPage;
 		int TestOutputPage;
 		
-		EventHandler testChangedHandler;
 		VBox detailsPad;
 		
 		ArrayList testNavigationHistory = new ArrayList ();
@@ -87,8 +86,7 @@ namespace MonoDevelop.NUnit
 		{
 			base.Initialize (builders, options, menuPath);
 			
-			testChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnDetailsTestChanged));
-			testService.TestSuiteChanged += (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestSuiteChanged));
+			testService.TestSuiteChanged += OnTestSuiteChanged;
 			paned = new VPaned ();
 			
 			VBox vbox = new VBox ();
@@ -563,7 +561,7 @@ namespace MonoDevelop.NUnit
 			detailLabel.Markup = "";
 			detailsStore.Clear ();
 			if (detailsTest != null)
-				detailsTest.TestChanged -= testChangedHandler;
+				detailsTest.TestChanged -= OnDetailsTestChanged;
 			detailsTest = null;
 			detailsDate = DateTime.MinValue;
 			detailsReferenceDate = DateTime.MinValue;
@@ -584,7 +582,7 @@ namespace MonoDevelop.NUnit
 			detailsPad.Sensitive = true;
 			
 			if (detailsTest != null)
-				detailsTest.TestChanged -= testChangedHandler;
+				detailsTest.TestChanged -= OnDetailsTestChanged;
 			
 			if (detailsTest != test) {
 				detailsTest = test;
@@ -594,7 +592,7 @@ namespace MonoDevelop.NUnit
 				if (testNavigationHistory.Count > 50)
 					testNavigationHistory.RemoveAt (0);
 			}
-			detailsTest.TestChanged += testChangedHandler;
+			detailsTest.TestChanged += OnDetailsTestChanged;
 			
 			if (test is UnitTestGroup) {
 				infoBook.HidePage (TestResultPage);

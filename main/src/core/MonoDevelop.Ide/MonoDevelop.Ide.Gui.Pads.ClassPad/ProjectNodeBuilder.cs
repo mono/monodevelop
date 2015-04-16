@@ -43,23 +43,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ProjectNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler projectNameChanged;
-
-		public ProjectNodeBuilder ()
-		{
-			projectNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnProjectRenamed));
-		}
-
-//		EventHandler<TypeUpdateInformationEventArgs> compilationUnitUpdated;
 		protected override void Initialize ()
 		{
-//			compilationUnitUpdated = (EventHandler<TypeUpdateInformationEventArgs>) DispatchService.GuiDispatch (new EventHandler<TypeUpdateInformationEventArgs> (OnClassInformationChanged));
-//			TypeSystemService.TypesUpdated += compilationUnitUpdated;
+//			TypeSystemService.TypesUpdated += OnClassInformationChanged;
 		}
 		
 		public override void Dispose ()
 		{
-//			TypeSystemService.TypesUpdated -= compilationUnitUpdated;
+//			TypeSystemService.TypesUpdated -= OnClassInformationChanged;
 		}
 		
 		public override Type NodeDataType {
@@ -73,13 +64,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			project.NameChanged += projectNameChanged;
+			project.NameChanged += OnProjectRenamed;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Project project = (Project) dataObject;
-			project.NameChanged -= projectNameChanged;
+			project.NameChanged -= OnProjectRenamed;
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

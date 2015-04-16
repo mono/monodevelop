@@ -41,14 +41,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class SolutionNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
-		EventHandler startupChanged;
-		
 		public SolutionNodeBuilder ()
 		{
-			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
-			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
-			
 			IdeApp.Workspace.ItemAddedToSolution += OnEntryAdded;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnEntryRemoved;
 		}
@@ -121,15 +115,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			solution.NameChanged += combineNameChanged;
-			solution.StartupItemChanged += startupChanged;
+			solution.NameChanged += OnCombineRenamed;
+			solution.StartupItemChanged += OnStartupChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			solution.NameChanged -= combineNameChanged;
-			solution.StartupItemChanged -= startupChanged;
+			solution.NameChanged -= OnCombineRenamed;
+			solution.StartupItemChanged -= OnStartupChanged;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)

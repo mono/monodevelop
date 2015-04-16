@@ -134,10 +134,10 @@ namespace MonoDevelop.Ide.Tasks
 				comments.EndTaskUpdates ();
 			}
 
-			comments.TasksAdded += DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskAdded);
-			comments.TasksRemoved += DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskRemoved);
+			comments.TasksAdded += GeneratedTaskAdded;
+			comments.TasksRemoved += GeneratedTaskRemoved;
 
-			PropertyService.PropertyChanged += DispatchService.GuiDispatch<EventHandler<PropertyChangedEventArgs>> (OnPropertyUpdated);
+			PropertyService.PropertyChanged += OnPropertyUpdated;
 			
 			// Initialize with existing tags.
 			foreach (TaskListEntry t in comments)
@@ -149,10 +149,10 @@ namespace MonoDevelop.Ide.Tasks
 				CommentTag.SpecialCommentTagsChanged -= OnCommentTagsChanged;
 				IdeApp.Workspace.WorkspaceItemLoaded -= OnWorkspaceItemLoaded;
 				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
-				comments.TasksAdded -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskAdded);
-				comments.TasksRemoved -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskRemoved);
+				comments.TasksAdded -= GeneratedTaskAdded;
+				comments.TasksRemoved -= GeneratedTaskRemoved;
 
-				PropertyService.PropertyChanged -= DispatchService.GuiDispatch<EventHandler<PropertyChangedEventArgs>> (OnPropertyUpdated);
+				PropertyService.PropertyChanged -= OnPropertyUpdated;
 			};
 		}
 

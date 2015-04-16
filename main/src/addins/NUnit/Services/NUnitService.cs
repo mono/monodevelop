@@ -313,8 +313,10 @@ namespace MonoDevelop.NUnit
 		
 		void NotifyTestSuiteChanged ()
 		{
-			if (TestSuiteChanged != null)
-				TestSuiteChanged (this, EventArgs.Empty);
+			Runtime.RunInMainThread (() => {
+				if (TestSuiteChanged != null)
+					TestSuiteChanged (this, EventArgs.Empty);
+			});
 		}
 
 		public static void ResetResult (UnitTest test)

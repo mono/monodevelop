@@ -394,7 +394,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		
 		static CSharpSyntaxMode ()
 		{
-			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += DispatchService.GuiDispatch (new EventHandler<DocumentEventArgs> (OnDisableConditionalCompilation));
+			MonoDevelop.Debugger.DebuggingService.DisableConditionalCompilation += OnDisableConditionalCompilation;
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += delegate {
 					foreach (var doc in IdeApp.Workbench.Documents) {

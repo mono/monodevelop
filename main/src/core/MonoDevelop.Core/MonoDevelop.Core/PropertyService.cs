@@ -168,8 +168,10 @@ namespace MonoDevelop.Core
 				UserDataMigrationService.SetMigrationSource (migratableProfile, migrateVersion);
 			
 			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
-				if (PropertyChanged != null)
-					PropertyChanged (sender, args);
+				Runtime.RunInMainThread (() => {
+					if (PropertyChanged != null)
+						PropertyChanged (sender, args);
+				});
 			};
 			
 			Counters.PropertyServiceInitialization.EndTiming ();

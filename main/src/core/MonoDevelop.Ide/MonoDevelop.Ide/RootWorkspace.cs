@@ -55,39 +55,11 @@ namespace MonoDevelop.Ide
 		bool useDefaultRuntime;
 		string preferredActiveExecutionTarget;
 
-		ProjectFileEventHandler fileAddedToProjectHandler;
-		ProjectFileEventHandler fileRemovedFromProjectHandler;
-		ProjectFileRenamedEventHandler fileRenamedInProjectHandler;
-		ProjectFileEventHandler fileChangedInProjectHandler;
-		ProjectFileEventHandler filePropertyChangedInProjectHandler;
-		ProjectReferenceEventHandler referenceAddedToProjectHandler;
-		ProjectReferenceEventHandler referenceRemovedFromProjectHandler;
-		SolutionItemChangeEventHandler itemAddedToSolutionHandler;
-		SolutionItemChangeEventHandler itemRemovedFromSolutionHandler;
-		EventHandler<WorkspaceItemChangeEventArgs> descendantItemAddedHandler;
-		EventHandler<WorkspaceItemChangeEventArgs> descendantItemRemovedHandler;
-		EventHandler configurationsChanged;
-		
 		internal RootWorkspace ()
 		{
 			items = new RootWorkspaceItemCollection (this);
 
-			fileAddedToProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileAddedToProject));
-			fileRemovedFromProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileRemovedFromProject));
-			fileRenamedInProjectHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (NotifyFileRenamedInProject));
-			fileChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFileChangedInProject));
-			filePropertyChangedInProjectHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (NotifyFilePropertyChangedInProject));
-			referenceAddedToProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceAddedToProject));
-			referenceRemovedFromProjectHandler = (ProjectReferenceEventHandler) DispatchService.GuiDispatch (new ProjectReferenceEventHandler (NotifyReferenceRemovedFromProject));
-		
-			itemAddedToSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemAddedToSolution));
-			itemRemovedFromSolutionHandler = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (NotifyItemRemovedFromSolution));
-			
-			descendantItemAddedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemAdded));
-			descendantItemRemovedHandler = (EventHandler<WorkspaceItemChangeEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemChangeEventArgs> (NotifyDescendantItemRemoved));
-			configurationsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (NotifyConfigurationsChanged));
-			
-			FileService.FileRenamed += (EventHandler<FileCopyEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileCopyEventArgs> (CheckFileRename));
+			FileService.FileRenamed += CheckFileRename;
 			
 			// Set the initial active runtime
 			UseDefaultRuntime = true;
@@ -99,7 +71,7 @@ namespace MonoDevelop.Ide
 				}
 			};
 			
-			FileService.FileChanged += (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (CheckWorkspaceItems));
+			FileService.FileChanged += CheckWorkspaceItems;
 		}
 		
 		public RootWorkspaceItemCollection Items {
@@ -961,10 +933,10 @@ namespace MonoDevelop.Ide
 
 			Workspace ws = item as Workspace;
 			if (ws != null) {
-				ws.DescendantItemAdded += descendantItemAddedHandler;
-				ws.DescendantItemRemoved += descendantItemRemovedHandler;
+				ws.DescendantItemAdded += NotifyDescendantItemAdded;
+				ws.DescendantItemRemoved += NotifyDescendantItemRemoved;
 			}
-			item.ConfigurationsChanged += configurationsChanged;
+			item.ConfigurationsChanged += NotifyConfigurationsChanged;
 			
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyDescendantItemAdded (this, args);
@@ -995,10 +967,10 @@ namespace MonoDevelop.Ide
 		{
 			Workspace ws = item as Workspace;
 			if (ws != null) {
-				ws.DescendantItemAdded -= descendantItemAddedHandler;
-				ws.DescendantItemRemoved -= descendantItemRemovedHandler;
+				ws.DescendantItemAdded -= NotifyDescendantItemAdded;
+				ws.DescendantItemRemoved -= NotifyDescendantItemRemoved;
 			}
-			item.ConfigurationsChanged -= configurationsChanged;
+			item.ConfigurationsChanged -= NotifyConfigurationsChanged;
 			
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyConfigurationsChanged (null, args);
@@ -1019,28 +991,28 @@ namespace MonoDevelop.Ide
 		
 		void SubscribeSolution (Solution sol)
 		{
-			sol.FileAddedToProject += fileAddedToProjectHandler;
-			sol.FileRemovedFromProject += fileRemovedFromProjectHandler;
-			sol.FileRenamedInProject += fileRenamedInProjectHandler;
-			sol.FileChangedInProject += fileChangedInProjectHandler;
-			sol.FilePropertyChangedInProject += filePropertyChangedInProjectHandler;
-			sol.ReferenceAddedToProject += referenceAddedToProjectHandler;
-			sol.ReferenceRemovedFromProject += referenceRemovedFromProjectHandler;
-			sol.SolutionItemAdded += itemAddedToSolutionHandler;
-			sol.SolutionItemRemoved += itemRemovedFromSolutionHandler;
+			sol.FileAddedToProject += NotifyFileAddedToProject;
+			sol.FileRemovedFromProject += NotifyFileRemovedFromProject;
+			sol.FileRenamedInProject += NotifyFileRenamedInProject;
+			sol.FileChangedInProject += NotifyFileChangedInProject;
+			sol.FilePropertyChangedInProject += NotifyFilePropertyChangedInProject;
+			sol.ReferenceAddedToProject += NotifyReferenceAddedToProject;
+			sol.ReferenceRemovedFromProject += NotifyReferenceRemovedFromProject;
+			sol.SolutionItemAdded += NotifyItemAddedToSolution;
+			sol.SolutionItemRemoved += NotifyItemRemovedFromSolution;
 		}
 		
 		void UnsubscribeSolution (Solution solution)
 		{
-			solution.FileAddedToProject -= fileAddedToProjectHandler;
-			solution.FileRemovedFromProject -= fileRemovedFromProjectHandler;
-			solution.FileRenamedInProject -= fileRenamedInProjectHandler;
-			solution.FileChangedInProject -= fileChangedInProjectHandler;
-			solution.FilePropertyChangedInProject -= filePropertyChangedInProjectHandler;
-			solution.ReferenceAddedToProject -= referenceAddedToProjectHandler;
-			solution.ReferenceRemovedFromProject -= referenceRemovedFromProjectHandler;
-			solution.SolutionItemAdded -= itemAddedToSolutionHandler;
-			solution.SolutionItemRemoved -= itemRemovedFromSolutionHandler;
+			solution.FileAddedToProject -= NotifyFileAddedToProject;
+			solution.FileRemovedFromProject -= NotifyFileRemovedFromProject;
+			solution.FileRenamedInProject -= NotifyFileRenamedInProject;
+			solution.FileChangedInProject -= NotifyFileChangedInProject;
+			solution.FilePropertyChangedInProject -= NotifyFilePropertyChangedInProject;
+			solution.ReferenceAddedToProject -= NotifyReferenceAddedToProject;
+			solution.ReferenceRemovedFromProject -= NotifyReferenceRemovedFromProject;
+			solution.SolutionItemAdded -= NotifyItemAddedToSolution;
+			solution.SolutionItemRemoved -= NotifyItemRemovedFromSolution;
 		}
 		
 		void NotifyConfigurationsChanged (object s, EventArgs a)

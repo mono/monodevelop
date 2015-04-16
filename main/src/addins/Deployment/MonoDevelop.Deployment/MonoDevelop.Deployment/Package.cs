@@ -70,6 +70,7 @@ namespace MonoDevelop.Deployment
 		
 		void NotifyChanged ()
 		{
+			Runtime.AssertMainThread ();
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);
 		}

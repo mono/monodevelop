@@ -41,20 +41,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class WorkspaceNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler<WorkspaceItemChangeEventArgs> combineEntryAdded;
-		EventHandler<WorkspaceItemChangeEventArgs> combineEntryRemoved;
-		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
-		
-		public WorkspaceNodeBuilder ()
-		{
-			combineEntryAdded = OnEntryAdded;
-			combineEntryRemoved = OnEntryRemoved;
-			combineNameChanged = OnCombineRenamed;
-			combineEntryAdded = DispatchService.GuiDispatch (combineEntryAdded);
-			combineEntryRemoved = DispatchService.GuiDispatch (combineEntryRemoved);
-			combineNameChanged = DispatchService.GuiDispatch (combineNameChanged);
-		}
-
 		public override Type NodeDataType {
 			get { return typeof(Workspace); }
 		}
@@ -100,17 +86,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Workspace ws = (Workspace) dataObject;
-			ws.ItemAdded += combineEntryAdded;
-			ws.ItemRemoved += combineEntryRemoved;
-			ws.NameChanged += combineNameChanged;
+			ws.ItemAdded += OnEntryAdded;
+			ws.ItemRemoved += OnEntryRemoved;
+			ws.NameChanged += OnCombineRenamed;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Workspace ws = (Workspace) dataObject;
-			ws.ItemAdded -= combineEntryAdded;
-			ws.ItemRemoved -= combineEntryRemoved;
-			ws.NameChanged -= combineNameChanged;
+			ws.ItemAdded -= OnEntryAdded;
+			ws.ItemRemoved -= OnEntryRemoved;
+			ws.NameChanged -= OnCombineRenamed;
 		}
 		
 		void OnEntryAdded (object sender, WorkspaceItemEventArgs e)

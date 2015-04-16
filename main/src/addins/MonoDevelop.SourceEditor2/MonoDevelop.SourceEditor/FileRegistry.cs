@@ -52,12 +52,11 @@ namespace MonoDevelop.SourceEditor
 		static FileRegistry ()
 		{
 			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			fileSystemWatcher.Created += (s,e) => Runtime.RunInMainThread (() => OnFileChanged (s,e));
+			fileSystemWatcher.Changed += (s,e) => Runtime.RunInMainThread (() => OnFileChanged (s,e));
 
-			var fileChanged = DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (HandleFileServiceChange));
-			FileService.FileCreated += fileChanged;
-			FileService.FileChanged += fileChanged;
+			FileService.FileCreated += HandleFileServiceChange;
+			FileService.FileChanged += HandleFileServiceChange;
 
 		}
 

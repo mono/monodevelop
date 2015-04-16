@@ -39,13 +39,6 @@ namespace MonoDevelop.Deployment.NodeBuilders
 {
 	internal class PackageNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler configsChanged;
-		
-		public PackageNodeBuilder ()
-		{
-			configsChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnConfigurationsChanged));
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(PackageNodeCommandHandler); }
 		}
@@ -81,13 +74,13 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void OnNodeAdded (object dataObject)
 		{
 			Package package = dataObject as Package;
-			package.Changed += configsChanged;
+			package.Changed += OnConfigurationsChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Package package = dataObject as Package;
-			package.Changed -= configsChanged;
+			package.Changed -= OnConfigurationsChanged;
 		}
 		
 		public void OnConfigurationsChanged (object sender, EventArgs args)

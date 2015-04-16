@@ -39,15 +39,6 @@ namespace MonoDevelop.NUnit
 {
 	public class TestNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler testChanged;
-		EventHandler testStatusChanged;
-		
-		public TestNodeBuilder ()
-		{
-			testChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestChanged));
-			testStatusChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnTestStatusChanged));
-		}
-		
 		public override Type CommandHandlerType {
 			get { return typeof(TestNodeCommandHandler); }
 		}
@@ -117,15 +108,15 @@ namespace MonoDevelop.NUnit
 		public override void OnNodeAdded (object dataObject)
 		{
 			UnitTest test = (UnitTest) dataObject;
-			test.TestChanged += testChanged;
-			test.TestStatusChanged += testStatusChanged;
+			test.TestChanged += OnTestChanged;
+			test.TestStatusChanged += OnTestStatusChanged;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			UnitTest test = (UnitTest) dataObject;
-			test.TestChanged -= testChanged;
-			test.TestStatusChanged -= testStatusChanged;
+			test.TestChanged -= OnTestChanged;
+			test.TestStatusChanged -= OnTestStatusChanged;
 		}
 		
 		public void OnTestChanged (object sender, EventArgs args)

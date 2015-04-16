@@ -43,33 +43,17 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
 	class SolutionNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemChangeEventHandler globalItemAddedRemoved;
-		SolutionItemChangeEventHandler combineEntryAdded;
-		SolutionItemChangeEventHandler combineEntryRemoved;
-		EventHandler<WorkspaceItemRenamedEventArgs> combineNameChanged;
-		EventHandler startupChanged;
-		EventHandler<SolutionItemFileEventArgs> fileAdded;
-		EventHandler<SolutionItemFileEventArgs> fileRemoved;
-		
 		public SolutionNodeBuilder ()
 		{
-			globalItemAddedRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnSolutionItemAddedRemoved));
-			combineEntryAdded = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryAdded));
-			combineEntryRemoved = (SolutionItemChangeEventHandler) DispatchService.GuiDispatch (new SolutionItemChangeEventHandler (OnEntryRemoved));
-			combineNameChanged = (EventHandler<WorkspaceItemRenamedEventArgs>) DispatchService.GuiDispatch (new EventHandler<WorkspaceItemRenamedEventArgs> (OnCombineRenamed));
-			startupChanged = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnStartupChanged));
-			fileAdded = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileAdded));
-			fileRemoved = (EventHandler<SolutionItemFileEventArgs>) DispatchService.GuiDispatch (new EventHandler<SolutionItemFileEventArgs> (OnFileRemoved));
-			
-			IdeApp.Workspace.ItemAddedToSolution += globalItemAddedRemoved;
-			IdeApp.Workspace.ItemRemovedFromSolution += globalItemAddedRemoved;
+			IdeApp.Workspace.ItemAddedToSolution += OnSolutionItemAddedRemoved;
+			IdeApp.Workspace.ItemRemovedFromSolution += OnSolutionItemAddedRemoved;
 		}
 		
 		public override void Dispose ()
 		{
 			base.Dispose ();
-			IdeApp.Workspace.ItemAddedToSolution -= globalItemAddedRemoved;
-			IdeApp.Workspace.ItemRemovedFromSolution -= globalItemAddedRemoved;
+			IdeApp.Workspace.ItemAddedToSolution -= OnSolutionItemAddedRemoved;
+			IdeApp.Workspace.ItemRemovedFromSolution -= OnSolutionItemAddedRemoved;
 		}
 
 
@@ -121,23 +105,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			solution.NameChanged += combineNameChanged;
-			solution.StartupItemChanged += startupChanged;
-			solution.RootFolder.ItemAdded += combineEntryAdded;
-			solution.RootFolder.ItemRemoved += combineEntryRemoved;
-			solution.RootFolder.SolutionItemFileAdded += fileAdded;
-			solution.RootFolder.SolutionItemFileRemoved += fileRemoved;
+			solution.NameChanged += OnCombineRenamed;
+			solution.StartupItemChanged += OnStartupChanged;
+			solution.RootFolder.ItemAdded += OnEntryAdded;
+			solution.RootFolder.ItemRemoved += OnEntryRemoved;
+			solution.RootFolder.SolutionItemFileAdded += OnFileAdded;
+			solution.RootFolder.SolutionItemFileRemoved += OnFileRemoved;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			solution.NameChanged -= combineNameChanged;
-			solution.StartupItemChanged -= startupChanged;
-			solution.RootFolder.ItemAdded -= combineEntryAdded;
-			solution.RootFolder.ItemRemoved -= combineEntryRemoved;
-			solution.RootFolder.SolutionItemFileAdded -= fileAdded;
-			solution.RootFolder.SolutionItemFileRemoved -= fileRemoved;
+			solution.NameChanged -= OnCombineRenamed;
+			solution.StartupItemChanged -= OnStartupChanged;
+			solution.RootFolder.ItemAdded -= OnEntryAdded;
+			solution.RootFolder.ItemRemoved -= OnEntryRemoved;
+			solution.RootFolder.SolutionItemFileAdded -= OnFileAdded;
+			solution.RootFolder.SolutionItemFileRemoved -= OnFileRemoved;
 		}
 		
 		void OnStartupChanged (object sender, EventArgs args)

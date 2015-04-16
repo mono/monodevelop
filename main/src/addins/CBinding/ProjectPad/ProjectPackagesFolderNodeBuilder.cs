@@ -42,9 +42,6 @@ namespace CBinding.ProjectPad
 {	
 	public class ProjectPackagesFolderNodeBuilder : TypeNodeBuilder
 	{
-		ProjectPackageEventHandler addedHandler;
-		ProjectPackageEventHandler removedHandler;
-		
 		public override Type NodeDataType {
 			get { return typeof(ProjectPackageCollection); }
 		}
@@ -53,26 +50,20 @@ namespace CBinding.ProjectPad
 		{
 			CProject project = ((ProjectPackageCollection)dataObject).Project;
 			if (project == null) return;
-			project.PackageAddedToProject += addedHandler;
-			project.PackageRemovedFromProject += removedHandler;
+			project.PackageAddedToProject += OnAddPackage;
+			project.PackageRemovedFromProject += OnRemovePackage;
 		}
 
 		public override void OnNodeRemoved (object dataObject)
 		{
 			CProject project = ((ProjectPackageCollection)dataObject).Project;
 			if (project == null) return;
-			project.PackageAddedToProject -= addedHandler;
-			project.PackageRemovedFromProject -= removedHandler;
+			project.PackageAddedToProject -= OnAddPackage;
+			project.PackageRemovedFromProject -= OnRemovePackage;
 		}
 		
 		public override Type CommandHandlerType {
 			get { return typeof(ProjectPackagesFolderNodeCommandHandler); }
-		}
-		
-		protected override void Initialize ()
-		{
-			addedHandler = (ProjectPackageEventHandler)DispatchService.GuiDispatch (new ProjectPackageEventHandler (OnAddPackage));
-			removedHandler = (ProjectPackageEventHandler)DispatchService.GuiDispatch (new ProjectPackageEventHandler (OnRemovePackage));
 		}
 		
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

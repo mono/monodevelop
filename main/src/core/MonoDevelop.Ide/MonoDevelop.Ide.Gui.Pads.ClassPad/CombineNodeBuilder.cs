@@ -37,13 +37,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class CombineNodeBuilder: TypeNodeBuilder
 	{
-		SolutionItemRenamedEventHandler combineNameChanged;
-		
-		public CombineNodeBuilder ()
-		{
-			combineNameChanged = (SolutionItemRenamedEventHandler) DispatchService.GuiDispatch (new SolutionItemRenamedEventHandler (OnCombineRenamed));
-		}
-			
 		public override Type NodeDataType {
 			get { return typeof(SolutionFolder); }
 		}
@@ -102,13 +95,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			SolutionFolder combine = (SolutionFolder) dataObject;
-			combine.NameChanged += combineNameChanged;
+			combine.NameChanged += OnCombineRenamed;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			SolutionFolder combine = (SolutionFolder) dataObject;
-			combine.NameChanged -= combineNameChanged;
+			combine.NameChanged -= OnCombineRenamed;
 		}
 		
 		void OnCombineRenamed (object sender, SolutionItemRenamedEventArgs e)

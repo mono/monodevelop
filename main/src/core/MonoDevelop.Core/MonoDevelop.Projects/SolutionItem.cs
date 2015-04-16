@@ -1188,6 +1188,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnConfigurationAdded (ConfigurationEventArgs args)
 		{
+			AssertMainThread ();
 			ItemExtension.OnConfigurationAdded (args);
 		}
 		
@@ -1199,6 +1200,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnConfigurationRemoved (ConfigurationEventArgs args)
 		{
+			AssertMainThread ();
 			ItemExtension.OnConfigurationRemoved (args);
 		}
 		

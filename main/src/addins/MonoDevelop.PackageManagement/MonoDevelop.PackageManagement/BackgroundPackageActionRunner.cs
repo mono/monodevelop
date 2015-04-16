@@ -210,7 +210,7 @@ namespace MonoDevelop.PackageManagement
 			DispatchService.BackgroundDispatch (handler);
 		}
 
-		protected virtual void GuiDispatch (MessageHandler handler)
+		protected virtual void GuiDispatch (Action handler)
 		{
 			DispatchService.GuiDispatch (handler);
 		}
