@@ -187,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 		
-		public class Border : Gtk.DrawingArea
+		class Border : Gtk.DrawingArea
 		{
 			protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 			{

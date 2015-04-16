@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class BaseWindow : Gtk.Window
+	class BaseWindow : Gtk.Window
 	{
 		public BaseWindow () : base(Gtk.WindowType.Toplevel)
 		{
@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class DebugValueWindow : PopoverWindow
+	class DebugValueWindow : PopoverWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;

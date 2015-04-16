@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	public class FoldSegmentWrapper : Mono.TextEditor.FoldSegment, IFoldSegment
+	class FoldSegmentWrapper : Mono.TextEditor.FoldSegment, IFoldSegment
 	{
 		bool IFoldSegment.IsCollapsed {
 			get {

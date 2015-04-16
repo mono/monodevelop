@@ -62,7 +62,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public partial class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
+	partial class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
@@ -106,7 +106,8 @@ namespace MonoDevelop.SourceEditor
 				lastSaveTimeUtc = value;
 			}
 		}		
-		public ExtensibleTextEditor TextEditor {
+
+		internal ExtensibleTextEditor TextEditor {
 			get {
 				return widget.TextEditor;
 			}

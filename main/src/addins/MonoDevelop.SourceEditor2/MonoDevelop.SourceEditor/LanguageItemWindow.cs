@@ -39,7 +39,7 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
+	class LanguageItemWindow: MonoDevelop.Components.TooltipWindow
 	{
 		public bool IsEmpty { get; set; }
 		

@@ -33,7 +33,7 @@ using Atk;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	public class TextDocumentWrapper : ITextDocument
+	class TextDocumentWrapper : ITextDocument
 	{
 		readonly TextDocument document;
 

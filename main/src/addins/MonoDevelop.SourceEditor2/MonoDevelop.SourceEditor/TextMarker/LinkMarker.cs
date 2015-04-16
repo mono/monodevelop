@@ -29,7 +29,7 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class LinkMarker : Mono.TextEditor.UnderlineTextSegmentMarker, ITextSegmentMarker
+	class LinkMarker : Mono.TextEditor.UnderlineTextSegmentMarker, ITextSegmentMarker
 	{
 		static readonly Cairo.Color linkColor = new Cairo.Color (0, 0, 1.0);
 		Action<LinkRequest> activateLink;

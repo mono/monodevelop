@@ -37,7 +37,7 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class PinnedWatchWidget : Gtk.EventBox
+	class PinnedWatchWidget : Gtk.EventBox
 	{
 		readonly ObjectValueTreeView valueTree;
 		ObjectValue objectValue;

@@ -41,7 +41,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public class QuickTaskStrip : VBox
+	class QuickTaskStrip : VBox
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
 		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);

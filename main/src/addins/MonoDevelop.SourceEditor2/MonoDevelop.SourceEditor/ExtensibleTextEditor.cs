@@ -52,7 +52,7 @@ using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtensibleTextEditor : Mono.TextEditor.MonoTextEditor
+	class ExtensibleTextEditor : Mono.TextEditor.MonoTextEditor
 	{
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		

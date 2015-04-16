@@ -40,7 +40,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public class QuickTaskOverviewMode : DrawingArea
+	class QuickTaskOverviewMode : DrawingArea
 	{
 		static Xwt.Drawing.Image searchImage = Xwt.Drawing.Image.FromResource ("issues-busy-16.png");
 		static Xwt.Drawing.Image okImage = Xwt.Drawing.Image.FromResource ("issues-ok-16.png");

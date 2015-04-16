@@ -31,7 +31,7 @@ using Gdk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class OverlayMessageWindow : Gtk.EventBox
+	class OverlayMessageWindow : Gtk.EventBox
 	{
 		const int border = 8;
 

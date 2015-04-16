@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class TabAction
+	class TabAction
 	{
 		ExtensibleTextEditor editor;
 		
