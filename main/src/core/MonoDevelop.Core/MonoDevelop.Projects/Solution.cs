@@ -755,8 +755,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		/*protected virtual*/ async Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
+			return Task.FromResult (0);
 		}
 
 		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)

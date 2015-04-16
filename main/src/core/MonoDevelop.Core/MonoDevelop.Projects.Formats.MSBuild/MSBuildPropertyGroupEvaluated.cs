@@ -135,7 +135,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal void Sync (MSBuildEngine e, object project)
+		internal void SyncCollection (MSBuildEngine e, object project)
 		{
 			properties.Clear ();
 			foreach (var p in e.GetEvaluatedProperties (project)) {

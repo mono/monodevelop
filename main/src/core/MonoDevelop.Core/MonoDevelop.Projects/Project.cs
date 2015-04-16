@@ -43,7 +43,6 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.Extensions;
 using System.Collections.Immutable;
-using MonoDevelop.Core.Instrumentation;
 
 
 namespace MonoDevelop.Projects

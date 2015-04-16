@@ -297,7 +297,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var props = new MSBuildEvaluatedPropertyCollection (this);
 			evaluatedProperties = props;
-			props.Sync (e, project);
+			props.SyncCollection (e, project);
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)
