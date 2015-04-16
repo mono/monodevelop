@@ -379,8 +379,11 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			var references = new HashSet<MetadataReference> ();
 
-			if (project != null)
-				references.Add (TypeSystemService.GetCompilationAsync (project).Result.ToMetadataReference ());
+			if (project != null) {
+				var task = TypeSystemService.GetCompilationAsync (project);
+				if (task.Result != null)
+					references.Add (task.Result.ToMetadataReference ());
+			}
 			if (doc != null)
 				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
 					references.Add (asm);
