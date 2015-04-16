@@ -67,7 +67,7 @@ namespace MonoDevelop.GtkCore
 			Project = project;
 		}
 		
-		DotNetProject Project {
+		internal DotNetProject Project {
 			get { return project; }
 			set {
 				if (project == value)
