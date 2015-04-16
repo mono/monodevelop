@@ -558,7 +558,7 @@ namespace MonoDevelop.Projects
 		}
 		
 		[ItemProperty ("Policies", IsExternal = true, SkipEmpty = true)]
-		public MonoDevelop.Projects.Policies.PolicyBag Policies {
+		public PolicyBag Policies {
 			get { return RootFolder.Policies; }
 			//this is for deserialisation
 			internal set { RootFolder.Policies = value; }

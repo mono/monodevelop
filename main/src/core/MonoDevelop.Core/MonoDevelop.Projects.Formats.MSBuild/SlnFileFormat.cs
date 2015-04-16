@@ -673,7 +673,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						SolutionItem uitem;
 						uitem = new UnknownSolutionItem () {
 							FileName = projectPath,
-							UnsupportedProjectMessage = unsupportedMessage,
+							LoadError = unsupportedMessage,
 						};
 						item = uitem;
 						item.ItemId = projectGuid;

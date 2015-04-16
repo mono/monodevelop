@@ -38,7 +38,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class SolutionFolderItem: WorkspaceObject, IExtendedDataItem, IPolicyProvider
+	public abstract class SolutionFolderItem: WorkspaceObject, IPolicyProvider
 	{
 		SolutionFolder parentFolder;
 		Solution parentSolution;

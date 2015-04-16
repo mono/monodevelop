@@ -122,6 +122,8 @@ namespace MonoDevelop.Projects
 		public Task<SolutionItem> ReadSolutionItem (ProgressMonitor monitor, string file, MSBuildFileFormat format, string typeGuid = null, string itemGuid = null, SolutionLoadContext ctx = null)
 		{
 			return Runtime.RunInMainThread (async delegate {
+				if (!File.Exists (file))
+					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
 				file = Path.GetFullPath (file);
 				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 					file = GetTargetFile (file);
@@ -173,6 +175,8 @@ namespace MonoDevelop.Projects
 		public Task<WorkspaceItem> ReadWorkspaceItem (ProgressMonitor monitor, FilePath file)
 		{
 			return Runtime.RunInMainThread (async delegate {
+				if (!File.Exists (file))
+					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
 				string fullpath = FileService.ResolveFullPath (file).FullPath;
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 					fullpath = GetTargetFile (fullpath);
