@@ -46,6 +46,9 @@ if ENABLE_WINDOWSPLATFORM
 TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
+UITEST_ASSEMBLIES = \
+	$(TEST_DIR)/UserInterfaceTests.dll
+
 test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
@@ -67,6 +70,15 @@ test:
 		if [ $${fail} = 1 ]; then \
 			exit 1; \
 		fi; \
+	fi
+
+uitest:
+	@if test -n "$(assembly)"; then \
+		for asm in $(UITEST_ASSEMBLIES); do \
+			if test `basename $$asm` = $(assembly); then \
+				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
+			fi; \
+		done; \
 	fi
 
 coverage:
