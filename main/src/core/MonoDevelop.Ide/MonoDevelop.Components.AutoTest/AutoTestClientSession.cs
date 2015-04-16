@@ -114,7 +114,17 @@ namespace MonoDevelop.Components.AutoTest
 			if (service != null)
 				service.DetachClient (this);
 			else
-				process.Kill ();
+				try {
+					process.Kill ();
+				} catch (InvalidOperationException invalidExp) {
+					Console.WriteLine ("Process has already exited");
+				}
+		}
+
+		public void ExitApp ()
+		{
+			ClearEventQueue ();
+			session.ExitApp ();
 		}
 
 		public void ExecuteCommand (object cmd)

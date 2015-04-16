@@ -66,7 +66,7 @@ namespace UserInterfaceTests
 		public static void CloseAll ()
 		{
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			Session.ExecuteCommand (FileCommands.CloseAllFiles);
+			Session.ExitApp ();
 		}
 
 		public static FilePath GetActiveDocumentFilename ()

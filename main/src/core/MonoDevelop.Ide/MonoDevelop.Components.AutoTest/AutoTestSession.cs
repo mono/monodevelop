@@ -102,6 +102,15 @@ namespace MonoDevelop.Components.AutoTest
 			return Sync (del, false);
 		}
 
+		public void ExitApp ()
+		{
+			try {
+				IdeApp.Exit ();
+			} catch (Exception e) {
+				Console.WriteLine (e);
+			}
+		}
+
 		public object GlobalInvoke (string name, object[] args)
 		{
 			return Sync (delegate {
