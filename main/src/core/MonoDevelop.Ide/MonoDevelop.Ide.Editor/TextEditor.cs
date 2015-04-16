@@ -1199,7 +1199,7 @@ namespace MonoDevelop.Ide.Editor
 			if (projectionsAdded) {
 				TextEditorExtension ext = textEditorImpl.EditorExtension;
 				while (ext != null && ext.Next != null) {
-					var pext = (IProjectionExtension)ext;
+					var pext = ext as IProjectionExtension;
 					if (pext != null) {
 						pext.Projections = projections;
 					}
