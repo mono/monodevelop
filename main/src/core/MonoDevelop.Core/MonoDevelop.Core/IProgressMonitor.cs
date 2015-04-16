@@ -49,12 +49,13 @@ namespace MonoDevelop.Core
 		protected AsyncOperation ()
 		{
 			Task = Task.FromResult (0);
+			CancellationTokenSource = new CancellationTokenSource ();
 		}
 
 		public AsyncOperation (Task task, CancellationTokenSource cancellationTokenSource)
 		{
 			Task = task;
-			this.CancellationTokenSource = cancellationTokenSource;
+			this.CancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource ();
 		}
 
 		public Task Task { get; protected set; }
