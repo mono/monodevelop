@@ -5,6 +5,7 @@ using ICSharpCode.PackageManagement;
 using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
 using NUnit.Framework;
+using System.Linq;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -135,7 +136,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			AddImportIfMissingAtBottom (import);
 			
-			Assert.AreEqual (1, project.Document.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (1, project.Imports.Count ());
 		}
 
 		[Test]
@@ -160,7 +161,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			project.RemoveImportIfExists (import);
 			
-			Assert.AreEqual (0, project.Document.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (0, project.Imports.Count ());
 		}
 
 		[Test]
@@ -173,7 +174,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			project.RemoveImportIfExists (import2);
 			
-			Assert.AreEqual (0, project.Document.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (0, project.Imports.Count ());
 		}
 
 		[Test]
@@ -210,7 +211,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			AddImportIfMissingAtTop (import);
 			
-			Assert.AreEqual (1, project.Document.DocumentElement.ChildNodes.Count);
+			Assert.AreEqual (1, project.Imports.Count ());
 		}
 	}
 }
