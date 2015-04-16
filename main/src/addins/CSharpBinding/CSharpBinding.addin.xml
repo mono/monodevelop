@@ -75,11 +75,6 @@
 		                 class = "MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "MonoDevelop.CSharp.Project.CSharpCompilerParameters" />
-		<DataType class = "MonoDevelop.CSharp.Project.CSharpProjectParameters" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<!-- indent engine must be before the completion text editor engine,
 		otherwise stuff like

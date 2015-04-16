@@ -17,10 +17,6 @@
 		<LanguageBinding id = "ILAsm" supportedextensions = ".il" class = "ILAsmBinding.ILAsmLanguageBinding"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-		<DataType class = "ILAsmBinding.ILAsmCompilerParameters" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectType  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}" tag="IL" />
 	</Extension>
