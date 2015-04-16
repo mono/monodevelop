@@ -59,8 +59,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool CanReadFile (string file, MSBuildFileFormat format)
 		{
 			if (String.Compare (Path.GetExtension (file), ".sln", StringComparison.OrdinalIgnoreCase) == 0) {
-				string tmp;
-				string version = GetSlnFileVersion (file, out tmp);
+				string version = SlnFile.GetFileVersion (file);
 				return format.SupportsSlnVersion (version);
 			}
 			return false;
@@ -69,11 +68,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool CanWriteFile (object obj, MSBuildFileFormat format)
 		{
 			return obj is Solution;
-		}
-		
-		public List<string> GetItemFiles (object obj)
-		{
-			return null;
 		}
 		
 		public Task WriteFile (string file, object obj, bool saveProjects, ProgressMonitor monitor)
@@ -933,97 +927,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				folder.Items.Add (item);
 			}
-		}
-
-		string GetNextLine (StreamReader reader, List<string> list)
-		{
-			if (reader.Peek () < 0)
-				return null;
-
-			string ret = reader.ReadLine ();
-			list.Add (ret);
-			return ret;
-		}
-
-		int ReadUntil (string end, StreamReader reader, List<string> lines)
-		{
-			int ret = -1;
-			while (reader.Peek () >= 0) {
-				string s = GetNextLine (reader, lines);
-
-				if (String.Compare (s.Trim (), end, true) == 0)
-					return (lines.Count - 1);
-			}
-
-			return ret;
-		}
-
-
-		// Utility function to determine the sln file version
-		string GetSlnFileVersion(string strInSlnFile, out string headerComment)
-		{
-			string strVersion = null;
-			string strInput = null;
-			headerComment = null;
-			Match match;
-			StreamReader reader = new StreamReader(strInSlnFile);
-			
-			strInput = reader.ReadLine();
-			if (strInput == null)
-				return null;
-
-			match = SlnVersionRegex.Match(strInput);
-			if (!match.Success) {
-				strInput = reader.ReadLine();
-				if (strInput == null)
-					return null;
-				match = SlnVersionRegex.Match (strInput);
-			}
-
-			if (match.Success)
-			{
-				strVersion = match.Groups[1].Value;
-				headerComment = reader.ReadLine ();
-			}
-			
-			// Close the stream
-			reader.Close();
-
-			return strVersion;
-		}
-
-		static Regex slnVersionRegex = null;
-		internal static Regex SlnVersionRegex {
-			get {
-				if (slnVersionRegex == null)
-					slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d?\d.\d\d)");
-				return slnVersionRegex;
-			}
-		}
-
-		public string Name {
-			get { return "MSBuild"; }
-		}
-
-	}
-
-	class Section {
-		public string Key;
-		public string Val;
-
-		public int Start = -1; //Line number
-		public int Count = 0;
-
-		public Section ()
-		{
-		}
-
-		public Section (string Key, string Val, int Start, int Count)
-		{
-			this.Key = Key;
-			this.Val = Val;
-			this.Start = Start;
-			this.Count = Count;
 		}
 	}
 }

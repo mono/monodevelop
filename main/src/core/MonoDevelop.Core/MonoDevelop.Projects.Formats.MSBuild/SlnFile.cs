@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -34,6 +35,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public SlnFile ()
 		{
 		}
+
+		/// <summary>
+		/// Gets the sln format version of the provided solution file
+		/// </summary>
+		/// <returns>The file version.</returns>
+		/// <param name="file">File.</param>
+		public static string GetFileVersion (string file)
+		{
+			string strVersion = null;
+			using (var reader = new StreamReader (file)) {
+				var strInput = reader.ReadLine();
+				if (strInput == null)
+					return null;
+
+				var match = slnVersionRegex.Match (strInput);
+				if (!match.Success) {
+					strInput = reader.ReadLine();
+					if (strInput == null)
+						return null;
+					match = slnVersionRegex.Match (strInput);
+					if (!match.Success)
+						return null;
+				}
+
+				strVersion = match.Groups[1].Value;
+				return strVersion;
+			}
+		}
+
+		static Regex slnVersionRegex = new Regex (@"Microsoft Visual Studio Solution File, Format Version (\d?\d.\d\d)");
 
 		/// <summary>
 		/// The directory to be used as base for converting absolute paths to relative
