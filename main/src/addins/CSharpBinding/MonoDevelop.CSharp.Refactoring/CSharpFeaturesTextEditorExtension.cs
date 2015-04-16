@@ -38,7 +38,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public class CSharpFeaturesTextEditorExtension : TextEditorExtension
+	sealed class CSharpFeaturesTextEditorExtension : TextEditorExtension
 	{
 		public override bool IsValidInContext (MonoDevelop.Ide.Editor.DocumentContext context)
 		{

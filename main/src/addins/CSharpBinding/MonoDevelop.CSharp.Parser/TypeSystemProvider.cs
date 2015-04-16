@@ -41,7 +41,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
+	sealed class TypeSystemParser : MonoDevelop.Ide.TypeSystem.TypeSystemParser
 	{
 		static readonly List<Error> emptyList = new List<Error> ();
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions options, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))

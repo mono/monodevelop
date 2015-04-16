@@ -44,7 +44,7 @@ using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public class CodeGenerationOptions
+	sealed class CodeGenerationOptions
 	{
 		readonly int offset;
 

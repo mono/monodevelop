@@ -36,7 +36,7 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class RoslynParameterHintingFactory : IParameterHintingDataFactory
+	class RoslynParameterHintingFactory : IParameterHintingDataFactory
 	{
 		#region IParameterHintingDataFactory implementation
 

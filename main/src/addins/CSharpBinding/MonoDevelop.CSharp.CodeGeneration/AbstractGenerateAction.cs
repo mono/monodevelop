@@ -41,12 +41,12 @@ using MonoDevelop.CSharp.Formatting;
 
 namespace MonoDevelop.CodeGeneration
 {
-	public abstract class AbstractGenerateAction : IGenerateAction
+	abstract class AbstractGenerateAction : IGenerateAction
 	{
 		readonly TreeStore store = new TreeStore (typeof(bool), typeof(Xwt.Drawing.Image), typeof(string), typeof(object));
 		readonly CodeGenerationOptions options;
 		
-		public CodeGenerationOptions Options {
+		internal CodeGenerationOptions Options {
 			get {
 				return options; 
 			}

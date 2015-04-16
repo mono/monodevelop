@@ -9,7 +9,7 @@ using MonoDevelop.CSharp.Project;
 
 namespace CSharpBinding.Autotools
 {
-	public class CSharpAutotoolsSetup : ISimpleAutotoolsSetup
+	class CSharpAutotoolsSetup : ISimpleAutotoolsSetup
 	{
 		public string GetCompilerCommand ( Project project, string configuration )
 		{

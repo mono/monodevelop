@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 {
 	[DataItem ("NamingRule")]
-	public class NameConventionRule
+	sealed class NameConventionRule
 	{
 		ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule wrappedRule = new ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule (ICSharpCode.NRefactory6.CSharp.Diagnostics.AffectedEntity.None);
 

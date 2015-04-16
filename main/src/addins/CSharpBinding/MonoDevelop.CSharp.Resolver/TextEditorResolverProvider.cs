@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Resolver
 {
-	public class TextEditorResolverProvider : ITextEditorResolverProvider
+	class TextEditorResolverProvider : ITextEditorResolverProvider
 	{
 		#region ITextEditorResolverProvider implementation
 

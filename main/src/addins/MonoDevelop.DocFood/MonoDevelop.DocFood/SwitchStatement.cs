@@ -97,7 +97,7 @@ namespace MonoDevelop.DocFood
 			return result;
 		}
 		
-		public class CaseStatement : Node
+		class CaseStatement : Node
 		{
 			public const string XmlTag = "Case";
 			

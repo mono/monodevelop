@@ -52,14 +52,14 @@ namespace Example {
 }";
 		TextStylePolicy textStylePolicy;
 		CSharpFormattingPolicy policy;
-		public CSharpFormattingPolicy Policy {
+		internal CSharpFormattingPolicy Policy {
 			get {
 				return policy;
 			}
 		}
 
 
-		public void SetPolicy (CSharpFormattingPolicy formattingPolicy, TextStylePolicy textStylePolicy)
+		internal void SetPolicy (CSharpFormattingPolicy formattingPolicy, TextStylePolicy textStylePolicy)
 		{
 			policy = formattingPolicy;
 			this.textStylePolicy = textStylePolicy;

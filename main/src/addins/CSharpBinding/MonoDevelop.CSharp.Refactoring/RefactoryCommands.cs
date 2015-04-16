@@ -42,7 +42,7 @@ using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	public class CurrentRefactoryOperationsHandler : CommandHandler
+	sealed class CurrentRefactoryOperationsHandler : CommandHandler
 	{
 		protected override void Run (object dataItem)
 		{

@@ -56,7 +56,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
+	sealed class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
 	{
 /*		internal protected virtual Mono.TextEditor.TextEditorData TextEditorData {
 			get {

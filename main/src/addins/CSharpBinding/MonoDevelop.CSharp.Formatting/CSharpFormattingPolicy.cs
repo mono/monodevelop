@@ -42,7 +42,7 @@ using MonoDevelop.Ide.Editor;
 namespace MonoDevelop.CSharp.Formatting
 {
 	[PolicyType ("C# formatting (roslyn)")]
-	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
+	public sealed class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
 		OptionSet options;
 		

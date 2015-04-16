@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Parser
 			return Task.FromResult (result);
 		}
 
-		public class SemanticTagVisitor : CSharpSyntaxWalker
+		sealed class SemanticTagVisitor : CSharpSyntaxWalker
 		{
 			string[] tagComments;
 			public List<Tag> Tags =  new List<Tag> ();
