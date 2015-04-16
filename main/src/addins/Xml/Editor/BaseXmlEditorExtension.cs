@@ -349,8 +349,11 @@ namespace MonoDevelop.Xml.Editor
 					//if triggered by first letter of value or forced, grab those letters
 
 					var result = GetAttributeValueCompletions (attributedOb, att);
-					result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
-					return Task.FromResult ((ICompletionDataList)result);
+					if (result != null) {
+						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+						return Task.FromResult ((ICompletionDataList)result);
+					}
+					return null;
 				}
 			}
 			
@@ -369,17 +372,18 @@ namespace MonoDevelop.Xml.Editor
 				if (attributedOb.Name.IsValid && (forced ||
 					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
 				{
-					
-
 					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
 					
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
 					var result = GetAttributeCompletions (attributedOb, existingAtts);
-					if (!forced)
-						result.TriggerWordLength = 1;
-					return Task.FromResult ((ICompletionDataList)result);
+					if (result != null) {
+						if (!forced)
+							result.TriggerWordLength = 1;
+						return Task.FromResult ((ICompletionDataList)result);
+					}
+					return null;
 				}
 			}
 			
