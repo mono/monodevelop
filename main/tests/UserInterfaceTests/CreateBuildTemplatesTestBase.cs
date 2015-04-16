@@ -45,7 +45,7 @@ namespace UserInterfaceTests
 
 		public readonly static Action WaitForPackageUpdate = delegate {
 			Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.",
-				pollStep: 1000, timeout: 30000);
+				pollStep: 1000, timeout: 120000);
 		};
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
