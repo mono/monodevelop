@@ -37,20 +37,38 @@ namespace MonoDevelop.Ide.Editor.Projection
 	{
 		public ITextDocument Document { get; private set; }
 
-		public IReadOnlyList<ProjectedSegment> ProjectedSegments {
-			get;
-			private set;
+		SegmentTree<ProjectedTreeSegment> originalProjections  = new SegmentTree<ProjectedTreeSegment> ();
+		SegmentTree<ProjectedTreeSegment> projectedProjections = new SegmentTree<ProjectedTreeSegment> ();
+
+		class ProjectedTreeSegment : TreeSegment
+		{
+			public ProjectedTreeSegment LinkedTo { get; set; }
+
+			public ProjectedTreeSegment (int offset, int length) : base (offset, length)
+			{
+			}
+		}
+
+		public IEnumerable<ProjectedSegment> ProjectedSegments {
+			get {
+				foreach (var treeSeg in originalProjections) {
+					yield return new ProjectedSegment (treeSeg.Offset, treeSeg.LinkedTo.Offset, treeSeg.Length);
+				}
+			}
 		}
 
 		TextEditor projectedEditor;
 
-		internal TextEditor ProjectedEditor {
-			get {
+		internal TextEditor ProjectedEditor
+		{
+			get
+			{
 				return projectedEditor;
 			}
 		}
 
 		ProjectedDocumentContext projectedDocumentContext;
+		TextEditor attachedEditor;
 
 		internal DocumentContext ProjectedContext {
 			get {
@@ -59,11 +77,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 		}
 
 		public TextEditor CreateProjectedEditor (DocumentContext originalContext)
-		{ 
+		{
 			if (projectedEditor == null) {
 				projectedEditor = TextEditorFactory.CreateNewEditor (Document);
 				projectedDocumentContext = new ProjectedDocumentContext (projectedEditor, originalContext);
 				projectedEditor.InitializeExtensionChain (projectedDocumentContext);
+				projectedProjections.InstallListener (projectedEditor);
 			}
 			return projectedEditor;
 		}
@@ -71,9 +90,41 @@ namespace MonoDevelop.Ide.Editor.Projection
 		public Projection (ITextDocument document, IReadOnlyList<ProjectedSegment> projectedSegments)
 		{
 			if (document == null)
-				throw new ArgumentNullException ("document");
+				throw new ArgumentNullException (nameof (document));
 			this.Document = document;
-			this.ProjectedSegments = projectedSegments;
+
+			for (int i = 0; i < projectedSegments.Count; i++) {
+				var p = projectedSegments [i];
+				var original = new ProjectedTreeSegment (p.Offset, p.Length);
+				var projected =  new ProjectedTreeSegment (p.ProjectedOffset, p.Length);
+				original.LinkedTo = projected;
+				projected.LinkedTo = original;
+				originalProjections.Add (original);
+				projectedProjections.Add (projected);
+			}
+		}
+
+		internal void Dettach ()
+		{
+			attachedEditor.TextChanged += HandleTextChanged;
+		}
+
+		internal void Attach (TextEditor textEditor)
+		{
+			attachedEditor = textEditor;
+			attachedEditor.TextChanged += HandleTextChanged;
+		}
+
+		void HandleTextChanged (object sender, TextChangeEventArgs e)
+		{
+			foreach (var segment in originalProjections) {
+				if (segment.Contains (e.Offset)) {
+					var projectedOffset = e.Offset - segment.Offset + segment.LinkedTo.Offset;
+					projectedEditor.ReplaceText (projectedOffset, e.RemovalLength, e.InsertedText);
+				}
+			}
+
+			originalProjections.UpdateOnTextReplace (sender, e);
 		}
 	}
 }

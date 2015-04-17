@@ -62,16 +62,22 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.projectedEditor = projectedEditor;
 			this.originalContext = originalContext;
 
-			var originalProjectId = TypeSystemService.GetProjectId (originalContext.Project);
-			var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
-
-			projectedDocument = originalProject.AddDocument (
-				projectedEditor.FileName,
-				projectedEditor
-			);
+			if (originalContext.Project != null) {
+				var originalProjectId = TypeSystemService.GetProjectId (originalContext.Project);
+				if (originalProjectId != null) {
+					var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
+					if (originalProject != null) {
+						projectedDocument = originalProject.AddDocument (
+							projectedEditor.FileName,
+							projectedEditor
+						);
+					}
+				}
+			}
 
 			projectedEditor.TextChanged += delegate(object sender, TextChangeEventArgs e) {
-				projectedDocument = projectedDocument.WithText (projectedEditor);
+				if (projectedDocument != null)
+					projectedDocument = projectedDocument.WithText (projectedEditor);
 				ReparseDocument ();
 			};
 

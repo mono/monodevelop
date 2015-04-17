@@ -1170,7 +1170,18 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (ctx == null)
 				throw new ArgumentNullException ("ctx");
+			if (this.projections != null) {
+				foreach (var projection in this.projections) {
+					projection.Dettach ();
+				}
+			}
 			this.projections = projections;
+			if (projections != null) {
+				foreach (var projection in projections) {
+					projection.Attach (this);
+				}
+			}
+
 			if ((disabledFeatures & DisabledProjectionFeatures.SemanticHighlighting) != DisabledProjectionFeatures.SemanticHighlighting) {
 					if (SemanticHighlighting is ProjectedSemanticHighlighting) {
 					((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);

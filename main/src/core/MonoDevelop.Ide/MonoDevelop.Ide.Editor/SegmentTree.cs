@@ -167,7 +167,7 @@ namespace MonoDevelop.Ide.Editor
 			ownerDocument = null;
 		}
 
-		void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
+		internal void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			if (e.RemovalLength == 0) {
 				var length = e.InsertionLength;
