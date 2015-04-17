@@ -88,7 +88,20 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual void OnReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
+			var secAttribute = (SolutionDataSectionAttribute) Attribute.GetCustomAttribute (GetType(), typeof(SolutionDataSectionAttribute));
+			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PreProcess) {
+				var sec = file.Sections.GetSection (secAttribute.SectionName, SlnSectionType.PreProcess);
+				if (sec != null)
+					sec.Properties.ReadObjectProperties (this);
+			}
+
 			next.OnReadSolution (monitor, file);
+
+			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PostProcess) {
+				var sec = file.Sections.GetSection (secAttribute.SectionName, SlnSectionType.PostProcess);
+				if (sec != null)
+					sec.Properties.ReadObjectProperties (this);
+			}
 		}
 
 		internal protected virtual void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
@@ -103,7 +116,20 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
+			var secAttribute = (SolutionDataSectionAttribute) Attribute.GetCustomAttribute (GetType(), typeof(SolutionDataSectionAttribute));
+			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PreProcess) {
+				var sec = file.Sections.GetOrCreateSection (secAttribute.SectionName, SlnSectionType.PreProcess);
+				sec.SkipIfEmpty = true;
+				sec.Properties.WriteObjectProperties (this);
+			}
+
 			next.OnWriteSolution (monitor, file);
+
+			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PostProcess) {
+				var sec = file.Sections.GetOrCreateSection (secAttribute.SectionName, SlnSectionType.PostProcess);
+				sec.SkipIfEmpty = true;
+				sec.Properties.WriteObjectProperties (this);
+			}
 		}
 
 		internal protected virtual void OnWriteSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)

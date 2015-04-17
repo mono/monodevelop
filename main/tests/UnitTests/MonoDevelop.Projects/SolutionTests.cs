@@ -35,6 +35,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Projects
 {
@@ -894,6 +896,103 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.ItemDependencies.Contains (lib2Reloaded));
 			Assert.AreEqual (1, p.ItemDependencies.Count);
 		}
+
+		[Test]
+		public async Task WriteCustomData ()
+		{
+			var en = new CustomSolutionItemNode<TestSolutionExtension> ();
+			WorkspaceObject.RegisterCustomExtension (en);
+			try {
+				string solFile = Util.GetSampleProject ("solution-custom-data", "custom-data.sln");
+
+				var sol = new Solution ();
+				var ext = sol.GetService<TestSolutionExtension> ();
+				Assert.NotNull (ext);
+				ext.Prop1 = "one";
+				ext.Prop2 = "two";
+				ext.Extra = new ComplexSolutionData {
+					Prop3 = "three",
+					Prop4 = "four"
+				};
+				var savedFile = solFile + ".saved.sln";
+				await sol.SaveAsync (savedFile, Util.GetMonitor ());
+				Assert.AreEqual (File.ReadAllText (solFile), File.ReadAllText (savedFile));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (en);
+			}
+		}
+
+		[Test]
+		public async Task ReadCustomData ()
+		{
+			var en = new CustomSolutionItemNode<TestSolutionExtension> ();
+			WorkspaceObject.RegisterCustomExtension (en);
+			try {
+				string solFile = Util.GetSampleProject ("solution-custom-data", "custom-data.sln");
+				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				var ext = sol.GetService<TestSolutionExtension> ();
+				Assert.NotNull (ext);
+				Assert.AreEqual ("one", ext.Prop1);
+				Assert.AreEqual ("two", ext.Prop2);
+				Assert.NotNull (ext.Extra);
+				Assert.AreEqual ("three", ext.Extra.Prop3);
+				Assert.AreEqual ("four", ext.Extra.Prop4);
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (en);
+			}
+		}
+
+		[Test]
+		public async Task KeepUnknownCustomData ()
+		{
+			var en = new CustomSolutionItemNode<TestSolutionExtension> ();
+			WorkspaceObject.RegisterCustomExtension (en);
+			try {
+				FilePath solFile = Util.GetSampleProject ("solution-custom-data", "custom-data-keep-unknown.sln");
+				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				var ext = sol.GetService<TestSolutionExtension> ();
+				ext.Prop1 = "one-mod";
+				ext.Prop2 = "";
+				ext.Extra.Prop3 = "three-mod";
+				ext.Extra.Prop4 = "";
+
+				var refFile = solFile.ParentDirectory.Combine ("custom-data-keep-unknown.sln.saved");
+
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
+
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (en);
+			}
+		}
+
+		[Test]
+		public async Task RemoveCustomData ()
+		{
+			var en = new CustomSolutionItemNode<TestSolutionExtension> ();
+			WorkspaceObject.RegisterCustomExtension (en);
+			try {
+				FilePath solFile = Util.GetSampleProject ("solution-custom-data", "custom-data.sln");
+				var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+				var ext = sol.GetService<TestSolutionExtension> ();
+				ext.Prop1 = "xx";
+				ext.Prop2 = "";
+				ext.Extra = null;
+
+				var refFile = solFile.ParentDirectory.Combine ("no-custom-data.sln");
+
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (File.ReadAllText (refFile), File.ReadAllText (sol.FileName));
+
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (en);
+			}
+		}
 	}
 
 	class SomeItem: SolutionItem
@@ -930,5 +1029,35 @@ namespace MonoDevelop.Projects
 			base.OnUnboundFromSolution ();
 			UnboundEvents++;
 		}
+	}
+
+	class CustomSolutionItemNode<T>: ProjectModelExtensionNode where T:new()
+	{
+		public override object CreateInstance ()
+		{
+			return new T ();
+		}
+	}
+
+	[SolutionDataSection ("TestData")]
+	class TestSolutionExtension: SolutionExtension
+	{
+		[ItemProperty ("prop1", DefaultValue = "xx")]
+		public string Prop1 { get; set; }
+
+		[ItemProperty ("prop2", DefaultValue = "")]
+		public string Prop2 { get; set; }
+
+		[ItemProperty ("extra")]
+		public ComplexSolutionData Extra { get; set; }
+	}
+
+	class ComplexSolutionData
+	{
+		[ItemProperty ("prop3")]
+		public string Prop3 { get; set; }
+
+		[ItemProperty ("prop4", DefaultValue = "")]
+		public string Prop4 { get; set; }
 	}
 }

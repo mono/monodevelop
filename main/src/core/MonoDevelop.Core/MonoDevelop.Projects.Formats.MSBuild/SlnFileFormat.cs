@@ -106,8 +106,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void WriteFileInternal (string file, string sourceFile, Solution solution, bool saveProjects, ProgressMonitor monitor)
 		{
-			string baseDir = Path.GetDirectoryName (sourceFile);
-
 			if (saveProjects) {
 				var items = solution.GetAllSolutionItems ().ToArray ();
 				monitor.BeginTask (items.Length + 1);
@@ -126,7 +124,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			SlnFile sln = new SlnFile ();
-			sln.BaseDirectory = baseDir;
+			sln.FileName = file;
 			if (File.Exists (sourceFile)) {
 				try {
 					sln.Read (sourceFile);
@@ -196,7 +194,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ICollection<SolutionFolder> folders = solution.RootFolder.GetAllItems<SolutionFolder> ().ToList ();
 			if (folders.Count > 1) {
 				// If folders ==1, that's the root folder
-				var sec = sln.Sections.GetOrCreateSection ("NestedProjects", "preSolution");
+				var sec = sln.Sections.GetOrCreateSection ("NestedProjects", SlnSectionType.PreProcess);
 				foreach (SolutionFolder folder in folders) {
 					if (folder.IsRoot)
 						continue;
@@ -211,7 +209,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Write custom properties for configurations
 			foreach (SolutionConfiguration conf in solution.Configurations) {
 				string secId = "MonoDevelopProperties." + conf.Id;
-				var sec = sln.Sections.GetOrCreateSection (secId, "preSolution");
+				var sec = sln.Sections.GetOrCreateSection (secId, SlnSectionType.PreProcess);
 				solution.WriteConfigurationData (monitor, sec.Properties, conf);
 				if (sec.IsEmpty)
 					sln.Sections.Remove (sec);
@@ -233,12 +231,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					proj.Name = item.Name;
 					proj.FilePath = FileService.NormalizeRelativePath (FileService.AbsoluteToRelativePath (sln.BaseDirectory, item.FileName)).Replace ('/', '\\');
 
-					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
 					sec.SkipIfEmpty = true;
 					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
 
 					if (item.ItemDependencies.Count > 0) {
-						sec = proj.Sections.GetOrCreateSection ("ProjectDependencies", "postProject");
+						sec = proj.Sections.GetOrCreateSection ("ProjectDependencies", SlnSectionType.PostProcess);
 						sec.Properties.ClearExcept (unknownProjects);
 						foreach (var dep in item.ItemDependencies)
 							sec.Properties.SetValue (dep.ItemId, dep.ItemId);
@@ -254,7 +252,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					WriteFolderFiles (proj, (SolutionFolder) ce);
 					
 					//Write custom properties
-					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", "preProject");
+					var sec = proj.Sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
 					sec.SkipIfEmpty = true;
 					folder.ParentSolution.WriteSolutionFolderItemData (monitor, sec.Properties, ce);
 				}
@@ -267,7 +265,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void WriteFolderFiles (SlnProject proj, SolutionFolder folder)
 		{
 			if (folder.Files.Count > 0) {
-				var sec = proj.Sections.GetOrCreateSection ("SolutionItems", "preProject");
+				var sec = proj.Sections.GetOrCreateSection ("SolutionItems", SlnSectionType.PreProcess);
 				sec.Properties.Clear ();
 				foreach (FilePath f in folder.Files) {
 					string relFile = MSBuildProjectService.ToMSBuildPathRelative (folder.ParentSolution.ItemDirectory, f);
@@ -349,151 +347,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			sln.ReadSolutionFolderItemData (monitor, sec.Properties, item);
 		}
-		
-		void WriteDataItem (SlnPropertySet pset, DataItem item)
-		{
-			pset.Clear ();
-			int id = 0;
-			foreach (DataNode val in item.ItemData)
-				WriteDataNode (pset, "", val, ref id);
-		}
-		
-		void WriteDataNode (SlnPropertySet pset, string prefix, DataNode node, ref int id)
-		{
-			string name = node.Name;
-			string newPrefix = prefix.Length > 0 ? prefix + "." + name: name;
-			
-			if (node is DataValue) {
-				DataValue val = (DataValue) node;
-				string value = EncodeString (val.Value);
-				pset.SetValue (newPrefix, value);
-			}
-			else {
-				DataItem it = (DataItem) node;
-				pset.SetValue (newPrefix, "$" + id);
-				newPrefix = "$" + id;
-				id ++;
-				foreach (DataNode cn in it.ItemData)
-					WriteDataNode (pset, newPrefix, cn, ref id);
-			}
-		}
-		
-		string EncodeString (string val)
-		{
-			if (val.Length == 0)
-				return val;
-			
-			int i = val.IndexOfAny (new char[] {'\n','\r','\t'});
-			if (i != -1 || val [0] == '@') {
-				StringBuilder sb = new StringBuilder ();
-				if (i != -1) {
-					int fi = val.IndexOf ('\\');
-					if (fi != -1 && fi < i) i = fi;
-					sb.Append (val.Substring (0,i));
-				} else
-					i = 0;
-				for (int n = i; n < val.Length; n++) {
-					char c = val [n];
-					if (c == '\r')
-						sb.Append (@"\r");
-					else if (c == '\n')
-						sb.Append (@"\n");
-					else if (c == '\t')
-						sb.Append (@"\t");
-					else if (c == '\\')
-						sb.Append (@"\\");
-					else
-						sb.Append (c);
-				}
-				val = "@" + sb.ToString ();
-			}
-			char fc = val [0];
-			char lc = val [val.Length - 1];
-		    if (fc == ' ' || fc == '"' || fc == '$' || lc == ' ')
-				val = "\"" + val + "\"";
-			return val;
-		}
-		
-		string DecodeString (string val)
-		{
-			val = val.Trim (' ', '\t');
-			if (val.Length == 0)
-				return val;
-			if (val [0] == '\"')
-				val = val.Substring (1, val.Length - 2);
-			if (val [0] == '@') {
-				StringBuilder sb = new StringBuilder (val.Length);
-				for (int n = 1; n < val.Length; n++) {
-					char c = val [n];
-					if (c == '\\') {
-						c = val [++n];
-						if (c == 'r') c = '\r';
-						else if (c == 'n') c = '\n';
-						else if (c == 't') c = '\t';
-					}
-					sb.Append (c);
-				}
-				return sb.ToString ();
-			}
-			else
-				return val;
-		}
-		
-		DataItem ReadDataItem (SlnSection sec)
-		{
-			DataItem it = new DataItem ();
 
-			var lines = sec.Properties.ToArray ();
-
-			int lineNum = 0;
-			int lastLine = lines.Length - 1;
-			while (lineNum <= lastLine) {
-				if (!ReadDataNode (it, lines, lastLine, "", ref lineNum))
-					lineNum++;
-			}
-			return it;
-		}
-		
-		bool ReadDataNode (DataItem item, KeyValuePair<string,string>[] lines, int lastLine, string prefix, ref int lineNum)
-		{
-			var s = lines [lineNum];
-			
-			// Check if the line belongs to the current item
-			if (prefix.Length > 0) {
-				if (!s.Key.StartsWith (prefix + "."))
-					return false;
-			} else {
-				if (s.Key.StartsWith ("$"))
-					return false;
-			}
-			
-			string name = s.Key;
-			if (name.Length == 0) {
-				lineNum++;
-				return true;
-			}
-			
-			string value = s.Value;
-			if (value.StartsWith ("$")) {
-				// New item
-				DataItem child = new DataItem ();
-				child.Name = name;
-				lineNum++;
-				while (lineNum <= lastLine) {
-					if (!ReadDataNode (child, lines, lastLine, value, ref lineNum))
-						break;
-				}
-				item.ItemData.Add (child);
-			}
-			else {
-				value = DecodeString (value);
-				DataValue val = new DataValue (name, value);
-				item.ItemData.Add (val);
-				lineNum++;
-			}
-			return true;
-		}
-		
 		string ToSlnConfigurationId (ItemConfiguration configuration)
 		{
 			if (configuration.Platform.Length == 0)
@@ -897,7 +751,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		void LoadNestedProjects (SlnSection sec, IDictionary<string, SolutionFolderItem> entries, ProgressMonitor monitor)
 		{
-			if (sec == null || String.Compare (sec.SectionType, "preSolution", StringComparison.OrdinalIgnoreCase) != 0)
+			if (sec == null || sec.SectionType != SlnSectionType.PreProcess)
 				return;
 
 			foreach (var kvp in sec.Properties) {

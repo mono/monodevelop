@@ -505,6 +505,8 @@
     <Compile Include="MonoDevelop.Projects.Extensions\ImportRedirectTypeNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\FileUtil.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\DefaultMSBuildEngine.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionDataSectionAttribute.cs" />
+    <Compile Include="MonoDevelop.Core.Serialization\DataDeletedValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

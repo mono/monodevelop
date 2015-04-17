@@ -923,6 +923,7 @@ namespace MonoDevelop.Projects
 		internal void ReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			SolutionExtension.OnReadSolution (monitor, file);
+			file.CustomMonoDevelopProperties.ReadObjectProperties (this);
 		}
 
 		/*protected virtual*/ void OnReadSolution (ProgressMonitor monitor, SlnFile file)
@@ -960,6 +961,7 @@ namespace MonoDevelop.Projects
 		/*protected virtual*/ void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			FileFormat.SlnFileFormat.WriteFileInternal (file, this, monitor);
+			file.CustomMonoDevelopProperties.WriteObjectProperties (this);
 		}
 
 		internal void WriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
