@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects
 			var doc = new XmlDocument ();
 			var projectOptions = doc.CreateElement ("Options");
 			projectOptions.SetAttribute ("language", "C#");
-			DotNetProject p = (DotNetProject) Services.ProjectService.CreateProject ("DotNet", info, projectOptions);
+			DotNetProject p = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 
 			Assert.AreEqual (2, p.Configurations.Count);
 			Assert.AreEqual ("Debug", p.Configurations [0].Name);
@@ -497,11 +497,11 @@ namespace MonoDevelop.Projects
 			var projectOptions = doc.CreateElement ("Options");
 			projectOptions.SetAttribute ("language", "C#");
 
-			DotNetProject project = (DotNetProject) Services.ProjectService.CreateProject ("DotNet", info, projectOptions);
+			DotNetProject project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 			Assert.AreEqual ("abc", project.DefaultNamespace);
 
 			info.ProjectName = "a.";
-			project = (DotNetProject) Services.ProjectService.CreateProject ("DotNet", info, projectOptions);
+			project = (DotNetProject) Services.ProjectService.CreateProject ("C#", info, projectOptions);
 			Assert.AreEqual ("a", project.DefaultNamespace);
 		}
 

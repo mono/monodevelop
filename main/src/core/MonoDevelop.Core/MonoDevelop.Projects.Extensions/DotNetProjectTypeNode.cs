@@ -47,20 +47,13 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public DotNetProjectTypeNode ()
 		{
-			TypeTag = "DotNet";
 		}
 
 		protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
-			if (!string.IsNullOrEmpty (language))
+			if (!string.IsNullOrEmpty (language) && string.IsNullOrEmpty (TypeTag))
 				TypeTag = language;
-		}
-
-		public override bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
-		{
-			string lang = projectOptions.GetAttribute ("language");
-			return base.CanCreateSolutionItem (type, info, projectOptions) && lang == Language;
 		}
 
 		public override Type ItemType {
