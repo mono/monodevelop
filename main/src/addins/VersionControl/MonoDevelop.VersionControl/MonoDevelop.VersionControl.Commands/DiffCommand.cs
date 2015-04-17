@@ -35,13 +35,11 @@ namespace MonoDevelop.VersionControl.Commands
 {
 	public class DiffCommand
 	{
-		internal static readonly string DiffViewHandlers = "/MonoDevelop/VersionControl/DiffViewHandler";
-		
 		static bool CanShow (VersionControlItem item)
 		{
-			return !item.IsDirectory 
+			return !item.IsDirectory
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IDiffViewHandler> (DiffViewHandlers).Any (h => h.CanHandle (item, null));
+				&& DiffViewHandler.Default.CanHandle (item, null);
 		}
 		
 		public static bool Show (List<VersionControlItem> items, bool test)
@@ -52,7 +50,7 @@ namespace MonoDevelop.VersionControl.Commands
 			foreach (var item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IDiffView> ());
+					document.Window.SwitchView (document.Window.FindView<DiffView> ());
 			}
 			
 			return true;

@@ -385,8 +385,6 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlItemListExtensions.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\IVersionControlViewHandler.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\DefaultVersionControlViewHandlers.cs" />
     <Compile Include="MonoDevelop.VersionControl.Commands\UpdateCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Commands\UnlockCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Commands\RevertRevisionsCommands.cs" />
@@ -405,6 +403,7 @@
     <Compile Include="MonoDevelop.VersionControl.Commands\DiffCommand.cs" />
     <Compile Include="MonoDevelop.VersionControl.Commands\Task.cs" />
     <Compile Include="MonoDevelop.VersionControl.Commands\Commands.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\VersionControlViewHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

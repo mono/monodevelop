@@ -35,14 +35,12 @@ namespace MonoDevelop.VersionControl.Commands
 {
 	public class LogCommand
 	{
-		internal static readonly string LogViewHandlers = "/MonoDevelop/VersionControl/LogViewHandler";
-		
 		static bool CanShow (VersionControlItem item)
 		{
 			// We want directories to be able to view the log for an entire directory
 			// by selecting it from the solution pane
 			return item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<ILogViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
+				&& LogViewHandler.Default.CanHandle (item, null);
 		}
 		
 		public static bool Show (List<VersionControlItem> items, bool test)
@@ -56,7 +54,7 @@ namespace MonoDevelop.VersionControl.Commands
 					document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 
 				if (document != null) {
-					document.Window.SwitchView (document.Window.FindView<ILogView> ());
+					document.Window.SwitchView (document.Window.FindView<LogView> ());
 				} else {
 					VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
 					LogView logView = new LogView (info);

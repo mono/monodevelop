@@ -35,13 +35,11 @@ namespace MonoDevelop.VersionControl.Commands
 {
 	public class BlameCommand
 	{
-		internal static readonly string BlameViewHandlers = "/MonoDevelop/VersionControl/BlameViewHandler";
-		
 		static bool CanShow (VersionControlItem item)
 		{
 			return !item.IsDirectory
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
+				&& BlameViewHandler.Default.CanHandle (item, null);
 		}
 		
 		public static bool Show (List<VersionControlItem> items, bool test)
@@ -52,7 +50,7 @@ namespace MonoDevelop.VersionControl.Commands
 			foreach (var item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IBlameView> ());
+					document.Window.SwitchView (document.Window.FindView<BlameView> ());
 			}
 			
 			return true;

@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var document = Ide.IdeApp.Workbench.ActiveDocument;
 			try {
-				if (document == null || !document.IsFile || document.Window.FindView<IDiffView> () >= 0)
+				if (document == null || !document.IsFile || document.Window.FindView<DiffView> () >= 0)
 					return;
 
 				IWorkspaceObject project = document.Project;
@@ -72,10 +72,10 @@ namespace MonoDevelop.VersionControl.Views
 
 				var item = new VersionControlItem (repo, project, document.FileName, false, null);
 				var vcInfo = new VersionControlDocumentInfo (document.PrimaryView, item, item.Repository);
-				TryAttachView <IDiffView> (document, vcInfo, DiffCommand.DiffViewHandlers);
-				TryAttachView <IBlameView> (document, vcInfo, BlameCommand.BlameViewHandlers);
-				TryAttachView <ILogView> (document, vcInfo, LogCommand.LogViewHandlers);
-				TryAttachView <IMergeView> (document, vcInfo, MergeCommand.MergeViewHandlers);
+				TryAttachView <DiffView> (document, vcInfo, DiffViewHandler.Default);
+				TryAttachView <BlameView> (document, vcInfo, BlameViewHandler.Default);
+				TryAttachView <LogView> (document, vcInfo, LogViewHandler.Default);
+				TryAttachView <MergeView> (document, vcInfo, MergeViewHandler.Default);
 			} catch (Exception ex) {
 				// If a user is hitting this, it will show a dialog box every time they
 				// switch to a document or open a document, so suppress the crash dialog
@@ -84,13 +84,11 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static void TryAttachView <T>(Document document, VersionControlDocumentInfo info, string type)
+		static void TryAttachView <T>(Document document, VersionControlDocumentInfo info, VersionControlViewHandler<T> viewHandler)
 			where T : IAttachableViewContent
 		{
-			var handler = AddinManager.GetExtensionObjects<IVersionControlViewHandler<T>> (type)
-				.FirstOrDefault (h => h.CanHandle (info.Item, info.Document));
-			if (handler != null)
-				document.Window.AttachViewContent (handler.CreateView (info));
+			if (viewHandler.CanHandle (info.Item, info.Document))
+				document.Window.AttachViewContent (viewHandler.CreateView (info));
 		}
 	}
 }

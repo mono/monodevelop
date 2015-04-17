@@ -25,42 +25,6 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffViewHandler" name = "Diff view handler">
-		<Description>Handler used to create the a diff view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IDiffViewHandler" />
-	</ExtensionPoint>
-
-	<Extension path = "/MonoDevelop/VersionControl/DiffViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.Views.DefaultDiffViewHandler" />
-	</Extension>
-
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/BlameViewHandler" name = "Blame view handler">
-		<Description>Handler used to create the a blame view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IBlameViewHandler" />
-	</ExtensionPoint>
-
-	<Extension path = "/MonoDevelop/VersionControl/BlameViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.Views.DefaultBlameViewHandler" />
-	</Extension>
-
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/LogViewHandler" name = "Log view handler">
-		<Description>Handler used to create the a log view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.ILogViewHandler" />
-	</ExtensionPoint>
-
-	<Extension path = "/MonoDevelop/VersionControl/LogViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.Views.DefaultLogViewHandler" />
-	</Extension>
-
-	<ExtensionPoint path = "/MonoDevelop/VersionControl/MergeViewHandler" name = "Merge view handler">
-		<Description>Handler used to create the a merge view which can display the current file.</Description>
-		<ExtensionNode name="Handler" objectType="MonoDevelop.VersionControl.Views.IMergeViewHandler" />
-	</ExtensionPoint>
-
-	<Extension path = "/MonoDevelop/VersionControl/MergeViewHandler">
-		<Handler class = "MonoDevelop.VersionControl.Views.DefaultMergeViewHandler" />
-	</Extension>
-
 	<ExtensionPoint path = "/MonoDevelop/VersionControl/DiffView/ContextMenu" name = "Diff view context menu">
 		<Description>Context menu for the diff view.</Description>
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
@@ -109,27 +73,27 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Add"
 			_label = "_Add"
 			icon = "vc-add-command"
-			defaultHandler = "MonoDevelop.VersionControl.AddCommandHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.AddCommandHandler"
 			description = "Add node to repository in the next commit."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Remove"
 			_label = "_Remove"
 			icon = "vc-remove-command"
-			defaultHandler = "MonoDevelop.VersionControl.RemoveCommandHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.RemoveCommandHandler"
 			description = "Remove node to repository in the next commit."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Diff"
 			_label = "_Diff"
 			icon = "vc-diff"
-			defaultHandler = "MonoDevelop.VersionControl.CurrentFileDiffHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.CurrentFileDiffHandler"
 			description = "Show the changes made to the local copy since the last update."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Revert"
 			_label = "_Revert"
 			icon = "vc-revert-command"
-			defaultHandler = "MonoDevelop.VersionControl.RevertCommandHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.RevertCommandHandler"
 			description = "Restore pristine working copy file (undo most local edits)."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Log"
 			_label = "_Log"
 			icon = "vc-log"
-			defaultHandler = "MonoDevelop.VersionControl.CurrentFileLogHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.CurrentFileLogHandler"
 			description = "Shows the commit history of the file or folder."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Status"
 			_label = "_Review and Commit"
@@ -138,7 +102,7 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.SolutionStatus"
 			_label = "_Review Solution and Commit"
 			icon = "vc-status"
-			defaultHandler="MonoDevelop.VersionControl.StatusCommandHandler"
+			defaultHandler="MonoDevelop.VersionControl.Commands.StatusCommandHandler"
 			description = "Shows the status of files in the solution."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Update"
 			_label = "_Update"
@@ -147,27 +111,27 @@
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.UpdateSolution"
 			_label = "_Update Solution"
 			icon = "vc-update"
-			defaultHandler="MonoDevelop.VersionControl.UpdateCommandHandler"
+			defaultHandler="MonoDevelop.VersionControl.Commands.UpdateCommandHandler"
 			description = "Updates the local copy with remote changes."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Publish"
 			_label = "_Publish..."
 			description = "Publish actual project into repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Checkout"
-			defaultHandler = "MonoDevelop.VersionControl.CheckoutCommand"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.CheckoutCommand"
 			_label = "C_heckout..."
 			icon = "vc-update"
 			description = "Checkout a project from repository."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Lock"
 			_label = "Lock"
-			defaultHandler = "MonoDevelop.VersionControl.LockCommandHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.LockCommandHandler"
 			description = "Lock files in the repository, so that no other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Unlock"
 			_label = "Release Lock"
-			defaultHandler = "MonoDevelop.VersionControl.UnlockCommandHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.UnlockCommandHandler"
 			description = "Unlock files in the repository, so that other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.Annotate"
 			_label = "Blame"
-			defaultHandler = "MonoDevelop.VersionControl.CurrentFileBlameHandler"
+			defaultHandler = "MonoDevelop.VersionControl.Commands.CurrentFileBlameHandler"
 			description = "Show the origin of each line in a file."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.VersionControlCommands.CreatePatch"
 			_label = "Create _Patch"

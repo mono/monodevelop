@@ -41,7 +41,7 @@ namespace MonoDevelop.VersionControl.Commands
 		{
 			return !item.IsDirectory
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IMergeViewHandler> (MergeViewHandlers).Any (h => h.CanHandle (item, null));
+				&& MergeViewHandler.Default.CanHandle (item, null);
 		}
 		
 		public static bool Show (List<VersionControlItem> items, bool test)
@@ -52,7 +52,7 @@ namespace MonoDevelop.VersionControl.Commands
 			foreach (var item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IMergeView> ());
+					document.Window.SwitchView (document.Window.FindView<MergeView> ());
 			}
 			
 			return true;

@@ -249,7 +249,7 @@ namespace MonoDevelop.VersionControl.Commands
 		protected override void Run ()
 		{
 			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<IDiffView> ());
+			window.SwitchView (window.FindView<DiffView> ());
 		}
 	}
 	
@@ -258,7 +258,7 @@ namespace MonoDevelop.VersionControl.Commands
 		protected override void Run ()
 		{
 			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<IBlameView> ());
+			window.SwitchView (window.FindView<BlameView> ());
 		}
 	}
 	
@@ -267,7 +267,7 @@ namespace MonoDevelop.VersionControl.Commands
 		protected override void Run ()
 		{
 			var window = IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchView (window.FindView<ILogView> ());
+			window.SwitchView (window.FindView<LogView> ());
 		}
 	}
 }

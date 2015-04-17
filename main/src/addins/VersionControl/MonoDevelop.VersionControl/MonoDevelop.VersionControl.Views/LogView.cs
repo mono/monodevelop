@@ -10,11 +10,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface ILogView : IAttachableViewContent
-	{
-	}
-	
-	public class LogView : BaseView, ILogView
+	public class LogView : BaseView, IAttachableViewContent
 	{
 		LogWidget widget;
 		VersionInfo vinfo;

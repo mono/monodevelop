@@ -30,11 +30,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IBlameView : IAttachableViewContent
-	{	
-	}
-	
-	internal class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
+	class BlameView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
