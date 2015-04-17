@@ -1,0 +1,18 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+	EndGlobalSection
+	GlobalSection(TestData) = postSolution
+		prop1 = one
+		propX = x
+		prop2 = two
+		extra = $0
+		$0.foo = bar
+		$0.prop3 = three
+		$0.prop4 = four
+	EndGlobalSection
+EndGlobal
