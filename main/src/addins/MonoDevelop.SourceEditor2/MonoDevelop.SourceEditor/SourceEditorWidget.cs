@@ -819,13 +819,31 @@ namespace MonoDevelop.SourceEditor
 			return "Unknown";
 		}
 
-		OverlayMessageWindow messageOverlayWindow;
+		//TODO: Support multiple Overlays at once to display above each other
+		internal void AddOverlay (Widget messageOverlayContent, Func<int> sizeFunc = null)
+		{
+			var messageOverlayWindow = new OverlayMessageWindow ();
+			messageOverlayWindow.Child = messageOverlayContent;
+			messageOverlayWindow.SizeFunc = sizeFunc;
+			messageOverlayWindow.ShowOverlay (TextEditor);
+			messageOverlayWindows.Add (messageOverlayWindow);
+		}
+
+		internal void RemoveOverlay (Widget messageOverlayContent)
+		{
+			var window = messageOverlayWindows.FirstOrDefault (w => w.Child == messageOverlayContent);
+			if (window == null)
+				return;
+			messageOverlayWindows.Remove (window);
+			window.Destroy ();
+		}
+
+		List<OverlayMessageWindow> messageOverlayWindows = new List<OverlayMessageWindow> ();
+		HBox incorrectEolMessage;
 
 		void ShowIncorrectEolMarkers (string fileName, bool multiple)
 		{
 			RemoveMessageBar ();
-			messageOverlayWindow = new OverlayMessageWindow ();
-
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
 
@@ -857,11 +875,9 @@ namespace MonoDevelop.SourceEditor
 			var combo = new ComboBox (list.ToArray ());
 			combo.Active = 0;
 			hbox.PackEnd (combo, false, false, 0);
-			var container = new HBox ();
+			incorrectEolMessage = new HBox ();
 			const int containerPadding = 8;
-			container.PackStart (hbox, true, true, containerPadding); 
-			messageOverlayWindow.Child = container; 
-			messageOverlayWindow.ShowOverlay (this.TextEditor);
+			incorrectEolMessage.PackStart (hbox, true, true, containerPadding); 
 
 			// This is hacky, but it will ensure that our combo appears with with the correct size.
 			GLib.Timeout.Add (100, delegate {
@@ -869,14 +885,15 @@ namespace MonoDevelop.SourceEditor
 				return false;
 			});
 
-			messageOverlayWindow.SizeFunc = () => {
+			AddOverlay (incorrectEolMessage, () => {
 				return okButton.SizeRequest ().Width +
-					combo.SizeRequest ().Width +
-					image.SizeRequest ().Width +
-					w +
-					hbox.Spacing * 4 + 
-					containerPadding * 2;
-			};
+							   combo.SizeRequest ().Width +
+							   image.SizeRequest ().Width +
+							   w +
+							   hbox.Spacing * 4 +
+							   containerPadding * 2;
+			});
+
 			image.Clicked += delegate {
 				UseIncorrectMarkers = true;
 				view.WorkbenchWindow.ShowNotification = false;
@@ -974,9 +991,9 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (!TextEditor.Visible)
 				TextEditor.Visible = true;
-			if (messageOverlayWindow != null) {
-				messageOverlayWindow.Destroy ();
-				messageOverlayWindow = null;
+			if (incorrectEolMessage != null) {
+				RemoveOverlay (incorrectEolMessage);
+				incorrectEolMessage = null;
 			}
 		}
 

@@ -89,17 +89,16 @@ namespace MonoDevelop.Debugger
 			currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
 			DebuggingService.StoppedEvent += OnStop;
 		}
-		
 
-		OverlayMessageWindow messageOverlayWindow;
+		HBox messageOverlayContent;
 
 		void ShowLoadSourceFile (StackFrame sf)
 		{
-			if (messageOverlayWindow != null) {
-				messageOverlayWindow.Destroy ();
-				messageOverlayWindow = null;
+			if (messageOverlayContent != null) {
+				editor.RemoveOverlay (messageOverlayContent);
+				messageOverlayContent = null;
 			}
-			messageOverlayWindow = new OverlayMessageWindow ();
+			messageOverlayContent = new HBox ();
 
 			var hbox = new HBox ();
 			hbox.Spacing = 8;
@@ -117,13 +116,10 @@ namespace MonoDevelop.Debugger
 			openButton.WidthRequest = 60;
 			hbox.PackEnd (openButton, false, false, 0); 
 
-			var container = new HBox ();
 			const int containerPadding = 8;
-			container.PackStart (hbox, true, true, containerPadding); 
-			messageOverlayWindow.Child = container; 
-			messageOverlayWindow.ShowOverlay (editor);
+			messageOverlayContent.PackStart (hbox, true, true, containerPadding);
+			editor.AddOverlay (messageOverlayContent,() => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2);
 
-			messageOverlayWindow.SizeFunc = () => openButton.SizeRequest ().Width + w + hbox.Spacing * 5 + containerPadding * 2;
 			openButton.Clicked += delegate {
 				var dlg = new OpenFileDialog (GettextCatalog.GetString ("File to Open"), Gtk.FileChooserAction.Open) {
 					TransientFor = IdeApp.Workbench.RootWindow,
@@ -182,9 +178,9 @@ namespace MonoDevelop.Debugger
 			editor.RemoveMarker (currentDebugLineMarker);
 			
 			if (DebuggingService.CurrentFrame == null) {
-				if (messageOverlayWindow != null) {
-					messageOverlayWindow.Destroy ();
-					messageOverlayWindow = null;
+				if (messageOverlayContent != null) {
+					editor.RemoveOverlay (messageOverlayContent);
+					messageOverlayContent = null;
 				}
 				sw.Sensitive = false;
 				return;
@@ -195,9 +191,9 @@ namespace MonoDevelop.Debugger
 			if (!string.IsNullOrWhiteSpace (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1 && sf.SourceLocation.FileHash != null) {
 				ShowLoadSourceFile (sf);
 			} else {
-				if (messageOverlayWindow != null) {
-					messageOverlayWindow.Destroy ();
-					messageOverlayWindow = null;
+				if (messageOverlayContent != null) {
+					editor.RemoveOverlay (messageOverlayContent);
+					messageOverlayContent = null;
 				}
 			}
 			if (!string.IsNullOrEmpty (sf.SourceLocation.FileName) && File.Exists (sf.SourceLocation.FileName))
@@ -400,9 +396,9 @@ namespace MonoDevelop.Debugger
 		{
 			addressLines.Clear ();
 			currentFile = null;
-			if (messageOverlayWindow != null) {
-				messageOverlayWindow.Destroy ();
-				messageOverlayWindow = null;
+			if (messageOverlayContent != null) {
+				editor.RemoveOverlay (messageOverlayContent);
+				messageOverlayContent = null;
 			}
 			sw.Sensitive = false;
 			autoRefill = false;
@@ -489,115 +485,5 @@ namespace MonoDevelop.Debugger
 		}
 
 		#endregion
-	}
-	
-//	class AsmLineMarker: TextLineMarker
-//	{
-//		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
-//		{
-//			ChunkStyle st = new ChunkStyle (baseStyle);
-//			st.Foreground = new Cairo.Color (125, 125, 125);
-//			return st;
-//		}
-//	}
-
-	//Copy pasted from SourceEditor
-	class OverlayMessageWindow : Gtk.EventBox
-	{
-		const int border = 8;
-
-		public Func<int> SizeFunc;
-
-		TextEditor textEditor;
-
-		public OverlayMessageWindow ()
-		{
-			AppPaintable = true;
-		}
-
-		public void ShowOverlay (TextEditor textEditor)
-		{
-			this.textEditor = textEditor;
-			this.ShowAll ();
-
-			// TODO :Editor transition
-//			textEditor.AddTopLevelWidget (this, 0, 0);
-//			textEditor.SizeAllocated += HandleSizeAllocated;
-//			var child = (TextEditor.EditorContainerChild)textEditor [this];
-//			child.FixedPosition = true;
-		}
-
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			// TODO :Editor transition
-/*			if (textEditor != null) {
-				textEditor.SizeAllocated -= HandleSizeAllocated;
-				textEditor = null;
-			}*/
-		}
-
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-
-			if (wRequest > 0) {
-				requisition.Width = wRequest;
-			}
-		}
-
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			Resize (allocation);
-		}
-
-		int wRequest = -1;
-
-		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
-		{
-			// TODO :Editor transition
-//			if (SizeFunc != null) {
-//				var req = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
-//				if (req != wRequest) {
-//					wRequest = req;
-//					QueueResize ();
-//				}
-//			} else {
-//				if (Allocation.Width > textEditor.Allocation.Width - border * 2) {
-//					if (textEditor.Allocation.Width - border * 2 > 0) {
-//						QueueResize ();
-//					}
-//				}
-//			}
-			Resize (Allocation);
-		}
-
-		void Resize (Gdk.Rectangle alloc)
-		{
-			// TODO :Editor transition
-//			textEditor.MoveTopLevelWidget (this, (textEditor.Allocation.Width - alloc.Width) / 2, textEditor.Allocation.Height - alloc.Height - 8);
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			// TODO :Editor transition
-
-//			using (var cr = CairoHelper.Create (evnt.Window)) {
-//				cr.LineWidth = 1;
-//				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-//				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
-//				cr.Fill ();
-//				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
-//				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
-//				cr.FillPreserve ();
-//
-//				cr.SetSourceColor (textEditor.ColorStyle.NotificationBorder.Color);
-//				cr.Stroke ();
-//			}
-
-			return base.OnExposeEvent (evnt);
-		}
-
 	}
 }

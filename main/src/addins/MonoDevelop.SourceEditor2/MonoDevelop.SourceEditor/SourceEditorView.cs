@@ -2956,6 +2956,15 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)
+		{
+			widget.AddOverlay (messageOverlayContent.GetNativeWidget<Widget> (), sizeFunc);
+		}
+
+		public void RemoveOverlay (Control messageOverlayContent)
+		{
+			widget.RemoveOverlay (messageOverlayContent.GetNativeWidget<Widget> ());
+		}
 
 		#region IEditorActionHost implementation
 

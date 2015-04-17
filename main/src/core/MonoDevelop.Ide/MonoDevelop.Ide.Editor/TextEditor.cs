@@ -1243,5 +1243,15 @@ namespace MonoDevelop.Ide.Editor
 			}
 			projectionsAdded = true;
 		}
+
+		public void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc)
+		{
+			textEditorImpl.AddOverlay (messageOverlayContent, sizeFunc);
+		}
+
+		public void RemoveOverlay (Control messageOverlayContent)
+		{
+			textEditorImpl.RemoveOverlay (messageOverlayContent);
+		}
 	}
 }

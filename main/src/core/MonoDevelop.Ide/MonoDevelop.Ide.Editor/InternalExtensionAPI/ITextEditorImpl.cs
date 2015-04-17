@@ -237,5 +237,8 @@ namespace MonoDevelop.Ide.Editor
 
 		double ZoomLevel { get; set; }
 		event EventHandler ZoomLevelChanged;
+
+		void AddOverlay (Control messageOverlayContent, Func<int> sizeFunc);
+		void RemoveOverlay (Control messageOverlayContent);
 	}
 }
