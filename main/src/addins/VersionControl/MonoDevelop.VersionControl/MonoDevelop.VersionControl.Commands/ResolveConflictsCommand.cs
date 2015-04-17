@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Commands
 {
-	public class ResolveConflictsCommand
+	class ResolveConflictsCommand
 	{
 		public static bool ResolveConflicts (List<VersionControlItem> list, bool test)
 		{

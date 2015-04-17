@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Commands
 {
-	public class MergeCommand
+	class MergeCommand
 	{
 		internal static readonly string MergeViewHandlers = "/MonoDevelop/VersionControl/MergeViewHandler";
 		

@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl.Commands
 	/// <summary>
 	/// Class for creating patches from VersionControlItems
 	/// </summary>
-	public class CreatePatchCommand
+	class CreatePatchCommand
 	{
 		/// <summary>
 		/// Creates a patch from a VersionControlItemList

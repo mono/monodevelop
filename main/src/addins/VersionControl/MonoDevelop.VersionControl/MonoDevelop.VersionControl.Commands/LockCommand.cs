@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Commands
 {
-	public class LockCommand
+	class LockCommand
 	{
 		public static bool Lock (List<VersionControlItem> items, bool test)
 		{

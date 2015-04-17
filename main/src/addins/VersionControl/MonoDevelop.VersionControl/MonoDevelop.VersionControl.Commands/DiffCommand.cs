@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Commands
 {
-	public class DiffCommand
+	class DiffCommand
 	{
 		static bool CanShow (VersionControlItem item)
 		{

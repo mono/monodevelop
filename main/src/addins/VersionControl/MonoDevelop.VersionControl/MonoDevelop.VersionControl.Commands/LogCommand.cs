@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Commands
 {
-	public class LogCommand
+	class LogCommand
 	{
 		static bool CanShow (VersionControlItem item)
 		{
