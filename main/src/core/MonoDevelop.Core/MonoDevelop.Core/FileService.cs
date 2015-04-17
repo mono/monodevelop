@@ -448,7 +448,7 @@ namespace MonoDevelop.Core
 		{
 			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
 				return false;
-			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ().Concat ("%#&").ToArray()) >= 0)
+			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ()) >= 0)
 				return false;
 			return true;
 		}
