@@ -37,9 +37,9 @@ namespace UserInterfaceTests
 {
 	public abstract class CreateBuildTemplatesTestBase: UITestBase
 	{
-		public string GeneralKindRoot { get; private set; } = "General";
+		public string GeneralKindRoot { get { return "General"; } }
 
-		public string OtherCategoryRoot { get; private set; } = "Other";
+		public string OtherCategoryRoot { get { return "Other"; } }
 
 		public readonly static Action EmptyAction = () => { };
 
