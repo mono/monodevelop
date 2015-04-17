@@ -81,6 +81,11 @@ uitest:
 		done; \
 	fi
 
+	@if ! test -n "$(assembly)"; then \
+		echo "You must pass 'assembly' argument"; \
+		exit 1; \
+	fi
+
 coverage:
 	if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
