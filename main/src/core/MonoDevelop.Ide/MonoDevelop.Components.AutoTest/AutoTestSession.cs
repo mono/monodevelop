@@ -239,7 +239,12 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppResult[] ExecuteQuery (AppQuery query)
 		{
-			return query.Execute ();
+			var results = query.Execute ();
+			Sync (() => {
+				DispatchService.RunPendingEvents ();
+				return true;
+			});
+			return results;
 		}
 
 		public AppResult[] WaitForElement (AppQuery query, int timeout)
