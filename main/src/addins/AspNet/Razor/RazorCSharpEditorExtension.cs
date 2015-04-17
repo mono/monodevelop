@@ -91,10 +91,6 @@ namespace MonoDevelop.AspNet.Razor
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
 			defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
-			defaultEditor.CaretPositionChanged += delegate
-			{
-				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
-			};
 			syntaxMode = new RazorSyntaxMode (DocumentContext);
 			var textEditorData = DocumentContext.GetContent<TextEditorData> ();
 			if (textEditorData != null)
@@ -119,6 +115,9 @@ namespace MonoDevelop.AspNet.Razor
 		{
 			if (razorDocument == null)
 				return;
+
+			// TODO Roslyn port.
+			return;
 
 			EnsureUnderlyingDocumentSet ();
 			int off = CalculateCaretPosition (e.Offset);
@@ -277,17 +276,19 @@ namespace MonoDevelop.AspNet.Razor
 		protected void SwitchToHidden ()
 		{
 			isInCSharpContext = true;
-			DocumentContext = HiddenDoc;
-			Editor = HiddenDoc.Editor;
-			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocumentContext, hiddenInfo);
+// TODO: Roslyn port.
+//			DocumentContext = HiddenDoc;
+//			Editor = HiddenDoc.Editor;
+//			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocumentContext, hiddenInfo);
 		}
 
 		protected void SwitchToReal ()
 		{
 			isInCSharpContext = false;
-			DocumentContext = defaultDocumentContext;
-			Editor = defaultEditor;
-			CompletionWidget = defaultCompletionWidget;
+// TODO: Roslyn port.
+//			DocumentContext = defaultDocumentContext;
+//			Editor = defaultEditor;
+//			CompletionWidget = defaultCompletionWidget;
 		}
 
 		bool NonCSharpCompletion (KeyDescriptor descriptor)
@@ -298,10 +299,11 @@ namespace MonoDevelop.AspNet.Razor
 
 		protected void InitializeCodeCompletion ()
 		{
-			EnsureUnderlyingDocumentSet ();
-			hiddenInfo.OriginalCaretPosition = defaultEditor.CaretOffset;
-			hiddenInfo.CaretPosition = CalculateCaretPosition ();
-			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
+			// TODO Roslyn port
+//			EnsureUnderlyingDocumentSet ();
+//			hiddenInfo.OriginalCaretPosition = defaultEditor.CaretOffset;
+//			hiddenInfo.CaretPosition = CalculateCaretPosition ();
+//			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
 		}
 
 		class CodeFragment
