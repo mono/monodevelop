@@ -439,17 +439,17 @@ namespace MonoDevelop.Debugger
 		
 		protected void OnBreakpointAdded (object o, EventArgs args)
 		{
-			Runtime.RunInMainThread (UpdateDisplay);
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointRemoved (object o, EventArgs args)
 		{
-			Runtime.RunInMainThread (UpdateDisplay);
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointChanged (object o, EventArgs args)
 		{
-			Runtime.RunInMainThread (UpdateDisplay);
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		void OnDebuggerStatusCheck (object s, EventArgs a)
