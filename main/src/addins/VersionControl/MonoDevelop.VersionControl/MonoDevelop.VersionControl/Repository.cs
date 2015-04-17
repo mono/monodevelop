@@ -492,7 +492,7 @@ namespace MonoDevelop.VersionControl
 		protected abstract void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
 		
 		// Called to create a ChangeSet to be used for a commit operation
-		public virtual ChangeSet CreateChangeSet (FilePath basePath)
+		public ChangeSet CreateChangeSet (FilePath basePath)
 		{
 			return new ChangeSet (this, basePath);
 		}
@@ -500,7 +500,7 @@ namespace MonoDevelop.VersionControl
 		/// <summary>
 		/// Creates a patch from a set of DiffInfos.
 		/// </summary>
-		public virtual string CreatePatch (IEnumerable<DiffInfo> diffs)
+		public string CreatePatch (IEnumerable<DiffInfo> diffs)
 		{
 			StringBuilder patch = new StringBuilder ();
 			
@@ -860,11 +860,8 @@ namespace MonoDevelop.VersionControl
 			get { return Date != DateTime.MinValue; }
 		}
 
-		public Annotation (string revision, string author, DateTime date)
+		public Annotation (string revision, string author, DateTime date) : this (revision, author, date, null)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
 		}
 
 		public Annotation (string revision, string author, DateTime date, string email)
