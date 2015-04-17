@@ -809,11 +809,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			SetMetadata (name, value ? "True" : "False");
 		}
 
-		public void SetMetadata (string name, string value, bool isXml = false)
+		public void SetMetadata (string name, string value, bool isXml = false, StringComparison oldValueComparison = StringComparison.Ordinal)
 		{
 			// Don't overwrite the metadata value if the new value is the same as the old
 			// This will keep the old metadata string, which can contain property references
-			if (GetMetadata (name, isXml) == value)
+			if (string.Equals(GetMetadata (name, isXml), value, oldValueComparison))
 				return;
 
 			XmlElement elem = Element [name, MSBuildProject.Schema];
