@@ -196,6 +196,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					if (file.IsLink) {
 						file.Link = newLink;
+					} else if (!FileService.IsValidFileName (newName)) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 					} else {
 						// This could throw an exception if we try to replace another file during the rename.
 						FileService.RenameFile (oldPath, newName);
