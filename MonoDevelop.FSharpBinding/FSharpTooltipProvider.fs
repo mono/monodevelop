@@ -54,28 +54,11 @@ type FSharpTooltipProvider() =
                         LoggingService.LogInfo "TooltipProvider: Getting tool tip"
                         let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
 
-                        let backupSig =
-                            //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
-                            // to extract the signature, this is only limited in that it deals with only a single tooltip in a group/list
-                            // We create the backupSig as lazily as possible.
-                            lazy
-                                let tip = parseAndCheckResults.GetToolTip(line, col, lineStr) |> Async.RunSynchronously
-                                match tip with
-                                | Some (FSharpToolTipText (first :: _remainder), (_startCol,_endCol)) ->
-                                    match first with
-                                    | FSharpToolTipElement.Single (_name, FSharpXmlDoc.XmlDocFileSignature(key, file)) -> Some (file, key)
-                                    | FSharpToolTipElement.Group ((_name, FSharpXmlDoc.XmlDocFileSignature (key, file)) :: _remainder)  -> Some (file, key)
-                                    | FSharpToolTipElement.CompositionError error ->
-                                        LoggingService.LogError (sprintf "TooltipProvider: Composition error: %s" error)
-                                        None
-                                    | _ -> None
-                                | _ -> None
-                        
                         // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
                         // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
                         match symbol with
                         | Some s -> 
-                             let tt = SymbolTooltips.getTooltipFromSymbolUse s backupSig
+                             let tt = SymbolTooltips.getTooltipFromSymbolUse s
                              match tt with
                              | ToolTip(signature, summary) ->
                                  //get the TextSegment the the symbols range occupies
@@ -90,7 +73,6 @@ type FSharpTooltipProvider() =
                         LoggingService.LogError ("TooltipProvider: unexpected exception", ex)
                         return ParseAndCheckNotFound},
                 ServiceSettings.blockingTimeout)
-
         match result with
         | ParseAndCheckNotFound -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"; null
         | NoToolTipText -> LoggingService.LogWarning "TooltipProvider: TootipText not returned"; null
@@ -108,6 +90,7 @@ type FSharpTooltipProvider() =
         // ToolTipText for the old tooltips and (string * XmlDoc) for the new tooltips
         match item.Item with 
         | :? FSharpToolTipText as titem ->
+            LoggingService.LogError (sprintf "TooltipProvider: Error tooltip not yet implemented for:\n%A" titem)
             let tooltip = TooltipFormatting.formatTip(titem)
             let (signature, comment) = 
                 match tooltip with
@@ -143,7 +126,7 @@ type FSharpTooltipProvider() =
             result.RepositionWindow ()                  
             new Control(result)
 
-        | _ -> LoggingService.LogError "TooltipProvider: Type mismatch, not a FSharpLocalResolveResult"
+        | _ -> LoggingService.LogError "TooltipProvider: Type mismatch"
                null
             
     interface IDisposable with

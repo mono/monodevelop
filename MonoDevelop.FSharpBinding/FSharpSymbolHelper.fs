@@ -277,7 +277,7 @@ module SymbolTooltips =
         | true, false -> b
         | false, false -> a + " " + b
 
-    let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>>) =
+    let getSummaryFromSymbol (symbol:FSharpSymbol) =
         let xmlDoc, xmlDocSig = 
             match symbol with
             | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
@@ -288,13 +288,9 @@ module SymbolTooltips =
             | :? FSharpGenericParameter as gp -> gp.XmlDoc, ""
             | _ -> ResizeArray() :> IList<_>, ""
 
-        if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
-        else
-            if String.IsNullOrWhiteSpace xmlDocSig then
-                match backupSig.Force() with
-                | Some (key, file) -> Lookup (key, Some file)
-                | None -> XmlDoc.EmptyDoc
-            else Lookup(xmlDocSig, symbol.Assembly.FileName)
+        if xmlDoc.Count > 0
+        then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
+        else Lookup(xmlDocSig, symbol.Assembly.FileName)
 
     let getUnioncaseSignature displayContext (unionCase:FSharpUnionCase) =
         if unionCase.UnionCaseFields.Count > 0 then
@@ -454,12 +450,12 @@ module SymbolTooltips =
                 else asType Keyword "val"
             prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
 
-    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) (backUpSig: Lazy<_>) =
+    let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) =
         match symbol with
         | Entity fse ->
             try
                 let signature = getEntitySignature symbol.DisplayContext fse
-                ToolTip(signature, getSummaryFromSymbol fse backUpSig)
+                ToolTip(signature, getSummaryFromSymbol fse)
             with exn ->
                 ToolTips.EmptyTip
 
@@ -467,43 +463,43 @@ module SymbolTooltips =
             if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
                 //ValueTypes
                 let signature = getFuncSignature symbol.DisplayContext func 3 false
-                ToolTip(signature, getSummaryFromSymbol func backUpSig)
+                ToolTip(signature, getSummaryFromSymbol func)
             else
                 //ReferenceType constructor
                 let signature = getFuncSignature symbol.DisplayContext func 3 false
-                ToolTip(signature, getSummaryFromSymbol func backUpSig)
+                ToolTip(signature, getSummaryFromSymbol func)
 
         | Operator func ->
             let signature = getFuncSignature symbol.DisplayContext func 3 false
-            ToolTip(signature, getSummaryFromSymbol func backUpSig)
+            ToolTip(signature, getSummaryFromSymbol func)
 
         | Pattern func ->
             //Active pattern or operator
             let signature = getFuncSignature symbol.DisplayContext func 3 false
-            ToolTip(signature, getSummaryFromSymbol func backUpSig)
+            ToolTip(signature, getSummaryFromSymbol func)
 
         | ClosureOrNestedFunction func ->
             //represents a closure or nested function
             let signature = getFuncSignature symbol.DisplayContext func 3 false
-            let summary = getSummaryFromSymbol func backUpSig
+            let summary = getSummaryFromSymbol func
             ToolTip(signature, summary)
 
         | Function func ->
             let signature = getFuncSignature symbol.DisplayContext func 3 false
-            ToolTip(signature, getSummaryFromSymbol func backUpSig) 
+            ToolTip(signature, getSummaryFromSymbol func) 
 
         | Val func ->
             //val name : Type
             let signature = getValSignature symbol.DisplayContext func
-            ToolTip(signature, getSummaryFromSymbol func backUpSig)
+            ToolTip(signature, getSummaryFromSymbol func)
 
         | Field fsf ->
             let signature = getFieldSignature symbol.DisplayContext fsf
-            ToolTip(signature, getSummaryFromSymbol fsf backUpSig)
+            ToolTip(signature, getSummaryFromSymbol fsf)
 
         | UnionCase uc ->
             let signature = getUnioncaseSignature symbol.DisplayContext uc
-            ToolTip(signature, getSummaryFromSymbol uc backUpSig)
+            ToolTip(signature, getSummaryFromSymbol uc)
 
         | ActivePatternCase _apc ->
             //There is actually enough information, but we need a sane way of presenting FSharpType in
