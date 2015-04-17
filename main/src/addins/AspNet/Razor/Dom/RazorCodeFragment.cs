@@ -48,9 +48,7 @@ namespace MonoDevelop.AspNet.Razor.Dom
 
 		public ITextDocument Document {
 			get {
-				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null)
-					return IdeApp.Workbench.ActiveDocument.Editor;
-				return null;
+				return RazorWorkbenchService.ActiveDocument;
 			}
 		}
 
