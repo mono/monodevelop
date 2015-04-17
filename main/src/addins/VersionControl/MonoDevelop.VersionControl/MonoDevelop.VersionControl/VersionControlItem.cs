@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl
 		
 		public VersionInfo VersionInfo {
 			get {
-				if (versionInfo == null) {
+				if (versionInfo == null || versionInfo.RequiresRefresh) {
 					try {
 						versionInfo = Repository.GetVersionInfo (Path, VersionInfoQueryFlags.IgnoreCache);
 						if (versionInfo == null)
