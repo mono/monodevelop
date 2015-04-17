@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Editor.Util
 			int bracket = openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
-				result = SearchMatchingBracketForward (document, offset + 1, openBrackets [bracket], closingBrackets [bracket]);
+				result = SearchMatchingBracketForward (document, offset + 1, closingBrackets [bracket], openBrackets [bracket]);
 			} else {
 				bracket = closingBrackets.IndexOf (ch);
 				if (bracket >= 0) {
-					result = SearchMatchingBracketBackward (document, offset - 1, closingBrackets [bracket], openBrackets [bracket]);
+					result = SearchMatchingBracketBackward (document, offset - 1, openBrackets [bracket], closingBrackets [bracket]);
 				} else {
 					result = -1;
 				}
