@@ -32,6 +32,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
@@ -40,11 +41,13 @@ namespace MonoDevelop.Refactoring
 		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
 		{
 			if (data == null)
-				throw new ArgumentNullException ("data");
+				throw new ArgumentNullException (nameof (data));
 			if (parsedDocument == null)
-				throw new ArgumentNullException ("parsedDocument");
+				throw new ArgumentNullException (nameof (parsedDocument));
 			if (type == null)
-				throw new ArgumentNullException ("type");
+				throw new ArgumentNullException (nameof (type));
+			if (!type.IsDefinedInSource ())
+				throw new ArgumentException ("The given type needs to be defined in source code.", nameof (type));
 
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
@@ -60,20 +63,28 @@ namespace MonoDevelop.Refactoring
 			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
 
+			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == part.SourceTree.FilePath && dsr.Span.Contains (part.SourceSpan));
+			if (declaringType == null)
+				return result;
 			foreach (var member in type.GetMembers ()) {
-				if (member.IsImplicitlyDeclared)
+				if (member.IsImplicitlyDeclared || !member.IsDefinedInSource())
 					continue;
+				
 				//var domLocation = member.BodyRegion.End;
-				var loc = member.DeclaringSyntaxReferences.FirstOrDefault (r => r.SyntaxTree.FilePath == part.SourceTree.FilePath);
-				var domLocation = data.OffsetToLocation (loc.Span.End);
-
-				if (domLocation.Line <= 0) {
-					var lineSegment = data.GetLineByOffset (loc.Span.Start);
-					if (lineSegment == null)
+				foreach (var loc in member.DeclaringSyntaxReferences) {
+					if (loc.SyntaxTree.FilePath != part.SourceTree.FilePath || !declaringType.Span.Contains (part.SourceSpan))
 						continue;
-					domLocation = new DocumentLocation (lineSegment.LineNumber, lineSegment.Length + 1);
+					var domLocation = data.OffsetToLocation (loc.Span.End);
+
+					if (domLocation.Line <= 0) {
+						var lineSegment = data.GetLineByOffset (loc.Span.Start);
+						if (lineSegment == null)
+							continue;
+						domLocation = new DocumentLocation (lineSegment.LineNumber, lineSegment.Length + 1);
+					}
+					result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
+					break;
 				}
-				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			result [result.Count - 1].LineAfter = NewLineInsertion.None;

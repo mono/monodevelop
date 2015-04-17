@@ -53,47 +53,57 @@ namespace MonoDevelop.Refactoring
 {
 	public static class CodeGenerationService
 	{
-//		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
-//		{
-//			bool isOpen;
-//			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
-//			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
-//			
-//			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
-//			
-//			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
-//			
-//			var dotNetProject = project as DotNetProject;
-//			if (dotNetProject == null) {
-//				LoggingService.LogError ("Only .NET projects are supported.");
-//				return null;
-//			}
-//			
-//			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
-//			StringWriter sw = new StringWriter ();
-//			var options = new CodeGeneratorOptions ();
-//			options.IndentString = data.GetLineIndent (type.Region.BeginLine) + "\t";
-//			if (newMember is CodeMemberMethod)
-//				options.BracingStyle = "C";
-//			generator.GenerateCodeFromMember (newMember, sw, options);
-//
-//			var code = sw.ToString ();
-//			if (!string.IsNullOrEmpty (code))
-//				suitableInsertionPoint.Insert (data, code);
-//			if (!isOpen) {
-//				try {
-//					File.WriteAllText (type.Region.FileName, data.Text);
-//				} catch (Exception e) {
-//					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.Region.FileName), e);
-//					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
-//				}
-//			}
-//			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
-//			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
-//		}
-		
+		//		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
+		//		{
+		//			bool isOpen;
+		//			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
+		//			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
+		//			
+		//			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
+		//			
+		//			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, type, newMember);
+		//			
+		//			var dotNetProject = project as DotNetProject;
+		//			if (dotNetProject == null) {
+		//				LoggingService.LogError ("Only .NET projects are supported.");
+		//				return null;
+		//			}
+		//			
+		//			var generator = dotNetProject.LanguageBinding.GetCodeDomProvider ();
+		//			StringWriter sw = new StringWriter ();
+		//			var options = new CodeGeneratorOptions ();
+		//			options.IndentString = data.GetLineIndent (type.Region.BeginLine) + "\t";
+		//			if (newMember is CodeMemberMethod)
+		//				options.BracingStyle = "C";
+		//			generator.GenerateCodeFromMember (newMember, sw, options);
+		//
+		//			var code = sw.ToString ();
+		//			if (!string.IsNullOrEmpty (code))
+		//				suitableInsertionPoint.Insert (data, code);
+		//			if (!isOpen) {
+		//				try {
+		//					File.WriteAllText (type.Region.FileName, data.Text);
+		//				} catch (Exception e) {
+		//					LoggingService.LogError (string.Format ("Failed to write file '{0}'.", type.Region.FileName), e);
+		//					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
+		//				}
+		//			}
+		//			var newDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
+		//			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
+		//		}
+
 		public static async void AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+			if (type == null)
+				throw new ArgumentNullException (nameof (type));
+			if (newMember == null)
+				throw new ArgumentNullException (nameof (newMember));
+			if (!type.IsDefinedInSource ())
+				throw new ArgumentException ("The given type needs to be defined in source code.", nameof (type));
+
+
 			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
 			var projectId = ws.GetProjectId (project);
 			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
@@ -104,9 +114,9 @@ namespace MonoDevelop.Refactoring
 			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
 
 			// for some reason the reducer doesn't reduce this
-			var systemVoid = newMember.DescendantNodesAndSelf().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
+			var systemVoid = newMember.DescendantNodesAndSelf ().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
 
-			if (systemVoid != null) newMember = newMember.ReplaceNode(systemVoid, SyntaxFactory.ParseTypeName("void"));
+			if (systemVoid != null) newMember = newMember.ReplaceNode (systemVoid, SyntaxFactory.ParseTypeName ("void"));
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation)));
 			document = document.WithSyntaxRoot (newRoot);
@@ -114,8 +124,8 @@ namespace MonoDevelop.Refactoring
 			var textPolicy = project.Policies.Get<TextStylePolicy> ("text/x-csharp");
 			var projectOptions = policy.CreateOptions (textPolicy);
 
-			document = await Formatter.FormatAsync(document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
-			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Formatter.FormatAsync (document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Simplifier.ReduceAsync (document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
 			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
 			var newSolution = ws.CurrentSolution.WithDocumentText (docId, text);
 			ws.TryApplyChanges (newSolution);
@@ -124,6 +134,14 @@ namespace MonoDevelop.Refactoring
 		readonly static SyntaxAnnotation insertedMemberAnnotation = new SyntaxAnnotation ("INSERTION_ANNOTATAION");
 		public static async void InsertMemberWithCursor (string operation, Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (operation == null)
+				throw new ArgumentNullException (nameof (operation));
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+			if (type == null)
+				throw new ArgumentNullException (nameof (type));
+			if (newMember == null)
+				throw new ArgumentNullException (nameof (newMember));
 			var ws = TypeSystemService.GetWorkspace (project.ParentSolution);
 			var projectId = ws.GetProjectId (project);
 			var docId = ws.GetDocumentId (projectId, part.SourceTree.FilePath);
@@ -134,9 +152,9 @@ namespace MonoDevelop.Refactoring
 			var typeDecl = (ClassDeclarationSyntax)root.FindNode (part.SourceSpan);
 
 			// for some reason the reducer doesn't reduce this
-			var systemVoid = newMember.DescendantNodesAndSelf().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
+			var systemVoid = newMember.DescendantNodesAndSelf ().OfType<QualifiedNameSyntax> ().FirstOrDefault (ma => ma.ToString () == "System.Void");
 
-			if (systemVoid != null) newMember = newMember.ReplaceNode(systemVoid, SyntaxFactory.ParseTypeName("void"));
+			if (systemVoid != null) newMember = newMember.ReplaceNode (systemVoid, SyntaxFactory.ParseTypeName ("void"));
 
 			var newRoot = root.ReplaceNode (typeDecl, typeDecl.AddMembers ((MemberDeclarationSyntax)newMember.WithAdditionalAnnotations (Simplifier.Annotation, Formatter.Annotation, insertedMemberAnnotation)));
 			var doc = IdeApp.Workbench.OpenDocument (part.SourceTree.FilePath, project, true);
@@ -146,8 +164,8 @@ namespace MonoDevelop.Refactoring
 			var projectOptions = policy.CreateOptions (textPolicy);
 
 			document = document.WithSyntaxRoot (newRoot);
-			document = await Formatter.FormatAsync(document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
-			document = await Simplifier.ReduceAsync(document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Formatter.FormatAsync (document, Formatter.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
+			document = await Simplifier.ReduceAsync (document, Simplifier.Annotation, projectOptions, cancellationToken).ConfigureAwait (false);
 
 			root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
 
@@ -165,7 +183,7 @@ namespace MonoDevelop.Refactoring
 					operation,
 					insertionPoints,
 					async point => {
-						if (!point.Success) 
+						if (!point.Success)
 							return;
 						var text = node.ToString ();
 						point.InsertionPoint.Insert (doc.Editor, doc, text);
@@ -182,53 +200,55 @@ namespace MonoDevelop.Refactoring
 		//	AddNewMember (type, part, newMember, implementExplicit);
 		//	return Task.FromResult (true);
 		//}
-//
-//		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
-//		{
-//			if (declaringType == null)
-//				return 0;
-//			int indentLevel = 1;
-//			while (declaringType.DeclaringTypeDefinition != null) {
-//				indentLevel++;
-//				declaringType = declaringType.DeclaringTypeDefinition;
-//			}
-//			var file = declaringType.UnresolvedFile as CSharpUnresolvedFile;
-//			if (file == null)
-//				return indentLevel;
-//			var scope = file.GetUsingScope (declaringType.Region.Begin);
-//			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
-//				indentLevel++;
-//				// skip virtual scopes.
-//				while (scope.Parent != null && scope.Parent.Region == scope.Region)
-//					scope = scope.Parent;
-//				scope = scope.Parent;
-//			}
-//			return indentLevel;
-//		}
+		//
+		//		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
+		//		{
+		//			if (declaringType == null)
+		//				return 0;
+		//			int indentLevel = 1;
+		//			while (declaringType.DeclaringTypeDefinition != null) {
+		//				indentLevel++;
+		//				declaringType = declaringType.DeclaringTypeDefinition;
+		//			}
+		//			var file = declaringType.UnresolvedFile as CSharpUnresolvedFile;
+		//			if (file == null)
+		//				return indentLevel;
+		//			var scope = file.GetUsingScope (declaringType.Region.Begin);
+		//			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
+		//				indentLevel++;
+		//				// skip virtual scopes.
+		//				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+		//					scope = scope.Parent;
+		//				scope = scope.Parent;
+		//			}
+		//			return indentLevel;
+		//		}
 		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this Ide.Gui.Document doc)
 		{
 			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (doc);
 		}
 
 
-//		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this ITextDocument data, ICompilation compilation)
-//		{
-//			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (data, compilation);
-//		}
-//		
-//		static IUnresolvedTypeDefinition GetMainPart (IType t)
-//		{
-//			return t.GetDefinition ().Parts.First ();
-//		}
-		
+		//		public static MonoDevelop.Ide.TypeSystem.CodeGenerator CreateCodeGenerator (this ITextDocument data, ICompilation compilation)
+		//		{
+		//			return MonoDevelop.Ide.TypeSystem.CodeGenerator.CreateGenerator (data, compilation);
+		//		}
+		//		
+		//		static IUnresolvedTypeDefinition GetMainPart (IType t)
+		//		{
+		//			return t.GetDefinition ().Parts.First ();
+		//		}
 
-		public static void AddAttribute (INamedTypeSymbol cls, string name, params object[] parameters)
+
+		public static void AddAttribute (INamedTypeSymbol cls, string name, params object [] parameters)
 		{
+			if (cls == null)
+				throw new ArgumentNullException ("cls");
 			bool isOpen;
 			string fileName = cls.Locations.First ().SourceTree.FilePath;
 			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
-			
-			
+
+
 			var code = new StringBuilder ();
 			int pos = cls.Locations.First ().SourceSpan.Start;
 			var line = buffer.GetLineByOffset (pos);
@@ -244,27 +264,35 @@ namespace MonoDevelop.Refactoring
 				}
 				code.Append (")");
 			}
- 			code.Append ("]");
+			code.Append ("]");
 			code.AppendLine ();
-			
+
 			buffer.InsertText (line.Offset, code.ToString ());
 
 			if (!isOpen) {
 				File.WriteAllText (fileName, buffer.Text);
 			}
 		}
-		
+
 		public static ITypeSymbol AddType (DotNetProject project, string folder, string namspace, ClassDeclarationSyntax type)
 		{
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+			if (folder == null)
+				throw new ArgumentNullException (nameof (folder));
+			if (namspace == null)
+				throw new ArgumentNullException (nameof (namspace));
+			if (type == null)
+				throw new ArgumentNullException (nameof (type));
 			var ns = SyntaxFactory.NamespaceDeclaration (SyntaxFactory.ParseName (namspace)).WithMembers (new SyntaxList<MemberDeclarationSyntax> () { type });
-			
+
 			string fileName = project.LanguageBinding.GetFileName (Path.Combine (folder, type.Identifier.ToString ()));
 			using (var sw = new StreamWriter (fileName)) {
 				sw.WriteLine (ns.ToString ());
 			}
-			FileService.NotifyFileChanged (fileName); 
-			var roslynProject = TypeSystemService.GetCodeAnalysisProject (project); 
-			var id = TypeSystemService.GetDocumentId (roslynProject.Id, fileName); 
+			FileService.NotifyFileChanged (fileName);
+			var roslynProject = TypeSystemService.GetCodeAnalysisProject (project);
+			var id = TypeSystemService.GetDocumentId (roslynProject.Id, fileName);
 			if (id == null)
 				return null;
 			var model = roslynProject.GetDocument (id).GetSemanticModelAsync ().Result;
