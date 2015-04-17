@@ -410,6 +410,9 @@ namespace MonoDevelop.CSharp.Parser
 					}
 				} catch (OperationCanceledException) {
 					return Task.FromResult (emptyErrors);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting diagnostics.", e);
+					return Task.FromResult (emptyErrors);
 				}
 			}
 			return Task.FromResult (result);
