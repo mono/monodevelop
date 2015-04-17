@@ -42,7 +42,6 @@ open MonoDevelop.Projects
 //      // then it probably means the inferred set of files to search for a symbol has not been correctly determined
 //      // by MD/XS.  The logic of 'what to search' used by XS is quite convoluted and depends on properties of
 //      // the symbol, e.g. accessibility, whether it is an IVariable, IEntity, etc.
-//      System.Diagnostics.Debug.WriteLine("Finding references...")
 //      seq { 
 //        for symbol in symbols do 
 //          match symbol with

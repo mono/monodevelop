@@ -84,7 +84,7 @@ type FSharpInteractivePad() as this =
           colourSchemChanged.Dispose()
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
-              Debug.WriteLine (sprintf "Interactive: process stopped")
+              LoggingService.LogInfo (sprintf "Interactive: process stopped")
               view.WriteOutput("\nSession termination detected. Press Enter to restart."))
             isPrompting <- true
           elif killIntent = Restart then 
@@ -134,20 +134,15 @@ type FSharpInteractivePad() as this =
     else Path.Combine(root, path)
     
   //let handler = 
-  do Debug.WriteLine ("InteractivePad: created!")
-  #if DEBUG
-  do view.Destroyed.Add (fun _ -> Debug.WriteLine ("Interactive: view destroyed"))
-  do IdeApp.Exiting.Add (fun _ -> Debug.WriteLine ("Interactive: app exiting!!"))
-  do IdeApp.Exited.Add  (fun _ -> Debug.WriteLine ("Interactive: app exited!!"))
-  #endif
+  do LoggingService.LogInfo ("InteractivePad: created!")
              
   member x.Shutdown()  = 
 
-    do Debug.WriteLine (sprintf "Interactive: x.Shutdown()!")
+    do LoggingService.LogInfo (sprintf "Interactive: x.Shutdown()!")
     resetFsi Kill
  
   override x.Dispose() =
-      Debug.WriteLine ("Interactive: disposing pad...")
+      LoggingService.LogInfo ("Interactive: disposing pad...")
       activeDoc |> Option.iter (fun ad -> ad.Dispose())
       x.Shutdown()
       view.Dispose()
@@ -217,7 +212,7 @@ type FSharpInteractivePad() as this =
   member x.UpdateFont() = 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
-    Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
+    LoggingService.LogInfo (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
 
@@ -258,7 +253,7 @@ type FSharpInteractivePad() as this =
   member x.IsInsideFSharpFile = isInsideFSharpFile()
       
   member x.LoadReferences() =
-    Debug.WriteLine("FSI:  #LoadReferences")
+    LoggingService.LogInfo ("FSI:  #LoadReferences")
     let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
 
     let references =

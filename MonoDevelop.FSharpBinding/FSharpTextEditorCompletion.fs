@@ -42,8 +42,8 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
 
     // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (_smartWrap) = 
-      Debug.WriteLine("computing tooltip for {0}", name)
-      let tip = SymbolTooltips.getTooltipFromSymbolUse symbol (lazy None)
+      LoggingService.LogInfo("computing tooltip for {0}", name)
+      let tip = SymbolTooltips.getTooltipFromSymbolUse symbol
       match tip  with
       | ToolTips.ToolTip (signature, xmldoc) ->
             let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
@@ -403,7 +403,7 @@ type FSharpTextEditorCompletion() =
               offset > 1 && Char.IsLetter (docText.[offset-2])
           | _ -> true
 
-      Debug.WriteLine("allowAnyStale = {0}", allowAnyStale)
+      LoggingService.LogInfo("allowAnyStale = {0}", allowAnyStale)
       x.CodeCompletionCommandImpl(context, allowAnyStale, token, true, false, completionChar)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  

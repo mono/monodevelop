@@ -66,7 +66,7 @@ module CompilerService =
       if m.Success then 
           let errNo = match get "err" with None -> "" | Some v -> v
           let file = match get "file" with None -> "unknown-file"  | Some v -> v
-          let line = match get "line" with None -> 1 | Some v -> Debug.WriteLine (sprintf "v.Value = <<<%s>>>" v); int32 v
+          let line = match get "line" with None -> 1 | Some v -> int32 v
           let col = match get "col" with None -> 1 | Some v -> int32 v
           let msg = match get "msg" with None -> "" | Some v -> v
           let isError = match get "type" with None -> true | Some v -> (v <> "warning")
@@ -135,15 +135,15 @@ module CompilerService =
         new ProcessStartInfo
           (FileName = fscPath.Value, UseShellExecute = false, Arguments = args,
            RedirectStandardError = true, CreateNoWindow = true, WorkingDirectory = projectDir) 
-      Debug.WriteLine (sprintf "Compiler: Compile using: %s Arguments: %s" fscPath.Value args)
+      LoggingService.LogInfo (sprintf "Compiler: Compile using: %s Arguments: %s" fscPath.Value args)
       let p = Process.Start(startInfo) 
       
-      Debug.WriteLine ("Compiler: Reading output..." )
+      LoggingService.LogInfo ("Compiler: Reading output..." )
       // Read all output and fold multi-line 
       let lines = 
         [ let line = ref ""
           while (line := p.StandardError.ReadLine(); !line <> null) do
-            Debug.WriteLine (sprintf "Compiler: OUTPUT: %s" !line)
+            LoggingService.LogInfo (sprintf "Compiler: OUTPUT: %s" !line)
             yield !line 
           yield "" ]    
       let messages = 
@@ -162,9 +162,9 @@ module CompilerService =
         | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
 
             
-      Debug.WriteLine (sprintf "Compiler: Waiting for exit...")
+      LoggingService.LogInfo (sprintf "Compiler: Waiting for exit...")
       p.WaitForExit()
-      Debug.WriteLine (sprintf "Compiler: Done with compilation" )
+      LoggingService.LogInfo (sprintf "Compiler: Done with compilation" )
       br.CompilerOutput <- String.concat "\n" lines
       br
   
