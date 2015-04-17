@@ -713,15 +713,6 @@ namespace MonoDevelop.VersionControl
 			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 		}
 
-		internal static string InternalGetRepositoryPath (string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
-				return null;
-
-			return file;
-		}
-
 		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
 		{
 			CommitMessageFormat format = new CommitMessageFormat ();
