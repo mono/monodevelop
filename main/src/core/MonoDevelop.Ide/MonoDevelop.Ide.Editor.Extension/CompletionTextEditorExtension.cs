@@ -519,6 +519,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 //				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
 		}
 
+		internal void InternalInitialize ()
+		{
+			Initialize ();
+		}
+
 		void HandlePositionChanged (object sender, EventArgs e)
 		{
 			CompletionWindowManager.UpdateCursorPosition ();

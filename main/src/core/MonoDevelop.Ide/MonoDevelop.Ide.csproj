@@ -3473,6 +3473,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MruCache.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\IProjectionExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedFilterCompletionTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
