@@ -234,13 +234,8 @@ namespace MonoDevelop.Xml.Editor
 					var oldIndent = Editor.GetLineIndent (newLine);
 					var seg = Editor.GetLine (newLine);
 					if (oldIndent != indent) {
-						int newCaretOffset = Editor.CaretOffset;
-						if (newCaretOffset > seg.Offset) {
-							newCaretOffset += (indent.Length - oldIndent.Length);
-						}
 						using (var undo = Editor.OpenUndoGroup ()) {
 							Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
-							Editor.CaretOffset = newCaretOffset;
 						}
 					}
 				}
