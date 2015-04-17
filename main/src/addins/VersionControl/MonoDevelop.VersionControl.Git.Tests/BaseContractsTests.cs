@@ -28,37 +28,79 @@ using System.Linq;
 using NUnit.Framework;
 using System.Reflection;
 using System.IO;
+using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
 	[TestFixture]
-	public class BaseContractsTests
+	public abstract class BaseAPIContractsTests
 	{
-		readonly string AssemblyPath = Path.Combine ("..", "AddIns", "VersionControl", "MonoDevelop.VersionControl.dll");
-		string[] AllowedTypes = {
-			"MonoDevelop.VersionControl.UrlBasedRepositoryEditor",
-			"MonoDevelop.VersionControl.Views.BlameWidget",
-			"MonoDevelop.VersionControl.Views.MergeWidget",
-		};
+		/// <summary>
+		/// Gets the path to the assemblies to load and test against.
+		/// </summary>
+		/// <value>The assembly path.</value>
+		protected abstract string[] AssemblyPaths { get; }
 
-		void NoVisibleUI (Assembly asm)
+		/// <summary>
+		/// Items to ignore in additional to the constraints imposed.
+		/// </summary>
+		/// <value>The allowed types.</value>
+		protected abstract string[] AllowedUITypes { get; }
+
+		static bool MethodIsOverrideableAndNotOverridden (MethodInfo m)
 		{
-			var types = asm.ExportedTypes;
-			var gtkType = typeof(Gtk.Widget);
+			return (m.IsVirtual || m.IsAbstract) && !m.IsFinal && m.GetBaseDefinition() != m;
+		}
 
-			var uiTypes = types
+		protected bool HasAbstractOrVirtualMethods (Type t)
+		{
+			return t.IsAbstract || t.GetMethods ().Any (MethodIsOverrideableAndNotOverridden) ||
+				t.GetProperties ().Any (p => MethodIsOverrideableAndNotOverridden (p.GetMethod) || MethodIsOverrideableAndNotOverridden (p.SetMethod));
+		}
+
+		protected bool IsToolboxItem (Type t)
+		{
+			return t.CustomAttributes.All (attr => attr.AttributeType != typeof(System.ComponentModel.ToolboxItemAttribute));
+		}
+
+		IEnumerable<string> NoVisibleUI (Assembly asm)
+		{
+			var gtkType = typeof(Gtk.Widget);
+			// TODO: Check Mac types too.
+
+			var uiTypes =
+				asm.ExportedTypes
 				.Where (gtkType.IsAssignableFrom)
-				.Where (t => t.CustomAttributes.All (attr => attr.AttributeType != typeof(System.ComponentModel.ToolboxItemAttribute)))
-				.Where (t => !t.IsAbstract)
-				.Where (t => !AllowedTypes.Contains (t.FullName))
-				;
-			Assert.True (!uiTypes.Any (), "Should not be public:\n" + String.Join ("\n", uiTypes.Select (t => t.FullName)));
+				.Where (IsToolboxItem)
+				.Where (t => !HasAbstractOrVirtualMethods(t))
+				.Where (t => !AllowedUITypes.Contains (t.FullName));
+			
+			return uiTypes.Select (t => t.FullName);
 		}
 
 		[Test]
 		public void TestNoVisibleUI ()
 		{
-			NoVisibleUI (Assembly.LoadFrom (AssemblyPath));
+			var uiTypes = Enumerable.Empty<string> ();
+			foreach (var path in AssemblyPaths) {
+				uiTypes = uiTypes.Concat (NoVisibleUI (Assembly.LoadFrom (path)));
+			}
+			Assert.True (!uiTypes.Any (), "The following UI types should not be public:\n" + String.Join ("\n", uiTypes));
+		}
+	}
+
+	[TestFixture]
+	public class VersionControlContractTests : BaseAPIContractsTests
+	{
+		string path = Path.Combine ("..", "AddIns", "VersionControl", "MonoDevelop.VersionControl.dll");
+		protected override string[] AssemblyPaths {
+			get { return new[] { path }; }
+		}
+
+		readonly string[] allowedUITypes = {};
+		protected override string[] AllowedUITypes {
+			get { return allowedUITypes; }
 		}
 	}
 }
