@@ -49,6 +49,7 @@ type FSharpLanguageBinding() =
         try
             let options = langServ.GetProjectCheckerOptions(dnp.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
             langServ.InvalidateConfiguration(options)
+            langServ.ClearProjectInfoCache()
         with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
     | _ -> ()
     
@@ -78,6 +79,8 @@ type FSharpLanguageBinding() =
       IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
       IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
+
+
   // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
   let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
   interface IDotNetLanguageBinding  with
@@ -93,8 +96,6 @@ type FSharpLanguageBinding() =
       CompilerService.Compile(items, config, configSel, monitor)
 
     override x.CreateCompilationParameters(options:XmlElement) : ConfigurationParameters =
-    
-      // Debug.tracef "Config" "Creating compiler configuration parameters"
       let pars = new FSharpCompilerParameters() 
       // Set up the default options
       if options <> null then 

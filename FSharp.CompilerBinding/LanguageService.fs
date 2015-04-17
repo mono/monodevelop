@@ -25,8 +25,8 @@ module Symbols =
 module ServiceSettings =
   let internal getEnvInteger e dflt = match System.Environment.GetEnvironmentVariable(e) with null -> dflt | t -> try int t with _ -> dflt
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 500
-  let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 5000
+  let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 1000
+  let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 10000
 
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
@@ -224,6 +224,8 @@ type LanguageService(dirtyNotify) =
         else
           Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
       Path.Combine(dir, Path.GetFileName(path))
+
+  let projectInfoCache = Collections.Generic.Dictionary<_, FSharpProjectOptions>()
    
   // We use a mailbox processor to wrap requests to F.C.S. here so 
   //   (a) we can get work off the GUI thread and 
@@ -265,6 +267,9 @@ type LanguageService(dirtyNotify) =
   static member IsAScript fileName =
       let ext = Path.GetExtension fileName
       [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
+
+
+  member x.ClearProjectInfoCache() = projectInfoCache.Clear()
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source) =
@@ -311,11 +316,14 @@ type LanguageService(dirtyNotify) =
    
   /// Constructs options for the interactive checker for a project under the given configuration. 
   member x.GetProjectCheckerOptions(projFilename, ?properties) =
-    let opts = 
-        match properties with
-        | Some properties -> checker.GetProjectOptionsFromProjectFile(projFilename, properties = properties)
-        | None -> checker.GetProjectOptionsFromProjectFile(projFilename)
-    opts
+    let properties = defaultArg properties ["Configuration", "Debug"]
+    match projectInfoCache.TryGetValue ( (projFilename, properties) ) with
+    | true, p -> p
+    | false, _ -> let pfi = FSharpProjectFileInfo.Parse(projFilename, properties, true)
+                  printfn "%s" pfi.LogOutput
+                  let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+                  projectInfoCache.[(projFilename, properties)] <- opts
+                  opts
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
@@ -328,6 +336,7 @@ type LanguageService(dirtyNotify) =
 
    async {
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+    printfn "%s" <| sprintf "%A" opts.OtherOptions
     Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
     let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
     if startBgCompile then
