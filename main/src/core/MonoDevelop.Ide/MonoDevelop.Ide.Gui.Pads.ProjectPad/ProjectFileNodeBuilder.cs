@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else if (newProjectFile != null && newProjectFile != file) {
 					// If there is already a file under the newPath which is *different*, then throw an exception
 					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
-				} else if (newPath.FileNameWithoutExtension =="") {
+				} else if (newPath.FileNameWithoutExtension == "" ) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("File and Folder names cannot contain an empty period"));
 				} else {
 					if (file.IsLink) {
