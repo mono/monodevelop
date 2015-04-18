@@ -435,21 +435,22 @@ namespace MonoDevelop.Core
 			return Path.GetFullPath (Path.Combine (baseDirectoryPath, relPath));
 		}
 
-		static readonly char [] InvalidFileNameCharacters = Path.GetInvalidFileNameChars ().Concat ("#%&").ToArray ();
+		static readonly char [] InvalidPathCharacters = Path.GetInvalidPathChars ().Concat ("#%&").ToArray ();
 		public static bool IsValidPath (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
 				return false;
-			if (fileName.IndexOfAny (InvalidFileNameCharacters) >= 0)
+			if (fileName.IndexOfAny (InvalidPathCharacters) >= 0)
 				return false;
 			return true;
 		}
 
+		static readonly char[] InvalidFileNamecharacters = Path.GetInvalidFileNameChars ().Concat ("#%&").ToArray ();
 		public static bool IsValidFileName (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
 				return false;
-			if (fileName.IndexOfAny (Path.GetInvalidFileNameChars ()) >= 0)
+			if (fileName.IndexOfAny (InvalidFileNamecharacters) >= 0)
 				return false;
 			return true;
 		}
