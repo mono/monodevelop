@@ -92,7 +92,7 @@ namespace MonoDevelop.Refactoring
 		//			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		//		}
 
-		public static async void AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task AddNewMember (Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
@@ -132,7 +132,7 @@ namespace MonoDevelop.Refactoring
 		}
 
 		readonly static SyntaxAnnotation insertedMemberAnnotation = new SyntaxAnnotation ("INSERTION_ANNOTATAION");
-		public static async void InsertMemberWithCursor (string operation, Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task InsertMemberWithCursor (string operation, Projects.Project project, ITypeSymbol type, Location part, SyntaxNode newMember, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (operation == null)
 				throw new ArgumentNullException (nameof (operation));
@@ -172,7 +172,6 @@ namespace MonoDevelop.Refactoring
 			var node = root.GetAnnotatedNodes (insertedMemberAnnotation).Single ();
 
 			Application.Invoke (delegate {
-
 				var insertionPoints = InsertionPointService.GetInsertionPoints (
 					doc.Editor,
 					doc.UpdateParseDocument (),
