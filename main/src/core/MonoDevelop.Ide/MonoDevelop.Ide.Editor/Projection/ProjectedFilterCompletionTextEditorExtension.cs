@@ -174,7 +174,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		protected override void Initialize ()
 		{
-			completionTextEditorExtension.InternalInitialize ();
 		}
 
 		public override void Dispose ()
