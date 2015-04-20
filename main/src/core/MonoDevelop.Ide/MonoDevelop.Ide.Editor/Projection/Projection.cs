@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		internal void Dettach ()
 		{
-			attachedEditor.TextChanged += HandleTextChanged;
+			attachedEditor.TextChanged -= HandleTextChanged;
 		}
 
 		internal void Attach (TextEditor textEditor)
