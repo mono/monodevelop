@@ -24,14 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using System.Linq;
+using NUnit.Framework;
 
 namespace MonoDevelop.Core
 {
+	[TestFixture]
 	public class FilePathTests
 	{
-		public FilePathTests ()
+		[Test]
+		public void InvalidCharactersTests ()
 		{
+			// Assert compatibility so we know something changed over here.
+			Assert.That (FilePath.GetInvalidFileNameChars (), Is.EquivalentTo (Path.GetInvalidFileNameChars ().Concat ("#%&")));
+			Assert.That (FilePath.GetInvalidPathChars (), Is.EquivalentTo (Path.GetInvalidPathChars ().Concat ("#%&")));
 		}
+
+		// TODO: more tests
 	}
 }
 
