@@ -54,10 +54,10 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		public void ExecuteCommand (object cmd)
+		public void ExecuteCommand (object cmd, object dataItem = null)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, null);
+				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null);
 			});
 		}
 		
@@ -100,6 +100,15 @@ namespace MonoDevelop.Components.AutoTest
 		public object UnsafeSync (Func<object> del)
 		{
 			return Sync (del, false);
+		}
+
+		public void ExitApp ()
+		{
+			try {
+				IdeApp.Exit ();
+			} catch (Exception e) {
+				Console.WriteLine (e);
+			}
 		}
 
 		public object GlobalInvoke (string name, object[] args)
