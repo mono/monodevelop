@@ -127,9 +127,9 @@ namespace MonoDevelop.Components.AutoTest
 			session.ExitApp ();
 		}
 
-		public void ExecuteCommand (object cmd)
+		public void ExecuteCommand (object cmd, object dataItem = null)
 		{
-			session.ExecuteCommand (cmd);
+			session.ExecuteCommand (cmd, dataItem);
 		}
 
 		/*
