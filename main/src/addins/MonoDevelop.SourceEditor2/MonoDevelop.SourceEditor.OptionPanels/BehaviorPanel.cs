@@ -54,7 +54,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			smartSemicolonPlaceCheckbutton.Active = DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement;
 			
 			tabAsReindentCheckbutton.Active = DefaultSourceEditorOptions.Instance.TabIsReindent;
-			indentationCombobox.Active = (int)DefaultSourceEditorOptions.Instance.IndentStyle;
+			indentationCombobox.Active = Math.Min (2, (int)DefaultSourceEditorOptions.Instance.IndentStyle);
 			controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.WordNavigationStyle;
 			useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
 			checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
