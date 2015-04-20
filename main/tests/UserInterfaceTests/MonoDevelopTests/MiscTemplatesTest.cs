@@ -51,7 +51,13 @@ namespace UserInterfaceTests
 
 		void RunMiscGenericTests (string templateName)
 		{
-			CreateBuildProject (GenerateProjectName (templateName), OtherCategoryRoot, miscCategory, genericKindRoot, templateName, EmptyAction);
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = miscCategory,
+				TemplateKindRoot = genericKindRoot,
+				TemplateKind = templateName
+			};
+			CreateBuildProject (templateOptions, EmptyAction);
 		}
 
 		#endregion
@@ -78,7 +84,13 @@ namespace UserInterfaceTests
 
 		void RunCCPlusTests (string templateName)
 		{
-			CreateBuildProject (GenerateProjectName (templateName), OtherCategoryRoot, miscCategory, cCPlusKindRoot, templateName, EmptyAction);
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = miscCategory,
+				TemplateKindRoot = cCPlusKindRoot,
+				TemplateKind = templateName
+			};
+			CreateBuildProject (templateOptions, EmptyAction);
 		}
 
 		#endregion
