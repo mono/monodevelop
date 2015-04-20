@@ -332,15 +332,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
 			if (config != null)
 				cp = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
-
+			FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : new FilePath (p.Name + ".dll");
 			var info = ProjectInfo.Create (
 				projectId,
 				VersionStamp.Create (),
-				p.Name,
-				p.Name,
+				p.Name, 
+				fileName.FileNameWithoutExtension,
 				LanguageNames.CSharp,
 				p.FileName,
-				IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"test.dll",
+				fileName,
 				cp != null ? cp.CreateCompilationOptions () : null,
 				cp != null ? cp.CreateParseOptions () : null,
 				CreateDocuments (projectData, p, token),
