@@ -24,13 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using NUnit.Framework;
 
 namespace MonoDevelop.Core
 {
+	[TestFixture]
 	public class FileServiceTests
 	{
-		public FileServiceTests ()
+		[Test]
+		public void InvalidFileCharsTests ()
 		{
+			Assert.True (FileService.IsValidFileName ("file"), "Empty string");
+			Assert.True (FileService.IsValidFileName ("text.txt"), "Empty string");
+			Assert.True (FileService.IsValidFileName (".gitignore"), "Empty string");
+
+			Assert.False (FileService.IsValidFileName (""), "Empty string");
+			Assert.False (FileService.IsValidFileName ("  "), "Empty string");
+
+			// Test strings containing an invalid character.
+			foreach (var c in FilePath.GetInvalidFileNameChars ())
+				Assert.False (FileService.IsValidFileName (c.ToString ()),
+					string.Format ("String with {0} (charcode: {1})", Char.IsControl (c) ? "<Control Char>" : c.ToString (), Convert.ToInt32 (c)));
+		}
+
+		[Test]
+		public void InvalidPathCharsTests ()
+		{
+			Assert.True (FileService.IsValidPath ("./relative_file"), "Empty string");
+			Assert.True (FileService.IsValidPath ("/path/to/file"), "Empty string");
+			Assert.True (FileService.IsValidPath ("Drive:\\some\\path\\here"), "Empty string");
+
+			Assert.False (FileService.IsValidPath (""), "Empty string");
+			Assert.False (FileService.IsValidPath ("  "), "Empty string");
+
+			// Test strings containing an invalid character.
+			foreach (var c in FilePath.GetInvalidPathChars ())
+				Assert.False (FileService.IsValidPath (c.ToString ()),
+					string.Format ("String with {0} (charcode: {1})", Char.IsControl (c) ? "<Control Char>" : c.ToString (), Convert.ToInt32 (c)));
 		}
 	}
 }
