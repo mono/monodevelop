@@ -1225,8 +1225,11 @@ namespace MonoDevelop.Ide.Editor
 			TextEditorExtension lastExtension = textEditorImpl.EditorExtension;
 			while (lastExtension != null && lastExtension.Next != null) {
 				var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
-				if (completionTextEditorExtension != null) 
-					lastExtension.Next = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+				if (completionTextEditorExtension != null) {
+					var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+					lastExtension.Next = projectedFilterExtension;
+					projectedFilterExtension.Initialize (this, DocumentContext);
+				}
 				lastExtension = lastExtension.Next;
 			}
 
