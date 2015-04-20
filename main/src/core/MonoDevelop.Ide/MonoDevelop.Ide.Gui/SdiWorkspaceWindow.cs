@@ -261,8 +261,15 @@ namespace MonoDevelop.Ide.Gui
 		public void SelectWindow()
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
-			if (window != null)
+			if (window != null) {
 				window.Present ();
+
+				#if MAC
+				AppKit.NSWindow nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
+				if (nswindow != null)
+					nswindow.MakeFirstResponder (nswindow.ContentView);
+				#endif
+			}	
 
 			// The tab change must be done now to ensure that the content is created
 			// before exiting this method.
