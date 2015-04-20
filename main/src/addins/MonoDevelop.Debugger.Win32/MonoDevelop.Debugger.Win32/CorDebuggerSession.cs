@@ -491,7 +491,7 @@ namespace MonoDevelop.Debugger.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				char[] badPathChars = System.IO.Path.GetInvalidPathChars();
+				char[] badPathChars = MonoDevelop.Core.FilePath.GetInvalidPathChars ();
 				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
 					try {
 						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
