@@ -43,16 +43,12 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var project = (DotNetProject)doc.Project;
-			var currentLocation = doc.Editor.Caret.Location;
 
-			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
-			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
-			if (pos > 0)
-				controllerName = controllerName.Remove (pos);
-
+			var method = MethodDeclarationAtCaret.Create (doc);
+			string controllerName = method.GetParentMvcControllerName ();
 			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
-			AddView (project, path, actionName);
+
+			AddView (project, path, method.Name);
 		}
 
 		public static void AddView (DotNetProject project, string path, string name)

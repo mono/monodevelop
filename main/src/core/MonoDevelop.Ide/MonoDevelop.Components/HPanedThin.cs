@@ -37,7 +37,7 @@ namespace MonoDevelop.Components
 
 		public HPanedThin ()
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 			handle = new CustomPanedHandle (this);
 			handle.Parent = this;
 		}

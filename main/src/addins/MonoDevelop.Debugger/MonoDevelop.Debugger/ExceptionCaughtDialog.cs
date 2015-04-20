@@ -38,7 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
@@ -232,6 +232,7 @@ namespace MonoDevelop.Debugger
 			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
 			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
 			OnlyShowMyCodeCheckbox.Show ();
+			OnlyShowMyCodeCheckbox.Active = DebuggingService.GetUserOptions ().ProjectAssembliesOnly;
 
 			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = OnlyShowMyCodeCheckbox };
 			alignment.Show ();
@@ -782,17 +783,17 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtTextEditorExtension: TextEditorExtension
 	{
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
+				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;
 			}
 
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 	}
 }

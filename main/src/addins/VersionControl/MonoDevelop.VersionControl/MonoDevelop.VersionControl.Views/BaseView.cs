@@ -1,6 +1,7 @@
 using System;
 using System.IO; 
 using MonoDevelop.Ide.Gui;
+using System.Text;
 
 namespace MonoDevelop.VersionControl
 {
@@ -13,10 +14,15 @@ namespace MonoDevelop.VersionControl
 			this.name = name;
 		}
 		
-		protected virtual void SaveAs (string fileName)
+		protected virtual void SaveAs (FileSaveInformation fileSaveInformation)
 		{
 		}
 
+		void IViewContent.Load (FileOpenInformation fileOpenInformation)
+		{
+			throw new InvalidOperationException();
+		}
+		
 		void IViewContent.Load (string fileName)
 		{
 			throw new InvalidOperationException();
@@ -38,9 +44,14 @@ namespace MonoDevelop.VersionControl
 		
 		void IViewContent.Save (string fileName)
 		{
-			SaveAs (fileName);
+			SaveAs (new FileSaveInformation (fileName));
 		}
-		
+
+		void IViewContent.Save (FileSaveInformation info)
+		{
+			SaveAs (info);
+		}
+
 		string IViewContent.ContentName {
 			get { return name; }
 			set { }

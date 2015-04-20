@@ -17,15 +17,20 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
+<<<<<<< HEAD
 DEP_NEEDED_VERSION[0]=6d12a0fa86dfea73b8bfde67cc960decd59efae7
 DEP_BRANCH_AND_REMOTE[0]="new-project-model origin/new-project-model"
+=======
+DEP_NEEDED_VERSION[0]=72883b1936ad1211e553cb49b4496160cbff7cc6
+DEP_BRANCH_AND_REMOTE[0]="roslyn origin/roslyn"
+>>>>>>> origin/roslyn
 
 # heap-shot
 DEP[1]=heap-shot
 DEP_NAME[1]=HEAPSHOT
 DEP_PATH[1]=${top_srcdir}/../heap-shot
 DEP_MODULE[1]=git://github.com/mono/heap-shot.git
-DEP_NEEDED_VERSION[1]=8822b2285aa09daae71c48f4a1ebf73be751155c
+DEP_NEEDED_VERSION[1]=30d34139b33e908356cdf7007e0f84d8cc483f60
 DEP_BRANCH_AND_REMOTE[1]="master origin/master"
 
 # other dependencies

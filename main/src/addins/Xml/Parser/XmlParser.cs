@@ -30,10 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Xml.Parser
 {
@@ -45,8 +45,8 @@ namespace MonoDevelop.Xml.Parser
 		bool buildTree;
 		
 		int position;
-		TextLocation location;
-		TextLocation previousLineEnd;
+		DocumentLocation location;
+		DocumentLocation previousLineEnd;
 		int stateTag;
 		StringBuilder keywordBuilder;
 		int currentStateLength;
@@ -94,7 +94,7 @@ namespace MonoDevelop.Xml.Parser
 		#region IDocumentStateEngine
 		
 		public int Position { get { return position; } }
-		public TextLocation Location { get { return location; } }
+		public DocumentLocation Location { get { return location; } }
 		
 		public void Reset ()
 		{
@@ -102,8 +102,8 @@ namespace MonoDevelop.Xml.Parser
 			previousState = rootState;
 			position = 0;
 			stateTag = 0;
-			location = new TextLocation (1, 1);
-			previousLineEnd = TextLocation.Empty;
+			location = new DocumentLocation (1, 1);
+			previousLineEnd = DocumentLocation.Empty;
 			keywordBuilder = new StringBuilder ();
 			currentStateLength = 0;
 			nodes = new NodeStack ();
@@ -131,10 +131,10 @@ namespace MonoDevelop.Xml.Parser
 				//FIXME: position/location should be at current char, not after it
 				position++;
 				if (c == '\n') {
-					previousLineEnd = new TextLocation (location.Line, location.Column + 1);
-					location = new TextLocation (location.Line + 1, 1);
+					previousLineEnd = new DocumentLocation (location.Line, location.Column + 1);
+					location = new DocumentLocation (location.Line + 1, 1);
 				} else {
-					location = new TextLocation (location.Line, location.Column + 1);
+					location = new DocumentLocation (location.Line, location.Column + 1);
 				}
 
 				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
@@ -172,7 +172,7 @@ namespace MonoDevelop.Xml.Parser
 
 					//rollback position and location so they're valid
 					position -= (rollback.Length + 1);
-					location = new TextLocation (location.Line, location.Column - (rollback.Length + 1));
+					location = new DocumentLocation (location.Line, location.Column - (rollback.Length + 1));
 					if (location.Column < 0)
 						throw new InvalidOperationException ("Can't roll back across line boundary");
 
@@ -181,7 +181,7 @@ namespace MonoDevelop.Xml.Parser
 
 					//restore position and location
 					position++;
-					location = new TextLocation (location.Line, location.Column + 1);
+					location = new DocumentLocation (location.Line, location.Column + 1);
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
 			} catch (Exception ex)  {
@@ -253,8 +253,8 @@ namespace MonoDevelop.Xml.Parser
 				builder.AppendLine ("Errors=");
 				foreach (Error err in errors) {
 					builder.Append (' ', 4);
-					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.BeginLine,
-					                      err.Region.BeginColumn, err.Message);
+					builder.AppendFormat ("[{0}@{1}:{2}, {3}]\n", err.ErrorType, err.Region.Begin.Line,
+					                      err.Region.Begin.Column, err.Message);
 				}
 			}
 			
@@ -269,7 +269,7 @@ namespace MonoDevelop.Xml.Parser
 			set { stateTag = value; }
 		}
 		
-		TextLocation IXmlParserContext.LocationMinus (int colOffset)
+		DocumentLocation IXmlParserContext.LocationMinus (int colOffset)
 		{
 			int col = Location.Column - colOffset;
 			int line = Location.Line;
@@ -279,7 +279,7 @@ namespace MonoDevelop.Xml.Parser
 				System.Diagnostics.Debug.Assert (col > 0);
 			}
 			System.Diagnostics.Debug.Assert (line > 0);
-			return new TextLocation (line, col);
+			return new DocumentLocation (line, col);
 		}
 		
 		StringBuilder IXmlParserContext.KeywordBuilder {
@@ -307,25 +307,25 @@ namespace MonoDevelop.Xml.Parser
 				InternalLogError (new Error (ErrorType.Warning, message, ((IXmlParserContext)this).LocationMinus (1)));
 		}
 		
-		void IXmlParserContext.LogError (string message, TextLocation location)
+		void IXmlParserContext.LogError (string message, DocumentLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Error, message, ((IXmlParserContext)this).LocationMinus (1)));
 		}
 		
-		void IXmlParserContext.LogWarning (string message, TextLocation location)
+		void IXmlParserContext.LogWarning (string message, DocumentLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Warning, message, location));
 		}
 		
-		void IXmlParserContext.LogError (string message, DomRegion region)
+		void IXmlParserContext.LogError (string message, DocumentRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Error, message, region));
 		}
 		
-		void IXmlParserContext.LogWarning (string message, DomRegion region)
+		void IXmlParserContext.LogWarning (string message, DocumentRegion region)
 		{
 			if (errors != null || ErrorLogged != null)
 				InternalLogError (new Error (ErrorType.Warning, message, region));
@@ -382,17 +382,17 @@ namespace MonoDevelop.Xml.Parser
 		int StateTag { get; set; }
 		StringBuilder KeywordBuilder { get; }
 		int CurrentStateLength { get; }
-		TextLocation Location { get; }
-		TextLocation LocationMinus (int colOffset);
+		DocumentLocation Location { get; }
+		DocumentLocation LocationMinus (int colOffset);
 		XmlParserState PreviousState { get; }
 		NodeStack Nodes { get; }
 		bool BuildTree { get; }
 		void LogError (string message);
 		void LogWarning (string message);
-		void LogError (string message, TextLocation location);
-		void LogWarning (string message, TextLocation location);
-		void LogError (string message, DomRegion region);
-		void LogWarning (string message, DomRegion region);
+		void LogError (string message, DocumentLocation location);
+		void LogWarning (string message, DocumentLocation location);
+		void LogError (string message, DocumentRegion region);
+		void LogWarning (string message, DocumentRegion region);
 		void EndAll (bool pop);
 		void ConnectAll ();
 	}

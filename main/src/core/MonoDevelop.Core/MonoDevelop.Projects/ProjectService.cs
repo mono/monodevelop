@@ -35,6 +35,8 @@ using MonoDevelop.Core.Serialization;
 
 using MonoDevelop.Core;
 using Mono.Addins;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects.Extensions;
@@ -177,7 +179,7 @@ namespace MonoDevelop.Projects
 			return Runtime.RunInMainThread (async delegate {
 				if (!File.Exists (file))
 					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
-				string fullpath = FileService.ResolveFullPath (file).FullPath;
+				string fullpath = file.ResolveLinks ().FullPath;
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 					fullpath = GetTargetFile (fullpath);
 					WorkspaceItem item = await GetExtensionChain ().LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;

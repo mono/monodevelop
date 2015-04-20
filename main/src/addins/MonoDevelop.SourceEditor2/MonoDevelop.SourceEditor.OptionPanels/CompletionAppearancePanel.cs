@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -52,7 +53,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
 		{
-			spinbutton1.Value = CompletionTextEditorExtension.CompletionListRows;
 			filterByBrowsableCheckbutton.Active = CompletionTextEditorExtension.FilterCompletionListByEditorBrowsable;
 			normalOnlyRadiobutton.Active = !CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers;
 			includeAdvancedRadiobutton.Active = CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers;
@@ -72,7 +72,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void IOptionsPanel.ApplyChanges ()
 		{
-			CompletionTextEditorExtension.CompletionListRows.Value = spinbutton1.ValueAsInt;
 			CompletionTextEditorExtension.FilterCompletionListByEditorBrowsable.Value = filterByBrowsableCheckbutton.Active;
 			CompletionTextEditorExtension.IncludeEditorBrowsableAdvancedMembers.Value = includeAdvancedRadiobutton.Active;
 		}

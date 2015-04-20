@@ -25,19 +25,18 @@
 // THE SOFTWARE.
 
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {
 	public class WebFormsServerComment : XNode
 	{
-		public WebFormsServerComment (DomRegion region) : base (region)
+		public WebFormsServerComment (DocumentRegion region) : base (region)
 		{
 		}
 
-		public WebFormsServerComment (TextLocation start) : base (start)
+		public WebFormsServerComment (DocumentLocation start) : base (start)
 		{
 		}
 

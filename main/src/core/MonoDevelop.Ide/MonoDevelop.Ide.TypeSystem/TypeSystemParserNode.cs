@@ -113,6 +113,4 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 	}
-
 }
-

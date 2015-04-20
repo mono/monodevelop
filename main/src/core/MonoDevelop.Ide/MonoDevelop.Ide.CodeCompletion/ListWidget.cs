@@ -30,12 +30,14 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using Pango;
-using ICSharpCode.NRefactory.Completion;
-using Mono.TextEditor;
-using Mono.TextEditor.Highlighting;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
+using System.ComponentModel.Design;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
@@ -100,21 +102,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public readonly static PropertyWrapper<bool> EnableCompletionCategoryMode = PropertyService.Wrap("EnableCompletionCategoryMode", false);
 
 		public bool InCategoryMode {
-			get { return EnableCompletionCategoryMode; }
-			set {
-				EnableCompletionCategoryMode.Set(value);
-
-				CalcVisibleRows ();
-				if (value)
-					SelectFirstItemInCategory ();
-			}
+			get { return EnableCompletionCategoryMode && categories.Count > 1; }
 		}
+
+		internal void UpdateCategoryMode ()
+		{
+			CalcVisibleRows ();
+			if (InCategoryMode)
+				SelectFirstItemInCategory ();
+		}
+
 		public int CategoryCount {
 			get { return this.categories.Count; }
 		}
 
 		ICompletionWidget completionWidget;
-		public ICompletionWidget CompletionWidget {
+		internal ICompletionWidget CompletionWidget {
 			get {
 				return completionWidget;
 			}
@@ -141,14 +144,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// TODO: Add font property to ICompletionWidget;
 			if (itemFont != null)
 				itemFont.Dispose ();
-			itemFont = FontService.GetFontDescription ("Editor").Copy ();
-			var provider = CompletionWidget as ITextEditorDataProvider;
-			if (provider != null) {
-				var newSize = (itemFont.Size * provider.GetTextEditorData ().Options.Zoom);
-				if (newSize > 0) {
-					itemFont.Size = (int)newSize;
-					layout.FontDescription = itemFont;
-				}
+			itemFont = FontService.MonospaceFont.Copy ();
+			var newSize = (itemFont.Size * (completionWidget != null ? this.completionWidget.ZoomLevel : 1));
+			if (newSize > 0) {
+				itemFont.Size = (int)newSize;
+				layout.FontDescription = itemFont;
 			}
 		}
 
@@ -380,8 +380,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public bool SelectionEnabled {
 			get {
-				return AutoSelect && (AutoCompleteEmptyMatch || !string.IsNullOrEmpty (CompletionString));
+				return AutoSelect && (AutoCompleteEmptyMatch || !IsEmptyMatch (CompletionString));
 			}
+		}
+
+		static bool IsEmptyMatch (string completionString)
+		{
+			if (string.IsNullOrEmpty (completionString))
+				return true;
+			var ch = completionString [0];
+			return char.IsDigit (ch);
 		}
 		
 		protected override bool OnButtonPressEvent (EventButton e)
@@ -656,7 +664,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			});
 			categories = newCategories;
 
-			SelectFirstItemInCategory ();
+			//SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			SetAdjustments ();
 

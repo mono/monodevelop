@@ -209,10 +209,11 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual void ReconnectAssemblyReferences (IPackageManagementProject project)
 		{
-			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
-			if (projectWrapper != null) {
-				projectWrapper.ReconnectAssemblyReferences ();
-			}
+			// TODO : Roslyn port ? 
+//			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
+//			if (projectWrapper != null) {
+//				projectWrapper.ReconnectAssemblyReferences ();
+//			}
 		}
 
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)

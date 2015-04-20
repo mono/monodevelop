@@ -40,6 +40,8 @@ namespace MonoDevelop.Debugger
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.Decorated = false;
+			if (((Gtk.Window)invokingWidget.Toplevel).Modal)
+				this.Modal = true;
 			TransientFor = (Gtk.Window) invokingWidget.Toplevel;
 
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));

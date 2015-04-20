@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CSharpBinding</AssemblyName>
     <RootNamespace>CSharpBinding</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -52,11 +52,6 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -65,11 +60,6 @@
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
@@ -125,10 +115,21 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
       <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
       <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
       <Name>ICSharpCode.NRefactory.Xml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
+      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory6.CSharp.Refactoring.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp.Refactoring</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +154,50 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\external\NRefactory6\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\ConsoleProject.xpt.xml">
@@ -191,26 +236,14 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml">
       <LogicalName>MonoCSharpPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\SharpDevelopCSharpPolicy.xml">
-      <LogicalName>SharpDevelopCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\WhitesmithsCSharpPolicy.xml">
-      <LogicalName>WhitesmithsCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUCSharpPolicy.xml">
-      <LogicalName>GNUCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUTextStylePolicy.xml">
-      <LogicalName>GNUTextStylePolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml">
-      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
       <LogicalName>PortableLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\MonoNameConventionPolicy.xml">
+      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -230,7 +263,6 @@
     <Compile Include="MonoDevelop.CSharp\CSharpBindingCompilerManager.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpEnhancedCodeProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpLanguageBinding.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\Indent.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\OnTheFlyFormatter.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\HighlightUsagesExtension.cs" />
@@ -247,18 +279,8 @@
     <Compile Include="MonoDevelop.CSharp\CSharpAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs">
-      <DependentUpon>IndexerParameterDataProvider.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpReferenceFinder.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
@@ -276,47 +298,112 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeAction.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\AstAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\AstStockIcons.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\BaseNRefactoryIssueProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\CSharpProjectExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Project\PortableCSharpProjectFlavor.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSortingPreferencesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs">
+      <DependentUpon>ProtocolMemberContextHandler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CreateOverrideCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CreatePartialCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\TextEditorResolverProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Parser\CSharpParsedDocument.cs" />
+    <Compile Include="MonoDevelop.CSharp.Resolver\DebuggerExpressionResolver.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ImportSymbolCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolMemberContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\AnonymousMethodCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\ObjectCreationCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\CastCompletionData.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionData.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonIndentationTracker.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonIndentEngine.cs" />
+    <Compile Include="MonoDevelop.JSon\JSonTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ExtractMethodCommandHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RefactoryCommands.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\CSharpAddImportCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\AddImport\AbstractAddImportCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\CSharpFullyQualifyCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\PredefinedCodeFixProviderNames.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpConvertToAsyncMethodCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAwaitCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\CSharpAddAsyncCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\Async\AbstractAsyncCodeFix.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\MoveTypeToFile.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\GotoDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\GenerateConstructorCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\AbstractGenerateMemberCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\GenerateEnumMemberCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateConversionCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\GenerateMethodCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\GenerateVariableCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\ImplementAbstractClassCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\ImplementInterfaceCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynCompletionCategory.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\IntroduceVariableCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\PredefinedCodeRefactoringProviderNames.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.InitializerRewriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\InlineTemporaryCodeRefactoringProvider.ReferenceRewriter.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\ExtractMethodCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\GenerateType\GenerateTypeCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\DiagnosticCustomTags.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\IDEDiagnosticIds.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\SimplifyTypeNamesCodeFixProvider.SimplifyTypeNamesFixAllProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\RemoveUnnecessaryUsingsCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\CSharpRemoveUnnecessaryCastDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\RemoveUnnecessaryImportsDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\CSharpRemoveUnnecessaryImportsDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\SimplifyTypeNamesDiagnosticAnalyzerBase.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\CSharpSimplifyTypeNamesDiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\RemoveUnnecessaryCastCodeFixProvider.RemoveUnnecessaryCastFixAllProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\MonoTODODiagnosticAnalyzer.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionPolicy.cs" />
+    <Compile Include="MonoDevelop.CSharp.Diagnostics\InconsistentNaming\NameConventionRule.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFeaturesTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindReferencesHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindExtensionMethodHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberOverloadsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\GotoBaseDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
+    <None Include="packages.config" />
+    <None Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\ConvertToEnumCodeRefactoringProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -330,13 +417,36 @@
     <Folder Include="MonoDevelop.CSharp.Completion\" />
     <Folder Include="MonoDevelop.CSharp.CodeGeneration\" />
     <Folder Include="MonoDevelop.CSharp.Formatting\policies\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\" />
     <Folder Include="MonoDevelop.CSharp.Tooltips\" />
     <Folder Include="MonoDevelop.CSharp.UnitTests\" />
-    <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\" />
     <Folder Include="icons\" />
+    <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
+    <Folder Include="MonoDevelop.CSharp.NRefactoryWrapper\" />
+    <Folder Include="MonoDevelop.JSon\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\AddImport\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\FullyQualify\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\Async\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\MoveTypeToFile\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateConstructor\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateEnumMember\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateMethod\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateVariable\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementAbstractClass\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\ImplementInterface\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\IntroduceVariable\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\InlineTemporary\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ExtractMethod\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\GenerateType\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\SimplifyTypeNames\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryUsings\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryCast\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\RemoveUnnecessaryImports\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\SimplifyTypeNames\" />
+    <Folder Include="MonoDevelop.CSharp.CodeFixes\RemoveUnnecessaryCast\" />
+    <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
   </ItemGroup>
 </Project>

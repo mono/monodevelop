@@ -52,7 +52,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			outputPad.BasePath = path;
 		}
-		
+
+		public PathMode PathMode {
+			set { outputPad.PathMode = value; }
+		}
+
 		public void ReportResult (SearchResult result)
 		{
 			DispatchService.GuiDispatch (delegate {

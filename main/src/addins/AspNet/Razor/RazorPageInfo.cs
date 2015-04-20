@@ -27,9 +27,9 @@
 using System.Collections.Generic;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -54,8 +54,8 @@ namespace MonoDevelop.AspNet.Razor
 
 	public class RazorCSharpPageInfo : RazorPageInfo
 	{
-		public ParsedDocumentDecorator CSharpParsedFile { get; set; }
-		public ICompilation Compilation { get; set; }
+		public SyntaxTree CSharpParsedFile { get; set; }
+		public Compilation Compilation { get; set; }
 		public string CSharpCode { get; set; }
 	}
 

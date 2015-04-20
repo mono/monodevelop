@@ -372,7 +372,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Run ();
 
-			Assert.AreEqual ("Incompatible packages found. Please see Package Console for details.", progressMonitor.ReportedErrorMessage);
+			Assert.AreEqual ("Incompatible packages found.", progressMonitor.ReportedErrorMessage);
 			Assert.IsTrue (runner.PackageConsoleIsShown);
 		}
 	}

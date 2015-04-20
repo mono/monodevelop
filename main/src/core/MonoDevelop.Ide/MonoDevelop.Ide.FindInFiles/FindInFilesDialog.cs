@@ -37,6 +37,11 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
+	public enum PathMode {
+		Absolute,
+		Hidden
+	}
+
 	public partial class FindInFilesDialog : Gtk.Dialog
 	{
 		readonly bool writeScope = true;
@@ -191,7 +196,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				toggleFindInFiles.Toggle ();
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> ();
+				var view = IdeApp.Workbench.ActiveDocument.Editor;
 				if (view != null) {
 					string selectedText = FormatPatternToSelectionOption (view.SelectedText, properties.Get ("RegexSearch", false));
 					if (!string.IsNullOrEmpty (selectedText)) {
@@ -668,9 +673,17 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			switch ((SearchScope) comboboxScope.Active) {
 			case SearchScope.CurrentDocument:
+				if (IdeApp.Workbench.ActiveDocument == null) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
+					return null;
+				}
 				scope = new DocumentScope ();
 				break;
 			case SearchScope.Selection:
+				if (IdeApp.Workbench.ActiveDocument == null) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
+					return null;
+				}
 				scope = new SelectionScope ();
 				break;
 			case SearchScope.WholeWorkspace:
@@ -699,6 +712,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				return null;
 			case SearchScope.AllOpenFiles:
+				if (IdeApp.Workbench.Documents.Count == 0) {
+					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open documents."));
+					return null;
+				}
 				scope = new AllOpenFilesScope ();
 				break;
 			case SearchScope.Directories: 
@@ -790,6 +807,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			ThreadPool.QueueUserWorkItem (delegate {
 				CancellationTokenSource cancelSource = new CancellationTokenSource ();
 				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, cancellationTokenSource:cancelSource)) {
+
+					searchMonitor.PathMode = scope.PathMode;
+
 					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 					lock (searchesInProgress)
 						searchesInProgress.Add (cancelSource);

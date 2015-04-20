@@ -91,7 +91,11 @@ namespace MonoDevelop.Ide.Commands
 		DuplicateLine,
 		
 		ToggleCompletionSuggestionMode,
-		ToggleBlockSelectionMode
+		ToggleBlockSelectionMode,
+
+		DynamicAbbrev,
+
+		PulseCaret
 	}
 	
 	public class ToggleCompletionSuggestionModeHandler : CommandHandler

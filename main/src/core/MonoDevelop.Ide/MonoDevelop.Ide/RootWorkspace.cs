@@ -554,7 +554,7 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (false);
 			}
-			
+
 			using (monitor) {
 				try {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
@@ -910,6 +910,11 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
+			try {
+				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not load parser database.", ex);
+			}
 			if (DispatchService.IsGuiThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
@@ -919,18 +924,9 @@ namespace MonoDevelop.Ide
 				});
 			}
 		}
-		
+
 		void NotifyItemAddedGui (WorkspaceItem item, bool reloading)
 		{
-			try {
-//				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item);
-//				Mono.Profiler.RuntimeControls.DisableProfiler ();
-//				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not load parser database.", ex);
-			}
-
 			Workspace ws = item as Workspace;
 			if (ws != null) {
 				ws.DescendantItemAdded += NotifyDescendantItemAdded;
@@ -982,10 +978,8 @@ namespace MonoDevelop.Ide
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
-			
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
-//			ParserDatabase.Unload (item);
-			
+
 			NotifyDescendantItemRemoved (this, args);
 		}
 		
@@ -1223,7 +1217,7 @@ namespace MonoDevelop.Ide
 		/// once for the workspace, and once for each solution.
 		/// </remarks>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
-		
+
 		/// <summary>
 		/// Fired when a workspace item (a solution or workspace) is unloaded
 		/// </summary>

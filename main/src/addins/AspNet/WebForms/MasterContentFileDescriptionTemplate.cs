@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.WebForms
 			tags ["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
-				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath)
+				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath).Result
 						as WebFormsParsedDocument;
 				if (pd == null)
 					return;

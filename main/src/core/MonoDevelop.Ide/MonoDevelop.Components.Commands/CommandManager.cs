@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
-using Mono.TextEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -847,8 +846,8 @@ namespace MonoDevelop.Components.Commands
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
-
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			
+			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 		
 		/// <summary>

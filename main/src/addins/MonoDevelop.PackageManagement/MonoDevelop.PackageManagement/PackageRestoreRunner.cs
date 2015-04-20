@@ -156,10 +156,11 @@ namespace MonoDevelop.PackageManagement
 
 		void ReconnectAssemblyReferences (DotNetProject dotNetProject)
 		{
-			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
-			if (projectWrapper != null) {
-				projectWrapper.ReconnectAssemblyReferences ();
-			}
+			// TODO: Roslyn port ?
+//			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
+//			if (projectWrapper != null) {
+//				projectWrapper.ReconnectAssemblyReferences ();
+//			}
 		}
 	}
 }

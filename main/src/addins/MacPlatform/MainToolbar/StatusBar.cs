@@ -160,7 +160,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (TaskListEntry t in TaskService.Errors) {
+				foreach (var t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
@@ -198,6 +198,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
+				if (Window == null)
+					return;
+
 				ReconstructString ();
 				foreach (var layer in Layer.Sublayers) {
 					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))

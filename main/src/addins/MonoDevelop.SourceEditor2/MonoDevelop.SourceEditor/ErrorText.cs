@@ -38,7 +38,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ErrorText
+	class ErrorText
 	{
 		public TaskListEntry Task { get; set; }
 		public bool IsError { get; set; }

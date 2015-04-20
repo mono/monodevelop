@@ -28,7 +28,6 @@ using Gtk;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -129,8 +128,18 @@ namespace MonoDevelop.Ide.WelcomePage
 				if (uri.StartsWith ("project://")) {
 					string projectUri = uri.Substring ("project://".Length);			
 					Uri fileuri = new Uri (projectUri);
-					Gdk.ModifierType mtype = Mono.TextEditor.GtkWorkarounds.GetCurrentKeyModifiers ();
+					Gdk.ModifierType mtype = GtkWorkarounds.GetCurrentKeyModifiers ();
 					bool inWorkspace = (mtype & Gdk.ModifierType.ControlMask) != 0;
+
+					// Notify the RecentFiles that this item does not exist anymore.
+					// Possible other solution would be to check the recent projects list on focus in
+					// and update them accordingly.
+					if (!System.IO.File.Exists (fileuri.LocalPath)) {
+						MessageService.ShowError (GettextCatalog.GetString ("File not found {0}", fileuri.LocalPath));
+						FileService.NotifyFileRemoved (fileuri.LocalPath);
+						return;
+					}
+
 					IdeApp.Workspace.OpenWorkspaceItem (fileuri.LocalPath, !inWorkspace);
 				} else if (uri.StartsWith ("monodevelop://")) {
 					var cmdId = uri.Substring ("monodevelop://".Length);

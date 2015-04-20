@@ -24,19 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {
 	public abstract class RazorExpression : XNode
 	{
-		protected RazorExpression (DomRegion region) : base (region)
+		protected RazorExpression (DocumentRegion region) : base (region)
 		{
 		}
 
-		protected RazorExpression (TextLocation start) : base (start)
+		protected RazorExpression (DocumentLocation start) : base (start)
 		{
 		}
 

@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System.IO;
+using System.Threading;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms;
+using MonoDevelop.Core.Text;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.CodeCompletion;
@@ -47,13 +49,17 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			var textEditorCompletion = CreateEditor (text, extension, out editorText, out sev);
 			int cursorPosition = text.IndexOf ('$');
 
-			int triggerWordLength = 1;
 			var ctx = textEditorCompletion.GetCodeCompletionContext (sev);
 
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
-			else
-				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
+			else {
+				var task = textEditorCompletion.HandleCodeCompletionAsync (ctx, editorText [cursorPosition - 1]);
+				if (task != null) {
+					return task.Result as CompletionDataList;
+				}
+				return null;
+			}
 		}
 
 		static WebFormsTestingEditorExtension CreateEditor (string text, string extension, out string editorText, out TestViewContent sev)
@@ -76,10 +82,6 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			string file = UnitTests.TestBase.GetTempFile (extension);
 			project.AddFile (file);
 
-			var pcw = TypeSystemService.LoadProject (project);
-			TypeSystemService.ForceUpdate (pcw);
-			pcw.ReconnectAssemblyReferences ();
-
 			sev = new TestViewContent ();
 			sev.Project = project;
 			sev.ContentName = file;
@@ -90,9 +92,14 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			tww.ViewContent = sev;
 
 			var doc = new TestDocument (tww);
-			doc.Editor.Document.FileName = sev.ContentName;
+			doc.Editor.FileName = sev.ContentName;
 			var parser = new WebFormsParser ();
-			var parsedDoc = (WebFormsParsedDocument) parser.Parse (false, sev.ContentName, new StringReader (parsedText), project);
+			var options = new ParseOptions {
+				Project = project,
+				FileName = sev.ContentName,
+				Content = new StringTextSource (parsedText)
+			};
+			var parsedDoc = (WebFormsParsedDocument)parser.Parse (options, default(CancellationToken)).Result;
 			doc.HiddenParsedDocument = parsedDoc;
 
 			return new WebFormsTestingEditorExtension (doc);
@@ -102,7 +109,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 		{
 			public WebFormsTestingEditorExtension (Document doc)
 			{
-				Initialize (doc);
+				Initialize (doc.Editor, doc);
 			}
 
 			public CodeCompletionContext GetCodeCompletionContext (TestViewContent sev)

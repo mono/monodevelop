@@ -45,18 +45,17 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
-using Mono.TextEditor;
 using System.Diagnostics;
-using ICSharpCode.NRefactory.Documentation;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading.Tasks;
 using System.Threading;
 using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Projects.Formats.MSBuild;
+using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide
 {
@@ -231,31 +230,33 @@ namespace MonoDevelop.Ide
 			return (GetDeclaredFile(item) != null);
 		}*/
 		
-		public bool CanJumpToDeclaration (object element)
+		public bool CanJumpToDeclaration (Microsoft.CodeAnalysis.ISymbol symbol)
 		{
-			if (element is ICSharpCode.NRefactory.TypeSystem.IVariable)
-				return true;
-			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
-			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
-				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
-			if (entity == null)
+			if (symbol == null)
 				return false;
-			if (entity.Region.IsEmpty) {
-				var parentAssembly = entity.ParentAssembly;
-				if (parentAssembly == null)
-					return false;
-				return !string.IsNullOrEmpty (parentAssembly.UnresolvedAssembly.Location);
+			switch (symbol.Kind) {
+			case Microsoft.CodeAnalysis.SymbolKind.Local:
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
+			case Microsoft.CodeAnalysis.SymbolKind.Method:
+			case Microsoft.CodeAnalysis.SymbolKind.Field:
+			case Microsoft.CodeAnalysis.SymbolKind.Property:
+			case Microsoft.CodeAnalysis.SymbolKind.Event:
+			case Microsoft.CodeAnalysis.SymbolKind.Label:
+			case Microsoft.CodeAnalysis.SymbolKind.TypeParameter:
+			case Microsoft.CodeAnalysis.SymbolKind.RangeVariable:
+				return true;
 			}
-			return true;
+			return false;
 		}
 
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
+		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
 		{
-			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
-			var doc = new Mono.TextEditor.TextDocument ();
+			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = provider.ReadString ();
-			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
-			while (position + part.Name.Length < doc.TextLength) {
+			int position = location.SourceSpan.Start;
+			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 					break;
 				position++;
@@ -263,67 +264,90 @@ namespace MonoDevelop.Ide
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
 
-		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement visitable, bool askIfMultipleLocations = true)
+		public void JumpTo (Microsoft.CodeAnalysis.ISymbol symbol, Microsoft.CodeAnalysis.Location location, Project project = null)
 		{
-			if (askIfMultipleLocations) {
-				var type = visitable as ICSharpCode.NRefactory.TypeSystem.IType;
-				if (type != null && type.GetDefinition () != null && type.GetDefinition ().Parts.Count > 1) {
-					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-						foreach (var part in type.GetDefinition ().Parts)
-							monitor.ReportResult (GetJumpTypePartSearchResult (part));
-					}
+			if (location == null)
+				return;
+			if (location.IsInMetadata) {
+				string fileName = null;
+				var dn = project as DotNetProject;
+				if (dn == null)
 					return;
+				var metadataDllName = location.MetadataModule.Name;
+				if (metadataDllName == "CommonLanguageRuntimeLibrary")
+					metadataDllName = "corlib.dll";
+				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+					if (assembly.IndexOf (metadataDllName) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly);
+						break;
+					}
 				}
-			}
+				if (fileName == null)
+					return;
+				var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, project));
 
-			JumpToDeclaration (visitable);
-		}
+				if (doc != null) {
+					doc.RunWhenLoaded (delegate {
+						var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
+						if (handler != null)
+							handler.Open (symbol);
+					});
+				}
 
-		void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.INamedElement element)
-		{
-			var entity = element as ICSharpCode.NRefactory.TypeSystem.IEntity;
-
-			if (entity == null && element is ICSharpCode.NRefactory.TypeSystem.IType)
-				entity = ((ICSharpCode.NRefactory.TypeSystem.IType)element).GetDefinition ();
-			if (entity is SpecializedMember) 
-				entity = ((SpecializedMember)entity).MemberDefinition;
-
-			if (entity == null) {
-				LoggingService.LogError ("Unknown element:" + element);
 				return;
 			}
-			string fileName;
-			bool isCecilProjectContent = entity.Region.IsEmpty;
-			if (isCecilProjectContent) {
-				fileName = entity.ParentAssembly.UnresolvedAssembly.Location;
-			} else {
-				fileName = entity.Region.FileName;
+			IdeApp.Workbench.OpenDocument (new FileOpenInformation (location.SourceTree.FilePath, project) {
+				Offset = location.SourceSpan.Start
+			});
+		}
+		
+		public void JumpToDeclaration (Microsoft.CodeAnalysis.ISymbol symbol, Project project = null, bool askIfMultipleLocations = true)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException ("symbol");
+			var locations = symbol.Locations;
+			
+			if (askIfMultipleLocations && locations.Length > 1) {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+					foreach (var part in locations)
+						monitor.ReportResult (GetJumpTypePartSearchResult (symbol, part));
+				}
+				return;
 			}
-			var project = (entity is ITypeDefinition ? ((ITypeDefinition )entity) : entity.DeclaringTypeDefinition).GetProjectWhereTypeIsDefined ();
-			var doc = IdeApp.Workbench.OpenDocument (fileName,
-				project,
-				entity.Region.BeginLine,
-				entity.Region.BeginColumn);
+			JumpTo (symbol, locations.FirstOrDefault (), project);
+		}
 
-			if (isCecilProjectContent && doc != null) {
+		public void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null)
+		{
+			if (metadataDllName == null)
+				throw new ArgumentNullException ("metadataDllName");
+			if (documentationCommentId == null)
+				throw new ArgumentNullException ("documentationCommentId");
+			string fileName = metadataDllName;
+			if (metadataDllName == "CommonLanguageRuntimeLibrary")
+				metadataDllName = "corlib.dll";
+			var dn = project as DotNetProject;
+			if (dn != null) {
+				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+					if (assembly.IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly);
+						break;
+					}
+				}
+			}
+			if (fileName == null || !File.Exists (fileName))
+				return;
+			var doc = IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName));
+			if (doc != null) {
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
 					if (handler != null)
-						handler.Open (entity);
+						handler.Open (documentationCommentId);
 				});
 			}
 		}
 
-		public void JumpToDeclaration (ICSharpCode.NRefactory.TypeSystem.IVariable entity)
-		{
-			if (entity == null)
-				throw new ArgumentNullException ("entity");
-			string fileName = entity.Region.FileName;
-			// variables are always in the same file -> file is already open, project not needed.
-			IdeApp.Workbench.OpenDocument (fileName, null, entity.Region.BeginLine, entity.Region.BeginColumn);
-		}
-
-		public async Task RenameItem (IWorkspaceFileObject item, string newName)
+		public async void RenameItem (IWorkspaceFileObject item, string newName)
 		{
 			ProjectOptionsDialog.RenameItem (item, newName);
 			if (item is SolutionFolderItem) {
@@ -2100,7 +2124,12 @@ namespace MonoDevelop.Ide
 			return new BackgroundProgressMonitor (GettextCatalog.GetString ("Code completion database generation"), "md-parser");
 		}
 	}
-	
+
+	public interface ITextFileProvider
+	{
+		ITextDocument GetEditableTextFile (FilePath filePath);
+	}
+
 	public class TextFileProvider : ITextFileProvider
 	{
 		static TextFileProvider instance = new TextFileProvider ();
@@ -2113,101 +2142,19 @@ namespace MonoDevelop.Ide
 		TextFileProvider ()
 		{
 		}
-		
-		class ProviderProxy : ITextEditorDataProvider, IEditableTextFile
-		{
-			TextEditorData data;
-			string encoding;
-			bool bom;
-			
-			public ProviderProxy (TextEditorData data, string encoding, bool bom)
-			{
-				this.data = data;
-				this.encoding = encoding;
-				this.bom = bom;
-			}
 
-			public TextEditorData GetTextEditorData ()
-			{
-				return data;
-			}
-			
-			void Save ()
-			{
-				TextFile.WriteFile (Name, Text, encoding, bom);
-			}
-			
-			#region IEditableTextFile implementation
-			public FilePath Name { get { return data.Document.FileName; } }
-
-			public int Length { get { return data.Length; } }
-		
-			public string GetText (int startPosition, int endPosition)
-			{
-				return data.GetTextBetween (startPosition, endPosition);
-			}
-			
-			public char GetCharAt (int position)
-			{
-				return data.GetCharAt (position);
-			}
-			
-			public int GetPositionFromLineColumn (int line, int column)
-			{
-				return data.Document.LocationToOffset (line, column);
-			}
-			
-			public void GetLineColumnFromPosition (int position, out int line, out int column)
-			{
-				var loc = data.Document.OffsetToLocation (position);
-				line = loc.Line;
-				column = loc.Column;
-			}
-			
-			public int InsertText (int position, string text)
-			{
-				int result = data.Insert (position, text);
-				Save ();
-				
-				return result;
-			}
-			
-			public void DeleteText (int position, int length)
-			{
-				data.Remove (position, length);
-				Save ();
-			}
-			
-			public string Text {
-				get {
-					return data.Text;
-				}
-				set {
-					data.Text = value;
-					Save ();
-				}
-			}
-			
-			#endregion
-		}
-		
-		public IEditableTextFile GetEditableTextFile (FilePath filePath)
+		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
 			if (IdeApp.IsInitialized) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					if (doc.FileName == filePath) {
-						IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+						var ef = doc.Editor;
 						if (ef != null) return ef;
 					}
 				}
 			}
-			
-			TextFile file = TextFile.ReadFile (filePath);
-			TextEditorData data = new TextEditorData ();
-			data.Document.FileName = filePath;
-			data.Text = file.Text;
-			
-			return new ProviderProxy (data, file.SourceEncoding, file.HadBOM);
+
+			return TextEditorFactory.CreateNewDocument (StringTextSource.ReadFrom (filePath), filePath);
 		}
 
 		/// <summary>
@@ -2216,18 +2163,16 @@ namespace MonoDevelop.Ide
 		/// <returns><c>true</c>, if file operation was saved, <c>false</c> otherwise.</returns>
 		/// <param name="filePath">File path.</param>
 		/// <param name="operation">The operation.</param>
-		public bool EditFile (FilePath filePath, Action<TextEditorData> operation)
+		public bool EditFile (FilePath filePath, Action<ITextDocument> operation)
 		{
 			if (operation == null)
 				throw new ArgumentNullException ("operation");
-			bool hadBom;
-			Encoding encoding;
 			bool isOpen;
-			var data = GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
+			var data = GetTextEditorData (filePath, out isOpen);
 			operation (data);
 			if (!isOpen) {
-				try { 
-					Mono.TextEditor.Utils.TextFileUtility.WriteText (filePath, data.Text, encoding, hadBom);
+				try {
+					data.Save ();
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while saving changes to : " + filePath, e);
 					return false;
@@ -2236,13 +2181,13 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		public TextEditorData GetTextEditorData (FilePath filePath)
+		public ITextDocument GetTextEditorData (FilePath filePath)
 		{
 			bool isOpen;
 			return GetTextEditorData (filePath, out isOpen);
 		}
 
-		public TextEditorData GetReadOnlyTextEditorData (FilePath filePath)
+		public IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath)
 		{
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
@@ -2251,42 +2196,26 @@ namespace MonoDevelop.Ide
 					return doc.Editor;
 				}
 			}
-			bool hadBom;
-			Encoding encoding;
-			var text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = new TextEditorData (TextDocument.CreateImmutableDocument (text));
-			data.Document.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.Document.FileName = filePath;
-			data.Text = text;
+			var data = TextEditorFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
 			return data;
 		}
 
-		public TextEditorData GetTextEditorData (FilePath filePath, out bool isOpen)
-		{
-			bool hadBom;
-			Encoding encoding;
-			return GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
-		}
-
-		public TextEditorData GetTextEditorData (FilePath filePath, out bool hadBom, out Encoding encoding, out bool isOpen)
+		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
-					var content = doc.GetContent <MonoDevelop.Ide.Gui.Content.IEncodedTextContent> (); 
-					var theEncoding = content != null ? content.SourceEncoding : null;
-
 					isOpen = true;
-					hadBom = false;
-					encoding = theEncoding ?? Encoding.Default;
 					return doc.Editor;
 				}
 			}
-
-			var text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			TextEditorData data = new TextEditorData ();
-			data.Document.SuppressHighlightUpdate = true;
-			data.Document.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.Document.FileName = filePath;
+			bool hadBom;
+			Encoding encoding;
+			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
+			var data = TextEditorFactory.CreateNewDocument ();
+			data.UseBOM = hadBom;
+			data.Encoding = encoding;
+			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
+			data.FileName = filePath;
 			data.Text = text;
 			isOpen = false;
 			return data;

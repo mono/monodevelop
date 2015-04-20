@@ -30,10 +30,8 @@
 
 //#define ANIMATE_DOCKING
 
-using System;
 using Gtk;
 using Gdk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Docking
 {

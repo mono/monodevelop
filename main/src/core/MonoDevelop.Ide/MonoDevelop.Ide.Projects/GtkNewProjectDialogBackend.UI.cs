@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.Projects
 			WidthRequest = 901;
 			HeightRequest = 632;
 
-			Modal = true;
 			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;

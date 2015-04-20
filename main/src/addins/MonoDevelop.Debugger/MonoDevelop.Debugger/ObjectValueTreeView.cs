@@ -39,9 +39,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Extension;
 using System.Linq;
-
 
 namespace MonoDevelop.Debugger
 {
@@ -1107,8 +1106,8 @@ namespace MonoDevelop.Debugger
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
 			}
-			
-			strval = strval.Replace (Environment.NewLine, " ");
+
+			strval = strval.Replace ("\r\n", " ").Replace ("\n", " ");
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
@@ -1428,7 +1427,7 @@ namespace MonoDevelop.Debugger
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
 				CompletionWindowManager.UpdateWordSelection (text);
-				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
+				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				PopupCompletion ((Entry) sender);
 			}
 		}
@@ -1450,7 +1449,7 @@ namespace MonoDevelop.Debugger
 			keyValue = args.Event.KeyValue;
 
 			if (currentCompletionData != null) {
-				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				args.RetVal = wasHandled;
 			}
 		}
@@ -2112,7 +2111,13 @@ namespace MonoDevelop.Debugger
 				return ((ICompletionWidget)this).CreateCodeCompletionContext (editEntry.Position);
 			}
 		}
-		
+
+		public double ZoomLevel {
+			get {
+				return 1;
+			}
+		}
+
 		public event EventHandler CompletionContextChanged;
 
 		protected virtual void OnCompletionContextChanged (EventArgs e)
@@ -2146,6 +2151,9 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return editEntry.Position;
+			}
+			set {
+				editEntry.Position = value;
 			}
 		}
 		
@@ -2217,6 +2225,11 @@ namespace MonoDevelop.Debugger
 				return editEntry.Style;
 			}
 		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion 
 
 		ObjectValue[] GetValues (string[] names)
@@ -2266,8 +2279,9 @@ namespace MonoDevelop.Debugger
 		}
 	}
 	
-	class DebugCompletionDataList: List<ICSharpCode.NRefactory.Completion.ICompletionData>, ICompletionDataList
+	class DebugCompletionDataList: List<MonoDevelop.Ide.CodeCompletion.CompletionData>, ICompletionDataList
 	{
+		public int TriggerWordLength { get; set; }
 		public bool IsSorted { get; set; }
 		public DebugCompletionDataList (Mono.Debugging.Client.CompletionData data)
 		{
@@ -2317,7 +2331,7 @@ namespace MonoDevelop.Debugger
 		public event EventHandler CompletionListClosed;
 	}
 	
-	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
+	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
 	{
 		readonly CompletionItem item;
 		
@@ -2341,6 +2355,43 @@ namespace MonoDevelop.Debugger
 		public override string CompletionText {
 			get {
 				return item.Name;
+			}
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
+			get {
+				return keyHandler;
+			}
+		}
+
+		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+		{
+			base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
+		}
+
+		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+			get {
+				return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
+			}
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
+			get {
+				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
+			} 
+			set {
+				base.CompletionCategory = (CompletionCategory)value;
+			} 
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
+			get {
+				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
+			}
+			set {
+				base.DisplayFlags = (DisplayFlags)value;
 			}
 		}
 	}

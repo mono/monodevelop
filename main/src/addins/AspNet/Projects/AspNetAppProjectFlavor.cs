@@ -36,9 +36,8 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 
-using ICSharpCode.NRefactory.TypeSystem;
-
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
@@ -400,12 +399,10 @@ namespace MonoDevelop.AspNet.Projects
 			var webConfig = GetWebConfig ();
 			if (webConfig == null || !File.Exists (webConfig.FilePath))
 				return;
-
-			var textFile = TextFileProvider.Instance.GetEditableTextFile (webConfig.FilePath);
+			
 			//use textfile API because it's write safe (writes out to another file then moves)
-			if (textFile == null)
-				textFile = MonoDevelop.Projects.Text.TextFile.ReadFile (webConfig.FilePath);
-
+			var textFile = MonoDevelop.Ide.TextFileProvider.Instance.GetEditableTextFile (webConfig.FilePath);
+				
 			//can't use System.Web.Configuration.WebConfigurationManager, as it can only access virtual paths within an app
 			//so need full manual handling
 			try {
@@ -465,10 +462,7 @@ namespace MonoDevelop.AspNet.Projects
 				doc.WriteTo (tw);
 				tw.Flush ();
 				textFile.Text = sw.ToString ();
-
-				MonoDevelop.Projects.Text.TextFile tf = textFile as MonoDevelop.Projects.Text.TextFile;
-				if (tf != null)
-					tf.Save ();
+				textFile.WriteTextTo (textFile.FileName); 
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Could not modify application web.config in project " + Project.Name, e);
 			}

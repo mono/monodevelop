@@ -39,7 +39,7 @@ using MonoDevelop.Projects.Utility;
 
 namespace MonoDevelop.Projects.Text
 {
-	public class TextFile: IEditableTextFile
+	public class TextFile: ITextFile
 	{
 		const string LIBGLIB = "libglib-2.0-0.dll";
 

@@ -40,10 +40,6 @@ using System.Web.Razor.Text;
 using System.Web.WebPages.Razor;
 using System.Web.WebPages.Razor.Configuration;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-
-using Mono.TextEditor;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -53,6 +49,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.Razor.Parser;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -63,16 +62,16 @@ namespace MonoDevelop.AspNet.Razor
 		AutoResetEvent parseComplete;
 		ChangeInfo lastChange;
 		string lastParsedFile;
-		TextDocument currentDocument;
+		MonoDevelop.Ide.Editor.ITextDocument currentDocument;
 		AspNetAppProjectFlavor aspProject;
 		DotNetProject project;
-		IList<TextDocument> openDocuments;
+		IList<MonoDevelop.Ide.Editor.ITextDocument> openDocuments;
 
-		public IList<TextDocument> OpenDocuments { get { return openDocuments; } }
+		public IList<MonoDevelop.Ide.Editor.ITextDocument> OpenDocuments { get { return openDocuments; } }
 
 		public RazorCSharpParser ()
 		{
-			openDocuments = new List<TextDocument> ();
+			openDocuments = new List<MonoDevelop.Ide.Editor.ITextDocument> ();
 
 			IdeApp.Exited += delegate {
 				//HACK: workaround for Mono's not shutting downs IsBackground threads in WaitAny calls
@@ -82,21 +81,21 @@ namespace MonoDevelop.AspNet.Razor
 			};
 		}
 
-		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions, CancellationToken cancellationToken)
 		{
-			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == fileName);
+			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == parseOptions.FileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
 			this.project = project as DotNetProject;
-			if (currentDocument == null && !TryAddDocument (fileName))
-				return new RazorCSharpParsedDocument (fileName, new RazorCSharpPageInfo ());
+			if (currentDocument == null && !TryAddDocument (parseOptions.FileName))
+				return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (parseOptions.FileName, new RazorCSharpPageInfo ()));
 
 			this.aspProject = project.GetService<AspNetAppProjectFlavor> ();
 
-			EnsureParserInitializedFor (fileName);
+			EnsureParserInitializedFor (parseOptions.FileName);
 
 			var errors = new List<Error> ();
 
-			using (var source = new SeekableTextReader (content)) {
+			using (var source = new SeekableTextReader (parseOptions.Content.CreateReader ())) {
 				var textChange = CreateTextChange (source);
 				var parseResult = editorParser.CheckForStructureChanges (textChange);
 				if (parseResult == PartialParseResult.Rejected) {
@@ -107,7 +106,8 @@ namespace MonoDevelop.AspNet.Razor
 			}
 
 			ParseHtmlDocument (errors);
-			CreateCSharpParsedDocument ();
+			// TODO: Roslyn port
+			// CreateCSharpParsedDocument ();
 			ClearLastChange ();
 
 			RazorHostKind kind = RazorHostKind.WebPage;
@@ -130,7 +130,7 @@ namespace MonoDevelop.AspNet.Razor
 				HostKind = kind,
 			};
 
-			return new RazorCSharpParsedDocument (fileName, pageInfo);
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (parseOptions.FileName, pageInfo));
 		}
 
 		bool TryAddDocument (string fileName)
@@ -140,19 +140,19 @@ namespace MonoDevelop.AspNet.Razor
 
 			var guiDoc = IdeApp.Workbench.GetDocument (fileName);
 			if (guiDoc != null && guiDoc.Editor != null) {
-				currentDocument = guiDoc.Editor.Document;
-				currentDocument.TextReplacing += OnTextReplacing;
+				currentDocument = guiDoc.Editor;
+				currentDocument.TextChanging += OnTextReplacing;
 				lock (this) {
-					var newDocs = new List<TextDocument> (openDocuments);
+					var newDocs = new List<MonoDevelop.Ide.Editor.ITextDocument> (openDocuments);
 					newDocs.Add (currentDocument);
 					openDocuments = newDocs;
 				}
 				guiDoc.Closed += (sender, args) =>
 				{
-					var doc = sender as Document;
-					if (doc.Editor != null && doc.Editor.Document != null) {
+					var doc = sender as MonoDevelop.Ide.Gui.Document;
+					if (doc.Editor != null && doc.Editor != null) {
 						lock (this) {
-							openDocuments = new List<TextDocument> (openDocuments.Where (d => d != doc.Editor.Document));
+							openDocuments = new List<MonoDevelop.Ide.Editor.ITextDocument> (openDocuments.Where (d => d.FileName != doc.Editor.FileName));
 						}
 					}
 
@@ -305,7 +305,7 @@ namespace MonoDevelop.AspNet.Razor
 							ClosingTag = "*@",
 							CommentType = CommentType.Block,
 						};
-						comment.Region = new DomRegion (
+						comment.Region = new MonoDevelop.Ide.Editor.DocumentRegion (
 							currentDocument.OffsetToLocation (span.Start.AbsoluteIndex - comment.OpenTag.Length),
 							currentDocument.OffsetToLocation (span.Start.AbsoluteIndex + span.Length + comment.ClosingTag.Length));
 						comments.Add (comment);
@@ -352,7 +352,7 @@ namespace MonoDevelop.AspNet.Razor
 				var endLine = currentDocument.GetLineByOffset (block.Start.AbsoluteIndex + block.Length);
 				if (beginLine != endLine)
 					foldingRegions.Add (new FoldingRegion (RazorUtils.GetShortName (block),
-						new DomRegion (currentDocument.OffsetToLocation (block.Start.AbsoluteIndex),
+						new DocumentRegion (currentDocument.OffsetToLocation (block.Start.AbsoluteIndex),
 							currentDocument.OffsetToLocation (block.Start.AbsoluteIndex + block.Length))));
 			}
 		}
@@ -367,21 +367,8 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		ParsedDocumentDecorator parsedCodeFile;
+		SyntaxTree parsedCodeFile;
 		string csharpCode;
-
-		void CreateCSharpParsedDocument ()
-		{
-			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser ();
-			ICSharpCode.NRefactory.CSharp.SyntaxTree unit;
-			csharpCode = CreateCodeFile ();
-			using (var sr = new StringReader (csharpCode)) {
-				unit = parser.Parse (sr, "Generated.cs");
-			}
-			unit.Freeze ();
-			var parsedDoc = unit.ToTypeSystem ();
-			parsedCodeFile = new ParsedDocumentDecorator (parsedDoc) { Ast = unit };
-		}
 
 		string CreateCodeFile ()
 		{
@@ -401,35 +388,37 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		// Creates compilation that includes underlying C# file for Razor view
-		ICompilation CreateCompilation ()
+// TODO Roslyn port
+//		// Creates compilation that includes underlying C# file for Razor view
+		Compilation CreateCompilation ()
 		{
-			if (project != null) {
-				return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
-			}
-			return new SimpleCompilation (
-				new DefaultUnresolvedAssembly (Path.ChangeExtension (parsedCodeFile.FileName, ".dll")),
-				GetDefaultAssemblies ()
-			);
+//			if (project != null) {
+//				return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
+//			}
+//			return new SimpleCompilation (
+//				new DefaultUnresolvedAssembly (Path.ChangeExtension (parsedCodeFile.FileName, ".dll")),
+//				GetDefaultAssemblies ()
+//			);
+			return null;
 		}
+//
+//		//FIXME: make this better reflect the real set of assemblies used by razor
+//		static IEnumerable<IUnresolvedAssembly> GetDefaultAssemblies ()
+//		{
+//			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
+//			var fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
+//			if (!runtime.IsInstalled (fx))
+//				fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
+//			foreach (var assembly in new [] { "System", "System.Core", "System.Xml", "System.Web.Mvc,Version=3.0.0.0" }) {
+//				var path = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assembly, fx);
+//				yield return TypeSystemService.LoadAssemblyContext (runtime, fx, path);
+//			}
+//		}
 
-		//FIXME: make this better reflect the real set of assemblies used by razor
-		static IEnumerable<IUnresolvedAssembly> GetDefaultAssemblies ()
-		{
-			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
-			var fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
-			if (!runtime.IsInstalled (fx))
-				fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
-			foreach (var assembly in new [] { "System", "System.Core", "System.Xml", "System.Web.Mvc,Version=3.0.0.0" }) {
-				var path = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assembly, fx);
-				yield return TypeSystemService.LoadAssemblyContext (runtime, fx, path);
-			}
-		}
-
-		void OnTextReplacing (object sender, DocumentChangeEventArgs e)
+		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			if (lastChange == null)
-				lastChange = new ChangeInfo (e.Offset, new SeekableTextReader((sender as TextDocument).Text));
+				lastChange = new ChangeInfo (e.Offset, new SeekableTextReader((sender as MonoDevelop.Ide.Editor.ITextDocument).Text));
 			if (e.ChangeDelta > 0) {
 				lastChange.Length += e.InsertionLength;
 			} else {

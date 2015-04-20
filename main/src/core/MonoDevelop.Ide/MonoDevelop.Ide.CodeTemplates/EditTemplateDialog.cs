@@ -32,6 +32,8 @@ using Gtk;
  
 using MonoDevelop.Core;
 using Gdk;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 
 namespace MonoDevelop.Ide.CodeTemplates
@@ -41,8 +43,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 	public partial class EditTemplateDialog : Gtk.Dialog
 	{
 		CodeTemplate template;
-		Mono.TextEditor.TextEditor textEditor = new Mono.TextEditor.TextEditor ();
-		Mono.TextEditor.TextEditorOptions options;
+		TextEditor textEditor = TextEditorFactory.CreateNewEditor ();
+		ITextEditorOptions options;
 		
 		ListStore variablesListStore;
 		List<CodeTemplateVariable> variables = new List<CodeTemplateVariable> ();
@@ -59,24 +61,20 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.comboboxentryGroups.Entry.Text = template.Group ?? "";
 			this.comboboxentryMime.Entry.Text = template.MimeType ?? "";
 			this.entryDescription.Text = template.Description ?? "";
-			this.textEditor.Document.MimeType = template.MimeType;
-			this.textEditor.Document.Text = template.Code;
+			this.textEditor.MimeType = template.MimeType;
+			this.textEditor.Text = template.Code;
 			
 			checkbuttonExpansion.Active = (template.CodeTemplateType & CodeTemplateType.Expansion) == CodeTemplateType.Expansion;
 			checkbuttonSurroundWith.Active = (template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith;
 			
-			scrolledwindow1.Child = textEditor;
-			textEditor.ShowAll ();
-			textEditor.Caret.PositionChanged += CaretPositionChanged;
-			options = new Mono.TextEditor.TextEditorOptions ();
-			options.ShowLineNumberMargin = false;
-			options.ShowFoldMargin = false;
-			options.ShowIconMargin = false;
-			options.ColorScheme = IdeApp.Preferences.ColorScheme;
-			textEditor.Options = options;
-			
-			HashSet<string> mimeTypes = new HashSet<string> ();
-			HashSet<string> groups    = new HashSet<string> ();
+			Gtk.Widget control = textEditor;
+			scrolledwindow1.Child = control;
+			control.ShowAll ();
+			textEditor.CaretPositionChanged += CaretPositionChanged;
+			textEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+
+			var mimeTypes = new HashSet<string> ();
+			var groups    = new HashSet<string> ();
 			foreach (CodeTemplate ct in CodeTemplateService.Templates) {
 				mimeTypes.Add (ct.MimeType);
 				groups.Add (ct.Group);
@@ -89,7 +87,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			foreach (string group in groups) {
 				comboboxentryGroups.AppendText (group);
 			}
-			textEditor.Document.TextReplaced += DocumentTextReplaced;
+			textEditor.TextChanged += DocumentTextReplaced;
 			this.buttonOk.Clicked += ButtonOkClicked;
 			
 			checkbuttonWhiteSpaces.Hide ();
@@ -140,7 +138,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			template.Group = this.comboboxentryGroups.Entry.Text;
 			template.MimeType = this.comboboxentryMime.Entry.Text;
 			template.Description = this.entryDescription.Text;
-			template.Code = this.textEditor.Document.Text;
+			template.Code = this.textEditor.Text;
 			variables.ForEach (v => template.AddVariable (v));
 			template.CodeTemplateType = CodeTemplateType.Unknown;
 			if (checkbuttonExpansion.Active)
@@ -149,9 +147,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 				template.CodeTemplateType |= CodeTemplateType.SurroundsWith;
 		}
 
-		void DocumentTextReplaced (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
+		void DocumentTextReplaced (object sender, TextChangeEventArgs e)
 		{
-			List<string> vars = template.ParseVariables (textEditor.Document.Text);
+			List<string> vars = template.ParseVariables (textEditor.Text);
 			foreach (string var in vars) {
 				if (!variables.Any (v => v.Name == var) && !template.Variables.Any (v => v.Name == var)) {
 					variables.Add (new CodeTemplateVariable (var) {
@@ -170,13 +168,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 		}
 
 
-		void CaretPositionChanged (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void CaretPositionChanged (object sender, EventArgs e)
 		{
 			comboboxVariables.Active = -1;
-			int offset = textEditor.Caret.Offset;
+			int offset = textEditor.CaretOffset;
 			int start = offset;
-			while (start >= 0 && start < textEditor.Document.TextLength) { // caret offset may be behind the text
-				char ch = textEditor.Document.GetCharAt (start);
+			while (start >= 0 && start < textEditor.Length) { // caret offset may be behind the text
+				char ch = textEditor.GetCharAt (start);
 				if (ch == '$')
 					break;
 				if (!char.IsLetterOrDigit (ch) && ch != '_')
@@ -185,16 +183,16 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			
 			int end = offset;
-			while (end < textEditor.Document.TextLength) {
-				char ch = textEditor.Document.GetCharAt (end);
+			while (end < textEditor.Length) {
+				char ch = textEditor.GetCharAt (end);
 				if (ch == '$')
 					break;
 				if (!char.IsLetterOrDigit (ch) && ch != '_')
 					return;
 				end++;
 			}
-			if (start >= 0 && end < textEditor.Document.TextLength) {
-				string varName = textEditor.Document.GetTextBetween (start, end).Trim ('$');
+			if (start >= 0 && end < textEditor.Length) {
+				string varName = textEditor.GetTextBetween (start, end).Trim ('$');
 				TreeIter iter;
 				if (variablesListStore.GetIterFirst (out iter)) {
 					int i = -1;

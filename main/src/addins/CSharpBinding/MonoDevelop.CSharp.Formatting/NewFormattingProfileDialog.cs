@@ -36,14 +36,14 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 		
 		
-		public CSharpFormattingPolicy InitializeFrom {
+		internal CSharpFormattingPolicy InitializeFrom {
 			get {
 				return policies[comboboxInitFrom.Active];
 			}
 		}
 		
 		readonly List<CSharpFormattingPolicy> policies;
-		public NewFormattingProfileDialog (List<CSharpFormattingPolicy> policies)
+		internal NewFormattingProfileDialog (List<CSharpFormattingPolicy> policies)
 		{
 			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
 			this.Build ();

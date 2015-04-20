@@ -28,7 +28,6 @@ using NUnit.Framework;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.CSharp.Resolver;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.CSharp.Completion;
@@ -37,37 +36,62 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Debugger;
+using UnitTests;
 
 namespace MonoDevelop.SourceEditor
 {
 	[TestFixture]
-	public class DebugTooltipTests
+	public class DebugTooltipTests : TestBase
 	{
 		Document document;
 		string content;
+		MonoDevelop.Projects.Solution solution;
 
-		static Document CreateDocument (string input)
+		Document CreateDocument (string input)
 		{
-			var tww = new TestWorkbenchWindow ();
-			var content = new TestViewContent ();
-			tww.ViewContent = content;
-			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
-			var doc = new Document (tww);
-
 			var text = input;
 			int endPos = text.IndexOf ('$');
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "mscorlib"));
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System.Core"));
+
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+
+			solution = new MonoDevelop.Projects.Solution ();
+			var config = solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor, false);
+
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+			content.Project = project;
+
+
 			content.Text = text;
 			content.CursorPosition = Math.Max (0, endPos);
+			var doc = new Document (tww);
+			doc.SetProject (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
+
 			return doc;
 		}
 
@@ -177,18 +201,19 @@ namespace DebuggerTooltipTests
 			document = CreateDocument (content);
 		}
 
+		public override void TearDown()
+		{
+			TypeSystemService.Unload (solution);
+			base.TearDown ();
+		}
+
 		static string ResolveExpression (Document doc, string content, int offset)
 		{
 			var editor = doc.Editor;
-			ResolveResult result;
-			int startOffset;
-			AstNode node;
-
 			var loc = editor.OffsetToLocation (offset);
-			if (!doc.TryResolveAt (loc, out result, out node))
-				return null;
+			var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
 
-			return CSharpCompletionTextEditorExtension.ResolveExpression (doc.Editor, result, node, out startOffset);
+			return resolver.ResolveExpressionAsync (editor, doc, offset, default(System.Threading.CancellationToken)).Result.Text;
 		}
 
 		int GetBasicOffset (string expr)
@@ -264,15 +289,15 @@ namespace DebuggerTooltipTests
 		public void TestFieldDeclarations ()
 		{
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticField", ResolveExpression (document, content, GetBasicOffset ("StaticField")));
-			Assert.AreEqual ("this.@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
-			Assert.AreEqual ("this.field", ResolveExpression (document, content, GetBasicOffset ("field")));
+			Assert.AreEqual ("@double", ResolveExpression (document, content, GetBasicOffset ("@double")));
+			Assert.AreEqual ("field", ResolveExpression (document, content, GetBasicOffset ("field")));
 		}
 
 		[Test]
 		public void TestPropertyDeclarations ()
 		{
 			Assert.AreEqual ("DebuggerTooltipTests.Abc.StaticProperty", ResolveExpression (document, content, GetBasicOffset ("StaticProperty")));
-			Assert.AreEqual ("this.Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
+			Assert.AreEqual ("Text", ResolveExpression (document, content, GetBasicOffset ("Text")));
 		}
 
 		[Test]

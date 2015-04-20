@@ -30,7 +30,6 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using Cairo;
 using System.Linq;
-using Mono.TextEditor;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.PropertyGrid

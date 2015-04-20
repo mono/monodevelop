@@ -97,23 +97,24 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			var dom = TypeSystemService.GetCompilation (project);
-			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
-			HashSet<string> addedNames = new HashSet<string> ();
-			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
-				if (nestedNamespaces) {
-					if (!addedNames.Contains (ns.Name)) {
-						builder.AddChild (new ProjectNamespaceData (project, ns));
-						addedNames.Add (ns.Name);
-					}
-				} else {
-					FillNamespaces (builder, project, ns);
-				}
-			}
-			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
-				if (!publicOnly || type.IsPublic)
-					builder.AddChild (new ClassData (project, type));
-			}
+			// TODO: Roslyn port.
+//			var dom = TypeSystemService.GetCompilation (project);
+//			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
+//			HashSet<string> addedNames = new HashSet<string> ();
+//			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
+//				if (nestedNamespaces) {
+//					if (!addedNames.Contains (ns.Name)) {
+//						builder.AddChild (new ProjectNamespaceData (project, ns));
+//						addedNames.Add (ns.Name);
+//					}
+//				} else {
+//					FillNamespaces (builder, project, ns);
+//				}
+//			}
+//			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
+//				if (!publicOnly || type.IsPublic)
+//					builder.AddChild (new ClassData (project, type));
+//			}
 		}
 		
 		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespace ns)

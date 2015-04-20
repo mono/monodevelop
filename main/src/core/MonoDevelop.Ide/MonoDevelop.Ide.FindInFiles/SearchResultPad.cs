@@ -82,6 +82,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				widget.BasePath = value;
 			}
 		}
+
+		internal PathMode PathMode {
+			set {
+				widget.PathMode = value;
+			}
+		}
 		
 		public SearchResultPad (int instanceNum)
 		{

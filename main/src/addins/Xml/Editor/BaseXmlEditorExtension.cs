@@ -34,10 +34,7 @@ using System.Linq;
 
 using Gtk;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 
-using Mono.TextEditor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
@@ -45,10 +42,14 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using MonoDevelop.Xml.Completion;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -65,18 +66,17 @@ namespace MonoDevelop.Xml.Editor
 
 		#region Setup and teardown
 
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		public override bool IsValidInContext (DocumentContext context)
 		{
 			//can only attach if there is not already an attached BaseXmlEditorExtension
-			return doc.GetContent<BaseXmlEditorExtension> () == null;
+			return context.GetContent<BaseXmlEditorExtension> () == null;
 		}
 		
 		protected virtual XmlRootState CreateRootState ()
 		{
 			return new XmlRootState ();
 		}
-
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
@@ -89,11 +89,11 @@ namespace MonoDevelop.Xml.Editor
 
 			var parser = new XmlParser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<XmlParser> (parser, Editor);
+			DocumentContext.DocumentParsed += UpdateParsedDocument;
+			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 
-			Document.DocumentParsed += UpdateParsedDocument;
-			
-			if (Document.ParsedDocument != null) {
-				lastCU = Document.ParsedDocument;
+			if (DocumentContext.ParsedDocument != null) {
+				lastCU = DocumentContext.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
 
@@ -105,7 +105,7 @@ namespace MonoDevelop.Xml.Editor
 
 		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
 		{
-			if (e.Any (f => f.ProjectFile.FilePath == Document.FileName))
+			if (e.Any (f => f.ProjectFile.FilePath == DocumentContext.Name))
 				UpdateOwnerProjects ();
 		}
 
@@ -115,37 +115,39 @@ namespace MonoDevelop.Xml.Editor
 				ownerProjects = new List<DotNetProject> ();
 				return;
 			}
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
-				var dnp = Document.Project as DotNetProject;
+				var dnp = DocumentContext.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					var pp = DocumentContext.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == DocumentContext.Project.ParentSolution) : null;
 					if (pp != null)
-						Document.AttachToProject (pp);
+						DocumentContext.AttachToProject (pp);
 				}
 			}
-			if (Document.Project == null && ownerProjects.Count > 0)
-				Document.AttachToProject (ownerProjects[0]);
+			if (DocumentContext.Project == null && ownerProjects.Count > 0)
+				DocumentContext.AttachToProject (ownerProjects[0]);
 			UpdatePath ();
 		}
 
 		void UpdateParsedDocument (object sender, EventArgs args)
 		{
-			lastCU = Document.ParsedDocument;
+			lastCU = DocumentContext.ParsedDocument;
 			OnParsedDocumentUpdated ();
 		}
 
 		public override void Dispose ()
 		{
+			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
+
 			if (tracker != null) {
 				tracker = null;
 				base.Dispose ();
 			}
 
-			Document.DocumentParsed -= UpdateParsedDocument;
+			DocumentContext.DocumentParsed -= UpdateParsedDocument;
 
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
@@ -183,34 +185,17 @@ namespace MonoDevelop.Xml.Editor
 		protected ParsedDocument CU {
 			get { return lastCU; }
 		}
-		
-		protected ITextBuffer Buffer {
-			get {
-				if (Document == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<ITextBuffer> ();
-			}
-		}
-		
-		protected IEditableTextBuffer EditableBuffer {
-			get {
-				if (Document == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<IEditableTextBuffer> ();
-			}
-		}
-		
+
 		protected DocumentStateTracker<XmlParser> Tracker {
 			get { return tracker; }
 		}
 		
-		protected string GetBufferText (DomRegion region)
+		protected string GetBufferText (DocumentRegion region)
 		{
-			ITextBuffer buf = Buffer;
-			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
-			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
-				return buf.GetText (start, end);
+				return Editor.GetTextBetween (start, end);
 			return null;
 		}
 		
@@ -219,7 +204,12 @@ namespace MonoDevelop.Xml.Editor
 		public override string CompletionLanguage {
 			get { return "Xml"; }
 		}
-		
+
+		protected FilePath FileName {
+			get {
+				return Editor.FileName;
+			}
+		}
 		protected XDocType DocType {
 			get { return docType; }
 			set {
@@ -234,29 +224,24 @@ namespace MonoDevelop.Xml.Editor
 		{
 		}
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart) {
-				var newLine = Editor.Caret.Line + 1;
-				var ret = base.KeyPress (key, keyChar, modifier);
-				if (key == Gdk.Key.Return && Editor.Caret.Line == newLine) {
+			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
+				var newLine = Editor.CaretLine + 1;
+				var ret = base.KeyPress (descriptor);
+				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
 					var seg = Editor.GetLine (newLine);
 					if (oldIndent != indent) {
-						int newCaretOffset = Editor.Caret.Offset;
-						if (newCaretOffset > seg.Offset) {
-							newCaretOffset += (indent.Length - oldIndent.Length);
-						}
 						using (var undo = Editor.OpenUndoGroup ()) {
-							Editor.Replace (seg.Offset, oldIndent.Length, indent);
-							Editor.Caret.Offset = newCaretOffset;
+							Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
 						}
 					}
 				}
 				return ret;
 			}
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 		
 		#region Code completion
@@ -266,31 +251,29 @@ namespace MonoDevelop.Xml.Editor
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			int triggerWordLength = 0;
-			
 			tracker.UpdateEngine ();
-			return HandleCodeCompletion (completionContext, true, ref triggerWordLength);
+			var task = HandleCodeCompletion (completionContext, true, default(CancellationToken));
+			return task != null ? task.Result : null;
 		}
 
-		public override ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			int pos = completionContext.TriggerOffset;
 			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
 			if (pos > 0 && ch == completionChar) {
 				tracker.UpdateEngine ();
-				return HandleCodeCompletion (completionContext, false, ref triggerWordLength);
+				return HandleCodeCompletion (completionContext, false, token);
 			}
 			return null;
 		}
 
-		protected virtual ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
+		protected virtual Task<ICompletionDataList> HandleCodeCompletion (
+			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
-			IEditableTextBuffer buf = EditableBuffer;
+			var buf = this.Editor;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			var currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			var currentLocation = new DocumentLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 
@@ -300,12 +283,12 @@ namespace MonoDevelop.Xml.Editor
 			
 			//closing tag completion
 			if (tracker.Engine.CurrentState is XmlRootState && currentChar == '>')
-				return ClosingTagCompletion (buf, currentLocation);
+				return Task.FromResult (ClosingTagCompletion (buf, currentLocation));
 			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
 			if (XmlEditorOptions.AutoInsertFragments && tracker.Engine.CurrentState is XmlTagState && currentChar == '/') {
-				buf.InsertText (buf.CursorPosition, ">");
+				buf.InsertAtCaret (">");
 				return null;
 			}
 			
@@ -331,7 +314,7 @@ namespace MonoDevelop.Xml.Editor
 				list.Add ("&").CompletionText = "amp;";
 				
 				GetEntityCompletions (list);
-				return list;
+				return Task.FromResult ((ICompletionDataList)list);
 			}
 			
 			//doctype completion
@@ -339,7 +322,7 @@ namespace MonoDevelop.Xml.Editor
 				if (tracker.Engine.CurrentStateLength == 1) {
 					CompletionDataList list = GetDocTypeCompletions ();
 					if (list != null && list.Count > 0)
-						return list;
+						return Task.FromResult ((ICompletionDataList)list);
 				}
 				return null;
 			}
@@ -359,9 +342,13 @@ namespace MonoDevelop.Xml.Editor
 						return null;
 
 					//if triggered by first letter of value or forced, grab those letters
-					triggerWordLength = Tracker.Engine.CurrentStateLength - 1;
 
-					return GetAttributeValueCompletions (attributedOb, att);
+					var result = GetAttributeValueCompletions (attributedOb, att);
+					if (result != null) {
+						result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+						return Task.FromResult ((ICompletionDataList)result);
+					}
+					return null;
 				}
 			}
 			
@@ -380,17 +367,18 @@ namespace MonoDevelop.Xml.Editor
 				if (attributedOb.Name.IsValid && (forced ||
 					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
 				{
-					
-					if (!forced)
-						triggerWordLength = 1;
-					
 					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
 					
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
-					
-					return GetAttributeCompletions (attributedOb, existingAtts);
+					var result = GetAttributeCompletions (attributedOb, existingAtts);
+					if (result != null) {
+						if (!forced)
+							result.TriggerWordLength = 1;
+						return Task.FromResult ((ICompletionDataList)result);
+					}
+					return null;
 				}
 			}
 			
@@ -405,47 +393,78 @@ namespace MonoDevelop.Xml.Editor
 				var list = new CompletionDataList ();
 				GetElementCompletions (list);
 				AddCloseTag (list, Tracker.Engine.Nodes);
-				return list.Count > 0? list : null;
+				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
 			}
 
 			if (forced && Tracker.Engine.CurrentState is XmlRootState) {
 				var list = new CompletionDataList ();
-				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
-				return list.Count > 0? list : null;
+				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (DocumentContext.Name, list);
+				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
 			}
 			
 			return null;
 		}
 
-		protected virtual ICompletionDataList ClosingTagCompletion (IEditableTextBuffer buf, TextLocation currentLocation)
+
+
+		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
+
 		{
+
 			//get name of current node in document that's being ended
+
 			var el = tracker.Engine.Nodes.Peek () as XElement;
+
 			if (el != null && el.Region.End >= currentLocation && !el.IsClosed && el.IsNamed) {
+
 				string tag = String.Concat ("</", el.Name.FullName, ">");
+
 				if (XmlEditorOptions.AutoCompleteElements) {
 
+
+
 					//						//make sure we have a clean atomic undo so the user can undo the tag insertion
+
 					//						//independently of the >
+
 					//						bool wasInAtomicUndo = this.Editor.Document.IsInAtomicUndo;
+
 					//						if (wasInAtomicUndo)
+
 					//							this.Editor.Document.EndAtomicUndo ();
 
+
+
 					using (var undo = buf.OpenUndoGroup ()) {
-						buf.InsertText (buf.CursorPosition, tag);
-						buf.CursorPosition -= tag.Length;
+
+						buf.InsertText (buf.CaretOffset, tag);
+
+						buf.CaretOffset -= tag.Length;
+
 					}
 
+
+
 					//						if (wasInAtomicUndo)
+
 					//							this.Editor.Document.BeginAtomicUndo ();
 
+
+
 					return null;
+
 				} else {
+
 					var cp = new CompletionDataList ();
+
 					cp.Add (new XmlTagCompletionData (tag, 0, true));
+
 					return cp;
+
 				}
+
 			}
+
 			return null;
 		}
 		
@@ -475,7 +494,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		protected string GetLineIndent (int line)
 		{
-			var seg = Editor.Document.GetLine (line);
+			var seg = Editor.GetLine (line);
 			
 			//reset the tracker to the beginning of the line
 			Tracker.UpdateEngine (seg.Offset);
@@ -592,7 +611,7 @@ namespace MonoDevelop.Xml.Editor
 		PathEntry[] currentPath;
 		bool pathUpdateQueued;
 		
-		public override void CursorPositionChanged ()
+		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
 			if (pathUpdateQueued)
 				return;
@@ -602,7 +621,6 @@ namespace MonoDevelop.Xml.Editor
 				UpdatePath ();
 				return false;
 			});
-				
 		}
 
 		public void SelectPath (int depth)
@@ -662,16 +680,16 @@ namespace MonoDevelop.Xml.Editor
 				//pick out the locations, with some offsets to account for the parsing model
 				var s = contents? el.Region.End : el.Region.Begin;
 				var e = contents? el.ClosingTag.Region.Begin : el.ClosingTag.Region.End;
-				EditorSelect (new DomRegion (s, e));
+				EditorSelect (new DocumentRegion (s, e));
 			} else {
 				LoggingService.LogDebug ("No end tag found for selection");
 			}
 		}
 		
-		protected void EditorSelect (DomRegion region)
+		protected void EditorSelect (DocumentRegion region)
 		{
-			int s = Editor.Document.LocationToOffset (region.BeginLine, region.BeginColumn);
-			int e = Editor.Document.LocationToOffset (region.EndLine, region.EndColumn);
+			int s = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int e = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (s > -1 && e > s) {
 				Editor.SetSelection (s, e);
 				Editor.ScrollTo (s);
@@ -743,7 +761,7 @@ namespace MonoDevelop.Xml.Editor
 
 			public void ActivateItem (int n)
 			{
-				ext.Document.AttachToProject (ext.ownerProjects [n]);
+				ext.DocumentContext.AttachToProject (ext.ownerProjects [n]);
 			}
 
 			public int IconCount {
@@ -842,7 +860,7 @@ namespace MonoDevelop.Xml.Editor
 			var path = new List<PathEntry> ();
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				path.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+				path.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
 			}
 			if (l != null) {
 				for (int i = 0; i < l.Count; i++) {
@@ -999,7 +1017,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			var el = n as XElement;
 			if (el != null && el.IsClosed && el.ClosingTag.Region.End > region.End) {
-				region = new DomRegion (region.Begin, el.ClosingTag.Region.End);
+				region = new DocumentRegion (region.Begin, el.ClosingTag.Region.End);
 			}
 			EditorSelect (region);
 		}		

@@ -30,19 +30,21 @@ using System;
 using System.Text;
 using System.Linq;
 using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -61,8 +63,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 		}
 		
-		internal static OutputSettings settings;
-		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
+		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
 		internal static string MarkupKeyword (string text)
 		{
@@ -75,34 +76,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return text;
 		}
-		
-		static DomTypeNodeBuilder ()
-		{
-			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
-			
-			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
-				return "<span style=\"text\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitModifiersCallback = delegate (string text) {
-				return "<span style=\"keyword.modifier\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
-				return MarkupKeyword (text);
-			};
-//			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IEntity domVisitable, ref string outString) {
-//				if (domVisitable is IType) {
-//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-//				} else {
-//					outString = "<span style=\"text\">" + outString + "</span>";
-//				}
-//			};
-//			DomTypeNodeBuilder.settings.PostProcessCallback = delegate (IEntity domVisitable, ref string outString) {
-//				if (domVisitable is IReturnType) {
-//					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IReturnType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
-//				}
-//			};
-		}
-		
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
@@ -114,7 +88,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			try {
 				var resolved = Resolve (treeBuilder, type);
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.UseNETTypeNames);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = type.Name;
 			}
@@ -161,7 +135,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var resolved = Resolve (navigator, type);
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<span font_family=\"monospace\">");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved)));
 			result.Append ("</span>");
 			result.AppendLine ();
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Name:</b>\t{0}"), type.FullName));
@@ -170,7 +144,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -193,19 +167,19 @@ namespace MonoDevelop.AssemblyBrowser
 				LockStatement = true,
 				AsyncAwait = true,
 				ShowXmlDocumentation = true,
-				CSharpFormattingOptions = codePolicy.CreateOptions (),
+				CSharpFormattingOptions = FormattingOptionsFactory.CreateMono (),
 				HideNonPublicMembers = publicOnly
 			};
 		}
 
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
@@ -213,14 +187,14 @@ namespace MonoDevelop.AssemblyBrowser
 			}, settings);
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
 			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
@@ -228,24 +202,17 @@ namespace MonoDevelop.AssemblyBrowser
 			}, settings);
 		}
 
-
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
 			var resolved = Resolve (navigator, type);
 			var result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertType (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
 			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
-			result.AppendLine ();
-			
-			result.Append (AmbienceService.GetDocumentationMarkup (resolved.GetDefinition (), AmbienceService.GetDocumentation (resolved.GetDefinition ()), options));
+			//result.Append (AmbienceService.GetDocumentationMarkup (resolved.GetDefinition (), AmbienceService.GetDocumentation (resolved.GetDefinition ()), options));
 			
 			return result.ToString ();
 		}

@@ -25,16 +25,16 @@ namespace MonoDevelop.Deployment.Linux
 			}
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			ContentName = fileName;
-			entry.Load (fileName);
+			ContentName = fileOpenInformation.FileName;
+			entry.Load (fileOpenInformation.FileName);
 			widget.DesktopEntry = entry;
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			entry.Save (fileName);
+			entry.Save (fileSaveInformation.FileName);
 			IsDirty = false;
 		}
 		

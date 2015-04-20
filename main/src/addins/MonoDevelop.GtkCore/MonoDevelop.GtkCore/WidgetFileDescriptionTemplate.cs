@@ -92,8 +92,8 @@ namespace MonoDevelop.GtkCore
 			string fileName = fileTemplate.GetFileName (policyParent, project, language, directory, name);
 			fileTemplate.AddToProject (policyParent, project, language, directory, name);
 
-			TypeSystemService.ParseFile (project, fileName);
-			
+			FileService.NotifyFileChanged (fileName);
+
 			DotNetProject netProject = project as DotNetProject;
 			string ns = netProject != null ? netProject.GetDefaultNamespace (fileName) : "";
 			string cname = Path.GetFileNameWithoutExtension (fileName);

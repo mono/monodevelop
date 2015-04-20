@@ -72,5 +72,8 @@ namespace MonoDevelop.Projects
 
 		public virtual bool NoStdLib { get; set; }
 		public virtual string DebugType { get { return ""; } set {} }
+
+		public abstract Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ();
+		public abstract Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ();
 	}
 }

@@ -49,9 +49,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			IEvent data = dataObject as IEvent;
-			nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
+			// IEvent data = dataObject as IEvent;
+			// nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
+			// nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

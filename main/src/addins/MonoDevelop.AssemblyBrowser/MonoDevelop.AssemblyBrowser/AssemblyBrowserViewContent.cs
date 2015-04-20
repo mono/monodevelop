@@ -72,10 +72,10 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = false;
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			widget.AddReferenceByFileName (fileName);
+			widget.AddReferenceByFileName (fileOpenInformation.FileName);
 		}
 		
 		public override bool IsFile {
@@ -108,30 +108,17 @@ namespace MonoDevelop.AssemblyBrowser
 
 		#region IUrlHandler implementation 
 		
-		public void Open (INamedElement element)
+		public void Open (Microsoft.CodeAnalysis.ISymbol element)
 		{
-			var member = element as IUnresolvedEntity;
-			if (member == null) {
-				var entity = element as IMember;
-				if (entity != null)
-					member = entity.UnresolvedMember;
-
-			}
-			if (member == null) {
-				var entity = element as IType;
-				if (entity != null)
-					member = entity.GetDefinition ().Parts [0];
-			}
-			if (member == null)
-				return;
-			var url = AssemblyBrowserWidget.GetIdString (member);
-			try {
-				widget.Open (url);
-			} catch (Exception e) {
-				MessageService.ShowError (GettextCatalog.GetString ("{0} could not be opened", url), e);
-			}
+			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
+			widget.Open (url);
 		}
-		
+
+		public void Open (string documentationCommentId)
+		{
+			widget.Open (documentationCommentId);
+		}
+
 		#endregion 
 
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindReferences)]
@@ -140,7 +127,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var member = widget.ActiveMember as IMember;
 			if (member == null)
 				return;
-			FindReferencesHandler.FindRefs (member);
+			// FindReferencesHandler.FindRefs (member);
 		}
 		
 		[MonoDevelop.Components.Commands.CommandHandler(MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses)]
@@ -149,7 +136,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = widget.ActiveMember as ITypeDefinition;
 			if (type == null)
 				return;
-			FindDerivedClassesHandler.FindDerivedClasses (type);
+			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
 		public void FillWidget ()

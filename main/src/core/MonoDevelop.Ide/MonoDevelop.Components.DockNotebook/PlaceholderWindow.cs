@@ -27,7 +27,6 @@
 using Gdk;
 using Gtk;
 using MonoDevelop.Components.Docking;
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;

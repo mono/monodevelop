@@ -31,29 +31,33 @@ using Gtk;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICompletionWidget
+	interface ICompletionWidget
 	{
-		CodeCompletionContext CurrentCodeCompletionContext {
+		CodeCompletionContext CurrentCodeCompletionContext
+		{
 			get;
 		}
 
-		int CaretOffset { get;}
+		int CaretOffset { get; set; }
 		int TextLength { get; }
 		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);
-		
+
 		char GetChar (int offset);
-		
+
 		void Replace (int offset, int count, string text);
-		
+
 		Gtk.Style GtkStyle { get; }
+		double ZoomLevel { get; }
 
 		CodeCompletionContext CreateCodeCompletionContext (int triggerOffset);
 		string GetCompletionText (CodeCompletionContext ctx);
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word);
-		
+
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset);
-		
+
+		void AddSkipChar (int cursorPosition, char c);
+
 		event EventHandler CompletionContextChanged;
 	}
 }

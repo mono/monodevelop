@@ -391,7 +391,7 @@ namespace MonoDevelop.Projects
 			
 			SolutionConfigurationSelector config = (SolutionConfigurationSelector) "Debug";
 			
-			Assert.IsTrue (p.NeedsBuilding (config));
+			Assert.IsTrue (p. NeedsBuilding (config));
 			Assert.IsTrue (lib1.NeedsBuilding (config));
 			Assert.IsTrue (lib2.NeedsBuilding (config));
 			

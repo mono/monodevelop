@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.AspNet.Razor
@@ -36,7 +37,7 @@ namespace MonoDevelop.AspNet.Razor
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
 		public override void CorrectIndenting (PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData data, int line)
+			IEnumerable<string> mimeTypeChain, TextEditor data, int line)
 		{
 		}
 
@@ -46,7 +47,7 @@ namespace MonoDevelop.AspNet.Razor
 			return null;
 		}
 
-		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
 		{
 		}
 	}

@@ -50,7 +50,7 @@ namespace MonoDevelop.Core
 		static FileServiceErrorHandler errorHandler;
 		
 		static FileSystemExtension fileSystemChain;
-		static readonly FileSystemExtension defaultExtension = Platform.IsWindows ? new DefaultFileSystemExtension () : new UnixFileSystemExtension () ;
+		static readonly FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
 		
 		static readonly EventQueue eventQueue = new EventQueue ();
 		
@@ -87,17 +87,6 @@ namespace MonoDevelop.Core
 				fileSystemChain = extensions [0];
 			} else {
 				fileSystemChain = defaultExtension;
-			}
-		}
-		
-		public static FilePath ResolveFullPath (FilePath path)
-		{
-			try {
-				return GetFileSystemForPath (path, false).ResolveFullPath (path);
-			} catch (Exception e) {
-				if (!HandleError (GettextCatalog.GetString ("Can't resolve full path {0}", path), e))
-					throw;
-				return FilePath.Empty;
 			}
 		}
 		

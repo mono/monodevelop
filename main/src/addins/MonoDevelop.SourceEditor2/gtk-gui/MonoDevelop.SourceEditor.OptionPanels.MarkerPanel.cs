@@ -5,176 +5,194 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class MarkerPanel
 	{
 		private global::Gtk.VBox vbox1;
+
 		private global::Gtk.Label GtkLabel9;
+
 		private global::Gtk.Alignment alignment1;
+
 		private global::Gtk.VBox vbox3;
+
 		private global::Gtk.CheckButton showLineNumbersCheckbutton;
+
 		private global::Gtk.CheckButton underlineErrorsCheckbutton;
+
 		private global::Gtk.CheckButton highlightMatchingBracketCheckbutton;
+
 		private global::Gtk.CheckButton highlightCurrentLineCheckbutton;
+
 		private global::Gtk.CheckButton showRulerCheckbutton;
+
 		private global::Gtk.CheckButton enableAnimationCheckbutton1;
+
 		private global::Gtk.CheckButton enableHighlightUsagesCheckbutton;
+
 		private global::Gtk.CheckButton drawIndentMarkersCheckbutton;
+
 		private global::Gtk.CheckButton enableQuickDiffCheckbutton;
+
 		private global::Gtk.Table table1;
+
 		private global::Gtk.CheckButton checkbuttonLineEndings;
+
 		private global::Gtk.CheckButton checkbuttonSpaces;
+
 		private global::Gtk.CheckButton checkbuttonTabs;
+
 		private global::Gtk.Label label1;
+
 		private global::Gtk.ComboBox showWhitespacesCombobox;
-		
-		protected virtual void Build ()
+
+		protected virtual void Build()
 		{
-			global::Stetic.Gui.Initialize (this);
+			global::Stetic.Gui.Initialize(this);
 			// Widget MonoDevelop.SourceEditor.OptionPanels.MarkerPanel
-			global::Stetic.BinContainer.Attach (this);
+			global::Stetic.BinContainer.Attach(this);
 			this.Name = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel";
 			// Container child MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.Gtk.Container+ContainerChild
-			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1 = new global::Gtk.VBox();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.GtkLabel9 = new global::Gtk.Label ();
+			this.GtkLabel9 = new global::Gtk.Label();
 			this.GtkLabel9.Name = "GtkLabel9";
 			this.GtkLabel9.Xalign = 0F;
-			this.GtkLabel9.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>General</b>");
+			this.GtkLabel9.LabelProp = global::Mono.Unix.Catalog.GetString("<b>General</b>");
 			this.GtkLabel9.UseMarkup = true;
-			this.vbox1.Add (this.GtkLabel9);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkLabel9]));
+			this.vbox1.Add(this.GtkLabel9);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel9]));
 			w1.Position = 0;
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.alignment1 = new global::Gtk.Alignment (0.5F, 0.5F, 1F, 1F);
+			this.alignment1 = new global::Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
 			this.alignment1.Name = "alignment1";
 			this.alignment1.LeftPadding = ((uint)(12));
 			// Container child alignment1.Gtk.Container+ContainerChild
-			this.vbox3 = new global::Gtk.VBox ();
+			this.vbox3 = new global::Gtk.VBox();
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.showLineNumbersCheckbutton = new global::Gtk.CheckButton ();
+			this.showLineNumbersCheckbutton = new global::Gtk.CheckButton();
 			this.showLineNumbersCheckbutton.CanFocus = true;
 			this.showLineNumbersCheckbutton.Name = "showLineNumbersCheckbutton";
-			this.showLineNumbersCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Show line numbers");
+			this.showLineNumbersCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Show line numbers");
 			this.showLineNumbersCheckbutton.DrawIndicator = true;
 			this.showLineNumbersCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.showLineNumbersCheckbutton);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.showLineNumbersCheckbutton]));
+			this.vbox3.Add(this.showLineNumbersCheckbutton);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.showLineNumbersCheckbutton]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.underlineErrorsCheckbutton = new global::Gtk.CheckButton ();
+			this.underlineErrorsCheckbutton = new global::Gtk.CheckButton();
 			this.underlineErrorsCheckbutton.CanFocus = true;
 			this.underlineErrorsCheckbutton.Name = "underlineErrorsCheckbutton";
-			this.underlineErrorsCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Underline errors");
+			this.underlineErrorsCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Underline errors");
 			this.underlineErrorsCheckbutton.DrawIndicator = true;
 			this.underlineErrorsCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.underlineErrorsCheckbutton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.underlineErrorsCheckbutton]));
+			this.vbox3.Add(this.underlineErrorsCheckbutton);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.underlineErrorsCheckbutton]));
 			w3.Position = 1;
 			w3.Expand = false;
 			w3.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.highlightMatchingBracketCheckbutton = new global::Gtk.CheckButton ();
+			this.highlightMatchingBracketCheckbutton = new global::Gtk.CheckButton();
 			this.highlightMatchingBracketCheckbutton.CanFocus = true;
 			this.highlightMatchingBracketCheckbutton.Name = "highlightMatchingBracketCheckbutton";
-			this.highlightMatchingBracketCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Highlight matching braces");
+			this.highlightMatchingBracketCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Highlight matching braces");
 			this.highlightMatchingBracketCheckbutton.DrawIndicator = true;
 			this.highlightMatchingBracketCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.highlightMatchingBracketCheckbutton);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.highlightMatchingBracketCheckbutton]));
+			this.vbox3.Add(this.highlightMatchingBracketCheckbutton);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.highlightMatchingBracketCheckbutton]));
 			w4.Position = 2;
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.highlightCurrentLineCheckbutton = new global::Gtk.CheckButton ();
+			this.highlightCurrentLineCheckbutton = new global::Gtk.CheckButton();
 			this.highlightCurrentLineCheckbutton.CanFocus = true;
 			this.highlightCurrentLineCheckbutton.Name = "highlightCurrentLineCheckbutton";
-			this.highlightCurrentLineCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Highlight _current line");
+			this.highlightCurrentLineCheckbutton.Label = global::Mono.Unix.Catalog.GetString("Highlight _current line");
 			this.highlightCurrentLineCheckbutton.DrawIndicator = true;
 			this.highlightCurrentLineCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.highlightCurrentLineCheckbutton);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.highlightCurrentLineCheckbutton]));
+			this.vbox3.Add(this.highlightCurrentLineCheckbutton);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.highlightCurrentLineCheckbutton]));
 			w5.Position = 3;
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.showRulerCheckbutton = new global::Gtk.CheckButton ();
+			this.showRulerCheckbutton = new global::Gtk.CheckButton();
 			this.showRulerCheckbutton.CanFocus = true;
 			this.showRulerCheckbutton.Name = "showRulerCheckbutton";
-			this.showRulerCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Show _column ruler");
+			this.showRulerCheckbutton.Label = global::Mono.Unix.Catalog.GetString("Show _column ruler");
 			this.showRulerCheckbutton.DrawIndicator = true;
 			this.showRulerCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.showRulerCheckbutton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.showRulerCheckbutton]));
+			this.vbox3.Add(this.showRulerCheckbutton);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.showRulerCheckbutton]));
 			w6.Position = 4;
 			w6.Expand = false;
 			w6.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.enableAnimationCheckbutton1 = new global::Gtk.CheckButton ();
+			this.enableAnimationCheckbutton1 = new global::Gtk.CheckButton();
 			this.enableAnimationCheckbutton1.CanFocus = true;
 			this.enableAnimationCheckbutton1.Name = "enableAnimationCheckbutton1";
-			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString ("_Enable animations");
+			this.enableAnimationCheckbutton1.Label = global::Mono.Unix.Catalog.GetString("_Enable animations");
 			this.enableAnimationCheckbutton1.DrawIndicator = true;
 			this.enableAnimationCheckbutton1.UseUnderline = true;
-			this.vbox3.Add (this.enableAnimationCheckbutton1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.enableAnimationCheckbutton1]));
+			this.vbox3.Add(this.enableAnimationCheckbutton1);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.enableAnimationCheckbutton1]));
 			w7.Position = 5;
 			w7.Expand = false;
 			w7.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.enableHighlightUsagesCheckbutton = new global::Gtk.CheckButton ();
+			this.enableHighlightUsagesCheckbutton = new global::Gtk.CheckButton();
 			this.enableHighlightUsagesCheckbutton.CanFocus = true;
 			this.enableHighlightUsagesCheckbutton.Name = "enableHighlightUsagesCheckbutton";
-			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Highlight _identifier references");
+			this.enableHighlightUsagesCheckbutton.Label = global::Mono.Unix.Catalog.GetString("Highlight _identifier references");
 			this.enableHighlightUsagesCheckbutton.DrawIndicator = true;
 			this.enableHighlightUsagesCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.enableHighlightUsagesCheckbutton);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.enableHighlightUsagesCheckbutton]));
+			this.vbox3.Add(this.enableHighlightUsagesCheckbutton);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.enableHighlightUsagesCheckbutton]));
 			w8.Position = 6;
 			w8.Expand = false;
 			w8.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.drawIndentMarkersCheckbutton = new global::Gtk.CheckButton ();
+			this.drawIndentMarkersCheckbutton = new global::Gtk.CheckButton();
 			this.drawIndentMarkersCheckbutton.CanFocus = true;
 			this.drawIndentMarkersCheckbutton.Name = "drawIndentMarkersCheckbutton";
-			this.drawIndentMarkersCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Show indentation guides");
+			this.drawIndentMarkersCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Show indentation guides");
 			this.drawIndentMarkersCheckbutton.DrawIndicator = true;
 			this.drawIndentMarkersCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.drawIndentMarkersCheckbutton);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.drawIndentMarkersCheckbutton]));
+			this.vbox3.Add(this.drawIndentMarkersCheckbutton);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.drawIndentMarkersCheckbutton]));
 			w9.Position = 7;
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.enableQuickDiffCheckbutton = new global::Gtk.CheckButton ();
+			this.enableQuickDiffCheckbutton = new global::Gtk.CheckButton();
 			this.enableQuickDiffCheckbutton.CanFocus = true;
 			this.enableQuickDiffCheckbutton.Name = "enableQuickDiffCheckbutton";
-			this.enableQuickDiffCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Visualize changed lines");
+			this.enableQuickDiffCheckbutton.Label = global::Mono.Unix.Catalog.GetString("_Visualize changed lines");
 			this.enableQuickDiffCheckbutton.DrawIndicator = true;
 			this.enableQuickDiffCheckbutton.UseUnderline = true;
-			this.vbox3.Add (this.enableQuickDiffCheckbutton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.enableQuickDiffCheckbutton]));
+			this.vbox3.Add(this.enableQuickDiffCheckbutton);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.enableQuickDiffCheckbutton]));
 			w10.Position = 8;
 			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.table1 = new global::Gtk.Table (((uint)(4)), ((uint)(4)), false);
+			this.table1 = new global::Gtk.Table(((uint)(4)), ((uint)(4)), false);
 			this.table1.Name = "table1";
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.checkbuttonLineEndings = new global::Gtk.CheckButton ();
+			this.checkbuttonLineEndings = new global::Gtk.CheckButton();
 			this.checkbuttonLineEndings.CanFocus = true;
 			this.checkbuttonLineEndings.Name = "checkbuttonLineEndings";
-			this.checkbuttonLineEndings.Label = global::Mono.Unix.Catalog.GetString ("Include Line Endings");
+			this.checkbuttonLineEndings.Label = global::Mono.Unix.Catalog.GetString("Include Line Endings");
 			this.checkbuttonLineEndings.DrawIndicator = true;
 			this.checkbuttonLineEndings.UseUnderline = true;
-			this.table1.Add (this.checkbuttonLineEndings);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonLineEndings]));
+			this.table1.Add(this.checkbuttonLineEndings);
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonLineEndings]));
 			w11.TopAttach = ((uint)(3));
 			w11.BottomAttach = ((uint)(4));
 			w11.LeftAttach = ((uint)(1));
@@ -182,14 +200,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.checkbuttonSpaces = new global::Gtk.CheckButton ();
+			this.checkbuttonSpaces = new global::Gtk.CheckButton();
 			this.checkbuttonSpaces.CanFocus = true;
 			this.checkbuttonSpaces.Name = "checkbuttonSpaces";
-			this.checkbuttonSpaces.Label = global::Mono.Unix.Catalog.GetString ("Include _Spaces");
+			this.checkbuttonSpaces.Label = global::Mono.Unix.Catalog.GetString("Include _Spaces");
 			this.checkbuttonSpaces.DrawIndicator = true;
 			this.checkbuttonSpaces.UseUnderline = true;
-			this.table1.Add (this.checkbuttonSpaces);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonSpaces]));
+			this.table1.Add(this.checkbuttonSpaces);
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonSpaces]));
 			w12.TopAttach = ((uint)(1));
 			w12.BottomAttach = ((uint)(2));
 			w12.LeftAttach = ((uint)(1));
@@ -197,14 +215,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w12.XOptions = ((global::Gtk.AttachOptions)(4));
 			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.checkbuttonTabs = new global::Gtk.CheckButton ();
+			this.checkbuttonTabs = new global::Gtk.CheckButton();
 			this.checkbuttonTabs.CanFocus = true;
 			this.checkbuttonTabs.Name = "checkbuttonTabs";
-			this.checkbuttonTabs.Label = global::Mono.Unix.Catalog.GetString ("Include Tabs");
+			this.checkbuttonTabs.Label = global::Mono.Unix.Catalog.GetString("Include Tabs");
 			this.checkbuttonTabs.DrawIndicator = true;
 			this.checkbuttonTabs.UseUnderline = true;
-			this.table1.Add (this.checkbuttonTabs);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1 [this.checkbuttonTabs]));
+			this.table1.Add(this.checkbuttonTabs);
+			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.table1[this.checkbuttonTabs]));
 			w13.TopAttach = ((uint)(2));
 			w13.BottomAttach = ((uint)(3));
 			w13.LeftAttach = ((uint)(1));
@@ -212,38 +230,39 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w13.XOptions = ((global::Gtk.AttachOptions)(4));
 			w13.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.label1 = new global::Gtk.Label ();
+			this.label1 = new global::Gtk.Label();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("_Show invisible characters:");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString("_Show invisible characters:");
 			this.label1.UseUnderline = true;
-			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
+			this.table1.Add(this.label1);
+			global::Gtk.Table.TableChild w14 = ((global::Gtk.Table.TableChild)(this.table1[this.label1]));
 			w14.XOptions = ((global::Gtk.AttachOptions)(4));
 			w14.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.showWhitespacesCombobox = global::Gtk.ComboBox.NewText ();
+			this.showWhitespacesCombobox = global::Gtk.ComboBox.NewText();
 			this.showWhitespacesCombobox.Name = "showWhitespacesCombobox";
-			this.table1.Add (this.showWhitespacesCombobox);
-			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1 [this.showWhitespacesCombobox]));
+			this.table1.Add(this.showWhitespacesCombobox);
+			global::Gtk.Table.TableChild w15 = ((global::Gtk.Table.TableChild)(this.table1[this.showWhitespacesCombobox]));
 			w15.LeftAttach = ((uint)(1));
 			w15.RightAttach = ((uint)(4));
 			w15.XOptions = ((global::Gtk.AttachOptions)(4));
 			w15.YOptions = ((global::Gtk.AttachOptions)(4));
-			this.vbox3.Add (this.table1);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.table1]));
+			this.vbox3.Add(this.table1);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox3[this.table1]));
 			w16.Position = 9;
 			w16.Fill = false;
-			this.alignment1.Add (this.vbox3);
-			this.vbox1.Add (this.alignment1);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.alignment1]));
+			this.alignment1.Add(this.vbox3);
+			this.vbox1.Add(this.alignment1);
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment1]));
 			w18.Position = 1;
 			w18.Expand = false;
 			w18.Fill = false;
-			this.Add (this.vbox1);
-			if ((this.Child != null)) {
-				this.Child.ShowAll ();
+			this.Add(this.vbox1);
+			if ((this.Child != null))
+			{
+				this.Child.ShowAll();
 			}
-			this.Show ();
+			this.Show();
 		}
 	}
 }

@@ -35,14 +35,17 @@ using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
 using System.Linq;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public class QuickTaskStrip : VBox
+	class QuickTaskStrip : VBox
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
-		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
-		public readonly static bool MergeScrollBarAndQuickTasks = !Platform.IsMac;
+		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
+		public readonly static bool MergeScrollBarAndQuickTasks = !MonoDevelop.Core.Platform.IsMac;
 
 		static QuickTaskStrip ()
 		{
@@ -61,8 +64,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 		
-		Mono.TextEditor.TextEditor textEditor;
-		public TextEditor TextEditor {
+		Mono.TextEditor.MonoTextEditor textEditor;
+		public Mono.TextEditor.MonoTextEditor TextEditor {
 			get {
 				return textEditor;
 			}
@@ -87,7 +90,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		Dictionary<IUsageProvider, List<Usage>> providerUsages = new Dictionary<IUsageProvider, List<Usage>> ();
+		Dictionary<UsageProviderEditorExtension, List<Usage>> providerUsages = new Dictionary<UsageProviderEditorExtension, List<Usage>> ();
 
 		public IEnumerable<QuickTask> AllTasks {
 			get {
@@ -176,7 +179,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}
 		
-		public void Update (IUsageProvider provider)
+		public void Update (UsageProviderEditorExtension provider)
 		{
 			if (providerTasks == null)
 				return;
@@ -255,13 +258,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		internal enum HoverMode { NextMessage, NextWarning, NextError }
 		internal QuickTask SearchNextTask (HoverMode mode)
 		{
-			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			var curLoc = TextEditor.Caret.Offset;
 			QuickTask firstTask = null;
 			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
 				bool isNextTask = task.Location > curLoc;
 				if (mode == HoverMode.NextMessage ||
-					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-					mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == DiagnosticSeverity.Warning ||
+					mode == HoverMode.NextError && task.Severity == DiagnosticSeverity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)
@@ -273,13 +276,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		internal QuickTask SearchPrevTask (HoverMode mode)
 		{
-			var curLoc = (TextLocation)TextEditor.Caret.Location;
+			var curLoc = TextEditor.Caret.Offset;
 			QuickTask firstTask = null;
 			foreach (var task in AllTasks.OrderByDescending (t => t.Location) ) {
 				bool isNextTask = task.Location < curLoc;
 				if (mode == HoverMode.NextMessage ||
-					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-					mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == DiagnosticSeverity.Warning ||
+					mode == HoverMode.NextError && task.Severity == DiagnosticSeverity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)
@@ -293,10 +296,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 			if (quickTask == null)
 				return;
-			var line = quickTask.Location.Line;
-			if (line < 1 || line >= TextEditor.LineCount)
-				return;
-			TextEditor.Caret.Location = new TextLocation (line, Math.Max (1, quickTask.Location.Column));
+			TextEditor.Caret.Offset = quickTask.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();

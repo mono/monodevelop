@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9D360D43-0C05-49D6-84DB-4E7AB2F38F82}"
@@ -269,6 +269,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.Xml"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp.Refactoring", "external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj", "{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NRefactory6", "NRefactory6", "{840E8B8D-929C-4CB2-9D23-2702FF01269A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory6.CSharp", "external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj", "{7E891659-45F3-42B5-B940-A728780CCAE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory6.CSharp.Refactoring", "external\NRefactory6\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory6.CSharp.Refactoring.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiUnit_NET_4_5", "external\guiunit\src\framework\GuiUnit_NET_4_5.csproj", "{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}"
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{AC7D119C-980B-4712-8811-5368C14412D7}"
@@ -306,8 +312,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 		DebugGnome|Any CPU = DebugGnome|Any CPU
 		ReleaseMac|Any CPU = ReleaseMac|Any CPU
-		ReleaseGnome|Any CPU = ReleaseGnome|Any CPU
 		ReleaseWin32|Any CPU = ReleaseWin32|Any CPU
+		ReleaseGnome|Any CPU = ReleaseGnome|Any CPU
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0413DB7D-8B35-423F-9752-D75C9225E7DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -690,6 +698,7 @@ Global
 		{376889B5-6504-46A1-9D18-A9E4B4A50F49}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{376889B5-6504-46A1-9D18-A9E4B4A50F49}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{376889B5-6504-46A1-9D18-A9E4B4A50F49}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{376889B5-6504-46A1-9D18-A9E4B4A50F49}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -936,6 +945,18 @@ Global
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|x86.Build.0 = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|x86.Build.0 = Release|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1393,6 +1414,7 @@ Global
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
 		{AE84B4A7-E6B1-4565-8904-16284DCE41B6}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1516,6 +1538,18 @@ Global
 		{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E}.Release|x86.Build.0 = Release|Any CPU
 		{C4B0275C-37D3-43F2-927D-ABF556600804}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{C4B0275C-37D3-43F2-927D-ABF556600804}.DebugGnome|Any CPU.ActiveCfg = Debug|x86
 		{C4B0275C-37D3-43F2-927D-ABF556600804}.DebugMac|Any CPU.ActiveCfg = Debug|x86
@@ -1805,7 +1839,6 @@ Global
 		{F3AC14B0-3D1F-4B9B-95E8-384056060F33}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{F3AC14B0-3D1F-4B9B-95E8-384056060F33}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1821,13 +1854,10 @@ Global
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{F426CBB2-77FC-4E14-9E28-E667C2D1299A}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
@@ -2010,6 +2040,7 @@ Global
 		{D07C8309-996F-484E-BDA1-26BBAF69D29B} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{B8897B76-1A12-4DFA-8B60-7944CC4C9654} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{2D711139-8765-4929-BC7A-AA2DEE6F615D} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
+		{840E8B8D-929C-4CB2-9D23-2702FF01269A} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{92494904-35FA-4DC9-BDE9-3A3E87AC49D3} = {67A32B53-F719-4ECB-B5E1-FD0B04FEE258}
 		{C3887A93-B2BD-4097-8E2F-3A063EFF32FD} = {67A32B53-F719-4ECB-B5E1-FD0B04FEE258}
@@ -2035,6 +2066,8 @@ Global
 		{63D3B27A-D966-4902-90B3-30290E1692F1} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
 		{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
 		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
+		{7E891659-45F3-42B5-B940-A728780CCAE9} = {840E8B8D-929C-4CB2-9D23-2702FF01269A}
+		{C465A5DC-AD28-49A2-89C0-F81838814A7E} = {840E8B8D-929C-4CB2-9D23-2702FF01269A}
 		{BFE8691A-D323-4622-9021-7B8B27F81599} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{8A04FF99-5DFE-4E3D-A24F-72A621C8DDC6} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
 		{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
@@ -2046,6 +2079,7 @@ Global
 		{73D4CC8B-BAB9-4A29-841B-F25C6311F067} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
 		Policies = $0
 		$0.StandardHeader = $1
 		$1.Text = @\n${FileName}\n \nAuthor:\n      ${AuthorName} <${AuthorEmail}>\n\nCopyright (c) ${Year} ${CopyrightHolder}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.
@@ -2092,6 +2126,33 @@ Global
 		$0.XmlFormattingPolicy = $13
 		$13.inheritsSet = null
 		$13.scope = image/svgxml
+		$0.TextStylePolicy = $14
+		$14.TabsToSpaces = False
+		$14.inheritsSet = VisualStudio
+		$14.inheritsScope = text/plain
+		$14.scope = text/plain
+		$0.TextStylePolicy = $15
+		$15.inheritsSet = null
+		$15.scope = application/xml
+		$0.XmlFormattingPolicy = $16
+		$16.inheritsSet = Mono
+		$16.inheritsScope = application/xml
+		$16.scope = application/xml
+		$0.TextStylePolicy = $17
+		$17.inheritsSet = null
+		$17.scope = application/config+xml
+		$0.XmlFormattingPolicy = $18
+		$18.inheritsSet = null
+		$18.scope = application/config+xml
+		$0.TextStylePolicy = $19
+		$19.inheritsSet = null
+		$19.scope = application/json
+		$0.TextStylePolicy = $20
+		$20.inheritsSet = null
+		$20.scope = application/glade+xml
+		$0.XmlFormattingPolicy = $21
+		$21.inheritsSet = null
+		$21.scope = application/glade+xml
 		outputpath = build\bin\
 		MakePkgConfig = False
 		MakeLibPC = True

@@ -28,14 +28,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Core
 {
 	[Serializable]
 	public struct FilePath: IComparable<FilePath>, IComparable, IEquatable<FilePath>
 	{
-		static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
-		static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+		public static readonly StringComparer PathComparer = (Platform.IsWindows || Platform.IsMac) ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+		public static readonly StringComparison PathComparison = (Platform.IsWindows || Platform.IsMac) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
 		readonly string fileName;
 
@@ -64,6 +65,28 @@ namespace MonoDevelop.Core
 
 		public bool IsEmpty {
 			get { return fileName != null && fileName.Length == 0; }
+		}
+
+		const int PATHMAX = 4096 + 1;
+
+		[DllImport ("libc")]
+		static extern IntPtr realpath (string path, IntPtr buffer);
+
+		public FilePath ResolveLinks ()
+		{
+			if (Platform.IsWindows) {
+				return Path.GetFullPath (this);
+			}
+
+			IntPtr buffer = IntPtr.Zero;
+			try {
+				buffer = Marshal.AllocHGlobal (PATHMAX);
+				var result = realpath (this, buffer);
+				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+			} finally {
+				if (buffer != IntPtr.Zero)
+					Marshal.FreeHGlobal (buffer);
+			}
 		}
 
 		public FilePath FullPath {

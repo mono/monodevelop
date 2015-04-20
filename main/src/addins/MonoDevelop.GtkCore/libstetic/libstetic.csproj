@@ -111,7 +111,6 @@
     <Compile Include="editor\StringArray.cs" />
     <Compile Include="editor\Text.cs" />
     <Compile Include="editor\TextBox.cs" />
-    <Compile Include="editor\TextEditor.cs" />
     <Compile Include="editor\TextEditorDialog.cs" />
     <Compile Include="editor\ThemedIcon.cs" />
     <Compile Include="editor\ThemedIconList.cs" />
@@ -224,6 +223,7 @@
     <Compile Include="TopLevelWindow.cs" />
     <Compile Include="wrapper\NotifyWorkaround.cs" />
     <Compile Include="editor\GtkWorkarounds.cs" />
+    <Compile Include="editor\PropertyTextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="stetic.glade">

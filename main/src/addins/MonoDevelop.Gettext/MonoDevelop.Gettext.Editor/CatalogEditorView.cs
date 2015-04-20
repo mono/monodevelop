@@ -52,8 +52,9 @@ namespace MonoDevelop.Gettext.Editor
 			};
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
+			var fileName = fileOpenInformation.FileName;
 //			using (IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetLoadProgressMonitor (true)) {
 			catalog.Load (null, fileName);
 //			}
@@ -65,11 +66,11 @@ namespace MonoDevelop.Gettext.Editor
 			this.IsDirty = false;
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
 			OnBeforeSave (EventArgs.Empty);
-			catalog.Save (fileName);
-			ContentName = fileName;
+			catalog.Save (fileSaveInformation.FileName);
+			ContentName = fileSaveInformation.FileName;
 			IsDirty = false;
 		}
 		

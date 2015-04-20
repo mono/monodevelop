@@ -138,17 +138,23 @@ namespace MonoDevelop.Core.Text
 			// letter case
 			ch = text [j];
 			bool textCharIsUpper = char.IsUpper (ch);
-			if (!onlyWordStart && filterChar == (textCharIsUpper ? ch : char.ToUpper (ch)) && char.IsLetter (ch)) {
-				// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
-				if (!(textCharIsUpper || (filterTextLowerCaseTable & flag) != 0) && j + 1 < text.Length) {
-					int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
-					if (possibleBetterResult >= 0)
-						return possibleBetterResult;
+			if (!onlyWordStart) {
+				if (filterChar == (textCharIsUpper ? ch : char.ToUpper (ch)) && char.IsLetter (ch)) {
+					// cases don't match. Filter is upper char & letter is low, now prefer the match that does the word skip.
+					if (!(textCharIsUpper || (filterTextLowerCaseTable & flag) != 0) && j + 1 < text.Length) {
+						int possibleBetterResult = GetMatchChar (text, i, j + 1, onlyWordStart);
+						if (possibleBetterResult >= 0)
+							return possibleBetterResult;
+					}
+					return j;
 				}
-				return j;
+			} else {
+				if (textCharIsUpper && filterChar == ch && char.IsLetter (ch)) {
+					return j;
+				}
 			}
+
 			// no match, try to continue match at the next word start
-			
 			bool lastWasLower = false;
 			bool lastWasUpper = false;
 			int wordStart = j + 1;

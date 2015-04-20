@@ -36,6 +36,7 @@ using Xwt;
 using Xwt.Drawing;
 using System.Linq;
 using System.IO;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Debugger
 {
@@ -419,8 +420,8 @@ namespace MonoDevelop.Debugger
 				    IdeApp.Workbench.ActiveDocument.Editor != null &&
 				    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
-						IdeApp.Workbench.ActiveDocument.Editor.Caret.Line,
-						IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+						IdeApp.Workbench.ActiveDocument.Editor.CaretLine,
+						IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);
 					entryLocationFile.Text = breakpointLocation.ToString ();
 					stopOnLocation.Active = true;
 				}
@@ -688,18 +689,23 @@ namespace MonoDevelop.Debugger
 		{
 			classes.Add ("System.Exception");
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				var dom = TypeSystemService.GetCompilation (IdeApp.ProjectOperations.CurrentSelectedProject);
-				foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
-					classes.Add (t.ReflectionName);
-			} else {
-				// no need to unload this assembly context, it's not cached.
-				var unresolvedAssembly = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(Uri).Assembly.Location);
-				var mscorlib = TypeSystemService.LoadAssemblyContext (Runtime.SystemAssemblyService.CurrentRuntime, MonoDevelop.Core.Assemblies.TargetFramework.Default, typeof(object).Assembly.Location);
-				if (unresolvedAssembly != null && mscorlib != null) {
-					var dom = new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (unresolvedAssembly, mscorlib);
-					foreach (var t in dom.FindType (typeof (Exception)).GetSubTypeDefinitions ())
-						classes.Add (t.ReflectionName);
+				var compilation = TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject).Result;
+				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
+				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
+					classes.Add (t.GetFullMetadataName ());
 				}
+			} else {
+				//no need to unload this assembly context, it's not cached.
+				var dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
+				var compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
+										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(object)).Location))//corlib
+										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(Uri)).Location));//System.dll
+
+				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
+				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
+					classes.Add (t.GetFullMetadataName ());
+				}
+				MetadataReferenceCache.RemoveReferences (dummyProjectId);
 			}
 			entryExceptionType.SetCodeCompletionList (classes.ToList ());
 		}

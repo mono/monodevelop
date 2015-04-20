@@ -30,8 +30,6 @@ using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Ide;
 using System.Reflection;
-using Mono.TextEditor;
-
 
 namespace MonoDevelop.Components.MainToolbar
 {

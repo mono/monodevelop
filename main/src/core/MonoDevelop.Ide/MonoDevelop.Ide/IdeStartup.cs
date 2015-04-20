@@ -53,6 +53,7 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -117,11 +118,11 @@ namespace MonoDevelop.Ide
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
 
 			//default to Windows IME on Windows
-			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+			if (Platform.IsWindows && GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;
-				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				var val = GtkWorkarounds.GetProperty (settings, "gtk-im-module");
 				if (string.IsNullOrEmpty (val.Val as string))
-					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
 			
 			InternalLog.Initialize ();
@@ -610,6 +611,14 @@ namespace MonoDevelop.Ide
 		static void HandleException (Exception ex, bool willShutdown)
 		{
 			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var aggregateException = ex as AggregateException;
+			if (aggregateException != null) {
+				aggregateException.Flatten ().Handle (innerEx => {
+					HandleException (innerEx, willShutdown);
+					return true;
+				});
+				return;
+			}
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);

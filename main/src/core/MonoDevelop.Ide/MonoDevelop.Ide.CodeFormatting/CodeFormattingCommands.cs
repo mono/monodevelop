@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
+					formatter.OnTheFlyFormat (doc.Editor, doc, 0, doc.Editor.Length);
 				}
 			} else {
 				var text = doc.Editor.Text;
@@ -74,9 +74,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 				if (formattedText == null || formattedText == text)
 					return;
 
-				doc.Editor.Replace (0, text.Length, formattedText);
+				doc.Editor.ReplaceText (0, text.Length, formattedText);
 			}
-			doc.Editor.Document.CommitUpdateAll ();
 		}
 	}
 	
@@ -96,26 +95,26 @@ namespace MonoDevelop.Ide.CodeFormatting
 			if (formatter == null)
 				return;
 
-			TextSegment selection;
+			ISegment selection;
 			var editor = doc.Editor;
 			if (editor.IsSomethingSelected) {
 				selection = editor.SelectionRange;
 			} else {
-				selection = editor.GetLine (editor.Caret.Line).Segment;
+				selection = editor.GetLine (editor.CaretLocation.Line);
 			}
 			
 			using (var undo = editor.OpenUndoGroup ()) {
 				var version = editor.Version;
 
 				if (formatter.SupportsOnTheFlyFormatting) {
-					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
+					formatter.OnTheFlyFormat (doc.Editor, doc, selection.Offset, selection.EndOffset);
 				} else {
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					try {
 						var editorText = editor.Text;
 						string text = formatter.FormatText (pol, editorText, selection.Offset, selection.EndOffset);
 						if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
-							editor.Replace (selection.Offset, selection.Length, text);
+							editor.ReplaceText (selection.Offset, selection.Length, text);
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error during format.", e); 

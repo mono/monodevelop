@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 {
 	public class FoldMarkerMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		DocumentLine lineHover;
 		Pango.Layout layout;
 		
@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public FoldMarkerMargin (TextEditor editor)
+		public FoldMarkerMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 			layout = PangoUtil.CreateLayout (editor);

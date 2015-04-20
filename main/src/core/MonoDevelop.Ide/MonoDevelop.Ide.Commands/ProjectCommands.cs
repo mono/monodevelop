@@ -338,7 +338,7 @@ namespace MonoDevelop.Ide.Commands
 			if (h == null || !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
 				return;
 
-			IdeApp.ProjectOperations.Execute (target);
+			IdeApp.ProjectOperations.Execute (target, h);
 		}
 	}
 

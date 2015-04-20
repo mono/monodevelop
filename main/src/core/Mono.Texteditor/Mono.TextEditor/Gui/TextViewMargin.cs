@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 {
 	public class TextViewMargin : Margin
 	{
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
 		Pango.Layout[] eolMarkerLayout;
@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 		}
 
 
-		public TextViewMargin (TextEditor textEditor)
+		public TextViewMargin (MonoTextEditor textEditor)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -1630,17 +1630,25 @@ namespace Mono.TextEditor
 				TextRenderEndPosition = xPos + width,
 
 				LineHeight = _lineHeight,
-				WholeLineWidth = textEditor.Allocation.Width - xPos
+				WholeLineWidth = textEditor.Allocation.Width - xPos,
+
+				LineYRenderStartPosition = y
 			};
 
 			foreach (TextLineMarker marker in line.Markers) {
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, y, metrics)) {
+				if (marker.DrawBackground (textEditor, cr, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
 			}
+
+			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+				if (layout.Layout != null)
+					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
+			}
+
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
@@ -1819,12 +1827,12 @@ namespace Mono.TextEditor
 			}
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, y, metrics);
+					marker.Draw (textEditor, cr, metrics);
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, metrics, offset, offset + length);
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
@@ -2037,7 +2045,7 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
-						textEditor.SetSelection (clickLocation, clickLocation);
+						textEditor.MainSelection = new Selection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
 				}
@@ -2417,6 +2425,8 @@ namespace Mono.TextEditor
 
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn, int tabSize)
 		{
+			if (tabSize == 0)
+				return currentColumn;
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}
@@ -2878,10 +2888,11 @@ namespace Mono.TextEditor
 				var metrics = new EndOfLineMetrics {
 					LineSegment = line,
 					TextRenderEndPosition = TextStartPosition + position,
-					LineHeight = _lineHeight
+					LineHeight = _lineHeight,
+					LineYRenderStartPosition = y
 				};
 				foreach (var marker in line.Markers) {
-					marker.DrawAfterEol (textEditor, cr, y, metrics);
+					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
 

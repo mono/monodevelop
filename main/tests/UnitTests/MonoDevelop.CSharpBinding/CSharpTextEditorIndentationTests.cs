@@ -1,3 +1,4 @@
+/*
 // 
 // CSharpTextEditorIndentationTests.cs
 //  
@@ -39,6 +40,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using UnitTests;
 using MonoDevelop.Projects.Policies;
+
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
@@ -142,7 +144,9 @@ namespace MonoDevelop.CSharpBinding
 		IStateMachineIndentEngine CreateTracker (TextEditorData data)
 		{
 			var policy = PolicyService.InvariantPolicies.Get <CSharpFormattingPolicy> ("text/x-csharp").CreateOptions();
+
 			var textStylePolicy = data.CreateNRefactoryTextEditorOptions();
+
 			textStylePolicy.IndentBlankLines = true;
 			var result = new CacheIndentEngine(new ICSharpCode.NRefactory.CSharp.CSharpIndentEngine(data.Document, textStylePolicy, policy));
 			result.Update (data.Caret.Offset);
@@ -452,3 +456,4 @@ $void Bar ()
 
 	}
 }
+*/

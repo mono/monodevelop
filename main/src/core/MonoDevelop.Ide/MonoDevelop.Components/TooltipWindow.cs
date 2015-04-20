@@ -26,12 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 
 using MonoDevelop.Ide;
 using Gtk;
 using Gdk;
-using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Components
 {
@@ -41,7 +39,7 @@ namespace MonoDevelop.Components
 		
 		public string LinkColor {
 			get {
-				var color = Mono.TextEditor.HslColor.GenerateHighlightColors (Style.Background (State), Style.Text (State), 3)[2];
+				var color = HslColor.GenerateHighlightColors (Style.Background (State), Style.Text (State), 3)[2];
 				return color.ToPangoString ();
 			}
 		}

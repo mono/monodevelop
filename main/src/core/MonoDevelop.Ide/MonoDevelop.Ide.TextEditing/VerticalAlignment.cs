@@ -27,7 +27,6 @@
 using System;
 using System.Linq;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Text;
 

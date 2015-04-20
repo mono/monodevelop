@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.DocFood
 {
@@ -39,12 +40,12 @@ namespace MonoDevelop.DocFood
 		
 		public List<Node> Children = new List<Node> ();
 		
-		public Node ()
+		protected Node ()
 		{
 			Attributes = new List<KeyValuePair<string, string>> ();
 		}
 		
-		public abstract void Run (DocGenerator generator, object member);
+		public abstract void Run (DocGenerator generator, ISymbol member);
 		
 		public void SetAttribute (string name, string value)
 		{
@@ -63,7 +64,7 @@ namespace MonoDevelop.DocFood
 		
 		public static List<Node> ReadNodeList (XmlReader reader, string tag)
 		{
-			List<Node> result = new List<Node> ();
+			var result = new List<Node> ();
 			XmlReadHelper.ReadList (reader, tag, delegate () {
 				switch (reader.LocalName) {
 				case Section.XmlTag:

@@ -33,6 +33,7 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Core;
 
 using Mono.MHex.Data;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.HexEditor
 {
@@ -82,7 +83,7 @@ namespace MonoDevelop.HexEditor
 
 		void SetHexEditorOptions ()
 		{
-			hexEditor.Options.FontName = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.FontName;
+			hexEditor.Options.FontName = DefaultSourceEditorOptions.Instance.FontName;
 			hexEditor.PurgeLayoutCaches ();
 			hexEditor.Repaint ();
 		}

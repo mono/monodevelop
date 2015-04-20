@@ -70,7 +70,9 @@ namespace Mono.TextEditor
 
 		void HandleLineRemoved (object sender, LineEventArgs e)
 		{
-			RemoveLine (e.Line.LineNumber);
+			Rebuild ();
+			OnLineUpdateFrom (new HeightChangedEventArgs (e.Line.LineNumber - 1));
+			//RemoveLine (e.Line.LineNumber);
 		}
 
 		public void Dispose ()

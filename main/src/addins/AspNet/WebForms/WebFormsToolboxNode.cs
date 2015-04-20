@@ -30,7 +30,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
@@ -124,9 +123,9 @@ namespace MonoDevelop.AspNet.WebForms
 			//FIXME: only do this on the insert, not the preview - or remove it afterwards
 			RegisterReference (document.Project);
 			
-			var database = document.Compilation;
+			var database = document.GetCompilationAsync ().Result;
 			
-			var cls = database.FindType (Type.Load ());
+			var cls = database.GetTypeByMetadataName (Type.Load ().FullName);
 			if (cls == null)
 				return tag;
 

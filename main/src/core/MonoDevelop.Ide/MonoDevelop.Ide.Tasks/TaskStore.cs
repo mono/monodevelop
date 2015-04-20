@@ -61,9 +61,11 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public TaskStore ()
 		{
-			IdeApp.Workspace.FileRenamedInProject += ProjectFileRenamed;
-			IdeApp.Workspace.FileRemovedFromProject += ProjectFileRemoved;
-			
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.FileRenamedInProject += ProjectFileRenamed;
+				IdeApp.Workspace.FileRemovedFromProject += ProjectFileRemoved;
+			}
+
 			TextEditorService.LineCountChangesCommitted += delegate (object sender, TextFileEventArgs args) {
 				foreach (TaskListEntry task in GetFileTasks (args.TextFile.Name.FullPath))
 					task.SavedLine = -1;

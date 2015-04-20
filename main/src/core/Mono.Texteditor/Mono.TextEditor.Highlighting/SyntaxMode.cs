@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Highlighting
 	{
 		protected TextDocument doc;
 
-		public TextDocument Document {
+		public virtual TextDocument Document {
 			get {
 				return doc;
 			}
@@ -743,6 +743,9 @@ namespace Mono.TextEditor.Highlighting
 					string extends = reader.GetAttribute ("extends");
 					if (!String.IsNullOrEmpty (extends)) {
 						result = (SyntaxMode)SyntaxModeService.GetSyntaxMode (null, extends).MemberwiseClone ();
+						spanList.AddRange (result.spans);
+						prevMarkerList.AddRange (result.prevMarker);
+						matches.AddRange (result.matches);
 					}
 					result.Name = reader.GetAttribute ("name");
 					result.MimeType = reader.GetAttribute (MimeTypesAttribute);

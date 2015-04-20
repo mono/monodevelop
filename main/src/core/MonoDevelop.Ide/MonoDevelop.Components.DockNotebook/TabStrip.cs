@@ -28,7 +28,6 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using System;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using Cairo;
 using MonoDevelop.Components;

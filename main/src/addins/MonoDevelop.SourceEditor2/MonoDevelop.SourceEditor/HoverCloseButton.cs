@@ -29,7 +29,7 @@ using Gdk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class HoverCloseButton : EventBox
+	class HoverCloseButton : EventBox
 	{
 		bool hovered;
 

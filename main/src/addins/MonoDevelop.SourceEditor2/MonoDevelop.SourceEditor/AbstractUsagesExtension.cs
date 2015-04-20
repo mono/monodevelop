@@ -251,7 +251,7 @@ namespace MonoDevelop.SourceEditor
 			OnUsagesUpdated (EventArgs.Empty);
 		}
 
-		public class UsageMarker : TextLineMarker
+		class UsageMarker : TextLineMarker
 		{
 			List<UsageSegment> usages = new List<UsageSegment> ();
 
@@ -324,7 +324,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public class UsageSegment
+		class UsageSegment
 		{
 			public readonly ReferenceUsageType UsageType;
 			public readonly TextSegment TextSegment;

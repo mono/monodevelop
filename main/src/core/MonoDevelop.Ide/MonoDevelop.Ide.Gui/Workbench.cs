@@ -51,6 +51,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.DockNotebook;
 using System.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -441,6 +442,25 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
+		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
+		{
+			var ipos = doc.Editor;
+			if ((info.Line >= 1 || info.Offset >= 0) && ipos != null) {
+				doc.DisableAutoScroll ();
+				doc.RunWhenLoaded (() => {
+					var loc = new DocumentLocation (info.Line, info.Column >= 1 ? info.Column : 1);
+					if (info.Offset >= 0) {
+						loc = ipos.OffsetToLocation (info.Offset);
+					}
+					if (loc.IsEmpty)
+						return;
+					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+					if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
+						ipos.CenterToCaret ();
+				});
+			}
+		}
+		
 		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
@@ -454,7 +474,6 @@ namespace MonoDevelop.Ide.Gui
 
 			return OpenDocument (openFileInfo);
 		}
-
 
 		public Document OpenDocument (FileOpenInformation info)
 		{
@@ -481,18 +500,7 @@ namespace MonoDevelop.Ide.Gui
 								doc.SetProject (info.Project); 
 							}
 
-							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
-							if (info.Line >= 1 && ipos != null) {
-								doc.DisableAutoScroll ();
-								doc.RunWhenLoaded (() =>
-									ipos.SetCaretTo (
-										info.Line,
-										info.Column >= 1 ? info.Column : 1,
-										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-										info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-									)
-								);
-							}
+							ScrollToRequestedCaretLocation (doc, info);
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
@@ -518,6 +526,9 @@ namespace MonoDevelop.Ide.Gui
 				if (info.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
+					
+					ScrollToRequestedCaretLocation (doc, info);
+					
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						doc.RunWhenLoaded (() => {
 							if (doc.Window != null)
@@ -577,7 +588,7 @@ namespace MonoDevelop.Ide.Gui
 			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			
-			IViewContent newContent = binding.CreateContent (null, mimeType, null);
+			IViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
 			using (content) {
 				newContent.LoadNew (content, mimeType);
 			}
@@ -588,9 +599,8 @@ namespace MonoDevelop.Ide.Gui
 			
 			newContent.UntitledName = defaultName;
 			newContent.IsDirty = true;
-			workbench.ShowView (newContent, true);
-			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
-			
+			workbench.ShowView (newContent, true, binding);
+
 			var document = WrapDocument (newContent.WorkbenchWindow);
 			document.StartReparseThread ();
 			return document;
@@ -979,8 +989,8 @@ namespace MonoDevelop.Ide.Gui
 			var dp = new DocumentUserPrefs ();
 			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
 			if (document.Editor != null) {
-				dp.Line = document.Editor.Caret.Line;
-				dp.Column = document.Editor.Caret.Column;
+				dp.Line = document.Editor.CaretLine;
+				dp.Column = document.Editor.CaretColumn;
 			}
 			return dp;
 		}
@@ -1161,6 +1171,7 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 				lock (fileStatusLock) {
 //					DateTime t = DateTime.Now;
+
 					if (fileStatus == null)
 						return;
 					List<FilePath> modified = new List<FilePath> (fileStatus.Count);
@@ -1257,7 +1268,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 	}
-
+	
+	public class FileSaveInformation
+	{
+		FilePath fileName;
+		public FilePath FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value.CanonicalPath;
+				if (fileName.IsNullOrEmpty)
+					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
+			}
+		}
+		
+		public Encoding Encoding { get; set; }
+		
+		public FileSaveInformation (FilePath fileName, Encoding encoding = null)
+		{
+			this.FileName = fileName;
+			this.Encoding = encoding;
+		}
+	}
+	
 	public class FileOpenInformation
 	{
 		FilePath fileName;
@@ -1266,19 +1300,29 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = FileService.ResolveFullPath (value.CanonicalPath);
+				fileName = value.CanonicalPath.ResolveLinks ();
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
 		}
 
 		public OpenDocumentOptions Options { get; set; }
+		int offset = -1;
+		public int Offset {
+			get {
+				return offset;
+			}
+			set {
+				offset = value;
+			}
+		}
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+
 		internal DockNotebook DockNotebook { get; set; }
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
@@ -1291,7 +1335,7 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		public FileOpenInformation (FilePath filePath, Project project)
+		public FileOpenInformation (FilePath filePath, Project project = null)
 		{
 			this.FileName = filePath;
 			this.Project = project;
@@ -1393,12 +1437,8 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
-				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
 				try {
-					if (fileInfo.Encoding != null && etc != null)
-						etc.Load (fileName, fileInfo.Encoding);
-					else
-						newContent.Load (fileName);
+					newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return;
@@ -1420,14 +1460,14 @@ namespace MonoDevelop.Ide.Gui
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
 
-			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), fileInfo.DockNotebook);
+			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), binding, fileInfo.DockNotebook);
 
-			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
+
+			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
 			if (fileInfo.Line > 0 && ipos != null) {
-				Mono.TextEditor.Utils.FileSettingsStore.Remove (fileName);
+				FileSettingsStore.Remove (fileName);
 				ipos.RunWhenLoaded (JumpToLine); 
 			}
 			
@@ -1436,8 +1476,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		void JumpToLine ()
 		{
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
+			var loc = new DocumentLocation (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column));
+			if (fileInfo.Offset >= 0) {
+				loc = ipos.OffsetToLocation (fileInfo.Offset);
+			}
+			ipos.SetCaretLocation (loc, fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 		}
 	}
 	
