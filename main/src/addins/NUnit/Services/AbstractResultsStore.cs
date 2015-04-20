@@ -279,7 +279,7 @@ namespace MonoDevelop.NUnit
 		// Bug 3023 - Running NUnit tests throws ArgumentException: Illegal Characters in path
 		static string EscapeFilename (string str)
 		{
-			var pc = Path.GetInvalidPathChars ();
+			var pc = FilePath.GetInvalidPathChars ();
 			char[] specialCharacters = new char[pc.Length + 1];
 			pc.CopyTo (specialCharacters, 0);
 			specialCharacters [specialCharacters.Length - 1] = '%';
