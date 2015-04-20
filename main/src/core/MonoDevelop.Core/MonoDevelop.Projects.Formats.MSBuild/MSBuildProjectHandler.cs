@@ -1656,7 +1656,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					buildItem = AddOrGetBuildItem (msproject, oldItems, "ProjectReference", MSBuildProjectService.ToMSBuildPath (Item.ItemDirectory, refProj.FileName), pref.Condition);
 					MSBuildProjectHandler handler = refProj.ItemHandler as MSBuildProjectHandler;
 					if (handler != null)
-						buildItem.SetMetadata ("Project", handler.Item.ItemId);
+						buildItem.SetMetadata ("Project", handler.Item.ItemId, oldValueComparison: StringComparison.OrdinalIgnoreCase);
 					else
 						buildItem.UnsetMetadata ("Project");
 					buildItem.SetMetadata ("Name", refProj.Name);
