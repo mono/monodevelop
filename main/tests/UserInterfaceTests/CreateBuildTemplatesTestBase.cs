@@ -81,9 +81,6 @@ namespace UserInterfaceTests
 
 				Assert.IsTrue (newProject.Next ());
 
-				// Wait until the next page is displayed
-				Session.WaitForElement (c => c.Textfield ().Marked ("solutionNameTextBox"));
-
 				EnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory);
 
 				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
