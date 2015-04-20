@@ -111,6 +111,9 @@ run-gdb:
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
+uitest:
+	cd main && $(MAKE) uitest assembly=$(assembly)
+
 coverage:
 	cd main && $(MAKE) coverage
 
