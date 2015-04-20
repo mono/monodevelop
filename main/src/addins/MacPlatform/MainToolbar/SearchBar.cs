@@ -144,7 +144,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (value == (nint)(long)NSTextMovement.Return) {
 				if (Activated != null)
 					Activated (this, null);
-				AbortEditing ();
 				return;
 			}
 
