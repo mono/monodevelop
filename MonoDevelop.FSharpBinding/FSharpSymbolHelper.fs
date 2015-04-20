@@ -9,7 +9,6 @@ open MonoDevelop.Ide
 open MonoDevelop.Components
 
 module Symbols =
-
     let getLocationFromSymbolUse (s: FSharpSymbolUse) =
         [s.Symbol.DeclarationLocation; s.Symbol.SignatureLocation]
         |> List.choose id
@@ -45,14 +44,34 @@ module Symbols =
             MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
         | doc -> doc.Editor
 
-    let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
+    let getOffsets (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
+        let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)
+        let endOffset = editor.LocationToOffset (range.EndLine, range.EndColumn+1)
+        startOffset, endOffset
+
+    let getTextSpan (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
+        let startOffset, endOffset = getOffsets range editor
+        Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
+
+    let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) = 
         symbolUse
         |> getLocationFromSymbolUse
         |> List.map (fun range -> 
             let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
             range.FileName, start, finish)
 
-    let getTextSpanForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
+    let getTrimmedOffsetsForDeclarations lastIdent (symbolUse:FSharpSymbolUse) = 
+        let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse 
+        trimmedSymbols
+        |> List.map (fun (fileName, start, finish) ->
+            let editor = getEditorForFileName fileName
+            let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
+            let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
+            //if startOffset < 0 then argOutOfRange "startOffset" "broken"
+            //if endOffset < 0  then argOutOfRange "endOffset" "broken"
+            fileName, startOffset, endOffset)
+
+    let getTrimmedTextSpanForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
         let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
         trimmedSymbols
         |> List.map (fun (fileName, start, finish) ->
@@ -64,20 +83,17 @@ module Symbols =
                                                                   Microsoft.CodeAnalysis.Text.LinePosition(finish.Line, finish.Column))
             fileName, ts, ls)
 
-    let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
-        let range = symbolUse.RangeAlternate
-        let editor = getEditorForFileName symbolUse.RangeAlternate.FileName
-
+    let getOffsetsTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
+        let filename = symbolUse.RangeAlternate.FileName
+        let editor = getEditorForFileName filename
         let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
-
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-        range.FileName, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
+        filename, startOffset, endOffset
 
-    let getTextSpan (range:Microsoft.FSharp.Compiler.Range.range) (editor:Editor.IReadonlyTextDocument) =
-        let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)
-        let endOffset = editor.LocationToOffset (range.EndLine, range.EndColumn+1)
-        Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
+    let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
+        let filename, start, finish = getOffsetsTrimmed lastIdent symbolUse
+        filename, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (start, finish)
 
 [<AutoOpen>]
 module FSharpTypeExt =

@@ -59,7 +59,7 @@ type FSharpResolverProvider() =
             region <- dom
 
             let roslynLocs =
-                Symbols.getTextSpanForDeclarations lastIdent symbolUse
+                Symbols.getTrimmedTextSpanForDeclarations lastIdent symbolUse
                 |> List.map (fun (fileName, ts, ls) -> Microsoft.CodeAnalysis.Location.Create(fileName, ts, ls))
                 |> System.Collections.Immutable.ImmutableArray.ToImmutableArray
             let roslynSymbol = Roslyn.FsharpSymbol (symbolUse, roslynLocs)
