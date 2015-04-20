@@ -12,6 +12,7 @@ open MonoDevelop.Refactoring
 open FSharp.CompilerBinding
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop.Ide.FindInFiles
 
 module Refactoring =
 
@@ -225,6 +226,31 @@ module Refactoring =
                         monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
                         |> ignore
 
+    let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
+        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+        let findAsync = async { 
+
+            let! symbolrefs = MDLanguageService.Instance.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol)
+            let referenceSearchResults =
+                symbolrefs |> List.ofArray
+
+            let secondSet = 
+                referenceSearchResults
+                |> List.map (fun su -> Symbols.getOffsetsTrimmed lastIdent su)
+            
+            let debug =         
+                secondSet 
+                |> List.distinct
+
+            debug 
+            |> List.iter (fun (filename, startOffset, endOffset) -> 
+                                let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+                                monitor.ReportResult sr)
+
+            }
+        let onComplete _ = monitor.Dispose()
+        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
 
@@ -321,7 +347,14 @@ type CurrentRefactoringOperationsHandler() =
                                     ainfo.Add (declSet)
                             | _ -> ()
  
-                        //TODO:find references
+                        //find references
+                        // renamable indicates the source symbol is internal to the project
+                        if canRename then
+                            let command = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences)
+                            command.Enabled <- true
+                            ainfo.Add (command, Action (fun () -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)))
+                            //this one finds all overloads of a given symbol
+                            //ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), Action (fun () -> Refactoring.FindRefs (sym)))
 
                         //TODO: find derived symbols, find overloads, find extension methods, find type extensions
             
