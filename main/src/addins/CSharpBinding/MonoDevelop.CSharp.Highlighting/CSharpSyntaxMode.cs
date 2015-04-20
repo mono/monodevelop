@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -142,7 +143,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public HighlightingVisitior (SemanticModel resolver, Action<StyledTreeSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
 		{
 			if (resolver == null)
-				throw new ArgumentNullException ("resolver");
+				throw new ArgumentNullException (nameof (resolver));
 			this.cancellationToken = cancellationToken;
 			this.colorizeCallback = colorizeCallback;
 			this.region = new TextSpan (textSpan.Offset, textSpan.Length);
@@ -193,6 +194,22 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected override void Colorize (TextSpan span, string color)
 		{
 			colorizeCallback (new StyledTreeSegment (span.Start, span.Length, color));
+		}
+
+		public override void VisitIdentifierName (Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax node)
+		{
+			switch (node.Identifier.Text) {
+			case "nfloat":
+			case "nint":
+			case "nuint":
+				var symbol = base.semanticModel.GetSymbolInfo (node).Symbol as INamedTypeSymbol;
+				if (symbol != null && symbol.ContainingNamespace.ToDisplayString () == "System") {
+					Colorize (node.Span, "Keyword(Type)");
+					return;
+				}
+				break;
+			}
+			base.VisitIdentifierName (node);
 		}
 	}
 }
