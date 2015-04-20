@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor
 	[TestFixture]
 	public class CodeCommentTests : TestBase
 	{
-		static TextEditor CreateTextEditor (string input)
+		internal static TextEditor CreateTextEditor (string input)
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			editor.MimeType = "text/x-csharp";

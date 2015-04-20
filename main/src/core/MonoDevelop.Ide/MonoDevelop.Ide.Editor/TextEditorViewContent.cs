@@ -1214,6 +1214,19 @@ namespace MonoDevelop.Ide.Editor
 			EditActions.UnIndentSelection (textEditor);
 		}
 
+
+		[CommandHandler (EditCommands.SortSelectedLines)]
+		void SortSelectedLines ()
+		{
+			EditActions.SortSelectedLines (textEditor);
+		}
+
+		[CommandUpdateHandler (EditCommands.SortSelectedLines)]
+		void UpdateSortSelectedLines (CommandInfo ci)
+		{
+			var region = textEditor.SelectionRegion;
+			ci.Enabled = region.BeginLine != region.EndLine;
+		}
 		#endregion
 
 	}

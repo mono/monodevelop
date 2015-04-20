@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Text;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Util;
 
@@ -454,6 +455,61 @@ namespace MonoDevelop.Ide.Editor
 		public static void SelectionMoveNextWord (TextEditor textEditor)
 		{
 			RunSelectionAction (textEditor, MoveNextWord);
+		}
+
+		public static void SortSelectedLines (TextEditor textEditor)
+		{
+			var selectionRegion = textEditor.SelectionRegion;
+			var start = selectionRegion.Begin;
+			var end = selectionRegion.End;
+			var caret = textEditor.CaretLocation;
+
+			int startLine = start.Line;
+			int endLine = end.Line;
+			if (startLine == endLine)
+				return;
+
+			int length = 0;
+			var lines = new string[endLine - startLine + 1];
+			for (int i = startLine; i <= endLine; i++) {
+				//get lines *with* line endings
+				var lineText = textEditor.GetLineText (i, true);
+				lines [i - startLine] = lineText;
+				length += lineText.Length;
+			}
+
+			var linesUnsorted = new string[lines.Length];
+
+			Array.Sort (lines, StringComparer.Ordinal);
+
+			bool changed = false;
+			for (int i = 0; i <= lines.Length; i++) {
+				//can't simply use reference comparison as Array.Sort is not stable
+				if (string.Equals (lines [i], linesUnsorted [i], StringComparison.Ordinal)) {
+					continue;
+				}
+				changed = true;
+				break;
+			}
+			if (!changed)
+				return;
+
+
+			var sb = new StringBuilder ();
+			for (int i = 0; i < lines.Length; i++) {
+				sb.Append (lines [i]);
+			}
+
+			var startOffset = textEditor.LocationToOffset (startLine, 1);
+			textEditor.ReplaceText (startOffset, length, sb.ToString ());
+
+			textEditor.CaretLocation = LimitColumn (textEditor, caret);
+			textEditor.SetSelection (LimitColumn (textEditor, start), LimitColumn (textEditor, end));
+		}
+
+		static DocumentLocation LimitColumn (TextEditor data, DocumentLocation loc)
+		{
+			return new DocumentLocation (loc.Line, System.Math.Min (loc.Column, data.GetLine (loc.Line).Length + 1));
 		}
 		#endregion
 	}

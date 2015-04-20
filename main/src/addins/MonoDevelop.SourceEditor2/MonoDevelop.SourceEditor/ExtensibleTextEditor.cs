@@ -1064,18 +1064,6 @@ namespace MonoDevelop.SourceEditor
 				RunAction (Mono.TextEditor.Vi.ViActions.Join);
 			}
 		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines)]
-		void SortSelectedLines ()
-		{
-			RunAction (MiscActions.SortSelectedLines);
-		}
-
-		[CommandUpdateHandler (MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines)]
-		void UpdateSortSelectedLines (CommandInfo ci)
-		{
-			ci.Enabled = GetTextEditorData ().IsMultiLineSelection;
-		}
 #endregion
 	
 	}
