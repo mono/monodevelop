@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -92,7 +93,7 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = sb.ToString ();
 			content.CursorPosition = cursorPosition;
 
-			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			var project = Services.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
@@ -101,7 +102,7 @@ namespace MonoDevelop.CSharpBinding
 			var solution = new MonoDevelop.Projects.Solution ();
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new NullProgressMonitor ())
+			using (var monitor = new ProgressMonitor ())
 				TypeSystemService.Load (solution, monitor, false);
 			content.Project = project;
 			doc.SetProject (project);

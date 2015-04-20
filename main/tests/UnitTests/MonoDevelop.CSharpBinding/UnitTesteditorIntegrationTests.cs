@@ -35,6 +35,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -62,7 +63,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
-			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			var project = IdeApp.Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
@@ -70,7 +71,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			var solution = new Solution ();
 			solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new NullProgressMonitor ())
+			using (var monitor = new ProgressMonitor ())
 				TypeSystemService.Load (solution, monitor, false);
 			content.Project = project;
 			doc.SetProject (project);
@@ -86,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 		protected override void InternalSetup (string rootDir)
 		{
 			base.InternalSetup (rootDir);
-			IdeApp.Initialize (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ()); 
+			IdeApp.Initialize (new ProgressMonitor ()); 
 		}
 
 		[Test]

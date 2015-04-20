@@ -766,7 +766,7 @@ namespace MonoDevelop.Ide.Gui
 						return;
 					}
 					if (Editor != null && Editor.MimeType == "text/x-csharp") {
-						var newProject = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+						var newProject = Services.ProjectService.CreateDotNetProject ("C#");
 						this.adhocProject = newProject;
 
 						newProject.Name = "InvisibleProject";
@@ -781,7 +781,7 @@ namespace MonoDevelop.Ide.Gui
 						var solution = new Solution ();
 						solution.AddConfiguration ("", true);
 						solution.DefaultSolutionFolder.AddItem (newProject);
-						using (var monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+						using (var monitor = new ProgressMonitor ())
 							RoslynWorkspace = TypeSystemService.Load (solution, monitor, false);
 						analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
 						TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);

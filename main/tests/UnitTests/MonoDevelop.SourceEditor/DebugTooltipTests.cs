@@ -41,6 +41,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Debugger;
 using UnitTests;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.SourceEditor
 			if (endPos >= 0)
 				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
 
-			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
 			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "mscorlib"));
 			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
@@ -70,7 +71,7 @@ namespace MonoDevelop.SourceEditor
 			solution = new MonoDevelop.Projects.Solution ();
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
-			using (var monitor = new NullProgressMonitor ())
+			using (var monitor = new ProgressMonitor ())
 				TypeSystemService.Load (solution, monitor, false);
 
 			var tww = new TestWorkbenchWindow ();

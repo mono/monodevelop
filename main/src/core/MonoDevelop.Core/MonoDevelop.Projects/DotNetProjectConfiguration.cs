@@ -209,24 +209,6 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class UnknownCompilationParameters: DotNetCompilerParameters, IExtendedDataItem
-	{
-		readonly Hashtable table = new Hashtable ();
-		
-		public IDictionary ExtendedProperties { 
-			get { return table; }
-		}
-	}
-	
-	public class UnknownProjectParameters: ProjectParameters, IExtendedDataItem
-	{
-		readonly Hashtable table = new Hashtable ();
-		
-		public IDictionary ExtendedProperties { 
-			get { return table; }
-		}
-	}
-	
 	[Mono.Addins.Extension]
 	class ProjectTagProvider: StringTagProvider<DotNetProjectConfiguration>, IStringTagProvider
 	{

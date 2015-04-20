@@ -31,7 +31,6 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	[DataItem (FallbackType=typeof(UnknownProjectParameters))]
 	public class ProjectParameters: IMSBuildDataObject
 	{
 		DotNetProject parentProject;

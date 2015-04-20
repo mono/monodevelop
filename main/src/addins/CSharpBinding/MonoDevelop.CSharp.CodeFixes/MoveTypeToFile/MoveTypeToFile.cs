@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 					FileService.RenameFile (document.FilePath, correctFileName);
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc.HasProject) {
-						IdeApp.ProjectOperations.Save (doc.Project);
+						IdeApp.ProjectOperations.SaveAsync (doc.Project);
 					}
 					return Task.FromResult (document);
 				} 
@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 				File.WriteAllText (correctFileName, content);
 				if (doc.HasProject) {
 					doc.Project.AddFile (correctFileName);
-					IdeApp.ProjectOperations.Save (doc.Project);
+					IdeApp.ProjectOperations.SaveAsync (doc.Project);
 				}
 
 				doc.Editor.RemoveText (CalcTypeBounds (type));

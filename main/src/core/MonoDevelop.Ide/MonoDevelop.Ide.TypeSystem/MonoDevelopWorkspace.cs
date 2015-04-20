@@ -38,7 +38,6 @@ using Microsoft.CodeAnalysis.Host;
 using MonoDevelop.Core.Text;
 using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
-using MonoDevelop.Core.ProgressMonitoring;
 using Gtk;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -329,9 +328,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectId = GetOrCreateProjectId (p);
 			var projectData = GetOrCreateProjectData (projectId); 
 			var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
-			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
+			MonoDevelop.Projects.DotNetCompilerParameters cp = null;
 			if (config != null)
-				cp = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
+				cp = config.CompilationParameters;
 			FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : new FilePath (p.Name + ".dll");
 			var info = ProjectInfo.Create (
 				projectId,
@@ -526,7 +525,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var data = GetMonoProject (projectChanges.NewProject);
 				if (data != null) {
 					Application.Invoke (delegate {
-						data.Save (new NullProgressMonitor ());	
+						data.SaveAsync (new ProgressMonitor ());	
 					});
 				}
 			} finally {
@@ -650,7 +649,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				var file = new MonoDevelop.Projects.ProjectFile (path);
 				Application.Invoke (delegate {
 					mdProject.Files.Add (file);
-					IdeApp.ProjectOperations.Save (mdProject);
+					IdeApp.ProjectOperations.SaveAsync (mdProject);
 				});
 			}
 

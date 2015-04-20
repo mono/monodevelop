@@ -116,17 +116,12 @@ namespace MonoDevelop.CSharp.Project
 
 		public override Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ()
 		{
-			CSharpProjectParameters cparams;
-			if (ParentConfiguration != null && ParentConfiguration.ProjectParameters != null) {
-				cparams = (CSharpProjectParameters)ParentConfiguration.ProjectParameters;
-			} else {
-				cparams = new CSharpProjectParameters ();
-			}
+			var project = (CSharpProject) ParentProject;
 
 			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
 				null,
-				cparams.MainClass,
+				project.MainClass,
 				"Script",
 				null,
 				OptimizationLevel.Debug,

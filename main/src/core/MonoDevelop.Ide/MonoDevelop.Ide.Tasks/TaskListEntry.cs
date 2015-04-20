@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Tasks
 		bool completed;
 		
 		object owner;
-		IWorkspaceObject parentObject;
+		WorkspaceObject parentObject;
 		internal int SavedLine;
 
 		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity)
@@ -77,12 +77,12 @@ namespace MonoDevelop.Ide.Tasks
 		{
 		}
 		
-		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, WorkspaceObject parent)
 			: this (file, description, column, line, severity, priority, parent, null)
 		{
 		}
 		
-		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner)
+		public TaskListEntry (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, WorkspaceObject parent, object owner)
 		{
 			this.file = file;
 			this.description = description;
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public TaskListEntry (BuildError error, object owner)
 		{
-			parentObject = error.SourceTarget;
+			parentObject = error.SourceTarget as WorkspaceObject;
 			file = error.FileName;
 			this.owner = owner;
 			description = error.ErrorText;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.Tasks
 			}
 		}
 		
-		public IWorkspaceObject WorkspaceObject {
+		public WorkspaceObject WorkspaceObject {
 			get {
 				return parentObject;
 			}
@@ -224,12 +224,12 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.InformJumpToTask (this);
 		}
 		
-		public bool BelongsToItem (IWorkspaceObject item, bool checkHierarchy)
+		public bool BelongsToItem (WorkspaceObject item, bool checkHierarchy)
 		{
 			if (!checkHierarchy)
 				return item == parentObject;
 			
-			IWorkspaceObject cit = parentObject;
+			WorkspaceObject cit = parentObject;
 			do {
 				if (cit == item)
 					return true;
