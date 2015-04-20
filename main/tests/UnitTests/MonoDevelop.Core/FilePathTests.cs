@@ -41,6 +41,13 @@ namespace MonoDevelop.Core
 			Assert.That (FilePath.GetInvalidPathChars (), Is.EquivalentTo (Path.GetInvalidPathChars ().Concat ("#%&")));
 		}
 
+		[Test]
+		public void InvalidCharactersAreCloned ()
+		{
+			Assert.AreNotSame (FilePath.GetInvalidFileNameChars (), FilePath.GetInvalidFileNameChars ());
+			Assert.AreNotSame (FilePath.GetInvalidPathChars (), FilePath.GetInvalidPathChars ());
+		}
+
 		// TODO: more tests
 	}
 }
