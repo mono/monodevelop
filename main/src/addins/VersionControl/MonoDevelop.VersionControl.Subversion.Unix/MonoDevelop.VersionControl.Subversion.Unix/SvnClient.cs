@@ -1198,7 +1198,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			case LibSvnClient.svn_wc_status_kind.Merged: return VersionStatus.Modified;
 			case LibSvnClient.svn_wc_status_kind.Conflicted: return VersionStatus.Conflicted;
 			case LibSvnClient.svn_wc_status_kind.Ignored: return VersionStatus.Ignored;
-			case LibSvnClient.svn_wc_status_kind.Obstructed: return Unmodified;
+			case LibSvnClient.svn_wc_status_kind.Obstructed: return VersionStatus.Unmodified;
 			case LibSvnClient.svn_wc_status_kind.Added: return VersionStatus.ScheduledAdd;
 			case LibSvnClient.svn_wc_status_kind.Deleted: return VersionStatus.ScheduledDelete;
 			case LibSvnClient.svn_wc_status_kind.Replaced: return VersionStatus.ScheduledReplace;

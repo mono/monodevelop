@@ -500,7 +500,7 @@ namespace MonoDevelop.VersionControl
 		/// <summary>
 		/// Creates a patch from a set of DiffInfos.
 		/// </summary>
-		public string CreatePatch (IEnumerable<DiffInfo> diffs)
+		public virtual string CreatePatch (IEnumerable<DiffInfo> diffs)
 		{
 			StringBuilder patch = new StringBuilder ();
 			

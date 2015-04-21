@@ -51,9 +51,7 @@ namespace MonoDevelop.VersionControl
 		/// If the version control system depends on some native tools or libraries, this method should
 		/// check if those dependencies are properly installed and return <c>false</c> if they are not.
 		/// </remarks>
-		public virtual bool IsInstalled {
-			get { return false; }
-		}
+		public abstract bool IsInstalled { get; }
 		
 		/// <summary>
 		/// Creates an instance of a repository for this version control system
