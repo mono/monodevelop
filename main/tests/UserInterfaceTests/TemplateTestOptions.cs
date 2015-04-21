@@ -50,6 +50,8 @@ namespace UserInterfaceTests
 		public string TemplateKindRoot { get; set; }
 
 		public string TemplateKind { get; set; }
+
+		public string ProjectName { get; set; }
 	}
 
 	public class GitOptions

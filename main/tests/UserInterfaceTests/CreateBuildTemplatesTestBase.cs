@@ -73,7 +73,7 @@ namespace UserInterfaceTests
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
 			var templateName = templateOptions.TemplateKind;
-			var projectName = GenerateProjectName (templateName);
+			var projectName = !string.IsNullOrEmpty (templateOptions.ProjectName) ? templateOptions.ProjectName: GenerateProjectName (templateName);
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
 			try {
 				var newProject = new NewProjectController ();
