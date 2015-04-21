@@ -1006,7 +1006,7 @@ namespace MonoDevelop.Debugger
 				string val = (string) store.GetValue (it, ValueColumn);
 				oldValues [path + name] = val;
 				TreeIter cit;
-				if (store.IterChildren (out cit, it))
+				if (GetRowExpanded (store.GetPath (it)) && store.IterChildren (out cit, it))
 					ChangeCheckpoint (cit, path + name + "/");
 			} while (store.IterNext (ref it));
 		}
@@ -1146,6 +1146,13 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
+				valPath += "/";
+				foreach (var oldPath in oldValues.Keys) {
+					if (oldPath.StartsWith (valPath, StringComparison.Ordinal)) {
+						ExpandRow (store.GetPath (it), false);
+						break;
+					}
+				}
 			}
 		}
 		
