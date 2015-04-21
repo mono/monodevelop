@@ -1007,7 +1007,7 @@ namespace MonoDevelop.Debugger
 				oldValues [path + name] = val;
 				TreeIter cit;
 				if (store.IterChildren (out cit, it))
-					ChangeCheckpoint (cit, name + "/");
+					ChangeCheckpoint (cit, path + name + "/");
 			} while (store.IterNext (ref it));
 		}
 		
