@@ -23,15 +23,10 @@
 		<NodeBuilder id = "AutotoolNodeExtension" class = "MonoDevelop.Autotools.NodeExtension"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Condition id="Platform" value="!windows">
-			<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
-		</Condition>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Condition id="Platform" value="!windows">
-			<Class class = "MonoDevelop.Autotools.MakefileProjectExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+			<Class class = "MonoDevelop.Autotools.MakefileProjectServiceExtension" insertafter="FinalStep"/>
+			<Class class = "MonoDevelop.Autotools.MakefileProjectExtension" insertafter="FinalStep"/>
 		</Condition>
 	</Extension>
 

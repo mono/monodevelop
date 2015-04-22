@@ -43,30 +43,27 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Autotools
 {
-	public class MakefileProjectServiceExtension : ProjectServiceExtension
+	public class MakefileProjectServiceExtension : SolutionExtension
 	{
-		public async override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
+		protected override void OnReadSolution (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.SlnFile file)
 		{
-			WorkspaceItem item = await base.LoadWorkspaceItem (monitor, fileName);
+			base.OnReadSolution (monitor, file);
 
-			Solution sol = item as Solution;
-			if (sol != null) {
-				//Resolve project references
-				try {
-					MakefileData.ResolveProjectReferences (sol.RootFolder, monitor);
-				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
-					monitor.ReportError (GettextCatalog.GetString (
-						"Error resolving Makefile based project references for solution {0}", sol.Name), e);
-				}
+			//Resolve project references
+			try {
+				MakefileData.ResolveProjectReferences (Solution.RootFolder, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError (GettextCatalog.GetString (
+					"Error resolving Makefile based project references for solution {0}", Solution.Name), e);
+				monitor.ReportError (GettextCatalog.GetString (
+					"Error resolving Makefile based project references for solution {0}", Solution.Name), e);
 			}
 
-			return item;
+			// All done, dispose myself
+			Dispose ();
 		}
 	}
 
-	[ExportProjectModelExtension]
 	public class MakefileProjectExtension: ProjectExtension
 	{
 		MakefileData data;
