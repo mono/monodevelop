@@ -41,6 +41,8 @@ namespace MonoDeveloper
 		string multilineMatch = @"(((?<content>.*)(?<!\\)\n)|((?<content>.*?)\\\n(\t(?<content>.*?)\\\n)*\t(?<content>.*?)(?<!\\)\n))";
 		string fileName;
 		
+		public static string[] MonoConfigurations = { "default", "net_4_0" };
+
 		public MonoMakefile (string file)
 		{
 			this.fileName = file;

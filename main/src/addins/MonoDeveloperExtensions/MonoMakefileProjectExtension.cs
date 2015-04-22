@@ -1,9 +1,10 @@
-// MonoSolutionItemHandler.cs
+﻿//
+// MakefileProject.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,70 +23,57 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.CodeDom.Compiler;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 using System.Collections;
+using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Extensions;
-using System.Threading.Tasks;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Execution;
+using System.CodeDom.Compiler;
 
 namespace MonoDeveloper
 {
-	public class MonoSolutionItemHandler
+	public class MonoMakefileProjectExtension: DotNetProjectExtension
 	{
-		DotNetProject project;
 		string outFile;
 		ArrayList refNames = new ArrayList ();
 		bool loading;
 		string testFileBase;
 		object unitTest;
-		
-		public MonoSolutionItemHandler (DotNetProject project)
+
+		public MonoMakefileProjectExtension ()
 		{
-			this.project = project;
-			project.FileAddedToProject += OnFileAddedToProject;
-			project.FileRemovedFromProject += OnFileRemovedFromProject;
-			project.FileRenamedInProject += OnFileRenamedInProject;
 		}
-		
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			Project.FileAddedToProject += OnFileAddedToProject;
+			Project.FileRemovedFromProject += OnFileRemovedFromProject;
+			Project.FileRenamedInProject += OnFileRenamedInProject;
+		}
+
 		public string SourcesFile {
 			get { return outFile + ".sources"; }
 		}
-		
-		public bool SyncFileName {
-			get { return false; }
-		}
-		
-		public string ItemId {
-			get {
-				if (project.ParentSolution != null)
-					return project.ParentSolution.GetRelativeChildPath (project.FileName);
-				else
-					return project.Name;
-			}
-		}
 
-		public Task Save (MonoDevelop.Core.ProgressMonitor monitor)
+		protected override Task OnSave (ProgressMonitor monitor)
 		{
+			// Nothing to do, changes are saved directly to the backing file
 			return Task.FromResult (0);
 		}
-		
+
 		internal void Read (MonoMakefile mkfile)
 		{
 			loading = true;
-			
+
 			string basePath = Path.GetDirectoryName (mkfile.FileName);
 			string aname;
-			
+
 			string targetAssembly = mkfile.GetVariable ("LIBRARY");
 			if (targetAssembly == null) {
 				targetAssembly = mkfile.GetVariable ("PROGRAM");
@@ -98,12 +86,12 @@ namespace MonoDeveloper
 				if (targetName != null) targetAssembly = targetName;
 				targetAssembly = "$(topdir)/class/lib/$(PROFILE)/" + targetAssembly;
 			}
-			
+
 			outFile = Path.Combine (basePath, aname);
-			project.FileName = mkfile.FileName;
-			
+			Project.FileName = mkfile.FileName;
+
 			ArrayList checkedFolders = new ArrayList ();
-			
+
 			// Parse projects
 			string sources = outFile + ".sources";
 			StreamReader sr = new StreamReader (sources);
@@ -112,24 +100,24 @@ namespace MonoDeveloper
 				line = line.Trim (' ','\t');
 				if (line != "") {
 					string fname = Path.Combine (basePath, line);
-					project.Files.Add (new ProjectFile (fname));
-					
+					Project.Files.Add (new ProjectFile (fname));
+
 					string dir = Path.GetDirectoryName (fname);
 					if (!checkedFolders.Contains (dir)) {
 						checkedFolders.Add (dir);
 						fname = Path.Combine (dir, "ChangeLog");
 						if (File.Exists (fname))
-							project.Files.Add (new ProjectFile (fname, BuildAction.Content));
+							Project.Files.Add (new ProjectFile (fname, BuildAction.Content));
 					}
 				}
 			}
-			
+
 			sr.Close ();
-			
+
 			// Project references
 			string refs = mkfile.GetVariable ("LIB_MCS_FLAGS");
 			if (refs == null || refs == "") refs = mkfile.GetVariable ("LOCAL_MCS_FLAGS");
-			
+
 			if (refs != null && refs != "") {
 				Regex var = new Regex(@"(.*?/r:(?<ref>.*?)(( |\t)|$).*?)*");
 				Match match = var.Match (refs);
@@ -138,46 +126,49 @@ namespace MonoDeveloper
 						refNames.Add (Path.GetFileNameWithoutExtension (c.Value));
 				}
 			}
-			
+
 			int i = basePath.LastIndexOf ("/mcs/", basePath.Length - 2);
 			string topdir = basePath.Substring (0, i + 4);
 			targetAssembly = targetAssembly.Replace ("$(topdir)", topdir);
-			
+
 			if (mkfile.GetVariable ("NO_TEST") != "yes") {
 				string tname = Path.GetFileNameWithoutExtension (aname) + "_test_";
 				testFileBase = Path.Combine (basePath, tname);
 			}
-			
-			foreach (string sconf in MonoMakefileFormat.Configurations) {
+
+			foreach (string sconf in MonoMakefile.MonoConfigurations) {
 				DotNetProjectConfiguration conf = new DotNetProjectConfiguration (sconf);
-				conf.CompilationParameters = project.LanguageBinding.CreateCompilationParameters (null);
+				conf.CompilationParameters = Project.LanguageBinding.CreateCompilationParameters (null);
 				conf.OutputDirectory = basePath;
 				conf.OutputAssembly = Path.GetFileName (targetAssembly);
-				project.Configurations.Add (conf);
+				Project.Configurations.Add (conf);
 			}
-			
+
 			loading = false;
 			IdeApp.Workspace.SolutionLoaded += CombineOpened;
 		}
-		
-		public void CombineOpened (object sender, SolutionEventArgs args)
+
+		void CombineOpened (object sender, SolutionEventArgs args)
 		{
-			if (args.Solution == project.ParentSolution) {
+			if (args.Solution == Project.ParentSolution) {
 				foreach (string pref in refNames) {
-					Project p = project.ParentSolution.FindProjectByName (pref);
-					if (p != null) project.References.Add (new ProjectReference (p));
+					Project p = Project.ParentSolution.FindProjectByName (pref);
+					if (p != null) Project.References.Add (new ProjectReference (p));
 				}
 			}
 		}
 
-		public Task<BuildResult> RunTarget (MonoDevelop.Core.ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
+			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			if (target == ProjectService.BuildTarget)
 				target = "all";
 			else if (target == ProjectService.CleanTarget)
 				target = "clean";
-			
-			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
+
+			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) Project.GetConfiguration (configuration);
 
 			return Task<BuildResult>.Factory.StartNew (delegate {
 				using (var output = new StringWriter ()) {
@@ -191,49 +182,68 @@ namespace MonoDeveloper
 						tw.UnchainWriter (output);
 						tw.UnchainWriter (monitor.Log);
 
-						var result = new BuildResult (output.ToString (), 1, 0);
-
-						string[] lines = result.CompilerOutput.Split ('\n');
+						CompilerResults cr = new CompilerResults (null);
+						string[] lines = output.ToString ().Split ('\n');
 						foreach (string line in lines) {
-							var err = CreateErrorFromString (line);
+							CompilerError err = CreateErrorFromString (line);
 							if (err != null)
-								result.Append (err);
+								cr.Errors.Add (err);
 						}
 
-						return result;
+						return new BuildResult (cr, output.ToString ());
 					}
 				}
 			});
 		}
-		
-		private BuildError CreateErrorFromString (string error_string)
+
+		private CompilerError CreateErrorFromString (string error_string)
 		{
 			// When IncludeDebugInformation is true, prevents the debug symbols stats from braeking this.
 			if (error_string.StartsWith ("WROTE SYMFILE") ||
-			    error_string.StartsWith ("make[") ||
-			    error_string.StartsWith ("OffsetTable") ||
-			    error_string.StartsWith ("Compilation succeeded") ||
-			    error_string.StartsWith ("Compilation failed"))
+				error_string.StartsWith ("make[") ||
+				error_string.StartsWith ("OffsetTable") ||
+				error_string.StartsWith ("Compilation succeeded") ||
+				error_string.StartsWith ("Compilation failed"))
 				return null;
 
-			return BuildError.FromMSBuildErrorFormat (error_string);
+			CompilerError error = new CompilerError();
+
+			Match match=regexError.Match(error_string);
+			if (!match.Success)
+				return null;
+
+			string level = match.Result("${level}");
+			if (level == "warning")
+				error.IsWarning = true;
+			else if (level != "error")
+				return null;
+
+			if (String.Empty != match.Result("${file}"))
+				error.FileName = Path.Combine (Project.BaseDirectory, match.Result("${file}"));
+			if (String.Empty != match.Result("${line}"))
+				error.Line=Int32.Parse(match.Result("${line}"));
+			if (String.Empty != match.Result("${column}"))
+				error.Column = Int32.Parse(match.Result("${column}"));
+			error.ErrorNumber = match.Result ("${number}");
+			error.ErrorText = match.Result ("${message}");
+			return error;
 		}
-		
+
 		void OnFileAddedToProject (object s, ProjectFileEventArgs args)
 		{
 			if (loading) return;
-			
+
 			foreach (ProjectFileEventInfo e in args) {
 				if (e.ProjectFile.BuildAction != BuildAction.Compile)
 					continue;
 				AddSourceFile (e.ProjectFile.Name);
 			}
 		}
-		
+
 		void OnFileRemovedFromProject (object s, ProjectFileEventArgs args)
 		{
 			if (loading) return;
-			
+
 			foreach (ProjectFileEventInfo e in args) {
 				if (e.ProjectFile.BuildAction != BuildAction.Compile)
 					continue;
@@ -241,15 +251,15 @@ namespace MonoDeveloper
 				RemoveSourceFile (e.ProjectFile.Name);
 			}
 		}
-		
- 		void OnFileRenamedInProject (object s, ProjectFileRenamedEventArgs args)
+
+		void OnFileRenamedInProject (object s, ProjectFileRenamedEventArgs args)
 		{
 			if (loading) return;
-			
+
 			foreach (ProjectFileRenamedEventInfo e in args) {
 				if (e.ProjectFile.BuildAction != BuildAction.Compile)
 					continue;
-				
+
 				if (RemoveSourceFile (e.OldName))
 					AddSourceFile (e.NewName);
 			}
@@ -259,14 +269,14 @@ namespace MonoDeveloper
 		{
 			StreamReader sr = null;
 			StreamWriter sw = null;
-			
+
 			try {
 				sr = new StreamReader (outFile + ".sources");
 				sw = new StreamWriter (outFile + ".sources.new");
 
-				string newFile = project.GetRelativeChildPath (sourceFile);
+				string newFile = Project.GetRelativeChildPath (sourceFile);
 				if (newFile.StartsWith ("./")) newFile = newFile.Substring (2);
-				
+
 				string line;
 				while ((line = sr.ReadLine ()) != null) {
 					string file = line.Trim (' ','\t');
@@ -285,7 +295,7 @@ namespace MonoDeveloper
 			File.Delete (outFile + ".sources");
 			File.Move (outFile + ".sources.new", outFile + ".sources");
 		}
-		
+
 		bool RemoveSourceFile (string sourceFile)
 		{
 			StreamReader sr = null;
@@ -296,9 +306,9 @@ namespace MonoDeveloper
 				sr = new StreamReader (outFile + ".sources");
 				sw = new StreamWriter (outFile + ".sources.new");
 
-				string oldFile = project.GetRelativeChildPath (sourceFile);
+				string oldFile = Project.GetRelativeChildPath (sourceFile);
 				if (oldFile.StartsWith ("./")) oldFile = oldFile.Substring (2);
-				
+
 				string line;
 				while ((line = sr.ReadLine ()) != null) {
 					string file = line.Trim (' ','\t');
@@ -317,32 +327,25 @@ namespace MonoDeveloper
 			}
 			return found;
 		}
-		
-		public void Dispose ()
+
+		public override void Dispose ()
 		{
-			project.FileAddedToProject -= OnFileAddedToProject;
-			project.FileRemovedFromProject -= OnFileRemovedFromProject;
-			project.FileRenamedInProject -= OnFileRenamedInProject;
+			Project.FileAddedToProject -= OnFileAddedToProject;
+			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
+			Project.FileRenamedInProject -= OnFileRenamedInProject;
 			IdeApp.Workspace.SolutionLoaded -= CombineOpened;
+			base.Dispose ();
 		}
 
-		public void OnModified (string hint)
-		{
-		}
-		
 		public string GetTestFileBase ()
 		{
 			return testFileBase;
 		}
-		
+
 		public object UnitTest {
 			get { return unitTest; }
 			set { unitTest = value; }
 		}
-
-		public object GetService (Type t)
-		{
-			return null;
-		}
 	}
 }
+

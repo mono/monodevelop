@@ -38,13 +38,14 @@ namespace MonoDeveloper
 	{
 		public UnitTest CreateUnitTest (WorkspaceObject entry)
 		{
-			if (entry is MakefileProject) {
-				var project = (MakefileProject) entry;
-				if (project.UnitTest != null)
-					return (UnitTest) project.UnitTest;
-				string testFileBase = project.GetTestFileBase ();
+			var ext = entry.GetService<MonoMakefileProjectExtension> ();
+			if (ext != null) {
+				var project = (DotNetProject) entry;
+				if (ext.UnitTest != null)
+					return (UnitTest) ext.UnitTest;
+				string testFileBase = ext.GetTestFileBase ();
 				UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
-				project.UnitTest = testSuite;
+				ext.UnitTest = testSuite;
 				return testSuite;
 			}
 			return null;
@@ -60,7 +61,7 @@ namespace MonoDeveloper
 	{
 		string basePath;
 		
-		public MonoTestSuite (MakefileProject p, string name, string basePath): base (name, p)
+		public MonoTestSuite (DotNetProject p, string name, string basePath): base (name, p)
 		{
 			this.basePath = basePath;
 		}

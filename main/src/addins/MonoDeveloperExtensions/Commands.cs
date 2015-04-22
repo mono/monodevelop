@@ -50,7 +50,7 @@ namespace MonoDeveloper
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MakefileProject;
+			info.Visible = IdeApp.ProjectOperations.CurrentSelectedItem is MonoMakefileProjectExtension;
 		}
 		
 		void Install (object prj)
