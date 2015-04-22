@@ -28,12 +28,30 @@ using System;
 using MonoDevelop.Core.Serialization;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public abstract class DotNetCompilerParameters: ProjectParameters
+	public abstract class DotNetCompilerParameters
 	{
-		DotNetProjectConfiguration configuration;
+		public DotNetProject ParentProject {
+			get { return ParentConfiguration.ParentItem; }
+		}
+
+		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
+		{
+			pset.ReadObjectProperties (this, GetType (), true);
+		}
+
+		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
+		{
+			pset.WriteObjectProperties (this, GetType (), true);
+		}
+
+		public virtual DotNetCompilerParameters Clone ()
+		{
+			return (DotNetCompilerParameters) MemberwiseClone ();
+		}
 
 		public virtual IEnumerable<string> GetDefineSymbols ()
 		{
@@ -56,19 +74,7 @@ namespace MonoDevelop.Projects
 			return GetDefineSymbols ().Any (s => s == symbol);
 		}
 		
-		public new DotNetCompilerParameters Clone ()
-		{
-			return (DotNetCompilerParameters) base.Clone ();
-		}
-		
-		public DotNetProjectConfiguration ParentConfiguration {
-			get { return configuration; }
-			internal set {
-				configuration = value; 
-				if (configuration != null)
-					ParentProject = configuration.ParentItem;
-			}
-		}
+		public DotNetProjectConfiguration ParentConfiguration { get; internal set; }
 
 		public virtual bool NoStdLib { get; set; }
 		public virtual string DebugType { get { return ""; } set {} }

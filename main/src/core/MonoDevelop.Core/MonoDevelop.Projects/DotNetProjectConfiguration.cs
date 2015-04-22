@@ -71,7 +71,7 @@ namespace MonoDevelop.Projects
 			if (string.IsNullOrEmpty (assemblyKeyFile))
 				assemblyKeyFile = pset.GetPathValue ("AssemblyKeyFile");
 			if (compilationParameters != null)
-				((IMSBuildDataObject)compilationParameters).Read (pset, toolsVersion);
+				compilationParameters.Read (pset, toolsVersion);
 		}
 
 		internal protected override void Write (IPropertySet pset, string toolsVersion)
@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects
 			pset.SetValue ("DelaySign", delaySign, defaultValue:false, mergeToMainGroup:true);
 			pset.SetValue ("AssemblyOriginatorKeyFile", assemblyKeyFile, mergeToMainGroup:true);
 			if (compilationParameters != null)
-				((IMSBuildDataObject)compilationParameters).Write (pset, toolsVersion);
+				compilationParameters.Write (pset, toolsVersion);
 		}
 
 		private bool signAssembly = false;
