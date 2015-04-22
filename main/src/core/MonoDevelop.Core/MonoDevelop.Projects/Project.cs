@@ -366,6 +366,21 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Determines whether the provided build action is a compile action
+		/// </summary>
+		/// <returns><c>true</c> if this instance is compile build action the specified buildAction; otherwise, <c>false</c>.</returns>
+		/// <param name="buildAction">Build action.</param>
+		public bool IsCompileBuildAction (string buildAction)
+		{
+			return ProjectExtension.OnGetIsCompileBuildAction (buildAction);
+		}
+
+		protected virtual bool OnGetIsCompileBuildAction (string buildAction)
+		{
+			return buildAction == BuildAction.Compile;
+		}
+
+		/// <summary>
 		/// Files of the project
 		/// </summary>
 		public ProjectFileCollection Files {
@@ -2433,6 +2448,11 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnGetIsCompileable (string fileName)
 			{
 				return Project.OnGetIsCompileable (fileName);
+			}
+
+			internal protected override bool OnGetIsCompileBuildAction (string buildAction)
+			{
+				return Project.OnGetIsCompileBuildAction (buildAction);
 			}
 
 			internal protected override void OnGetTypeTags (HashSet<string> types)

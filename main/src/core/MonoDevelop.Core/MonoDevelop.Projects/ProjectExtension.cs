@@ -127,6 +127,11 @@ namespace MonoDevelop.Projects
 			return next.OnGetIsCompileable (fileName);
 		}
 
+		internal protected virtual bool OnGetIsCompileBuildAction (string buildAction)
+		{
+			return next.OnGetIsCompileBuildAction (buildAction);
+		}
+
 		internal protected virtual string OnGetDefaultBuildAction (string fileName)
 		{
 			return next.OnGetDefaultBuildAction (fileName);
