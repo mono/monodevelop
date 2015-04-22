@@ -29,42 +29,42 @@ using UnitTests;
 
 namespace MonoDevelop.AspNet.Tests.Razor
 {
-	[Ignore ("Not working")]
 	[TestFixture]
 	class RazorCompletionTests : TestBase
 	{
-		// TODO: Roslyn port
+		[Test]
+		public void HtmlTagsCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateProvider ("<$", false);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("p"));
+			Assert.IsNotNull (provider.Find ("div"));
+		}
 
-//		[Test]
-//		public void HtmlTagsCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("<$", false);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("p"));
-//			Assert.IsNotNull (provider.Find ("div"));
-//		}
-//
-//		[Test]
-//		public void NestedHtmlTagsCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("<div><ul><$ </ul></div>", false);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("li"));
-//		}
-//
-//		[Test]
-//		public void RazorDirectivesAndStatementsCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("@m$", true);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("model"));
-//			Assert.IsNotNull (provider.Find ("sessionstate"));
-//			Assert.IsNotNull (provider.Find ("using"));
-//			Assert.IsNotNull (provider.Find ("layout"));
-//			Assert.IsNotNull (provider.Find ("section"));
-//			Assert.IsNotNull (provider.Find ("functions"));
-//			Assert.IsNotNull (provider.Find ("helper"));
-//			Assert.IsNotNull (provider.Find ("inherits"));
+		[Test]
+		public void NestedHtmlTagsCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateProvider ("<div><ul><$ </ul></div>", false);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("li"));
+		}
+
+		[Test]
+		public void RazorDirectivesAndStatementsCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateProvider ("@m$", true);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("model"));
+			Assert.IsNotNull (provider.Find ("sessionstate"));
+			Assert.IsNotNull (provider.Find ("using"));
+			Assert.IsNotNull (provider.Find ("layout"));
+			Assert.IsNotNull (provider.Find ("section"));
+			Assert.IsNotNull (provider.Find ("functions"));
+			Assert.IsNotNull (provider.Find ("helper"));
+			Assert.IsNotNull (provider.Find ("inherits"));
+
+			// TODO: Roslyn - the following are not working.
+			// They work for Ctrl+Space completion but not with completion as you type.
 //			Assert.IsNotNull (provider.Find ("for"));
 //			Assert.IsNotNull (provider.Find ("foreach"));
 //			Assert.IsNotNull (provider.Find ("while"));
@@ -73,48 +73,48 @@ namespace MonoDevelop.AspNet.Tests.Razor
 //			Assert.IsNotNull (provider.Find ("switch"));
 //			Assert.IsNotNull (provider.Find ("if"));
 //			Assert.IsNotNull (provider.Find ("try"));
-//		}
-//
-//		[Test]
-//		public void CSharpIdentifiersCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("@{ i$ }", true);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("int"));
-//			Assert.IsNotNull (provider.Find ("var"));
-//		}
-//
-//		[Test]
-//		public void CSharpIdentifiersCtrlSpaceCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateRazorCtrlSpaceProvider ("@{ $ }", true);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("int"));
-//			Assert.IsNotNull (provider.Find ("var"));
-//		}
-//
-//		[Test]
-//		public void CSharpMembersCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("@{ Char.$ }", true);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("IsLetter"));
-//		}
-//
-//		[Test]
-//		public void CSharpMembersCtrlSpaceCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateRazorCtrlSpaceProvider ("@{ Char.Is$ }", true);
-//			Assert.IsNotNull (provider);
-//			Assert.IsNotNull (provider.Find ("IsLetter"));
-//		}
-//
-//		[Test]
-//		public void CSharpParametersCompletion ()
-//		{
-//			var provider = RazorCompletionTesting.CreateProvider ("@{ Char.IsLetter($ }");
-//			Assert.IsNotNull (provider);
-//			Assert.AreEqual (2, provider.Count);
-//		}
+		}
+
+		[Test]
+		public void CSharpIdentifiersCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateProvider ("@{ i$ }", true);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("int"));
+			Assert.IsNotNull (provider.Find ("var"));
+		}
+
+		[Test]
+		public void CSharpIdentifiersCtrlSpaceCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateRazorCtrlSpaceProvider ("@{ $ }", true);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("int"));
+			Assert.IsNotNull (provider.Find ("var"));
+		}
+
+		[Test]
+		public void CSharpMembersCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateProvider ("@{ Char.$ }", true);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("IsLetter"));
+		}
+
+		[Test]
+		public void CSharpMembersCtrlSpaceCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateRazorCtrlSpaceProvider ("@{ Char.Is$ }", true);
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("IsLetter"));
+		}
+
+		[Test]
+		public void CSharpParametersCompletion ()
+		{
+			var provider = RazorCompletionTesting.CreateParameterProvider ("@{ Char.IsLetter($ }");
+			Assert.IsNotNull (provider);
+			Assert.AreEqual (2, provider.Count);
+		}
 	}
 }

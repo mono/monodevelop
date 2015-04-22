@@ -54,7 +54,7 @@ namespace MonoDevelop.AspNet.Razor
 	public class RazorCSharpEditorExtension : BaseHtmlEditorExtension
 	{
 		protected RazorCSharpParsedDocument razorDocument;
-		protected UnderlyingDocumentInfo hiddenInfo;
+		internal UnderlyingDocumentInfo hiddenInfo;
 		IRazorCompletionBuilder completionBuilder;
 
 		bool isInCSharpContext;
@@ -82,6 +82,23 @@ namespace MonoDevelop.AspNet.Razor
 		public override string CompletionLanguage {
 			get {
 				return "Razor";
+			}
+		}
+
+		public RazorCSharpEditorExtension ()
+		{
+		}
+
+		/// <summary>
+		/// Used by unit tests.
+		/// </summary>
+		internal RazorCSharpEditorExtension (MonoDevelop.Ide.Gui.Document doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
+		{
+			razorDocument = parsedDoc;
+			Initialize (doc.Editor, doc);
+			if (cSharpContext) {
+				InitializeCodeCompletion ();
+				SwitchToHidden ();
 			}
 		}
 
