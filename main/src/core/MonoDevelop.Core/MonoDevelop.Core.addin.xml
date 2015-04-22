@@ -84,10 +84,10 @@
 		</ExtensionNode>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions" name = "Project service extensions">
-		<Description>Project service extensions. Specified classes must be a subclass of ProjectServiceExtension</Description>
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders" name = "Project service extensions">
+		<Description>WorkspaceObject readers. Specified classes must be a subclass of WorkspaceObjectReader</Description>
 		<ExtensionNode name="Class">
-			<Description>A subclass of ProjectServiceExtension.</Description>
+			<Description>A subclass of WorkspaceObjectReader.</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
 
@@ -202,13 +202,13 @@
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-		<Class id="InitialStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
-		<Class class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
-		<Class class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
-		<Class class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
-		<Class id="MidStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
-		<Class id="FinalStep" class = "MonoDevelop.Projects.ProjectServiceExtension" />
+	<Extension path = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders">
+		<Class id="InitialStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
+		<Class id="CompiledAssembly" class = "MonoDevelop.Projects.CompiledAssemblyExtension" />
+		<Class id="Workspace" class = "MonoDevelop.Projects.WorkspaceSerializationExtension" />
+		<Class id="MSBuild" class = "MonoDevelop.Projects.MSBuildSerializationExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
+		<Class id="FinalStep" class = "MonoDevelop.Projects.DummyWorkspaceObjectReader" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/FileSystemExtensions">

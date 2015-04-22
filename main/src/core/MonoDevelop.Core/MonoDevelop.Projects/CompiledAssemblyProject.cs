@@ -204,25 +204,20 @@ namespace MonoDevelop.Projects
 		}
 	}
 	
-	public class CompiledAssemblyExtension: ProjectServiceExtension
+	public class CompiledAssemblyExtension: WorkspaceObjectReader
 	{
-		public override bool FileIsObjectOfType (string fileName, Type type)
+		public override bool CanRead (FilePath file, Type expectedType)
 		{
-			if ((type.IsAssignableFrom (typeof(SolutionItem))|| type.IsAssignableFrom (typeof(Solution))) && (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll")))
-				return true;
-			return base.FileIsObjectOfType (fileName, type);
+			return (expectedType.IsAssignableFrom (typeof(SolutionItem)) || expectedType.IsAssignableFrom (typeof(Solution))) && (file.Extension.ToLower() == ".exe" || file.Extension.ToLower() ==  ".dll");
 		}
 
 		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			if (fileName.ToLower().EndsWith (".exe") || fileName.ToLower().EndsWith (".dll")) {
-				return Task<SolutionItem>.Factory.StartNew (delegate {
-					CompiledAssemblyProject p = new CompiledAssemblyProject ();
-					p.LoadFrom (fileName);
-					return p;
-				});
-			}
-			return base.LoadSolutionItem (monitor, ctx, fileName, expectedFormat, typeGuid, itemGuid);
+			return Task<SolutionItem>.Factory.StartNew (delegate {
+				CompiledAssemblyProject p = new CompiledAssemblyProject ();
+				p.LoadFrom (fileName);
+				return p;
+			});
 		}
 	}
 }

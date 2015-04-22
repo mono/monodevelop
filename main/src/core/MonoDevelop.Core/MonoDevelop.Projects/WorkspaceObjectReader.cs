@@ -1,10 +1,9 @@
-﻿//
-// MSBuildSerializationExtension.cs
+// ProjectServiceExtension.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//   Lluis Sanchez Gual <lluis@novell.com>
 //
-// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +22,46 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
+//
+
+
 using System;
-using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	class MSBuildSerializationExtension: WorkspaceObjectReader
+	public abstract class WorkspaceObjectReader
 	{
-		public override bool CanRead (FilePath file, Type expectedType)
-		{
-			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-				if (f.CanReadFile (file, expectedType))
-					return true;
-			}
-			return false;
-		}
+		internal WorkspaceObjectReader Next;
 
-		public override async Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
+		public abstract bool CanRead (FilePath file, Type expectedType);
+
+		public virtual Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-				if (f.CanReadFile (fileName, typeof(SolutionItem)))
-					return await MSBuildProjectService.LoadItem (monitor, fileName, f, typeGuid, itemGuid, ctx);
-			}
 			throw new NotSupportedException ();
 		}
-
-		public override async Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
+		
+		public virtual Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-				if (f.CanReadFile (fileName, typeof(WorkspaceItem)))
-					return (WorkspaceItem) await f.ReadFile (fileName, typeof(WorkspaceItem), monitor);
-			}
 			throw new NotSupportedException ();
 		}
 	}
-}
 
+	class DummyWorkspaceObjectReader: WorkspaceObjectReader
+	{
+		public override bool CanRead (FilePath file, Type expectedType)
+		{
+			return false;
+		}
+	}
+
+	public class BuildData
+	{
+		public ProjectItemCollection Items { get; internal set; }
+		public DotNetProjectConfiguration Configuration { get; internal set; }
+		public ConfigurationSelector ConfigurationSelector { get; internal set; }
+	}
+}

@@ -50,9 +50,8 @@ namespace MonoDevelop.Projects
 	public class ProjectService
 	{
 		DataContext dataContext = new DataContext ();
-		ProjectServiceExtension defaultExtensionChain;
-		DefaultProjectServiceExtension extensionChainTerminator = new DefaultProjectServiceExtension ();
-		
+		WorkspaceObjectReader defaultExtensionChain;
+
 		TargetFramework defaultTargetFramework;
 		
 		string defaultPlatformTarget = "x86";
@@ -63,6 +62,7 @@ namespace MonoDevelop.Projects
 		
 		const string SerializableClassesExtensionPath = "/MonoDevelop/ProjectModel/SerializableClasses";
 		const string ProjectBindingsExtensionPath = "/MonoDevelop/ProjectModel/ProjectBindings";
+		const string WorkspaceObjectReadersPath = "/MonoDevelop/ProjectModel/WorkspaceObjectReaders";
 
 		internal const string ProjectModelExtensionsPath = "/MonoDevelop/ProjectModel/ProjectModelExtensions";
 
@@ -78,27 +78,19 @@ namespace MonoDevelop.Projects
 			get { return dataContext; }
 		}
 		
-		internal ProjectServiceExtension GetExtensionChain ()
+		IEnumerable<WorkspaceObjectReader> GetObjectReaders ()
 		{
-			if (defaultExtensionChain == null) {
-				ProjectServiceExtension[] extensions = AddinManager.GetExtensionObjects<ProjectServiceExtension> ("/MonoDevelop/ProjectModel/ProjectServiceExtensions");
-				defaultExtensionChain = CreateExtensionChain (extensions);
-			}
-			return defaultExtensionChain;
+			return AddinManager.GetExtensionObjects<WorkspaceObjectReader> (WorkspaceObjectReadersPath);
 		}
-		
-		ProjectServiceExtension CreateExtensionChain (ProjectServiceExtension[] extensions)
+
+		WorkspaceObjectReader GetObjectReaderForFile (FilePath file, Type type)
 		{
-			if (extensions.Length > 0) {
-				for (int n=0; n<extensions.Length - 1; n++)
-					extensions [n].Next = extensions [n + 1];
-				extensions [extensions.Length - 1].Next = extensionChainTerminator;
-				return extensions [0];
-			} else {
-				return extensionChainTerminator;
-			}
+			foreach (var r in GetObjectReaders ())
+				if (r.CanRead (file, type))
+					return r;
+			return null;
 		}
-		
+
 		public string DefaultPlatformTarget {
 			get { return defaultPlatformTarget; }
 			set { defaultPlatformTarget = value; }
@@ -129,7 +121,10 @@ namespace MonoDevelop.Projects
 				file = Path.GetFullPath (file);
 				using (Counters.ReadSolutionItem.BeginTiming ("Read project " + file)) {
 					file = GetTargetFile (file);
-					SolutionItem loadedItem = await GetExtensionChain ().LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
+					var r = GetObjectReaderForFile (file, typeof(SolutionItem));
+					if (r == null)
+						throw new UnknownSolutionItemTypeException ();
+					SolutionItem loadedItem = await r.LoadSolutionItem (monitor, ctx, file, format, typeGuid, itemGuid);
 					if (loadedItem != null)
 						loadedItem.NeedsReload = false;
 					return loadedItem;
@@ -182,7 +177,10 @@ namespace MonoDevelop.Projects
 				string fullpath = file.ResolveLinks ().FullPath;
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 					fullpath = GetTargetFile (fullpath);
-					WorkspaceItem item = await GetExtensionChain ().LoadWorkspaceItem (monitor, fullpath) as WorkspaceItem;
+					var r = GetObjectReaderForFile (file, typeof(WorkspaceItem));
+					if (r == null)
+						throw new InvalidOperationException ("Invalid file format: " + file);
+					WorkspaceItem item = await r.LoadWorkspaceItem (monitor, fullpath);
 					if (item != null)
 						item.NeedsReload = false;
 					else
@@ -381,19 +379,17 @@ namespace MonoDevelop.Projects
 		public bool FileIsObjectOfType (FilePath file, Type type)
 		{
 			var filename = GetTargetFile (file);
-			return GetExtensionChain ().FileIsObjectOfType (filename, type);
+			return GetObjectReaderForFile (filename, type) != null;
 		}
 
 		public bool IsSolutionItemFile (FilePath file)
 		{
-			var filename = GetTargetFile (file);
-			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(SolutionItem));
+			return FileIsObjectOfType (file, typeof(SolutionItem));
 		}
 
 		public bool IsWorkspaceItemFile (FilePath file)
 		{
-			var filename = GetTargetFile (file);
-			return GetExtensionChain ().FileIsObjectOfType (filename, typeof(WorkspaceItem));
+			return FileIsObjectOfType (file, typeof(WorkspaceItem));
 		}
 		
 		internal void InitializeDataContext (DataContext ctx)
@@ -434,24 +430,6 @@ namespace MonoDevelop.Projects
 			return file;
 		}
 	}
-	
-	internal class DefaultProjectServiceExtension: ProjectServiceExtension
-	{
-		public override bool FileIsObjectOfType (string file, Type type)
-		{
-			return false;
-		}
-
-		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
-		{
-			return Task.FromResult ((SolutionItem)null);
-		}
-		
-		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
-		{
-			return Task.FromResult ((WorkspaceItem)null);
-		}
-	}	
 	
 	internal static class Counters
 	{

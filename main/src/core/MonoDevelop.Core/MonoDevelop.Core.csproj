@@ -113,9 +113,6 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Build.Engine" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build" />
   </ItemGroup>
   <ItemGroup>
@@ -274,7 +271,6 @@
     <Compile Include="MonoDevelop.Projects\ExecutionContext.cs" />
     <Compile Include="MonoDevelop.Projects\BuildTool.cs" />
     <Compile Include="MonoDevelop.Projects\BuildEventHandler.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectServiceExtension.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommandCollection.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommand.cs" />
     <Compile Include="MonoDevelop.Projects\CustomCommandType.cs" />
@@ -523,6 +519,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\DefaultMSBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionDataSectionAttribute.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\DataDeletedValue.cs" />
+    <Compile Include="MonoDevelop.Projects\WorkspaceObjectReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

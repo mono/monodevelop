@@ -33,48 +33,44 @@ using MonoDevelop.Projects.Formats.MD1;
 
 namespace MonoDevelop.Projects
 {
-	class WorkspaceSerializationExtension: ProjectServiceExtension
+	class WorkspaceSerializationExtension: WorkspaceObjectReader
 	{
-		public override bool FileIsObjectOfType (string file, Type type)
+		public override bool CanRead (FilePath file, Type expectedType)
 		{
-			if (type.IsAssignableFrom (typeof(Workspace))) {
+			if (expectedType.IsAssignableFrom (typeof(Workspace))) {
 				string ext = Path.GetExtension (file).ToLower ();
 				if (ext == ".mdw")
 					return true;
 			}
-			return base.FileIsObjectOfType (file, type);
+			return false;
 		}
 
-		public override async Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
-		{
-			string ext = Path.GetExtension (fileName).ToLower ();
-			if (ext == ".mdw")
-				return await ReadWorkspaceItemFile (fileName, monitor);
-
-			return await base.LoadWorkspaceItem (monitor, fileName);
-		}
-
-		Task<WorkspaceItem> ReadWorkspaceItemFile (FilePath fileName, ProgressMonitor monitor)
+		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
 			return Task<WorkspaceItem>.Factory.StartNew (delegate {
-				XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
-				try {
-					monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading workspace item: {0}"), fileName), 1);
-					reader.MoveToContent ();
-					XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
-					ser.SerializationContext.BaseFile = fileName;
-					ser.SerializationContext.ProgressMonitor = monitor;
-					WorkspaceItem entry = (WorkspaceItem)ser.Deserialize (reader, typeof(WorkspaceItem));
-					entry.FileName = fileName;
-					return entry;
-				} catch (Exception ex) {
-					monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
-					throw;
-				} finally {
-					monitor.EndTask ();
-					reader.Close ();
-				}
+				return ReadWorkspaceItemFile (fileName, monitor);
 			});
+		}
+
+		WorkspaceItem ReadWorkspaceItemFile (FilePath fileName, ProgressMonitor monitor)
+		{
+			XmlTextReader reader = new XmlTextReader (new StreamReader (fileName));
+			try {
+				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading workspace item: {0}"), fileName), 1);
+				reader.MoveToContent ();
+				XmlDataSerializer ser = new XmlDataSerializer (MD1ProjectService.DataContext);
+				ser.SerializationContext.BaseFile = fileName;
+				ser.SerializationContext.ProgressMonitor = monitor;
+				WorkspaceItem entry = (WorkspaceItem)ser.Deserialize (reader, typeof(WorkspaceItem));
+				entry.FileName = fileName;
+				return entry;
+			} catch (Exception ex) {
+				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
+				throw;
+			} finally {
+				monitor.EndTask ();
+				reader.Close ();
+			}
 		}
 	}
 }
