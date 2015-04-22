@@ -56,6 +56,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Razor
 {
+	// TODO: Roslyn - Fix threading issues with using member variables.
 	public class RazorCSharpParser : TypeSystemParser
 	{
 		MonoDevelop.Web.Razor.EditorParserFixed.RazorEditorParser editorParser;
@@ -107,7 +108,7 @@ namespace MonoDevelop.AspNet.Razor
 			}
 
 			ParseHtmlDocument (errors);
-			CreateCSharpParsedDocument ();
+			CreateCSharpParsedDocument (parseOptions);
 			ClearLastChange ();
 
 			RazorHostKind kind = RazorHostKind.WebPage;
@@ -117,12 +118,14 @@ namespace MonoDevelop.AspNet.Razor
 				kind = RazorHostKind.Template;
 			}
 
+			var model = document.GetSemanticModelAsync (cancellationToken).Result;
 			var pageInfo = new RazorCSharpPageInfo () {
 				HtmlRoot = htmlParsedDocument,
 				GeneratorResults = capturedArgs.GeneratorResults,
 				Spans = editorParser.CurrentParseTree.Flatten (),
 				CSharpSyntaxTree = parsedSyntaxTree,
-				ParsedDocument = new DefaultParsedDocument ("generated.cs") { Ast = parsedSyntaxTree },
+				ParsedDocument = new DefaultParsedDocument ("generated.cs") { Ast = model },
+				AnalysisDocument = document,
 				CSharpCode = csharpCode,
 				Errors = errors,
 				FoldingRegions = GetFoldingRegions (),
@@ -370,11 +373,31 @@ namespace MonoDevelop.AspNet.Razor
 
 		SyntaxTree parsedSyntaxTree;
 		string csharpCode;
+		Microsoft.CodeAnalysis.Document document;
 
-		void CreateCSharpParsedDocument ()
+		void CreateCSharpParsedDocument (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions)
 		{
+			if (parseOptions.Project == null)
+				return;
+
 			csharpCode = CreateCodeFile ();
 			parsedSyntaxTree = CSharpSyntaxTree.ParseText (Microsoft.CodeAnalysis.Text.SourceText.From (csharpCode));
+
+			var originalProjectId = TypeSystemService.GetProjectId (parseOptions.Project);
+			if (originalProjectId != null) {
+				var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
+				if (originalProject != null) {
+					string fileName = parseOptions.FileName + ".g.cs";
+					var documentId = TypeSystemService.GetDocumentId (originalProjectId, fileName);
+					if (documentId == null) {
+						document = originalProject.AddDocument (
+							fileName,
+							parsedSyntaxTree?.GetRoot ());
+					} else {
+						document = TypeSystemService.GetCodeAnalysisDocument (documentId);
+					}
+				}
+			}
 		}
 
 		string CreateCodeFile ()

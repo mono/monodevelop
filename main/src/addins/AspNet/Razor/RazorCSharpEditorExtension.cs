@@ -202,7 +202,8 @@ namespace MonoDevelop.AspNet.Razor
 			var workbenchWindow = new HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
 			hiddenInfo.UnderlyingDocument = new UnderlyingDocument (workbenchWindow) {
-				HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument
+				HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument,
+				HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument
 			};
 
 			// completion window needs this
@@ -211,27 +212,6 @@ namespace MonoDevelop.AspNet.Razor
 
 			currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
 			codeFragment = null;
-
-			// TODO: Move this to the RazorParser.
-			if (DocumentContext.Project != null) {
-				var originalProjectId = TypeSystemService.GetProjectId (DocumentContext.Project);
-				if (originalProjectId != null) {
-					var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
-					if (originalProject != null) {
-						string fileName = razorDocument.FileName + ".g.cs";
-						Microsoft.CodeAnalysis.Document document = null;
-						var documentId = TypeSystemService.GetDocumentId (originalProjectId, fileName);
-						if (documentId == null) {
-							document = originalProject.AddDocument (
-								fileName,
-								razorDocument.PageInfo.CSharpSyntaxTree?.GetRoot ());
-						} else {
-							document = TypeSystemService.GetCodeAnalysisDocument (documentId);
-						}
-						hiddenInfo.UnderlyingDocument.HiddenAnalysisDocument = document;
-					}
-				}
-			}
 		}
 
 		#region Code completion
