@@ -243,7 +243,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
-				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
+				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || typeGuid == node.TypeTag) {
 					var p = node.CreateProject (flavorGuids);
 					p.EnsureInitialized ();
 					p.NotifyItemReady ();
