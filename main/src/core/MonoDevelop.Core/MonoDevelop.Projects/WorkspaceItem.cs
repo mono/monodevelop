@@ -319,7 +319,6 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		protected virtual void OnItemReady ()
 		{
-			SetShared ();
 		}
 
 		internal void NotifyItemReady ()

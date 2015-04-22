@@ -106,7 +106,7 @@ namespace MonoDevelop.Projects
 		public virtual void Dispose ()
 		{
 			if (chain != null)
-				chain.DisposeExtension (this);
+				chain.RemoveExtension (this);
 		}
 	}
 }

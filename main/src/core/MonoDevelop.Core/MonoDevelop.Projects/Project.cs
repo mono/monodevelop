@@ -101,9 +101,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override void SetShared ()
+		protected override void OnSetShared ()
 		{
-			base.SetShared ();
+			base.OnSetShared ();
 			items.SetShared ();
 			files.SetShared ();
 		}

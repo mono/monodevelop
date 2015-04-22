@@ -174,7 +174,6 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		protected virtual void OnItemReady ()
 		{
-			SetShared ();
 		}
 
 		internal void NotifyItemReady ()
@@ -183,9 +182,9 @@ namespace MonoDevelop.Projects
 			OnItemReady ();
 		}
 
-		protected override void SetShared ()
+		protected override void OnSetShared ()
 		{
-			base.SetShared ();
+			base.OnSetShared ();
 			configurations.SetShared ();
 		}
 

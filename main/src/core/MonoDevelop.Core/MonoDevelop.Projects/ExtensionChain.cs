@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
 	public class ExtensionChain
 	{
-		ChainedExtension first;
 		Dictionary<Type,ChainedExtension> chains = new Dictionary<Type, ChainedExtension> ();
+		ChainedExtension[] extensions;
 
 		public static ExtensionChain Create<T> (T[] extensions) where T:ChainedExtension
 		{
@@ -40,7 +41,7 @@ namespace MonoDevelop.Projects
 			for (int n = extensions.Length - 2; n >= 0; n--)
 				extensions [n].InitChain (c, extensions [n + 1]);
 
-			c.first = extensions [0];
+			c.extensions = extensions;
 			return c;
 		}
 
@@ -49,7 +50,7 @@ namespace MonoDevelop.Projects
 			ChainedExtension e;
 			if (!chains.TryGetValue (typeof(T), out e)) {
 				e = new T ();
-				e.InitChain (this, ChainedExtension.FindNextImplementation<T> (first));
+				e.InitChain (this, ChainedExtension.FindNextImplementation<T> (extensions[0]));
 				chains [typeof(T)] = e;
 			}
 			return (T)e;
@@ -57,32 +58,37 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<ChainedExtension> GetAllExtensions ()
 		{
-			var e = first;
-			while (e != null) {
-				yield return e;
-				e = e.Next;
-			}
+			return extensions;
 		}
 
-		internal void DisposeExtension (ChainedExtension ext)
+		internal void AddExtension (ChainedExtension ext)
 		{
-			var e = first;
-			var extensions = new List<ChainedExtension> ();
-			while (e != null) {
-				if (e != ext)
-					extensions.Add (e);
-				e = e.Next;
-			}
-			for (int n = extensions.Count - 2; n >= 0; n--)
+			Array.Resize (ref extensions, extensions.Length + 1);
+			extensions [extensions.Length - 1] = ext;
+			Rechain ();
+		}
+
+		internal void RemoveExtension (ChainedExtension ext)
+		{
+			extensions = extensions.Where (e => e != ext).ToArray ();
+			Rechain ();
+		}
+
+		void Rechain ()
+		{
+			// Re-chain every extension
+			for (int n = extensions.Length - 2; n >= 0; n--)
 				extensions [n].InitChain (this, extensions [n + 1]);
-			first = extensions [0];
+			
+			// The first extension object in type-specific chains is a placeholder extension used only to hold
+			// a reference to the real first extension.
 			foreach (var fex in chains)
-				fex.Value.InitChain (this, ChainedExtension.FindNextImplementation (fex.Key, first));
+				fex.Value.InitChain (this, ChainedExtension.FindNextImplementation (fex.Key, extensions[0]));
 		}
 
 		public void Dispose ()
 		{
-			first.DisposeChain ();
+			extensions[0].DisposeChain ();
 		}
 	}
 }

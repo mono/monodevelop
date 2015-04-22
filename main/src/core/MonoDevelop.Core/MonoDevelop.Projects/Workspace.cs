@@ -55,9 +55,9 @@ namespace MonoDevelop.Projects
 			return MD1FileFormat.Instance.WriteFile (FileName, this, monitor);
 		}
 
-		protected override void SetShared ()
+		protected override void OnSetShared ()
 		{
-			base.SetShared ();
+			base.OnSetShared ();
 			items.SetShared ();
 		}
 		

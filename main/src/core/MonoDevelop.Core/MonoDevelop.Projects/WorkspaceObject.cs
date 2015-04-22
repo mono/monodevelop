@@ -78,7 +78,24 @@ namespace MonoDevelop.Projects
 				Runtime.AssertMainThread ();
 		}
 
-		protected virtual void SetShared ()
+		/// <summary>
+		/// Gets a value indicating whether this instance is shared.
+		/// </summary>
+		/// <remarks>Shared objects can only be modified in the main thread</remarks>
+		public bool IsShared {
+			get { return isShared; }
+		}
+
+		/// <summary>
+		/// Sets this object as shared, which means that it is accessible from several threads for reading,
+		/// but it can only be modified in the main thread
+		/// </summary>
+		public void SetShared ()
+		{
+			OnSetShared ();
+		}
+
+		protected virtual void OnSetShared ()
 		{
 			isShared = true;
 			ItemExtension.NotifyShared ();
@@ -265,6 +282,19 @@ namespace MonoDevelop.Projects
 					AssertExtensionChainCreated ();
 				return itemExtension;
 			}
+		}
+
+		public void AttachExtension (WorkspaceObjectExtension ext)
+		{
+			AssertMainThread ();
+			ExtensionChain.AddExtension (ext);
+			ext.Init (this);
+		}
+
+		public void DetachExtension (WorkspaceObjectExtension ext)
+		{
+			AssertMainThread ();
+			ExtensionChain.RemoveExtension (ext);
 		}
 
 		void InitializeExtensionChain ()

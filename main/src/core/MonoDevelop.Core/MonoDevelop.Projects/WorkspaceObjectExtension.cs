@@ -73,12 +73,12 @@ namespace MonoDevelop.Projects
 
 		internal void NotifyShared ()
 		{
-			SetShared ();
+			OnSetShared ();
 			if (next != null)
-				next.SetShared ();
+				next.OnSetShared ();
 		}
 
-		protected virtual void SetShared ()
+		protected virtual void OnSetShared ()
 		{
 		}
 

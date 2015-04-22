@@ -815,6 +815,9 @@ namespace MonoDevelop.Projects
 		
 		internal /*protected virtual*/ void OnSolutionItemAdded (SolutionItemChangeEventArgs args)
 		{
+			if (IsShared)
+				args.Solution.SetShared ();
+			
 			solutionItems = null;
 
 			SolutionFolder sf = args.SolutionItem as SolutionFolder;

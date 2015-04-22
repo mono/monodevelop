@@ -558,8 +558,10 @@ namespace MonoDevelop.Ide
 			using (monitor) {
 				try {
 					// Add the item in the GUI thread. It is not safe to do it in the background thread.
-					if (!monitor.CancellationToken.IsCancellationRequested)
+					if (!monitor.CancellationToken.IsCancellationRequested) {
+						item.SetShared ();
 						Items.Add (item);
+					}
 					else {
 						item.Dispose ();
 						return false;

@@ -109,9 +109,9 @@ namespace MonoDevelop.Projects
 			usePartialTypes = SupportsPartialTypes;
 		}
 
-		protected override void SetShared ()
+		protected override void OnSetShared ()
 		{
-			base.SetShared ();
+			base.OnSetShared ();
 			projectReferences.SetShared ();
 		}
 
