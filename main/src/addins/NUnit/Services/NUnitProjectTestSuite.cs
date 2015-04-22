@@ -59,8 +59,8 @@ namespace MonoDevelop.NUnit
 			resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			this.project = project;
-			project.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged += OnProjectRenamed;
+			IdeApp.ProjectOperations.EndBuild += OnProjectBuilt;
 		}
 		
 		public static NUnitProjectTestSuite CreateTest (DotNetProject project)
@@ -126,8 +126,8 @@ namespace MonoDevelop.NUnit
 		
 		public override void Dispose ()
 		{
-			project.NameChanged -= new SolutionItemRenamedEventHandler (OnProjectRenamed);
-			IdeApp.ProjectOperations.EndBuild -= new BuildEventHandler (OnProjectBuilt);
+			project.NameChanged -= OnProjectRenamed;
+			IdeApp.ProjectOperations.EndBuild -= OnProjectBuilt;
 			base.Dispose ();
 		}
 		

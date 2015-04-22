@@ -61,12 +61,7 @@ namespace ILAsmBinding
 		{
 			return new ILAsmCompilerParameters();
 		}
-	
-		public ProjectParameters CreateProjectParameters (XmlElement projectOptions)
-		{
-			return null;
-		}
-		
+
 		public string SingleLineCommentTag { get { return "//"; } }
 		public string BlockCommentStartTag { get { return "/*"; } }
 		public string BlockCommentEndTag { get { return "*/"; } }

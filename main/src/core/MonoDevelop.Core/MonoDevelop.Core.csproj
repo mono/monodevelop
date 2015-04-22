@@ -114,7 +114,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\Microsoft.Bcl.Immutable.1.0.34\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build" />
   </ItemGroup>
@@ -309,7 +309,6 @@
     <Compile Include="MonoDevelop.Projects\ProjectItemCollection.cs" />
     <Compile Include="MonoDevelop.Projects\IFolderItem.cs" />
     <Compile Include="MonoDevelop.Projects\IFileItem.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectParameters.cs" />
     <Compile Include="MonoDevelop.Projects\CyclicDependencyException.cs" />
     <Compile Include="MonoDevelop.Projects\ItemConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionConfigurationSelector.cs" />
