@@ -83,11 +83,11 @@ namespace UserInterfaceTests
 			return SetCheckBox ("createProjectWithinSolutionDirectoryCheckBox", projectInSolution);
 		}
 
-		public bool UseGit (bool useGit, bool useGitIgnore = true)
+		public bool UseGit (GitOptions options)
 		{
-			var gitSelectionSuccess = SetCheckBox ("useGitCheckBox", useGit);
-			if (gitSelectionSuccess && useGit)
-				return gitSelectionSuccess && SetCheckBox ("createGitIgnoreFileCheckBox", useGitIgnore);
+			var gitSelectionSuccess = SetCheckBox ("useGitCheckBox", options.UseGit);
+			if (gitSelectionSuccess && options.UseGit)
+				return gitSelectionSuccess && SetCheckBox ("createGitIgnoreFileCheckBox", options.UseGitIgnore);
 			return gitSelectionSuccess;
 		}
 

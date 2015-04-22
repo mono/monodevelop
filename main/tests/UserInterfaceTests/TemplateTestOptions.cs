@@ -1,5 +1,5 @@
 ﻿//
-// MonoDevelopTemplatesTest.cs
+// TemplateTestOptions.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -23,51 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using MonoDevelop.Components.AutoTest;
-using MonoDevelop.Ide.Commands;
-using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
+	[Flags]
+	public enum Platforms
 	{
-		readonly string dotNetCategory = ".NET";
+		None = 0x0,
+		IOS = 0x1,
+		Android = 0x2
+	}
 
-		[Test]
-		public void TestCreateBuildConsoleProject ()
+	public enum CodeSharingType
+	{
+		PortableClassLibrary,
+		SharedProject
+	}
+
+	public class TemplateSelectionOptions
+	{
+		public string CategoryRoot { get; set; }
+
+		public string Category { get; set; }
+
+		public string TemplateKindRoot { get; set; }
+
+		public string TemplateKind { get; set; }
+
+		public string ProjectName { get; set; }
+	}
+
+	public class GitOptions
+	{
+		public GitOptions ()
 		{
-			RunDotNetTests ("Console Project", EmptyAction);
+			UseGit = true;
+			UseGitIgnore = true;
 		}
 
-		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
-		{
-			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
-		}
+		public bool UseGit { get; set; }
 
-		[Test]
-		public void TestCreateBuildLibrary ()
-		{
-			RunDotNetTests ("Library", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
-		{
-			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
-		}
-
-		void RunDotNetTests (string templateName, Action beforeBuild)
-		{
-			var templateOptions = new TemplateSelectionOptions {
-				CategoryRoot = OtherCategoryRoot,
-				Category = dotNetCategory,
-				TemplateKindRoot = GeneralKindRoot,
-				TemplateKind = templateName
-			};
-			CreateBuildProject (templateOptions, beforeBuild);
-		}
+		public bool UseGitIgnore { get; set; }
 	}
 }
+
