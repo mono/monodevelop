@@ -383,19 +383,16 @@ namespace MonoDevelop.AspNet.Razor
 			csharpCode = CreateCodeFile ();
 			parsedSyntaxTree = CSharpSyntaxTree.ParseText (Microsoft.CodeAnalysis.Text.SourceText.From (csharpCode));
 
-			var originalProjectId = TypeSystemService.GetProjectId (parseOptions.Project);
-			if (originalProjectId != null) {
-				var originalProject = TypeSystemService.Workspace.CurrentSolution.GetProject (originalProjectId);
-				if (originalProject != null) {
-					string fileName = parseOptions.FileName + ".g.cs";
-					var documentId = TypeSystemService.GetDocumentId (originalProjectId, fileName);
-					if (documentId == null) {
-						document = originalProject.AddDocument (
-							fileName,
-							parsedSyntaxTree?.GetRoot ());
-					} else {
-						document = TypeSystemService.GetCodeAnalysisDocument (documentId);
-					}
+			var originalProject = TypeSystemService.GetCodeAnalysisProject (parseOptions.Project);
+			if (originalProject != null) {
+				string fileName = parseOptions.FileName + ".g.cs";
+				var documentId = TypeSystemService.GetDocumentId (originalProject.Id, fileName);
+				if (documentId == null) {
+					document = originalProject.AddDocument (
+						fileName,
+						parsedSyntaxTree?.GetRoot ());
+				} else {
+					document = TypeSystemService.GetCodeAnalysisDocument (documentId);
 				}
 			}
 		}
