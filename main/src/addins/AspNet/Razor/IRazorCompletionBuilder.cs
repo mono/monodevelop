@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
@@ -40,11 +42,11 @@ namespace MonoDevelop.AspNet.Razor
 		bool SupportsLanguage (string language);
 		ICompletionWidget CreateCompletionWidget (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
 		ICompletionDataList HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
-			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		MonoDevelop.Ide.CodeCompletion.ParameterHintingResult HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
+		Task<ICompletionDataList> HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
+			UnderlyingDocumentInfo docInfo, char currentChar, CancellationToken token);
+		Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
+	//	bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
 		int GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
@@ -59,6 +61,12 @@ namespace MonoDevelop.AspNet.Razor
 		public UnderlyingDocument (IWorkbenchWindow window)
 			: base (window)
 		{
+		}
+
+		internal Microsoft.CodeAnalysis.Document HiddenAnalysisDocument;
+
+		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
+			get { return HiddenAnalysisDocument; }
 		}
 	}
 

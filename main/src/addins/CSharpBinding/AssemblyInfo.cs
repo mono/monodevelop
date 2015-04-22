@@ -9,3 +9,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion ("2.6")]
 [assembly: AssemblyCopyright ("MIT X11")]
 [assembly: InternalsVisibleTo("UnitTests")]
+[assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]

@@ -18,3 +18,4 @@ using Mono.Addins.Description;
 
 // Submodules
 [assembly:AddinModule ("MonoDevelop.CSharpBinding.Autotools.dll")]
+[assembly:AddinModule ("MonoDevelop.CSharpBinding.AspNet.dll")]

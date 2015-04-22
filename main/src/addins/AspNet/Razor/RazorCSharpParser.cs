@@ -50,6 +50,7 @@ using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.Razor.Parser;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 
@@ -106,8 +107,7 @@ namespace MonoDevelop.AspNet.Razor
 			}
 
 			ParseHtmlDocument (errors);
-			// TODO: Roslyn port
-			// CreateCSharpParsedDocument ();
+			CreateCSharpParsedDocument ();
 			ClearLastChange ();
 
 			RazorHostKind kind = RazorHostKind.WebPage;
@@ -121,7 +121,8 @@ namespace MonoDevelop.AspNet.Razor
 				HtmlRoot = htmlParsedDocument,
 				GeneratorResults = capturedArgs.GeneratorResults,
 				Spans = editorParser.CurrentParseTree.Flatten (),
-				CSharpParsedFile = parsedCodeFile,
+				CSharpSyntaxTree = parsedSyntaxTree,
+				ParsedDocument = new DefaultParsedDocument ("generated.cs") { Ast = parsedSyntaxTree },
 				CSharpCode = csharpCode,
 				Errors = errors,
 				FoldingRegions = GetFoldingRegions (),
@@ -367,8 +368,14 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		SyntaxTree parsedCodeFile;
+		SyntaxTree parsedSyntaxTree;
 		string csharpCode;
+
+		void CreateCSharpParsedDocument ()
+		{
+			csharpCode = CreateCodeFile ();
+			parsedSyntaxTree = CSharpSyntaxTree.ParseText (Microsoft.CodeAnalysis.Text.SourceText.From (csharpCode));
+		}
 
 		string CreateCodeFile ()
 		{

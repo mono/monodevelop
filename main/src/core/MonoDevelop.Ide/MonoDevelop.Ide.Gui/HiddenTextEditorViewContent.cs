@@ -219,5 +219,19 @@ namespace MonoDevelop.Ide.Gui
 		#endregion
 
 		public event EventHandler CaretPositionSet;
+
+		protected virtual void OnCaretPositionSet (EventArgs e)
+		{
+			var handler = CaretPositionSet;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public override object GetContent (Type type)
+		{
+			if (type.IsAssignableFrom (typeof(TextEditor)))
+				return Editor;
+			return base.GetContent (type);
+		}
 	}
 }

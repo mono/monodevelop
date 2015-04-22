@@ -23,14 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*
+
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
-using ICSharpCode.NRefactory6.CSharp.Completion;
+//using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.AspNet.Razor;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -79,15 +82,15 @@ namespace MonoDevelop.CSharp.Completion
 			return completion.CodeCompletionCommand (ccc);
 		}
 
-		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
-			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength)
+		public Task<ICompletionDataList> HandleCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
+			UnderlyingDocumentInfo docInfo, char currentChar, CancellationToken token)
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.HandleCodeCompletionAsync (completionContext, currentChar, ref triggerWordLength);
+			return completion.HandleCodeCompletionAsync (completionContext, currentChar, token);
 		}
 
-		public ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
+		public Task<ParameterHintingResult> HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
@@ -95,12 +98,12 @@ namespace MonoDevelop.CSharp.Completion
 			return completion.HandleParameterCompletionAsync (completionContext, completionChar);
 		}
 
-		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	UnderlyingDocumentInfo docInfo, out int cpos)
-		{
-			CodeCompletionContext ccc;
-			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.GetParameterCompletionCommandOffset (out cpos);
-		}
+//		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	UnderlyingDocumentInfo docInfo, out int cpos)
+//		{
+//			CodeCompletionContext ccc;
+//			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
+//			return completion.GetParameterCompletionCommandOffset (out cpos);
+//		}
 
 		public int GetCurrentParameterIndex (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset)
 		{
@@ -135,6 +138,13 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		public event EventHandler CompletionContextChanged;
+
+		protected virtual void OnCompletionContextChanged (EventArgs e)
+		{
+			var handler = CompletionContextChanged;
+			if (handler != null)
+				handler (this, e);
+		}
 
 		public string GetText (int startOffset, int endOffset)
 		{
@@ -241,7 +251,12 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			// ignore
 		}
+
+		public double ZoomLevel {
+			get {
+				return 1d;
+			}
+		}
 		#endregion
 	}
 }
-*/
