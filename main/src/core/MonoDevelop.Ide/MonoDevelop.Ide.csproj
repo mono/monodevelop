@@ -2642,7 +2642,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\LayoutComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\UnknownEntryNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\InternalLog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\KeyBindingsPanel.cs" />
@@ -3001,12 +3000,10 @@
     <Compile Include="MonoDevelop.Ide.Projects\AddFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddMimeTypeDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AssemblyReferencePanel.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\CombineEntryFeatureSelector.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\CombineOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ConfirmProjectDeleteDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DefaultPolicyOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\DeleteConfigDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\FeatureSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectFileSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectOperations.cs" />
@@ -3050,11 +3047,9 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RuntimeOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\SolutionItemConfigurationsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\StartupOptionsPanel.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.CombineEntryFeatureSelector.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.AddMimeTypeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.DeleteConfigDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.FeatureSelectorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewConfigurationDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewFileDialog.cs" />
@@ -3471,6 +3466,21 @@
     <Compile Include="MonoDevelop.Ide.Editor\TooltipExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\IProjectionExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\ProjectedFilterCompletionTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppQuery.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AppResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\IAutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\AutoTestSessionDebug.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\SemanticModelAttribute.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\IndexOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\MarkedOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\ModelOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\NextSiblingsOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\Operation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\PropertyOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TextOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

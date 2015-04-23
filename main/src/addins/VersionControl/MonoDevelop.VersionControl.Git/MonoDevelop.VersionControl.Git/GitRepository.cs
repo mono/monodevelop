@@ -72,7 +72,7 @@ namespace MonoDevelop.VersionControl.Git
 			Url = "git://";
 		}
 
-		public GitRepository (FilePath path, string url)
+		public GitRepository (VersionControlSystem vcs, FilePath path, string url) : base (vcs)
 		{
 			RootPath = path;
 			RootRepository = new LocalGitRepository (path.Combine (Constants.DOT_GIT));

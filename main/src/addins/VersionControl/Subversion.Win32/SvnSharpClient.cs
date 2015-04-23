@@ -27,6 +27,12 @@ namespace SubversionAddinWindows
 			client = new Lazy<SvnClient> (CheckInstalled);
 		}
 
+		public override string Version {
+			get {
+				return SvnClient.Version.ToString ();
+			}
+		}
+
 		static SvnClient CheckInstalled ()
 		{
 			try {

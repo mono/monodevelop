@@ -50,11 +50,13 @@ using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.Razor.Parser;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Razor
 {
+	// TODO: Roslyn - Fix threading issues with using member variables.
 	public class RazorCSharpParser : TypeSystemParser
 	{
 		MonoDevelop.Web.Razor.EditorParserFixed.RazorEditorParser editorParser;
@@ -106,8 +108,7 @@ namespace MonoDevelop.AspNet.Razor
 			}
 
 			ParseHtmlDocument (errors);
-			// TODO: Roslyn port
-			// CreateCSharpParsedDocument ();
+			CreateCSharpParsedDocument (parseOptions);
 			ClearLastChange ();
 
 			RazorHostKind kind = RazorHostKind.WebPage;
@@ -117,16 +118,18 @@ namespace MonoDevelop.AspNet.Razor
 				kind = RazorHostKind.Template;
 			}
 
+			var model = document.GetSemanticModelAsync (cancellationToken).Result;
 			var pageInfo = new RazorCSharpPageInfo () {
 				HtmlRoot = htmlParsedDocument,
 				GeneratorResults = capturedArgs.GeneratorResults,
 				Spans = editorParser.CurrentParseTree.Flatten (),
-				CSharpParsedFile = parsedCodeFile,
+				CSharpSyntaxTree = parsedSyntaxTree,
+				ParsedDocument = new DefaultParsedDocument ("generated.cs") { Ast = model },
+				AnalysisDocument = document,
 				CSharpCode = csharpCode,
 				Errors = errors,
 				FoldingRegions = GetFoldingRegions (),
 				Comments = comments,
-				Compilation = CreateCompilation (),
 				HostKind = kind,
 			};
 
@@ -367,8 +370,31 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		SyntaxTree parsedCodeFile;
+		SyntaxTree parsedSyntaxTree;
 		string csharpCode;
+		Microsoft.CodeAnalysis.Document document;
+
+		void CreateCSharpParsedDocument (MonoDevelop.Ide.TypeSystem.ParseOptions parseOptions)
+		{
+			if (parseOptions.Project == null)
+				return;
+
+			csharpCode = CreateCodeFile ();
+			parsedSyntaxTree = CSharpSyntaxTree.ParseText (Microsoft.CodeAnalysis.Text.SourceText.From (csharpCode));
+
+			var originalProject = TypeSystemService.GetCodeAnalysisProject (parseOptions.Project);
+			if (originalProject != null) {
+				string fileName = parseOptions.FileName + ".g.cs";
+				var documentId = TypeSystemService.GetDocumentId (originalProject.Id, fileName);
+				if (documentId == null) {
+					document = originalProject.AddDocument (
+						fileName,
+						parsedSyntaxTree?.GetRoot ());
+				} else {
+					document = TypeSystemService.GetCodeAnalysisDocument (documentId);
+				}
+			}
+		}
 
 		string CreateCodeFile ()
 		{
@@ -387,33 +413,6 @@ namespace MonoDevelop.AspNet.Razor
 				return sw.ToString ();
 			}
 		}
-
-// TODO Roslyn port
-//		// Creates compilation that includes underlying C# file for Razor view
-		Compilation CreateCompilation ()
-		{
-//			if (project != null) {
-//				return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
-//			}
-//			return new SimpleCompilation (
-//				new DefaultUnresolvedAssembly (Path.ChangeExtension (parsedCodeFile.FileName, ".dll")),
-//				GetDefaultAssemblies ()
-//			);
-			return null;
-		}
-//
-//		//FIXME: make this better reflect the real set of assemblies used by razor
-//		static IEnumerable<IUnresolvedAssembly> GetDefaultAssemblies ()
-//		{
-//			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
-//			var fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
-//			if (!runtime.IsInstalled (fx))
-//				fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
-//			foreach (var assembly in new [] { "System", "System.Core", "System.Xml", "System.Web.Mvc,Version=3.0.0.0" }) {
-//				var path = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assembly, fx);
-//				yield return TypeSystemService.LoadAssemblyContext (runtime, fx, path);
-//			}
-//		}
 
 		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{

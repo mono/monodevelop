@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		#endregion
 
-		internal ICompletionWidget CompletionWidget
+		internal virtual ICompletionWidget CompletionWidget
 		{
 			get;
 			set;
@@ -222,11 +222,18 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		protected void OnCompletionContextChanged (object o, EventArgs a)
 		{
+			if (!IsActiveExtension ())
+				return;
 			if (autoHideCompletionWindow)
 				CompletionWindowManager.HideWindow ();
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
+		}
+
+		internal protected virtual bool IsActiveExtension ()
+		{
+			return true;
 		}
 
 		[CommandUpdateHandler(TextEditorCommands.ShowCompletionWindow)]
@@ -526,6 +533,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void HandlePositionChanged (object sender, EventArgs e)
 		{
+			if (!IsActiveExtension ())
+				return;
 			CompletionWindowManager.UpdateCursorPosition ();
 		}
 
@@ -558,6 +567,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		string ResolveName (string typeName);
 	}
+
 	class SimpleTypeNameResolver: ITypeNameResolver
 	{
 		// This simple resolver removes the namespace from all class names.

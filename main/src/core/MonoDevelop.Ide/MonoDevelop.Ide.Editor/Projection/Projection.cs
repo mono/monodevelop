@@ -106,16 +106,16 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		internal void Dettach ()
 		{
-			attachedEditor.TextChanged -= HandleTextChanged;
+			attachedEditor.TextChanging -= HandleTextChanging;
 		}
 
 		internal void Attach (TextEditor textEditor)
 		{
 			attachedEditor = textEditor;
-			attachedEditor.TextChanged += HandleTextChanged;
+			attachedEditor.TextChanging += HandleTextChanging;
 		}
 
-		void HandleTextChanged (object sender, TextChangeEventArgs e)
+		void HandleTextChanging (object sender, TextChangeEventArgs e)
 		{
 			foreach (var segment in originalProjections) {
 				if (segment.Contains (e.Offset)) {

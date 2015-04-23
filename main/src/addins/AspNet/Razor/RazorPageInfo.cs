@@ -54,8 +54,9 @@ namespace MonoDevelop.AspNet.Razor
 
 	public class RazorCSharpPageInfo : RazorPageInfo
 	{
-		public SyntaxTree CSharpParsedFile { get; set; }
-		public Compilation Compilation { get; set; }
+		public SyntaxTree CSharpSyntaxTree { get; set; }
+		public ParsedDocument ParsedDocument { get; set; }
+		public Microsoft.CodeAnalysis.Document AnalysisDocument { get; set; }
 		public string CSharpCode { get; set; }
 	}
 

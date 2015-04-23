@@ -1,9 +1,10 @@
-// FeatureSelectorDialog.cs
+﻿//
+// Operation.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Templates;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	
-	
-	public partial class FeatureSelectorDialog : Gtk.Dialog
+	public abstract class Operation
 	{
-		public FeatureSelectorDialog (SolutionFolder parentCombine, SolutionFolderItem entry)
-		{
-			this.Build();
-			featureList.Fill (parentCombine, entry, SolutionItemFeatures.GetFeatures (parentCombine, entry));
-		}
-
-		protected virtual void OnButtonOkClicked(object sender, System.EventArgs e)
-		{
-			featureList.ApplyFeatures ();
-			Respond (Gtk.ResponseType.Ok);
-		}
+		public abstract List<AppResult> Execute (List<AppResult> resultSet);
 	}
 }
+

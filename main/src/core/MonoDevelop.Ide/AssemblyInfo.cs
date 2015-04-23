@@ -28,3 +28,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.AssemblyBrowser")]
 [assembly: InternalsVisibleTo("MonoDevelop.AspNet")]
 [assembly: InternalsVisibleTo("Xamarin.Sketches")]
+[assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]

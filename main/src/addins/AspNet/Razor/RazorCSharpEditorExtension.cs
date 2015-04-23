@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using System.Web.Razor.Parser.SyntaxTree;
 using Mono.TextEditor;
@@ -44,13 +46,15 @@ using MonoDevelop.AspNet.Razor.Dom;
 using MonoDevelop.AspNet.Razor.Parser;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.AspNet.Razor
 {
 	public class RazorCSharpEditorExtension : BaseHtmlEditorExtension
 	{
 		protected RazorCSharpParsedDocument razorDocument;
-		protected UnderlyingDocumentInfo hiddenInfo;
+		internal UnderlyingDocumentInfo hiddenInfo;
 		IRazorCompletionBuilder completionBuilder;
 
 		bool isInCSharpContext;
@@ -78,6 +82,23 @@ namespace MonoDevelop.AspNet.Razor
 		public override string CompletionLanguage {
 			get {
 				return "Razor";
+			}
+		}
+
+		public RazorCSharpEditorExtension ()
+		{
+		}
+
+		/// <summary>
+		/// Used by unit tests.
+		/// </summary>
+		internal RazorCSharpEditorExtension (MonoDevelop.Ide.Gui.Document doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
+		{
+			razorDocument = parsedDoc;
+			Initialize (doc.Editor, doc);
+			if (cSharpContext) {
+				InitializeCodeCompletion ();
+				SwitchToHidden ();
 			}
 		}
 
@@ -116,9 +137,6 @@ namespace MonoDevelop.AspNet.Razor
 			if (razorDocument == null)
 				return;
 
-			// TODO Roslyn port.
-			return;
-
 			EnsureUnderlyingDocumentSet ();
 			int off = CalculateCaretPosition (e.Offset);
 
@@ -129,9 +147,10 @@ namespace MonoDevelop.AspNet.Razor
 				HiddenDoc.Editor.RemoveText (off, removalLength);
 			}
 			if (e.InsertionLength > 0) {
-				if (isInCSharpContext)
+				if (isInCSharpContext) {
 					HiddenDoc.Editor.InsertText (off, e.InsertedText.Text);
-				else // Insert spaces to correctly calculate offsets until next reparse
+					HiddenDoc.HiddenAnalysisDocument = HiddenDoc.HiddenAnalysisDocument.WithText (Microsoft.CodeAnalysis.Text.SourceText.From (HiddenDoc.Editor.Text));
+				} else // Insert spaces to correctly calculate offsets until next reparse
 					HiddenDoc.Editor.InsertText (off, new String (' ', e.InsertionLength));
 			}
 			if (codeFragment != null)
@@ -143,7 +162,7 @@ namespace MonoDevelop.AspNet.Razor
 			base.OnParsedDocumentUpdated ();
 			try {
 				razorDocument = CU as RazorCSharpParsedDocument;
-				if (razorDocument == null || razorDocument.PageInfo.CSharpParsedFile == null)
+				if (razorDocument == null || razorDocument.PageInfo.CSharpSyntaxTree == null)
 					return;
 
 				CreateDocType ();
@@ -186,9 +205,14 @@ namespace MonoDevelop.AspNet.Razor
 		void UpdateHiddenDocument (bool updateSourceCode = true)
 		{
 			if (!updateSourceCode && hiddenInfo != null) {
-				// TODO : Roslyn port
-				//hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.CSharpParsedFile;
-				//hiddenInfo.UnderlyingDocument.HiddenCompilation = razorDocument.PageInfo.Compilation;
+				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
+				return;
+			} else if (updateSourceCode && hiddenInfo != null) {
+				hiddenInfo.UnderlyingDocument.Editor.Text = razorDocument.PageInfo.CSharpCode;
+				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
+				hiddenInfo.UnderlyingDocument.HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument;
+				currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+				codeFragment = null;
 				return;
 			}
 
@@ -202,10 +226,8 @@ namespace MonoDevelop.AspNet.Razor
 			var workbenchWindow = new HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
 			hiddenInfo.UnderlyingDocument = new UnderlyingDocument (workbenchWindow) {
-				// TODO: Roslyn port
-				// HiddenParsedDocument = razorDocument.PageInfo.CSharpParsedFile
-				/*,
-				HiddenCompilation = razorDocument.PageInfo.Compilation*/
+				HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument,
+				HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument
 			};
 
 			// completion window needs this
@@ -276,19 +298,17 @@ namespace MonoDevelop.AspNet.Razor
 		protected void SwitchToHidden ()
 		{
 			isInCSharpContext = true;
-// TODO: Roslyn port.
-//			DocumentContext = HiddenDoc;
-//			Editor = HiddenDoc.Editor;
-//			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocumentContext, hiddenInfo);
+			DocumentContext = HiddenDoc;
+			Editor = HiddenDoc.Editor;
+			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocumentContext, hiddenInfo);
 		}
 
 		protected void SwitchToReal ()
 		{
 			isInCSharpContext = false;
-// TODO: Roslyn port.
-//			DocumentContext = defaultDocumentContext;
-//			Editor = defaultEditor;
-//			CompletionWidget = defaultCompletionWidget;
+			DocumentContext = defaultDocumentContext;
+			Editor = defaultEditor;
+			CompletionWidget = defaultCompletionWidget;
 		}
 
 		bool NonCSharpCompletion (KeyDescriptor descriptor)
@@ -299,11 +319,10 @@ namespace MonoDevelop.AspNet.Razor
 
 		protected void InitializeCodeCompletion ()
 		{
-			// TODO Roslyn port
-//			EnsureUnderlyingDocumentSet ();
-//			hiddenInfo.OriginalCaretPosition = defaultEditor.CaretOffset;
-//			hiddenInfo.CaretPosition = CalculateCaretPosition ();
-//			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
+			EnsureUnderlyingDocumentSet ();
+			hiddenInfo.OriginalCaretPosition = defaultEditor.CaretOffset;
+			hiddenInfo.CaretPosition = CalculateCaretPosition ();
+			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
 		}
 
 		class CodeFragment
@@ -325,17 +344,22 @@ namespace MonoDevelop.AspNet.Razor
 
 		int GetDefaultPosition ()
 		{
-			// TODO: Roslyn port
-			return -1;
-//			var type = razorDocument.PageInfo.CSharpParsedFile.TopLevelTypeDefinitions.FirstOrDefault ();
-//			if (type == null) {
-//				return -1;
-//			}
-//			var method = type.Members.FirstOrDefault (m => m.Name == "Execute");
-//			if (method == null) {
-//				return -1;
-//			}
-//			return HiddenDoc.Editor.LocationToOffset (method.BodyRegion.Begin) + 1;
+			var root = razorDocument.PageInfo.CSharpSyntaxTree?.GetRoot ();
+			if (root == null)
+				return -1;
+
+			var type = root.DescendantNodes ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
+			if (type == null) {
+				return -1;
+			}
+			var method = type.DescendantNodes ()
+				.OfType <MethodDeclarationSyntax> ()
+				.FirstOrDefault (m => m.Identifier.ValueText == "Execute");
+			if (method == null) {
+				return -1;
+			}
+			var location = method.Body.GetLocation ();
+			return location.SourceSpan.Start + 1;
 		}
 
 		IDictionary<int, GeneratedCodeMapping> currentMappings;
@@ -417,42 +441,38 @@ namespace MonoDevelop.AspNet.Razor
 			return hiddenOff;
 		}
 
-// TODO: Roslyn port
-//		public override async System.Threading.Tasks.Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
-//		{
-////			if (!EnableCodeCompletion)
-////				return null;
-//
-//			char previousChar = defaultEditor.CaretOffset > 1 ? defaultEditor.GetCharAt (
-//				defaultEditor.CaretOffset - 2) : ' ';
-//
-//			// Don't show completion window when directive's name is being typed
-//			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
-//			if (directive != null && !directive.FirstBracket.HasValue)
-//				return null;
-//
-//			if (hiddenInfo != null && isInCSharpContext) {
-//				var list = (CompletionDataList) await completionBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext,
-//					hiddenInfo, completionChar);
-//
-//				if (list != null) {
-//					//filter out the C# templates, many of them are not valid
-//					int oldCount = list.Count;
-//					list = FilterCSharpTemplates (list);
-//					int templates = list.Count - oldCount;
-//
-//					if (previousChar == '@') {
-//						RazorCompletion.AddAllRazorSymbols (list, razorDocument.PageInfo.HostKind);
-//					}
-//					if (templates > 0) {
-//						AddFilteredRazorTemplates (list, previousChar == '@', true);
-//					}
-//				}
-//				return list;
-//			}
-//
-//			return base.HandleCodeCompletionAsync (completionContext, completionChar, token);
-//		}
+		public override async System.Threading.Tasks.Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		{
+			char previousChar = defaultEditor.CaretOffset > 1 ? defaultEditor.GetCharAt (
+				defaultEditor.CaretOffset - 2) : ' ';
+
+			// Don't show completion window when directive's name is being typed
+			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
+			if (directive != null && !directive.FirstBracket.HasValue)
+				return null;
+
+			if (hiddenInfo != null && isInCSharpContext) {
+				var list = (CompletionDataList) await completionBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext,
+					hiddenInfo, completionChar, token);
+
+				if (list != null) {
+					//filter out the C# templates, many of them are not valid
+					int oldCount = list.Count;
+					list = FilterCSharpTemplates (list);
+					int templates = list.Count - oldCount;
+
+					if (previousChar == '@') {
+						RazorCompletion.AddAllRazorSymbols (list, razorDocument.PageInfo.HostKind);
+					}
+					if (templates > 0) {
+						AddFilteredRazorTemplates (list, previousChar == '@', true);
+					}
+				}
+				return list;
+			}
+
+			return await base.HandleCodeCompletionAsync (completionContext, completionChar, token);
+		}
 
 		//recreating the list is over 2x as fast as using remove operations, saves typically 10ms
 		static CompletionDataList FilterCSharpTemplates (CompletionDataList list)
@@ -465,6 +485,7 @@ namespace MonoDevelop.AspNet.Razor
 				CompletionSelectionMode = list.CompletionSelectionMode,
 				DefaultCompletionString = list.DefaultCompletionString,
 				IsSorted = list.IsSorted,
+				TriggerWordLength = list.TriggerWordLength
 			};
 			foreach (var l in list) {
 				var c =  l as CompletionData;
@@ -495,28 +516,24 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		// TODO: Roslyn port
-//		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-//			bool forced, ref int triggerWordLength)
-//		{
-////			if (!EnableCodeCompletion)
-////				return null;
-//
-//			var currentLocation = new ICSharpCode.NRefactory.TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
-//			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
-//
-//			var codeState = Tracker.Engine.CurrentState as RazorCodeFragmentState;
-//			if (currentChar == '<' && codeState != null) {
-//				if (!codeState.IsInsideParentheses && !codeState.IsInsideGenerics) {
-//					var list = new CompletionDataList ();
-//					GetElementCompletions (list);
-//					return list;
-//				}
-//			} else if (currentChar == '>' && Tracker.Engine.CurrentState is RazorCodeFragmentState)
-//				return ClosingTagCompletion (Editor, currentLocation);
-//
-//			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
-//		}
+		protected override Task<ICompletionDataList> HandleCodeCompletion (
+			CodeCompletionContext completionContext, bool forced, CancellationToken token)
+		{
+			var currentLocation = new MonoDevelop.Ide.Editor.DocumentLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
+
+			var codeState = Tracker.Engine.CurrentState as RazorCodeFragmentState;
+			if (currentChar == '<' && codeState != null) {
+				if (!codeState.IsInsideParentheses && !codeState.IsInsideGenerics) {
+					var list = new CompletionDataList ();
+					GetElementCompletions (list);
+					return Task.FromResult((ICompletionDataList)list);
+				}
+			} else if (currentChar == '>' && Tracker.Engine.CurrentState is RazorCodeFragmentState)
+				return Task.FromResult(ClosingTagCompletion (Editor, currentLocation));
+
+			return base.HandleCodeCompletion (completionContext, forced, token);
+		}
 
 		//we override to ensure we get parent element name even if there's a razor node in between
 		protected override void GetElementCompletions (CompletionDataList list)
@@ -560,17 +577,16 @@ namespace MonoDevelop.AspNet.Razor
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-// TODO: Roslyn port
-//		public override ParameterHintingResult HandleParameterCompletionAsync (CodeCompletionContext completionContext,
-//			char completionChar)
-//		{
-//			if (hiddenInfo != null && isInCSharpContext) {
-//				return completionBuilder.HandleParameterCompletion (defaultEditor, defaultDocumentContext, completionContext,
-//					hiddenInfo, completionChar);
-//			}
-//
-//			return base.HandleParameterCompletionAsync (completionContext, completionChar);
-//		}
+		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (
+			CodeCompletionContext completionContext, char completionChar, CancellationToken token)
+		{
+			if (hiddenInfo != null && isInCSharpContext) {
+				return completionBuilder.HandleParameterCompletion (defaultEditor, defaultDocumentContext, completionContext,
+					hiddenInfo, completionChar);
+			}
+
+			return base.HandleParameterCompletionAsync (completionContext, completionChar);
+		}
 
 		#endregion
 

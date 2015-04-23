@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
 
@@ -51,6 +52,7 @@ namespace UserInterfaceTests
 			Util.ClearTmpDir ();
 
 			TestService.StartSession (MonoDevelopBinPath);
+			TestService.Session.DebugObject = new UITestDebug ();
 		}
 
 		[TearDown]

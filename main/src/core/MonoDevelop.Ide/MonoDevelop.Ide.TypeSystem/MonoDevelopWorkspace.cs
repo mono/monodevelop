@@ -331,7 +331,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			MonoDevelop.Projects.DotNetCompilerParameters cp = null;
 			if (config != null)
 				cp = config.CompilationParameters;
-			FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : new FilePath (p.Name + ".dll");
+			FilePath fileName = IdeApp.Workspace != null ? p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration) : (FilePath)"";
+			if (fileName.IsNullOrEmpty)
+				fileName = new FilePath (p.Name + ".dll");
 			var info = ProjectInfo.Create (
 				projectId,
 				VersionStamp.Create (),

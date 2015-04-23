@@ -62,6 +62,24 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return pctx.ProjectedEditor.GetContent<CompletionTextEditorExtension> () != null;
 		}
 
+		internal protected override bool IsActiveExtension ()
+		{
+			return IsInProjection ();
+		}
+
+		bool IsInProjection ()
+		{
+			int offset = Editor.CaretOffset;
+			foreach (var p in projections) {
+				foreach (var seg in p.ProjectedSegments) {
+					if (seg.ContainsOriginal (offset))
+						return true;
+				}
+			}
+			return false;
+		}
+
+
 		Projection GetProjectionAt (int offset)
 		{
 			foreach (var projection in projections) {

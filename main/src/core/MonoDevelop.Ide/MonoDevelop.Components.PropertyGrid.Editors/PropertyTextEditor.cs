@@ -255,10 +255,9 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
 		void IDisposable.Dispose ()
 		{
-			if (!disposed) {
-				disposed = true;
+			if (disposed)
 				return;
-			}
+			
 			if (entry != null) {
 				TextChanged (null, null);
 				FirePendingChangeEvent (null, null);
