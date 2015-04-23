@@ -124,7 +124,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				cursorPosition = endPos - 1;
 			}
 
-			var project = new AspNetAppProject ("C#");
+			var project = Services.ProjectService.CreateProject ("C#", "AspNetApp");
 
 			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");
 			string file = UnitTests.TestBase.GetTempFile (extension);
