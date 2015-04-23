@@ -86,9 +86,4 @@
 	<Extension path = "/MonoDevelop/Ide/VersionControlProjectTemplateHandler">
 		<Class class="MonoDevelop.VersionControl.Git.ProjectTemplateHandler" />
 	</Extension>
-
-<!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Class class = "MonoDevelop.VersionControl.Git.GitSupportFeature" />
-	</Extension>
--->
 </ExtensionModel>

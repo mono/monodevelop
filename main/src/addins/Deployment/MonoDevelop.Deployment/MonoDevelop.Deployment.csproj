@@ -142,7 +142,6 @@
     <Compile Include="MonoDevelop.Deployment\DeployPlatformInfo.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\DeployFileListWidget.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeatureWidget.cs" />
-    <Compile Include="MonoDevelop.Deployment.Gui\PackagingFeature.cs" />
     <Compile Include="MonoDevelop.Deployment.Gui\BinariesZipEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.LocalFileCopyConfigurationEditorWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Deployment.Gui.FileCopyConfigurationSelector.cs" />

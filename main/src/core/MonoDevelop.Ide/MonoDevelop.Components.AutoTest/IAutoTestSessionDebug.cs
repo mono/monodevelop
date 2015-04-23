@@ -1,10 +1,10 @@
-//
-// Gui.cs
+﻿//
+// IAutoTestSessionDebug.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc.
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,36 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Threading;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Ide.Commands;
-using NUnit.Framework;
-using MonoDevelop.Components.AutoTest;
+using System.Runtime.InteropServices;
 
-namespace UserInterfaceTests
+
+namespace MonoDevelop.Components.AutoTest
 {
-
-	static class Gui
+	public interface IAutoTestSessionDebug<T> where T : MarshalByRefObject
 	{
-		static AutoTestClientSession Session {
-			get { return TestService.Session; }
-		}
-
-		public static void PressButton (string buttonName)
-		{
-			Assert.IsTrue (Session.SelectWidget (buttonName));
-			Session.Invoke ("Activate");
-		}
-
-		public static void EnterText (string widgetName, string text, bool replace = true)
-		{
-			Assert.IsTrue (Session.SelectWidget (widgetName));
-			if (replace)
-				Session.ExecuteCommand (EditCommands.SelectAll);
-			Session.TypeText (text);
-		}
+		void Debug (string message);
 	}
 }
+
