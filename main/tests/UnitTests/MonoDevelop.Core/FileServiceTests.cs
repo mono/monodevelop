@@ -34,12 +34,12 @@ namespace MonoDevelop.Core
 		[Test]
 		public void InvalidFileCharsTests ()
 		{
-			Assert.True (FileService.IsValidFileName ("file"), "Empty string");
-			Assert.True (FileService.IsValidFileName ("text.txt"), "Empty string");
-			Assert.True (FileService.IsValidFileName (".gitignore"), "Empty string");
+			Assert.True (FileService.IsValidFileName ("file"), "File without extension");
+			Assert.True (FileService.IsValidFileName ("text.txt"), "File with extension");
+			Assert.True (FileService.IsValidFileName (".gitignore"), "Dot file");
 
 			Assert.False (FileService.IsValidFileName (""), "Empty string");
-			Assert.False (FileService.IsValidFileName ("  "), "Empty string");
+			Assert.False (FileService.IsValidFileName ("  "), "Whitespace string");
 
 			// Test strings containing an invalid character.
 			foreach (var c in FilePath.GetInvalidFileNameChars ())
@@ -50,12 +50,12 @@ namespace MonoDevelop.Core
 		[Test]
 		public void InvalidPathCharsTests ()
 		{
-			Assert.True (FileService.IsValidPath ("./relative_file"), "Empty string");
-			Assert.True (FileService.IsValidPath ("/path/to/file"), "Empty string");
-			Assert.True (FileService.IsValidPath ("Drive:\\some\\path\\here"), "Empty string");
+			Assert.True (FileService.IsValidPath ("./relative_file"), "Relative path string");
+			Assert.True (FileService.IsValidPath ("/path/to/file"), "Absolute unix path string");
+			Assert.True (FileService.IsValidPath ("Drive:\\some\\path\\here"), "Absolute windows path string");
 
 			Assert.False (FileService.IsValidPath (""), "Empty string");
-			Assert.False (FileService.IsValidPath ("  "), "Empty string");
+			Assert.False (FileService.IsValidPath ("  "), "Whitespace string");
 
 			// Test strings containing an invalid character.
 			foreach (var c in FilePath.GetInvalidPathChars ())
