@@ -335,26 +335,24 @@ namespace MonoDevelop.AspNet.Razor
 			}
 		}
 
-		// TODO: Roslyn - Does not find the type. Need to walk the syntax tree.
 		int GetDefaultPosition ()
 		{
-			SyntaxNode root = razorDocument.PageInfo.CSharpSyntaxTree?.GetRoot ();
+			var root = razorDocument.PageInfo.CSharpSyntaxTree?.GetRoot ();
 			if (root == null)
 				return -1;
-			
-			var type = root.AncestorsAndSelf ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
+
+			var type = root.DescendantNodes ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
 			if (type == null) {
 				return -1;
 			}
-			var method = type.AncestorsAndSelf ()
+			var method = type.DescendantNodes ()
 				.OfType <MethodDeclarationSyntax> ()
 				.FirstOrDefault (m => m.Identifier.ValueText == "Execute");
 			if (method == null) {
 				return -1;
 			}
-			var location = method.GetLocation ();
+			var location = method.Body.GetLocation ();
 			return location.SourceSpan.Start + 1;
-			//return HiddenDoc.Editor.off (location.SourceSpan.Start) + 1;
 		}
 
 		IDictionary<int, GeneratedCodeMapping> currentMappings;
