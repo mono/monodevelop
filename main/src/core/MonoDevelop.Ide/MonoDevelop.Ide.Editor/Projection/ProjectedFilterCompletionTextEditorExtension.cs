@@ -49,6 +49,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			this.projections = projections;
 		}
 
+		internal protected override bool IsActiveExtension ()
+		{
+			return !IsInProjection ();
+		}
+
 		bool IsInProjection ()
 		{
 			int offset = Editor.CaretOffset;
