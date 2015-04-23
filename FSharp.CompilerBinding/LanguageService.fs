@@ -4,6 +4,9 @@ open System.IO
 open System.Diagnostics
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open ExtCore
+open ExtCore.Control
+open ExtCore.Control.Collections
 
 module Symbols =
   /// We always know the text of the identifier that resolved to symbol.
@@ -319,8 +322,8 @@ type LanguageService(dirtyNotify) =
     let properties = defaultArg properties ["Configuration", "Debug"]
     match projectInfoCache.TryGetValue ( (projFilename, properties) ) with
     | true, p -> p
-    | false, _ -> let pfi = FSharpProjectFileInfo.Parse(projFilename, properties, true)
-                  printfn "%s" pfi.LogOutput
+    | false, _ -> //let pfi = FSharpProjectFileInfo.Parse(projFilename, properties, true)
+                  //printfn "%s" pfi.LogOutput
                   let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
                   projectInfoCache.[(projFilename, properties)] <- opts
                   opts
@@ -336,7 +339,6 @@ type LanguageService(dirtyNotify) =
 
    async {
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-    printfn "%s" <| sprintf "%A" opts.OtherOptions
     Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
     let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
     if startBgCompile then
@@ -388,33 +390,32 @@ type LanguageService(dirtyNotify) =
 
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
-   async { 
-    match Parsing.findLongIdents(col, lineStr) with 
-    | Some(colu, identIsland) ->
-        let! checkResults = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
-        match checkResults with
-        | Some results ->
-            let! symbolResults = results.GetSymbolAtLocation(line, colu, lineStr)
-            match symbolResults with
-            | Some symbolUse -> 
-                let lastIdent = Seq.last identIsland
-                let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol)
-                return Some(lastIdent, refs)
-            | None -> return None
-        | None -> return None
-    | None -> return None 
+   asyncMaybe { 
+     let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
+     let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
+     let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
+     let lastIdent = Seq.last identIsland
+     let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
+     return (lastIdent, refs)
    }
 
-  member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol) =
+  member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
    async { 
-    let projectOptions = x.GetCheckerOptions(file, projectFilename, source)
 
-    //parse and retrieve Checked Project results, this has the entity graph and errors etc
-    let! projectResults = checker.ParseAndCheckProject(projectOptions) 
+    let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+    let dependentProjects = defaultArg dependentProjects []
+
+    let! allSymbolUses =
+        sourceProjectOptions
+        |> List.cons (dependentProjects |> List.map x.GetProjectCheckerOptions)
+        |> Async.List.map checker.ParseAndCheckProject
+        |> Async.RunSynchronously
+        |> List.map (fun checkedProj -> checkedProj.GetUsesOfSymbol(symbol))
+        |> Async.Parallel
+        |> Async.map Array.concat
+
+    return allSymbolUses }
   
-    let! refs = projectResults.GetUsesOfSymbol(symbol)
-    return refs }
-
   member x.InvalidateConfiguration(options) = checker.InvalidateConfiguration(options)
 
   member x.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients() =
