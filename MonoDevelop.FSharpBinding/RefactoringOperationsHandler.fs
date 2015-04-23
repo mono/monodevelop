@@ -355,7 +355,7 @@ type CurrentRefactoringOperationsHandler() =
                                     match bs with
                                     | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
                                     | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
-                                let ident = symbol.DisplayName
+                                let _baseIdent = symbol.DisplayName
                                 let locations = Symbols.getLocationFromSymbol symbol
                                 match locations with
                                 | [] -> ()
