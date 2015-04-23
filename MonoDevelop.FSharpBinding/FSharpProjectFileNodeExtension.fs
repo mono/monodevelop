@@ -18,7 +18,7 @@ type FSharpProjectNodeCommandHandler() =
   /// Reload project causing the node tree up refresh with new ordering
   let reloadProject (currentNode: ITreeNavigator) =
     use monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor(true)
-    monitor.BeginTask("Reloading Project", 1)
+    monitor.BeginTask("Reloading Project", 1) |> ignore
     let file = currentNode.DataItem :?> ProjectFile
     file.Project.ParentFolder.ReloadItem(monitor, file.Project) |> ignore
     monitor.Step (1)

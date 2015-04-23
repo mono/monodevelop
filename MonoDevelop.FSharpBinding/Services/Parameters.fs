@@ -11,7 +11,7 @@ open MonoDevelop.Core.Serialization
 
 /// Serializable type respresnting F# compiler parameters
 type FSharpCompilerParameters() = 
-  inherit MonoDevelop.Projects.DotNetConfigurationParameters()
+  inherit MonoDevelop.Projects.DotNetCompilerParameters()
 
   [<ItemProperty ("Optimize")>]           
   let mutable optimize = true

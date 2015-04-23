@@ -17,7 +17,7 @@ type CompilerArgumentsTests() =
     inherit TestBase()
 
     member private x.``Run Only mscorlib referenced`` (assemblyName) =
-        use testProject = new DotNetAssemblyProject() :> DotNetProject
+        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let _ = testProject.AddReference assemblyName
         let references = 
@@ -41,7 +41,7 @@ type CompilerArgumentsTests() =
         | _ -> Assert.Fail("Too many references returned")
 
     member private x.``Run Only FSharp.Core referenced``(assemblyName) =
-        use testProject = new DotNetAssemblyProject() :> DotNetProject
+        use testProject = Services.ProjectService.CreateDotNetProject ("F#")
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let reference = testProject.AddReference assemblyName
         let references = 
@@ -56,7 +56,7 @@ type CompilerArgumentsTests() =
 
         //find the mscorlib inside the FSharp.Core ref
         let mscorlibContained =
-            let assemblyDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(reference.HintPath)
+            let assemblyDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(reference.HintPath.ToString())
             match assemblyDef.MainModule.AssemblyReferences |> Seq.tryFind (fun name -> name.Name = "mscorlib") with
             |Some name ->
                 let resolved = assemblyDef.MainModule.AssemblyResolver.Resolve(name)

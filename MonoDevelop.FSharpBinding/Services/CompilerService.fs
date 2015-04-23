@@ -35,7 +35,7 @@ module CompilerService =
       | CompileTarget.WinExe   -> yield "--target:winexe"
       | (*CompileTarget.Exe*)_ -> yield "--target:exe"
     
-      if config.SignAssembly then yield "--keyfile:" + CompilerArguments.wrapFile config.AssemblyKeyFile
+      if config.SignAssembly then yield "--keyfile:" + CompilerArguments.wrapFile(config.AssemblyKeyFile.ToString())
       yield "--out:" + CompilerArguments.wrapFile (config.CompiledOutputName.ToString())
     
       // Generate compiler options based on F# specific project settings
@@ -46,7 +46,7 @@ module CompilerService =
           yield ("--doc:" + CompilerArguments.wrapFile docFile) 
 
       let shouldWrap = true// The compiler argument paths should always be wrapped, since some paths (ie. on Windows) may contain spaces.
-      let proj = config.ProjectParameters.ParentProject
+      let proj = config.ParentItem
       yield! CompilerArguments.generateCompilerOptions (proj, fsconfig, regLangVersion, CompilerArguments.getTargetFramework config.TargetFramework.Id, configSel, shouldWrap) ]
 
 
@@ -90,7 +90,7 @@ module CompilerService =
 
   /// Run the F# compiler with the specified arguments (passed as a list)
   /// and print the arguments to progress monitor (Output in MonoDevelop)
-  let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:IProgressMonitor) projectDir argsList = 
+  let private compile (runtime:TargetRuntime) (framework:TargetFramework) (monitor:ProgressMonitor) projectDir argsList = 
   
 //    let nw x = if x = None then "None" else x.Value 
 //    monitor.Log.WriteLine("Env compiler: " + nw (Common.getCompilerFromEnvironment runtime framework))
@@ -173,7 +173,7 @@ module CompilerService =
   let Compile(items, config:DotNetProjectConfiguration, configSel, monitor) : BuildResult =
     let runtime = config.TargetRuntime
     let framework = config.TargetFramework
-    let root = Path.GetDirectoryName(config.ProjectParameters.ParentProject.FileName.FullPath.ToString())
+    let root = Path.GetDirectoryName(config.ParentItem.FileName.FullPath.ToString())
     let args = 
         [ yield! [ "--noframework --nologo" ]
           yield! generateCmdArgs(config, None, configSel)

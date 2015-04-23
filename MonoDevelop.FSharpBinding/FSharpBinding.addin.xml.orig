@@ -121,21 +121,16 @@
 
   </Dependencies>
 
-  <!-- This updates the old guid to the new one on saving the project -->
-  <Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
-    <Class class="MonoDevelop.FSharp.CorrectGuidMSBuildExtension"/>
-  </Extension>
-
   <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
   <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
     <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
 	<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
-      <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+      <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" type="MonoDevelop.FSharp.FSharpProject"/>
 	</Condition>
 
     <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
-    <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+    <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
@@ -154,9 +149,10 @@
     <Parser class = "MonoDevelop.FSharp.FSharpFoldingParser" mimeType="text/x-fsharp" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+<!-- TODO NPM type loading fails for some reason -->
+<!--  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
     <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpTooltipProvider" mimeType="text/x-fsharp" />
-  </Extension>
+  </Extension>-->
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
     <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
@@ -194,11 +190,6 @@
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-    <DataType class = "MonoDevelop.FSharp.FSharpCompilerParameters" />
-    <DataType class = "MonoDevelop.FSharp.FSharpProjectParameters" />
-  </Extension>
-
   <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
     <Condition id="ActiveLanguage" value="F#">
       <Panel id = "FSharpCodeGenerationPanel" _label = "Compiler" class = "MonoDevelop.FSharp.CodeGenerationPanel"/>
@@ -222,8 +213,12 @@
   </Extension>
 
   <Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
-    <LanguageBinding id="F#" supportedextensions=".fs,.fsi,.fsx,.fsscript"
-                     class="MonoDevelop.FSharp.FSharpLanguageBinding" />
+    <LanguageBinding id="F#"
+    				 extensions=".fs,.fsi,.fsx,.fsscript,.sketchfs"
+    				 singleLineCommentTag="//"
+    				 blockCommentStartTag="(*"
+    				 blockCommentEndTag="*)"
+                     codeDomType="FSharp.Compiler.CodeDom.FSharpCleanCodeProvider" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ReferenceFinder">
@@ -250,10 +245,6 @@
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
-  </Extension>
-
-  <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-    <Class class = "MonoDevelop.FSharp.FSharpProjectServiceExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
@@ -440,6 +431,8 @@
         <ProjectTemplate file="Templates/ios/LibraryProject.xpt.xml"/>
       </Condition>
     </Extension>
+
+    <!-- TODO NPM: AddImport/RemoveImport are not supported anymore. This has to be implemented as a project extension. -->
 
     <!-- iOS Classic API -->
     <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.MonoTouchProject">

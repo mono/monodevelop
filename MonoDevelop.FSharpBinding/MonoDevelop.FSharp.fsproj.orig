@@ -87,13 +87,12 @@
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpLanguageBinding.fs" />
-    <Compile Include="FSharpResourceIdBuilder.fs" />
+    <Compile Include="FSharpProject.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
-    <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
@@ -149,6 +148,10 @@
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
+    <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
+      <Private>False</Private>
+      <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
+    </Reference>
     <Reference Include="monodoc">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\bin\monodoc.dll</HintPath>
@@ -203,7 +206,7 @@
       <HintPath>..\packages\Fantomas.1.6.0\lib\FantomasLib.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.CodeDom">
-      <HintPath>..\packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+      <HintPath>..\packages\FSharp.Compiler.CodeDom.0.9.2\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
     </Reference>
     <Reference Include="ExtCore">
       <HintPath>..\packages\ExtCore.0.8.45\lib\net40\ExtCore.dll</HintPath>
