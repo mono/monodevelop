@@ -207,6 +207,13 @@ namespace MonoDevelop.AspNet.Razor
 			if (!updateSourceCode && hiddenInfo != null) {
 				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
 				return;
+			} else if (updateSourceCode && hiddenInfo != null) {
+				hiddenInfo.UnderlyingDocument.Editor.Text = razorDocument.PageInfo.CSharpCode;
+				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.ParsedDocument;
+				hiddenInfo.UnderlyingDocument.HiddenAnalysisDocument = razorDocument.PageInfo.AnalysisDocument;
+				currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
+				codeFragment = null;
+				return;
 			}
 
 			hiddenInfo = new UnderlyingDocumentInfo ();
