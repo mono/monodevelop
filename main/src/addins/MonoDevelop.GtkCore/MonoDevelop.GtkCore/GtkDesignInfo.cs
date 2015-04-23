@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore
 	{
 		DotNetProject project;
 		GuiBuilderProject builderProject;
-		IDotNetLanguageBinding binding;
+		LanguageBinding binding;
 		ProjectResourceProvider resourceProvider;
 		ReferenceManager referenceManager;
 		
@@ -84,7 +84,7 @@ namespace MonoDevelop.GtkCore
 				}
 				project = value;
 				if (project != null) {
-					binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+					binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName);
 					project.FileAddedToProject += OnFileEvent;
 					project.FileChangedInProject += OnFileEvent;
 					project.FileRemovedFromProject += OnFileEvent;

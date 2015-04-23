@@ -441,9 +441,8 @@ namespace MonoDevelop.Ide.Templates
 			//Template can match all CodeDom .NET languages with a "*"
 			if (list.Contains ("*")) {
 				foreach (var lb in LanguageBindingService.LanguageBindings) {
-					IDotNetLanguageBinding dnlang = lb as IDotNetLanguageBinding;
-					if (dnlang != null && dnlang.GetCodeDomProvider () != null)
-						list.Add (dnlang.Language);
+					if (lb.GetCodeDomProvider () != null)
+						list.Add (lb.Language);
 					list.Remove ("*");
 				}
 			}

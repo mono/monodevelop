@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 	public sealed class SharedAssetsProject: Project, IDotNetFileContainer
 	{
 		Solution currentSolution;
-		IDotNetLanguageBinding languageBinding;
+		LanguageBinding languageBinding;
 		string languageName;
 		FilePath projItemsPath;
 		MSBuildProject projitemsProject;
@@ -202,10 +202,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return new [] { "", languageName };
 		}
 
-		public IDotNetLanguageBinding LanguageBinding {
+		public LanguageBinding LanguageBinding {
 			get {
 				if (languageBinding == null)
-					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName) as IDotNetLanguageBinding;
+					languageBinding = LanguageBindingService.GetBindingPerLanguageName (languageName);
 				return languageBinding;
 			}
 		}

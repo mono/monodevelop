@@ -226,7 +226,6 @@
     <Compile Include="Project\ProjectPackageCollection.cs" />
     <Compile Include="Gui\EditPackagesDialog.cs" />
     <Compile Include="gtk-gui\CBinding.EditPackagesDialog.cs" />
-    <Compile Include="CLanguageBinding.cs" />
     <Compile Include="Project\Package.cs" />
     <Compile Include="Project\ProjectPackageEventArgs.cs" />
     <Compile Include="Gui\OutputOptionsPanel.cs" />
@@ -270,7 +269,6 @@
     <Compile Include="Parser\Typedef.cs" />
     <Compile Include="Parser\Union.cs" />
     <Compile Include="Parser\Variable.cs" />
-    <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="Gui\GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\CBinding.GeneralOptionsPanel.cs" />
     <Compile Include="Parser\Local.cs" />
@@ -278,8 +276,6 @@
     <Compile Include="gtk-gui\CBinding.PackageDetails.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parser\CDocumentParser.cs" />
-    <Compile Include="ObjCLanguageBinding.cs" />
-    <Compile Include="ObjCppLanguageBinding.cs" />
     <Compile Include="Parser\CompilationUnitDataProvider.cs" />
     <Compile Include="Parser\DataProvider.cs" />
     <Compile Include="Parser\CTagsManager.cs" />

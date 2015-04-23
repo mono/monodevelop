@@ -80,7 +80,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="VBBindingCompilerServices.cs" />
-    <Compile Include="VBLanguageBinding.cs" />
     <Compile Include="Project\VBCompilerParameters.cs" />
     <Compile Include="VBCodeGenerator.cs" />
     <Compile Include="gtk-gui\generated.cs" />

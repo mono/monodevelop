@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects.Extensions;
 using System.Collections.Generic;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -49,6 +50,9 @@ namespace MonoDevelop.CSharp.Project
 
 		static CSharpResourceIdBuilder resourceHandler = new CSharpResourceIdBuilder ();
 
+		// Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
+		public static IList<string> SupportedPlatforms = new string[] { "anycpu", "x86", "x64", "itanium" };
+
 		public CSharpProject ()
 		{
 			Initialize (this);
@@ -58,6 +62,7 @@ namespace MonoDevelop.CSharp.Project
 		{
 			base.OnInitialize ();
 			DefaultResourceHandler = resourceHandler;
+			StockIcon = "md-csharp-project";
 		}
 
 		protected override void OnGetDefaultImports (List<string> imports)
@@ -124,6 +129,41 @@ namespace MonoDevelop.CSharp.Project
 			if (prop != null)
 				codePage = int.Parse (prop.Value);
 		}
+
+		protected override BuildResult OnCompileSources (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
+		{
+			return CSharpBindingCompilerManager.Compile (items, configuration, configSelector, monitor);
+		}
+
+		protected override DotNetCompilerParameters OnCreateCompilationParameters (System.Xml.XmlElement projectOptions)
+		{
+			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
+			if (projectOptions != null) {
+				string platform = projectOptions.GetAttribute ("Platform");
+				if (SupportedPlatforms.Contains (platform))
+					pars.PlatformTarget = platform;
+				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
+				if (string.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) == 0) {
+					pars.AddDefineSymbol ("DEBUG");
+					pars.DebugType = "full";
+				}
+				string releaseAtt = projectOptions.GetAttribute ("Release");
+				if (string.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) == 0)
+					pars.Optimize = true;
+			}
+			return pars;
+		}
+
+		protected override ClrVersion[] OnGetSupportedClrVersions ()
+		{
+			return new ClrVersion[] { 
+				ClrVersion.Net_1_1, 
+				ClrVersion.Net_2_0, 
+				ClrVersion.Clr_2_1,
+				ClrVersion.Net_4_0,
+				ClrVersion.Net_4_5
+			};
+		}
 	}
 
 	public interface ICSharpProject
@@ -137,5 +177,9 @@ namespace MonoDevelop.CSharp.Project
 		string Win32Resource { get; set; }
 	}
 
+	internal static class Counters
+	{
+		public static Counter ResolveTime = InstrumentationService.CreateCounter ("Resolve Time", "Timing");
+	}
 }
 

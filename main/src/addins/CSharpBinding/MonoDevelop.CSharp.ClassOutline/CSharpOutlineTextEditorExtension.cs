@@ -80,8 +80,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 
 		public override bool IsValidInContext (DocumentContext context)
 		{
-			var binding = LanguageBindingService.GetBindingPerFileName (context.Name);
-			return binding != null && binding is IDotNetLanguageBinding;
+			return LanguageBindingService.GetBindingPerFileName (context.Name) != null;
 		}
 
 		protected override void Initialize ()

@@ -35,24 +35,39 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (Description="A language binding. The specified class must implement MonoDevelop.Projects.ILanguageBinding")]
-	internal class LanguageBindingCodon : TypeExtensionNode
+	[ExtensionNode (Description="A language binding. If no class name is provided, a custom language binding withe the provided data will be created")]
+	internal class LanguageBindingExtensionNode : ExtensionNode
 	{
-		[NodeAttribute("supportedextensions", "File extensions supported by this binding (to be shown in the Open File dialog)")]
-		string[] supportedExtensions;
-		
-		public string[] Supportedextensions {
+		LanguageBinding binding;
+
+		[NodeAttribute("extensions", "Comma separated list of file extensions supported by this binding (to be shown in the Open File dialog)")]
+		public string[] SupportedExtensions { get; set; }
+
+		[NodeAttribute("singleLineCommentTag", "Single line comment tag")]
+		public string SingleLineCommentTag { get; set; }
+
+		[NodeAttribute("blockCommentStartTag", "Block comment start tag")]
+		public string BlockCommentStartTag { get; set; }
+
+		[NodeAttribute("blockCommentEndTag", "Block comment end tag")]
+		public string BlockCommentEndTag { get; set; }
+
+		[NodeAttribute("codeDomType", "Block comment end tag")]
+		public string CodeDomType { get; set; }
+
+		[NodeAttribute("class", "Optional type of the language binding. Must be a subclass of LanguageBinding.")]
+		public string LanguageBindingType { get; set; }
+
+		internal LanguageBinding LanguageBinding {
 			get {
-				return supportedExtensions;
-			}
-			set {
-				supportedExtensions = value;
-			}
-		}
-		
-		public ILanguageBinding LanguageBinding {
-			get {
-				return (ILanguageBinding) GetInstance ();
+				if (binding == null) {
+					if (!string.IsNullOrEmpty (LanguageBindingType))
+						binding = (LanguageBinding) Addin.CreateInstance (LanguageBindingType, true);
+					else
+						binding = new LanguageBinding ();
+					binding.InitFromNode (this);
+				}
+				return binding;
 			}
 		}
 	}

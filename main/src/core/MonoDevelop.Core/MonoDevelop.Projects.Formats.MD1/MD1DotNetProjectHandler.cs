@@ -166,7 +166,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				if (br != null)
 					return br;
 
-				br = project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
+				br = project.OnCompileSources (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
 				if (refres != null) {
 					refres.Append (br);
 					return refres;
@@ -183,7 +183,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 				BuildResult br = BuildResources (buildData.Configuration, ref items, monitor);
 				if (br != null)
 					return br;
-				return project.LanguageBinding.Compile (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
+				return project.OnCompileSources (items, buildData.Configuration, buildData.ConfigurationSelector, monitor);
 			});
 		}
 

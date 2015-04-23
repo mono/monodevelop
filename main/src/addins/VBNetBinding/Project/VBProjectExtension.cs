@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Formats.MSBuild;
 using MonoDevelop.Core.Serialization;
+using System.Diagnostics;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VBNetBinding
 {
@@ -103,6 +105,25 @@ namespace MonoDevelop.VBNetBinding
 			base.OnInitialize ();
 			DefaultNamespaceIsImplicit = true;
 			DefaultResourceHandler = resourceBuilder;
+			StockIcon = "md-project";
+		}
+
+		VBBindingCompilerServices compilerServices = new VBBindingCompilerServices();
+
+		protected override BuildResult OnCompileSources (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, MonoDevelop.Core.ProgressMonitor monitor)
+		{
+			Debug.Assert(compilerServices != null);
+			return compilerServices.Compile (items, configuration, configSelector, monitor);
+		}
+
+		protected override DotNetCompilerParameters OnCreateCompilationParameters (System.Xml.XmlElement projectOptions)
+		{
+			return new VBCompilerParameters ();
+		}
+
+		protected override ClrVersion[] OnGetSupportedClrVersions ()
+		{
+			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0 };
 		}
 	}
 }

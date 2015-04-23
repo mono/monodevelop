@@ -137,8 +137,7 @@ namespace MonoDeveloper
 			}
 
 			foreach (string sconf in MonoMakefile.MonoConfigurations) {
-				DotNetProjectConfiguration conf = new DotNetProjectConfiguration (sconf);
-				conf.CompilationParameters = Project.LanguageBinding.CreateCompilationParameters (null);
+				var conf = (DotNetProjectConfiguration) Project.CreateConfiguration (sconf);
 				conf.OutputDirectory = basePath;
 				conf.OutputAssembly = Path.GetFileName (targetAssembly);
 				Project.Configurations.Add (conf);

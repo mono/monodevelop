@@ -265,7 +265,6 @@
     <Compile Include="MonoDevelop.Projects\ProjectFileCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectReferenceCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCreateInformation.cs" />
-    <Compile Include="MonoDevelop.Projects\IDotNetLanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionItemConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\ConfigurationEventHandler.cs" />
     <Compile Include="MonoDevelop.Projects\ExecutionContext.cs" />
@@ -314,7 +313,6 @@
     <Compile Include="MonoDevelop.Projects\CompiledAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects\IAssemblyProject.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ItemPropertyCodon.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\DataTypeCodon.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SerlializationMapNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\FileFormatNode.cs" />
@@ -390,7 +388,6 @@
     <Compile Include="MonoDevelop.Core\ApplicationService.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressStatusMonitor.cs" />
     <Compile Include="MonoDevelop.Projects\LanguageBindingService.cs" />
-    <Compile Include="MonoDevelop.Projects\ILanguageBinding.cs" />
     <Compile Include="MonoDevelop.Core\Platform.cs" />
     <Compile Include="MonoDevelop.Core\UserProfile.cs" />
     <Compile Include="MonoDevelop.Core\BrandingService.cs" />
@@ -520,6 +517,8 @@
     <Compile Include="MonoDevelop.Projects\SolutionDataSectionAttribute.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\DataDeletedValue.cs" />
     <Compile Include="MonoDevelop.Projects\WorkspaceObjectReader.cs" />
+    <Compile Include="MonoDevelop.Projects\LanguageBinding.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingExtensionNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -90,11 +90,11 @@
     <Compile Include="Project\ILAsmCompilerParameters.cs" />
     <Compile Include="ILAsmCompilerManager.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="ILAsmLanguageBinding.cs" />
     <Compile Include="Gui\CompilerParametersPanelWidget.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\ILAsmBinding.CompilerParametersPanelWidget.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="ILAsmProject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

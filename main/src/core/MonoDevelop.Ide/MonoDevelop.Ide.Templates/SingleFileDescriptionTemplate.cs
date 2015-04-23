@@ -364,7 +364,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
-			ILanguageBinding binding = null;
+			LanguageBinding binding = null;
 			if (!string.IsNullOrEmpty (language)) {
 				binding = GetLanguageBinding (language);
 				if (binding != null)
@@ -392,12 +392,9 @@ namespace MonoDevelop.Ide.Templates
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 				
 				//some .NET languages may be able to use keywords as identifiers if they're escaped
-				IDotNetLanguageBinding dnb = binding as IDotNetLanguageBinding;
-				if (dnb != null) {
-					System.CodeDom.Compiler.CodeDomProvider provider = dnb.GetCodeDomProvider ();
-					if (provider != null) {
-						tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
-					}
+				System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+				if (provider != null) {
+					tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
 				}
 			}
 			
@@ -447,7 +444,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		
-		protected ILanguageBinding GetLanguageBinding (string language)
+		protected LanguageBinding GetLanguageBinding (string language)
 		{
 			var binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding == null)

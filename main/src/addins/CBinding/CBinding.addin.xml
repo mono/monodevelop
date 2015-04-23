@@ -87,20 +87,27 @@
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding
 			id = "C"
-		    supportedextensions = ".c,.h"
-		    class = "CBinding.CLanguageBinding"/>
+		    extensions = ".c,.h"
+		    blockCommentStartTag = "/*"
+		    blockCommentEndTag = "*/" />
 		<LanguageBinding
 			id = "CPP"
-			supportedextensions = ".cpp,.cxx,.cc,.h,.hpp,.hh,.hxx"
-		    class = "CBinding.CppLanguageBinding"/>
+			extensions = ".cpp,.cxx,.cc,.h,.hpp,.hh,.hxx"
+			singleLineCommentTag = "//"
+		    blockCommentStartTag = "/*"
+		    blockCommentEndTag = "*/" />
 		<LanguageBinding
 			id = "Objective C"
-		    supportedextensions = ".m,.h"
-		    class = "CBinding.ObjCLanguageBinding"/>
+		    extensions = ".m,.h"
+			singleLineCommentTag = "//"
+		    blockCommentStartTag = "/*"
+		    blockCommentEndTag = "*/" />
 		<LanguageBinding
 			id = "Objective C++"
-			supportedextensions = ".mm,.M"
-		    class = "CBinding.ObjCppLanguageBinding"/>
+			extensions = ".mm,.M"
+			singleLineCommentTag = "//"
+		    blockCommentStartTag = "/*"
+		    blockCommentEndTag = "*/" />
     </Extension>
     
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">

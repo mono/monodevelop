@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Project
 			warningLevelSpinButton.Value               = compilerParameters.WarningLevel;
 			ignoreWarningsEntry.Text                   = compilerParameters.NoWarnings;
 			
-			int i = CSharpLanguageBinding.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
+			int i = CSharpProject.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
 			comboPlatforms.Active = i != -1 ? i : 0;
 
 			if (!configuration.DebugMode || string.Equals ("none", compilerParameters.DebugType, StringComparison.OrdinalIgnoreCase)) {
@@ -91,7 +91,7 @@ namespace MonoDevelop.CSharp.Project
 			compilerParameters.TreatWarningsAsErrors  = warningsAsErrorsCheckButton.Active;
 			compilerParameters.WarningLevel           = warningLevelSpinButton.ValueAsInt;
 			compilerParameters.NoWarnings             = ignoreWarningsEntry.Text;
-			compilerParameters.PlatformTarget         = CSharpLanguageBinding.SupportedPlatforms [comboPlatforms.Active];
+			compilerParameters.PlatformTarget         = CSharpProject.SupportedPlatforms [comboPlatforms.Active];
 
 			switch (comboDebug.Active) {
 			case DEBUG_FULL:

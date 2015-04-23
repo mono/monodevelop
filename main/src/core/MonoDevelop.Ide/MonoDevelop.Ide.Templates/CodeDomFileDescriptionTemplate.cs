@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide.Templates
 			if (language == null || language == "")
 				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
 			
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			var binding = GetLanguageBinding (language);
 			
 			CodeDomProvider provider = null;
 			if (binding != null)

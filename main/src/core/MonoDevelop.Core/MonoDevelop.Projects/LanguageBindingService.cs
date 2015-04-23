@@ -34,62 +34,28 @@ namespace MonoDevelop.Projects
 {
 	public static class LanguageBindingService
 	{
-		static List<LanguageBindingCodon> languageBindingCodons = new List<LanguageBindingCodon> ();
-		
-		static LanguageBindingService ()
-		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/LanguageBindings", delegate(object sender, ExtensionNodeEventArgs args) {
-				LanguageBindingCodon languageBindingCodon = (LanguageBindingCodon)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					languageBindingCodons.Add (languageBindingCodon);
-					IDotNetLanguageBinding dotNetBinding = languageBindingCodon as IDotNetLanguageBinding;
-					if (dotNetBinding != null) {
-						object par = dotNetBinding.CreateCompilationParameters (null);
-						if (par != null)
-							Services.ProjectService.DataContext.IncludeType (par.GetType ());
-					}
-					break;
-				case ExtensionChange.Remove:
-					languageBindingCodons.Remove (languageBindingCodon);
-					break;
-				}
-				languageBindings = null;
-			});
-		}
-		
-		static List<ILanguageBinding> languageBindings = null;
-		public static IEnumerable<ILanguageBinding> LanguageBindings {
+		public static IEnumerable<LanguageBinding> LanguageBindings {
 			get {
-				CheckBindings ();
-				return languageBindings;
+				return AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/LanguageBindings").Cast<LanguageBindingExtensionNode> ().Select (b => b.LanguageBinding);
 			}
 		}
 		
-		static void CheckBindings ()
-		{
-			if (languageBindings == null)
-				languageBindings = new List<ILanguageBinding> (from codon in languageBindingCodons select codon.LanguageBinding);
-		}
-		
-		public static ILanguageBinding GetBindingPerFileName (string fileName)
+		public static LanguageBinding GetBindingPerFileName (string fileName)
 		{
 			if (String.IsNullOrEmpty (fileName)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null filename at {0}", Environment.StackTrace);
 				return null;
 			}
-			CheckBindings ();
-			return languageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
+			return LanguageBindings.FirstOrDefault (binding => binding.IsSourceCodeFile (fileName));
 		}
 		
-		public static ILanguageBinding GetBindingPerLanguageName (string language)
+		public static LanguageBinding GetBindingPerLanguageName (string language)
 		{
 			if (String.IsNullOrEmpty (language)) {
 				MonoDevelop.Core.LoggingService.LogWarning ("Cannot get binding for null language at {0}", Environment.StackTrace);
 				return null;
 			}
-			CheckBindings ();
-			return languageBindings.FirstOrDefault (binding => binding.Language == language);
+			return LanguageBindings.FirstOrDefault (binding => binding.Language == language);
 		}
 	}
 }

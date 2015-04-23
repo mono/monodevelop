@@ -651,7 +651,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (hasError)
 				return files;
 
-			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName) as IDotNetLanguageBinding;
+			var binding = LanguageBindingService.GetBindingPerLanguageName (project.LanguageName);
 			string path = Path.Combine (guiFolder, binding.GetFileName ("generated"));
 			if (!System.IO.File.Exists (path)) {
 				// Generate an empty build class

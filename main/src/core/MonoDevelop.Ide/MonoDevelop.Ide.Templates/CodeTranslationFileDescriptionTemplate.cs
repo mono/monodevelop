@@ -156,7 +156,7 @@ namespace MonoDevelop.Ide.Templates
 		private System.CodeDom.Compiler.CodeDomProvider GetCodeDomProvider (string language)
 		{
 			System.CodeDom.Compiler.CodeDomProvider provider = null;
-			IDotNetLanguageBinding binding = GetLanguageBinding (language) as IDotNetLanguageBinding;
+			var binding = GetLanguageBinding (language);
 			if (binding == null)
 				throw new InvalidOperationException ("No LanguageBinding was found for the language '" + language + "'.");
 			

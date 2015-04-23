@@ -89,9 +89,12 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
-		<LanguageBinding id    = "CSharp"
-		                 supportedextensions = ".cs"
-		                 class = "MonoDevelop.CSharp.CSharpLanguageBinding" />
+		<LanguageBinding id = "C#"
+		                 extensions = ".cs"
+		                 singleLineCommentTag = "//"
+		                 blockCommentStartTag = "/*"
+		                 blockCommentEndTag = "*/" 
+		                 codeDomType = "MonoDevelop.CSharp.CSharpEnhancedCodeProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ReferenceFinder">

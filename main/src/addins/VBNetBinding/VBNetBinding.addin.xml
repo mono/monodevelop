@@ -60,8 +60,9 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding id = "VBNet"
-			supportedextensions = ".vb"
-			class = "MonoDevelop.VBNetBinding.VBLanguageBinding" />
+			extensions = ".vb"
+			singleLineCommentTag = "'"
+			codeDomType = "MonoDevelop.VBNetBinding.VBLanguageBinding+ImprovedCodeDomProvider" />
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

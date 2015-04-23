@@ -46,7 +46,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects
 {
-	public class DotNetProject : Project, IAssemblyProject, IDotNetFileContainer
+	public abstract class DotNetProject : Project, IAssemblyProject, IDotNetFileContainer
 	{
 		bool usePartialTypes = true;
 
@@ -56,7 +56,7 @@ namespace MonoDevelop.Projects
 
 		CompileTarget compileTarget;
 
-		IDotNetLanguageBinding languageBinding;
+		LanguageBinding languageBinding;
 
 		protected ProjectReferenceCollection projectReferences;
 
@@ -99,9 +99,6 @@ namespace MonoDevelop.Projects
 			projectExtension = ExtensionChain.GetExtension<DotNetProjectExtension> ();
 			base.OnExtensionChainInitialized ();
 
-			if (LanguageBinding != null)
-				this.StockIcon = LanguageBinding.ProjectStockIcon;
-
 			if (IsLibraryBasedProjectType)
 				CompileTarget = CompileTarget.Library;
 
@@ -143,7 +140,7 @@ namespace MonoDevelop.Projects
 				}
 				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
-				configDebug.CompilationParameters = LanguageBinding.CreateCompilationParameters (projectOptions);
+				configDebug.CompilationParameters = OnCreateCompilationParameters (projectOptions);
 				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
 				configDebug.DebugMode = true;
 				configDebug.ExternalConsole = externalConsole;
@@ -155,10 +152,10 @@ namespace MonoDevelop.Projects
 				if (projectOptions != null) {
 					XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
 					releaseProjectOptions.SetAttribute ("Release", "True");
-					configRelease.CompilationParameters = LanguageBinding.CreateCompilationParameters (releaseProjectOptions);
+					configRelease.CompilationParameters = OnCreateCompilationParameters (releaseProjectOptions);
 					DefineSymbols (configRelease.CompilationParameters, projectOptions, "DefineConstantsRelease");
 				} else {
-					configRelease.CompilationParameters = LanguageBinding.CreateCompilationParameters (null);
+					configRelease.CompilationParameters = OnCreateCompilationParameters (null);
 				}
 
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
@@ -349,7 +346,7 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
-		public IDotNetLanguageBinding LanguageBinding {
+		public LanguageBinding LanguageBinding {
 			get {
 				if (languageBinding == null) {
 					languageBinding = FindLanguage (languageName);
@@ -537,7 +534,7 @@ namespace MonoDevelop.Projects
 				return false;
 			if (LanguageBinding == null)
 				return false;
-			ClrVersion[] versions = LanguageBinding.GetSupportedClrVersions ();
+			ClrVersion[] versions = OnGetSupportedClrVersions ();
 			if (versions != null && versions.Length > 0 && framework != null) {
 				foreach (ClrVersion v in versions) {
 					if (v == framework.ClrVersion)
@@ -918,10 +915,9 @@ namespace MonoDevelop.Projects
 			return base.OnSave (monitor);
 		}
 
-		IDotNetLanguageBinding FindLanguage (string name)
+		LanguageBinding FindLanguage (string name)
 		{
-			IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (languageName) as IDotNetLanguageBinding;
-			return binding;
+			return LanguageBindingService.GetBindingPerLanguageName (languageName);
 		}
 
 		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
@@ -942,7 +938,7 @@ namespace MonoDevelop.Projects
 					xconf = doc.CreateElement ("Options");
 					xconf.SetAttribute ("Platform", conf.Platform);
 				}
-				conf.CompilationParameters = LanguageBinding.CreateCompilationParameters (xconf);
+				conf.CompilationParameters = OnCreateCompilationParameters (xconf);
 			}
 			return conf;
 		}
@@ -1252,6 +1248,15 @@ namespace MonoDevelop.Projects
 
 			base.OnEndLoad ();
 		}
+
+		protected abstract DotNetCompilerParameters OnCreateCompilationParameters (XmlElement projectOptions);
+
+		internal protected virtual BuildResult OnCompileSources (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
+		{
+			throw new NotSupportedException ();
+		}
+
+		protected abstract ClrVersion[] OnGetSupportedClrVersions ();
 
 		public void UpdateResourceHandler (bool keepOldIds)
 		{
