@@ -1862,6 +1862,10 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void UpdateSelectAll (CommandInfo cmd)
 		{
+			if (editing) {
+				cmd.Bypass = true;
+				return;
+			}
 			TreeIter iter;
 
 			cmd.Enabled = store.GetIterFirst (out iter);
@@ -1870,6 +1874,10 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.SelectAll)]
 		protected new void OnSelectAll ()
 		{
+			if (editing) {
+				base.OnSelectAll ();
+				return;
+			}
 			Selection.SelectAll ();
 		}
 		
