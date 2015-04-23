@@ -130,7 +130,6 @@ namespace MonoDevelop.AspNet.Razor
 				Errors = errors,
 				FoldingRegions = GetFoldingRegions (),
 				Comments = comments,
-				Compilation = CreateCompilation (),
 				HostKind = kind,
 			};
 
@@ -414,33 +413,6 @@ namespace MonoDevelop.AspNet.Razor
 				return sw.ToString ();
 			}
 		}
-
-// TODO Roslyn port
-//		// Creates compilation that includes underlying C# file for Razor view
-		Compilation CreateCompilation ()
-		{
-//			if (project != null) {
-//				return TypeSystemService.GetProjectContext (project).AddOrUpdateFiles (parsedCodeFile.ParsedFile).CreateCompilation ();
-//			}
-//			return new SimpleCompilation (
-//				new DefaultUnresolvedAssembly (Path.ChangeExtension (parsedCodeFile.FileName, ".dll")),
-//				GetDefaultAssemblies ()
-//			);
-			return null;
-		}
-//
-//		//FIXME: make this better reflect the real set of assemblies used by razor
-//		static IEnumerable<IUnresolvedAssembly> GetDefaultAssemblies ()
-//		{
-//			var runtime = Runtime.SystemAssemblyService.DefaultRuntime;
-//			var fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_5);
-//			if (!runtime.IsInstalled (fx))
-//				fx = Runtime.SystemAssemblyService.GetTargetFramework (MonoDevelop.Core.Assemblies.TargetFrameworkMoniker.NET_4_0);
-//			foreach (var assembly in new [] { "System", "System.Core", "System.Xml", "System.Web.Mvc,Version=3.0.0.0" }) {
-//				var path = Runtime.SystemAssemblyService.DefaultAssemblyContext.GetAssemblyLocation (assembly, fx);
-//				yield return TypeSystemService.LoadAssemblyContext (runtime, fx, path);
-//			}
-//		}
 
 		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{

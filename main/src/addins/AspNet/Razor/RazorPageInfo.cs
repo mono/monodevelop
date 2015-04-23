@@ -57,7 +57,6 @@ namespace MonoDevelop.AspNet.Razor
 		public SyntaxTree CSharpSyntaxTree { get; set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public Microsoft.CodeAnalysis.Document AnalysisDocument { get; set; }
-		public Compilation Compilation { get; set; }
 		public string CSharpCode { get; set; }
 	}
 
