@@ -62,6 +62,7 @@ namespace MonoDevelop.VersionControl.Tests
 			CommitNumber = 0;
 		}
 
+		#region Detection
 		[Test]
 		// Tests false positives of repository detection.
 		public void IgnoreScatteredDotDir ()
@@ -124,6 +125,9 @@ namespace MonoDevelop.VersionControl.Tests
 
 		protected abstract NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ();
 
+		#endregion
+
+		#region Repository
 		[Test]
 		public void UrlIsValid ()
 		{
@@ -568,6 +572,27 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		protected abstract void BlameExtraInternals (Annotation [] annotations);
+
+		#endregion
+
+		#region VersionControlItem
+		[Test]
+		public void VersionControlItemRefreshesVersionInfo ()
+		{
+			AddFile ("foo", "meh", true, true);
+
+			var vci = new VersionControlItem (Repo, null, LocalPath.Combine ("foo"), false, null);
+			VersionInfo vi = vci.VersionInfo;
+
+			Assert.AreEqual (VersionStatus.Unmodified, vi.Status);
+			Assert.AreSame (vi, vci.VersionInfo);
+
+			vi.RequiresRefresh = true;
+			VersionInfo vi2 = vci.VersionInfo;
+			Assert.AreEqual (VersionStatus.Unmodified, vi2.Status);
+			Assert.AreNotSame (vi, vi2);
+		}
+		#endregion
 
 		#region Util
 
