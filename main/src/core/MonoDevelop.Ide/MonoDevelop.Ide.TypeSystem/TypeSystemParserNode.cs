@@ -31,7 +31,7 @@ using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class TypeSystemParserNode : TypeExtensionNode
+	class TypeSystemParserNode : TypeExtensionNode
 	{
 		const string ApiDefinitionBuildAction = "ObjcBindingApiDefinition";
 
@@ -83,34 +83,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				buildAction == MonoDevelop.Projects.BuildAction.Compile ||
 				buildAction == ApiDefinitionBuildAction || 
 				buildAction == "BMacInputs";
-		}
-	}
-
-
-	public class TypeSystemOutputTrackingNode : ExtensionNode
-	{
-		[NodeAttribute (Description="The project type.")]
-		string projectType;
-
-		public string ProjectType {
-			get {
-				return projectType;
-			}
-			set {
-				projectType = value;
-			}
-		}
-
-		[NodeAttribute (Description="The language name.")]
-		string languageName;
-
-		public string LanguageName {
-			get {
-				return languageName;
-			}
-			set {
-				languageName = value;
-			}
 		}
 	}
 }

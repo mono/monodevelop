@@ -3480,6 +3480,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\AbstractCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemOutputTrackingNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
