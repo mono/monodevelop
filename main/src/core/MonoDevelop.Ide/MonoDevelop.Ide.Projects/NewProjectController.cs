@@ -585,9 +585,9 @@ namespace MonoDevelop.Ide.Projects
 				MessageService.ShowError (ex.Message, ex.Details);
 				return false;
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The project could not be created"));
+				MessageService.ShowError (GettextCatalog.GetString ("The project could not be created"), ex);
 				return false;
-			}
+			}	
 			processedTemplate = result;
 			return true;
 		}
