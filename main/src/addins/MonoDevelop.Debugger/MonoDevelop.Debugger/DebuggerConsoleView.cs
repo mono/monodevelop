@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger
 
 			TextView.KeyReleaseEvent += OnEditKeyRelease;
 
-			IdeApp.Preferences.CustomOutputPadFontChanged += OnCustomOutputPadFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
 		}
 
@@ -474,7 +474,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void OnDestroyed ()
 		{
-			IdeApp.Preferences.CustomOutputPadFontChanged -= OnCustomOutputPadFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed -= OnCompletionWindowClosed;
 			CompletionWindowManager.HideWindow ();
 			base.OnDestroyed ();

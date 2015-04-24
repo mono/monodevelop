@@ -64,9 +64,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void ApplyChanges ()
 		{
 			if (IdeApp.Preferences.EnableInstrumentation != checkInstr.Active)
-				IdeApp.Preferences.EnableInstrumentation = checkInstr.Active;
+				IdeApp.Preferences.EnableInstrumentation.Value = checkInstr.Active;
 			if (IdeApp.Preferences.EnableAutomatedTesting != checkAutoTest.Active)
-				IdeApp.Preferences.EnableAutomatedTesting = checkAutoTest.Active;
+				IdeApp.Preferences.EnableAutomatedTesting.Value = checkAutoTest.Active;
 		}
 	}
 }

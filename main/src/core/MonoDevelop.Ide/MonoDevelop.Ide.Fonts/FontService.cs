@@ -181,6 +181,11 @@ namespace MonoDevelop.Ide.Fonts
 				callbacks.ForEach (c => c ());
 			}
 		}
+
+		internal static ConfigurationProperty<FontDescription> GetFontProperty (string name)
+		{
+			return new FontConfigurationProperty (name);
+		}
 		
 		static Dictionary<string, List<Action>> fontChangeCallbacks = new Dictionary<string, List<Action>> ();
 		public static void RegisterFontChangedCallback (string fontName, Action callback)
@@ -194,6 +199,28 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
+		}
+	}
+
+	class FontConfigurationProperty: ConfigurationProperty<FontDescription>
+	{
+		string name;
+
+		public FontConfigurationProperty (string name)
+		{
+			this.name = name;
+			FontService.RegisterFontChangedCallback (name, OnChanged);
+		}
+
+		protected override FontDescription OnGetValue ()
+		{
+			return FontService.GetFontDescription (name);
+		}
+
+		protected override bool OnSetValue (FontDescription value)
+		{
+			FontService.SetFont (name, value.ToString ());
+			return true;
 		}
 	}
 

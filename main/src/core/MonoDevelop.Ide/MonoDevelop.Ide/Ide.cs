@@ -290,7 +290,7 @@ namespace MonoDevelop.Ide
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			
 			UpdateInstrumentationIcon ();
-			IdeApp.Preferences.EnableInstrumentationChanged += delegate {
+			IdeApp.Preferences.EnableInstrumentation.Changed += delegate {
 				UpdateInstrumentationIcon ();
 			};
 			AutoTestService.NotifyEvent ("MonoDevelop.Ide.IdeStart");
@@ -414,7 +414,7 @@ namespace MonoDevelop.Ide
 		{
 			if (previousRevision <= 3) {
 				// Reset the current runtime when upgrading from <2.2, to ensure the default runtime is not stuck to an old mono install
-				IdeApp.Preferences.DefaultTargetRuntime = Runtime.SystemAssemblyService.CurrentRuntime;
+				IdeApp.Preferences.DefaultTargetRuntime.Value = Runtime.SystemAssemblyService.CurrentRuntime;
 			}
 			if (previousRevision < 5)
 				SetInitialLayout ();

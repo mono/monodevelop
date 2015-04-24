@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			endMark = buffer.CreateMark ("end-mark", buffer.EndIter, false);
 
 			UpdateCustomFont ();
-			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed += HandleCustomFontChanged;
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
 
@@ -633,7 +633,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				updates.Clear ();
 				lastTextWrite = null;
 			}
-			IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomFontChanged;
+			IdeApp.Preferences.CustomOutputPadFont.Changed -= HandleCustomFontChanged;
 		}
 		
 		abstract class QueuedUpdate

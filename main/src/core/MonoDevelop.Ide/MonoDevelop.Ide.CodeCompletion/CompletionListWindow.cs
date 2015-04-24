@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public void ToggleCategoryMode ()
 		{
-			ListWidget.EnableCompletionCategoryMode.Set (!ListWidget.EnableCompletionCategoryMode.Value); 
+			IdeApp.Preferences.EnableCompletionCategoryMode.Set (!IdeApp.Preferences.EnableCompletionCategoryMode.Value); 
 			List.UpdateCategoryMode ();
 			ResetSizes ();
 			List.QueueDraw ();

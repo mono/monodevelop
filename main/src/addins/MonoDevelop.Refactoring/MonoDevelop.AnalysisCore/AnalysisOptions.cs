@@ -26,18 +26,19 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public static class AnalysisOptions
 	{
-		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
+		public readonly static ConfigurationProperty<bool> EnableFancyFeatures = IdeApp.Preferences.EnableSourceAnalysis;
 
-		public static PropertyWrapper<bool> AnalysisEnabled {
+		public static ConfigurationProperty<bool> AnalysisEnabled {
 			get { return EnableFancyFeatures; }
 		}
 
-		public readonly static PropertyWrapper<bool> EnableUnitTestEditorIntegration = new PropertyWrapper<bool> ("Testing.EnableUnitTestEditorIntegration", false);
+		public readonly static ConfigurationProperty<bool> EnableUnitTestEditorIntegration = IdeApp.Preferences.EnableUnitTestEditorIntegration;
 
 	}
 }

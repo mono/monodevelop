@@ -108,8 +108,8 @@ namespace MonoDevelop.VersionControl.Views
 		#region new options
 
 		public bool EnableAutoCodeCompletion {
-			get { return CompletionTextEditorExtension.EnableAutoCodeCompletion; }
-			set { CompletionTextEditorExtension.EnableAutoCodeCompletion.Set (value); }
+			get { return IdeApp.Preferences.EnableAutoCodeCompletion; }
+			set { IdeApp.Preferences.EnableAutoCodeCompletion.Set (value); }
 		}
 
 		public bool DefaultRegionsFolding {
@@ -321,7 +321,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		PropertyWrapper<ShowWhitespaces> showWhitespaces = new PropertyWrapper<ShowWhitespaces> ("ShowWhitespaces", ShowWhitespaces.Never);
+		ConfigurationProperty<ShowWhitespaces> showWhitespaces = ConfigurationProperty.Create ("ShowWhitespaces", ShowWhitespaces.Never);
 		public override ShowWhitespaces ShowWhitespaces {
 			get {
 				return showWhitespaces;
@@ -332,7 +332,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		PropertyWrapper<IncludeWhitespaces> includeWhitespaces = new PropertyWrapper<IncludeWhitespaces> ("IncludeWhitespaces", IncludeWhitespaces.All);
+		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = ConfigurationProperty.Create ("IncludeWhitespaces", IncludeWhitespaces.All);
 		public override IncludeWhitespaces IncludeWhitespaces {
 			get {
 				return includeWhitespaces;

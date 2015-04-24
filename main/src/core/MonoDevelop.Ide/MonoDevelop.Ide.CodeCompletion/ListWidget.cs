@@ -99,10 +99,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 
-		public readonly static PropertyWrapper<bool> EnableCompletionCategoryMode = PropertyService.Wrap("EnableCompletionCategoryMode", false);
-
 		public bool InCategoryMode {
-			get { return EnableCompletionCategoryMode && categories.Count > 1; }
+			get { return IdeApp.Preferences.EnableCompletionCategoryMode && categories.Count > 1; }
 		}
 
 		internal void UpdateCategoryMode ()
@@ -674,7 +672,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void SelectFirstItemInCategory ()
 		{
-			if (string.IsNullOrEmpty (CompletionString) && EnableCompletionCategoryMode)
+			if (string.IsNullOrEmpty (CompletionString) && IdeApp.Preferences.EnableCompletionCategoryMode)
 				selection = categories.First ().Items.First ();
 		}
 
@@ -749,7 +747,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			layout.GetPixelSize (out rowWidth, out rowHeight);
 			rowHeight = Math.Max (1, rowHeight * 3 / 2);
 
-			int newHeight = rowHeight * CompletionTextEditorExtension.CompletionListRows;
+			int newHeight = rowHeight * IdeApp.Preferences.CompletionListRows;
 			if (Allocation.Width != listWidth || Allocation.Height != newHeight)
 				this.SetSizeRequest (listWidth, newHeight);
 			SetAdjustments ();

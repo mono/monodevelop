@@ -59,22 +59,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			noSaveRadioButton.Active = action == BeforeCompileAction.Nothing;
 			runWithWarningsCheckBox.Active = IdeApp.Preferences.RunWithWarnings;
 			buildBeforeRunCheckBox.Active = IdeApp.Preferences.BuildBeforeExecuting;
-			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity;
+			verbosityCombo.Active = (int)IdeApp.Preferences.MSBuildVerbosity.Value;
 			buildBeforeTestCheckBox.Active = IdeApp.Preferences.BuildBeforeRunningTests;
 		}
 		
 		public void Store ()
 		{
-			IdeApp.Preferences.RunWithWarnings = runWithWarningsCheckBox.Active;
-			IdeApp.Preferences.BuildBeforeExecuting = buildBeforeRunCheckBox.Active;
-			IdeApp.Preferences.MSBuildVerbosity = (MSBuildVerbosity) verbosityCombo.Active;
+			IdeApp.Preferences.RunWithWarnings.Value = runWithWarningsCheckBox.Active;
+			IdeApp.Preferences.BuildBeforeExecuting.Value = buildBeforeRunCheckBox.Active;
+			IdeApp.Preferences.MSBuildVerbosity.Value = (MSBuildVerbosity) verbosityCombo.Active;
 			IdeApp.Preferences.BuildBeforeRunningTests.Value = buildBeforeTestCheckBox.Active;
 			if (saveChangesRadioButton.Active)
-				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.SaveAllFiles;
+				IdeApp.Preferences.BeforeBuildSaveAction.Value = BeforeCompileAction.SaveAllFiles;
 			else if (promptChangesRadioButton.Active)
-				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.PromptForSave;
+				IdeApp.Preferences.BeforeBuildSaveAction.Value = BeforeCompileAction.PromptForSave;
 			else if (noSaveRadioButton.Active)
-				IdeApp.Preferences.BeforeBuildSaveAction = BeforeCompileAction.Nothing;
+				IdeApp.Preferences.BeforeBuildSaveAction.Value = BeforeCompileAction.Nothing;
 		}
 	}
 }

@@ -39,6 +39,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -175,7 +176,7 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
-			var project = Services.ProjectService.CreateProject ("C#");
+			var project = IdeApp.Services.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
@@ -222,7 +223,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestSimpleCase ()
 		{
-			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Set (true); 
+			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (true); 
 			string completion = Test (@"class MyClass
 {
 	int foo;
@@ -238,7 +239,7 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestNoAutoCase ()
 		{
-			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Set (false); 
+			IdeApp.Preferences.AddParenthesesAfterCompletion.Set (false); 
 			string completion = Test (@"class MyClass
 {
 	int foo;

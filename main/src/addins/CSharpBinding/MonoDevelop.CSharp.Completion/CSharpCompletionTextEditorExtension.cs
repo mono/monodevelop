@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Refactoring;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -261,7 +262,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 //			if (!EnableCodeCompletion)
 //				return null;
-			if (!EnableAutoCodeCompletion && char.IsLetter (completionChar))
+			if (!IdeApp.Preferences.EnableAutoCodeCompletion && char.IsLetter (completionChar))
 				return null;
 
 			//	var timer = Counters.ResolveTime.BeginTiming ();
@@ -398,7 +399,7 @@ namespace MonoDevelop.CSharp.Completion
 					list.Add ((CompletionData)symbol); 
 				}
 
-				if (AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
+				if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
 					AddImportCompletionData (list, semanticModel, offset, token);
 				}
 

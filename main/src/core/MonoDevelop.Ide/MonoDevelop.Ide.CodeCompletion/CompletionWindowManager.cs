@@ -63,21 +63,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		static PropertyWrapper<bool> forceSuggestionMode = PropertyService.Wrap ("ForceCompletionSuggestionMode", false);
-		public static bool ForceSuggestionMode {
-			get { return forceSuggestionMode; }
-			set {
-				forceSuggestionMode.Value = value; 
-				if (wnd != null) {
-					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !forceSuggestionMode;
-				}
-			}
-		}
-		
 		static CompletionWindowManager ()
 		{
 			if (IdeApp.Workbench != null)
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+			
+			IdeApp.Preferences.ForceSuggestionMode.Changed += (s,a) => {
+				if (wnd != null)
+					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !IdeApp.Preferences.ForceSuggestionMode;
+			};
 		}
 		
 		// ext may be null, but then parameter completion don't work
@@ -106,7 +100,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						return false;
 					}
 					
-					if (ForceSuggestionMode)
+					if (IdeApp.Preferences.ForceSuggestionMode)
 						wnd.AutoSelect = false;
 					wnd.Show ();
 					DesktopService.RemoveWindowShadow (wnd);

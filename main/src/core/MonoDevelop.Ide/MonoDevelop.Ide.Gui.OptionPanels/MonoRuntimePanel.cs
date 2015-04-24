@@ -103,12 +103,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			object ob = store.GetValue (defaultIter, 1);
 			MonoRuntimeInfo newDefaultInfo = ob as MonoRuntimeInfo;
 			if (ob is TargetRuntime)
-				IdeApp.Preferences.DefaultTargetRuntime = (TargetRuntime)ob;
+				IdeApp.Preferences.DefaultTargetRuntime.Value = (TargetRuntime)ob;
 
 			foreach (var rinfo in newInfos) {
 				TargetRuntime tr = MonoTargetRuntime.RegisterRuntime (rinfo);
 				if (rinfo == newDefaultInfo)
-					IdeApp.Preferences.DefaultTargetRuntime = tr;
+					IdeApp.Preferences.DefaultTargetRuntime.Value = tr;
 			}
 
 			foreach (var tr in removedRuntimes.OfType<MonoTargetRuntime> ())

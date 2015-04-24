@@ -10,7 +10,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 {
     internal partial class TipOfTheDayWindow : Gtk.Window
 	{
-		internal const string ShowTipsAtStartup = "MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup";
         List<string> tips = new List<string> ();
         int currentTip;
 
@@ -20,9 +19,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
             Build ();
             TransientFor = IdeApp.Workbench.RootWindow;
 
-            if (PropertyService.Get (ShowTipsAtStartup, false)) {
+            if (IdeApp.Preferences.ShowTipsAtStartup)
                 noshowCheckbutton.Active = true;
-            }
 
             XmlDocument xmlDocument = new XmlDocument ();
             xmlDocument.Load (System.IO.Path.Combine (System.IO.Path.Combine (PropertyService.DataPath, "options"), "TipsOfTheDay.xml"));
@@ -49,7 +47,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
         void OnNoShow (object o, EventArgs e)
         {
-            PropertyService.Set (ShowTipsAtStartup, noshowCheckbutton.Active);
+            IdeApp.Preferences.ShowTipsAtStartup.Value = noshowCheckbutton.Active;
         }
 
         void OnNextClicked (object o, EventArgs e)
@@ -75,7 +73,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
     class TipOfTheDayStartup : CommandHandler {
         protected override void Run ()
         {
-            if (PropertyService.Get (TipOfTheDayWindow.ShowTipsAtStartup, false)) {
+			if (IdeApp.Preferences.ShowTipsAtStartup) {
                 new TipOfTheDayWindow ().Show ();
             }
         }

@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.Projects
 		void SetDefaultLocation ()
 		{
 			if (BasePath == null)
-				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
+				BasePath = IdeApp.Preferences.ProjectsDefaultPath;
 
 			projectConfiguration.Location = new FilePath (BasePath).ResolveLinks ();
 		}

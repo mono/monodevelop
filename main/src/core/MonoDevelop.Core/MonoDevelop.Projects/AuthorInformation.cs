@@ -67,11 +67,11 @@ namespace MonoDevelop.Projects
 		
 		public static AuthorInformation Default {
 			get {
-				string name = GetValueOrMigrate<string> ("Author.Name", "ChangeLogAddIn.Name") ?? Environment.UserName;
-				string email = GetValueOrMigrate<string> ("Author.Email", "ChangeLogAddIn.Email");
-				string copyright = PropertyService.Get<string> ("Author.Copyright", name);
-				string company = PropertyService.Get<string> ("Author.Company", "");
-				string trademark = PropertyService.Get<string> ("Author.Trademark", "");
+				string name = Runtime.Preferences.AuthorName.Value;
+				string email = Runtime.Preferences.AuthorEmail;
+				string copyright = Runtime.Preferences.AuthorCopyright ?? name;
+				string company = Runtime.Preferences.AuthorCompany;
+				string trademark = Runtime.Preferences.AuthorTrademark;
 				return new AuthorInformation (name, email, copyright, company, trademark);
 			}
 		}
@@ -80,20 +80,6 @@ namespace MonoDevelop.Projects
 			get {
 				return !String.IsNullOrEmpty (Name) && !String.IsNullOrEmpty (Email);
 			}
-		}
-		
-		static T GetValueOrMigrate<T> (string name, string oldName)
-		{
-			T val = PropertyService.Get<T> (name);
-			if (val != null)
-				return val;
-			
-			val = PropertyService.Get<T> (oldName);
-			if (val != null) {
-				PropertyService.Set (oldName, null);
-				PropertyService.Set (name, val);
-			}
-			return val;
 		}
 	}
 }

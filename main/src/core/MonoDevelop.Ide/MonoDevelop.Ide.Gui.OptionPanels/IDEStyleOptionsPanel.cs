@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			string lc = isoCodes [comboLanguage.Active * 2];
 			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
-				IdeApp.Preferences.UserInterfaceLanguage = lc;
+				IdeApp.Preferences.UserInterfaceLanguage.Value = lc;
 				MessageService.ShowMessage (
 					GettextCatalog.GetString (
 						"The user interface language change will take effect the next time you start {0}",
@@ -149,11 +149,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			string theme;
 			if (comboTheme.Active == 0) {
 				theme = IdeStartup.DefaultTheme;
-				IdeApp.Preferences.UserInterfaceTheme = "";
+				IdeApp.Preferences.UserInterfaceTheme.Value = "";
 			}
 			else {
 				theme = comboTheme.ActiveText;
-				IdeApp.Preferences.UserInterfaceTheme = theme;
+				IdeApp.Preferences.UserInterfaceTheme.Value = theme;
 			}
 			
 			if (theme != Gtk.Settings.Default.ThemeName)

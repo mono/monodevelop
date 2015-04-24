@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.Gui
 					} else {
 						string fileName = Window.ViewContent.ContentName;
 						// save backup first						
-						if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+						if (IdeApp.Preferences.CreateFileBackupCopies) {
 							Window.ViewContent.Save (fileName + "~");
 							FileService.NotifyFileChanged (fileName);
 						}
@@ -448,7 +448,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			// save backup first
-			if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
+			if (IdeApp.Preferences.CreateFileBackupCopies) {
 				if (tbuffer != null && encoding != null)
 					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, tbuffer.UseBOM);
 				else

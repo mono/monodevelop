@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			};
 
 			PropertyService.PropertyChanged += HandlePropertyChanged;
-			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
+			DefaultMSBuildVerbosity = Runtime.Preferences.MSBuildVerbosity;
 
 			Runtime.ShuttingDown += (sender, e) => ShutDown = true;
 

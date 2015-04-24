@@ -43,8 +43,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 {
 	class QuickTaskStrip : VBox
 	{
-		// move that one to AnalysisOptions when the new features are enabled by default.
-		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
+		public readonly static ConfigurationProperty<bool> EnableFancyFeatures = IdeApp.Preferences.EnableSourceAnalysis;
 		public readonly static bool MergeScrollBarAndQuickTasks = !MonoDevelop.Core.Platform.IsMac;
 
 		static QuickTaskStrip ()

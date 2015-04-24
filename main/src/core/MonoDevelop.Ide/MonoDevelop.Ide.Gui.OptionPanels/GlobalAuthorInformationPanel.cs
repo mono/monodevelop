@@ -64,11 +64,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Save ()
 		{
-			PropertyService.Set ("Author.Name", nameEntry.Text);
-			PropertyService.Set ("Author.Email", emailEntry.Text);
-			PropertyService.Set ("Author.Copyright", copyrightEntry.Text);
-			PropertyService.Set ("Author.Company", companyEntry.Text);
-			PropertyService.Set ("Author.Trademark", trademarkEntry.Text);
+			Runtime.Preferences.AuthorName.Value = nameEntry.Text;
+			Runtime.Preferences.AuthorEmail.Value = emailEntry.Text;
+			Runtime.Preferences.AuthorCopyright.Value = copyrightEntry.Text;
+			Runtime.Preferences.AuthorCompany.Value = companyEntry.Text;
+			Runtime.Preferences.AuthorTrademark.Value = trademarkEntry.Text;
 		}
 	}
 }

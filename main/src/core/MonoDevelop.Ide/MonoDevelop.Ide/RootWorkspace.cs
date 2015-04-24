@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide
 			
 			// Set the initial active runtime
 			UseDefaultRuntime = true;
-			IdeApp.Preferences.DefaultTargetRuntimeChanged += delegate {
+			IdeApp.Preferences.DefaultTargetRuntime.Changed += delegate {
 				// If the default runtime changes and current active is default, update it
 				if (UseDefaultRuntime) {
 					Runtime.SystemAssemblyService.DefaultRuntime = IdeApp.Preferences.DefaultTargetRuntime;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide
 
 		protected override string OnGetBaseDirectory ()
 		{
-			return IdeApp.ProjectOperations.ProjectsDefaultPath;
+			return IdeApp.Preferences.ProjectsDefaultPath;
 		}
 
 		protected override string OnGetItemDirectory ()

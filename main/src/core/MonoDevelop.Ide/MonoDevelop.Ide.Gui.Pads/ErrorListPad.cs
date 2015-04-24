@@ -76,12 +76,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Xwt.Drawing.Image iconWarning;
 		Xwt.Drawing.Image iconError;
 		Xwt.Drawing.Image iconInfo;
-		
-		const string showErrorsPropertyName = "SharpDevelop.TaskList.ShowErrors";
-		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
-		const string showMessagesPropertyName = "SharpDevelop.TaskList.ShowMessages";
-		const string logSeparatorPositionPropertyName = "SharpDevelop.TaskList.LogSeparatorPosition";
-		const string outputViewVisiblePropertyName = "SharpDevelop.TaskList.OutputViewVisible";
+
+		public readonly ConfigurationProperty<bool> ShowErrors = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowErrors", true);
+		public readonly ConfigurationProperty<bool> ShowWarnings = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowWarnings", true);
+		public readonly ConfigurationProperty<bool> ShowMessages = ConfigurationProperty.Create ("SharpDevelop.TaskList.ShowMessages", true);
+		public readonly ConfigurationProperty<double> LogSeparatorPosition = ConfigurationProperty.Create ("SharpDevelop.TaskList.LogSeparatorPosition", 0.5d);
+		public readonly ConfigurationProperty<bool> OutputViewVisible = ConfigurationProperty.Create ("SharpDevelop.TaskList.OutputViewVisible", false);
 
 		static class DataColumns
 		{
@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
 			
 			errorBtn = new ToggleButton ();
-			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
+			errorBtn.Active = ShowErrors;
 			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
 			errorBtn.Image.Show ();
 			errorBtn.Toggled += new EventHandler (FilterChanged);
@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Add (errorBtn);
 			
 			warnBtn = new ToggleButton ();
-			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
+			warnBtn.Active = ShowWarnings;
 			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
 			warnBtn.Image.Show ();
 			warnBtn.Toggled += new EventHandler (FilterChanged);
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			toolbar.Add (warnBtn);
 			
 			msgBtn = new ToggleButton ();
-			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
+			msgBtn.Active = ShowMessages;
 			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
 			msgBtn.Toggled += new EventHandler (FilterChanged);
@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			control.SizeAllocated += HandleControlSizeAllocated;
 			
-			bool outputVisible = PropertyService.Get<bool> (outputViewVisiblePropertyName, false);
+			bool outputVisible = OutputViewVisible;
 			if (outputVisible) {
 				outputView.Visible = true;
 				logBtn.Active = true;
@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			if (!initialLogShow && outputView.Visible) {
 				var val = (double) ((double) control.Position / (double) control.Allocation.Width);
-				PropertyService.Set (logSeparatorPositionPropertyName, val);
+				LogSeparatorPosition.Value = val;
 			}
 		}
 		
@@ -657,9 +657,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void FilterChanged (object sender, EventArgs e)
 		{
 			
-			PropertyService.Set (showErrorsPropertyName, errorBtn.Active);
-			PropertyService.Set (showWarningsPropertyName, warnBtn.Active);
-			PropertyService.Set (showMessagesPropertyName, msgBtn.Active);
+			ShowErrors.Value = errorBtn.Active;
+			ShowWarnings.Value = warnBtn.Active;
+			ShowMessages.Value = msgBtn.Active;
 			
 			filter.Refilter ();
 		}
@@ -834,7 +834,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void HandleLogBtnToggled (object sender, EventArgs e)
 		{
 			var visible = logBtn.Active;
-			PropertyService.Set (outputViewVisiblePropertyName, visible);
+			OutputViewVisible.Value = visible;
 			outputView.Visible = visible;
 			
 			if (initialLogShow && visible && control.IsRealized) {
@@ -845,7 +845,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void SetInitialOutputViewSize (int controlWidth)
 		{
-			double relPos = PropertyService.Get<double> (logSeparatorPositionPropertyName, 0.5d);
+			double relPos = LogSeparatorPosition;
 			int pos = (int) (controlWidth * relPos);
 			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
 			control.Position = pos;

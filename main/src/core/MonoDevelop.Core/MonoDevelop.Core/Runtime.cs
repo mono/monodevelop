@@ -43,6 +43,7 @@ using System.Net.Security;
 using System.Net;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 
 namespace MonoDevelop.Core
@@ -56,6 +57,7 @@ namespace MonoDevelop.Core
 		static bool initialized;
 		static SynchronizationContext mainSynchronizationContext;
 		static SynchronizationContext defaultSynchronizationContext;
+		static RuntimePreferences preferences = new RuntimePreferences ();
 
 		public static void GetAddinRegistryLocation (out string configDir, out string addinsDir, out string databaseDir)
 		{
@@ -188,7 +190,7 @@ namespace MonoDevelop.Core
 		
 		static void SetupInstrumentation ()
 		{
-			InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
+			InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
 			if (InstrumentationService.Enabled) {
 				LoggingService.LogInfo ("Instrumentation Service started");
 				try {
@@ -198,9 +200,7 @@ namespace MonoDevelop.Core
 					LoggingService.LogError ("Instrumentation service could not be published", ex);
 				}
 			}
-			PropertyService.AddPropertyHandler ("MonoDevelop.EnableInstrumentation", delegate {
-				InstrumentationService.Enabled = PropertyService.Get ("MonoDevelop.EnableInstrumentation", false);
-			});
+			Runtime.Preferences.EnableInstrumentation.Changed += (s,e) => InstrumentationService.Enabled = Runtime.Preferences.EnableInstrumentation;
 		}
 		
 		static void OnLoadError (object s, AddinErrorEventArgs args)
@@ -266,6 +266,10 @@ namespace MonoDevelop.Core
 					applicationService = new ApplicationService ();
 				return applicationService;
 			}
+		}
+
+		public static RuntimePreferences Preferences {
+			get { return preferences; }
 		}
 		
 		static Version version;
@@ -475,5 +479,21 @@ namespace MonoDevelop.Core
 		public static Counter LogMessages = InstrumentationService.CreateCounter ("Information messages", "Log");
 		public static Counter LogFatalErrors = InstrumentationService.CreateCounter ("Fatal errors", "Log");
 		public static Counter LogDebug = InstrumentationService.CreateCounter ("Debug messages", "Log");
+	}
+
+	public class RuntimePreferences
+	{
+		internal RuntimePreferences () { }
+
+		public readonly ConfigurationProperty<bool> EnableInstrumentation = ConfigurationProperty.Create ("MonoDevelop.EnableInstrumentation", false);
+		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = ConfigurationProperty.Create ("MonoDevelop.EnableAutomatedTesting", false);
+		public readonly ConfigurationProperty<string> UserInterfaceLanguage = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceLanguage", "");
+		public readonly ConfigurationProperty<MSBuildVerbosity> MSBuildVerbosity = ConfigurationProperty.Create ("MonoDevelop.Ide.MSBuildVerbosity", MonoDevelop.Projects.Formats.MSBuild.MSBuildVerbosity.Normal);
+
+		public readonly ConfigurationProperty<string> AuthorName = ConfigurationProperty.Create ("Author.Name", Environment.UserName, oldName:"ChangeLogAddIn.Name");
+		public readonly ConfigurationProperty<string> AuthorEmail = ConfigurationProperty.Create ("Author.Email", "", oldName:"ChangeLogAddIn.Email");
+		public readonly ConfigurationProperty<string> AuthorCopyright = ConfigurationProperty.Create ("Author.Copyright", (string) null);
+		public readonly ConfigurationProperty<string> AuthorCompany = ConfigurationProperty.Create ("Author.Company", "");
+		public readonly ConfigurationProperty<string> AuthorTrademark = ConfigurationProperty.Create ("Author.Trademark", "");
 	}
 }

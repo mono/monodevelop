@@ -536,7 +536,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			string defaultFolder = comboboxentryPath.Entry.Text;
 			if (string.IsNullOrEmpty (defaultFolder))
-				defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
+				defaultFolder = IdeApp.Preferences.ProjectsDefaultPath;
 			if (!string.IsNullOrEmpty (defaultFolder))
 				dlg.CurrentFolder = defaultFolder;
 			

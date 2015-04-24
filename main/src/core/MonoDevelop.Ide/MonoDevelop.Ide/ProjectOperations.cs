@@ -153,15 +153,6 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public string ProjectsDefaultPath {
-			get {
-				return PropertyService.Get ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), "Projects"));
-			}
-			set {
-				PropertyService.Set ("MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.DefaultPath", value);
-			}
-		}
-		
 		public AsyncOperation CurrentBuildOperation {
 			get { return currentBuildOperation; }
 		}
@@ -1425,7 +1416,7 @@ namespace MonoDevelop.Ide
 				
 				try {
 					Pad errorsPad = IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ();
-					switch (IdeApp.Preferences.ShowErrorPadAfterBuild) {
+					switch (IdeApp.Preferences.ShowErrorPadAfterBuild.Value) {
 					case BuildResultStates.Always:
 						if (!errorsPad.Visible)
 							errorsPad.IsOpenedAutomatically = true;
@@ -1447,7 +1438,7 @@ namespace MonoDevelop.Ide
 				
 				if (tasks != null) {
 					TaskListEntry jumpTask = null;
-					switch (IdeApp.Preferences.JumpToFirstErrorOrWarning) {
+					switch (IdeApp.Preferences.JumpToFirstErrorOrWarning.Value) {
 					case JumpToFirst.Error:
 						jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error && TaskStore.IsProjectTaskFile (t));
 						break;

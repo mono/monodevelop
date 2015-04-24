@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.MainToolbar
 			get { return ToolbarView.StatusBar; }
 		}
 
-		readonly PropertyWrapper<bool> searchForMembers = new PropertyWrapper<bool> ("MainToolbar.Search.IncludeMembers", true);
+		readonly ConfigurationProperty<bool> searchForMembers = ConfigurationProperty.Create ("MainToolbar.Search.IncludeMembers", true);
 		bool SearchForMembers {
 			get { return searchForMembers; }
 			set { searchForMembers.Value = value; }

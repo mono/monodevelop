@@ -247,13 +247,13 @@ namespace MonoDevelop.Ide.Editor
 		DefaultSourceEditorOptions (TextStylePolicy currentPolicy)
 		{
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
-			controlLeftRightMode = new PropertyWrapper<ControlLeftRightMode> ("ControlLeftRightMode", defaultControlMode);
+			controlLeftRightMode = ConfigurationProperty.Create ("ControlLeftRightMode", defaultControlMode);
 			
 			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
 			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
 				defaultWordNavigation = WordNavigationStyle.Windows;
 			}
-			wordNavigationStyle = new PropertyWrapper<WordNavigationStyle> ("WordNavigationStyle", defaultWordNavigation);
+			wordNavigationStyle = ConfigurationProperty.Create ("WordNavigationStyle", defaultWordNavigation);
 			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
@@ -288,11 +288,11 @@ namespace MonoDevelop.Ide.Editor
 		#region new options
 
 		public bool EnableAutoCodeCompletion {
-			get { return CompletionTextEditorExtension.EnableAutoCodeCompletion; }
-			set { CompletionTextEditorExtension.EnableAutoCodeCompletion.Set (value); }
+			get { return IdeApp.Preferences.EnableAutoCodeCompletion; }
+			set { IdeApp.Preferences.EnableAutoCodeCompletion.Set (value); }
 		}
 
-		PropertyWrapper<bool> defaultRegionsFolding = new PropertyWrapper<bool> ("DefaultRegionsFolding", false);
+		ConfigurationProperty<bool> defaultRegionsFolding = ConfigurationProperty.Create ("DefaultRegionsFolding", false);
 		public bool DefaultRegionsFolding {
 			get {
 				return defaultRegionsFolding;
@@ -303,7 +303,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> defaultCommentFolding = new PropertyWrapper<bool> ("DefaultCommentFolding", true);
+		ConfigurationProperty<bool> defaultCommentFolding = ConfigurationProperty.Create ("DefaultCommentFolding", true);
 		public bool DefaultCommentFolding {
 			get {
 				return defaultCommentFolding;
@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> enableSemanticHighlighting = new PropertyWrapper<bool> ("EnableSemanticHighlighting", true);
+		ConfigurationProperty<bool> enableSemanticHighlighting = ConfigurationProperty.Create ("EnableSemanticHighlighting", true);
 		public bool EnableSemanticHighlighting {
 			get {
 				return enableSemanticHighlighting;
@@ -325,7 +325,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> tabIsReindent = new PropertyWrapper<bool> ("TabIsReindent", false);
+		ConfigurationProperty<bool> tabIsReindent = ConfigurationProperty.Create ("TabIsReindent", false);
 		public bool TabIsReindent {
 			get {
 				return tabIsReindent;
@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> autoInsertMatchingBracket = new PropertyWrapper<bool> ("AutoInsertMatchingBracket", false);
+		ConfigurationProperty<bool> autoInsertMatchingBracket = ConfigurationProperty.Create ("AutoInsertMatchingBracket", false);
 		public bool AutoInsertMatchingBracket {
 			get {
 				return autoInsertMatchingBracket;
@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> smartSemicolonPlacement = new PropertyWrapper<bool> ("SmartSemicolonPlacement", false);
+		ConfigurationProperty<bool> smartSemicolonPlacement = ConfigurationProperty.Create ("SmartSemicolonPlacement", false);
 		public bool SmartSemicolonPlacement {
 			get {
 				return smartSemicolonPlacement;
@@ -358,7 +358,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> underlineErrors = new PropertyWrapper<bool> ("UnderlineErrors", true);
+		ConfigurationProperty<bool> underlineErrors = ConfigurationProperty.Create ("UnderlineErrors", true);
 		public bool UnderlineErrors {
 			get {
 				return underlineErrors; 
@@ -369,7 +369,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<IndentStyle> indentStyle = new PropertyWrapper<IndentStyle> ("IndentStyle", IndentStyle.Smart);
+		ConfigurationProperty<IndentStyle> indentStyle = ConfigurationProperty.Create ("IndentStyle", IndentStyle.Smart);
 		public IndentStyle IndentStyle {
 			get {
 				return indentStyle;
@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> enableHighlightUsages = new PropertyWrapper<bool> ("EnableHighlightUsages", false);
+		ConfigurationProperty<bool> enableHighlightUsages = ConfigurationProperty.Create ("EnableHighlightUsages", false);
 		public bool EnableHighlightUsages {
 			get {
 				return enableHighlightUsages;
@@ -391,7 +391,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<LineEndingConversion> lineEndingConversion = new PropertyWrapper<LineEndingConversion> ("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
@@ -404,7 +404,7 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		PropertyWrapper<bool> useViModes = new PropertyWrapper<bool> ("UseViModes", true);
+		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", true);
 		public bool UseViModes {
 			get {
 				return useViModes;
@@ -415,7 +415,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> onTheFlyFormatting = new PropertyWrapper<bool> ("OnTheFlyFormatting", true);
+		ConfigurationProperty<bool> onTheFlyFormatting = ConfigurationProperty.Create ("OnTheFlyFormatting", true);
 		public bool OnTheFlyFormatting {
 			get {
 				return onTheFlyFormatting;
@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<ControlLeftRightMode> controlLeftRightMode;
+		ConfigurationProperty<ControlLeftRightMode> controlLeftRightMode;
 		[Obsolete("Use WordNavigationStyle")]
 		public ControlLeftRightMode ControlLeftRightMode {
 			get {
@@ -452,7 +452,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<WordNavigationStyle> wordNavigationStyle;
+		ConfigurationProperty<WordNavigationStyle> wordNavigationStyle;
 		public WordNavigationStyle WordNavigationStyle {
 			get {
 				return wordNavigationStyle;
@@ -553,7 +553,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> showLineNumberMargin = new PropertyWrapper<bool> ("ShowLineNumberMargin", true);
+		ConfigurationProperty<bool> showLineNumberMargin = ConfigurationProperty.Create ("ShowLineNumberMargin", true);
 		public bool ShowLineNumberMargin {
 			get {
 				return showLineNumberMargin;
@@ -564,7 +564,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> showFoldMargin = new PropertyWrapper<bool> ("ShowFoldMargin", false);
+		ConfigurationProperty<bool> showFoldMargin = ConfigurationProperty.Create ("ShowFoldMargin", false);
 		public bool ShowFoldMargin {
 			get {
 				return showFoldMargin;
@@ -589,7 +589,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> highlightCaretLine = new PropertyWrapper<bool> ("HighlightCaretLine", false);
+		ConfigurationProperty<bool> highlightCaretLine = ConfigurationProperty.Create ("HighlightCaretLine", false);
 		public bool HighlightCaretLine {
 			get {
 				return highlightCaretLine;
@@ -600,7 +600,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> enableSyntaxHighlighting = new PropertyWrapper<bool> ("EnableSyntaxHighlighting", true);
+		ConfigurationProperty<bool> enableSyntaxHighlighting = ConfigurationProperty.Create ("EnableSyntaxHighlighting", true);
 		public bool EnableSyntaxHighlighting {
 			get {
 				return enableSyntaxHighlighting;
@@ -611,7 +611,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> highlightMatchingBracket = new PropertyWrapper<bool> ("HighlightMatchingBracket", true);
+		ConfigurationProperty<bool> highlightMatchingBracket = ConfigurationProperty.Create ("HighlightMatchingBracket", true);
 		public bool HighlightMatchingBracket {
 			get {
 				return highlightMatchingBracket;
@@ -637,7 +637,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> showRuler = new PropertyWrapper<bool> ("ShowRuler", true);
+		ConfigurationProperty<bool> showRuler = ConfigurationProperty.Create ("ShowRuler", true);
 		public bool ShowRuler {
 			get {
 				return showRuler;
@@ -648,7 +648,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> enableAnimations = new PropertyWrapper<bool> ("EnableAnimations", true);
+		ConfigurationProperty<bool> enableAnimations = ConfigurationProperty.Create ("EnableAnimations", true);
 		public bool EnableAnimations {
 			get { 
 				return enableAnimations; 
@@ -659,7 +659,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> drawIndentationMarkers = new PropertyWrapper<bool> ("DrawIndentationMarkers", false);
+		ConfigurationProperty<bool> drawIndentationMarkers = ConfigurationProperty.Create ("DrawIndentationMarkers", false);
 		public bool DrawIndentationMarkers {
 			get {
 				return drawIndentationMarkers;
@@ -670,7 +670,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> wrapLines = new PropertyWrapper<bool> ("WrapLines", false);
+		ConfigurationProperty<bool> wrapLines = ConfigurationProperty.Create ("WrapLines", false);
 		public bool WrapLines {
 			get {
 				return wrapLines;
@@ -681,7 +681,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<bool> enableQuickDiff = new PropertyWrapper<bool> ("EnableQuickDiff", false);
+		ConfigurationProperty<bool> enableQuickDiff = ConfigurationProperty.Create ("EnableQuickDiff", false);
 		public bool EnableQuickDiff {
 			get {
 				return enableQuickDiff;
@@ -710,7 +710,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<string> colorScheme = new PropertyWrapper<string> ("ColorScheme", "Default");
+		ConfigurationProperty<string> colorScheme = IdeApp.Preferences.ColorScheme;
 		public string ColorScheme {
 			get {
 				return colorScheme;
@@ -721,7 +721,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		PropertyWrapper<bool> generateFormattingUndoStep = new PropertyWrapper<bool> ("GenerateFormattingUndoStep", false);
+		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", false);
 		public bool GenerateFormattingUndoStep {
 			get {
 				return generateFormattingUndoStep;
@@ -745,7 +745,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<ShowWhitespaces> showWhitespaces = new PropertyWrapper<ShowWhitespaces> ("ShowWhitespaces", ShowWhitespaces.Never);
+		ConfigurationProperty<ShowWhitespaces> showWhitespaces = ConfigurationProperty.Create ("ShowWhitespaces", ShowWhitespaces.Never);
 		public ShowWhitespaces ShowWhitespaces {
 			get {
 				return showWhitespaces;
@@ -756,7 +756,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		PropertyWrapper<IncludeWhitespaces> includeWhitespaces = new PropertyWrapper<IncludeWhitespaces> ("IncludeWhitespaces", IncludeWhitespaces.All);
+		ConfigurationProperty<IncludeWhitespaces> includeWhitespaces = ConfigurationProperty.Create ("IncludeWhitespaces", IncludeWhitespaces.All);
 		public IncludeWhitespaces IncludeWhitespaces {
 			get {
 				return includeWhitespaces;

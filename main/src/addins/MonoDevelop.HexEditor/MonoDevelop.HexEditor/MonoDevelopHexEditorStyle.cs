@@ -44,7 +44,7 @@ namespace MonoDevelop.HexEditor
 		{
 			this.hexEditor = hexEditor;
 			SetStyle ();
-			IdeApp.Preferences.ColorSchemeChanged += delegate {
+			IdeApp.Preferences.ColorScheme.Changed += delegate {
 				SetStyle ();
 				this.hexEditor.Options.RaiseChanged ();
 				this.hexEditor.PurgeLayoutCaches ();

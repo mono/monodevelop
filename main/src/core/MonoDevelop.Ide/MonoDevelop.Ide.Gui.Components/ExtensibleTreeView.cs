@@ -163,7 +163,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			text_render = new CustomCellRendererText (this);
 			text_render.Ypad = 0;
-			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
+			IdeApp.Preferences.CustomPadFont.Changed += CustomFontPropertyChanged;
 			text_render.EditingStarted += HandleEditingStarted;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
@@ -1985,7 +1985,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		protected override void OnDestroyed ()
 		{
-			IdeApp.Preferences.CustomPadFontChanged -= CustomFontPropertyChanged;;
+			IdeApp.Preferences.CustomPadFont.Changed -= CustomFontPropertyChanged;
 			if (pix_render != null) {
 				pix_render.Destroy ();
 				pix_render = null;

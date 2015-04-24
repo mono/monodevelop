@@ -67,11 +67,9 @@ namespace MonoDevelop.NUnit
 
 		public abstract Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token);
 
-		readonly static PropertyWrapper<bool> EnableUnitTestEditorIntegration = new PropertyWrapper<bool> ("Testing.EnableUnitTestEditorIntegration", false);
-
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			if (!EnableUnitTestEditorIntegration)
+			if (!IdeApp.Preferences.EnableUnitTestEditorIntegration)
 				return;
 			src.Cancel ();
 			src = new CancellationTokenSource ();

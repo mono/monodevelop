@@ -340,7 +340,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			viewContentCollection.Add (content);
 
-			if (PropertyService.Get ("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+			if (IdeApp.Preferences.LoadDocumentUserProperties && content is IMementoCapable) {
 				try {
 					Properties memento = GetStoredMemento(content);
 					if (memento != null) {
@@ -816,9 +816,9 @@ namespace MonoDevelop.Ide.Gui
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
 			
-			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
-			IdeApp.Preferences.WorkbenchCompactnessChanged += delegate {
-				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness) + 1;
+			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
+			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {
+				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
 			};
 			
 			/* Side bar is experimental. Disabled for now

@@ -90,9 +90,9 @@ namespace MonoDevelop.Ide.Tasks
 			IdeApp.Workbench.DocumentOpened += WorkbenchDocumentOpened;
 			IdeApp.Workbench.DocumentClosed += WorkbenchDocumentClosed;;
 
-			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
 
 			store = new Gtk.ListStore (
 				typeof (int),        // line

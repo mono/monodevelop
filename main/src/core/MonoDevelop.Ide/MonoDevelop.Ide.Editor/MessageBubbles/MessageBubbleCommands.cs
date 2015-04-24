@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor
 		
 		protected override void Run (object data)
 		{
-			IdeApp.Preferences.DefaultHideMessageBubbles = !IdeApp.Preferences.DefaultHideMessageBubbles;
+			IdeApp.Preferences.DefaultHideMessageBubbles.Value = !IdeApp.Preferences.DefaultHideMessageBubbles.Value;
 		}
 	}
 	
@@ -63,14 +63,14 @@ namespace MonoDevelop.Ide.Editor
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Errors & Warnings"), new Action (delegate {
-				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles = MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
+				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value = MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
 			}));
 			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles == MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
 			
 			info = ainfo.Add (GettextCatalog.GetString ("E_rrors only"), new Action (delegate {
-				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles = MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
+				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value = MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
 			}));
-			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles == MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
+			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value == MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
 		}
 	}
 }

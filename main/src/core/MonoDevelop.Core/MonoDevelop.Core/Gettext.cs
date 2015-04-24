@@ -51,7 +51,7 @@ namespace MonoDevelop.Core
 			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
-			string lang = PropertyService.Get ("MonoDevelop.Ide.UserInterfaceLanguage", "");
+			string lang = Runtime.Preferences.UserInterfaceLanguage;
 			if (!string.IsNullOrEmpty (lang)) {
 				if (Platform.IsWindows) {
 					lang = lang.Replace("_", "-");

@@ -66,9 +66,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		public UserTasksView ()
 		{
-			highPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			normalPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			lowPrioColor = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
 			
 			store = new ListStore (
 				typeof (string),     // priority
@@ -136,7 +136,10 @@ namespace MonoDevelop.Ide.Tasks
 			
 			IdeApp.Workspace.FirstWorkspaceItemOpened += CombineOpened;
 			IdeApp.Workspace.LastWorkspaceItemClosed += CombineClosed;
-			PropertyService.PropertyChanged += OnPropertyUpdated;
+
+			IdeApp.Preferences.UserTasksLowPrioColor.Changed += OnPropertyUpdated;
+			IdeApp.Preferences.UserTasksNormalPrioColor.Changed += OnPropertyUpdated;
+			IdeApp.Preferences.UserTasksHighPrioColor.Changed += OnPropertyUpdated;
 			ValidateButtons ();
 			
 			// Initialize with existing tags.
@@ -170,35 +173,20 @@ namespace MonoDevelop.Ide.Tasks
 			ValidateButtons ();
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
+		void OnPropertyUpdated (object sender, EventArgs e)
 		{
-			bool change = false;
-			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)
+			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
+
+			TreeIter iter;
+			if (store.GetIterFirst (out iter))
 			{
-				highPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			if (e.Key == "Monodevelop.UserTasksNormalPrioColor" && e.NewValue != e.OldValue)
-			{
-				normalPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			if (e.Key == "Monodevelop.UserTasksLowPrioColor" && e.NewValue != e.OldValue)
-			{
-				lowPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			if (change)
-			{
-				TreeIter iter;
-				if (store.GetIterFirst (out iter))
+				do
 				{
-					do
-					{
-						TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.UserTask);
-						store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
-					} while (store.IterNext (ref iter));
-				}
+					TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.UserTask);
+					store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
+				} while (store.IterNext (ref iter));
 			}
 		}
 		

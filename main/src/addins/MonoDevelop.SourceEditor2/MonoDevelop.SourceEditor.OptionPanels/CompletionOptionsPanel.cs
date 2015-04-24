@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -58,13 +59,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
 		{
 			autoCodeCompletionCheckbutton.Active = DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion;
-			showImportsCheckbutton.Active = CompletionTextEditorExtension.AddImportedItemsToCompletionList;
-			includeKeywordsCheckbutton.Active = CompletionTextEditorExtension.IncludeKeywordsInCompletionList;
-			includeCodeSnippetsCheckbutton.Active = CompletionTextEditorExtension.IncludeCodeSnippetsInCompletionList;
+			showImportsCheckbutton.Active = IdeApp.Preferences.AddImportedItemsToCompletionList;
+			includeKeywordsCheckbutton.Active = IdeApp.Preferences.IncludeKeywordsInCompletionList;
+			includeCodeSnippetsCheckbutton.Active = IdeApp.Preferences.IncludeCodeSnippetsInCompletionList;
 
-			insertParenthesesCheckbutton.Active = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
-			openingRadiobutton.Active = CompletionTextEditorExtension.AddOpeningOnly;
-			bothRadiobutton.Active = !CompletionTextEditorExtension.AddOpeningOnly;
+			insertParenthesesCheckbutton.Active = IdeApp.Preferences.AddParenthesesAfterCompletion;
+			openingRadiobutton.Active = IdeApp.Preferences.AddOpeningOnly;
+			bothRadiobutton.Active = !IdeApp.Preferences.AddOpeningOnly;
 
 			InsertParensToggled (this, EventArgs.Empty);
 			AutomaticCompletionToggled (this, EventArgs.Empty);
@@ -89,12 +90,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void IOptionsPanel.ApplyChanges ()
 		{
 			DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion = autoCodeCompletionCheckbutton.Active;
-			CompletionTextEditorExtension.AddImportedItemsToCompletionList.Value = showImportsCheckbutton.Active;
-			CompletionTextEditorExtension.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
-			CompletionTextEditorExtension.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
+			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = showImportsCheckbutton.Active;
+			IdeApp.Preferences.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
+			IdeApp.Preferences.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
 
-			CompletionTextEditorExtension.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
-			CompletionTextEditorExtension.AddOpeningOnly.Value = openingRadiobutton.Active;
+			IdeApp.Preferences.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
+			IdeApp.Preferences.AddOpeningOnly.Value = openingRadiobutton.Active;
 		}
 
 		#endregion

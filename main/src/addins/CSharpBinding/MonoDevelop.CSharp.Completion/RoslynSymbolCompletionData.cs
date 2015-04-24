@@ -160,8 +160,8 @@ namespace MonoDevelop.CSharp.Completion
 			bool runCompletionCompletionCommand = false;
 			var method = Symbol as IMethodSymbol;
 
-			bool addParens = CompletionTextEditorExtension.AddParenthesesAfterCompletion;
-			bool addOpeningOnly = CompletionTextEditorExtension.AddOpeningOnly;
+			bool addParens = IdeApp.Preferences.AddParenthesesAfterCompletion;
+			bool addOpeningOnly = IdeApp.Preferences.AddOpeningOnly;
 			var Editor = ext.Editor;
 			var Policy = ext.FormattingPolicy;
 			string insertionText = this.GetInsertionText();
@@ -267,7 +267,7 @@ namespace MonoDevelop.CSharp.Completion
 				ka |= KeyActions.Ignore;
 			}
 			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
-				CompletionTextEditorExtension.AddParenthesesAfterCompletion &&
+				IdeApp.Preferences.AddParenthesesAfterCompletion &&
 				(descriptor.SpecialKey == SpecialKey.Tab ||
 					descriptor.SpecialKey == SpecialKey.Return ||
 					descriptor.SpecialKey == SpecialKey.Space)) {
