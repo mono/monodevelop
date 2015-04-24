@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			foreach (var path in AssemblyPaths) {
 				uiTypes = uiTypes.Concat (NoVisibleUI (Assembly.LoadFrom (path)));
 			}
-			Assert.True (!uiTypes.Any (), "The following UI types should not be public:\n" + String.Join ("\n", uiTypes));
+			Assert.False (uiTypes.Any (), "The following UI types should not be public:" + Environment.NewLine + String.Join (Environment.NewLine, uiTypes));
 		}
 	}
 
@@ -101,6 +101,41 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		readonly string[] allowedUITypes = {};
 		protected override string[] AllowedUITypes {
 			get { return allowedUITypes; }
+		}
+	}
+
+	[TestFixture]
+	public class VersionControlTestsTest
+	{
+		[Test]
+		public void EnsureAllPublicClassesAreFixtures ()
+		{
+			var nonDecoratedFixtures = typeof(VersionControlTestsTest).Assembly.ExportedTypes
+				.Where (t => t.CustomAttributes.All (attr => attr.AttributeType != typeof(TestFixtureAttribute)))
+				.Select (t => t.FullName);
+
+			Assert.False (nonDecoratedFixtures.Any (), "The following public classes should be fixtures or not public:" + Environment.NewLine +
+				string.Join (Environment.NewLine, nonDecoratedFixtures));
+		}
+
+		[Test]
+		public void EnsureAllPublicFunctionsAreTests ()
+		{
+			Type[] methodDecorations = {
+				typeof(TestAttribute),
+				typeof(SetUpAttribute),
+				typeof(TearDownAttribute),
+				typeof(TestFixtureSetUpAttribute),
+				typeof(TestFixtureTearDownAttribute),
+			};
+
+			var nonDecoratedTests = typeof(VersionControlTestsTest).Assembly.ExportedTypes
+				.SelectMany (t => t.GetMethods (BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+				.Where (t => !t.CustomAttributes.Any (attr => methodDecorations.Contains (attr.AttributeType)))
+				.Select (t => t.DeclaringType.FullName + "." + t.Name);
+
+			Assert.False (nonDecoratedTests.Any (), "The following public methods should be tests or not public:" + Environment.NewLine +
+				string.Join (Environment.NewLine, nonDecoratedTests));
 		}
 	}
 }
