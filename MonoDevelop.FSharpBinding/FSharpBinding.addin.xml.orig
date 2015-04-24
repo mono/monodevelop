@@ -390,26 +390,6 @@
       <ProjectTemplate id="FSharp.MonoDroidUnitTestProject" file ="Templates/Android/MonoDroidUnitTestProject.xpt.xml"/>
     </Extension>
 
-<!--     <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-      <DotNetProjectSubtype
-        guid="{F278D4AB-4730-4720-B08E-FE5E31564D9E}"
-        type="MonoDevelop.MonoDroid.MonoDroidProject"
-        useXBuild="true">
-        <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.FSharp.targets" />
-        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
-          <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
-          <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-      </DotNetProjectSubtype>
-    </Extension> -->
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.MonoDroid.MonoDroidProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
   </Module>
 
   <!-- ios-->
@@ -431,42 +411,6 @@
         <ProjectTemplate file="Templates/ios/LibraryProject.xpt.xml"/>
       </Condition>
     </Extension>
-
-    <!-- TODO NPM: AddImport/RemoveImport are not supported anymore. This has to be implemented as a project extension. -->
-
-    <!-- iOS Classic API -->
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.MonoTouchProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.MonoTouchBindingProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Xamarin.ObjcBinding.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
-    <!-- iOS Unified API -->
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSAppExtensionProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.AppExtension.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
-    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSBindingProject">
-      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Xamarin.ObjcBinding.FSharp.targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-    </Extension>
-
-  </Module>
 
   <!-- MonoMac-->
   <Module>
@@ -509,11 +453,6 @@
         </Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.MonoMac.XamMac2Project">
-		<AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.FSharp.targets"/>
-		<RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
-    <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
-	</Extension>
   </Module>
 
 </Addin>
