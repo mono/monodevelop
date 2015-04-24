@@ -496,7 +496,7 @@ namespace MonoDevelop.Ide.Gui
 		#region Folding
 		bool IsFoldMarkerMarginEnabled {
 			get {
-				return IdeApp.Preferences.SourceEditor.ShowFoldMargin;
+				return DefaultSourceEditorOptions.Instance.ShowFoldMargin;
 			}
 		}
 

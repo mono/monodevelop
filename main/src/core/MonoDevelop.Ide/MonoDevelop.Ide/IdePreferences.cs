@@ -147,7 +147,6 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
 		public readonly ConfigurationProperty<string> ColorScheme = ConfigurationProperty.Create ("ColorScheme", "Default");
-		public readonly DefaultSourceEditorOptions SourceEditor = DefaultSourceEditorOptions.Instance;
 
 		public readonly ConfigurationProperty<string> UserTasksHighPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksHighPrioColor", "");
 		public readonly ConfigurationProperty<string> UserTasksNormalPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksNormalPrioColor", "");
