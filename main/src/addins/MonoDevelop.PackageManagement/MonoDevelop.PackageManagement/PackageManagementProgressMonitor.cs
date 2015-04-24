@@ -86,6 +86,8 @@ namespace MonoDevelop.PackageManagement
 			ReportAllErrorsButLastToConsole ();
 
 			consoleMonitor.Dispose ();
+
+			base.Dispose ();
 		}
 
 		void ReportAllWarningsButLastToConsole ()
