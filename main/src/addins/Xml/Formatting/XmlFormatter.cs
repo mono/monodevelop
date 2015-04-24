@@ -32,10 +32,11 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Xml.Formatting
 {
-	public class XmlFormatter: ICodeFormatter
+	public class XmlFormatter: AbstractCodeFormatter
 	{
 		public static string FormatXml (TextStylePolicy textPolicy, XmlFormattingPolicy formattingPolicy, string input)
 		{
@@ -55,12 +56,12 @@ namespace MonoDevelop.Xml.Formatting
 			xmlWriter.Flush ();
 			return sw.ToString ();
 		}
-		
-		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input)
+
+		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int endOffset)
 		{
-			var txtPol = policyParent.Get<TextStylePolicy> (mimeTypeInheritanceChain);
-			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeTypeInheritanceChain);
-			return FormatXml (txtPol, xmlPol, input);
+			var txtPol = policyParent.Get<TextStylePolicy> (mimeType);
+			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
+			return new StringTextSource(FormatXml (txtPol, xmlPol, input.Text));
 		}
 		
 		public string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeInheritanceChain, string input, int fromOffest, int toOffset)

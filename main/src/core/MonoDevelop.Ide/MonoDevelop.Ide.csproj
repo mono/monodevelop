@@ -3099,11 +3099,8 @@
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\ICodeFormatter.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\IAdvancedCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
@@ -3484,6 +3481,8 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\AbstractCodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

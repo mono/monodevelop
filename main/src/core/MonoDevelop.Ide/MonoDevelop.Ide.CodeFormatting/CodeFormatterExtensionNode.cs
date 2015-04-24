@@ -37,9 +37,9 @@ namespace MonoDevelop.Ide.CodeFormatting
 			get { return mimeType; }
 		}
 		
-		public ICodeFormatter GetFormatter ()
+		public AbstractCodeFormatter GetFormatter ()
 		{
-			return (ICodeFormatter) this.GetInstance ();
+			return (AbstractCodeFormatter) this.GetInstance ();
 		}
 	}
 }

@@ -31,24 +31,23 @@ using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.AspNet.Razor
 {
-	public class RazorCSharpFormatter : AbstractAdvancedFormatter
+	public class RazorCSharpFormatter : AbstractCodeFormatter
 	{
 		public override bool SupportsOnTheFlyFormatting { get { return true; } }
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
-		public override void CorrectIndenting (PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, TextEditor data, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 		}
 
-		public override string FormatText (PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int endOffset)
 		{
-			return null;
+			return input.CreateSnapshot (startOffset, endOffset - startOffset);
+        }
+
+		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		{
 		}
 
-		public override void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
-		{
-		}
 	}
 }

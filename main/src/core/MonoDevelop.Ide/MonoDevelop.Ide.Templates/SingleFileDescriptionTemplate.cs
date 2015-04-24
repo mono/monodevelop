@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Templates
 			content = ProcessContent (content, model);
 
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
-			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
+			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			
 			if (formatter != null) {
 				var formatted = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);

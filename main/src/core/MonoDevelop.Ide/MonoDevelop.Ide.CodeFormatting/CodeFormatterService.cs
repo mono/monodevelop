@@ -62,11 +62,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 			foreach (var mt in chain) {
 				var node = nodes.FirstOrDefault (f => f.MimeType == mt);
 				if (node != null)
-					return new CodeFormatter (chain, node.GetFormatter ());
+					return new CodeFormatter (mimeType, node.GetFormatter ());
 			}
 			
 			if (DesktopService.GetMimeTypeIsText (mimeType))
-				return new CodeFormatter (chain, new DefaultCodeFormatter ());
+				return new CodeFormatter (mimeType, new DefaultCodeFormatter ());
 			
 			return null;
 		}

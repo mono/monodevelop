@@ -32,23 +32,22 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
-	public class DefaultCodeFormatter : AbstractCodeFormatter
+	class DefaultCodeFormatter : AbstractCodeFormatter
 	{
 		static int GetNextTabstop (int currentColumn, int tabSize)
 		{
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}
-		
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			string input, int startOffset, int endOffset)
+
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int endOffset)
 		{
-			var currentPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+			var currentPolicy = policyParent.Get<TextStylePolicy> (mimeType);
 			
-			input = input ?? "";
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
 			var result = new StringBuilder ();
@@ -79,7 +78,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 					break;
 				}
 			}
-			return result.ToString ();
+
+			return new StringTextSource (result.ToString (), input.Encoding, input.UseBOM);
 		}
 	}
 }
