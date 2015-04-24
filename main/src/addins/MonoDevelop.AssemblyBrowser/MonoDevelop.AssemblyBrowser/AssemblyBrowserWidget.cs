@@ -204,7 +204,7 @@ namespace MonoDevelop.AssemblyBrowser
 			TreeView.ShadowType = ShadowType.None;
 			TreeView.BorderWidth = 1;
 			TreeView.ShowBorderLine = false;
-			TreeView.Zoom = 1.0;
+			//TreeView.Zoom = 1.0;
 
 			treeViewPlaceholder.Add (TreeView);
 
@@ -1483,7 +1483,7 @@ namespace MonoDevelop.AssemblyBrowser
 			builder.Selected = builder.Expanded = selectReference;
 		}
 
-		MonoDevelop.Components.RoundedFrame popupWidgetFrame;
+		//MonoDevelop.Components.RoundedFrame popupWidgetFrame;
 	
 		#region NavigationHistory
 		Stack<ITreeNavigator> navigationBackwardHistory = new Stack<ITreeNavigator> ();

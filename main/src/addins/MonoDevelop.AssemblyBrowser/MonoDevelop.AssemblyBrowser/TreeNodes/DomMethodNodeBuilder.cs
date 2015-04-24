@@ -198,8 +198,8 @@ namespace MonoDevelop.AssemblyBrowser
 
 		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
 		{
-			StringBuilder result = new StringBuilder ();
-			var ambience = new CSharpAmbience ();
+			var result = new StringBuilder ();
+			//var ambience = new CSharpAmbience ();
 
 			foreach (var attr in attributes) {
 				if (result.Length > 0)
