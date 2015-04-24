@@ -707,10 +707,8 @@ namespace MonoDevelop.VersionControl
 
 		public static bool CheckVersionControlInstalled ()
 		{
-			if (IsGloballyDisabled)
-				return false;
+			return !IsGloballyDisabled && GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 
-			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 		}
 
 		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
