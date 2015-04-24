@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class CodeTemplateListDataProvider : IListDataProvider<string>
+	class CodeTemplateListDataProvider : IListDataProvider<string>
 	{
 		List<CodeTemplateVariableValue> itemList;
 		
