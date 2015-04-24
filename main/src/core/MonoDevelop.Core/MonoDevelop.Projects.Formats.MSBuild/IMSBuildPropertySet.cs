@@ -84,29 +84,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static PropInfo[] GetMembers (Type type, bool includeBaseMembers)
 		{
-			PropInfo[] pinfo;
-			if (types.TryGetValue (type, out pinfo))
-				return pinfo;
+			lock (types) {
+				PropInfo[] pinfo;
+				if (types.TryGetValue (type, out pinfo))
+					return pinfo;
 
-			List<PropInfo> list = new List<PropInfo> ();
+				List<PropInfo> list = new List<PropInfo> ();
 
-			foreach (var m in type.GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-				if (!includeBaseMembers && m.DeclaringType != type)
-					continue;
-				if (!(m is FieldInfo) && !(m is PropertyInfo))
-					continue;
-				var attr = Attribute.GetCustomAttribute (m, typeof(ItemPropertyAttribute)) as ItemPropertyAttribute;
-				if (attr == null)
-					continue;
-				bool merge = Attribute.IsDefined (m, typeof(MergeToProjectAttribute));
+				foreach (var m in type.GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+					if (!includeBaseMembers && m.DeclaringType != type)
+						continue;
+					if (!(m is FieldInfo) && !(m is PropertyInfo))
+						continue;
+					var attr = Attribute.GetCustomAttribute (m, typeof(ItemPropertyAttribute)) as ItemPropertyAttribute;
+					if (attr == null)
+						continue;
+					bool merge = Attribute.IsDefined (m, typeof(MergeToProjectAttribute));
 
-				list.Add (new PropInfo {
-					Member = m,
-					Attribute = attr,
-					MergeToMainGroup = merge
-				});
+					list.Add (new PropInfo {
+						Member = m,
+						Attribute = attr,
+						MergeToMainGroup = merge
+					});
+				}
+				return types [type] = list.ToArray ();
 			}
-			return types [type] = list.ToArray ();
 		}
 
 		public static void WriteObjectProperties (this IPropertySet pset, object ob, Type typeToScan, bool includeBaseMembers = false)
