@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		readonly string colorStyleKey;
 
-		//// <summary>
+		/// <summary>
 		/// Gets the color style. The style is looked up in the current color scheme.
 		/// </summary>
 		public string ColorStyleKey {

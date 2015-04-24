@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			}
 		}
+
 		public bool TransparentBackground {
 			get {
 				return Background.Alpha == 0.0;
@@ -54,20 +55,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public Xwt.Drawing.FontStyle FontStyle { get; set; }
 
-		[Obsolete("Will be removed - use FontWeight")]
-		public bool Bold {
-			get {
-				return FontWeight == Xwt.Drawing.FontWeight.Bold;
-			}
-		}
-		
-		[Obsolete("Will be removed - use FontStyle")]
-		public bool Italic {
-			get {
-				return FontStyle == Xwt.Drawing.FontStyle.Italic;
-			}
-		}
-		
 		public bool Underline {
 			get; set;
 		}
@@ -108,7 +95,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static ChunkStyle Create (XElement element, Dictionary<string, HslColor> palette)
+		internal static ChunkStyle Create (XElement element, Dictionary<string, HslColor> palette)
 		{
 			var result = new ChunkStyle ();
 
@@ -146,12 +133,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
-		public Gdk.GC CreateBgGC (Gdk.Drawable drawable)
+		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
 		{
 			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Foreground, RgbFgColor = (HslColor)Background };
 		}
 		
-		public Gdk.GC CreateFgGC (Gdk.Drawable drawable)
+		internal Gdk.GC CreateFgGC (Gdk.Drawable drawable)
 		{
 			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Background, RgbFgColor = (HslColor)Foreground };
 		}
@@ -161,7 +148,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
 		}
 
-		public static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
+		internal static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
 		{
 			var textColor = new ChunkStyle ();
 			textColor.Name = name;

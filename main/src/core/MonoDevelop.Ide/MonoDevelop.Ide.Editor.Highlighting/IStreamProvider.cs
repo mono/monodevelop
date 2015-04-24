@@ -36,15 +36,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		Stream Open ();
 	}
 
-	[Obsolete("Do not use this anymore. Use ResourceStreamProvider.")]
-	public class ResourceXmlProvider : ResourceStreamProvider
-	{
-		public ResourceXmlProvider (Assembly assembly, string manifestResourceName) : base(assembly, manifestResourceName)
-		{
-
-		}
-	}
-	public class ResourceStreamProvider : IStreamProvider
+	class ResourceStreamProvider : IStreamProvider
 	{
 		Assembly assembly;
 		string   manifestResourceName;
@@ -73,7 +65,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 	
-	public class UrlStreamProvider : IStreamProvider
+	class UrlStreamProvider : IStreamProvider
 	{
 		string  url;
 		
@@ -93,5 +85,4 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return File.OpenRead (url);
 		}
 	}
-	
 }

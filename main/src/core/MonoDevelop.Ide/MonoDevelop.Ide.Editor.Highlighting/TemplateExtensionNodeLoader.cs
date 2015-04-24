@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public static class TemplateExtensionNodeLoader
+	static class TemplateExtensionNodeLoader
 	{
 		static bool initialized = false;
 		

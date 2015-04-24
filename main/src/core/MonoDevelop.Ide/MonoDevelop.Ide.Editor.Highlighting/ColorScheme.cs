@@ -610,7 +610,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		#endregion
 
-		public class PropertyDecsription
+		internal class PropertyDecsription
 		{
 			public readonly PropertyInfo Info;
 			public readonly ColorDescriptionAttribute Attribute;
@@ -624,7 +624,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static Dictionary<string, PropertyDecsription> textColors = new Dictionary<string, PropertyDecsription> ();
 
-		public static IEnumerable<PropertyDecsription> TextColors {
+		internal static IEnumerable<PropertyDecsription> TextColors {
 			get {
 				return textColors.Values;
 			}
@@ -632,7 +632,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static Dictionary<string, PropertyDecsription> ambientColors = new Dictionary<string, PropertyDecsription> ();
 
-		public static IEnumerable<PropertyDecsription> AmbientColors {
+		internal static IEnumerable<PropertyDecsription> AmbientColors {
 			get {
 				return ambientColors.Values;
 			}
@@ -676,7 +676,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return HslColor.Parse (value);
 		}
 
-		public static HslColor ParsePaletteColor (Dictionary<string, HslColor> palette, string value)
+		internal static HslColor ParsePaletteColor (Dictionary<string, HslColor> palette, string value)
 		{
 			HslColor result;
 			if (palette.TryGetValue (value, out result))
@@ -684,7 +684,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return ParseColor (value);
 		}
 
-		public ChunkStyle GetChunkStyle (string color)
+		internal ChunkStyle GetChunkStyle (string color)
 		{
 			if (color == null)
 				return GetChunkStyle ("Plain Text");
@@ -704,7 +704,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				color.Info.SetValue (this, color.Info.GetValue (baseScheme, null), null);
 		}
 
-		public static ColorScheme LoadFrom (Stream stream)
+		internal static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
 			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
@@ -791,8 +791,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return color.ToMarkup ();
 		}
 
-
-		public void Save (string fileName)
+		internal void Save (string fileName)
 		{
 			using (var writer = new StreamWriter (fileName)) {
 				writer.WriteLine ("{");
@@ -895,7 +894,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return HslColor.Parse (color);
 		}
 
-		public class VSSettingColor
+		internal class VSSettingColor
 		{
 			public string Name { get; private set; }
 			public string Foreground { get; private set; }
@@ -913,7 +912,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static HslColor AlphaBlend (HslColor fore, HslColor back, double alpha)
+		internal static HslColor AlphaBlend (HslColor fore, HslColor back, double alpha)
 		{
 			var fc = (Cairo.Color)fore;
 			var bc = (Cairo.Color)back;
@@ -923,7 +922,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				(1.0 - alpha) * bc.B + alpha * fc.B);
 		}
 
-		public static ColorScheme Import (string fileName, Stream stream)
+		internal static ColorScheme Import (string fileName, Stream stream)
 		{
 			var result = new ColorScheme ();
 			result.Name = Path.GetFileNameWithoutExtension (fileName);
@@ -1019,12 +1018,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
-		public HslColor GetForeground (ChunkStyle chunkStyle)
+		internal HslColor GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground)
 				return PlainText.Foreground;
 			return chunkStyle.Foreground;
 		}
-
 	}
 }
