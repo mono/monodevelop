@@ -115,17 +115,20 @@ namespace MonoDevelop.Ide.Templates
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
 			var lang = projectOptions.GetAttribute ("language");
-			var projectType = !string.IsNullOrEmpty (type) ? type : lang;
+			var projectTypes = !string.IsNullOrEmpty (type) ? type.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim()).ToArray() : new string[] {lang};
+
+			var projectType = projectTypes [0];
+			string[] flavors = projectTypes.Skip (1).ToArray ();
 
 			if (!Services.ProjectService.CanCreateProject (projectType, projectCreateInformation, projectOptions)) {
-				LoggingService.LogError ("Could not create project of type '" + projectType + "'. Project skipped");
+				LoggingService.LogError ("Could not create project of type '" + string.Join (",", projectTypes) + "'. Project skipped");
 				return null;
 			}
 
 			if (!ShouldCreateProject (projectCreateInformation))
 				return null;
 
-			Project project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions);
+			Project project = Services.ProjectService.CreateProject (projectTypes[0], projectCreateInformation, projectOptions, flavors);
 			return project;
 		}
 

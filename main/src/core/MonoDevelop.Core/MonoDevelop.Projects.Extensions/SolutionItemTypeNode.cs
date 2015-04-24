@@ -63,8 +63,8 @@ namespace MonoDevelop.Projects.Extensions
 			this.import = import;
 		}
 		
-		[NodeAttribute ("tag")]
-		public string TypeTag { get; set; }
+		[NodeAttribute ("alias")]
+		public string TypeAlias { get; set; }
 
 		public string Guid {
 			get { return guid; }
@@ -118,7 +118,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		public virtual bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			return type.Equals (Guid, StringComparison.OrdinalIgnoreCase) || type == TypeTag;
+			return type.Equals (Guid, StringComparison.OrdinalIgnoreCase) || type == TypeAlias;
 		}
 
 		public virtual SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)

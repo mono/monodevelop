@@ -337,9 +337,9 @@ namespace MonoDevelop.Projects
 			return MSBuildProjectService.CreateProject (typeGuid, typeGuids);
 		}
 
-		public Project CreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)
+		public Project CreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions, params string[] flavorGuids)
 		{
-			return MSBuildProjectService.CreateSolutionItem (typeAlias, info, projectOptions) as Project;
+			return MSBuildProjectService.CreateProject (typeAlias, info, projectOptions, flavorGuids);
 		}
 
 		public bool CanCreateProject (string typeAlias)

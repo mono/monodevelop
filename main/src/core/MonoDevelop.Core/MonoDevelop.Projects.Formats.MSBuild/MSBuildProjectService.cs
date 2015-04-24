@@ -233,6 +233,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
+			type = ConvertTypeTag (type);
+
 			foreach (var node in GetItemTypeNodes ()) {
 				if (node.CanCreateSolutionItem (type, info, projectOptions))
 					return true;
@@ -242,8 +244,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
+			flavorGuids = ConvertTypeTags (flavorGuids);
+
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
-				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || typeGuid == node.TypeTag) {
+				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || node.TypeAlias == typeGuid) {
 					var p = node.CreateProject (flavorGuids);
 					p.EnsureInitialized ();
 					p.NotifyItemReady ();
@@ -255,6 +259,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
+			type = ConvertTypeTag (type);
+
 			foreach (var node in GetItemTypeNodes ()) {
 				if (node.CanCreateSolutionItem (type, info, projectOptions)) {
 					var item = node.CreateSolutionItem (type, info, projectOptions);
@@ -263,6 +269,47 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			throw new InvalidOperationException ("Unknown project type: " + type);
+		}
+
+		internal static Project CreateProject (string typeGuid, ProjectCreateInformation info, System.Xml.XmlElement projectOptions, params string[] flavorGuids)
+		{
+			flavorGuids = ConvertTypeTags (flavorGuids);
+
+			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
+				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || typeGuid == node.TypeAlias) {
+					var p = node.CreateProject (flavorGuids);
+					p.EnsureInitialized ();
+					p.InitializeFromTemplate (info, projectOptions);
+					p.NotifyItemReady ();
+					return p;
+				}
+			}
+			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
+		}
+
+		static string ConvertTypeTag (string type)
+		{
+			var node = GetItemTypeNodes ().FirstOrDefault (n => n.TypeAlias == type);
+			if (node != null)
+				return node.Guid;
+			var enode = WorkspaceObject.GetModelExtensions (null).OfType<SolutionItemExtensionNode> ().FirstOrDefault (n => n.TypeAlias == type);
+			if (enode != null)
+				return enode.Guid;
+			return type;
+		}
+
+		static string[] ConvertTypeTags (string[] types)
+		{
+			string[] copy = null;
+			for (int n=0; n<types.Length; n++) {
+				var nt = ConvertTypeTag (types[n]);
+				if (nt != types[n]) {
+					if (copy == null)
+						copy = types.ToArray ();
+					copy [n] = nt;
+				}
+			}
+			return copy ?? types;
 		}
 
 		internal static MSBuildSupport GetMSBuildSupportForFlavors (IEnumerable<string> flavorGuids)
@@ -386,7 +433,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static string GetTypeGuidFromAlias (string alias)
 		{
 			foreach (var node in GetItemTypeNodes ()) {
-				if (node.TypeTag.Equals (alias, StringComparison.OrdinalIgnoreCase))
+				if (node.TypeAlias.Equals (alias, StringComparison.OrdinalIgnoreCase))
 					return node.Guid;
 			}
 			return null;

@@ -18,7 +18,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProjectType  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}" tag="IL" type="ILAsmBinding.ILAsmProject" />
+		<DotNetProjectType language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}" type="ILAsmBinding.ILAsmProject" />
 	</Extension>
 	
 </ExtensionModel>

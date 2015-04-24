@@ -52,8 +52,8 @@ namespace MonoDevelop.Projects.Extensions
 		protected override void Read (NodeElement elem)
 		{
 			base.Read (elem);
-			if (!string.IsNullOrEmpty (language) && string.IsNullOrEmpty (TypeTag))
-				TypeTag = language;
+			if (!string.IsNullOrEmpty (language) && string.IsNullOrEmpty (TypeAlias))
+				TypeAlias = language;
 		}
 
 		public override Type ItemType {
