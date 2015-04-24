@@ -48,6 +48,7 @@
     <Compile Include="GitIntegrityTests.cs" />
     <Compile Include="BaseContractsTests.cs" />
     <Compile Include="VersionInfoCacheTests.cs" />
+    <Compile Include="RevisionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
