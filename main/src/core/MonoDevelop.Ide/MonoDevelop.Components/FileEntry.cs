@@ -57,6 +57,6 @@ namespace MonoDevelop.Components
 			return null;
 		}
 
-		public Gtk.FileChooserAction Action { get; set; }
+		public new Gtk.FileChooserAction Action { get; set; }
 	}
 }

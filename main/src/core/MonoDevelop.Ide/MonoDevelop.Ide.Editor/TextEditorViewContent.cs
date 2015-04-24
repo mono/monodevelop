@@ -44,7 +44,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
