@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects
 		{
 			this.filename = FileService.GetFullPath (filename);
 			subtype = Subtype.Code;
-			ItemName = buildaction = buildAction;
+			BuildAction = buildAction;
 		}
 
 		public override string Include {
@@ -184,11 +184,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		string buildaction = MonoDevelop.Projects.BuildAction.None;
 		public string BuildAction {
-			get { return buildaction; }
+			get { return ItemName; }
 			set {
-				buildaction = string.IsNullOrEmpty (value) ? MonoDevelop.Projects.BuildAction.None : value;
+				ItemName = string.IsNullOrEmpty (value) ? MonoDevelop.Projects.BuildAction.None : value;
 				OnChanged ("BuildAction");
 			}
 		}

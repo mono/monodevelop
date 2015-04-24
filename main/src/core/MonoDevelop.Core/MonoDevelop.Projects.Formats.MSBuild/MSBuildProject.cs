@@ -500,7 +500,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildItemGroup AddNewItemGroup ()
 		{
 			XmlElement elem = doc.CreateElement (null, "ItemGroup", MSBuildProject.Schema);
-			doc.DocumentElement.AppendChild (elem);
+
+			XmlNode refNode = null;
+			var lastGroup = ItemGroups.LastOrDefault ();
+			if (lastGroup != null)
+				refNode = lastGroup.Element;
+			else {
+				var g = (MSBuildPropertyGroup) GetGlobalPropertyGroup ();
+				if (g != null)
+					refNode = g.Element;
+			}
+			if (refNode != null)
+				doc.DocumentElement.InsertAfter (elem, refNode);
+			else
+				doc.DocumentElement.AppendChild (elem);
 			return GetItemGroup (elem);
 		}
 		
