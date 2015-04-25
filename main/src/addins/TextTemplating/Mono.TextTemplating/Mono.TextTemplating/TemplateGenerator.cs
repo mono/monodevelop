@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TextTemplating;
 
@@ -204,6 +205,10 @@ namespace Mono.TextTemplating
  				if (System.IO.File.Exists (path))
  					return path;
  			}
+
+			var assemblyName = new AssemblyName(assemblyReference);
+			if (assemblyName.Version != null)
+				return assemblyReference;
 
 			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.ToLowerInvariant ().EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
 				return assemblyReference + ".dll";
