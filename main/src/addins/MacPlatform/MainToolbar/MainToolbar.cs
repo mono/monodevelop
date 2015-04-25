@@ -74,6 +74,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return (SearchBar)widget.Items[searchEntryIdx + buttonBarCount].View; }
 		}
 
+		// TODO: Remove this when XamMac 2.2 goes stable.
 		static HashSet<object> viewCache = new HashSet<object> ();
 		static HashSet<ButtonBar> buttonBarCache = new HashSet<ButtonBar> ();
 
