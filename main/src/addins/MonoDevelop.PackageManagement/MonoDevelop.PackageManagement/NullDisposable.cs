@@ -1,5 +1,5 @@
 ﻿//
-// TestableInstallPackageAction.cs
+// NullDisposable.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,30 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class TestableInstallPackageAction : InstallPackageAction
+	public class NullDisposable : IDisposable
 	{
-		public TestableInstallPackageAction (
-			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		public static readonly IDisposable Null = new NullDisposable ();
+
+		public void Dispose ()
 		{
 		}
-
-		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
-
-		protected override IDisposable CreateOpenPackageReadMeMonitor (string packageId)
-		{
-			IDisposable monitor = base.CreateOpenPackageReadMeMonitor (packageId);
-			OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
-			NullOpenPackageReadMeMonitorIsCreated = monitor is NullDisposable;
-			return monitor;
-		}
-
-		public bool NullOpenPackageReadMeMonitorIsCreated;
 	}
 }
 

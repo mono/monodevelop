@@ -67,6 +67,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
+			action.OpenReadMeText = false;
 			action.Execute ();
 		}
 	}

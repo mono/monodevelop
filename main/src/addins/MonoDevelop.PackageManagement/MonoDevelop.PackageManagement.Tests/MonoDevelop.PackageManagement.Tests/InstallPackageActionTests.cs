@@ -529,5 +529,23 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
 			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
 		}
+
+		[Test]
+		public void OpenReadMeText_DefaultValue_IsTrue ()
+		{
+			CreateAction ();
+			Assert.IsTrue (action.OpenReadMeText);
+		}
+
+		[Test]
+		public void Execute_OpenReadMeTextSetToFalse_NullOpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			action.OpenReadMeText = false;
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.IsTrue (action.NullOpenPackageReadMeMonitorIsCreated);
+		}
 	}
 }
