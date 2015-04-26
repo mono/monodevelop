@@ -1,10 +1,10 @@
 ﻿//
-// FakeFileService.cs
+// TestableInstallPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,54 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using ICSharpCode.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeFileService : IPackageManagementFileService
+	public class TestableInstallPackageAction : InstallPackageAction
 	{
-		public string PathPassedToRemoveFile;
-		public string PathPassedToRemoveDirectory;
-
-		IDotNetProject project;
-
-		public FakeFileService (IDotNetProject project)
-		{
-			this.project = project;
-		}
-
-		public void RemoveFile (string path)
-		{
-			PathPassedToRemoveFile = path;
-		}
-
-		public void RemoveDirectory (string path)
-		{
-			PathPassedToRemoveDirectory = path;
-			project.Files.Clear ();
-		}
-
-		public void OnFileChanged (string path)
+		public TestableInstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base (project, packageManagementEvents)
 		{
 		}
 
-		public string FileNamePassedToOpenFile;
-		public bool IsOpenFileCalled;
+		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
 
-		public void OpenFile (string path)
+		protected override IDisposable CreateOpenPackageReadMeMonitor (string packageId)
 		{
-			IsOpenFileCalled = true;
-			FileNamePassedToOpenFile = path;
-		}
-
-		public List<string> ExistingFileNames = new List<string> ();
-
-		public bool FileExists (string path)
-		{
-			return ExistingFileNames.Contains (path);
+			OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
+			return OpenPackageReadMeMonitor;
 		}
 	}
 }

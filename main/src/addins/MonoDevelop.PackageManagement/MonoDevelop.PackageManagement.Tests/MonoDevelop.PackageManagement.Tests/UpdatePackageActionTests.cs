@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement.Tests
 	[TestFixture]
 	public class UpdatePackageActionTests
 	{
-		UpdatePackageAction action;
+		TestableUpdatePackageAction action;
 		PackageManagementEvents packageManagementEvents;
 		FakePackageManagementProject fakeProject;
 		UpdatePackageHelper updatePackageHelper;
@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManagementEvents = new PackageManagementEvents ();
 			fakeProject = new FakePackageManagementProject ();
 			fileRemover = new FakeFileRemover ();
-			action = new UpdatePackageAction (fakeProject, packageManagementEvents, fileRemover);
+			action = new TestableUpdatePackageAction (fakeProject, packageManagementEvents, fileRemover);
 			updatePackageHelper = new UpdatePackageHelper (action);
 		}
 
@@ -473,6 +473,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsNull (fakeProject.PackagePassedToUpdatePackage);
 			Assert.IsFalse (fakeProject.IsUpdatePackageCalled);
 			AssertMessageIsLogged ("No updates available for 'MyPackage' in project 'MyProject'.");
+		}
+
+		[Test]
+		public void Execute_PackageUpdatedSuccessfully_OpenPackageReadmeMonitorCreated ()
+		{
+			CreateSolution ();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.UpdateTestPackage ();
+
+			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
 		}
 	}
 }

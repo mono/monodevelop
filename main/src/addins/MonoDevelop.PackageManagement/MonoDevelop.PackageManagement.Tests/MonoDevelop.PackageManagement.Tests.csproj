@@ -207,6 +207,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\CheckForUpdatesProgressMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForUpdatesProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\TestableCheckForUpdatesTaskRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\OpenPackageReadMeMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableInstallPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatePackageAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

@@ -39,14 +39,14 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		PackageManagementEvents packageManagementEvents;
 		FakePackageManagementProject fakeProject;
-		InstallPackageAction action;
+		TestableInstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
 
 		void CreateAction ()
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			fakeProject = new FakePackageManagementProject ();
-			action = new InstallPackageAction (fakeProject, packageManagementEvents);
+			action = new TestableInstallPackageAction (fakeProject, packageManagementEvents);
 			installPackageHelper = new InstallPackageHelper (action);
 		}
 
@@ -517,6 +517,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			installPackageHelper.InstallTestPackage ();
 
 			CollectionAssert.AreEqual (action.Operations, actualOperations);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfully_OpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
 		}
 	}
 }

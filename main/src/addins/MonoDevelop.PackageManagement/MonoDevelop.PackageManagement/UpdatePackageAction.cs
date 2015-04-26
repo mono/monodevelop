@@ -74,8 +74,10 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			if (ShouldUpdatePackage ()) {
-				using (IDisposable monitor = CreateFileMonitor ()) {
-					Project.UpdatePackage (Package, this);
+				using (IDisposable readmeMonitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
+					using (IDisposable monitor = CreateFileMonitor ()) {
+						Project.UpdatePackage (Package, this);
+					}
 				}
 				OnParentPackageInstalled ();
 			} else {
