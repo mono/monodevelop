@@ -28,6 +28,7 @@ using AppKit;
 using Foundation;
 using Gtk;
 using MonoDevelop.Components.Mac;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -58,14 +59,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void Initialize ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => {
-				if (notification.Object == Window)
-					if (LostFocus != null)
-						LostFocus (this, null);
+				DispatchService.GuiDispatch (delegate {
+					if (notification.Object == Window)
+						if (LostFocus != null)
+							LostFocus (this, null);
+				});
 			});
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => {
-				if (notification.Object == Window)
-					if (LostFocus != null)
-						LostFocus (this, null);
+				DispatchService.GuiDispatch (delegate {
+					if (notification.Object == Window)
+						if (LostFocus != null)
+							LostFocus (this, null);
+				});
 			});
 		}
 
