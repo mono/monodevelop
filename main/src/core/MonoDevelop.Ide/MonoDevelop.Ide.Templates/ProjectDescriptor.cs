@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Templates
 			if (!ShouldCreateProject (projectCreateInformation))
 				return null;
 
-			Project project = Services.ProjectService.CreateProject (projectTypes[0], projectCreateInformation, projectOptions, flavors);
+			Project project = Services.ProjectService.CreateProject (projectType, projectCreateInformation, projectOptions, flavors);
 			return project;
 		}
 
