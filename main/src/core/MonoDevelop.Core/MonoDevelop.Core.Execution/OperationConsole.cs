@@ -59,8 +59,6 @@ namespace MonoDevelop.Core.Execution
 		/// </summary>
 		public abstract TextWriter Log { get; }
 
-		public bool CloseOnDispose { get; set; }
-
 		/// <summary>
 		/// Writes debug information to the console
 		/// </summary>

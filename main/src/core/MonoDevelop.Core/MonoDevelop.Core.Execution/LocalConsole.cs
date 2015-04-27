@@ -49,7 +49,6 @@ namespace MonoDevelop.Core.Execution
 			cerror = new InternalWriter ();
 			clog = new InternalWriter ();
 			cin = new InternalWriter ();
-			CloseOnDispose = true;
 		}
 		
 		public override void Dispose ()

@@ -43,7 +43,6 @@ namespace MonoDevelop.AspNet.Execution
 		{
 			this.real = real;
 			this.launchBrowser = launchBrowser;
-			CloseOnDispose = real.CloseOnDispose;
 			cancelReg = real.CancellationToken.Register (CancellationSource.Cancel);
 		}
 		

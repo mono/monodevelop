@@ -49,6 +49,8 @@ namespace MonoDevelop.Core.Execution
 			CloseOnDispose = closeOnDispose;
 		}
 		
+		public bool CloseOnDispose { get; set; }
+
 		public override TextReader In {
 			get { return Console.In; }
 		}

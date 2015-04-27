@@ -191,8 +191,10 @@ namespace MonoDevelop.Core.Execution
 		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, OperationConsole console,
 			IDictionary<string, string> environmentVariables = null, EventHandler exited = null)
 		{
-			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
-				
+			var externalConsole = console as ExternalConsole;
+
+			if ((console == null || externalConsole != null) && externalConsoleHandler != null) {
+
 				var dict = new Dictionary<string,string> ();
 				if (environmentVariables != null)
 					foreach (var kvp in environmentVariables)
@@ -203,7 +205,7 @@ namespace MonoDevelop.Core.Execution
 				
 				var p = externalConsoleHandler (command, arguments, workingDirectory, dict,
 					GettextCatalog.GetString ("{0} External Console", BrandingService.ApplicationName),
-					console != null ? !console.CloseOnDispose : false);
+					externalConsole != null ? !externalConsole.CloseOnDispose : false);
 
 				if (p != null) {
 					if (exited != null)
