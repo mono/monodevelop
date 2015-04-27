@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -185,13 +186,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				MaxSize = new CGSize (360, 22),
 			};
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => DispatchService.GuiDispatch (() => {
 				double maxSize = Math.Round (bar.Window.Frame.Width * 0.30f);
 				double minSize = Math.Round (bar.Window.Frame.Width * 0.25f);
 				item.MinSize = new CGSize ((nfloat)Math.Max (280, minSize), 22);
 				item.MaxSize = new CGSize ((nfloat)Math.Min (700, maxSize), 22);
 				bar.RepositionStatusLayers ();
-			});
+			}));
 			return item;
 		}
 

@@ -58,20 +58,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => {
-				DispatchService.GuiDispatch (delegate {
-					if (notification.Object == Window)
-						if (LostFocus != null)
-							LostFocus (this, null);
-				});
-			});
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => {
-				DispatchService.GuiDispatch (delegate {
-					if (notification.Object == Window)
-						if (LostFocus != null)
-							LostFocus (this, null);
-				});
-			});
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
+				if (notification.Object == Window)
+					if (LostFocus != null)
+						LostFocus (this, null);
+			}));
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
+				if (notification.Object == Window)
+					if (LostFocus != null)
+						LostFocus (this, null);
+			}));
 		}
 
 		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)
