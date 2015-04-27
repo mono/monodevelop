@@ -31,7 +31,7 @@ using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
-	public abstract class ConsoleFactory
+	public abstract class OperationConsoleFactory
 	{
 		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
 		{

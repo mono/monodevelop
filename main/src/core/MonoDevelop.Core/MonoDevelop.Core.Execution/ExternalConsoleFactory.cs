@@ -32,7 +32,7 @@ using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
-	public sealed class ExternalConsoleFactory: ConsoleFactory
+	public sealed class ExternalConsoleFactory: OperationConsoleFactory
 	{
 		public static ExternalConsoleFactory Instance = new ExternalConsoleFactory ();
 		

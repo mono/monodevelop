@@ -517,8 +517,8 @@
     <Compile Include="MonoDevelop.Projects\LanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingExtensionNode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\OperationConsole.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\ConsoleFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\OutputProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OperationConsoleFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

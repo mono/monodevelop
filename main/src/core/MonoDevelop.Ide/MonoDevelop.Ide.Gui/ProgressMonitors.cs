@@ -108,11 +108,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		CustomConsoleFactory customConsoleFactory = new CustomConsoleFactory ();
-		public ConsoleFactory ConsoleFactory {
+		public OperationConsoleFactory ConsoleFactory {
 			get { return customConsoleFactory; }
 		}
 
-		class CustomConsoleFactory: ConsoleFactory
+		class CustomConsoleFactory: OperationConsoleFactory
 		{
 			protected override OperationConsole OnCreateConsole (bool closeOnDispose)
 			{
