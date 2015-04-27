@@ -801,7 +801,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 			public override TextWriter Log {
 				get {
-					return monitor.Log;
+					return monitor.internalLogger;
 				}
 			}
 

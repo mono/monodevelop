@@ -156,11 +156,12 @@ namespace MonoDevelop.Core.Execution
 			// 	p.Exited += exited;
 			// p.EnableRaisingEvents = true;
 			
-			if (exited != null)
-				p.Task.ContinueWith (t => exited (p, EventArgs.Empty), TaskScheduler.FromCurrentSynchronizationContext ());
-
 			Counters.ProcessesStarted++;
 			p.Start ();
+
+			if (exited != null)
+				p.Task.ContinueWith (t => exited (p, EventArgs.Empty), Runtime.MainTaskScheduler);
+
 			return p;
 		}
 
