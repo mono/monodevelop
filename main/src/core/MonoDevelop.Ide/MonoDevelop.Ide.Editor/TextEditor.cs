@@ -1191,11 +1191,13 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Tooltips) != DisabledProjectionFeatures.Tooltips) {
-					projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
+				projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
 				projectedProviders = new List<ProjectedTooltipProvider> ();
 				foreach (var projection in projections) {
-					foreach (var tp in projection.ProjectedEditor.textEditorImpl.TooltipProvider) {
-						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, tp);
+					foreach (var tp in projection.ProjectedEditor.allProviders) {
+						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
+							continue;
+						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider) tp.CreateInstance ());
 						projectedProviders.Add (newProvider);
 						textEditorImpl.AddTooltipProvider (newProvider);
 					}
@@ -1227,6 +1229,7 @@ namespace MonoDevelop.Ide.Editor
 				var completionTextEditorExtension = lastExtension.Next as CompletionTextEditorExtension;
 				if (completionTextEditorExtension != null) {
 					var projectedFilterExtension = new ProjectedFilterCompletionTextEditorExtension (completionTextEditorExtension, projections) { Next = completionTextEditorExtension.Next };
+					completionTextEditorExtension.Deinitialize ();
 					lastExtension.Next = projectedFilterExtension;
 					projectedFilterExtension.Initialize (this, DocumentContext);
 				}

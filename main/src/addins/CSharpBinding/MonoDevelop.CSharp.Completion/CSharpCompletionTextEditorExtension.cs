@@ -1237,8 +1237,8 @@ namespace MonoDevelop.CSharp.Completion
 				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
-			currentCompletionContext.TriggerWordLength = wlen;
+			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
+			CurrentCompletionContext.TriggerWordLength = wlen;
 
 			var list = new CSharpCompletionDataList ();
 			list.TriggerWordLength = wlen;
@@ -1247,11 +1247,11 @@ namespace MonoDevelop.CSharp.Completion
 
 			AddImportCompletionData (list, semanticModel, offset);
 				
-			completionList = CodeCompletionCommand (currentCompletionContext);
+			completionList = CodeCompletionCommand (CurrentCompletionContext);
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else
-				currentCompletionContext = null;
+				CurrentCompletionContext = null;
 		}
 
 	}

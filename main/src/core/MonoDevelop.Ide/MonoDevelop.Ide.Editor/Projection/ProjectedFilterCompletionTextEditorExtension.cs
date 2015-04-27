@@ -68,21 +68,21 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (IsInProjection())
+			if (!IsActiveExtension())
 				return Next == null || Next.KeyPress (descriptor);
 			return completionTextEditorExtension.KeyPress (descriptor);
 		}
 
 		public override bool IsValidInContext (DocumentContext context)
 		{
-			if (IsInProjection())
+			if (!IsActiveExtension())
 				return false;
 			return completionTextEditorExtension.IsValidInContext (context);
 		}
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
-			if (IsInProjection())
+			if (!IsActiveExtension())
 				return -1;
 			return completionTextEditorExtension.GetCurrentParameterIndex (startOffset);
 		}
@@ -95,35 +95,35 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override void RunCompletionCommand ()
 		{
-			if (IsInProjection ())
+			if (!IsActiveExtension())
 				return;
 			completionTextEditorExtension.RunCompletionCommand ();
 		}
 
 		public override void RunShowCodeTemplatesWindow ()
 		{
-			if (IsInProjection ())
+			if (!IsActiveExtension())
 				return;
 			completionTextEditorExtension.RunShowCodeTemplatesWindow ();
 		}
 
 		public override void RunParameterCompletionCommand ()
 		{
-			if (IsInProjection ())
+			if (!IsActiveExtension())
 				return;
 			completionTextEditorExtension.RunParameterCompletionCommand ();
 		}
 
 		public override bool CanRunCompletionCommand ()
 		{
-			if (IsInProjection ())
+			if (!IsActiveExtension ())
 				return false;
 			return completionTextEditorExtension.CanRunCompletionCommand ();
 		}
 
 		public override bool CanRunParameterCompletionCommand ()
 		{
-			if (IsInProjection ())
+			if (!IsActiveExtension ())
 				return false;
 			return completionTextEditorExtension.CanRunParameterCompletionCommand ();
 		}
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override bool GetCompletionCommandOffset (out int cpos, out int wlen)
 		{
-			if (IsInProjection ()) {
+			if (!IsActiveExtension()) {
 				cpos = 0; wlen = 0;
 				return false;
 			}
@@ -149,32 +149,45 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override CodeCompletion.ICompletionDataList ShowCodeSurroundingsCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
-			if (IsInProjection ()) return null;
+			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.ShowCodeSurroundingsCommand (completionContext);
 		}
 
 		public override CodeCompletion.ICompletionDataList ShowCodeTemplatesCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
-			if (IsInProjection ()) return null;
+			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.ShowCodeTemplatesCommand (completionContext);
 		}
 
 		public override CodeCompletion.ICompletionDataList CodeCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
-			if (IsInProjection ()) return null;
+			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.CodeCompletionCommand (completionContext);
 		}
 
 		public override CodeCompletion.ParameterHintingResult ParameterCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
-			if (IsInProjection ()) return null;
+			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.ParameterCompletionCommand (completionContext);
 		}
 
 		public override int GuessBestMethodOverload (CodeCompletion.ParameterHintingResult provider, int currentOverload)
 		{
-			if (IsInProjection ()) return -1;
+			if (!IsActiveExtension()) return -1;
 			return completionTextEditorExtension.GuessBestMethodOverload (provider, currentOverload);
+		}
+
+		internal protected override void OnCompletionContextChanged (object o, EventArgs a)
+		{
+			if (!IsActiveExtension()) return;
+			completionTextEditorExtension.OnCompletionContextChanged (o, a);
+		}
+
+		internal protected override void HandlePositionChanged (object sender, EventArgs e)
+		{
+			if (!IsActiveExtension ())
+				return;
+			completionTextEditorExtension.HandlePositionChanged (sender, e);
 		}
 
 		protected override void Initialize ()

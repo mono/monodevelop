@@ -249,6 +249,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 				}
 				return result;
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (x => x is OperationCanceledException);
+				return Task.FromResult ((ParsedDocumentProjection)null);
 			} catch (OperationCanceledException) {
 				return Task.FromResult ((ParsedDocumentProjection)null);
 			} catch (Exception e) {

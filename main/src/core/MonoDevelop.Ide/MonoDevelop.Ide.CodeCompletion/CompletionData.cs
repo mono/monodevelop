@@ -102,11 +102,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		public static string GetCurrentWord (CompletionListWindow window)
 		{
-			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
-			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
-			int endOffset = Math.Min (window.CodeCompletionContext.TriggerOffset + replaceLength, window.CompletionWidget.TextLength);
-			var result = window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, endOffset);
-			return result;
+			return window.PartialWord;
 		}
 
 		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
