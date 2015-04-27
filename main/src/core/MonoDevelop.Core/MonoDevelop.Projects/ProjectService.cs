@@ -50,7 +50,6 @@ namespace MonoDevelop.Projects
 	public class ProjectService
 	{
 		DataContext dataContext = new DataContext ();
-		WorkspaceObjectReader defaultExtensionChain;
 
 		TargetFramework defaultTargetFramework;
 		
@@ -71,7 +70,6 @@ namespace MonoDevelop.Projects
 		internal ProjectService ()
 		{
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
-			AddinManager.ExtensionChanged += OnExtensionChanged;
 		}
 		
 		public DataContext DataContext {
@@ -409,12 +407,6 @@ namespace MonoDevelop.Projects
 			
 			if (DataContextChanged != null)
 				DataContextChanged (this, EventArgs.Empty);
-		}
-		
-		void OnExtensionChanged (object s, ExtensionEventArgs args)
-		{
-			if (args.PathChanged ("/MonoDevelop/ProjectModel/ProjectServiceExtensions"))
-				defaultExtensionChain = null;
 		}
 		
 		string GetTargetFile (string file)

@@ -916,13 +916,13 @@ namespace MonoDevelop.Ide
 
 		public bool CanExecute (IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return CanExecute (entry, context);
 		}
 		
 		public bool CanExecute (IBuildTarget entry, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return entry.CanExecute (context, IdeApp.Workspace.ActiveConfiguration);
 		}
 		
@@ -938,7 +938,7 @@ namespace MonoDevelop.Ide
 		
 		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler, bool buildBeforeExecuting = true)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return Execute (entry, context, buildBeforeExecuting);
 		}
 		
@@ -988,7 +988,7 @@ namespace MonoDevelop.Ide
 
 		public bool CanExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return CanExecuteFile (file, context);
 		}
 
@@ -1002,7 +1002,7 @@ namespace MonoDevelop.Ide
 
 		public AsyncOperation ExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return ExecuteFile (file, context);
 		}
 
@@ -1010,7 +1010,7 @@ namespace MonoDevelop.Ide
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			if (context.ExecutionHandler.CanExecute (cmd))
-				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole (true));
+				return context.ExecutionHandler.Execute (cmd, context.ConsoleFactory.CreateConsole (true, CancellationToken.None));
 			else {
 				MessageService.ShowError(GettextCatalog.GetString ("No runnable executable found."));
 				return AsyncOperation.CompleteOperation;

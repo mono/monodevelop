@@ -188,14 +188,8 @@ namespace MonoDevelop.Core.Execution
 			return startInfo;
 		}
 		
-		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console,
-		                                                   EventHandler exited)
-		{
-			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
-		}
-		
-		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
-		                                                   IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
+		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, OperationConsole console,
+			IDictionary<string, string> environmentVariables = null, EventHandler exited = null)
 		{
 			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
 				
@@ -409,21 +403,23 @@ namespace MonoDevelop.Core.Execution
 	
 	class ProcessMonitor
 	{
-		public IConsole console;
+		public OperationConsole console;
 		EventHandler exited;
 		ProcessAsyncOperation operation;
+		IDisposable cancelRegistration;
 
-		public ProcessMonitor (IConsole console, ProcessAsyncOperation operation, EventHandler exited)
+		public ProcessMonitor (OperationConsole console, ProcessAsyncOperation operation, EventHandler exited)
 		{
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
 			operation.Task.ContinueWith (t => OnOperationCompleted ());
-			console.CancelRequested += OnCancelRequest;
+			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		
 		public void OnOperationCompleted ()
 		{
+			cancelRegistration.Dispose ();
 			try {
 				if (exited != null)
 					exited (operation, EventArgs.Empty);
@@ -435,14 +431,6 @@ namespace MonoDevelop.Core.Execution
 			} finally {
 				console.Dispose ();
 			}
-		}
-
-		void OnCancelRequest (object sender, EventArgs args)
-		{
-			operation.Cancel ();
-
-			//remove the cancel handler, it will be attached again when StartConsoleProcess is called
-			console.CancelRequested -= OnCancelRequest;
 		}
 	}
 	

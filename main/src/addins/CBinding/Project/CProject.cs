@@ -349,7 +349,7 @@ namespace CBinding
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 			bool pause = conf.PauseConsoleOutput;
-			IConsole console;
+			OperationConsole console;
 			
 			if (conf.CompileTarget != CBinding.CompileTarget.Bin) {
 				MessageService.ShowMessage ("Compile target is not an executable!");
@@ -359,9 +359,9 @@ namespace CBinding
 			monitor.Log.WriteLine ("Running project...");
 			
 			if (conf.ExternalConsole)
-				console = context.ExternalConsoleFactory.CreateConsole (!pause);
+				console = context.ExternalConsoleFactory.CreateConsole (!pause, monitor.CancellationToken);
 			else
-				console = context.ConsoleFactory.CreateConsole (!pause);
+				console = context.ConsoleFactory.CreateConsole (!pause, monitor.CancellationToken);
 			
 			try {
 				ExecutionCommand cmd = CreateExecutionCommand (conf);

@@ -239,19 +239,19 @@ namespace MonoDevelop.Projects
 			}
 			
 			ProcessAsyncOperation oper = null;
-			IConsole console = null;
+			OperationConsole console = null;
 			var result = true;
 			
 			try {
 				if (context != null) {
 					if (externalConsole)
-						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole);
+						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole, monitor.CancellationToken);
 					else
-						console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole);
+						console = context.ConsoleFactory.CreateConsole (!pauseExternalConsole, monitor.CancellationToken);
 					oper = context.ExecutionHandler.Execute (cmd, console);
 				} else {
 					if (externalConsole) {
-						console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole);
+						console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole, monitor.CancellationToken);
 						oper = Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments,
 							cmd.WorkingDirectory, console, null);
 					} else {

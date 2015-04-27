@@ -147,9 +147,9 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration conf = (ProjectConfiguration) GetConfiguration (configuration);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", FileName));
 
-			IConsole console = conf.ExternalConsole
-				? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput)
-				: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput);
+			OperationConsole console = conf.ExternalConsole
+				? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput, monitor.CancellationToken)
+				: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput, monitor.CancellationToken);
 			
 			try {
 				try {

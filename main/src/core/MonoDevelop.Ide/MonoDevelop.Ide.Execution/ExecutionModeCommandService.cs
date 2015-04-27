@@ -462,7 +462,7 @@ namespace MonoDevelop.Ide.Execution
 			return Mode.ExecutionHandler.CanExecute (command);
 		}
 		
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			if (Mode is CustomExecutionMode)
 				return ((CustomExecutionMode)Mode).Execute (command, console, true, true);
@@ -487,7 +487,7 @@ namespace MonoDevelop.Ide.Execution
 			return Handler.CanExecute (command);
 		}
 		
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			return Handler.InternalExecute (Context, ParentMode, command, console);
 		}

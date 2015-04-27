@@ -45,7 +45,7 @@ namespace MonoDevelop.Debugger
 			return DebuggingService.CanDebugCommand (command);
 		}
 
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			if (!CanExecute (command))
 			    return null;

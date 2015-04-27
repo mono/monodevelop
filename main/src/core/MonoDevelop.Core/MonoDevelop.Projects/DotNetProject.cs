@@ -1349,9 +1349,9 @@ namespace MonoDevelop.Projects
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
-			IConsole console = dotNetProjectConfig.ExternalConsole
-				? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput)
-				: context.ConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput);
+			OperationConsole console = dotNetProjectConfig.ExternalConsole
+				? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
+				: context.ConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken);
 
 			try {
 				try {

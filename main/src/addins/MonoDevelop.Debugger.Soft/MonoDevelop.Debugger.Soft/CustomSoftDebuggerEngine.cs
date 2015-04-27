@@ -133,8 +133,7 @@ namespace MonoDevelop.Debugger.Soft
 					usingExternalConsole = true;
 					var console = ExternalConsoleFactory.Instance.CreateConsole (info.CloseExternalConsoleOnExit);
 					process = Runtime.ProcessService.StartConsoleProcess (
-						info.Command, info.Arguments, info.WorkingDirectory, info.EnvironmentVariables,
-						console, null);
+						info.Command, info.Arguments, info.WorkingDirectory, console, info.EnvironmentVariables);
 				} else {
 					var psi = new ProcessStartInfo (info.Command, info.Arguments) {
 						WorkingDirectory = info.WorkingDirectory,

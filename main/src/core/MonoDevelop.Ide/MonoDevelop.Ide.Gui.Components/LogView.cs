@@ -443,7 +443,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		#endregion
 
-		public LogViewProgressMonitor GetProgressMonitor ()
+		public OutputProgressMonitor GetProgressMonitor ()
 		{
 			return new LogViewProgressMonitor (this);
 		}
@@ -690,27 +690,31 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 
-	public class LogViewProgressMonitor : ProgressMonitor, IDebugConsole
+	public class LogViewProgressMonitor : OutputProgressMonitor
 	{
 		LogView outputPad;
-		event EventHandler stopRequested;
-		
+
 		LogTextWriter internalLogger = new LogTextWriter ();
 		NotSupportedTextReader inputReader = new NotSupportedTextReader ();
+		OperationConsole console;
 		
-		public LogView LogView {
+		internal LogView LogView {
 			get { return outputPad; }
 		}
 		
-		public LogViewProgressMonitor (LogView pad)
+		internal LogViewProgressMonitor (LogView pad)
 		{
 			outputPad = pad;
 			outputPad.Clear ();
 			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
-			CancellationToken.Register (OnCancelRequested);
+			console = new LogViewProgressConsole (this);
 		}
 
-		public void Cancel ()
+		public override OperationConsole Console {
+			get { return console; }
+		}
+
+		internal void Cancel ()
 		{
 			CancellationTokenSource.Cancel ();
 		}
@@ -741,75 +745,72 @@ namespace MonoDevelop.Ide.Gui.Components
 			base.OnEndTask (name, totalWork, stepWork);
 		}
 
-		public override void Dispose ()
-		{
-			if (outputPad == null) throw GetDisposedException ();
-			outputPad.WriteText ("\n");
-			
-			foreach (string msg in SuccessMessages)
-				outputPad.WriteText (msg + "\n");
-			
-			foreach (string msg in Warnings)
-				outputPad.WriteText (msg + "\n");
-			
-			foreach (ProgressError msg in Errors)
-				outputPad.WriteError (msg.Message + "\n");
-			
-			outputPad = null;
-			base.Dispose ();
-		}
-		
 		Exception GetDisposedException ()
 		{
 			return new InvalidOperationException ("Output progress monitor already disposed.");
 		}
 		
-		void OnCancelRequested ()
-		{
-			if (stopRequested != null)
-				stopRequested (this, null);
-		}
-		
-		TextWriter IConsole.Log {
-			get { return internalLogger; }
-		}
-		
-		TextReader IConsole.In {
-			get { return inputReader; }
-		}
-		
-		TextWriter IConsole.Out {
-			get { return base.Log; }
-		}
-		
-		TextWriter IConsole.Error {
-			get { return base.ErrorLog; }
-		} 
-
-		void IDebugConsole.Debug (int level, string category, string message)
-		{
-			outputPad.WriteDebug (level, category, message);
-		}
-		
-		bool IConsole.CloseOnDispose {
-			get { return false; }
-		}
-		
-		event EventHandler IConsole.CancelRequested {
-			add { stopRequested += value; }
-			remove { stopRequested -= value; }
-		}
-
 		protected override void OnCompleted ()
 		{
+			if (outputPad == null) throw GetDisposedException ();
+			outputPad.WriteText ("\n");
+
+			foreach (string msg in SuccessMessages)
+				outputPad.WriteText (msg + "\n");
+
+			foreach (string msg in Warnings)
+				outputPad.WriteText (msg + "\n");
+
+			foreach (ProgressError msg in Errors)
+				outputPad.WriteError (msg.Message + "\n");
+			
 			base.OnCompleted ();
+
+			outputPad = null;
+
 			if (Completed != null)
 				Completed (this, EventArgs.Empty);
 		}
 
-		public event EventHandler Completed;
-	}
+		internal event EventHandler Completed;
 
+		class LogViewProgressConsole: OperationConsole
+		{
+			LogViewProgressMonitor monitor;
+
+			public LogViewProgressConsole (LogViewProgressMonitor monitor)
+			{
+				this.monitor = monitor;
+				CancellationSource = monitor.CancellationTokenSource;
+			}
+
+			public override TextReader In {
+				get {
+					return monitor.inputReader;
+				}
+			}
+			public override TextWriter Out {
+				get {
+					return monitor.Log;
+				}
+			}
+			public override TextWriter Error {
+				get {
+					return monitor.ErrorLog;
+				}
+			}
+			public override TextWriter Log {
+				get {
+					return monitor.Log;
+				}
+			}
+
+			public override void Debug (int level, string category, string message)
+			{
+				monitor.outputPad.WriteDebug (level, category, message);
+			}
+		}
+	}
 	
 	class NotSupportedTextReader: TextReader
 	{

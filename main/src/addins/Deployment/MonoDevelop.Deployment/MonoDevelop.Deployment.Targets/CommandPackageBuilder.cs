@@ -92,9 +92,9 @@ namespace MonoDevelop.Deployment.Targets
 		protected override bool OnBuild (ProgressMonitor monitor, DeployContext ctx)
 		{
 			string consMsg;
-			IConsole cons;
+			OperationConsole cons;
 			if (ExternalConsole) {
-				cons = ExternalConsoleFactory.Instance.CreateConsole (CloseConsoleWhenDone);
+				cons = ExternalConsoleFactory.Instance.CreateConsole (CloseConsoleWhenDone, monitor.CancellationToken);
 				consMsg = GettextCatalog.GetString ("(in external terminal)");
 			} else {
 				cons = new MonitorConsole (monitor);
@@ -102,7 +102,7 @@ namespace MonoDevelop.Deployment.Targets
 			}
 			
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Executing: {0} {1} {2}", Command, Arguments, consMsg));
-			ProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons, null);
+			ProcessAsyncOperation process = Runtime.ProcessService.StartConsoleProcess (Command, Arguments, workingDirectory, cons);
 			
 			process.Task.Wait ();
 			
@@ -113,7 +113,7 @@ namespace MonoDevelop.Deployment.Targets
 		}
 	}
 	
-	class MonitorConsole: IConsole
+	class MonitorConsole: OperationConsole
 	{
 		StringReader nullReader;
 		ProgressMonitor monitor;
@@ -122,21 +122,15 @@ namespace MonoDevelop.Deployment.Targets
 		public MonitorConsole (ProgressMonitor monitor)
 		{
 			this.monitor = monitor;
-			tr = monitor.CancellationToken.Register (OnCancel);
+			tr = monitor.CancellationToken.Register (CancellationSource.Cancel);
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			tr.Dispose ();
 		}
 		
-		void OnCancel ()
-		{
-			if (CancelRequested != null)
-				CancelRequested (this, EventArgs.Empty);
-		}
-		
-		public TextReader In {
+		public override TextReader In {
 			get {
 				if (nullReader == null)
 					nullReader = new StringReader ("");
@@ -144,22 +138,16 @@ namespace MonoDevelop.Deployment.Targets
 			}
 		}
 		
-		public TextWriter Out {
+		public override TextWriter Out {
 			get { return monitor.Log; }
 		}
 		
-		public TextWriter Error {
+		public override TextWriter Error {
 			get { return monitor.Log; }
 		}
 		
-		public TextWriter Log {
+		public override TextWriter Log {
 			get { return Out; }
 		}
-		
-		public bool CloseOnDispose {
-			get { return false; }
-		}
-		
-		public event EventHandler CancelRequested;
 	}	
 }

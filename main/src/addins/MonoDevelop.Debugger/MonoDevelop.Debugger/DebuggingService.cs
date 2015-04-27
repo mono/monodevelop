@@ -62,7 +62,8 @@ namespace MonoDevelop.Debugger
 		static readonly BreakpointStore breakpoints = new BreakpointStore ();
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 		
-		static IConsole console;
+		static OperationConsole console;
+		static IDisposable cancelRegistration;
 
 		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
 		static DebuggerEngine currentEngine;
@@ -380,7 +381,7 @@ namespace MonoDevelop.Debugger
 			};
 			currentDebugOperation = new DebugAsyncOperation ();
 
-			console.CancelRequested += OnCancelRequested;
+			cancelRegistration = console.CancellationToken.Register (Stop);
 			
 			DispatchService.GuiDispatch (delegate {
 				if (DebugSessionStarted != null)
@@ -395,7 +396,7 @@ namespace MonoDevelop.Debugger
 		{
 			DebuggerSession currentSession;
 			StatusBarIcon currentIcon;
-			IConsole currentConsole;
+			OperationConsole currentConsole;
 
 			lock (cleanup_lock) {
 				if (!IsDebugging)
@@ -427,7 +428,7 @@ namespace MonoDevelop.Debugger
 			currentDebugOperation.Cleanup ();
 
 			if (currentConsole != null) {
-				currentConsole.CancelRequested -= OnCancelRequested;
+				cancelRegistration.Dispose ();
 				currentConsole.Dispose ();
 			}
 			
@@ -534,13 +535,13 @@ namespace MonoDevelop.Debugger
 			NotifyLocationChanged ();
 		}
 
-		public static ProcessAsyncOperation Run (string file, IConsole console)
+		public static ProcessAsyncOperation Run (string file, OperationConsole console)
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			return Run (cmd, console);
 		}
 
-		public static ProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, IConsole console)
+		public static ProcessAsyncOperation Run (string file, string args, string workingDir, IDictionary<string,string> envVars, OperationConsole console)
 		{
 			var cmd = Runtime.ProcessService.CreateCommand (file);
 			if (args != null) 
@@ -552,7 +553,7 @@ namespace MonoDevelop.Debugger
 			return Run (cmd, console);
 		}
 
-		public static ProcessAsyncOperation Run (ExecutionCommand cmd, IConsole console, DebuggerEngine engine = null)
+		public static ProcessAsyncOperation Run (ExecutionCommand cmd, OperationConsole console, DebuggerEngine engine = null)
 		{
 			InternalRun (cmd, engine, console);
 			return currentDebugOperation;
@@ -563,8 +564,8 @@ namespace MonoDevelop.Debugger
 			currentEngine = debugger;
 			session = debugger.CreateSession ();
 			session.ExceptionHandler = ExceptionHandler;
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
-			console = monitor as IConsole;
+			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+			console = monitor.Console;
 			SetupSession ();
 			session.TargetExited += delegate {
 				monitor.Dispose ();
@@ -616,7 +617,7 @@ namespace MonoDevelop.Debugger
 				DisassemblyRequested (null, EventArgs.Empty);
 		}
 		
-		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, IConsole c)
+		internal static void InternalRun (ExecutionCommand cmd, DebuggerEngine factory, OperationConsole c)
 		{
 			if (factory == null) {
 				factory = GetFactoryForCommand (cmd);
@@ -637,7 +638,7 @@ namespace MonoDevelop.Debugger
 			// When using an external console, create a new internal console which will be used
 			// to show the debugger log
 			if (startInfo.UseExternalConsole)
-				console = (IConsole) IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
+				console = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ().Console;
 			else
 				console = c;
 			
@@ -677,19 +678,9 @@ namespace MonoDevelop.Debugger
 		static void DebugWriter (int level, string category, string message)
 		{
 			var logger = console;
-			var debugLogger = logger as IDebugConsole;
 
-			if (logger != null) {
-				if (debugLogger != null) {
-					debugLogger.Debug (level, category, message);
-				} else {
-					if (level == 0 && string.IsNullOrEmpty (category)) {
-						logger.Log.Write (message);
-					} else {
-						logger.Log.Write (string.Format ("[{0}:{1}] {2}", level, category, message));
-					}
-				}
-			}
+			if (logger != null)
+				logger.Debug (level, category, message);
 		}
 
 		static void OutputWriter (bool iserr, string text)
@@ -825,11 +816,6 @@ namespace MonoDevelop.Debugger
 				CallStackChanged (null, EventArgs.Empty);
 		}
 		
-		static void OnCancelRequested (object sender, EventArgs args)
-		{
-			Stop ();
-		}
-
 		public static void Stop ()
 		{
 			if (!IsDebugging)
@@ -1125,7 +1111,7 @@ namespace MonoDevelop.Debugger
 			return SupportedFeatures != DebuggerFeatures.None;
 		}
 
-		public ProcessAsyncOperation Execute (ExecutionCommand cmd, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand cmd, OperationConsole console)
 		{
 			// Never called
 			throw new NotImplementedException ();
@@ -1146,7 +1132,7 @@ namespace MonoDevelop.Debugger
 			return engine.CanDebugCommand (command);
 		}
 
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			return DebuggingService.Run (command, console, engine);
 		}

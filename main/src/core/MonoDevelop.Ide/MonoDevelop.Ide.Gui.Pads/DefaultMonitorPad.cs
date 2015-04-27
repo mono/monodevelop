@@ -40,6 +40,7 @@ using Gtk;
 using Pango;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {	
@@ -113,7 +114,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			set { this.statusSourcePad = value; }
 		}
 		
-		internal ProgressMonitor CurrentMonitor {
+		internal OutputProgressMonitor CurrentMonitor {
 			get { return monitor; }
 		}
 		
@@ -149,12 +150,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			get { return !progressStarted && !buttonPin.Active; }
 		}
 		
-		public ProgressMonitor BeginProgress (string title)
+		public OutputProgressMonitor BeginProgress (string title)
 		{
 			progressStarted = true;
 			
 			logView.Clear ();
-			monitor = logView.GetProgressMonitor ();
+			monitor = (LogViewProgressMonitor) logView.GetProgressMonitor ();
 
 			DispatchService.GuiDispatch (delegate {
 				window.HasNewData = false;

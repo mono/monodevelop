@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide.Execution
 	{
 		public abstract bool CanExecute (ExecutionCommand command);
 		
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			return InternalExecute (new CommandExecutionContext (null, command), new ExecutionMode ("", "", this), command, console);
 		}
 		
-		internal ProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, IConsole console)
+		internal ProcessAsyncOperation InternalExecute (CommandExecutionContext ctx, IExecutionMode mode, ExecutionCommand command, OperationConsole console)
 		{
 			CustomExecutionMode cmode = ExecutionModeCommandService.ShowParamtersDialog (ctx, mode, null);
 			if (cmode == null)
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Execution
 		/// <param name="configurationData">
 		/// Configuration information. Created by the IExecutionConfigurationEditor object.
 		/// </param>
-		public abstract ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, CommandExecutionContext ctx, object configurationData);
+		public abstract ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console, CommandExecutionContext ctx, object configurationData);
 		
 		/// <summary>
 		/// Creates an editor to be used to edit the execution handler arguments.

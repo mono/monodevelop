@@ -164,7 +164,7 @@ namespace MonoDevelop.AspNet.Projects
 			var cmd = CreateExecutionCommand (configuration, cfg);
 			var browserExcTarget = (BrowserExecutionTarget) context.ExecutionTarget;
 
-			IConsole console = null;
+			OperationConsole console = null;
 
 			bool isXsp = true; //FIXME: fix this when it might not be true - should delegate to the ExecutionHandler
 
@@ -182,9 +182,9 @@ namespace MonoDevelop.AspNet.Projects
 				}
 
 				if (cfg.ExternalConsole)
-					console = context.ExternalConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput);
+					console = context.ExternalConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput, monitor.CancellationToken);
 				else
-					console = context.ConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput);
+					console = context.ConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput, monitor.CancellationToken);
 
 				// The running Port value is now captured in the XspBrowserLauncherConsole object
 				string url = String.Format ("http://{0}", XspParameters.Address);

@@ -499,8 +499,8 @@ namespace MonoDevelop.NUnit
 					var root = doc.Root.Elements ("test-suite").FirstOrDefault ();
 					if (root != null) {
 						cons.SetDone ();
-						var ot = cons.Out.ReadToEnd ();
-						var et = cons.Error.ReadToEnd ();
+						var ot = cons.OutReader.ReadToEnd ();
+						var et = cons.ErrorReader.ReadToEnd ();
 						testContext.Monitor.WriteGlobalLog (ot);
 						if (!string.IsNullOrEmpty (et)) {
 							testContext.Monitor.WriteGlobalLog ("ERROR:\n");
@@ -517,8 +517,8 @@ namespace MonoDevelop.NUnit
 				throw new Exception ("Test results could not be parsed.");
 			} catch (Exception ex) {
 				cons.SetDone ();
-				var ot = cons.Out.ReadToEnd ();
-				var et = cons.Error.ReadToEnd ();
+				var ot = cons.OutReader.ReadToEnd ();
+				var et = cons.ErrorReader.ReadToEnd ();
 				testContext.Monitor.WriteGlobalLog (ot);
 				if (!string.IsNullOrEmpty (et)) {
 					testContext.Monitor.WriteGlobalLog ("ERROR:\n");

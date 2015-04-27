@@ -38,10 +38,11 @@ using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Components.Docking;
 using System.Threading;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ProgressMonitorManager : GuiSyncObject, IConsoleFactory
+	public class ProgressMonitorManager : GuiSyncObject
 	{
 		ArrayList searchMonitors = new ArrayList ();
 		ArrayList outputMonitors = new ArrayList ();
@@ -76,12 +77,12 @@ namespace MonoDevelop.Ide.Gui
 			return mon;
 		}
 		
-		public ProgressMonitor GetRunProgressMonitor ()
+		public OutputProgressMonitor GetRunProgressMonitor ()
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.RunProgramIcon, true, true);
 		}
 		
-		public ProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
+		public OutputProgressMonitor GetToolOutputProgressMonitor (bool bringToFront, CancellationTokenSource cs = null)
 		{
 			return GetOutputProgressMonitor ("MonoDevelop.Ide.ToolOutput", GettextCatalog.GetString ("Tool Output"), Stock.RunProgramIcon, bringToFront, true);
 		}
@@ -101,25 +102,28 @@ namespace MonoDevelop.Ide.Gui
 			return GetStatusProgressMonitor (GettextCatalog.GetString ("Saving..."), Stock.StatusSolutionOperation, true, false, lockGui);
 		}
 		
-		public IConsole CreateConsole (bool closeOnDispose)
+		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken)
 		{
-			return (IConsole) GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true);
+			return ((OutputProgressMonitor)GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true)).Console;
 		}
-		
+
+		CustomConsoleFactory customConsoleFactory = new CustomConsoleFactory ();
+		public ConsoleFactory ConsoleFactory {
+			get { return customConsoleFactory; }
+		}
+
+		class CustomConsoleFactory: ConsoleFactory
+		{
+			protected override OperationConsole OnCreateConsole (bool closeOnDispose)
+			{
+				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true)).Console;
+			}
+		}
+
 		/******************************/
 		
 		
-		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs)
-		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, true, false, null);
-		}
-		
-		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui)
-		{
-			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, null);
-		}
-		
-		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle, bool lockGui, Pad statusSourcePad)
+		public ProgressMonitor GetStatusProgressMonitor (string title, IconId icon, bool showErrorDialogs, bool showTaskTitle = true, bool lockGui = false, Pad statusSourcePad = null)
 		{
 			return new StatusProgressMonitor (title, icon, showErrorDialogs, showTaskTitle, lockGui, statusSourcePad);
 		}
@@ -129,19 +133,12 @@ namespace MonoDevelop.Ide.Gui
 			return new BackgroundProgressMonitor (title, icon);
 		}
 		
-		public ProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
+		public OutputProgressMonitor GetOutputProgressMonitor (string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
 		{
-			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse);
+			return GetOutputProgressMonitor (null, title, icon, bringToFront, allowMonitorReuse, visible);
 		}
 		
-		public ProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse)
-		{
-			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
-			pad.Visible = true;
-			return ((DefaultMonitorPad) pad.Content).BeginProgress (title);
-		}
-
-		public ProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible)
+		public OutputProgressMonitor GetOutputProgressMonitor (string id, string title, IconId icon, bool bringToFront, bool allowMonitorReuse, bool visible = true)
 		{
 			Pad pad = CreateMonitorPad (id, title, icon, bringToFront, allowMonitorReuse, true);
 			pad.Visible = visible;

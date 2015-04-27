@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProgressMonitor : ProgressMonitor
 	{
-		ProgressMonitor consoleMonitor;
+		OutputProgressMonitor consoleMonitor;
 		CancellationTokenRegistration consoleMonitorReg;
 		CancellationTokenRegistration statusMonitorReg;
 
@@ -45,11 +45,11 @@ namespace MonoDevelop.PackageManagement
 			get { return consoleMonitor; }
 		}
 
-		public IConsole Console {
-			get { return (IConsole)this.consoleMonitor; }
+		public OperationConsole Console {
+			get { return consoleMonitor.Console; }
 		}
 
-		public PackageManagementProgressMonitor (ProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
+		public PackageManagementProgressMonitor (OutputProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
 		{
 			AddSlaveMonitor (statusMonitor);
 			this.consoleMonitor = consoleMonitor;

@@ -39,7 +39,7 @@ namespace MonoDevelop.Debugger
 	{
 		public static bool CanDebug (this ProjectOperations opers, IBuildTarget entry)
 		{
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.CanExecute (entry, context);
 		}
 
@@ -48,7 +48,7 @@ namespace MonoDevelop.Debugger
 			if (opers.CurrentRunOperation != null && !opers.CurrentRunOperation.IsCompleted)
 				return opers.CurrentRunOperation;
 
-			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			ExecutionContext context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 
 			AsyncOperation op = opers.Execute (entry, context, buildBeforeExecuting);
 			SwitchToDebugLayout (op);
@@ -57,13 +57,13 @@ namespace MonoDevelop.Debugger
 
 		public static bool CanDebugFile (this ProjectOperations opers, string file)
 		{
-			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.CanExecuteFile (file, context);
 		}
 
 		public static AsyncOperation DebugFile (this ProjectOperations opers, string file)
 		{
-			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
+			var context = new ExecutionContext (DebuggingService.GetExecutionHandler (), IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return opers.ExecuteFile (file, context);
 		}
 
@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger
 
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 
-			var oper = DebuggingService.Run (executableFile, args, workingDir, envVars, (IConsole) monitor);
+			var oper = DebuggingService.Run (executableFile, args, workingDir, envVars, monitor.Console);
 			opers.CurrentRunOperation = oper;
 
 			oper.Task.ContinueWith (t => {

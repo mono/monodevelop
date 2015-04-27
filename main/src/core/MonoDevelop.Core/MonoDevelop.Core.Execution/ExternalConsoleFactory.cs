@@ -28,55 +28,41 @@
 
 using System;
 using System.IO;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
-	public sealed class ExternalConsoleFactory: IConsoleFactory
+	public sealed class ExternalConsoleFactory: ConsoleFactory
 	{
 		public static ExternalConsoleFactory Instance = new ExternalConsoleFactory ();
 		
-		public IConsole CreateConsole (bool closeOnDispose)
+		protected override OperationConsole OnCreateConsole (bool closeOnDispose)
 		{
 			return new ExternalConsole (closeOnDispose);
 		}
 	}
 	
-	public sealed class ExternalConsole: IConsole
+	public sealed class ExternalConsole: OperationConsole
 	{
-		bool closeOnDispose;
-		
 		internal ExternalConsole (bool closeOnDispose)
 		{
-			this.closeOnDispose = closeOnDispose;
+			CloseOnDispose = closeOnDispose;
 		}
 		
-		public TextReader In {
+		public override TextReader In {
 			get { return Console.In; }
 		}
 		
-		public TextWriter Out {
+		public override TextWriter Out {
 			get { return Console.Out; }
 		}
 		
-		public TextWriter Error {
+		public override TextWriter Error {
 			get { return Console.Error; }
 		}
 		
-		public bool CloseOnDispose {
-			get { return closeOnDispose; }
-		}
-		
-		public TextWriter Log {
+		public override TextWriter Log {
 			get { return Out; }
-		}
-		
-		public void Dispose ()
-		{
-		}
-		
-		public event EventHandler CancelRequested {
-			add {}
-			remove {}
 		}
 	}
 }

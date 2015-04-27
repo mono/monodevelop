@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public ProgressMonitor CreateProgressMonitor (string title)
 		{
-			ProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
+			OutputProgressMonitor consoleMonitor = CreatePackageConsoleOutputMonitor ();
 
 			Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (consoleMonitor);
 
@@ -51,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 			return new PackageManagementProgressMonitor (consoleMonitor, statusMonitor);
 		}
 
-		ProgressMonitor CreatePackageConsoleOutputMonitor ()
+		OutputProgressMonitor CreatePackageConsoleOutputMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
 				"PackageConsole",

@@ -364,35 +364,22 @@ namespace MonoDevelop.Core.Execution
 
 	}
 	
-	class ProcessHostConsole: IConsole
+	class ProcessHostConsole: OperationConsole
 	{
-		//nothing fires this event so make a dummy implementation to keep csc happy
-		event EventHandler IConsole.CancelRequested { add { } remove {} }
-		
-		public TextReader In {
+		public override TextReader In {
 			get { return Console.In; }
 		}
 		
-		public TextWriter Out {
+		public override TextWriter Out {
 			get { return Console.Out; }
 		}
 		
-		public TextWriter Error {
+		public override TextWriter Error {
 			get { return Console.Error; }
 		}
 		
-		public TextWriter Log {
+		public override TextWriter Log {
 			get { return Out; }
-		}
-		
-		public bool CloseOnDispose {
-			get {
-				return false;
-			}
-		}
-		
-		public void Dispose ()
-		{
 		}
 	}
 }

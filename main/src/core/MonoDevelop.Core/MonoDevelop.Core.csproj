@@ -135,8 +135,6 @@
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProgressTracker.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DefaultExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExternalConsoleFactory.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IConsole.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IConsoleFactory.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\MonoPlatformExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Core.Execution\NativePlatformExecutionHandler.cs" />
@@ -446,7 +444,6 @@
     <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
     <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
     <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />
-    <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
@@ -519,6 +516,9 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceObjectReader.cs" />
     <Compile Include="MonoDevelop.Projects\LanguageBinding.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\LanguageBindingExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OperationConsole.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\ConsoleFactory.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\OutputProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -115,10 +115,19 @@ namespace MonoDevelop.Ide.Templates
 				projectOptions.SetAttribute ("language", defaultLanguage);
 
 			var lang = projectOptions.GetAttribute ("language");
-			var projectTypes = !string.IsNullOrEmpty (type) ? type.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim()).ToArray() : new string[] {lang};
+			var splitType = !string.IsNullOrEmpty (type) ? type.Split (new char [] {','}, StringSplitOptions.RemoveEmptyEntries).Select (t => t.Trim()).ToArray() : null;
+			var projectTypes = splitType != null ? splitType : new string[] {lang};
 
 			var projectType = projectTypes [0];
-			string[] flavors = projectTypes.Skip (1).ToArray ();
+
+			string[] flavors;
+
+			if (!Services.ProjectService.CanCreateProject (projectType, projectCreateInformation, projectOptions) && projectType != lang && !string.IsNullOrEmpty (lang)) {
+				// Maybe the type of the template is just a flavor id. In that case try using the language as project type.
+				projectType = lang;
+				flavors = splitType ?? new string[0];
+			} else
+				flavors = projectTypes.Skip (1).ToArray ();
 
 			if (!Services.ProjectService.CanCreateProject (projectType, projectCreateInformation, projectOptions)) {
 				LoggingService.LogError ("Could not create project of type '" + string.Join (",", projectTypes) + "'. Project skipped");

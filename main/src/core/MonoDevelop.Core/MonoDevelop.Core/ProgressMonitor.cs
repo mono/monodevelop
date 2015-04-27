@@ -37,6 +37,7 @@ namespace MonoDevelop.Core
 		ProgressTask currentTask;
 		ProgressTask parentRootTask;
 		ProgressTask rootTask;
+		bool disposed;
 
 		LogTextWriter logWriter;
 		LogTextWriter errorLogWriter;
@@ -85,6 +86,9 @@ namespace MonoDevelop.Core
 
 		public virtual void Dispose ()
 		{
+			if (disposed)
+				return;
+			disposed = true;
 			var t = parentRootTask;
 			parentRootTask = null;
 			while (currentTask != t && currentTask != null)

@@ -119,12 +119,12 @@ namespace MonoDevelop.Ide.Execution
 			return false;
 		}
 		
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			return Execute (command, console, true, false);
 		}
 		
-		public ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console, bool allowPrompt, bool forcePrompt)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console, bool allowPrompt, bool forcePrompt)
 		{
 			if ((PromptForParameters || forcePrompt) && allowPrompt) {
 				var ctx = new CommandExecutionContext (Project, command);

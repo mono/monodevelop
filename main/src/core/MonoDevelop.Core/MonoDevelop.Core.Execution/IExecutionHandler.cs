@@ -57,7 +57,7 @@ namespace MonoDevelop.Core.Execution
 		/// <param name='console'>
 		/// Console where to log the output
 		/// </param>
-		ProcessAsyncOperation Execute (ExecutionCommand command, IConsole console);
+		ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console);
 	}
 
 	/// <summary>

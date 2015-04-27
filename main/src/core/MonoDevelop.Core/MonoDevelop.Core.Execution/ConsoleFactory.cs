@@ -1,5 +1,5 @@
 //
-// IConsole.cs
+// IConsoleFactory.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,18 +27,20 @@
 //
 
 using System;
-using System.IO;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
-	public interface IConsole: IDisposable
+	public abstract class ConsoleFactory
 	{
-		TextReader In { get; }
-		TextWriter Out { get; }
-		TextWriter Error { get; }
-		TextWriter Log { get; }
-		bool CloseOnDispose { get; }
-		
-		event EventHandler CancelRequested;
+		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var c = OnCreateConsole (closeOnDispose);
+			if (cancellationToken != default(CancellationToken))
+				c.BindToCancelToken (cancellationToken);
+			return c;
+		}
+
+		protected abstract OperationConsole OnCreateConsole (bool closeOnDispose);
 	}
 }

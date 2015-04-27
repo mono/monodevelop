@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Execution
 				return true;
 			}
 			
-			public ProcessAsyncOperation Execute (MonoDevelop.Core.Execution.ExecutionCommand command, MonoDevelop.Core.Execution.IConsole console)
+			public ProcessAsyncOperation Execute (MonoDevelop.Core.Execution.ExecutionCommand command, MonoDevelop.Core.Execution.OperationConsole console)
 			{
 				throw new InvalidOperationException ();
 			}

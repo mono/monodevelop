@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger.Soft
 			startArgs.ExternalConsoleLauncher = delegate (System.Diagnostics.ProcessStartInfo info) {
 				ProcessAsyncOperation oper;
 				oper = Runtime.ProcessService.StartConsoleProcess (info.FileName, info.Arguments, info.WorkingDirectory,
-					varsCopy, ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), null);
+					ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), varsCopy);
 				return new ProcessAdapter (oper, Path.GetFileName (info.FileName));
 			};
 
