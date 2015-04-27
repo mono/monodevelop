@@ -1351,7 +1351,7 @@ namespace MonoDevelop.Projects
 
 			OperationConsole console = dotNetProjectConfig.ExternalConsole
 				? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
-				: context.ConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken);
+				: context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 
 			try {
 				try {

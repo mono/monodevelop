@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 
 		class CustomConsoleFactory: OperationConsoleFactory
 		{
-			protected override OperationConsole OnCreateConsole (bool closeOnDispose)
+			protected override OperationConsole OnCreateConsole ()
 			{
 				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true)).Console;
 			}

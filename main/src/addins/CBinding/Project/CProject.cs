@@ -361,7 +361,7 @@ namespace CBinding
 			if (conf.ExternalConsole)
 				console = context.ExternalConsoleFactory.CreateConsole (!pause, monitor.CancellationToken);
 			else
-				console = context.ConsoleFactory.CreateConsole (!pause, monitor.CancellationToken);
+				console = context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 			
 			try {
 				ExecutionCommand cmd = CreateExecutionCommand (conf);

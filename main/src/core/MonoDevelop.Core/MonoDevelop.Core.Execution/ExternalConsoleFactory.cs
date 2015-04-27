@@ -36,9 +36,17 @@ namespace MonoDevelop.Core.Execution
 	{
 		public static ExternalConsoleFactory Instance = new ExternalConsoleFactory ();
 		
-		protected override OperationConsole OnCreateConsole (bool closeOnDispose)
+		public new ExternalConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return new ExternalConsole (closeOnDispose);
+			var c = new ExternalConsole (closeOnDispose);
+			if (cancellationToken != default(CancellationToken))
+				c.BindToCancelToken (cancellationToken);
+			return c;
+		}
+
+		protected override OperationConsole OnCreateConsole ()
+		{
+			return new ExternalConsole (true);
 		}
 	}
 	

@@ -184,7 +184,7 @@ namespace MonoDevelop.AspNet.Projects
 				if (cfg.ExternalConsole)
 					console = context.ExternalConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput, monitor.CancellationToken);
 				else
-					console = context.ConsoleFactory.CreateConsole (!cfg.PauseConsoleOutput, monitor.CancellationToken);
+					console = context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 
 				// The running Port value is now captured in the XspBrowserLauncherConsole object
 				string url = String.Format ("http://{0}", XspParameters.Address);

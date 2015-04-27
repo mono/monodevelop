@@ -66,7 +66,7 @@ namespace MonoDevelop.Projects
 			get { return consoleFactory; }
 		}
 		
-		public OperationConsoleFactory ExternalConsoleFactory {
+		public ExternalConsoleFactory ExternalConsoleFactory {
 			get { return MonoDevelop.Core.Execution.ExternalConsoleFactory.Instance; }
 		}
 	}

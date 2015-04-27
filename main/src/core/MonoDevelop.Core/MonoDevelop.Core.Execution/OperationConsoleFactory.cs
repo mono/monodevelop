@@ -33,14 +33,14 @@ namespace MonoDevelop.Core.Execution
 {
 	public abstract class OperationConsoleFactory
 	{
-		public OperationConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
+		public OperationConsole CreateConsole (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var c = OnCreateConsole (closeOnDispose);
+			var c = OnCreateConsole ();
 			if (cancellationToken != default(CancellationToken))
 				c.BindToCancelToken (cancellationToken);
 			return c;
 		}
 
-		protected abstract OperationConsole OnCreateConsole (bool closeOnDispose);
+		protected abstract OperationConsole OnCreateConsole ();
 	}
 }

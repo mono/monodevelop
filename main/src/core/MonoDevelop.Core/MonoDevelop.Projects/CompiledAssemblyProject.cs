@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects
 
 			OperationConsole console = conf.ExternalConsole
 				? context.ExternalConsoleFactory.CreateConsole (!conf.PauseConsoleOutput, monitor.CancellationToken)
-				: context.ConsoleFactory.CreateConsole (!conf.PauseConsoleOutput, monitor.CancellationToken);
+				: context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 			
 			try {
 				try {
