@@ -251,6 +251,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			widget.InsertItem (StatusBarId, statusBarIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
+
+			// NSButton -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
+			viewCache.Add (runButton.Superview.Superview.Superview);
 		}
 
 		#region IMainToolbarView implementation
