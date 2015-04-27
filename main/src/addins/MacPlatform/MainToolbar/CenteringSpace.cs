@@ -27,6 +27,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -41,7 +42,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override void ViewDidMoveToWindow ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif => toolbarItem.UpdateWidth ());
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notif =>
+				DispatchService.GuiDispatch (toolbarItem.UpdateWidth));
 			base.ViewDidMoveToWindow ();
 		}
 	}

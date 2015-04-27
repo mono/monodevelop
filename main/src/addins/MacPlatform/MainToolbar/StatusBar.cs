@@ -197,7 +197,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => DispatchService.GuiDispatch (() => {
 				if (Window == null)
 					return;
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
 					buildResultText.ContentsScale = Window.BackingScaleFactor;
 				}
-			});
+			}));
 
 			AddSubview (imageView);
 			AddSubview (textField);
