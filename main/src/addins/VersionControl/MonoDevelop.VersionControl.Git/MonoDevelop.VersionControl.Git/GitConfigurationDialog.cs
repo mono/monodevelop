@@ -310,5 +310,19 @@ namespace MonoDevelop.VersionControl.Git
 			string tagName = (string) storeTags.GetValue (it, 0);
 			repo.PushTag (tagName);
 		}
+
+		protected void OnButtonFetchClicked (object sender, EventArgs e)
+		{
+			TreeIter it;
+			if (!treeRemotes.Selection.GetSelected (out it))
+				return;
+
+			string remoteName = (string) storeRemotes.GetValue (it, 4);
+			if (remoteName == null)
+				return;
+
+			repo.Fetch (VersionControlService.GetProgressMonitor ("Fetching remote..."), remoteName);
+			FillRemotes ();
+		}
 	}
 }

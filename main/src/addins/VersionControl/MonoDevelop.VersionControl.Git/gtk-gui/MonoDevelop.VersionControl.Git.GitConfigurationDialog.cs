@@ -34,6 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.Button buttonRemoveRemote;
 		private global::Gtk.HSeparator hseparator2;
 		private global::Gtk.Button buttonTrackRemote;
+		private global::Gtk.Button buttonFetch;
 		private global::Gtk.Label label2;
 		private global::Gtk.Button buttonOk;
 
@@ -298,17 +299,28 @@ namespace MonoDevelop.VersionControl.Git
 			w25.Position = 4;
 			w25.Expand = false;
 			w25.Fill = false;
-			this.hbox2.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox5]));
-			w26.Position = 1;
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.buttonFetch = new global::Gtk.Button ();
+			this.buttonFetch.CanFocus = true;
+			this.buttonFetch.Name = "buttonFetch";
+			this.buttonFetch.UseUnderline = true;
+			this.buttonFetch.Label = global::Mono.Unix.Catalog.GetString ("Fetch");
+			this.vbox5.Add (this.buttonFetch);
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.buttonFetch]));
+			w26.Position = 5;
 			w26.Expand = false;
 			w26.Fill = false;
+			this.hbox2.Add (this.vbox5);
+			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox5]));
+			w27.Position = 1;
+			w27.Expand = false;
+			w27.Fill = false;
 			this.vbox4.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox2]));
-			w27.Position = 0;
+			global::Gtk.Box.BoxChild w28 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox2]));
+			w28.Position = 0;
 			this.notebook1.Add (this.vbox4);
-			global::Gtk.Notebook.NotebookChild w28 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox4]));
-			w28.Position = 2;
+			global::Gtk.Notebook.NotebookChild w29 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox4]));
+			w29.Position = 2;
 			// Notebook tab
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -316,14 +328,14 @@ namespace MonoDevelop.VersionControl.Git
 			this.notebook1.SetTabLabel (this.vbox4, this.label2);
 			this.label2.ShowAll ();
 			w1.Add (this.notebook1);
-			global::Gtk.Box.BoxChild w29 = ((global::Gtk.Box.BoxChild)(w1 [this.notebook1]));
-			w29.Position = 0;
+			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(w1 [this.notebook1]));
+			w30.Position = 0;
 			// Internal child MonoDevelop.VersionControl.Git.GitConfigurationDialog.ActionArea
-			global::Gtk.HButtonBox w30 = this.ActionArea;
-			w30.Name = "dialog1_ActionArea";
-			w30.Spacing = 10;
-			w30.BorderWidth = ((uint)(5));
-			w30.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w31 = this.ActionArea;
+			w31.Name = "dialog1_ActionArea";
+			w31.Spacing = 10;
+			w31.BorderWidth = ((uint)(5));
+			w31.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -333,9 +345,9 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-close";
 			this.AddActionWidget (this.buttonOk, -7);
-			global::Gtk.ButtonBox.ButtonBoxChild w31 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w30 [this.buttonOk]));
-			w31.Expand = false;
-			w31.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w32 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w31 [this.buttonOk]));
+			w32.Expand = false;
+			w32.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
@@ -353,6 +365,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonEditRemote.Clicked += new global::System.EventHandler (this.OnButtonEditRemoteClicked);
 			this.buttonRemoveRemote.Clicked += new global::System.EventHandler (this.OnButtonRemoveRemoteClicked);
 			this.buttonTrackRemote.Clicked += new global::System.EventHandler (this.OnButtonTrackRemoteClicked);
+			this.buttonFetch.Clicked += new global::System.EventHandler (this.OnButtonFetchClicked);
 		}
 	}
 }
