@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
 					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
 					if (openedProject != null)
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith ((t) => IdeApp.OpenFiles (startupInfo.RequestedFileList));
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
 				}
 				if (openedProject == null)
 					IdeApp.OpenFiles (startupInfo.RequestedFileList);

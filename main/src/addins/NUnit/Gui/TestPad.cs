@@ -45,6 +45,7 @@ using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.NUnit
 {
@@ -488,7 +489,7 @@ namespace MonoDevelop.NUnit
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
 			runningTestOperation = testService.RunTest (test, mode);
-			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted ());
+			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return runningTestOperation;
 		}
 		

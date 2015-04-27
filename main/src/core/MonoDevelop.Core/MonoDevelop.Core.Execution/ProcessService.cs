@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -156,7 +157,7 @@ namespace MonoDevelop.Core.Execution
 			// p.EnableRaisingEvents = true;
 			
 			if (exited != null)
-				p.Task.ContinueWith (t => exited (p, EventArgs.Empty));
+				p.Task.ContinueWith (t => exited (p, EventArgs.Empty), TaskScheduler.FromCurrentSynchronizationContext ());
 
 			Counters.ProcessesStarted++;
 			p.Start ();
@@ -209,7 +210,7 @@ namespace MonoDevelop.Core.Execution
 
 				if (p != null) {
 					if (exited != null)
-						p.Task.ContinueWith (t => exited (p, EventArgs.Empty));
+						p.Task.ContinueWith (t => exited (p, EventArgs.Empty), TaskScheduler.FromCurrentSynchronizationContext ());
 					Counters.ProcessesStarted++;
 					return p;
 				} else {
@@ -415,7 +416,7 @@ namespace MonoDevelop.Core.Execution
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Task.ContinueWith (t => OnOperationCompleted ());
+			operation.Task.ContinueWith (t => OnOperationCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		

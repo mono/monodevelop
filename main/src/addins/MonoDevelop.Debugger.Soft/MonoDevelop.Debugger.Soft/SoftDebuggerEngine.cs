@@ -35,6 +35,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger.Soft
 {
@@ -167,7 +168,7 @@ namespace MonoDevelop.Debugger.Soft
 			oper.Task.ContinueWith (t => {
 				if (Exited != null)
 					Exited (this, EventArgs.Empty);
-			});
+			}, TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 		
 		#region IProcess implementation

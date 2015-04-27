@@ -297,6 +297,17 @@ namespace MonoDevelop.Core
 				if (mainSynchronizationContext != null && value != null)
 					throw new InvalidOperationException ("The main synchronization context has already been set");
 				mainSynchronizationContext = value;
+				taskScheduler = null;
+			}
+		}
+
+
+		static TaskScheduler taskScheduler;
+		public static TaskScheduler MainTaskScheduler {
+			get {
+				if (taskScheduler == null)
+					RunInMainThread (() => taskScheduler =TaskScheduler.FromCurrentSynchronizationContext ()).Wait ();
+				return taskScheduler;
 			}
 		}
 

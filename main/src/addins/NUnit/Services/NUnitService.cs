@@ -93,7 +93,7 @@ namespace MonoDevelop.NUnit
 		public AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
-			result.Task.ContinueWith (t => OnTestSessionCompleted ());
+			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
 		

@@ -308,18 +308,14 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		//methods
-		public Task<bool> OpenCreatedSolution ()
+		public async Task<bool> OpenCreatedSolution ()
 		{
-			var asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName);
-			return asyncOperation.ContinueWith (t => {
-				if (t.Result) {
-					foreach (string action in actions) {
-						IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
-					}
-					return true;
-				}
-				return false;
-			});
+			if (await IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName)) {
+				foreach (string action in actions)
+					IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
+				return true;
+			}
+			return false;
 		}
 
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)

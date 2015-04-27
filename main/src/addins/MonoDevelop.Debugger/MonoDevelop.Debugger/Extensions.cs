@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -83,7 +84,7 @@ namespace MonoDevelop.Debugger
 			oper.Task.ContinueWith (t => {
 				monitor.Dispose ();
 				IdeApp.Workbench.CurrentLayout = oldLayout;
-			});
+			}, TaskScheduler.FromCurrentSynchronizationContext ());
 
 			return oper;
 		}
@@ -107,7 +108,7 @@ namespace MonoDevelop.Debugger
 
 			oper.Task.ContinueWith (t => {
 				IdeApp.Workbench.CurrentLayout = oldLayout;
-			});
+			}, TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 	}
 }
