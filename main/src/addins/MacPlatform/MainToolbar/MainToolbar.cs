@@ -210,7 +210,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSToolbarItem CreateCenteringSpaceItem ()
 		{
-			return new CenteringSpaceToolbarItem (CenteringSpaceId);
+			var item = new CenteringSpaceToolbarItem (CenteringSpaceId);
+			viewCache.Add (item.View);
+			return item;
 		}
 
 		public MainToolbar (Gtk.Window window)
