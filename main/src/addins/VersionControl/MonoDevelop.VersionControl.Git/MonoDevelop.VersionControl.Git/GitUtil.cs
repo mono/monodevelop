@@ -67,7 +67,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var path = LibGit2Sharp.Repository.Init (targetLocalPath);
 			var repo = new LibGit2Sharp.Repository (path);
-			repo.Network.Remotes.Add ("origin", url);
+			if (!string.IsNullOrEmpty (url))
+				repo.Network.Remotes.Add ("origin", url);
 			return repo;
 		}
 
