@@ -628,16 +628,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-	
-		internal static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId analysisDocument, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			foreach (var w in Workspaces) {
-				var doc = w.GetDocument (analysisDocument, cancellationToken);
-				if (doc != null)
-					return doc;
-			}
-			return null;
-		}
 
 		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
@@ -682,7 +672,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static Microsoft.CodeAnalysis.Document GetCodeAnysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
+		public static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (docId == null)
 				throw new ArgumentNullException ("docId");
