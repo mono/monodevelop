@@ -326,7 +326,9 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			projections = ctx.GetPartialProjectionsAsync ().Result;
+			var task = ctx.GetPartialProjectionsAsync ();
+			if (task != null)
+				projections = task.Result;
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension != null) {
 				return projectedExtension.KeyPress (descriptor);

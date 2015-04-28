@@ -39,6 +39,17 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public sealed class ParseOptions
 	{
+		string buildAction;
+
+		public string BuildAction {
+			get {
+				return buildAction ?? "Compile";
+			}
+			set {
+				buildAction = value;
+			}
+		}
+
 		public string FileName { get; set; } 
 
 		public ITextSource Content { get; set; }

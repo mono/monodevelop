@@ -198,13 +198,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
 		{
-			var parser = GetParser (mimeType);
-			if (parser == null)
-				return false;
 			var projectFile = project.GetProjectFile (fileName);
 			if (projectFile == null)
 				return false;
-
+			var parser = GetParser (mimeType, projectFile.BuildAction);
+			if (parser == null)
+				return false;
 			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
 		}
 
@@ -230,7 +229,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (options.FileName == null)
 				throw new ArgumentNullException ("fileName");
 
-			var parser = GetParser (mimeType);
+			var parser = GetParser (mimeType, options.BuildAction);
 			if (parser == null)
 				return Task.FromResult ((ParsedDocumentProjection)null);
 
@@ -240,11 +239,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (options.Project != null) {
 					var Workspace = Workspaces.First () ;
 					var projectId = Workspace.GetProjectId (options.Project);
+
 					if (projectId != null) {
 						foreach (var projection in result.Result.Projections) {
 							var docId = Workspace.GetDocumentId (projectId, projection.Document.FileName);
-							if (docId != null)
+							if (docId != null) {
 								Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+							}
 						}
 					}
 				}

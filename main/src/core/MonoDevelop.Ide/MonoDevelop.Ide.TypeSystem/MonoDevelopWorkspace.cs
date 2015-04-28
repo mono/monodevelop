@@ -362,7 +362,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var sourceCodeKind = f.FilePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
-				id.GetOrCreateDocumentId (f.Name),
+				id.GetOrCreateDocumentId (f.FilePath),
 				f.FilePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				sourceCodeKind,
@@ -385,23 +385,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			public List<Projection> Projections = new List<Projection> ();
 		}
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			var duplicates = new HashSet<DocumentId> ();
 			foreach (var f in p.Files) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
-					if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
+					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (p.Name, id, f);
+					yield return CreateDocumentInfo (p.Name, projectData, f);
 					continue;
 				}
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
-					continue;
-				if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
 					continue;
 				var options = new ParseOptions {
 					FileName = f.FilePath,
@@ -413,9 +411,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				entry.File = f;
 				foreach (var projection in projections.Result) {
 					entry.Projections.Add (projection);
+					if (!duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
+						continue;
 					var plainName = projection.Document.FileName.FileName;
 					yield return DocumentInfo.Create (
-						id.GetOrCreateDocumentId (plainName),
+						projectData.GetOrCreateDocumentId (projection.Document.FileName),
 						plainName,
 						new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 						SourceCodeKind.Regular,
@@ -756,11 +756,21 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			foreach (var project in this.projectDataMap.Keys) {
-				var docId = this.GetDocumentId (project, fileName);
-				if (docId == null)
-					continue;
-				base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+			foreach (var kv in this.projectDataMap) {
+				var projectId = kv.Key;
+				var docId = this.GetDocumentId (projectId, fileName);
+				if (docId != null) {
+					base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+				}
+				var monoProject = GetMonoProject (projectId);
+				if (monoProject != null) {
+					var pf = monoProject.GetProjectFile (fileName);
+					if (pf != null) {
+						TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction },
+														   DesktopService.GetMimeTypeForUri (fileName));
+					}
+				}
+
 			}
 		}
 
@@ -862,7 +872,9 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-	
+
+
+
 		/// <summary>
 		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
 		/// back to the original physical file.
