@@ -36,6 +36,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.Remoting.Messaging;
 using MonoDevelop.Core.StringParsing;
+using System.Threading;
 
 
 namespace MonoDevelop.Projects
@@ -47,6 +48,8 @@ namespace MonoDevelop.Projects
 		bool isShared;
 		object localLock = new object ();
 		ExtensionContext extensionContext;
+		CancellationTokenSource disposeCancellation = new CancellationTokenSource ();
+		HashSet<Task> activeTasks = new HashSet<Task> ();
 
 		internal protected void Initialize<T> (T instance)
 		{
@@ -76,6 +79,54 @@ namespace MonoDevelop.Projects
 		{
 			if (isShared)
 				Runtime.AssertMainThread ();
+		}
+
+		/// <summary>
+		/// This CancellationTokenSource is used to cancel all async operations when the object is disposed.
+		/// </summary>
+		protected CancellationToken InstanceCancellationToken {
+			get { return disposeCancellation.Token; }
+		}
+
+		/// <summary>
+		/// Binds a task to this object. The object will track the task execution and if the object is disposed,
+		/// it will try to cancel the task and will wait for the task to end.
+		/// </summary>
+		/// <returns>The task returned by the provided lambda.</returns>
+		/// <param name="f">A lambda that takes a CancellationToken token as argument and returns the task
+		/// to be tracked. The provided CancellationToken will be signalled when the object is disposed.</param>
+		/// <typeparam name="T">Task return type</typeparam>
+		public Task<T> BindTask<T> (Func<CancellationToken, Task<T>> f)
+		{
+			lock (activeTasks) {
+				var t = f (disposeCancellation.Token);
+				activeTasks.Add (t);
+				t.ContinueWith (tr => {
+					lock (activeTasks)
+						activeTasks.Remove (t);
+				});
+				return t;
+			}
+		}
+
+		/// <summary>
+		/// Binds a task to this object. The object will track the task execution and if the object is disposed,
+		/// it will try to cancel the task and will wait for the task to end.
+		/// </summary>
+		/// <returns>The task returned by the provided lambda.</returns>
+		/// <param name="f">A lambda that takes a CancellationToken token as argument and returns the task
+		/// to be tracked. The provided CancellationToken will be signalled when the object is disposed.</param>
+		public Task BindTask (Func<CancellationToken, Task> f)
+		{
+			lock (activeTasks) {
+				var t = f (disposeCancellation.Token);
+				activeTasks.Add (t);
+				t.ContinueWith (tr => {
+					lock (activeTasks)
+						activeTasks.Remove (t);
+				});
+				return t;
+			}
 		}
 
 		/// <summary>
@@ -152,7 +203,7 @@ namespace MonoDevelop.Projects
 		/// </value>
 		internal protected bool Disposed { get; private set; }
 
-		public virtual void Dispose ()
+		public void Dispose ()
 		{
 			AssertMainThread ();
 
@@ -161,6 +212,21 @@ namespace MonoDevelop.Projects
 
 			Disposed = true;
 
+			disposeCancellation.Cancel ();
+
+			Task[] allTasks;
+
+			lock (activeTasks)
+				allTasks = activeTasks.ToArray ();
+
+			if (allTasks.Length > 0)
+				Task.WhenAll (allTasks).ContinueWith (t => OnDispose (), TaskScheduler.FromCurrentSynchronizationContext ());
+			else
+				OnDispose ();
+		}
+
+		protected virtual void OnDispose ()
+		{
 			if (extensionChain != null) {
 				extensionChain.Dispose ();
 				extensionChain = null;

@@ -280,10 +280,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				ProcessProject (p);
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
 			DisconnectFromSolution ();
+			base.OnDispose ();
 		}
 
 		void DisconnectFromSolution ()

@@ -36,7 +36,7 @@ namespace MonoDevelop.Core.Execution
 	{
 		public static ExternalConsoleFactory Instance = new ExternalConsoleFactory ();
 		
-		public new ExternalConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
+		public ExternalConsole CreateConsole (bool closeOnDispose, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var c = new ExternalConsole (closeOnDispose);
 			if (cancellationToken != default(CancellationToken))

@@ -193,7 +193,7 @@ namespace MonoDevelop.Projects
 				return base.OnGetExtendedProperties ();
 		}
 		
-		public override void Dispose()
+		protected override void OnDispose ()
 		{
 			if (items != null) {
 				foreach (SolutionFolderItem e in items)
@@ -201,7 +201,7 @@ namespace MonoDevelop.Projects
 				items = null;
 			}
 			files = null;
-			base.Dispose ();
+			base.OnDispose ();
 		}
 		
 		public async Task<SolutionFolderItem> ReloadItem (ProgressMonitor monitor, SolutionFolderItem sitem)

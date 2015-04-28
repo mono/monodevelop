@@ -61,12 +61,11 @@ namespace MonoDevelop.Projects
 			items.SetShared ();
 		}
 		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			AssertMainThread ();
-			base.Dispose ();
 			foreach (WorkspaceItem it in Items)
 				it.Dispose ();
+			base.OnDispose ();
 		}
 
 		[ThreadSafe]

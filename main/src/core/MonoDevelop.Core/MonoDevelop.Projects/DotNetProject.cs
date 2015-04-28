@@ -549,7 +549,7 @@ namespace MonoDevelop.Projects
 			set { usePartialTypes = value; }
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (composedAssemblyContext != null) {
 				composedAssemblyContext.Dispose ();
@@ -565,7 +565,7 @@ namespace MonoDevelop.Projects
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= RuntimeSystemAssemblyServiceDefaultRuntimeChanged;
 			FileService.FileRemoved -= OnFileRemoved;
 
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		public bool SupportsPartialTypes {

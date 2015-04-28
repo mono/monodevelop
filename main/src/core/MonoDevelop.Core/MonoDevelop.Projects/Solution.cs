@@ -583,11 +583,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
 			RootFolder.Dispose ();
 			Counters.SolutionsLoaded--;
+			base.OnDispose ();
 		}
 
 		internal bool IsSolutionItemEnabled (string solutionItemPath)

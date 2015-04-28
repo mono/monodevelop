@@ -633,7 +633,7 @@ namespace MonoDevelop.Projects
 			return BuildAction.StandardActions;
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			foreach (var item in items) {
 				IDisposable disp = item as IDisposable;
@@ -644,7 +644,7 @@ namespace MonoDevelop.Projects
 			FileService.FileChanged -= OnFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 			CleanupProjectBuilder ();
-			base.Dispose ();
+			base.OnDispose ();
 		}
 
 		/// <summary>
@@ -712,6 +712,8 @@ namespace MonoDevelop.Projects
 			if (target == ProjectService.BuildTarget) {
 				SolutionItemConfiguration conf = GetConfiguration (configuration);
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
+					if (monitor.CancellationToken.IsCancellationRequested)
+						return BuildResult.Cancelled;
 					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
@@ -723,6 +725,8 @@ namespace MonoDevelop.Projects
 				SetFastBuildCheckDirty ();
 				SolutionItemConfiguration config = GetConfiguration (configuration);
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
+					if (monitor.CancellationToken.IsCancellationRequested)
+						return BuildResult.Cancelled;
 					if (!await config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));

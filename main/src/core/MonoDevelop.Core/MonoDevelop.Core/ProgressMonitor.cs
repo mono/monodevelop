@@ -53,6 +53,8 @@ namespace MonoDevelop.Core
 		List<string> messages = new List<string> ();
 
 		List<ProgressMonitor> slaveMonitors;
+		List<Action> disposeCallbacks;
+		object localLock = new object ();
 
 		public ProgressMonitor (): this (null, null)
 		{
@@ -75,6 +77,28 @@ namespace MonoDevelop.Core
 
 			errorLogWriter = new LogTextWriter ();
 			errorLogWriter.TextWritten += OnWriteErrorLog;
+		}
+
+		public ProgressMonitor WithCancellationSource (CancellationTokenSource cancellationTokenSource)
+		{
+			return new AggregatedProgressMonitor (this, cancellationTokenSource);
+		}
+
+		public ProgressMonitor WithCancellationToken (CancellationToken cancellationToken)
+		{
+			var ct = new CancellationTokenSource ();
+			var cr = cancellationToken.Register (ct.Cancel);
+			RegisterDisposeCallback (cr.Dispose);
+			return new AggregatedProgressMonitor (this, ct);
+		}
+
+		void RegisterDisposeCallback (Action action)
+		{
+			lock (localLock) {
+				if (disposeCallbacks == null)
+					disposeCallbacks = new List<Action> ();
+				disposeCallbacks.Add (action);
+			}
 		}
 
 		void SetParentTask (ProgressMonitor parent, ProgressTask task, int work)
@@ -102,6 +126,11 @@ namespace MonoDevelop.Core
 			if (slaveMonitors != null) {
 				foreach (var m in slaveMonitors)
 					m.Dispose ();
+			}
+			if (disposeCallbacks != null) {
+				foreach (var c in disposeCallbacks.ToArray ())
+					c ();
+				disposeCallbacks = null;
 			}
 		}
 

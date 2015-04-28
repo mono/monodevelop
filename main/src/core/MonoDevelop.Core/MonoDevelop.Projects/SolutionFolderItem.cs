@@ -306,19 +306,9 @@ namespace MonoDevelop.Projects
 			OnUnboundFromSolution ();
 		}
 
-		/// <summary>
-		/// Releases all resource used by the <see cref="MonoDevelop.Projects.SolutionItem"/> object.
-		/// </summary>
-		/// <remarks>
-		/// Call <see cref="Dispose"/> when you are finished using the <see cref="MonoDevelop.Projects.SolutionItem"/>. The
-		/// <see cref="Dispose"/> method leaves the <see cref="MonoDevelop.Projects.SolutionItem"/> in an unusable state.
-		/// After calling <see cref="Dispose"/>, you must release all references to the
-		/// <see cref="MonoDevelop.Projects.SolutionItem"/> so the garbage collector can reclaim the memory that the
-		/// <see cref="MonoDevelop.Projects.SolutionItem"/> was occupying.
-		/// </remarks>
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
+			base.OnDispose ();
 
 			if (userProperties != null) {
 				((IDisposable)userProperties).Dispose ();

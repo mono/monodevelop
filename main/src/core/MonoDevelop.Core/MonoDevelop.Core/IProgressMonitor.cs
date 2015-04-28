@@ -83,12 +83,4 @@ namespace MonoDevelop.Core
 			get { return (Task<T>) base.Task; }
 		}
 	}
-
-	public static class ProgressMonitorExtensions
-	{
-		public static ProgressMonitor WithCancellationSource (this ProgressMonitor monitor, CancellationTokenSource cancellationTokenSource)
-		{
-			return new AggregatedProgressMonitor (monitor, cancellationTokenSource);
-		}
-	}
 }

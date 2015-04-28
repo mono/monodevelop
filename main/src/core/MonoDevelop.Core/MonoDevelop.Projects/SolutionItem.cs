@@ -117,12 +117,12 @@ namespace MonoDevelop.Projects
 			yield return TypeGuid;
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose ()
 		{
 			if (Disposing != null)
 				Disposing (this, EventArgs.Empty);
 			
-			base.Dispose ();
+			base.OnDispose ();
 			Counters.ItemsLoaded--;
 
 			// items = null;
@@ -420,8 +420,9 @@ namespace MonoDevelop.Projects
 		
 		public Task SaveAsync (ProgressMonitor monitor)
 		{
-			return Runtime.RunInMainThread (async () => {
+			return BindTask (ct => Runtime.RunInMainThread (async () => {
 				using (await WriteLock ()) {
+					monitor = monitor.WithCancellationToken (ct);
 					await ItemExtension.OnSave (monitor);
 
 					if (ItemExtension.OnCheckHasSolutionData () && !SavingSolution && ParentSolution != null) {
@@ -430,7 +431,7 @@ namespace MonoDevelop.Projects
 						ParentSolution.NeedsReload = false;
 					}
 				}
-			});
+			}));
 		}
 		
 		async Task DoSave (ProgressMonitor monitor)
@@ -554,7 +555,12 @@ namespace MonoDevelop.Projects
 		/// <param name='buildReferences'>
 		/// When set to <c>true</c>, the referenced items will be built before building this item
 		/// </param>
-		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
+		{
+			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences));
+		}
+
+		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
 			if (!buildReferences) {
 				try {
@@ -682,7 +688,12 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to clean the project
 		/// </param>
-		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration));
+		}
+
+		async Task<BuildResult> CleanTask (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata ());
 			try {
@@ -853,7 +864,7 @@ namespace MonoDevelop.Projects
 		/// there is no guarantee that Execute() will actually be called.</remarks>
 		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return ItemExtension.OnPrepareExecution (monitor, context, configuration);
+			return BindTask (ct => ItemExtension.OnPrepareExecution (monitor.WithCancellationToken (ct), context, configuration));
 		}
 
 		/// <summary>

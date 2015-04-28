@@ -425,11 +425,11 @@ namespace MonoDevelop.Projects
 			return absPath.ToRelative (BaseDirectory);
 		}
 		
-		public override void Dispose()
+		protected override void OnDispose ()
 		{
-			base.Dispose ();
 			if (userProperties != null)
 				userProperties.Dispose ();
+			base.OnDispose ();
 		}
 		
 		protected virtual void OnNameChanged (WorkspaceItemRenamedEventArgs e)
