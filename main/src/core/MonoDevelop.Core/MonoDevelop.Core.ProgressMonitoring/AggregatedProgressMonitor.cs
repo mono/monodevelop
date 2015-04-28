@@ -54,8 +54,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		ProgressMonitor masterMonitor;
 		List<MonitorInfo> monitors = new List<MonitorInfo> ();
-		CancellationTokenSource cancelSource;
-		
+
 		class MonitorInfo {
 			public MonitorAction ActionMask;
 			public ProgressMonitor Monitor;
@@ -77,7 +76,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		internal AggregatedProgressMonitor (ProgressMonitor masterMonitor, CancellationTokenSource cancelSource, params ProgressMonitor[] slaveMonitors)
 		{
-			this.cancelSource = cancelSource ?? new CancellationTokenSource ();
+			CancellationTokenSource = cancelSource ?? new CancellationTokenSource ();
 			this.masterMonitor = masterMonitor;
 			AddSlaveMonitor (masterMonitor, MonitorAction.All);
 			foreach (ProgressMonitor mon in slaveMonitors)
@@ -188,7 +187,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		void OnSlaveCancelRequested ()
 		{
-			cancelSource.Cancel ();
+			CancellationTokenSource.Cancel ();
 		}
 	}
 }
