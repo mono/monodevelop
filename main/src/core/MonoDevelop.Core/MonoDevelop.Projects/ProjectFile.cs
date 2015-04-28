@@ -153,6 +153,8 @@ namespace MonoDevelop.Projects
 			get { return subtype; }
 			set {
 				subtype = value;
+				if (subtype == Subtype.Directory)
+					ItemName = "Folder";
 				OnChanged ("Subtype");
 			}
 		}
