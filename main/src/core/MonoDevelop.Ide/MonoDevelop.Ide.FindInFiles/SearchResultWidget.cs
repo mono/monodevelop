@@ -64,11 +64,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		TextView textviewLog;
 		TreeViewColumn pathColumn;
 
-		public string BasePath {
-			get;
-			set;
-		}
-
 		internal PathMode PathMode {
 			set {
 				pathColumn.Visible = (value != PathMode.Hidden);
