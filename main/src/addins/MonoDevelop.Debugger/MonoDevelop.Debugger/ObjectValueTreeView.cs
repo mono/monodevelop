@@ -1357,7 +1357,7 @@ namespace MonoDevelop.Debugger
 				if (val.TypeName == "string") {
 					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 					opt.EllipsizeStrings = false;
-					strVal = '"' + (string)val.GetRawValue (opt) + '"';
+					strVal = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)val.GetRawValue (opt)) + '"';
 				} else {
 					strVal = val.Value;
 				}
@@ -1936,7 +1936,7 @@ namespace MonoDevelop.Debugger
 					if (objVal != null) {
 						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
 						opt.EllipsizeStrings = false;
-						value = '"' + (string)objVal.GetRawValue (opt) + '"';
+						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
 					}
 				}
 
