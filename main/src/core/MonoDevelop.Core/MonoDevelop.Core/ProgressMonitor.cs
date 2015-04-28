@@ -402,7 +402,7 @@ namespace MonoDevelop.Core
 		{
 			if (parentMonitor != null)
 				parentMonitor.ReportError (message, exception);
-			else
+			else if (exception != null)
 				LoggingService.LogError (message, exception);
 
 			var msg = message;
