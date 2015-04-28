@@ -37,5 +37,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		IProjectBuilder LoadProject (string projectFile);
 		void UnloadProject (IProjectBuilder pb);
 		void Ping ();
+		void CancelTask (int taskId);
 	}
 }

@@ -74,6 +74,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		public void CancelTask (int taskId)
+		{
+			try {
+				engine.CancelTask (taskId);
+			} catch {
+				CheckDisconnected ();
+				throw;
+			}
+		}
+
 		public void SetCulture (CultureInfo uiCulture)
 		{
 			try {
@@ -146,6 +156,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		IProjectBuilder builder;
 		Dictionary<string,string[]> referenceCache;
 		string file;
+		static int lastTaskId;
 
 		internal RemoteProjectBuilder (string file, RemoteBuildEngine engine)
 		{
@@ -165,37 +176,79 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public MSBuildResult Run (
+		IDisposable RegisterCancellation (CancellationToken cancellationToken, int taskId)
+		{
+			return cancellationToken.Register (() => {
+				try {
+					engine.CancelTask (taskId);
+				} catch (Exception ex) {
+					// Ignore
+					LoggingService.LogError ("CancelTask failed", ex);
+				}
+			});
+		}
+
+		public Task<MSBuildResult> Run (
 			ProjectConfigurationInfo[] configurations,
 			ILogWriter logWriter,
 			MSBuildVerbosity verbosity,
 			string[] runTargets,
 			string[] evaluateItems,
-			string[] evaluateProperties)
+			string[] evaluateProperties,
+			CancellationToken cancellationToken
+		)
 		{
-			try {
-				return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties);
-			} catch (Exception ex) {
-				CheckDisconnected ();
-				LoggingService.LogError ("RunTarget failed", ex);
-				MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
-				MSBuildResult res = new MSBuildResult (new [] { err });
-				return res;
-			}
+			// Get an id for the task, and get ready to cancel it if the cancellation token is signalled
+			var taskId = Interlocked.Increment (ref lastTaskId);
+			var cr = RegisterCancellation (cancellationToken, taskId);
+
+			var t = Task.Run (() => {
+				try {
+					return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, taskId);
+				} catch (Exception ex) {
+					CheckDisconnected ();
+					LoggingService.LogError ("RunTarget failed", ex);
+					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
+					MSBuildResult res = new MSBuildResult (new [] { err });
+					return res;
+				}
+			});
+
+			// Dispose the cancel registration
+			t.ContinueWith (r => cr.Dispose ());
+
+			return t;
 		}
 
-		public string[] ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations)
+		public Task<string[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
 		{
 			string[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
 
 			lock (referenceCache) {
-				if (!referenceCache.TryGetValue (id, out refs)) {
+				// Check the cache before starting the task
+				if (referenceCache.TryGetValue (id, out refs))
+					return Task.FromResult (refs);
+			}
+
+			// Get an id for the task, it will be used later on to cancel the task if necessary
+			var taskId = Interlocked.Increment (ref lastTaskId);
+			IDisposable cr = null;
+
+			var t = Task.Run (() => {
+				lock (referenceCache) {
+					// Check again the cache, maybe the value was set while the task was starting
+					if (referenceCache.TryGetValue (id, out refs))
+						return refs;
+
+					// Get ready to cancel the task if the cancellation token is signalled
+					cr = RegisterCancellation (cancellationToken, taskId);
+
 					MSBuildResult result;
 					try {
 						result = builder.Run (
 						            configurations, null, MSBuildVerbosity.Normal,
-						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
+						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, taskId
 					            );
 					} catch (Exception ex) {
 						CheckDisconnected ();
@@ -211,8 +264,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					referenceCache [id] = refs;
 				}
-			}
-			return refs;
+				return refs;
+			});
+
+			// Dispose the cancel registration
+			t.ContinueWith (r => {
+				if (cr != null)
+					cr.Dispose ();
+			});
+			return t;
 		}
 
 		public void Refresh ()

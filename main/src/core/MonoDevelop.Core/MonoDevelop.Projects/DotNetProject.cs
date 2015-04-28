@@ -881,7 +881,7 @@ namespace MonoDevelop.Projects
 
 				string[] refs;
 				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata ()))
-					refs = builder.ResolveAssemblyReferences (configs);
+					refs = builder.ResolveAssemblyReferences (configs, CancellationToken.None).Result;
 				foreach (var r in refs)
 					yield return r;
 			} else {

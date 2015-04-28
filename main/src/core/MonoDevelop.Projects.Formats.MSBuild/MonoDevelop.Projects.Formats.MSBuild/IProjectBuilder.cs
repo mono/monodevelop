@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void RefreshWithContent (string projectContent);
 		MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, int taskId
 		);
 	}
 

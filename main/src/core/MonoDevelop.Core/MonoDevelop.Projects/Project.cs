@@ -746,7 +746,7 @@ namespace MonoDevelop.Projects
 				var configs = GetConfigurations (configuration);
 
 				MSBuildResult result = null;
-				await Task.Run (delegate {
+				await Task.Run (async delegate {
 					
 					TimerCounter buildTimer = null;
 					switch (target) {
@@ -758,7 +758,7 @@ namespace MonoDevelop.Projects
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata ()) : null;
 
 					try {
-						result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null, monitor.CancellationToken);
 					} finally {
 						t1.End ();
 						if (t2 != null)

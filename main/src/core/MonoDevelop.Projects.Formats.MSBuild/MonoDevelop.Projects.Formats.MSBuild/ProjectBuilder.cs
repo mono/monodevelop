@@ -61,10 +61,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, int taskId)
 		{
 			MSBuildResult result = null;
-			BuildEngine.RunSTA (delegate {
+			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;

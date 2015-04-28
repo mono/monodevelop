@@ -25,44 +25,22 @@
 // THE SOFTWARE.
 
 using System;
-using System.Threading;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
 using Microsoft.Build.BuildEngine;
 using System.Globalization;
-using System.IO;
 
 //this is the builder for the deprecated build engine API
 #pragma warning disable 618
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class BuildEngine: MarshalByRefObject, IBuildEngine
+	public partial class BuildEngine: MarshalByRefObject, IBuildEngine
 	{
-		static readonly AutoResetEvent workDoneEvent = new AutoResetEvent (false);
-		static ThreadStart workDelegate;
-		static readonly object workLock = new object ();
-		static Thread workThread;
 		static CultureInfo uiCulture;
-		static Exception workError;
-
-		readonly ManualResetEvent doneEvent = new ManualResetEvent (false);
 		readonly Dictionary<string,string> unsavedProjects = new Dictionary<string, string> ();
 
 		internal readonly Engine Engine = new Engine { DefaultToolsVersion = MSBuildConsts.Version };
-
-		public void Dispose ()
-		{
-			doneEvent.Set ();
-		}
-		
-		internal WaitHandle WaitHandle {
-			get { return doneEvent; }
-		}
-
-		public void Ping ()
-		{
-		}
 
 		public void SetCulture (CultureInfo uiCulture)
 		{
@@ -88,11 +66,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			RemotingServices.Disconnect ((MarshalByRefObject) pb);
 		}
 		
-		public override object InitializeLifetimeService ()
-		{
-			return null;
-		}
-
 		internal void UnloadProject (string file)
 		{
 			lock (unsavedProjects)
@@ -117,49 +90,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string content;
 				unsavedProjects.TryGetValue (file, out content);
 				return content;
-			}
-		}
-
-		internal static void RunSTA (ThreadStart ts)
-		{
-			lock (workLock) {
-				lock (threadLock) {
-					workDelegate = ts;
-					workError = null;
-					if (workThread == null) {
-						workThread = new Thread (STARunner);
-						workThread.SetApartmentState (ApartmentState.STA);
-						workThread.IsBackground = true;
-						workThread.CurrentUICulture = uiCulture;
-						workThread.Start ();
-					}
-					else
-						// Awaken the existing thread
-						Monitor.Pulse (threadLock);
-				}
-				workDoneEvent.WaitOne ();
-			}
-			if (workError != null)
-				throw new Exception ("MSBuild operation failed", workError);
-		}
-
-		static readonly object threadLock = new object ();
-		
-		static void STARunner ()
-		{
-			lock (threadLock) {
-				do {
-					try {
-						workDelegate ();
-					}
-					catch (Exception ex) {
-						workError = ex;
-					}
-					workDoneEvent.Set ();
-				}
-				while (Monitor.Wait (threadLock, 60000));
-				
-				workThread = null;
 			}
 		}
 	}

@@ -57,13 +57,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, int taskId)
 		{
 			if (runTargets == null || runTargets.Length == 0)
 				throw new ArgumentException ("runTargets is empty");
 
 			MSBuildResult result = null;
-			BuildEngine.RunSTA (delegate {
+			BuildEngine.RunSTA (taskId, delegate {
 				try {
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
