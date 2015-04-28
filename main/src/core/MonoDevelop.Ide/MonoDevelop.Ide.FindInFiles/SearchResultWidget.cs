@@ -406,7 +406,11 @@ namespace MonoDevelop.Ide.FindInFiles
 					var doc = GetDocument (searchResult);
 					if (doc == null)
 						return;
-					searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset);
+					try {
+						searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset);
+					} catch (ArgumentOutOfRangeException) {
+						searchResult.LineNumber = -1;
+					}
 				}
 				fileNameMarkup = MarkupText (System.IO.Path.GetFileName (searchResult.FileName) + ":" + searchResult.LineNumber, didRead);
 				searchResult.FileNameMarkup = fileNameMarkup;
@@ -533,8 +537,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 
 				if (searchResult.Markup == null) {
-					if (searchResult.LineNumber <= 0)
-						searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
+					if (searchResult.LineNumber <= 0) {
+						try {
+							searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
+						} catch (ArgumentOutOfRangeException) {
+							searchResult.LineNumber = -1;
+							textMarkup = "Invalid search result offset";
+							goto end;
+						}
+					}
 					var line = doc.GetLine (searchResult.LineNumber);
 					if (line == null) {
 						textMarkup = "Invalid line number " + searchResult.LineNumber + " from offset: " + searchResult.Offset;

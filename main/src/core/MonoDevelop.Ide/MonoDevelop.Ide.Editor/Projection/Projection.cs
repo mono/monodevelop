@@ -126,5 +126,29 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			originalProjections.UpdateOnTextReplace (sender, e);
 		}
+
+		public bool TryConvertFromProjectionToOriginal (int projectedOffset, out int originalOffset)
+		{
+			foreach (var pseg in ProjectedSegments) {
+				if (pseg.ContainsProjected (projectedOffset)) {
+					originalOffset = pseg.FromProjectedToOriginal (projectedOffset);
+					return true;
+				}
+			}
+			originalOffset = -1;
+			return false;
+		}
+
+		public bool TryConvertFromOriginalToProjection (int originalOffset, out int projectedOffset)
+		{
+			foreach (var pseg in ProjectedSegments) {
+				if (pseg.ContainsOriginal (originalOffset)) {
+					projectedOffset = pseg.FromOriginalToProjected (originalOffset);
+					return true;
+				}
+			}
+			projectedOffset = -1;
+			return false;
+		}
 	}
 }

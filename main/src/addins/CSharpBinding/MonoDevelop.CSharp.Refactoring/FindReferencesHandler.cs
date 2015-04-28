@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
@@ -44,7 +45,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static void FindRefs (ISymbol symbol)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = TypeSystemService.Workspace.CurrentSolution;
+			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
+			if (workspace == null)
+				return;
+			var solution = workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var loc in symbol.Locations) {
@@ -53,10 +57,19 @@ namespace MonoDevelop.CSharp.Refactoring
 						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 						monitor.ReportResult (sr);
 					}
-					
+
 					foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, solution).Result) {
 						foreach (var loc in mref.Locations) {
-							var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+							var fileName = loc.Document.FilePath;
+							var offset = loc.Location.SourceSpan.Start;
+							string projectedName;
+							int projectedOffset;
+							if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+								fileName = projectedName;
+								offset = projectedOffset;
+							}
+
+							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
 							monitor.ReportResult (sr);
 						}
 					}
@@ -101,7 +114,10 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static void FindRefs (ISymbol obj, Compilation compilation)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			var solution = TypeSystemService.Workspace.CurrentSolution;
+			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
+			if (workspace == null)
+				return;
+			var solution = workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation)) {
@@ -112,7 +128,16 @@ namespace MonoDevelop.CSharp.Refactoring
 
 						foreach (var mref in SymbolFinder.FindReferencesAsync (simSym, solution).Result) {
 							foreach (var loc in mref.Locations) {
-								var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+								var fileName = loc.Document.FilePath;
+								var offset = loc.Location.SourceSpan.Start;
+								string projectedName;
+								int projectedOffset;
+								if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+									fileName = projectedName;
+									offset = projectedOffset;
+								}
+
+								var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
 								monitor.ReportResult (sr);
 							}
 						}

@@ -40,6 +40,7 @@ using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
 using MonoDevelop.Core.ProgressMonitoring;
 using Gtk;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -150,6 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
 			var mdProjects = solution.GetAllProjects ();
+			projectionList.Clear ();
 			Parallel.ForEach (mdProjects, proj => {
 				if (token.IsCancellationRequested)
 					return;
@@ -369,6 +371,19 @@ namespace MonoDevelop.Ide.TypeSystem
 				false
 			);
 		}
+		List<ProjectionEntry> projectionList = new List<ProjectionEntry>();
+
+		internal IReadOnlyList<ProjectionEntry> ProjectionList {
+			get {
+				return projectionList;
+			}
+		}
+
+		internal class ProjectionEntry
+		{
+			public MonoDevelop.Projects.ProjectFile File;
+			public List<Projection> Projections = new List<Projection> ();
+		}
 
 		IEnumerable<DocumentInfo> CreateDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
 		{
@@ -394,17 +409,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					Content = StringTextSource.ReadFrom (f.FilePath),
 				};
 				var projections = node.Parser.GenerateProjections (options);
+				var entry = new ProjectionEntry ();
+				entry.File = f;
 				foreach (var projection in projections.Result) {
+					entry.Projections.Add (projection);
+					var plainName = projection.Document.FileName.FileName;
 					yield return DocumentInfo.Create (
-						id.GetOrCreateDocumentId (projection.Document.FileName),
-						projection.Document.FileName,
-						null,
+						id.GetOrCreateDocumentId (plainName),
+						plainName,
+						new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 						SourceCodeKind.Regular,
 						TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
-						f.Name,
+						projection.Document.FileName,
 						false
 					);
 				}
+				projectionList.Add (entry);
 			}
 		}
 
@@ -808,6 +828,26 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 	
+		/// <summary>
+		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
+		/// back to the original physical file.
+		/// </summary>
+		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
+		{
+			foreach (var projectionEntry in ProjectionList) {
+				var projection = projectionEntry.Projections.FirstOrDefault (p => FilePath.PathComparer.Equals (p.Document.FileName, fileName));
+				if (projection != null) {
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
+						originalName = projectionEntry.File.FilePath;
+						return true;
+					}
+				}
+			}
+
+			originalName = fileName;
+			originalOffset = offset;
+			return false;
+		}
 	}
 
 //	static class MonoDevelopWorkspaceFeatures
