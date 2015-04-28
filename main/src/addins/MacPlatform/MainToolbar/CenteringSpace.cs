@@ -84,6 +84,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override CGSize MinSize {
 			get {
+				// Do NOT let this calculate any values while the window is fullscreening.
+				// Everything changes, and the size might end up with bogus values and cause a native crash
+				// that is totally unrelated. See BXC 29261.
 				if (WindowFullscreening)
 					return base.MinSize;
 
