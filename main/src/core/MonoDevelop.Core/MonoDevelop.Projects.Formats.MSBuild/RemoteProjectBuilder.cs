@@ -204,7 +204,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var t = Task.Run (() => {
 				try {
-					return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, taskId);
+					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, taskId);
+					if (res == null && cancellationToken.IsCancellationRequested) {
+						MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
+						return new MSBuildResult (new [] { err });
+					}
+					if (res == null)
+						throw new Exception ("Unknown failure");
+					return res;
 				} catch (Exception ex) {
 					CheckDisconnected ();
 					LoggingService.LogError ("RunTarget failed", ex);
