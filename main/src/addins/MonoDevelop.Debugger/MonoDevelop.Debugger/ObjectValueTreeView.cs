@@ -1352,7 +1352,16 @@ namespace MonoDevelop.Debugger
 			var entry = (Entry) args.Editable;
 			
 			var val = store.GetValue (it, ObjectColumn) as ObjectValue;
-			string strVal = val != null ? val.Value : null;
+			string strVal = null;
+			if (val != null) {
+				if (val.TypeName == "string") {
+					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+					opt.EllipsizeStrings = false;
+					strVal = '"' + (string)val.GetRawValue (opt) + '"';
+				} else {
+					strVal = val.Value;
+				}
+			}
 			if (!string.IsNullOrEmpty (strVal))
 				entry.Text = strVal;
 			
@@ -1922,6 +1931,14 @@ namespace MonoDevelop.Debugger
 				string value = (string) store.GetValue (iter, ValueColumn);
 				string name = (string) store.GetValue (iter, NameColumn);
 				string type = (string) store.GetValue (iter, TypeColumn);
+				if (type == "string") {
+					var objVal = store.GetValue (iter, ObjectColumn) as ObjectValue;
+					if (objVal != null) {
+						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+						opt.EllipsizeStrings = false;
+						value = '"' + (string)objVal.GetRawValue (opt) + '"';
+					}
+				}
 
 				maxValue = Math.Max (maxValue, value.Length);
 				maxName = Math.Max (maxName, name.Length);
