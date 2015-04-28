@@ -417,7 +417,7 @@ namespace MonoDevelop.Core.Execution
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Task.ContinueWith (t => OnOperationCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
+			operation.Task.ContinueWith (t => OnOperationCompleted ());
 			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		
@@ -426,7 +426,9 @@ namespace MonoDevelop.Core.Execution
 			cancelRegistration.Dispose ();
 			try {
 				if (exited != null)
-					exited (operation, EventArgs.Empty);
+					Runtime.RunInMainThread (() => {
+						exited (operation, EventArgs.Empty);
+					});
 				
 				if (!Platform.IsWindows && Mono.Unix.Native.Syscall.WIFSIGNALED (operation.ExitCode))
 					console.Log.WriteLine (GettextCatalog.GetString ("The application was terminated by a signal: {0}"), Mono.Unix.Native.Syscall.WTERMSIG (operation.ExitCode));
