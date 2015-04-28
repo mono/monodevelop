@@ -604,12 +604,32 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null)
 				return;
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath, out isOpen);
+			var filePath = document.FilePath;
+
+			Projection projection = null;
+			foreach (var entry in ProjectionList) {
+				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+				if (p != null) {
+					filePath = entry.File.FilePath;
+					projection = p;
+					break;
+				}
+			}
+
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 			var changes = text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start).ToList ();
 
 			int delta = 0;
 			foreach (var change in changes) {
-				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
+				var offset = change.Span.Start;
+
+				if (projection != null) {
+					int originalOffset;
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
+						offset = originalOffset;
+				}
+
+				data.ReplaceText (offset, change.Span.Length, change.NewText);
 				delta += change.Span.Length - change.NewText.Length;
 			}
 
@@ -620,18 +640,33 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var change in changes) {
 					delta -= change.Span.Length - change.NewText.Length;
 					var startOffset = change.Span.Start - delta;
+
+					if (projection != null) {
+						int originalOffset;
+						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+							startOffset = originalOffset;
+					}
+
+
 					var str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
-				FileService.NotifyFileChanged (document.FilePath);
+				FileService.NotifyFileChanged (filePath);
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
-				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, document.FilePath) == 0);
+				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				if (documentContext != null) {
 					foreach (var change in changes) {
 						delta -= change.Span.Length - change.NewText.Length;
 						var startOffset = change.Span.Start - delta;
+
+						if (projection != null) {
+							int originalOffset;
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+								startOffset = originalOffset;
+						}
+
 						formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
 					}
 				}

@@ -83,16 +83,35 @@ namespace MonoDevelop.Refactoring
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			var fileNames = new HashSet<FilePath> ();
+			var ws = TypeSystemService.Workspace as MonoDevelopWorkspace;
+			string originalName;
+			int originalOffset;
+
 			for (int i = 0; i < changes.Count; i++) {
 				changes[i].PerformChange (monitor, rctx);
 				var replaceChange = changes[i] as TextReplaceChange;
 				if (replaceChange == null)
 					continue;
+				if (ws.TryGetOriginalFileFromProjection (replaceChange.FileName, replaceChange.Offset, out originalName, out originalOffset)) {
+					replaceChange.FileName = originalName;
+					replaceChange.Offset = originalOffset;
+				}
+
 				for (int j = i + 1; j < changes.Count; j++) {
 					var change = changes[j] as TextReplaceChange;
 					if (change == null)
 						continue;
+
+
+					if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
+						change.FileName = originalName;
+						change.Offset = originalOffset;
+					}
+
+
 					fileNames.Add (change.FileName);
+
+
 					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
 						if (replaceChange.Offset < change.Offset) {
 							change.Offset -= replaceChange.RemovedChars;
