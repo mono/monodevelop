@@ -267,6 +267,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
+    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
