@@ -29,14 +29,35 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Projects.Extensions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
 	public static class LanguageBindingService
 	{
+		const string LanguageBindingExtensionPath = "/MonoDevelop/ProjectModel/LanguageBindings";
+		static LanguageBinding[] extensions;
+
+		static void InitExtensions ()
+		{
+			if (extensions == null) {
+				AddinManager.ExtensionChanged += (sender, args) => {
+					if (args.Path == LanguageBindingExtensionPath)
+						LoadExtensions ();
+				};
+				Runtime.RunInMainThread (LoadExtensions).Wait ();
+			}
+		}
+
+		static void LoadExtensions ()
+		{
+			extensions = AddinManager.GetExtensionNodes<LanguageBindingExtensionNode> (LanguageBindingExtensionPath).Select (b => b.LanguageBinding).ToArray ();
+		}
+
 		public static IEnumerable<LanguageBinding> LanguageBindings {
 			get {
-				return AddinManager.GetExtensionNodes ("/MonoDevelop/ProjectModel/LanguageBindings").Cast<LanguageBindingExtensionNode> ().Select (b => b.LanguageBinding);
+				InitExtensions ();
+				return extensions;
 			}
 		}
 		

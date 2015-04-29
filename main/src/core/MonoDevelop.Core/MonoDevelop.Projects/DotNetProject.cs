@@ -1059,7 +1059,7 @@ namespace MonoDevelop.Projects
 					}
 				}
 				foreach (DotNetProjectConfiguration c in Configurations) {
-					if (c.SignAssembly)
+					if (c.SignAssembly && !c.AssemblyKeyFile.IsNullOrEmpty)
 						col.Add (c.AssemblyKeyFile);
 				}
 				baseFiles = baseFiles.Concat (col);

@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects
 	{
 		Hashtable extendedProperties;
 		ProjectItemMetadata metadata;
-		static Dictionary<Type,HashSet<string>> knownMetadata = new Dictionary<Type, HashSet<string>> ();
+		static Dictionary<Type,HashSet<string>> knownMetadataCache = new Dictionary<Type, HashSet<string>> ();
 
 		public IDictionary ExtendedProperties {
 			get {
@@ -120,8 +120,10 @@ namespace MonoDevelop.Projects
 		HashSet<string> GetKnownMetadata ()
 		{
 			HashSet<string> mset;
-			if (!knownMetadata.TryGetValue (GetType (), out mset))
-				knownMetadata [GetType()] = mset = new HashSet<string> (GetKnownMetadataProperties ());
+			lock (knownMetadataCache) {
+				if (!knownMetadataCache.TryGetValue (GetType (), out mset))
+					knownMetadataCache [GetType()] = mset = new HashSet<string> (GetKnownMetadataProperties ());
+			}
 			return mset;
 		}
 	}

@@ -401,12 +401,35 @@ namespace MonoDevelop.Projects
 				e.OnExtensionChainCreated ();
 		}
 
+		static ProjectModelExtensionNode[] modelExtensions;
+
 		internal static IEnumerable<ProjectModelExtensionNode> GetModelExtensions (ExtensionContext ctx)
 		{
-			if (ctx != null)
-				return ctx.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
-			else
-				return AddinManager.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes);
+			if (ctx != null) {
+				return Runtime.RunInMainThread (() => ctx.GetExtensionNodes (ProjectService.ProjectModelExtensionsPath).Cast<ProjectModelExtensionNode> ().Concat (customNodes).ToArray ()).Result;
+			}
+			else {
+				if (modelExtensions == null)
+					Runtime.RunInMainThread (InitExtensions).Wait ();
+				return modelExtensions;
+			}
+		}
+
+		static void InitExtensions ()
+		{
+			AddinManager.ExtensionChanged += OnExtensionsChanged;
+			LoadExtensions ();
+		}
+
+		static void OnExtensionsChanged (object sender, ExtensionEventArgs args)
+		{
+			if (args.Path == ProjectService.ProjectModelExtensionsPath)
+				LoadExtensions ();
+		}
+
+		static void LoadExtensions ()
+		{
+			modelExtensions = AddinManager.GetExtensionNodes<ProjectModelExtensionNode> (ProjectService.ProjectModelExtensionsPath).Concat (customNodes).ToArray ();
 		}
 
 		static List<ProjectModelExtensionNode> customNodes = new List<ProjectModelExtensionNode> ();
@@ -414,11 +437,13 @@ namespace MonoDevelop.Projects
 		internal static void RegisterCustomExtension (ProjectModelExtensionNode node)
 		{
 			customNodes.Add (node);
+			LoadExtensions ();
 		}
 
 		internal static void UnregisterCustomExtension (ProjectModelExtensionNode node)
 		{
 			customNodes.Remove (node);
+			LoadExtensions ();
 		}
 
 		protected virtual IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()

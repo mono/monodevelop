@@ -520,7 +520,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (k != -1) {
 				var name = line.Substring (0, k).Trim ();
 				var val = line.Substring (k + 1).Trim ();
-				values.Add (name, val);
+				values [name] = val;
 			} else {
 				values.Add (line, null);
 			}

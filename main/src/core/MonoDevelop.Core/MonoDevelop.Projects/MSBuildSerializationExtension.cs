@@ -41,22 +41,26 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 
-		public override async Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
+		public override Task<SolutionItem> LoadSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName, MSBuildFileFormat expectedFormat, string typeGuid, string itemGuid)
 		{
-			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-				if (f.CanReadFile (fileName, typeof(SolutionItem)))
-					return await MSBuildProjectService.LoadItem (monitor, fileName, f, typeGuid, itemGuid, ctx);
-			}
-			throw new NotSupportedException ();
+			return Task.Run (() => {
+				foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
+					if (f.CanReadFile (fileName, typeof(SolutionItem)))
+						return MSBuildProjectService.LoadItem (monitor, fileName, f, typeGuid, itemGuid, ctx);
+				}
+				throw new NotSupportedException ();
+			});
 		}
 
-		public override async Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
+		public override Task<WorkspaceItem> LoadWorkspaceItem (ProgressMonitor monitor, string fileName)
 		{
-			foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
-				if (f.CanReadFile (fileName, typeof(WorkspaceItem)))
-					return (WorkspaceItem) await f.ReadFile (fileName, typeof(WorkspaceItem), monitor);
-			}
-			throw new NotSupportedException ();
+			return Task.Run (async () => {
+				foreach (var f in MSBuildFileFormat.GetSupportedFormats ()) {
+					if (f.CanReadFile (fileName, typeof(WorkspaceItem)))
+						return (WorkspaceItem) await f.ReadFile (fileName, typeof(WorkspaceItem), monitor);
+				}
+				throw new NotSupportedException ();
+			});
 		}
 	}
 }

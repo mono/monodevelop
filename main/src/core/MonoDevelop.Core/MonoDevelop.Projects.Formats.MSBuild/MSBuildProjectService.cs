@@ -49,6 +49,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public static class MSBuildProjectService
 	{
 		internal const string ItemTypesExtensionPath = "/MonoDevelop/ProjectModel/MSBuildItemTypes";
+		internal const string ImportRedirectsExtensionPath = "/MonoDevelop/ProjectModel/MSBuildImportRedirects";
+		internal const string GlobalPropertyProvidersExtensionPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
+		internal const string UnknownMSBuildProjectTypesExtensionPath = "/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes";
+
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 		
@@ -62,8 +66,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
 		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
+		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
 
 		internal static bool ShutDown { get; private set; }
+
+		static ExtensionNode[] itemTypeNodes;
 		
 		public static DataContext DataContext {
 			get {
@@ -86,19 +93,47 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			Runtime.ShuttingDown += (sender, e) => ShutDown = true;
 
-			const string gppPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
-			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (gppPath);
-			foreach (var gpp in globalPropertyProviders) {
-				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
+			AddinManager.ExtensionChanged += OnExtensionChanged;
+			LoadExtensionData ();
+		}
+
+		static void OnExtensionChanged (object sender, ExtensionEventArgs args)
+		{
+			if (args.Path == ItemTypesExtensionPath || 
+				args.Path == ImportRedirectsExtensionPath || 
+				args.Path == UnknownMSBuildProjectTypesExtensionPath || 
+				args.Path == GlobalPropertyProvidersExtensionPath)
+				LoadExtensionData ();
+		}
+
+		static void LoadExtensionData ()
+		{
+			// Get global property providers
+
+			if (globalPropertyProviders != null) {
+				foreach (var gpp in globalPropertyProviders)
+					gpp.GlobalPropertiesChanged -= HandleGlobalPropertyProviderChanged;
 			}
 
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/ProjectModel/MSBuildImportRedirects", (s,a) => {
-				var node = (ImportRedirectTypeNode) a.ExtensionNode;
-				if (a.Change == ExtensionChange.Add)
-					importRedirects [node.Project] = node.Addin.GetFilePath (node.Target);
-				else
-					importRedirects.Remove (node.Project);
-			});
+			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (GlobalPropertyProvidersExtensionPath);
+
+			foreach (var gpp in globalPropertyProviders)
+				gpp.GlobalPropertiesChanged -= HandleGlobalPropertyProviderChanged;
+
+			// Get item type nodes
+
+			itemTypeNodes = AddinManager.GetExtensionNodes<ExtensionNode> (ItemTypesExtensionPath).ToArray ();
+
+			// Get import redirects
+
+			var newImportRedirects = new Dictionary<string, string> ();
+			foreach (ImportRedirectTypeNode node in AddinManager.GetExtensionNodes (ImportRedirectsExtensionPath))
+				newImportRedirects [node.Project] = node.Addin.GetFilePath (node.Target);
+			importRedirects = newImportRedirects;
+
+			// Unknown project type information
+
+			unknownProjectTypeNodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> (UnknownMSBuildProjectTypesExtensionPath).ToArray ();
 		}
 
 		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
@@ -460,7 +495,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static IEnumerable<SolutionItemTypeNode> GetItemTypeNodes ()
 		{
-			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ItemTypesExtensionPath)) {
+			foreach (ExtensionNode node in itemTypeNodes) {
 				if (node is SolutionItemTypeNode)
 					yield return (SolutionItemTypeNode) node;
 			}
@@ -957,8 +992,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids, string fileName = null)
 		{
 			var ext = fileName != null ? Path.GetExtension (fileName).TrimStart ('.') : null;
-			var nodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> ("/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes")
-				.Where (p => guids.Any (p.MatchesGuid) || (ext != null && p.Extension == ext)).ToList ();
+			var nodes = unknownProjectTypeNodes.Where (p => guids.Any (p.MatchesGuid) || (ext != null && p.Extension == ext)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
 		}
 	}
