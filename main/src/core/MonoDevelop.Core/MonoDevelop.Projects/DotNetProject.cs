@@ -272,14 +272,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
 		{
-			var flags = DotNetProjectFlags.GeneratesDebugInfoFile;
-
-			if (LanguageBinding != null) {
-				var provider = LanguageBinding.GetCodeDomProvider ();
-				if (provider != null && provider.Supports (System.CodeDom.Compiler.GeneratorSupport.PartialTypes))
-					flags |= DotNetProjectFlags.SupportsPartialTypes;
-			}
-			return flags;
+			return DotNetProjectFlags.GeneratesDebugInfoFile;
 		}
 
 		protected string GetDefaultTargetPlatform (ProjectCreateInformation projectCreateInfo)
@@ -569,7 +562,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public bool SupportsPartialTypes {
-			get { return (flags & DotNetProjectFlags.SupportsPartialTypes) != 0; }
+			get { return LanguageBinding.SupportsPartialTypes; }
 		}
 
 		void CheckReferenceChange (FilePath updatedFile)
@@ -1520,8 +1513,7 @@ namespace MonoDevelop.Projects
 	public enum DotNetProjectFlags
 	{
 		None = 0,
-		SupportsPartialTypes = 1,
-		GeneratesDebugInfoFile = 2,
-		IsLibrary = 4
+		GeneratesDebugInfoFile = 1,
+		IsLibrary = 2
 	}
 }

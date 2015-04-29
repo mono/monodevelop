@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects
 		string codeDomTypeName;
 		RuntimeAddin addin;
 		CodeDomProvider codeDomProvider;
+		bool? supportsPartialTypes;
 
 		public string Language { get; protected set; }
 			
@@ -46,6 +47,17 @@ namespace MonoDevelop.Projects
 		public string BlockCommentStartTag { get; protected set; }
 
 		public string BlockCommentEndTag { get; protected set; }
+
+		public bool SupportsPartialTypes {
+			get {
+				if (!supportsPartialTypes.HasValue && codeDomTypeName != null)
+					supportsPartialTypes = GetCodeDomProvider ().Supports (GeneratorSupport.PartialTypes);
+				return supportsPartialTypes ?? false;
+			}
+			set {
+				supportsPartialTypes = value;
+			}
+		}
 
 		public virtual bool IsSourceCodeFile (FilePath fileName)
 		{
