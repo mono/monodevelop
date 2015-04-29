@@ -313,20 +313,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					Colorize(identifier, valueKeywordColor);
 				} else {
 					var resolveResult = resolver.Resolve (identifierExpression, cancellationToken);
-					if (resolveResult.Type.Namespace == "System") {
-						switch (resolveResult.Type.Name) {
-						case "nfloat":
-						case "nint":
-						case "nuint":
-							Colorize(identifier, "Keyword(Type)");
-							break;
-						default:
-							Colorize (identifier, resolveResult);
-							break;
-						}
-					} else {
-						Colorize (identifier, resolveResult);
-					}
+					Colorize (identifier, resolveResult);
 				}
 				VisitChildrenAfter(identifierExpression, identifier);
 			}

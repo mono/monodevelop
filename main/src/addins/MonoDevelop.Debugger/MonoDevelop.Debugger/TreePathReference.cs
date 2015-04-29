@@ -66,6 +66,10 @@ namespace MonoDevelop.Debugger
 			var inserted = args.Path.Indices;
 			int i;
 
+			//If inserted is deeper then this path, it can't effect this path
+			if (inserted.Length > indices.Length)
+				return;
+
 			for (i = 0; i < inserted.Length - 1 && i < indices.Length - 1; i++) {
 				if (inserted[i] > indices[i]) {
 					// the inserted node is listed below the node we are watching, ignore it
@@ -76,9 +80,10 @@ namespace MonoDevelop.Debugger
 					break;
 			}
 
-			if (inserted[i] <= indices[i]) {
+			//(i == indices.Length - 1) is to prevent i(0), indices(1-2) and inserted(0-2)
+			if (inserted [i] <= indices [i] && i == indices.Length - 1) {
 				// the node was inserted above the node we are watching, update our position
-				indices[i]++;
+				indices [i]++;
 				path = null;
 			}
 		}
@@ -88,9 +93,18 @@ namespace MonoDevelop.Debugger
 			var deleted = args.Path.Indices;
 			int i;
 
+			//If deleted is deeper then this path, it can't effect this path
+			if (deleted.Length > indices.Length)
+				return;
+
 			for (i = 0; i < deleted.Length && i < indices.Length; i++) {
 				if (deleted[i] > indices[i]) {
 					// the deleted node is listed below the node we are watching, ignore it
+					return;
+				}
+
+				if (deleted [i] < indices [i] && i < deleted.Length - 1) {
+					// deleted is in different tree(not effecting our path)
 					return;
 				}
 

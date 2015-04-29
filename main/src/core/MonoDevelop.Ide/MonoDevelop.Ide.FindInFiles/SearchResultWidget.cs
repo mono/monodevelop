@@ -62,12 +62,17 @@ namespace MonoDevelop.Ide.FindInFiles
 		PadTreeView treeviewSearchResults;
 		Label labelStatus;
 		TextView textviewLog;
-		
-		public string BasePath {
-			get;
-			set;
+		TreeViewColumn pathColumn;
+
+		private PathMode pathMode;
+		internal PathMode PathMode {
+			set {
+				pathMode = value;
+
+				pathColumn.Visible = (value != PathMode.Hidden);
+			}
 		}
-		
+
 		public IAsyncOperation AsyncOperation {
 			get;
 			set;
@@ -159,8 +164,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			textColumn.Sizing = TreeViewColumnSizing.Fixed;
 			textColumn.FixedWidth = 300;
 
-			
-			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
+			pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
 				                            renderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = true;
@@ -453,7 +457,19 @@ namespace MonoDevelop.Ide.FindInFiles
 			string pathMarkup = searchResult.PathMarkup;
 			if (pathMarkup == null) {
 				bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-				pathMarkup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
+
+				var fileName = searchResult.FileName;
+				string baseSolutionPath = null;
+				if (pathMode == PathMode.Relative) {
+					var workspace = IdeApp.Workspace;
+					var solutions = workspace != null ? workspace.GetAllSolutions () : null;
+					baseSolutionPath = solutions != null && solutions.Count == 1 ? solutions [0].BaseDirectory : null;
+				}
+				var finalFileName = baseSolutionPath == null ? fileName :
+					FileService.AbsoluteToRelativePath (baseSolutionPath, fileName);
+				var directory = System.IO.Path.GetDirectoryName (finalFileName);
+
+				pathMarkup = MarkupText (directory, didRead);
 				searchResult.PathMarkup = pathMarkup;
 			}
 			pathRenderer.Markup = pathMarkup;

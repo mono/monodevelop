@@ -1,10 +1,10 @@
 ﻿//
-// MonoDevelopTemplatesTest.cs
+// IndexOperation.cs
 //
 // Author:
-//       Manish Sinha <manish.sinha@xamarin.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin Inc.
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Collections.Generic;
 
-using NUnit.Framework;
-
-namespace UserInterfaceTests
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
+	public class IndexOperation : Operation
 	{
-		readonly static string DotNetProjectKind = ".NET";
+		int Index;
 
-		readonly static string CategoryRoot = "Other";
-
-		[Test]
-		public void TestCreateBuildConsoleProject ()
+		public IndexOperation (int index)
 		{
-			CreateBuildProject ("ConsoleProject", "Console Project", DotNetProjectKind, CategoryRoot, EmptyAction);
+			Index = index;
 		}
 
-		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			CreateBuildProject ("Gtk20Project", "Gtk# 2.0 Project", DotNetProjectKind, CategoryRoot, EmptyAction);
-		}
+			if (Index > resultSet.Count) {
+				return null;
+			}
 
-		[Test]
-		public void TestCreateBuildLibrary ()
-		{
-			CreateBuildProject ("Library", "Library", DotNetProjectKind, CategoryRoot, EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
-		{
-			CreateBuildProject ("NUnitLibraryProject", "NUnit Library Project", DotNetProjectKind, CategoryRoot, delegate {
-				Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.", pollStep: 1000);
-			});
+			List<AppResult> newResults = new List<AppResult> ();
+			newResults.Add (resultSet [Index]);
+			return newResults;
 		}
 	}
 }
+

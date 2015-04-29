@@ -110,10 +110,6 @@
 		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
 			name = "Gettext.ScanForTranslations" type = "System.Boolean" />
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Class class = "MonoDevelop.Gettext.GettextFeature" />
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Autotools/MakefileHandlers">
 		<Class class = "MonoDevelop.Gettext.MakefileHandler"/>

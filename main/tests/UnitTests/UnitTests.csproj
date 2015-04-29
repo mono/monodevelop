@@ -245,6 +245,8 @@
     <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParserTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
+    <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
+    <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

@@ -8,12 +8,15 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.VersionControl
 {
 	[DataItem (FallbackType=typeof(UnknownRepository))]
 	public abstract class Repository: IDisposable
 	{
+		static Counter Repositories = InstrumentationService.CreateCounter ("VersionControl.RepositoryOpened", "Version Control", id:"VersionControl.RepositoryOpened");
+
 		string name;
 		VersionControlSystem vcs;
 		
@@ -38,6 +41,10 @@ namespace MonoDevelop.VersionControl
 		protected Repository (VersionControlSystem vcs): this ()
 		{
 			VersionControlSystem = vcs;
+			Repositories.SetValue (Repositories.Count + 1, string.Format ("Repository #{0}", Repositories.Count + 1), new Dictionary<string, string> {
+				{ "Type", vcs.Name },
+				{ "Version", vcs.Version },
+			});
 		}
 		
 		public virtual void CopyConfigurationFrom (Repository other)
@@ -133,7 +140,10 @@ namespace MonoDevelop.VersionControl
 			VersionControlOperation operations = VersionControlOperation.None;
 			bool exists = !vinfo.LocalPath.IsNullOrEmpty && (File.Exists (vinfo.LocalPath) || Directory.Exists (vinfo.LocalPath));
 			if (vinfo.IsVersioned) {
-				operations = VersionControlOperation.Commit | VersionControlOperation.Update | VersionControlOperation.Log;
+				operations = VersionControlOperation.Commit | VersionControlOperation.Update;
+				if (!vinfo.HasLocalChange (VersionStatus.ScheduledAdd))
+					operations |= VersionControlOperation.Log;
+
 				if (exists) {
 					if (!vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
 						operations |= VersionControlOperation.Remove;

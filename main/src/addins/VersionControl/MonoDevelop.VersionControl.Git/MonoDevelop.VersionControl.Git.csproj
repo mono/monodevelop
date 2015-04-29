@@ -117,7 +117,6 @@
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtensionWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\GitSupportFeature.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\UserGitConfigDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSelectRevisionDialog.cs" />

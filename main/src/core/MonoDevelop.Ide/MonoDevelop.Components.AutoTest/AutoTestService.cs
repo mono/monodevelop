@@ -37,7 +37,10 @@ namespace MonoDevelop.Components.AutoTest
 	{
 		static CommandManager commandManager;
 		static AutoTestServiceManager manager = new AutoTestServiceManager ();
-		
+		public static AutoTestSession CurrentSession { 
+			get { return manager.currentSession; } 
+		}
+
 		public static void Start (CommandManager commandManager, bool publishServer)
 		{
 			AutoTestService.commandManager = commandManager;
@@ -88,7 +91,7 @@ namespace MonoDevelop.Components.AutoTest
 	class AutoTestServiceManager: MarshalByRefObject, IAutoTestService
 	{
 		IAutoTestClient client;
-		AutoTestSession currentSession;
+		public AutoTestSession currentSession;
 		
 		public override object InitializeLifetimeService ()
 		{

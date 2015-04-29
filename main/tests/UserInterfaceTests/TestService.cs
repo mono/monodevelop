@@ -36,8 +36,6 @@ namespace UserInterfaceTests
 
 		public static void StartSession (string monoDevelopBinPath = null)
 		{
-			Console.WriteLine ("Starting application");
-
 			Session = new AutoTestClientSession ();
 
 			//TODO: support for testing the installed app
@@ -52,7 +50,6 @@ namespace UserInterfaceTests
 
 		public static void EndSession ()
 		{
-			Console.WriteLine ("Stopping application");
 			Session.Stop ();
 		}
 	}

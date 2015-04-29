@@ -198,6 +198,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksRemoved += updateHandler;
 
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => DispatchService.GuiDispatch (() => {
+				if (Window == null)
+					return;
+
 				ReconstructString ();
 				foreach (var layer in Layer.Sublayers) {
 					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
@@ -769,11 +772,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					layerToStatus [layer.Name].NotifyClicked (button);
 					return;
 				}
-			}
 
-			if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
-				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
-				return;
+				if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
+					IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+					return;
+				}
 			}
 
 			if (sourcePad != null)

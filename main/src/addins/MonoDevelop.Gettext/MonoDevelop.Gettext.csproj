@@ -133,7 +133,6 @@
     <Compile Include="MonoDevelop.Gettext\CatalogDeletedEntry.cs" />
     <Compile Include="MonoDevelop.Gettext\IsoCodes.cs" />
     <Compile Include="MonoDevelop.Gettext\PropertyProvider.cs" />
-    <Compile Include="MonoDevelop.Gettext\GettextFeature.cs" />
     <Compile Include="MonoDevelop.Gettext\GettextFeatureWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Gettext.GettextFeatureWidget.cs" />
     <Compile Include="MonoDevelop.Gettext\MakefileHandler.cs" />

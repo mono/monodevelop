@@ -81,10 +81,10 @@ namespace MonoDevelop.Components
 				}
 				return base.OnButtonPressEvent (evnt);
 			}
-			//pass click to base it it can update the selection
-			//unless the node is already selected, in which case we don't want to change the selection
+			//pass click to base so it can update the selection
+			//unless the node is already selected, in which case we don't want to change the selection(deselect multi selection)
 			bool res = false;
-			if (!IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
+			if (!this.IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
 				res = base.OnButtonPressEvent (evnt);
 			}
 			
@@ -139,15 +139,6 @@ namespace MonoDevelop.Components
 				return true;
 			}
 			return base.OnPopupMenu ();
-		}
-
-		bool IsClickedNodeSelected (int x, int y)
-		{
-			Gtk.TreePath path;
-			if (GetPathAtPos (x, y, out path))
-				return Selection.PathIsSelected (path);
-
-			return false;
 		}
 
 		bool MultipleNodesSelected ()

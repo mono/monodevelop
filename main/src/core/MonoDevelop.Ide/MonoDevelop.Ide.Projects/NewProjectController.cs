@@ -194,7 +194,7 @@ namespace MonoDevelop.Ide.Projects
 			if (BasePath == null)
 				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 
-			projectConfiguration.Location = FileService.ResolveFullPath (BasePath);
+			projectConfiguration.Location = new FilePath (BasePath).ResolveLinks ();
 		}
 
 		void SetDefaultGitSettings ()
@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.Projects
 				if (wizardProvider.MoveToPreviousPage ()) {
 					return;
 				}
-			} else if (IsLastPage && wizardProvider.HasWizard) {
+			} else if (IsLastPage && wizardProvider.HasWizard && wizardProvider.CurrentWizard.TotalPages != 0) {
 				IsLastPage = false;
 				return;
 			}

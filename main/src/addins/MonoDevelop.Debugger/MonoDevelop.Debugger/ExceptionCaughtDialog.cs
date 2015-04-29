@@ -232,6 +232,7 @@ namespace MonoDevelop.Debugger
 			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
 			OnlyShowMyCodeCheckbox.Toggled += OnlyShowMyCodeToggled;
 			OnlyShowMyCodeCheckbox.Show ();
+			OnlyShowMyCodeCheckbox.Active = DebuggingService.GetUserOptions ().ProjectAssembliesOnly;
 
 			var alignment = new Alignment (0.0f, 0.5f, 0.0f, 0.0f) { Child = OnlyShowMyCodeCheckbox };
 			alignment.Show ();

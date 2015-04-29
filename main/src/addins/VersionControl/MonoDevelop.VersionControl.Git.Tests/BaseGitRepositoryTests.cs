@@ -372,7 +372,7 @@ index 0000000..009b64b
 
 		protected override Repository GetRepo (string path, string url)
 		{
-			return new GitRepository (path, url);
+			return new GitRepository (VersionControlService.GetVersionControlSystems ().First (id => id.Name == "Git"), path, url);
 		}
 
 		// This test is for a memory usage improvement on status.
