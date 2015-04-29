@@ -416,12 +416,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
 				text_render.Pushed = true;
 				args.RetVal = true;
+				QueueDraw ();
 				var entryset = BuildEntrySet ();
-				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
-				if (menu != null) {
-					menu.Hidden += HandleMenuHidden;
-					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
-				}
+
+				IdeApp.CommandService.ShowContextMenu (this, args.Event, entryset, this, () => {
+					text_render.Pushed = false;
+					QueueDraw ();
+				});
 			}
 		}
 
