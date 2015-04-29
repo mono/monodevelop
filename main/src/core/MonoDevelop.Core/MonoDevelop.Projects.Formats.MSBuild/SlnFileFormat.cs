@@ -384,6 +384,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			sol.OnBeginLoad ();
 			try {
 				monitor.BeginTask (string.Format (GettextCatalog.GetString ("Loading solution: {0}"), fileName), 1);
+				monitor.BeginStep ();
 				var projectLoadMonitor = monitor as ProjectLoadProgressMonitor;
 				if (projectLoadMonitor != null)
 					projectLoadMonitor.CurrentSolution = sol;
@@ -403,8 +404,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		SolutionFolder LoadSolution (Solution sol, string fileName, ProgressMonitor monitor)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Loading solution: {0}", fileName), 1);
-
 			var sln = new SlnFile ();
 			sln.Read (fileName);
 
@@ -430,11 +429,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			List<Task> loadTasks = new List<Task> ();
 
 			foreach (SlnProject sec in sln.Projects) {
-				monitor.Step (1);
 				try {
 					// Valid guid?
 					new Guid (sec.TypeGuid);
 				} catch (FormatException) {
+					monitor.Step (1);
 					//Use default guid as projectGuid
 					LoggingService.LogDebug (GettextCatalog.GetString (
 						"Invalid Project type guid '{0}' on line #{1}. Ignoring.",
@@ -465,6 +464,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					lock (items)
 						items.Add (projectGuid, sfolder);
 
+					monitor.Step (1);
 					continue;
 				}
 
@@ -472,6 +472,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					monitor.ReportWarning (GettextCatalog.GetString (
 						"{0}({1}): Projects with non-local source (http://...) not supported. '{2}'.",
 						sol.FileName, sec.Line, projectPath));
+					monitor.Step (1);
 					continue;
 				}
 
@@ -481,6 +482,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						"Invalid project path found in {0} : {1}", sol.FileName, projectPath));
 					LoggingService.LogWarning (GettextCatalog.GetString (
 						"Invalid project path found in {0} : {1}", sol.FileName, projectPath));
+					monitor.Step (1);
 					continue;
 				}
 
@@ -540,13 +542,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							monitor.ReportError (GettextCatalog.GetString ("Invalid solution file. There are two projects with the same GUID. The project {0} will be ignored.", projectPath), null);
 						}
 					}
+					monitor.Step (1);
 				});
 				loadTasks.Add (ft);
 			}
 
 			Task.WaitAll (loadTasks.ToArray ());
-
-			monitor.EndTask ();
 
 			sol.LoadedProjects = new HashSet<string> (items.Keys);
 
