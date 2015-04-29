@@ -356,6 +356,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			return info;
 		}
 
+		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
+		{
+			foreach (var entry in projectionList) {
+				if (entry.File.FilePath == projectFile.FilePath) {
+					projectionList.Remove (entry);
+					break;
+				}
+			}
+			projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections});
+
+		}
+
 		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
 		static DocumentInfo CreateDocumentInfo (string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
@@ -382,7 +394,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal class ProjectionEntry
 		{
 			public MonoDevelop.Projects.ProjectFile File;
-			public List<Projection> Projections = new List<Projection> ();
+			public IReadOnlyList<Projection> Projections;
 		}
 
 		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
@@ -409,8 +421,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				var projections = node.Parser.GenerateProjections (options);
 				var entry = new ProjectionEntry ();
 				entry.File = f;
+				var list = new List<Projection> ();
+				entry.Projections = list;
 				foreach (var projection in projections.Result) {
-					entry.Projections.Add (projection);
+					list.Add (projection);
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
 						continue;
 					var plainName = projection.Document.FileName.FileName;

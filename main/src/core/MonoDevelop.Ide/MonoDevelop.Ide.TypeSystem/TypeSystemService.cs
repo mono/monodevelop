@@ -237,14 +237,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
-					var Workspace = Workspaces.First () ;
-					var projectId = Workspace.GetProjectId (options.Project);
+					var ws = Workspaces.First () ;
+					var projectId = ws.GetProjectId (options.Project);
 
 					if (projectId != null) {
+						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Result.Projections);
 						foreach (var projection in result.Result.Projections) {
-							var docId = Workspace.GetDocumentId (projectId, projection.Document.FileName);
+							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
 							if (docId != null) {
-								Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+								ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
 							}
 						}
 					}

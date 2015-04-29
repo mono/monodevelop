@@ -88,29 +88,35 @@ namespace MonoDevelop.Refactoring
 			int originalOffset;
 
 			for (int i = 0; i < changes.Count; i++) {
+				var change = changes[i] as TextReplaceChange;
+				if (change == null)
+					continue;
+				
+				if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
+					fileNames.Add (change.FileName);
+					change.FileName = originalName;
+					change.Offset = originalOffset;
+				}
+			}
+			if (changes.All (x => x is TextReplaceChange)) {
+				List<Change> newChanges = new List<Change> (changes);
+				newChanges.Sort ((Change x, Change y) => ((TextReplaceChange)x).Offset.CompareTo (((TextReplaceChange)y).Offset));
+				changes = newChanges;
+			}
+
+
+			for (int i = 0; i < changes.Count; i++) {
 				changes[i].PerformChange (monitor, rctx);
 				var replaceChange = changes[i] as TextReplaceChange;
 				if (replaceChange == null)
 					continue;
-				if (ws.TryGetOriginalFileFromProjection (replaceChange.FileName, replaceChange.Offset, out originalName, out originalOffset)) {
-					replaceChange.FileName = originalName;
-					replaceChange.Offset = originalOffset;
-				}
 
 				for (int j = i + 1; j < changes.Count; j++) {
 					var change = changes[j] as TextReplaceChange;
 					if (change == null)
 						continue;
-
-
-					if (ws.TryGetOriginalFileFromProjection (change.FileName, change.Offset, out originalName, out originalOffset)) {
-						change.FileName = originalName;
-						change.Offset = originalOffset;
-					}
-
-
+					
 					fileNames.Add (change.FileName);
-
 
 					if (replaceChange.Offset >= 0 && change.Offset >= 0 && replaceChange.FileName == change.FileName) {
 						if (replaceChange.Offset < change.Offset) {
