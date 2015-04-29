@@ -1843,14 +1843,18 @@ namespace MonoDevelop.Debugger
 				PreviewWindowManager.DestroyWindow ();
 			}
 
-			bool retval = base.OnButtonPressEvent (evnt);
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 				//	ShowPopup (evnt);
+				if (!this.IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
+					//pass click to base so it can update the selection
+					//unless the node is already selected, in which case we don't want to change the selection(deselect multi selection)
+					base.OnButtonPressEvent (evnt);
+				}
 				return true;
+			} else {
+				return base.OnButtonPressEvent (evnt);
 			}
-			
-			return retval;
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
