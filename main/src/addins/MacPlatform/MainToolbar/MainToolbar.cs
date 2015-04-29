@@ -74,9 +74,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return (SearchBar)widget.Items[searchEntryIdx + buttonBarCount].View; }
 		}
 
+		static HashSet<object> viewCache = new HashSet<object> ();
+		static HashSet<ButtonBar> buttonBarCache = new HashSet<ButtonBar> ();
+
 		NSToolbarItem CreateRunToolbarItem ()
 		{
 			var button = new RunButton ();
+			viewCache.Add (button);
 			button.Activated += (o, e) => {
 				if (RunButtonClicked != null)
 					RunButtonClicked (o, e);
@@ -93,6 +97,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateSelectorToolbarItem ()
 		{
 			var selector = new SelectorView ();
+			viewCache.Add (selector);
 			var item = new NSToolbarItem (SelectorId) {
 				View = selector,
 				MinSize = new CGSize (150, 25),
@@ -118,6 +123,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateButtonBarToolbarItem ()
 		{
 			var bar = new ButtonBar (barItems);
+			buttonBarCache.Add (bar);
 			// By default, Cocoa doesn't want to duplicate items in the toolbar.
 			// Use different Ids to prevent this and not have to subclass.
 			var item = new NSToolbarItem (ButtonBarId + buttonBarCount) {
@@ -160,6 +166,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateSearchBarToolbarItem ()
 		{
 			var bar = new SearchBar ();
+			viewCache.Add (bar);
 			var menuBar = new SearchBar {
 				Frame = new CGRect (0, 0, 180, bar.FittingSize.Height),
 			};
@@ -178,6 +185,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateStatusBarToolbarItem ()
 		{
 			var bar = new StatusBar ();
+			viewCache.Add (bar);
 			var item = new NSToolbarItem (StatusBarId) {
 				View = bar,
 				// Place some temporary values in there.
@@ -202,7 +210,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSToolbarItem CreateCenteringSpaceItem ()
 		{
-			return new CenteringSpaceToolbarItem (CenteringSpaceId);
+			var item = new CenteringSpaceToolbarItem (CenteringSpaceId);
+			viewCache.Add (item.View);
+			return item;
 		}
 
 		public MainToolbar (Gtk.Window window)
@@ -239,6 +249,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			widget.InsertItem (StatusBarId, statusBarIdx = ++total);
 			widget.InsertItem (NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, ++total);
 			widget.InsertItem (SearchBarId, searchEntryIdx = ++total);
+
+			// NSButton -> NSToolbarItemViewer -> _NSToolbarClipView -> NSToolbarView -> NSToolbarClippedItemsIndicator
+			viewCache.Add (runButton.Superview.Superview.Superview);
 		}
 
 		#region IMainToolbarView implementation
@@ -281,6 +294,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		List<IButtonBarButton> barItems = new List<IButtonBarButton> ();
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
 		{
+			buttonBarCache.Clear ();
 			while (buttonBarCount > 0) {
 				widget.RemoveItem (buttonBarStartIdx);
 				--buttonBarCount;
