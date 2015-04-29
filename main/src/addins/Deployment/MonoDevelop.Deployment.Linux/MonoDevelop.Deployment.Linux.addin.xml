@@ -60,12 +60,6 @@
 			<DeployDirectory id="Linux.DesktopApplications" _label=".desktop application folder" />
 		</Condition>
 	</Extension>
-	
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-		<Condition id="Platform" value="linux">
-			<Class class = "MonoDevelop.Deployment.Linux.LinuxIntegrationProjectFeature" />
-		</Condition>
-	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/FileTemplates">
 		<Condition id="Platform" value="linux">

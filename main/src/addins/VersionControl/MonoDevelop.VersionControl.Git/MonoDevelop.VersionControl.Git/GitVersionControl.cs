@@ -51,15 +51,10 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
-			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
-				return null;
-			if (path.IsGitRepository ()) {
-				GitRepository repo;
-				if (!repositories.TryGetValue (path.CanonicalPath, out repo))
-					repositories [path.CanonicalPath] = repo = new GitRepository (path, null);
-				return repo;
-			}
-			return GetRepositoryReference (path.ParentDirectory, id);
+			GitRepository repo;
+			if (!repositories.TryGetValue (path.CanonicalPath, out repo))
+				repositories [path.CanonicalPath] = repo = new GitRepository (this, path, null);
+			return repo;
 		}
 		
 		protected override Repository OnCreateRepositoryInstance ()
@@ -70,6 +65,15 @@ namespace MonoDevelop.VersionControl.Git
 		public override IRepositoryEditor CreateRepositoryEditor (Repository repo)
 		{
 			return new UrlBasedRepositoryEditor ((GitRepository)repo);
+		}
+
+		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
+		{
+			if (path.IsEmpty || path.ParentDirectory.IsEmpty || path.IsNull || path.ParentDirectory.IsNull)
+				return null;
+			if (path.IsGitRepository ())
+				return path;
+			return OnGetRepositoryPath (path.ParentDirectory, id);
 		}
 		
 		internal void UnregisterRepo (GitRepository repo)

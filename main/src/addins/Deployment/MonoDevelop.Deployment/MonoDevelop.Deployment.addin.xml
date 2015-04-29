@@ -177,10 +177,6 @@
 		<DeployPlatform id="Windows" _label="Microsoft Windows" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
-<!--		<Class class = "MonoDevelop.Deployment.Gui.PackagingFeature" /> -->
-	</Extension>
-
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
 		<Image id="md-packaging-project" resource="packaging-project.png" />
 	</Extension>

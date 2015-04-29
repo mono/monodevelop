@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Collections.Generic;
 
@@ -79,7 +80,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		public virtual bool IsValidName (string name, string language)
 		{
-			return name.Length > 0 && name.IndexOfAny (Path.GetInvalidFileNameChars ()) == -1;
+			return FileService.IsValidFileName (name);
 /*			if (name.Length > 0) {
 				if (language != null && language.Length > 0) {
 					IDotNetLanguageBinding binding = LanguageBindingService.GetBindingPerLanguageName (language) as IDotNetLanguageBinding;

@@ -1,9 +1,10 @@
-// UnixFileSystemExtension.cs
+﻿//
+// MarkedOperation.cs
 //
 // Author:
-//   Alan McGovern <alan@xamarin.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2011 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Core.FileSystem
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	class UnixFileSystemExtension : DefaultFileSystemExtension
+	public class MarkedOperation : Operation
 	{
-		const int PATHMAX = 4096 + 1;
-		
-		[DllImport ("libc")]
-		static extern IntPtr realpath (string path, IntPtr buffer);
-		
-		public override FilePath ResolveFullPath (FilePath path)
+		public string Mark;
+
+		public MarkedOperation (string mark)
 		{
-			IntPtr buffer = IntPtr.Zero;
-			try {
-				buffer = Marshal.AllocHGlobal (PATHMAX);
-				var result = realpath (path, buffer);
-				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
-			} finally {
-				if (buffer != IntPtr.Zero)
-					Marshal.FreeHGlobal (buffer);
+			Mark = mark;
+		}
+
+		public override List<AppResult> Execute (List<AppResult> resultSet)
+		{
+			List<AppResult> newResultSet = new List<AppResult> ();
+
+			foreach (var result in resultSet) {
+				AppResult newResult = result.Marked (Mark);
+				if (newResult != null) {
+					newResultSet.Add (newResult);
+				}
 			}
+
+			return newResultSet;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Mark ({0})", Mark);
 		}
 	}
 }

@@ -112,7 +112,6 @@
     <Compile Include="MakefileProject.cs" />
     <Compile Include="FileNodeBuilderExtension.cs" />
     <Compile Include="TarballBuilderEditorWidget.cs" />
-    <Compile Include="MakefileIntegrationFeature.cs" />
     <Compile Include="MakefileIntegrationFeatureWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Autotools.MakefileOptionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Autotools.TarballBuilderEditorWidget.cs" />

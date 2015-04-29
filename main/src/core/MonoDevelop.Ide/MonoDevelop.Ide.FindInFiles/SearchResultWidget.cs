@@ -62,12 +62,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		PadTreeView treeviewSearchResults;
 		Label labelStatus;
 		TextView textviewLog;
-		
+		TreeViewColumn pathColumn;
+
 		public string BasePath {
 			get;
 			set;
 		}
-		
+
+		internal PathMode PathMode {
+			set {
+				pathColumn.Visible = (value != PathMode.Hidden);
+			}
+		}
+
 		public IAsyncOperation AsyncOperation {
 			get;
 			set;
@@ -159,8 +166,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			textColumn.Sizing = TreeViewColumnSizing.Fixed;
 			textColumn.FixedWidth = 300;
 
-			
-			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
+			pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
 				                            renderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = true;

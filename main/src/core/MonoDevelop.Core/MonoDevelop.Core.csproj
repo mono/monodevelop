@@ -419,7 +419,6 @@
     <Compile Include="MonoDevelop.Core\LinuxSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\UnixSystemInformation.cs" />
     <Compile Include="MonoDevelop.Core\ISystemInformationProvider.cs" />
-    <Compile Include="MonoDevelop.Core.FileSystem\UnixFileSystemExtension.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashMonitor.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\ICrashMonitor.cs" />

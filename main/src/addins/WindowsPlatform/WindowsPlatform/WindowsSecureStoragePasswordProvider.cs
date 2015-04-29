@@ -223,13 +223,13 @@ namespace MonoDevelop.Platform.Windows
 
 			var ncred = (NativeCredential)Marshal.PtrToStructure (handle, typeof (NativeCredential));
 
-			if (ncred.CredentialBlob == IntPtr.Zero || ncred.UserName == IntPtr.Zero || ncred.TargetName == IntPtr.Zero)
+			if (ncred.CredentialBlob == IntPtr.Zero || ncred.TargetName == IntPtr.Zero)
 				return null;
 
 			return new Credential {
 				CredentialBlobSize = ncred.CredentialBlobSize,
 				CredentialBlob = Marshal.PtrToStringUni (ncred.CredentialBlob, (int)ncred.CredentialBlobSize / 2),
-				UserName = Marshal.PtrToStringUni (ncred.UserName),
+				UserName = ncred.UserName == IntPtr.Zero ? string.Empty : Marshal.PtrToStringUni (ncred.UserName),
 				TargetName = Marshal.PtrToStringUni (ncred.TargetName),
 				TargetAlias = ncred.TargetAlias == IntPtr.Zero ? string.Empty : Marshal.PtrToStringUni (ncred.TargetAlias),
 				Type = ncred.Type,
