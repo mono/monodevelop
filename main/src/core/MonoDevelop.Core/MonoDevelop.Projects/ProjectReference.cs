@@ -326,6 +326,7 @@ namespace MonoDevelop.Projects
 		{
 			ProjectReference newRef = (ProjectReference) pref.MemberwiseClone ();
 			newRef.reference = newReference;
+			newRef.Include = newReference;
 			return newRef;
 		}
 		
