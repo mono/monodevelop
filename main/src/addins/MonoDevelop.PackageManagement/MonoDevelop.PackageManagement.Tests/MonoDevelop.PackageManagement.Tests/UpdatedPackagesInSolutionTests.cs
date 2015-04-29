@@ -468,7 +468,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			task.Result = null;
 			task.ExecuteContinueWith ();
 
-			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates. Please see Package Console for details."), progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
+			Assert.AreEqual (GettextCatalog.GetString ("Could not check for package updates."), progressMonitorFactory.ProgressMonitor.ReportedErrorMessage);
 			Assert.IsTrue (checkForUpdatesTaskRunner.ProgressMonitorCreated.IsPackageConsoleShown);
 			progressMonitorFactory.ProgressMonitor.AssertMessageIsLogged ("Inner exception error message");
 			Assert.IsTrue (progressMonitorFactory.ProgressMonitor.IsDisposed);
