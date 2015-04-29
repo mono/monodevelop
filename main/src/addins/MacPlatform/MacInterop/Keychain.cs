@@ -553,12 +553,15 @@ namespace MonoDevelop.MacInterop
 				0, null, (uint) path.Length, path, (ushort) uri.Port,
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
-			if (result != OSStatus.Ok)
-				return null;
+			try {
+				if (result != OSStatus.Ok)
+					return null;
 
-			var username = GetUsernameFromKeychainItemRef (item);
-
-			return Tuple.Create (username, Marshal.PtrToStringAuto (passwordData, (int) passwordLength));
+				var username = GetUsernameFromKeychainItemRef (item);
+				return Tuple.Create (username, Marshal.PtrToStringAuto (passwordData, (int) passwordLength));
+			} finally {
+				CFRelease (item);
+			}
 		}
 
 		public static string FindInternetPassword (Uri uri)
