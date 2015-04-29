@@ -118,6 +118,16 @@ namespace MonoDevelop.Platform.Windows
 				return Tuple.Create (string.Empty, string.Empty);
 			}
 		}
+
+		public void RemoveWebPassword (Uri uri)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void RemoveWebUserNameAndPassword (Uri uri)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 
 	enum ErrorCode

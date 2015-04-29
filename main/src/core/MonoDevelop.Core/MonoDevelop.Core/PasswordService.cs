@@ -63,6 +63,20 @@ namespace MonoDevelop.Core
 			var provider = GetPasswordProvider ();
 			return provider != null ? provider.GetWebUserNameAndPassword (url) : null;
 		}
+
+		public static void RemoveWebPassword (Uri url)
+		{
+			var provider = GetPasswordProvider ();
+			if (provider != null)
+				provider.RemoveWebPassword (url);
+		}
+
+		public static void RemoveWebUsernameAndPassword (Uri url)
+		{
+			var provider = GetPasswordProvider ();
+			if (provider != null)
+				provider.RemoveWebUserNameAndPassword (url);
+		}
 	}
 }
 
