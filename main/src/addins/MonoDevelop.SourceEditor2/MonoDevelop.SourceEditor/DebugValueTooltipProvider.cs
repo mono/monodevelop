@@ -41,7 +41,6 @@ namespace MonoDevelop.SourceEditor
 {
 	public class DebugValueTooltipProvider: TooltipProvider, IDisposable
 	{
-		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		DebugValueWindow tooltip;
 		
 		public DebugValueTooltipProvider ()
@@ -57,9 +56,6 @@ namespace MonoDevelop.SourceEditor
 
 		void CurrentFrameChanged (object sender, EventArgs e)
 		{
-			// Clear the cached values every time the current frame changes
-			cachedValues.Clear ();
-
 			if (tooltip != null)
 				tooltip.Hide ();
 		}
@@ -113,17 +109,13 @@ namespace MonoDevelop.SourceEditor
 			
 			if (string.IsNullOrEmpty (expression))
 				return null;
-			
-			ObjectValue val;
-			if (!cachedValues.TryGetValue (expression, out val)) {
-				var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-				options.AllowMethodEvaluation = true;
-				options.AllowTargetInvoke = true;
 
-				val = frame.GetExpressionValue (expression, options);
-				cachedValues [expression] = val;
-			}
-			
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowMethodEvaluation = true;
+			options.AllowTargetInvoke = true;
+
+			var val = frame.GetExpressionValue (expression, options);
+
 			if (val == null || val.IsUnknown || val.IsNotSupported)
 				return null;
 			
@@ -162,6 +154,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
 			DebuggingService.DebugSessionStarted -= DebugSessionStarted;
+			if (DebuggingService.DebuggerSession != null)
+				DebuggingService.DebuggerSession.TargetExited -= TargetProcessExited;
 		}
 		#endregion
 	}
