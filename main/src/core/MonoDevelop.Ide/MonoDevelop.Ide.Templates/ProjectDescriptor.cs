@@ -292,6 +292,9 @@ namespace MonoDevelop.Ide.Templates
 				string referenceOutputAssembly = elem.GetAttribute ("ReferenceOutputAssembly");
 				if (!string.IsNullOrEmpty (referenceOutputAssembly))
 					ProjectReference.ReferenceOutputAssembly = bool.Parse (referenceOutputAssembly);
+				string hintPath = elem.GetAttribute ("HintPath");
+				if (!string.IsNullOrEmpty (hintPath))
+					ProjectReference.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
 			}
 
 			public ProjectReference ProjectReference { get; private set; }
