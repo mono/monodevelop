@@ -104,10 +104,12 @@ namespace MonoDevelop.VersionControl.Git
 					if (keyUsed + 1 < Keys.Count)
 						keyUsed++;
 					else {
-						var dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
-						dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+						SelectFileDialog dlg = null;
 						bool success = false;
+
 						DispatchService.GuiSyncDispatch (() => {
+							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
+							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 							success = dlg.Run ();
 						});
 						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))

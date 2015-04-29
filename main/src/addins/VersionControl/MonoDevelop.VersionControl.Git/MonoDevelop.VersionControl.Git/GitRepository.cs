@@ -771,23 +771,23 @@ namespace MonoDevelop.VersionControl.Git
 				name = RootRepository.Config.Get<string> ("user.name").Value;
 				email = RootRepository.Config.Get<string> ("user.email").Value;
 			} catch {
-				var dlg = new UserGitConfigDialog ();
-				try {
-					Gtk.ResponseType result = Gtk.ResponseType.Cancel;
-					DispatchService.GuiSyncDispatch (() => {
-						result = (Gtk.ResponseType)MessageService.RunCustomDialog (dlg);
-					});
+				string dlgName = null, dlgEmail = null;
 
-					if (result == Gtk.ResponseType.Ok) {
-						name = dlg.UserText;
-						email = dlg.EmailText;
-						SetUserInfo (name, email);
-					} else {
-						name = email = null;
+				DispatchService.GuiSyncDispatch (() => {
+					var dlg = new UserGitConfigDialog ();
+					try {
+						if ((Gtk.ResponseType)MessageService.RunCustomDialog (dlg) == Gtk.ResponseType.Ok) {
+							dlgName = dlg.UserText;
+							dlgEmail = dlg.EmailText;
+							SetUserInfo (dlgName, dlgEmail);
+						}
+					} finally {
+						dlg.Destroy ();
 					}
-				} finally {
-					dlg.Destroy ();
-				}
+				});
+
+				name = dlgName;
+				email = dlgEmail;
 			}
 		}
 
