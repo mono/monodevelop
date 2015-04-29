@@ -73,21 +73,30 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			foreach (Projection p in projections) {
 				foreach (var seg in p.ProjectedSegments) {
-					if (seg.IsInOriginal (segment)) {
+					if (seg.ContainsOriginal (segment.Offset) || 
+					    seg.ContainsOriginal (segment.EndOffset) || 
+					    segment.Offset <= seg.Offset && seg.Offset + seg.Length <= segment.EndOffset) {
 						if (p.ProjectedEditor.SemanticHighlighting == null)
 							continue;
-
-						int delta = segment.EndOffset - (seg.Offset + seg.Length);
-						int len = seg.Length;
-						if (delta < 0) {
-							len += delta;
+						if (segment.Offset < seg.Offset) {
+							foreach (var cs in GetColoredSegments (MonoDevelop.Core.Text.TextSegment.FromBounds (segment.Offset, seg.Offset - 1)))
+								yield return cs;
 						}
-						foreach (var cs in p.ProjectedEditor.SemanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (seg.ProjectedOffset, len))) {
-							yield return new ColoredSegment (cs.Offset - seg.ProjectedOffset + seg.Offset, cs.Length, cs.ColorStyleKey);
 
+
+						var v = Math.Max (seg.Offset, segment.Offset);
+						var projectedStartOffset = seg.FromOriginalToProjected (v);
+						var projectedEndOffset = Math.Min (seg.FromOriginalToProjected (segment.EndOffset), seg.ProjectedOffset + seg.Length);
+						var originalEndOffset = seg.FromProjectedToOriginal (projectedEndOffset);
+
+						foreach (var cs in p.ProjectedEditor.SemanticHighlighting.GetColoredSegments (MonoDevelop.Core.Text.TextSegment.FromBounds (projectedStartOffset, projectedEndOffset))) {
+							yield return new ColoredSegment (cs.Offset - projectedStartOffset + v, cs.Length, cs.ColorStyleKey);
 						}
-						foreach (var cs in GetColoredSegments (MonoDevelop.Core.Text.TextSegment.FromBounds (seg.Offset + len, segment.EndOffset)))
-							yield return cs;
+
+						if (originalEndOffset < segment.EndOffset) {
+							foreach (var cs in GetColoredSegments (MonoDevelop.Core.Text.TextSegment.FromBounds (originalEndOffset, segment.EndOffset)))
+								yield return cs;
+						}
 						yield break;
 					}
 				}
@@ -95,4 +104,3 @@ namespace MonoDevelop.Ide.Editor.Projection
 		}
 	}
 }
-

@@ -85,5 +85,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 		{
 			return offset + Offset - ProjectedOffset;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ProjectedSegment: Offset={0}, ProjectedOffset={1}, Length={2}]", Offset, ProjectedOffset, Length);
+		}
 	}
 }

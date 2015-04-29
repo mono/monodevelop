@@ -1716,7 +1716,12 @@ namespace MonoDevelop.SourceEditor
 			result.TriggerLineOffset = loc.Column - 1;
 			var p = widget.TextEditor.LocationToPoint (loc);
 			int tx, ty;
-			editor.ParentWindow.GetOrigin (out tx, out ty);
+			var parentWindow = editor.ParentWindow;
+			if (parentWindow != null) {
+				parentWindow.GetOrigin (out tx, out ty);
+			} else {
+				tx = ty = 0;
+			}
 			tx += editor.Allocation.X + p.X;
 			ty += editor.Allocation.Y + p.Y + (int)editor.LineHeight;
 
