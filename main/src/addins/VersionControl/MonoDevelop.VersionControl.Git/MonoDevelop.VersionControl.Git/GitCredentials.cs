@@ -44,6 +44,7 @@ namespace MonoDevelop.VersionControl.Git
 		static string urlUsed;
 		static bool agentUsed;
 		static int keyUsed = -1;
+		static bool nativePasswordUsed;
 
 		static GitCredentials ()
 		{
@@ -71,11 +72,13 @@ namespace MonoDevelop.VersionControl.Git
 				uri = new Uri (url);
 				string username;
 				string password;
-				if (TryGetUsernamePassword (uri, out username, out password))
+				if (!nativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+					nativePasswordUsed = true;
 					return new UsernamePasswordCredentials {
 						Username = username,
 						Password = password
 					};
+				}
 			}
 
 			Credentials cred;
@@ -188,6 +191,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal static void StoreCredentials ()
 		{
+			nativePasswordUsed = false;
+
 			if (!string.IsNullOrEmpty (urlUsed))
 				if (keyUsed != -1)
 					KeyForUrl [urlUsed] = keyUsed;
@@ -197,10 +202,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal static void InvalidateCredentials ()
 		{
-			if (!string.IsNullOrEmpty (urlUsed)) {
+			if (!string.IsNullOrEmpty (urlUsed))
 				if (AgentForUrl.ContainsKey (urlUsed))
 					AgentForUrl [urlUsed] &= !agentUsed;
-			}
 
 			Cleanup ();
 		}

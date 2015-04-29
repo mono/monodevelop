@@ -552,10 +552,15 @@ namespace MonoDevelop.VersionControl.Git
 					func ();
 					GitCredentials.StoreCredentials ();
 					retry = false;
-				} catch (LibGit2SharpException) {
+				} catch (AuthenticationException) {
 					GitCredentials.InvalidateCredentials ();
 					retry = true;
 				} catch (VersionControlException e) {
+					GitCredentials.InvalidateCredentials ();
+					if (monitor != null)
+						monitor.ReportError (e.Message, null);
+					retry = false;
+				} catch (LibGit2SharpException e) {
 					GitCredentials.InvalidateCredentials ();
 					if (monitor != null)
 						monitor.ReportError (e.Message, null);
@@ -768,7 +773,12 @@ namespace MonoDevelop.VersionControl.Git
 			} catch {
 				var dlg = new UserGitConfigDialog ();
 				try {
-					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+					Gtk.ResponseType result = Gtk.ResponseType.Cancel;
+					DispatchService.GuiSyncDispatch (() => {
+						result = (Gtk.ResponseType)MessageService.RunCustomDialog (dlg);
+					});
+
+					if (result == Gtk.ResponseType.Ok) {
 						name = dlg.UserText;
 						email = dlg.EmailText;
 						SetUserInfo (name, email);
