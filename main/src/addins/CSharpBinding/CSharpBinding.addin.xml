@@ -1,5 +1,12 @@
 <ExtensionModel>
-	
+
+	<!-- Extension Points -->
+	<ExtensionPoint path = "/MonoDevelop/CSharp/Completion/ContextHandler">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<!-- Extensions -->
+
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -276,4 +283,8 @@
 <!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
 	</Extension>
 
+	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
+		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
+	</Extension>
+	
 </ExtensionModel>

@@ -33,12 +33,17 @@ using System.Linq;
 using Mono.Addins.Description;
 
 namespace MonoDevelop.CSharp.Completion
-{
-	class ProtocolMemberContextHandler : OverrideContextHandler
+{	
+	interface IExtensionContextHandler
+	{
+		void Init (CSharpCompletionTextEditorExtension extension);
+	}
+
+	class ProtocolMemberContextHandler : OverrideContextHandler, IExtensionContextHandler
 	{
 		CSharpCompletionTextEditorExtension extension;
 
-		public ProtocolMemberContextHandler (CSharpCompletionTextEditorExtension extension)
+		void IExtensionContextHandler.Init (CSharpCompletionTextEditorExtension extension)
 		{
 			this.extension = extension;
 		}

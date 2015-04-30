@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Refactoring;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Mono.Addins;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -73,6 +74,8 @@ namespace MonoDevelop.CSharp.Completion
 */
 		SyntaxTree unit;
 		static readonly SyntaxTree emptyUnit = CSharpSyntaxTree.ParseText ("");
+
+		List<CompletionContextHandler> additionalContextHandlers = new List<CompletionContextHandler> ();
 
 		SyntaxTree Unit {
 			get {
@@ -150,6 +153,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		public CSharpCompletionTextEditorExtension ()
 		{
+			foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
+				var handler = (CompletionContextHandler)node.CreateInstance ();
+				var extHandler = handler as IExtensionContextHandler;
+				if (extHandler != null) {
+					extHandler.Init (this);
+				}
+				additionalContextHandlers.Add (handler);
+			}
 		}
 
 		bool addEventHandlersInInitialization = true;
@@ -167,10 +178,6 @@ namespace MonoDevelop.CSharp.Completion
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-//			DocumentContext.DocumentParsed += HandleDocumentParsed;
-			additionalContextHandlers = new [] {
-				new ProtocolMemberContextHandler (this)
-			};
 
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument != null) {
@@ -362,8 +369,6 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 		}
-
-		IEnumerable<CompletionContextHandler> additionalContextHandlers;
 
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
