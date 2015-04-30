@@ -67,11 +67,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
 		{
-			SetValue (value, preserveCase, mergeToMainGroup, false);
-		}
-
-		void SetValue (string value, bool preserveCase, bool mergeToMainGroup, bool isXml)
-		{
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
 
@@ -85,7 +80,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						return;
 				}
 			}
-			SetPropertyValue (value, isXml);
+			SetPropertyValue (value);
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
@@ -101,7 +96,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			// If the path is normalized in the property, keep the value
-			if (UnevaluatedValue == MSBuildProjectService.ToMSBuildPath (baseDir, value, true))
+			if (!string.IsNullOrEmpty (UnevaluatedValue) && UnevaluatedValue == MSBuildProjectService.ToMSBuildPath (baseDir, value, true))
 				return;
 			
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
@@ -115,33 +110,135 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					SetValue ((bool)value ? "true" : "false", preserveCase: true, mergeToMainGroup: mergeToMainGroup);
 			}
-			else if (value is XmlElement) {
-				SetValue (((XmlElement)value).OuterXml, false, mergeToMainGroup, true);
-			}
-			else if (value is XElement) {
-				SetValue (((XElement)value).ToString (), false, mergeToMainGroup, true);
-			}
 			else
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}		
 
-		internal virtual void SetPropertyValue (string value, bool isXml = false)
+		internal virtual void SetPropertyValue (string value)
 		{
 			if (Element.IsEmpty && string.IsNullOrEmpty (value))
 				return;
 
-			if (isXml)
-				Element.InnerXml = value;
-			else
-				Element.InnerText = value;
+			// This code is from Microsoft.Build.Internal.Utilities
+
+			if (value.IndexOf('<') != -1) {
+				// If the value looks like it probably contains XML markup ...
+				try {
+					// Attempt to store it verbatim as XML.
+					Element.InnerXml = value;
+					return;
+				}
+				catch (XmlException) {
+					// But that may fail, in the event that "value" is not really well-formed
+					// XML.  Eat the exception and fall through below ...
+				}
+			}
+
+			// The value does not contain valid XML markup.  Store it as text, so it gets 
+			// escaped properly.
+			Element.InnerText = value;
 		}
 
-		internal override string GetPropertyValue (bool isXml = false)
+		internal override string GetPropertyValue ()
 		{
-			if (isXml)
-				return Element.InnerXml;
-			else
+			// This code is from Microsoft.Build.Internal.Utilities
+
+			if (!Element.HasChildNodes)
+				return string.Empty;
+
+			if (Element.ChildNodes.Count == 1 && (Element.FirstChild.NodeType == XmlNodeType.Text || Element.FirstChild.NodeType == XmlNodeType.CDATA))
 				return Element.InnerText;
+
+			string innerXml = Element.InnerXml;
+
+			// If there is no markup under the XML node (detected by the presence
+			// of a '<' sign
+			int firstLessThan = innerXml.IndexOf('<');
+			if (firstLessThan == -1) {
+				// return the inner text so it gets properly unescaped
+				return Element.InnerText;
+			}
+
+			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
+
+			// ... or if the only XML is comments,
+			if (containsNoTagsOtherThanComments) {
+				// return the inner text so the comments are stripped
+				// (this is how one might comment out part of a list in a property value)
+				return Element.InnerText;
+			}
+
+			// ...or it looks like the whole thing is a big CDATA tag ...
+			bool startsWithCData = (innerXml.IndexOf("<![CDATA[", StringComparison.Ordinal) == 0);
+
+			if (startsWithCData) {
+				// return the inner text so it gets properly extracted from the CDATA
+				return Element.InnerText;
+			}
+
+			// otherwise, it looks like genuine XML; return the inner XML so that
+			// tags and comments are preserved and any XML escaping is preserved
+			return innerXml;
+		}
+
+		// This code is from Microsoft.Build.Internal.Utilities
+
+		/// <summary>
+		/// Figure out whether there are any XML tags, other than comment tags,
+		/// in the string.
+		/// </summary>
+		/// <remarks>
+		/// We know the string coming in is a valid XML fragment. (The project loaded after all.)
+		/// So for example we can ignore an open comment tag without a matching closing comment tag.
+		/// </remarks>
+		static bool ContainsNoTagsOtherThanComments (string innerXml, int firstLessThan)
+		{
+			bool insideComment = false;
+			for (int i = firstLessThan; i < innerXml.Length; i++)
+			{
+				if (!insideComment)
+				{
+					// XML comments start with exactly "<!--"
+					if (i < innerXml.Length - 3
+						&& innerXml[i] == '<'
+						&& innerXml[i + 1] == '!'
+						&& innerXml[i + 2] == '-'
+						&& innerXml[i + 3] == '-')
+					{
+						// Found the start of a comment
+						insideComment = true;
+						i = i + 3;
+						continue;
+					}
+				}
+
+				if (!insideComment)
+				{
+					if (innerXml[i] == '<')
+					{
+						// Found a tag!
+						return false;
+					}
+				}
+
+				if (insideComment)
+				{
+					// XML comments end with exactly "-->"
+					if (i < innerXml.Length - 2
+						&& innerXml[i] == '-'
+						&& innerXml[i + 1] == '-'
+						&& innerXml[i + 2] == '>')
+					{
+						// Found the end of a comment
+						insideComment = false;
+						i = i + 2;
+						continue;
+					}
+				}
+			}
+
+			// Didn't find any tags, except possibly comments
+			return true;
 		}
 
 		public override string UnevaluatedValue {
@@ -166,12 +263,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return name;
 		}
 
-		internal override void SetPropertyValue (string value, bool isXml)
+		internal override void SetPropertyValue (string value)
 		{
 			this.value = value;
 		}
 
-		internal override string GetPropertyValue (bool isXml)
+		internal override string GetPropertyValue ()
 		{
 			return value;
 		}
@@ -207,7 +304,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return value; }
 		}
 
-		internal override string GetPropertyValue (bool isXml)
+		internal override string GetPropertyValue ()
 		{
 			return evaluatedValue;
 		}
@@ -241,17 +338,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public object GetValue (Type t)
 		{
-			if (t == typeof(XmlElement)) {
-				var xmlValue = GetPropertyValue (true);
-				var doc = new XmlDocument ();
-				doc.LoadXml (xmlValue);
-				return doc.DocumentElement;
-			}
-			if (t == typeof(XElement)) {
-				var xmlValue = GetPropertyValue (true);
-				return XElement.Parse (xmlValue);
-			}
-
 			var val = GetPropertyValue ();
 			if (t == typeof(bool))
 				return (object) val.Equals ("true", StringComparison.InvariantCultureIgnoreCase);
@@ -297,7 +383,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public abstract string UnevaluatedValue { get; }
 
-		internal abstract string GetPropertyValue (bool isXml = false);
+		internal abstract string GetPropertyValue ();
 
 		internal abstract string GetName ();
 	}
