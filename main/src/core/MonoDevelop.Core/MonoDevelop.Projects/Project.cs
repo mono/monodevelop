@@ -1714,7 +1714,7 @@ namespace MonoDevelop.Projects
 		protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			timer.Trace ("Read project items");
-			LoadProjectItems (msproject, ProjectItemFlags.None);
+			LoadProjectItems (msproject, ProjectItemFlags.None, usedMSBuildItems);
 
 			timer.Trace ("Read configurations");
 
@@ -1945,8 +1945,11 @@ namespace MonoDevelop.Projects
 			return merged;
 		}
 
-		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags)
+		internal void LoadProjectItems (MSBuildProject msproject, ProjectItemFlags flags, HashSet<MSBuildItem> loadedItems)
 		{
+			if (loadedItems != null)
+				loadedItems.Clear ();
+			
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
 				if (buildItem.IsImported)
 					continue;
@@ -1957,6 +1960,8 @@ namespace MonoDevelop.Projects
 					continue;
 				it.Flags = flags;
 				Items.Add (it);
+				if (loadedItems != null)
+					loadedItems.Add (buildItem.SourceItem);
 			}
 		}
 
@@ -2099,8 +2104,10 @@ namespace MonoDevelop.Projects
 				foreach (KeyValuePair<string,MergedPropertyValue> prop in mergeToProjectPropertyValues) {
 					if (!prop.Value.IsDefault)
 						globalGroup.SetValue (prop.Key, prop.Value.XmlValue, preserveExistingCase: prop.Value.PreserveExistingCase);
-					else
-						globalGroup.RemoveProperty (prop.Key);
+					else {
+						// if the value is default, only remove the property if it was not already the default to avoid unnecessary project file churn
+						globalGroup.SetValue (prop.Key, prop.Value.XmlValue, defaultValue:prop.Value.XmlValue, preserveExistingCase: prop.Value.PreserveExistingCase);
+					}
 				}
 				foreach (string prop in mergeToProjectPropertyNames) {
 					if (!mergeToProjectPropertyValues.ContainsKey (prop))
@@ -2119,7 +2126,7 @@ namespace MonoDevelop.Projects
 						msproject.RemoveGroup ((MSBuildPropertyGroup)cd.Group);
 				}
 			}
-			SaveProjectItems (monitor, msproject);
+			SaveProjectItems (monitor, msproject, usedMSBuildItems);
 
 			if (msproject.IsNewProject) {
 				foreach (var im in DefaultImports)
@@ -2202,15 +2209,17 @@ namespace MonoDevelop.Projects
 			public bool Modified { get; set; }
 		}
 
-		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, string pathPrefix = null)
+		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
+
+		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
-			HashSet<MSBuildItem> unusedItems = new HashSet<MSBuildItem> (msproject.GetAllItems ());
+			HashSet<MSBuildItem> unusedItems = new HashSet<MSBuildItem> (loadedItems);
 			Dictionary<MSBuildItem,ExpandedItemList> expandedItems = new Dictionary<MSBuildItem, ExpandedItemList> ();
 
 			// Add the new items
 
 			foreach (ProjectItem ob in Items.Where (it => !it.Flags.HasFlag (ProjectItemFlags.DontPersist)))
-				SaveProjectItem (monitor, msproject, ob, expandedItems, unusedItems, pathPrefix);
+				SaveProjectItem (monitor, msproject, ob, expandedItems, unusedItems, loadedItems, pathPrefix);
 
 			// Process items generated from wildcards
 
@@ -2225,11 +2234,14 @@ namespace MonoDevelop.Projects
 
 			// Remove unused items
 
-			foreach (var it in unusedItems)
-				msproject.RemoveItem (it);
+			foreach (var it in unusedItems) {
+				if (it.Element.ParentNode != null) // It may already have been deleted
+					msproject.RemoveItem (it);
+				loadedItems.Remove (it);
+			}
 		}
 
-		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, string pathPrefix = null)
+		void SaveProjectItem (ProgressMonitor monitor, MSBuildProject msproject, ProjectItem item, Dictionary<MSBuildItem,ExpandedItemList> expandedItems, HashSet<MSBuildItem> unusedItems, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
 			if (item.IsFromWildcardItem) {
 				// Store the item in the list of expanded items
@@ -2259,6 +2271,7 @@ namespace MonoDevelop.Projects
 				buildItem = msproject.AddNewItem (item.ItemName, include);
 			}
 
+			loadedItems.Add (buildItem);
 			unusedItems.Remove (buildItem);
 
 			item.Write (this, buildItem);

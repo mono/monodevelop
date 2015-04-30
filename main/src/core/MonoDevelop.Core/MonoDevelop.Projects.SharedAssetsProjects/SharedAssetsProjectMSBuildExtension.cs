@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					if (File.Exists (projitemsFile)) {
 						MSBuildProject p = new MSBuildProject ();
 						p.Load (projitemsFile);
-						Project.LoadProjectItems (p, ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist);
+						Project.LoadProjectItems (p, ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist, null);
 						var r = new ProjectReference (ReferenceType.Project, Path.GetFileNameWithoutExtension (projitemsFile));
 						r.Flags = ProjectItemFlags.DontPersist;
 						r.SetItemsProjectPath (projitemsFile);

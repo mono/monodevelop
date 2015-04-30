@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		string languageName;
 		FilePath projItemsPath;
 		MSBuildProject projitemsProject;
+		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 
 		public SharedAssetsProject ()
 		{
@@ -102,7 +103,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (cp != null)
 				DefaultNamespace = cp.GetValue ("Import_RootNamespace");
 
-			LoadProjectItems (p, ProjectItemFlags.None);
+			LoadProjectItems (p, ProjectItemFlags.None, usedMSBuildItems);
 
 			projitemsProject = p;
 		}
@@ -157,7 +158,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			}
 			configGrp.SetValue ("Import_RootNamespace", DefaultNamespace);
 
-			SaveProjectItems (monitor, projitemsProject, "$(MSBuildThisFileDirectory)");
+			SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
 
 			// Remove all items of this project, since items are saved in the projitems file
 
