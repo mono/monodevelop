@@ -221,6 +221,8 @@ namespace MonoDevelop.VersionControl.Git
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (remote.Name != dlg.RemoteName)
 						repo.RenameRemote (remote.Name, dlg.RemoteName);
+					if (remote.Url != dlg.RemoteUrl)
+						repo.ChangeRemoteUrl (remote.Name, dlg.RemoteUrl);
 					FillRemotes ();
 				}
 			} finally {
