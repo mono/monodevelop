@@ -432,8 +432,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		static void GetDirectoryVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, FilePath directory, List<VersionInfo> versions, bool recursive)
 		{
+			var relativePath = repo.ToGitPath (directory);
 			var status = repo.RetrieveStatus (new StatusOptions {
-				PathSpec = new [] { repo.ToGitPath (directory) },
+				PathSpec = relativePath != "." ? new [] { relativePath } : null,
 				IncludeUnaltered = true,
 			});
 
