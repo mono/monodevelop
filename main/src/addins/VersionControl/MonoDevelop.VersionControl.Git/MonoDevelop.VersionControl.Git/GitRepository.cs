@@ -747,7 +747,7 @@ namespace MonoDevelop.VersionControl.Git
 				repo.RootRepository.Commit (message, new Signature (
 					(string)changeSet.ExtendedProperties ["Git.AuthorName"],
 					(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
-					DateTimeOffset.Now));
+					DateTimeOffset.Now), GetSignature ());
 			else
 				repo.RootRepository.Commit (message, GetSignature ());
 		}
