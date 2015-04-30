@@ -71,13 +71,15 @@ namespace MonoDevelop.Projects
 			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
 			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
 
-			var vars = pset.GetValue<XElement> ("EnvironmentVariables");
-			if (vars != null) {
-				vars = vars.Element ("EnvironmentVariables");
-				foreach (var val in vars.Elements ("Variable")) {
-					var name = (string)val.Attribute ("name");
-					if (name != null)
-						environmentVariables [name] = (string)val.Attribute ("value");
+			var svars = pset.GetValue ("EnvironmentVariables");
+			if (svars != null) {
+				var vars = XElement.Parse (svars);
+				if (vars != null) {
+					foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
+						var name = (string)val.Attribute ("name");
+						if (name != null)
+							environmentVariables [name] = (string)val.Attribute ("value");
+					}
 				}
 			}
 			pset.ReadObjectProperties (this, GetType (), true);
@@ -101,7 +103,7 @@ namespace MonoDevelop.Projects
 					val.SetAttributeValue ("value", v.Value);
 					e.Add (val);
 				}
-				pset.SetValue ("EnvironmentVariables", e);
+				pset.SetValue ("EnvironmentVariables", e.ToString ());
 			} else
 				pset.RemoveProperty ("EnvironmentVariables");
 

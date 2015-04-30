@@ -926,7 +926,9 @@ namespace MonoDevelop.Projects
 		internal void ReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			SolutionExtension.OnReadSolution (monitor, file);
-			file.CustomMonoDevelopProperties.ReadObjectProperties (this);
+			var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess); 
+			if (s != null)
+				s.ReadObjectProperties (this);
 		}
 
 		/*protected virtual*/ void OnReadSolution (ProgressMonitor monitor, SlnFile file)
@@ -964,7 +966,9 @@ namespace MonoDevelop.Projects
 		/*protected virtual*/ void OnWriteSolution (ProgressMonitor monitor, SlnFile file)
 		{
 			FileFormat.SlnFileFormat.WriteFileInternal (file, this, monitor);
-			file.CustomMonoDevelopProperties.WriteObjectProperties (this);
+			var s = file.Sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess); 
+			s.SkipIfEmpty = true;
+			s.WriteObjectProperties (this);
 		}
 
 		internal void WriteConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)

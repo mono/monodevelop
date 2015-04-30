@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects
 			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PreProcess) {
 				var sec = file.Sections.GetSection (secAttribute.SectionName, SlnSectionType.PreProcess);
 				if (sec != null)
-					sec.Properties.ReadObjectProperties (this);
+					sec.ReadObjectProperties (this);
 			}
 
 			next.OnReadSolution (monitor, file);
@@ -100,7 +100,7 @@ namespace MonoDevelop.Projects
 			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PostProcess) {
 				var sec = file.Sections.GetSection (secAttribute.SectionName, SlnSectionType.PostProcess);
 				if (sec != null)
-					sec.Properties.ReadObjectProperties (this);
+					sec.ReadObjectProperties (this);
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.Projects
 			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PreProcess) {
 				var sec = file.Sections.GetOrCreateSection (secAttribute.SectionName, SlnSectionType.PreProcess);
 				sec.SkipIfEmpty = true;
-				sec.Properties.WriteObjectProperties (this);
+				sec.WriteObjectProperties (this);
 			}
 
 			next.OnWriteSolution (monitor, file);
@@ -128,7 +128,7 @@ namespace MonoDevelop.Projects
 			if (secAttribute != null && secAttribute.ProcessOrder == SlnSectionType.PostProcess) {
 				var sec = file.Sections.GetOrCreateSection (secAttribute.SectionName, SlnSectionType.PostProcess);
 				sec.SkipIfEmpty = true;
-				sec.Properties.WriteObjectProperties (this);
+				sec.WriteObjectProperties (this);
 			}
 		}
 

@@ -158,7 +158,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static DataContext solutionDataContext = new DataContext ();
 
-		public static void WriteObjectProperties (this SlnPropertySet pset, object ob)
+		public static void WriteObjectProperties (this SlnSection pset, object ob)
 		{
 			DataSerializer ser = new DataSerializer (solutionDataContext);
 			ser.SerializationContext.BaseFile = pset.ParentFile.FileName;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				WriteDataItem (pset, data);
 		}
 
-		public static void ReadObjectProperties (this SlnPropertySet pset, object ob)
+		public static void ReadObjectProperties (this SlnSection pset, object ob)
 		{
 			DataSerializer ser = new DataSerializer (solutionDataContext);
 			ser.SerializationContext.BaseFile = pset.ParentFile.FileName;
@@ -176,7 +176,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ser.Deserialize (ob, data);
 		}
 
-		static void WriteDataItem (SlnPropertySet pset, DataItem item)
+		static void WriteDataItem (SlnSection pset, DataItem item)
 		{
 			HashSet<DataItem> removedItems = new HashSet<DataItem> ();
 			Dictionary<DataNode,int> ids = new Dictionary<DataNode, int> ();
@@ -196,14 +196,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var usedIds = ids.Where (p => !removedItems.Contains (p.Key)).Select (p => p.Value).ToArray ();
 			int nextId = usedIds.Length > 0 ? usedIds.Max () + 1 : 0;
 
-			// Clear all properties, since we are writing them again
-			pset.Clear ();
+			var newSet = new List<KeyValuePair<string, string>> ();
 
 			foreach (DataNode val in currentItem.ItemData)
-				WriteDataNode (pset, "", val, ids, unusedIds, ref nextId);
+				WriteDataNode (newSet, "", val, ids, unusedIds, ref nextId);
+			
+			pset.SetContent (newSet);
 		}
 
-		static void WriteDataNode (SlnPropertySet pset, string prefix, DataNode node, Dictionary<DataNode,int> ids, Queue<int> unusedIds, ref int id)
+		static void WriteDataNode (List<KeyValuePair<string, string>> pset, string prefix, DataNode node, Dictionary<DataNode,int> ids, Queue<int> unusedIds, ref int id)
 		{
 			string name = node.Name;
 			string newPrefix = prefix.Length > 0 ? prefix + "." + name: name;
@@ -211,14 +212,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (node is DataValue) {
 				DataValue val = (DataValue) node;
 				string value = EncodeString (val.Value);
-				pset.SetValue (newPrefix, value);
+				pset.Add (new KeyValuePair<string, string> (newPrefix, value));
 			}
 			else {
 				DataItem it = (DataItem) node;
 				int newId;
 				if (!ids.TryGetValue (node, out newId))
 					newId = unusedIds.Count > 0 ? unusedIds.Dequeue () : (id++);
-				pset.SetValue (newPrefix, "$" + newId);
+				pset.Add (new KeyValuePair<string, string> (newPrefix, "$" + newId));
 				newPrefix = "$" + newId;
 				foreach (DataNode cn in it.ItemData)
 					WriteDataNode (pset, newPrefix, cn, ids, unusedIds, ref id);
@@ -286,16 +287,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return val;
 		}
 
-		static DataItem ReadDataItem (SlnPropertySet pset)
+		static DataItem ReadDataItem (SlnSection pset)
 		{
 			return ReadDataItem (pset, null);
 		}
 
-		static DataItem ReadDataItem (SlnPropertySet pset, Dictionary<DataNode,int> ids)
+		static DataItem ReadDataItem (SlnSection pset, Dictionary<DataNode,int> ids)
 		{
 			DataItem it = new DataItem ();
 
-			var lines = pset.ToArray ();
+			var lines = pset.GetContent ().ToArray ();
 
 			int lineNum = 0;
 			int lastLine = lines.Length - 1;

@@ -92,18 +92,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return sections.GetOrCreateSection ("ProjectConfigurationPlatforms", SlnSectionType.PostProcess).NestedPropertySets; }
 		}
 
-		/// <summary>
-		/// Gets the custom MonoDevelop properties section
-		/// </summary>
-		/// <value>The custom mono develop properties.</value>
-		public SlnPropertySet CustomMonoDevelopProperties {
-			get {
-				var s = sections.GetOrCreateSection ("MonoDevelopProperties", SlnSectionType.PreProcess); 
-				s.SkipIfEmpty = true;
-				return s.Properties;
-			}
-		}
-
 		public SlnSectionCollection Sections {
 			get { return sections; }
 		}
@@ -325,7 +313,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool IsEmpty {
 			get {
-				return (properties == null || properties.Count == 0) && (nestedPropertySets == null || nestedPropertySets.All (t => t.IsEmpty));
+				return (properties == null || properties.Count == 0) && (nestedPropertySets == null || nestedPropertySets.All (t => t.IsEmpty)) && (sectionLines == null || sectionLines.Count == 0);
 			}
 		}
 
@@ -366,6 +354,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				return nestedPropertySets;
 			}
+		}
+
+		public void SetContent (IEnumerable<KeyValuePair<string,string>> lines)
+		{
+			sectionLines = new List<string> (lines.Select (p => p.Key + " = " + p.Value));
+			properties = null;
+			nestedPropertySets = null;
+		}
+
+		public IEnumerable<KeyValuePair<string,string>> GetContent ()
+		{
+			if (sectionLines != null)
+				return sectionLines.Select (li => {
+					int i = li.IndexOf ('=');
+					if (i != -1)
+						return new KeyValuePair<string,string> (li.Substring (0, i).Trim(), li.Substring (i + 1).Trim());
+					else
+						return new KeyValuePair<string,string> (li.Trim (), "");
+				});
+			else
+				return new KeyValuePair<string,string> [0];
 		}
 
 		public SlnSectionType SectionType { get; set; }
