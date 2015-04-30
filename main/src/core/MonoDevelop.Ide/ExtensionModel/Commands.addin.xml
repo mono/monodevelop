@@ -481,9 +481,16 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
 			_label = "_Open Folder"
 			_description = "Opens the folder in a file manager."/>
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+	<Condition id="Platform" value="!mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 			_label = "O_pen Containing Folder"
 			_description = "Opens the folder that contains this file."/>
+	</Condition>
+	<Condition id="Platform" value="mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+			_label = "Reveal in Finder"
+			_description = "Reveals the file in Finder."/>
+	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
 			_label = "Build action" />

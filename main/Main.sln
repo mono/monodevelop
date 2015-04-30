@@ -290,6 +290,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Tests\Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform.Tests", "tests\WindowsPlatform.Tests\WindowsPlatform.Tests.csproj", "{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -944,6 +946,16 @@ Global
 		{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}.ReleaseMac|Any CPU.Build.0 = net_4_0_Release|Any CPU
 		{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}.ReleaseWin32|Any CPU.ActiveCfg = net_4_0_Release|Any CPU
 		{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}.ReleaseWin32|Any CPU.Build.0 = net_4_0_Release|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1984,6 +1996,7 @@ Global
 		{EBFC7F90-C2E5-4A4C-A327-E35021BEC181} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{9E4BA410-8338-42EC-AF9C-422C35ECED81} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{73D4CC8B-BAB9-4A29-841B-F25C6311F067} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
+		{865100E2-A29C-4FCD-B803-1A0B9A0A6EF7} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj

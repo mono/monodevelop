@@ -118,6 +118,38 @@ namespace MonoDevelop.Platform.Windows
 				return Tuple.Create (string.Empty, string.Empty);
 			}
 		}
+
+		static bool RemoveCredential (string targetName)
+		{
+			if (targetName == null)
+				throw new ArgumentNullException ("targetName");
+
+			return NativeMethods.CredDelete (targetName, NativeCredentialType.Generic, 0);
+		}
+
+		public void RemoveWebPassword (Uri uri)
+		{
+			RemoveWebUserNameAndPassword (uri);
+		}
+
+		public void RemoveWebUserNameAndPassword (Uri uri)
+		{
+			var didDelete = RemoveCredential (uri.Host);
+			if (didDelete) return;
+
+			var lastError = (ErrorCode)Marshal.GetLastWin32Error ();
+			switch (lastError) {
+			case ErrorCode.NoSuchLogonSession:
+				LoggingService.LogError ("Tried saving credentials, but the logon session does not exist.");
+				break;
+			case ErrorCode.InvalidFlags:
+				LoggingService.LogError ("Tried saving credentials, but got invalid flags set on credential.");
+				break;
+			default:
+				LoggingService.LogError ("Tried saving credentials, but got unknown error code 0x{0:X}.", lastError);
+				break;
+			}
+		}
 	}
 
 	enum ErrorCode
@@ -263,5 +295,8 @@ namespace MonoDevelop.Platform.Windows
 
 		[DllImport (ADVAPI32, CharSet = CharSet.Unicode, EntryPoint = "CredFree")]
 		internal static extern bool CredFree ([In] IntPtr cred);
+
+		[DllImport (ADVAPI32, CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "CredDeleteW")]
+		internal static extern bool CredDelete (string targetName, NativeCredentialType type, CredentialFlags flags);
 	}
 }

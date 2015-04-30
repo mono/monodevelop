@@ -70,7 +70,7 @@ namespace UserInterfaceTests
 		}
 
 		public void CreateBuildProject (TemplateSelectionOptions templateOptions, Action beforeBuild,
-			GitOptions gitOptions = null, object miscOptions = null)
+			GitOptions gitOptions = null, object miscOptions = null, bool rethrowException = false)
 		{
 			var templateName = templateOptions.TemplateKind;
 			var projectName = !string.IsNullOrEmpty (templateOptions.ProjectName) ? templateOptions.ProjectName: GenerateProjectName (templateName);
@@ -88,6 +88,10 @@ namespace UserInterfaceTests
 				beforeBuild ();
 
 				Assert.IsTrue (Ide.BuildSolution ());
+			} catch (Exception e) {
+				Assert.Fail (e.StackTrace);
+				if (rethrowException)
+					throw;
 			} finally {
 				var actualSolutionDirectory = GetSolutionDirectory ();
 				Ide.CloseAll ();
