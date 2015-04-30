@@ -75,28 +75,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return Task.Run (delegate {
 				Solution sol = (Solution)obj;
 
-				string tmpfilename = String.Empty;
 				try {
 					monitor.BeginTask (GettextCatalog.GetString ("Saving solution: {0}", file), 1);
-					try {
-						if (File.Exists (file))
-							tmpfilename = Path.GetTempFileName ();
-					} catch (IOException) {
-					}
-
-					if (tmpfilename == String.Empty) {
-						WriteFileInternal (file, file, sol, saveProjects, monitor);
-					} else {
-						WriteFileInternal (tmpfilename, file, sol, saveProjects, monitor);
-						File.Delete (file);
-						File.Move (tmpfilename, file);
-					}
+					WriteFileInternal (file, file, sol, saveProjects, monitor);
 				} catch (Exception ex) {
 					monitor.ReportError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
 					LoggingService.LogError (GettextCatalog.GetString ("Could not save solution: {0}", file), ex);
-
-					if (!String.IsNullOrEmpty (tmpfilename))
-						File.Delete (tmpfilename);
 					throw;
 				} finally {
 					monitor.EndTask ();
@@ -292,7 +276,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					itemGuid = "{" + itemGuid + "}";
 
 				var pset = col.GetOrCreatePropertySet (itemGuid, ignoreCase:true);
-				pset.Clear ();
+				var existingKeys = new HashSet<string> (pset.Keys);
 
 				foreach (SolutionConfiguration cc in sol.Configurations) {
 					var cce = cc.GetEntryForItem (item);
@@ -301,14 +285,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var configId = ToSlnConfigurationId (cc);
 					var itemConfigId = ToSlnConfigurationId (cce.ItemConfiguration);
 
-					pset.SetValue (configId + ".ActiveCfg", itemConfigId);
+					string key;
+					pset.SetValue (key = configId + ".ActiveCfg", itemConfigId);
+					existingKeys.Remove (key);
 
-					if (cce.Build)
-						pset.SetValue (configId + ".Build.0", itemConfigId);
+					if (cce.Build) {
+						pset.SetValue (key = configId + ".Build.0", itemConfigId);
+						existingKeys.Remove (key);
+					}
 				
-					if (cce.Deploy)
-						pset.SetValue (configId + ".Deploy.0", itemConfigId);
+					if (cce.Deploy) {
+						pset.SetValue (key = configId + ".Deploy.0", itemConfigId);
+						existingKeys.Remove (key);
+					}
 				}
+				foreach (var k in existingKeys)
+					pset.Remove (k);
 			}
 		}
 
