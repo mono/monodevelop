@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 using MonoDevelop.Core;
 
@@ -33,6 +34,14 @@ namespace UserInterfaceTests
 	{
 		static FilePath rootDir;
 		static int projectId = 1;
+
+		static string testRunIdentifier = DateTime.Now.ToString ("dddd-MMMM-dd-yyyy-HH-mm-ss");
+
+		public static string TestRunId {
+			get {
+				return testRunIdentifier;
+			}
+		}
 
 		public static FilePath TestsRootDir {
 			get {

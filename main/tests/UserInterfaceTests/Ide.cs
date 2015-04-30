@@ -91,7 +91,7 @@ namespace UserInterfaceTests
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new Exception ("Timed out waiting for event");
+			throw new TimeoutException ("Timed out waiting for Function: "+done.Method.Name);
 		}
 
 		//no saner way to do this
