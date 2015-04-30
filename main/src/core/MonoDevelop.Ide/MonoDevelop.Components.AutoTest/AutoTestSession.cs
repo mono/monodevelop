@@ -104,11 +104,14 @@ namespace MonoDevelop.Components.AutoTest
 
 		public void ExitApp ()
 		{
-			try {
-				IdeApp.Exit ();
-			} catch (Exception e) {
-				Console.WriteLine (e);
-			}
+			Sync (delegate {
+				try {
+					IdeApp.Exit ();
+				} catch (Exception e) {
+					Console.WriteLine (e);
+				}
+				return true;
+			});
 		}
 
 		public object GlobalInvoke (string name, object[] args)
