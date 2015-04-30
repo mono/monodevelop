@@ -29,7 +29,6 @@
 using System;
 using MonoDevelop.Core;
 using System.IO;
-using MonoDevelop.Core.Serialization;
 using System.Collections.Generic;
 using MonoDevelop.Core.StringParsing;
 using System.Xml.Linq;
@@ -72,9 +71,9 @@ namespace MonoDevelop.Projects
 			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
 			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
 
-			var svars = pset.GetValue ("EnvironmentVariables");
-			if (!string.IsNullOrEmpty (svars)) {
-				XElement vars = XElement.Parse (svars);
+			var vars = pset.GetValue<XElement> ("EnvironmentVariables");
+			if (vars != null) {
+				vars = vars.Element ("EnvironmentVariables");
 				foreach (var val in vars.Elements ("Variable")) {
 					var name = (string)val.Attribute ("name");
 					if (name != null)
@@ -102,7 +101,7 @@ namespace MonoDevelop.Projects
 					val.SetAttributeValue ("value", v.Value);
 					e.Add (val);
 				}
-				pset.SetValue ("EnvironmentVariables", e.ToString ());
+				pset.SetValue ("EnvironmentVariables", e);
 			} else
 				pset.RemoveProperty ("EnvironmentVariables");
 

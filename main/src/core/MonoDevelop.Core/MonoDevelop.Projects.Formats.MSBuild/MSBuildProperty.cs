@@ -67,6 +67,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false)
 		{
+			SetValue (value, preserveCase, mergeToMainGroup, false);
+		}
+
+		void SetValue (string value, bool preserveCase, bool mergeToMainGroup, bool isXml)
+		{
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
 
@@ -80,7 +85,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						return;
 				}
 			}
-			SetPropertyValue (value);
+			SetPropertyValue (value, isXml);
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
@@ -94,6 +99,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else if (relativeToProject) {
 				baseDir = Project.BaseDirectory;
 			}
+
+			// If the path is normalized in the property, keep the value
+			if (UnevaluatedValue == MSBuildProjectService.ToMSBuildPath (baseDir, value, true))
+				return;
+			
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
 		}
 
@@ -105,21 +115,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					SetValue ((bool)value ? "true" : "false", preserveCase: true, mergeToMainGroup: mergeToMainGroup);
 			}
+			else if (value is XmlElement) {
+				SetValue (((XmlElement)value).OuterXml, false, mergeToMainGroup, true);
+			}
+			else if (value is XElement) {
+				SetValue (((XElement)value).ToString (), false, mergeToMainGroup, true);
+			}
 			else
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
 		}		
 
-		internal virtual void SetPropertyValue (string value)
+		internal virtual void SetPropertyValue (string value, bool isXml = false)
 		{
 			if (Element.IsEmpty && string.IsNullOrEmpty (value))
 				return;
-			
-			Element.InnerText = value;
+
+			if (isXml)
+				Element.InnerXml = value;
+			else
+				Element.InnerText = value;
 		}
 
-		internal override string GetPropertyValue ()
+		internal override string GetPropertyValue (bool isXml = false)
 		{
-			return Element.InnerText;
+			if (isXml)
+				return Element.InnerXml;
+			else
+				return Element.InnerText;
 		}
 
 		public override string UnevaluatedValue {
@@ -144,12 +166,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return name;
 		}
 
-		internal override void SetPropertyValue (string value)
+		internal override void SetPropertyValue (string value, bool isXml)
 		{
 			this.value = value;
 		}
 
-		internal override string GetPropertyValue ()
+		internal override string GetPropertyValue (bool isXml)
 		{
 			return value;
 		}
@@ -185,7 +207,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return value; }
 		}
 
-		internal override string GetPropertyValue ()
+		internal override string GetPropertyValue (bool isXml)
 		{
 			return evaluatedValue;
 		}
@@ -219,6 +241,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public object GetValue (Type t)
 		{
+			if (t == typeof(XmlElement)) {
+				var xmlValue = GetPropertyValue (true);
+				var doc = new XmlDocument ();
+				doc.LoadXml (xmlValue);
+				return doc.DocumentElement;
+			}
+			if (t == typeof(XElement)) {
+				var xmlValue = GetPropertyValue (true);
+				return XElement.Parse (xmlValue);
+			}
+
 			var val = GetPropertyValue ();
 			if (t == typeof(bool))
 				return (object) val.Equals ("true", StringComparison.InvariantCultureIgnoreCase);
@@ -229,7 +262,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (string.IsNullOrEmpty (Value))
 					return null;
 				return Convert.ChangeType (Value, at, CultureInfo.InvariantCulture);
-
 			}
 			return Convert.ChangeType (Value, t, CultureInfo.InvariantCulture);
 		}
@@ -265,7 +297,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public abstract string UnevaluatedValue { get; }
 
-		internal abstract string GetPropertyValue ();
+		internal abstract string GetPropertyValue (bool isXml = false);
 
 		internal abstract string GetName ();
 	}
