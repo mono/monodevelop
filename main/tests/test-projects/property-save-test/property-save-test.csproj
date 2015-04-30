@@ -10,6 +10,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>propertyevaluationtest</RootNamespace>
     <AssemblyName>property-evaluation-test</AssemblyName>
+    <BaseIntermediateOutputPath>obj\1.0</BaseIntermediateOutputPath>
+    <DelaySign>False</DelaySign>
     <AAA>test1</AAA>
     <BBB>test2</BBB>
     <BBB>$(AAA)_$(BBB)</BBB>
@@ -50,7 +52,7 @@
     <Reference Include="System" />
     <Reference Include="TestReference">
       <HintPath>$(SOME_PLACE)\MonoDevelop.Core.dll</HintPath>
-    </Reference>
+    </Reference><!-- Test -->
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program1_$(AAA).cs" />

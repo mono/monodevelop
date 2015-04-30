@@ -1038,6 +1038,34 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSol, savedSol);
 			Assert.AreEqual (refProj, savedProj);
 		}
+
+		[Test()]
+		public async Task ProjectWithCustomGroup ()
+		{
+			string solFile = Util.GetSampleProject ("project-with-custom-group", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items [0];
+
+			var refXml = Util.GetXmlFileInfoset (p.FileName);
+			await sol.SaveAsync (Util.GetMonitor ());
+			var savedXml = Util.GetXmlFileInfoset (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test()]
+		public async Task ProjectWithEnvVars ()
+		{
+			string solFile = Util.GetSampleProject ("project-with-env-vars", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items [0];
+
+			var refXml = Util.GetXmlFileInfoset (p.FileName);
+			await sol.SaveAsync (Util.GetMonitor ());
+			var savedXml = Util.GetXmlFileInfoset (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

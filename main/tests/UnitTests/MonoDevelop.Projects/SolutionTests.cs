@@ -297,6 +297,7 @@ namespace MonoDevelop.Projects
 			Assert.IsFalse (p3.NeedsReload);
 			
 			System.Threading.Thread.Sleep (1000);
+			sol.Description = "Foo"; // Small change to force the solution file save
 			await sol.SaveAsync (Util.GetMonitor ());
 			
 			Assert.IsTrue (sol3.NeedsReload);
