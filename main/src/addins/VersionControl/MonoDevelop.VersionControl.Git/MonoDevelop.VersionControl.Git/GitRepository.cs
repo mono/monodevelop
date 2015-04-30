@@ -984,13 +984,21 @@ namespace MonoDevelop.VersionControl.Git
 		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
 		{
 			bool success = true;
-			RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch,	new PushOptions {
-				OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
-					monitor.ReportError (pushStatusErrors.Message, null);
-					success = false;
-				},
-				CredentialsProvider = GitCredentials.TryGet
-			});
+
+			var branch = RootRepository.Head;
+			if (branch.TrackedBranch == null) {
+				RootRepository.Branches.Update (branch, b => b.TrackedBranch = "refs/remotes/" + remote + "/" + remoteBranch);
+			}
+
+			RetryUntilSuccess (monitor, () =>
+				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
+					OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
+						monitor.ReportError (pushStatusErrors.Message, null);
+						success = false;
+					},
+					CredentialsProvider = GitCredentials.TryGet
+				})
+			);
 
 			if (!success)
 				return;
