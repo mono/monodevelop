@@ -506,7 +506,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (lastGroup != null)
 				refNode = lastGroup.Element;
 			else {
-				var g = (MSBuildPropertyGroup) GetGlobalPropertyGroup ();
+				var g = PropertyGroups.LastOrDefault ();
 				if (g != null)
 					refNode = g.Element;
 			}
