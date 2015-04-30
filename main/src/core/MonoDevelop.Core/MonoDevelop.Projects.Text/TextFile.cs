@@ -428,14 +428,13 @@ namespace MonoDevelop.Projects.Text
 			
 			string tempName = Path.GetDirectoryName (fileName) + 
 				Path.DirectorySeparatorChar + ".#" + Path.GetFileName (fileName);
-			FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write);
 			
-			if (bom != null)
-				fs.Write (bom.Bytes, 0, bom.Length);
-			
-			fs.Write (converted, 0, converted.Length);
-			fs.Flush ();
-			fs.Close ();
+			using (FileStream fs = new FileStream (tempName, FileMode.Create, FileAccess.Write)) {
+				if (bom != null)
+					fs.Write (bom.Bytes, 0, bom.Length);
+				
+				fs.Write (converted, 0, converted.Length);
+			}
 
 			FileService.SystemRename (tempName, fileName);
 			FileService.NotifyFileChanged (fileName);
