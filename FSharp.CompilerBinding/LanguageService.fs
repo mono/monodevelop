@@ -18,9 +18,9 @@ module Symbols =
              
     let (beginLine, beginCol) =
         if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
-            (endLine,endCol-lastIdentAtLoc.Length)
+          (endLine,endCol-lastIdentAtLoc.Length)
         else
-            (beginLine, beginCol)
+          (beginLine, beginCol)
     Range.mkPos beginLine beginCol, Range.mkPos endLine endCol
     //(beginLine, beginCol), (endLine, endCol)
 
@@ -36,43 +36,42 @@ module ServiceSettings =
 /// various IntelliSense functions (such as completion & tool tips). Provides default
 /// empty/negative results if information is missing.
 type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpParseFileResults) option) =
-    let token = Parser.tagOfToken(Parser.token.IDENT("")) 
+  let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
-    new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
+  new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
 
-    static member Empty = ParseAndCheckResults(None)
+  static member Empty = ParseAndCheckResults(None)
 
-    /// Get declarations at the current location in the specified document and the long ident residue
-    /// e.g. The incomplete ident One.Two.Th will return Th
-    member x.GetDeclarations(line, col, lineStr) = 
-        match infoOpt with 
-        | None -> None
-        | Some (checkResults, parseResults) -> 
-            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
-            Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
-            // Get items & generate output
-            try
-             let results =
-                 Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
-                                         timeout = ServiceSettings.blockingTimeout )
-             Some (results, residue)
-            with :? TimeoutException -> None
+  /// Get declarations at the current location in the specified document and the long ident residue
+  /// e.g. The incomplete ident One.Two.Th will return Th
+  member x.GetDeclarations(line, col, lineStr) = 
+      match infoOpt with 
+      | None -> None
+      | Some (checkResults, parseResults) -> 
+        let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+        Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
+        // Get items & generate output
+        try
+          let results =
+            Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+          Some (results, residue)
+        with :? TimeoutException -> None
 
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
     member x.GetDeclarationSymbols(line, col, lineStr) = 
-        match infoOpt with 
-        | None -> None
-        | Some (checkResults, parseResults) -> 
-            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
-            Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
-            // Get items & generate output
-            try
-             let results = 
-                 Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
-                                         timeout = ServiceSettings.blockingTimeout )
-             Some (results, residue)
-            with :? TimeoutException -> None
+      match infoOpt with 
+      | None -> None
+      | Some (checkResults, parseResults) -> 
+          let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+          Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
+          // Get items & generate output
+          try
+           let results = 
+               Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                                       timeout = ServiceSettings.blockingTimeout )
+           Some (results, residue)
+          with :? TimeoutException -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)
@@ -143,59 +142,61 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
 
     member x.GetAllUsesOfAllSymbolsInFile() =
       async {
-          match infoOpt with
-          | None -> return None
-          | Some (checkResults, _parseResults) ->
-              let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
-              return Some allSymbols
+        match infoOpt with
+        | None -> return None
+        | Some (checkResults, _parseResults) ->
+            let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
+            return Some allSymbols
       }
 
     member x.PartialAssemblySignature =
       async {
-          match infoOpt with
-          | None -> return None
-          | Some (checkResults, _parseResults) ->
-              return Some checkResults.PartialAssemblySignature
+        match infoOpt with
+        | None -> return None
+        | Some (checkResults, _parseResults) ->
+          return Some checkResults.PartialAssemblySignature
       }
 
     member x.GetErrors() =
-        match infoOpt with 
-        | None -> None
-        | Some (checkResults, _parseResults) -> Some checkResults.Errors
+      match infoOpt with 
+      | None -> None
+      | Some (checkResults, _parseResults) -> Some checkResults.Errors
 
     member x.GetNavigationItems() =
-        match infoOpt with 
-        | None -> [| |]
-        | Some (_checkResults, parseResults) -> 
-           // GetNavigationItems is not 100% solid and throws occasional exceptions
-            try parseResults.GetNavigationItems().Declarations
-            with _ -> 
-                Debug.Assert(false, "couldn't update navigation items, ignoring")  
-                [| |]
+      match infoOpt with 
+      | None -> [| |]
+      | Some (_checkResults, parseResults) -> 
+         // GetNavigationItems is not 100% solid and throws occasional exceptions
+          try parseResults.GetNavigationItems().Declarations
+          with _ -> 
+            Debug.Assert(false, "couldn't update navigation items, ignoring")  
+            [| |]
 
     member x.ParseTree = 
-        match infoOpt with
-        | Some (_checkResults,parseResults) -> parseResults.ParseTree
-        | None -> None
+      match infoOpt with
+      | Some (_checkResults,parseResults) -> parseResults.ParseTree
+      | None -> None
 
     member x.CheckResults = 
-        match infoOpt with
-        | Some (checkResults,_parseResults) -> checkResults |> Some
-        | None -> None
+      match infoOpt with
+      | Some (checkResults,_parseResults) -> checkResults |> Some
+      | None -> None
 
     member x.GetExtraColorizations() =
-        match infoOpt with
-        | Some(checkResults,_parseResults) -> checkResults.GetExtraColorizationsAlternate() |> Some
-        | None -> None
+      match infoOpt with
+      | Some(checkResults,_parseResults) -> checkResults.GetExtraColorizationsAlternate() |> Some
+      | None -> None
 
 [<RequireQualifiedAccess>]
 type AllowStaleResults = 
-    // Allow checker results where the source doesn't even match
-    | MatchingFileName
-    // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
-    | MatchingSource
-    // Don't allow stale results
-    | No
+  // Allow checker results where the source doesn't even match
+  | MatchingFileName
+  // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
+  | MatchingSource
+  // Don't allow stale results
+  | No
+
+type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
 type LanguageService(dirtyNotify) =
@@ -228,7 +229,9 @@ type LanguageService(dirtyNotify) =
           Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
       Path.Combine(dir, Path.GetFileName(path))
 
-  let projectInfoCache = Collections.Generic.Dictionary<_, FSharpProjectOptions>()
+  let projectInfoCache =
+    //cache 50 project infos, then start evicting the least recently used entries
+    ref (ExtCore.Caching.LruCache.create 50u)
    
   // We use a mailbox processor to wrap requests to F.C.S. here so 
   //   (a) we can get work off the GUI thread and 
@@ -246,7 +249,6 @@ type LanguageService(dirtyNotify) =
   //   (c) only one request is active at a time, the rest are in the queue
 
   let mbox = MailboxProcessor.Start(fun mbox ->
-    
     async { 
        while true do
             try
@@ -267,13 +269,22 @@ type LanguageService(dirtyNotify) =
         })
 
   static member IsAScript fileName =
-      let ext = Path.GetExtension fileName
-      [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
+    let ext = Path.GetExtension fileName
+    [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
 
+
+  member x.RemoveFromProjectInfoCache(projFilename, ?properties) =
+    //Debug.WriteLine(sprintf "LanguageService: Clearing ProjectInfoCache : %A" projectInfoCache.Keys)
+    let properties = defaultArg properties ["Configuration", "Debug"]
+    let key = (projFilename, properties)
+    Debug.WriteLine(sprintf "LanguageService: Removing %A from projectInfoCache" key)
+    match (!projectInfoCache).TryExtract(key) with
+    | Some _extractee, cache -> projectInfoCache := cache
+    | None, _unchangedCache -> ()
 
   member x.ClearProjectInfoCache() =
-    Debug.WriteLine(sprintf "LanguageService: Clearing ProjectInfoCache : %A" projectInfoCache.Keys)
-    projectInfoCache.Clear()
+    Debug.WriteLine("LanguageService: Clearing ProjectInfoCache")
+    projectInfoCache := ExtCore.Caching.LruCache.create 50u
 
   /// Constructs options for the interactive checker for the given file in the project under the given configuration.
   member x.GetCheckerOptions(fileName, projFilename, source) =
@@ -322,17 +333,18 @@ type LanguageService(dirtyNotify) =
   /// Constructs options for the interactive checker for a project under the given configuration. 
   member x.GetProjectCheckerOptions(projFilename, ?properties) =
     let properties = defaultArg properties ["Configuration", "Debug"]
-    match projectInfoCache.TryGetValue ( (projFilename, properties) ) with
-    | true, p -> 
-        Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for %s" projFilename )
-        p
-    | false, _ -> lock projectInfoCache (fun () ->
-                  //let pfi = FSharpProjectFileInfo.Parse(projFilename, properties, true)
-                  //printfn "FSharpProjectFileInfo.Parse \n%s" pfi.LogOutput
-                  Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for %s" <| Path.GetFileName(projFilename) )
-                  let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-                  projectInfoCache.[(projFilename, properties)] <- opts
-                  opts)
+    let key = (projFilename, properties)
+    match (!projectInfoCache).TryFind (key) with
+           | Some entry, cache ->
+               Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for %s" projFilename )
+               projectInfoCache := cache
+               entry
+           | None, cache ->
+               Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for %s" <| Path.GetFileName(projFilename) )
+               let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+               projectInfoCache := cache.Add (key, opts)
+               opts 
+
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
@@ -345,13 +357,12 @@ type LanguageService(dirtyNotify) =
   /// Parses and checks the given file in the given project under the given configuration. Asynchronously
   /// returns the results of checking the file.
   member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src) =
-
-   async {
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-    Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
-    let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
-    return results
-   }
+    async {
+      let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+      Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
+      let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
+      return results
+    }
 
   member x.ParseFileInProject(projectFilename, fileName:string, src) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
@@ -370,22 +381,22 @@ type LanguageService(dirtyNotify) =
     | _ -> None
 
   member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout) = 
-   async {
-    let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
-    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-    Debug.WriteLine(sprintf "LanguageService: GetTypedParseResultWithTimeout, fileName=%s" fileName)
-    // Try to get recent results from the F# service
-    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
-    | Some _ as results ->
-        Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: using stale results")
-        return results
-    | None -> 
-        Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: No stale results - trying typecheck with timeout")
-        // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
-        match timeout with
-        | Some timeout -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
-        | None -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)))
-   }
+    async {
+      let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
+      let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+      Debug.WriteLine(sprintf "LanguageService: GetTypedParseResultWithTimeout, fileName=%s" fileName)
+      // Try to get recent results from the F# service
+      match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
+      | Some _ as results ->
+          Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: using stale results")
+          return results
+      | None -> 
+          Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: No stale results - trying typecheck with timeout")
+          // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+          match timeout with
+          | Some timeout -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)), timeout = timeout)
+          | None -> return mbox.TryPostAndReply((fun reply -> (fileName, src, opts, reply)))
+    }
 
   /// Returns a TypeParsedResults if available, otherwise None
   member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, stale) = 
