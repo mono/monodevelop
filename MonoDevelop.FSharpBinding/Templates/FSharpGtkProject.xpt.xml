@@ -22,7 +22,7 @@
 		</Options>
 
 		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "WinExe" TargetFrameworkVersion="4.0" />
+			<Options Target = "WinExe" TargetFrameworkVersion="4.5" />
 
 			<References>
         <Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
