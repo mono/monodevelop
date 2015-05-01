@@ -10,6 +10,8 @@ else
 			arg="build/tests/$arg"
 		fi
 
-		(build/bin/mdtool run-md-tests $arg) || exit $?
+		if [ -f $arg ]; then
+			(build/bin/mdtool run-md-tests $arg) || exit $?
+		fi
 	done
 fi
