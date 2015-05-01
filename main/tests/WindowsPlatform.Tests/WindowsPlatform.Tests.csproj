@@ -44,6 +44,7 @@
     <ProjectReference Include="..\..\src\addins\WindowsPlatform\WindowsPlatform\WindowsPlatform.csproj">
       <Project>{459868D2-54DC-415B-B1AB-BE39BDBD352F}</Project>
       <Name>WindowsPlatform</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
@@ -56,6 +57,7 @@
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
 </Project>
