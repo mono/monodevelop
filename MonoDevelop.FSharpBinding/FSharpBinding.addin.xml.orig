@@ -28,6 +28,8 @@
     <Import file = "Templates/AssemblyInfo.xft.xml" />
     <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
+    <Import file = "Templates/PortableLibrary78.xpt.xml" />
+    <Import file = "Templates/PortableLibrary259.xpt.xml" />
 
     <!--- F# MonoMac templates -->
     <Import file="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml"/>
@@ -136,6 +138,17 @@
 
     <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
     <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+  
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets">		
+      <DotNetProjectSubtype		
+        guid="{f2a71f9b-5d33-465a-a702-920d77279786}"		
+        type="MonoDevelop.Projects.DotNetProject"		
+        useXBuild="false">
+        <AddImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />		
+        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />		
+      </DotNetProjectSubtype>		
+    </Condition>
+  
   </Extension>
 
   <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
@@ -192,6 +205,11 @@
 
     <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
+    
+    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" >-->
+      <ProjectTemplate id="FSharpPortableLibrary78" file = "Templates/PortableLibrary78.xpt.xml" />
+      <ProjectTemplate id="FSharpPortableLibrary259" file = "Templates/PortableLibrary259.xpt.xml" />
+    </Condition>
   </Extension>
 
   <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
