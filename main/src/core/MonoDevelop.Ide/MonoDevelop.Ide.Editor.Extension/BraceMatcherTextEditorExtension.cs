@@ -66,12 +66,24 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var ctx = DocumentContext;
 			var snapshot = Editor.CreateDocumentSnapshot ();
 			Task.Run (async delegate() {
-				var result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
-				if (result == null && caretOffset > 0)
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
-				if (result == null)
+				BraceMatchingResult? result;
+				try {
+					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
+					if (result == null && caretOffset > 0)
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+					if (result == null)
+						return;
+				} catch (OperationCanceledException) {
+					return;
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+					return;
+				}
+				if (token.IsCancellationRequested)
 					return;
 				Application.Invoke (delegate {
+					if (token.IsCancellationRequested)
+						return;
 					Editor.UpdateBraceMatchingResult (result);
 				});
 			});
