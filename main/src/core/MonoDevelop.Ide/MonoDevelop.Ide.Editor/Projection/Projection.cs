@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 		public TextEditor CreateProjectedEditor (DocumentContext originalContext)
 		{
 			if (projectedEditor == null) {
-				projectedEditor = TextEditorFactory.CreateNewEditor (Document);
+				projectedEditor = TextEditorFactory.CreateNewEditor (Document, TextEditorType.Projection);
 				projectedDocumentContext = new ProjectedDocumentContext (projectedEditor, originalContext);
 				projectedEditor.InitializeExtensionChain (projectedDocumentContext);
 				projectedProjections.InstallListener (projectedEditor);

@@ -372,6 +372,16 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
+		/// Gets whether the offset is within the <paramref name="segment"/>.
+		/// </summary>
+		public static bool IsInside (this ISegment segment, int offset)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return unchecked((uint)(offset - segment.Offset) <= (uint)segment.Length);
+		}
+
+		/// <summary>
 		/// Determines whether <paramref name="other"/> overlaps this span. Two spans are considered to overlap 
 		/// if they have positions in common and neither is empty. Empty spans do not overlap with any 
 		/// other span.

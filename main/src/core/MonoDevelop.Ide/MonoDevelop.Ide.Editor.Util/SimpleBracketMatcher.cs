@@ -26,16 +26,16 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Util
 {
-	public static class SimpleBracketMatcher
+	static class SimpleBracketMatcher
 	{
 		const string openBrackets = "([{<";
 		const string closingBrackets = ")]}>";
 
-
-		public static int GetMatchingBracketOffset (IReadonlyTextDocument document, int offset)
+		public static int GetMatchingBracketOffset (IReadonlyTextDocument document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (offset < 0 || offset >= document.Length)
 				return -1;
@@ -43,11 +43,11 @@ namespace MonoDevelop.Ide.Editor.Util
 			int bracket = openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
-				result = SearchMatchingBracketForward (document, offset + 1, closingBrackets [bracket], openBrackets [bracket]);
+				result = SearchMatchingBracketForward (document, offset + 1, closingBrackets [bracket], openBrackets [bracket], cancellationToken);
 			} else {
 				bracket = closingBrackets.IndexOf (ch);
 				if (bracket >= 0) {
-					result = SearchMatchingBracketBackward (document, offset - 1, openBrackets [bracket], closingBrackets [bracket]);
+					result = SearchMatchingBracketBackward (document, offset - 1, openBrackets [bracket], closingBrackets [bracket], cancellationToken);
 				} else {
 					result = -1;
 				}
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Editor.Util
 			return -1;
 		}
 
-		static int SearchMatchingBracketForward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
+		static int SearchMatchingBracketForward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket, CancellationToken cancellationToken)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment = false;
@@ -91,6 +91,8 @@ namespace MonoDevelop.Ide.Editor.Util
 			var stringQuotes = GetList (document, "StringQuote");
 			int depth = -1;
 			while (offset >= 0 && offset < document.Length) {
+				if (offset % 100 == 0 && cancellationToken.IsCancellationRequested)
+					return -1;
 				if (curStringQuote < 0) {
 					// check line comments
 					if (!isInBlockComment && !isInLineComment)
@@ -199,7 +201,7 @@ namespace MonoDevelop.Ide.Editor.Util
 			return lineOffset;
 		}
 
-		static int SearchMatchingBracketBackward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
+		static int SearchMatchingBracketBackward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket, CancellationToken cancellationToken)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment = false;
@@ -216,6 +218,8 @@ namespace MonoDevelop.Ide.Editor.Util
 				offset = GetLastSourceCodePosition (document, offset);
 
 			while (offset >= 0 && offset < document.Length) {
+				if (offset % 100 == 0 && cancellationToken.IsCancellationRequested)
+					return -1;
 				char ch = document.GetCharAt (offset);
 
 				// check block comments

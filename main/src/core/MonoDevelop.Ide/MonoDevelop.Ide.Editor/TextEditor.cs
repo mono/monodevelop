@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public TextEditorType TextEditorType { get; internal set; }
+
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 
 		List<TooltipExtensionNode> allProviders = new List<TooltipExtensionNode> ();
@@ -67,9 +69,9 @@ namespace MonoDevelop.Ide.Editor
 				allProviders.Add (extensionNode);
 				if (extensionNode.IsValidFor (MimeType))
 					return;
-				provider = (TooltipProvider) extensionNode.CreateInstance ();
+				provider = (TooltipProvider)extensionNode.CreateInstance ();
 			} catch (Exception e) {
-				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
+				LoggingService.LogError ("Can't create tooltip provider:" + a.ExtensionNode, e);
 				return;
 			}
 			if (a.Change == ExtensionChange.Add) {
@@ -465,7 +467,7 @@ namespace MonoDevelop.Ide.Editor
 		public void RunWhenLoaded (Action action)
 		{
 			if (action == null)
-				throw new ArgumentNullException ("action");
+				throw new ArgumentNullException (nameof (action));
 			textEditorImpl.RunWhenLoaded (action);
 		}
 
@@ -482,14 +484,14 @@ namespace MonoDevelop.Ide.Editor
 		public void StartInsertionMode (InsertionModeOptions insertionModeOptions)
 		{
 			if (insertionModeOptions == null)
-				throw new ArgumentNullException ("insertionModeOptions");
+				throw new ArgumentNullException (nameof (insertionModeOptions));
 			textEditorImpl.StartInsertionMode (insertionModeOptions);
 		}
 
 		public void StartTextLinkMode (TextLinkModeOptions textLinkModeOptions)
 		{
 			if (textLinkModeOptions == null)
-				throw new ArgumentNullException ("textLinkModeOptions");
+				throw new ArgumentNullException (nameof (textLinkModeOptions));
 			textEditorImpl.StartTextLinkMode (textLinkModeOptions);
 		}
 
@@ -506,7 +508,7 @@ namespace MonoDevelop.Ide.Editor
 		public Xwt.Point LocationToPoint (DocumentLocation location)
 		{
 			return textEditorImpl.LocationToPoint (location.Line, location.Column);
-		} 
+		}
 
 		public Xwt.Point LocationToPoint (int line, int column)
 		{
@@ -546,13 +548,13 @@ namespace MonoDevelop.Ide.Editor
 
 		public void RemoveText (int offset, int count)
 		{
-			RemoveText (new TextSegment (offset, count)); 
+			RemoveText (new TextSegment (offset, count));
 		}
 
 		public void RemoveText (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			ReadWriteTextDocument.RemoveText (segment);
 		}
 
@@ -569,14 +571,14 @@ namespace MonoDevelop.Ide.Editor
 		public void ReplaceText (ISegment segment, string value)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
 		public void ReplaceText (ISegment segment, ITextSource value)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
@@ -598,37 +600,37 @@ namespace MonoDevelop.Ide.Editor
 		public void AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
 		{
 			if (line == null)
-				throw new ArgumentNullException ("line");
+				throw new ArgumentNullException (nameof (line));
 			if (lineMarker == null)
-				throw new ArgumentNullException ("lineMarker");
+				throw new ArgumentNullException (nameof (lineMarker));
 			textEditorImpl.AddMarker (line, lineMarker);
 		}
 
 		public void AddMarker (int lineNumber, ITextLineMarker lineMarker)
 		{
 			if (lineMarker == null)
-				throw new ArgumentNullException ("lineMarker");
+				throw new ArgumentNullException (nameof (lineMarker));
 			AddMarker (GetLine (lineNumber), lineMarker);
 		}
 
 		public void RemoveMarker (ITextLineMarker lineMarker)
 		{
 			if (lineMarker == null)
-				throw new ArgumentNullException ("lineMarker");
+				throw new ArgumentNullException (nameof (lineMarker));
 			textEditorImpl.RemoveMarker (lineMarker);
 		}
 
 		public IEnumerable<ITextLineMarker> GetLineMarkers (IDocumentLine line)
 		{
 			if (line == null)
-				throw new ArgumentNullException ("line");
+				throw new ArgumentNullException (nameof (line));
 			return textEditorImpl.GetLineMarkers (line);
 		}
 
 		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			return textEditorImpl.GetTextSegmentMarkersAt (segment);
 		}
 
@@ -640,21 +642,21 @@ namespace MonoDevelop.Ide.Editor
 		public void AddMarker (ITextSegmentMarker marker)
 		{
 			if (marker == null)
-				throw new ArgumentNullException ("marker");
+				throw new ArgumentNullException (nameof (marker));
 			textEditorImpl.AddMarker (marker);
 		}
 
 		public bool RemoveMarker (ITextSegmentMarker marker)
 		{
 			if (marker == null)
-				throw new ArgumentNullException ("marker");
+				throw new ArgumentNullException (nameof (marker));
 			return textEditorImpl.RemoveMarker (marker);
 		}
 
 		public void SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
 			if (foldings == null)
-				throw new ArgumentNullException ("foldings");
+				throw new ArgumentNullException (nameof (foldings));
 			textEditorImpl.SetFoldings (foldings);
 		}
 
@@ -667,7 +669,7 @@ namespace MonoDevelop.Ide.Editor
 		public IEnumerable<IFoldSegment> GetFoldingsIn (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			return textEditorImpl.GetFoldingsIn (segment.Offset, segment.Length);
 		}
 
@@ -681,7 +683,7 @@ namespace MonoDevelop.Ide.Editor
 		///  it doesn't require creating a String object.</remarks>
 		public char GetCharAt (int offset)
 		{
-			return ReadOnlyTextDocument.GetCharAt (offset); 
+			return ReadOnlyTextDocument.GetCharAt (offset);
 		}
 
 		public string GetTextAt (int offset, int length)
@@ -692,7 +694,7 @@ namespace MonoDevelop.Ide.Editor
 		public string GetTextAt (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			return ReadOnlyTextDocument.GetTextAt (segment);
 		}
 
@@ -704,28 +706,28 @@ namespace MonoDevelop.Ide.Editor
 		public string GetVirtualIndentationString (int lineNumber)
 		{
 			if (lineNumber < 1 || lineNumber > LineCount)
-				throw new ArgumentOutOfRangeException ("lineNumber");
+				throw new ArgumentOutOfRangeException (nameof (lineNumber));
 			return textEditorImpl.GetVirtualIndentationString (lineNumber);
 		}
 
 		public string GetVirtualIndentationString (IDocumentLine line)
 		{
 			if (line == null)
-				throw new ArgumentNullException ("line");
+				throw new ArgumentNullException (nameof (line));
 			return textEditorImpl.GetVirtualIndentationString (line.LineNumber);
 		}
 
 		public int GetVirtualIndentationColumn (int lineNumber)
 		{
 			if (lineNumber < 1 || lineNumber > LineCount)
-				throw new ArgumentOutOfRangeException ("lineNumber");
+				throw new ArgumentOutOfRangeException (nameof (lineNumber));
 			return 1 + textEditorImpl.GetVirtualIndentationString (lineNumber).Length;
 		}
 
 		public int GetVirtualIndentationColumn (IDocumentLine line)
 		{
 			if (line == null)
-				throw new ArgumentNullException ("line");
+				throw new ArgumentNullException (nameof (line));
 			return 1 + textEditorImpl.GetVirtualIndentationString (line.LineNumber).Length;
 		}
 
@@ -752,21 +754,21 @@ namespace MonoDevelop.Ide.Editor
 		public ITextSource CreateSnapshot (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			return ReadOnlyTextDocument.CreateSnapshot (segment.Offset, segment.Length);
 		}
 
 		public void WriteTextTo (TextWriter writer)
 		{
 			if (writer == null)
-				throw new ArgumentNullException ("writer");
+				throw new ArgumentNullException (nameof (writer));
 			ReadOnlyTextDocument.WriteTextTo (writer);
 		}
 
 		public void WriteTextTo (TextWriter writer, int offset, int length)
 		{
 			if (writer == null)
-				throw new ArgumentNullException ("writer");
+				throw new ArgumentNullException (nameof (writer));
 			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 
@@ -808,8 +810,10 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
 
-		public IList<SkipChar> SkipChars {
-			get {
+		public IList<SkipChar> SkipChars
+		{
+			get
+			{
 				return textEditorImpl.SkipChars;
 			}
 		}
@@ -846,7 +850,7 @@ namespace MonoDevelop.Ide.Editor
 			set {
 				if (extensionContext != null) {
 					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-//					textEditorImpl.ClearTooltipProviders ();
+					//					textEditorImpl.ClearTooltipProviders ();
 				}
 				extensionContext = value;
 				if (extensionContext != null)
@@ -866,11 +870,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal TextEditor (ITextEditorImpl textEditorImpl)
+		internal TextEditor (ITextEditorImpl textEditorImpl, TextEditorType textEditorType)
 		{
 			if (textEditorImpl == null)
-				throw new ArgumentNullException ("textEditorImpl");
+				throw new ArgumentNullException (nameof (textEditorImpl));
 			this.textEditorImpl = textEditorImpl;
+			this.TextEditorType = textEditorType;
 			commandRouter = new InternalCommandRouter (this);
 			fileTypeCondition.SetFileName (FileName);
 			ExtensionContext = AddinManager.CreateExtensionContext ();
@@ -884,7 +889,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.ClearTooltipProviders ();
 				foreach (var extensionNode in allProviders) {
 					if (extensionNode.IsValidFor (MimeType))
-						textEditorImpl.AddTooltipProvider ((TooltipProvider) extensionNode.CreateInstance ());
+						textEditorImpl.AddTooltipProvider ((TooltipProvider)extensionNode.CreateInstance ());
 				}
 			};
 		}
@@ -915,7 +920,7 @@ namespace MonoDevelop.Ide.Editor
 			{
 				this.editor = editor;
 			}
-			
+
 			#region IMultiCastCommandRouter implementation
 
 			System.Collections.IEnumerable MonoDevelop.Components.Commands.IMultiCastCommandRouter.GetCommandTargets ()
@@ -962,7 +967,7 @@ namespace MonoDevelop.Ide.Editor
 		internal void InitializeExtensionChain (DocumentContext documentContext)
 		{
 			if (documentContext == null)
-				throw new ArgumentNullException ("documentContext");
+				throw new ArgumentNullException (nameof (documentContext));
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			TextEditorExtension last = null;
@@ -977,7 +982,7 @@ namespace MonoDevelop.Ide.Editor
 					if (ext == null)
 						continue;
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
+					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type + ")", e);
 					continue;
 				}
 				if (ext.IsValidInContext (documentContext)) {
@@ -990,7 +995,7 @@ namespace MonoDevelop.Ide.Editor
 					ext.Initialize (this, documentContext);
 				}
 			}
-			this.DocumentContext = documentContext;
+			DocumentContext = documentContext;
 		}
 
 		void DetachExtensionChain ()
@@ -1007,7 +1012,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.EditorExtension = null;
 		}
 
-		public T GetContent<T> () where T : class
+		public T GetContent<T>() where T : class
 		{
 			T result = textEditorImpl as T;
 			if (result != null)
@@ -1022,7 +1027,7 @@ namespace MonoDevelop.Ide.Editor
 			return null;
 		}
 
-		public IEnumerable<T> GetContents<T> () where T : class
+		public IEnumerable<T> GetContents<T>() where T : class
 		{
 			T result = textEditorImpl as T;
 			if (result != null)
@@ -1045,7 +1050,7 @@ namespace MonoDevelop.Ide.Editor
 		public string GetPangoMarkup (ISegment segment)
 		{
 			if (segment == null)
-				throw new ArgumentNullException ("segment");
+				throw new ArgumentNullException (nameof (segment));
 			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length);
 		}
 
@@ -1066,15 +1071,15 @@ namespace MonoDevelop.Ide.Editor
 			// There are two uses for this custom list type:
 			// 1) it's private, and thus (unlike List<object>) cannot be confused with real annotations
 			// 2) It allows us to simplify the cloning logic by making the list behave the same as a clonable annotation.
-			public AnnotationList (int initialCapacity) : base(initialCapacity)
+			public AnnotationList (int initialCapacity) : base (initialCapacity)
 			{
 			}
 
 			public object Clone ()
 			{
 				lock (this) {
-					AnnotationList copy = new AnnotationList (this.Count);
-					for (int i = 0; i < this.Count; i++) {
+					AnnotationList copy = new AnnotationList (Count);
+					for (int i = 0; i < Count; i++) {
 						object obj = this [i];
 						ICloneable c = obj as ICloneable;
 						copy.Add (c != null ? c.Clone () : obj);
@@ -1087,9 +1092,9 @@ namespace MonoDevelop.Ide.Editor
 		public void AddAnnotation (object annotation)
 		{
 			if (annotation == null)
-				throw new ArgumentNullException ("annotation");
+				throw new ArgumentNullException (nameof (annotation));
 			retry: // Retry until successful
-			object oldAnnotation = Interlocked.CompareExchange (ref this.annotations, annotation, null);
+			object oldAnnotation = Interlocked.CompareExchange (ref annotations, annotation, null);
 			if (oldAnnotation == null) {
 				return; // we successfully added a single annotation
 			}
@@ -1099,7 +1104,7 @@ namespace MonoDevelop.Ide.Editor
 				list = new AnnotationList (4);
 				list.Add (oldAnnotation);
 				list.Add (annotation);
-				if (Interlocked.CompareExchange (ref this.annotations, list, oldAnnotation) != oldAnnotation) {
+				if (Interlocked.CompareExchange (ref annotations, list, oldAnnotation) != oldAnnotation) {
 					// the transformation failed (some other thread wrote to this.annotations first)
 					goto retry;
 				}
@@ -1111,23 +1116,23 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public void RemoveAnnotations<T> () where T : class
+		public void RemoveAnnotations<T>() where T : class
 		{
-			retry: // Retry until successful
-			object oldAnnotations = this.annotations;
+		retry: // Retry until successful
+			object oldAnnotations = annotations;
 			var list = oldAnnotations as AnnotationList;
 			if (list != null) {
 				lock (list)
 					list.RemoveAll (obj => obj is T);
 			} else if (oldAnnotations is T) {
-				if (Interlocked.CompareExchange (ref this.annotations, null, oldAnnotations) != oldAnnotations) {
+				if (Interlocked.CompareExchange (ref annotations, null, oldAnnotations) != oldAnnotations) {
 					// Operation failed (some other thread wrote to this.annotations first)
 					goto retry;
 				}
 			}
 		}
 
-		public T Annotation<T> () where T: class
+		public T Annotation<T>() where T : class
 		{
 			object annotations = this.annotations;
 			var list = annotations as AnnotationList;
@@ -1147,8 +1152,10 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// Gets all annotations stored on this AstNode.
 		/// </summary>
-		public IEnumerable<object> Annotations {
-			get {
+		public IEnumerable<object> Annotations
+		{
+			get
+			{
 				object annotations = this.annotations;
 				AnnotationList list = annotations as AnnotationList;
 				if (list != null) {
@@ -1164,12 +1171,12 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		List<ProjectedTooltipProvider> projectedProviders = new List<ProjectedTooltipProvider> ();
-		IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections = null;
+		IReadOnlyList<Editor.Projection.Projection> projections = null;
 
-		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<MonoDevelop.Ide.Editor.Projection.Projection> projections, DisabledProjectionFeatures disabledFeatures = DisabledProjectionFeatures.None)
+		public void SetOrUpdateProjections (DocumentContext ctx, IReadOnlyList<Editor.Projection.Projection> projections, DisabledProjectionFeatures disabledFeatures = DisabledProjectionFeatures.None)
 		{
 			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
+				throw new ArgumentNullException (nameof (ctx));
 			if (this.projections != null) {
 				foreach (var projection in this.projections) {
 					projection.Dettach ();
@@ -1183,7 +1190,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			if ((disabledFeatures & DisabledProjectionFeatures.SemanticHighlighting) != DisabledProjectionFeatures.SemanticHighlighting) {
-					if (SemanticHighlighting is ProjectedSemanticHighlighting) {
+				if (SemanticHighlighting is ProjectedSemanticHighlighting) {
 					((ProjectedSemanticHighlighting)SemanticHighlighting).UpdateProjection (projections);
 				} else {
 					SemanticHighlighting = new ProjectedSemanticHighlighting (this, ctx, projections);
@@ -1197,7 +1204,7 @@ namespace MonoDevelop.Ide.Editor
 					foreach (var tp in projection.ProjectedEditor.allProviders) {
 						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
 							continue;
-						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider) tp.CreateInstance ());
+						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider)tp.CreateInstance ());
 						projectedProviders.Add (newProvider);
 						textEditorImpl.AddTooltipProvider (newProvider);
 					}
@@ -1258,6 +1265,11 @@ namespace MonoDevelop.Ide.Editor
 		public void RemoveOverlay (Control messageOverlayContent)
 		{
 			textEditorImpl.RemoveOverlay (messageOverlayContent);
+		}
+
+		internal void UpdateBraceMatchingResult (BraceMatchingResult? result)
+		{
+			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
 	}
 }

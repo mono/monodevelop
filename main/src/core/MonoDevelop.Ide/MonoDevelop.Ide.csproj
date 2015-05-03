@@ -3481,6 +3481,10 @@
     <Compile Include="MonoDevelop.Ide.CodeFormatting\AbstractCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemOutputTrackingNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorType.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractBraceMatcher.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatcherTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatchingResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
