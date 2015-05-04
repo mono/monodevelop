@@ -52,105 +52,77 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 	public static class IMSBuildPropertySetExtensions
 	{
-		class PropInfo
-		{
-			public MemberInfo Member;
-			public ItemPropertyAttribute Attribute;
-			public bool MergeToMainGroup;
-
-			public Type ReturnType {
-				get { return (Member is FieldInfo) ? ((FieldInfo)Member).FieldType : ((PropertyInfo)Member).PropertyType; }
-			}
-			public object GetValue (object instance)
-			{
-				if (Member is FieldInfo)
-					return ((FieldInfo)Member).GetValue (instance);
-				else
-					return ((PropertyInfo)Member).GetValue (instance, null);
-			}
-			public void SetValue (object instance, object value)
-			{
-				if (Member is FieldInfo)
-					((FieldInfo)Member).SetValue (instance, value);
-				else
-					((PropertyInfo)Member).SetValue (instance, value, null);
-			}
-			public string Name {
-				get { return Attribute.Name ?? Member.Name; }
-			}
-		}
-
-		static Dictionary<Type,PropInfo[]> types = new Dictionary<Type, PropInfo[]> ();
-
-		static PropInfo[] GetMembers (Type type, bool includeBaseMembers)
-		{
-			lock (types) {
-				PropInfo[] pinfo;
-				if (types.TryGetValue (type, out pinfo))
-					return pinfo;
-
-				List<PropInfo> list = new List<PropInfo> ();
-
-				foreach (var m in type.GetMembers (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-					if (!includeBaseMembers && m.DeclaringType != type)
-						continue;
-					if (!(m is FieldInfo) && !(m is PropertyInfo))
-						continue;
-					var attr = Attribute.GetCustomAttribute (m, typeof(ItemPropertyAttribute)) as ItemPropertyAttribute;
-					if (attr == null)
-						continue;
-					bool merge = Attribute.IsDefined (m, typeof(MergeToProjectAttribute));
-
-					list.Add (new PropInfo {
-						Member = m,
-						Attribute = attr,
-						MergeToMainGroup = merge
-					});
-				}
-				return types [type] = list.ToArray ();
-			}
-		}
-
 		public static void WriteObjectProperties (this IPropertySet pset, object ob, Type typeToScan, bool includeBaseMembers = false)
 		{
-			var props = GetMembers (typeToScan, includeBaseMembers);
+			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
+			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
+			XmlConfigurationWriter cwriter = null;
+		
 			foreach (var prop in props) {
-				if (prop.Attribute.IsExternal)
+				if (prop.IsExternal)
 					continue;
-				if (prop.ReturnType == typeof(FilePath)) {
+				bool merge = Attribute.IsDefined (prop.Member, typeof(MergeToProjectAttribute));
+				if (prop.PropertyType == typeof(FilePath)) {
 					var val = (FilePath)prop.GetValue (ob);
-					FilePath def = (string)prop.Attribute.DefaultValue;
-					pset.SetValue (prop.Name, val, def, mergeToMainGroup: prop.MergeToMainGroup);
-				} else if (prop.Attribute is ProjectPathItemProperty && prop.ReturnType == typeof(string)) {
+					FilePath def = (string)prop.DefaultValue;
+					pset.SetValue (prop.Name, val, def, mergeToMainGroup: merge);
+				} else if (prop.DataType is PathDataType && prop.PropertyType == typeof(string)) {
 					FilePath val = (string)prop.GetValue (ob);
-					FilePath def = (string)prop.Attribute.DefaultValue;
-					pset.SetValue (prop.Name, val, def, mergeToMainGroup: prop.MergeToMainGroup);
-				} else if (prop.ReturnType == typeof(string)) {
-					pset.SetValue (prop.Name, (string)prop.GetValue (ob), (string)prop.Attribute.DefaultValue, prop.MergeToMainGroup);
+					FilePath def = (string)prop.DefaultValue;
+					pset.SetValue (prop.Name, val, def, mergeToMainGroup: merge);
+				} else if (prop.PropertyType == typeof(string)) {
+					pset.SetValue (prop.Name, (string)prop.GetValue (ob), (string)prop.DefaultValue, merge);
+				} else if (prop.DataType.IsSimpleType) {
+					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, merge);
 				} else {
-					pset.SetValue (prop.Name, prop.GetValue (ob), prop.Attribute.DefaultValue, prop.MergeToMainGroup);
+					var val = prop.GetValue (ob);
+					if (val != null) {
+						if (cwriter == null)
+							cwriter = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
+						var w = new StringWriter ();
+						var data = prop.Serialize (ser.SerializationContext, ob, val);
+						if (data != null) {
+							cwriter.Write (new XmlTextWriter (w), data);
+							pset.SetValue (prop.Name, w.ToString ());
+						} else
+							pset.RemoveProperty (prop.Name);
+					} else
+						pset.RemoveProperty (prop.Name);
 				}
 			}
 		}
 
 		public static void ReadObjectProperties (this IPropertySet pset, object ob, Type typeToScan, bool includeBaseMembers = false)
 		{
-			var props = GetMembers (typeToScan, includeBaseMembers);
+			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
+			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
+
 			foreach (var prop in props) {
-				if (prop.Attribute.IsExternal)
+				if (prop.IsExternal)
 					continue;
 				object readVal = null;
-				if (prop.ReturnType == typeof(FilePath)) {
-					FilePath def = (string)prop.Attribute.DefaultValue;
+				if (prop.PropertyType == typeof(FilePath)) {
+					FilePath def = (string)prop.DefaultValue;
 					readVal = pset.GetPathValue (prop.Name, def);
-				} else if (prop.Attribute is ProjectPathItemProperty && prop.ReturnType == typeof(string)) {
-					FilePath def = (string)prop.Attribute.DefaultValue;
+				} else if (prop.DataType is PathDataType && prop.PropertyType == typeof(string)) {
+					FilePath def = (string)prop.DefaultValue;
 					readVal = pset.GetPathValue (prop.Name, def);
 					readVal = readVal.ToString ();
-				} else if (prop.ReturnType == typeof(string)) {
-					readVal = pset.GetValue (prop.Name, (string)prop.Attribute.DefaultValue);
+				} else if (prop.PropertyType == typeof(string)) {
+					readVal = pset.GetValue (prop.Name, (string)prop.DefaultValue);
+				} else if (prop.DataType.IsSimpleType) {
+					readVal = pset.GetValue (prop.Name, prop.PropertyType, prop.DefaultValue);
 				} else {
-					readVal = pset.GetValue (prop.Name, prop.ReturnType, prop.Attribute.DefaultValue);
+					var val = pset.GetValue (prop.Name);
+					if (!string.IsNullOrEmpty (val)) {
+						try {
+							var data = XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (new StringReader (val)));
+							readVal = prop.Deserialize (ser.SerializationContext, ob, data);
+						} catch (Exception ex) {
+							LoggingService.LogError ("Cound not read project property '" + prop.Name + "'", ex);
+						}
+					} else
+						continue;
 				}
 				prop.SetValue (ob, readVal);
 			}
@@ -352,15 +324,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static void WriteExternalProjectProperties (this MSBuildProject project, object ob, Type typeToScan, bool includeBaseMembers = false)
 		{
-			var props = GetMembers (typeToScan, includeBaseMembers);
+			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
+			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
+
 			XmlConfigurationWriter writer = null;
 			foreach (var prop in props) {
-				if (!prop.Attribute.IsExternal)
+				if (!prop.IsExternal)
 					continue;
 				var val = prop.GetValue (ob);
 				if (val != null) {
-					DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
-					var data = ser.Serialize (val, prop.ReturnType);
+					var data = prop.Serialize (ser.SerializationContext, ob, val);
 					if (data != null) {
 						data.Name = prop.Name;
 						if (writer == null)
@@ -376,15 +349,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static void ReadExternalProjectProperties (this MSBuildProject project, object ob, Type typeToScan, bool includeBaseMembers = false)
 		{
-			var props = GetMembers (typeToScan, includeBaseMembers);
+			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
+			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
+
 			foreach (var prop in props) {
-				if (!prop.Attribute.IsExternal)
+				if (!prop.IsExternal)
 					continue;
 				var sec = project.GetMonoDevelopProjectExtension (prop.Name);
 				if (sec != null) {
 					var data = XmlConfigurationReader.DefaultReader.Read (sec);
-					DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
-					var val = ser.Deserialize (prop.ReturnType, data);
+					var val = prop.Deserialize (ser.SerializationContext, ob, data);
 					prop.SetValue (ob, val);
 				}
 			}

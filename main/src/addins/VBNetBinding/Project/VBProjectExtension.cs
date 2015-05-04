@@ -34,8 +34,6 @@ namespace MonoDevelop.VBNetBinding
 {
 	class VBProject: DotNetProject
 	{
-		static VBNetResourceIdBuilder resourceBuilder = new VBNetResourceIdBuilder ();
-
 		[ItemProperty ("OptionInfer", DefaultValue="Off")]
 		string optionInfer = "Off";
 
@@ -104,7 +102,6 @@ namespace MonoDevelop.VBNetBinding
 		{
 			base.OnInitialize ();
 			DefaultNamespaceIsImplicit = true;
-			DefaultResourceHandler = resourceBuilder;
 			StockIcon = "md-project";
 		}
 
@@ -124,6 +121,11 @@ namespace MonoDevelop.VBNetBinding
 		protected override ClrVersion[] OnGetSupportedClrVersions ()
 		{
 			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0 };
+		}
+
+		protected override string OnGetDefaultResourceId (ProjectFile projectFile)
+		{
+			return VBNetResourceIdBuilder.GetDefaultResourceId (projectFile) ?? base.OnGetDefaultResourceId (projectFile);
 		}
 	}
 }

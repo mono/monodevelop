@@ -319,7 +319,6 @@
     <Compile Include="MonoDevelop.Projects.Extensions\ItemTypeCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\MonoDocSourceNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectLanguageCondition.cs" />
-    <Compile Include="MonoDevelop.Projects.Extensions\IResourceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\IAssemblyReferenceHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1DotNetProjectHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1FileFormat.cs" />

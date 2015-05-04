@@ -485,16 +485,6 @@ namespace MonoDevelop.Projects
 			return IsCompileable (fileName) ? BuildAction.Compile : BuildAction.None;
 		}
 
-		public string GetDefaultResourceId (ProjectFile projectFile)
-		{
-			return ProjectExtension.OnGetDefaultResourceId (projectFile);
-		}
-
-		protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
-		{
-			return MSBuildResourceHandler.Instance.GetDefaultResourceId (projectFile);
-		}
-
 		internal ProjectItem CreateProjectItem (IMSBuildItemEvaluated item)
 		{
 			return ProjectExtension.OnCreateProjectItem (item);
@@ -2490,11 +2480,6 @@ namespace MonoDevelop.Projects
 			internal protected override string OnGetDefaultBuildAction (string fileName)
 			{
 				return Project.OnGetDefaultBuildAction (fileName);
-			}
-
-			internal protected override string OnGetDefaultResourceId (ProjectFile projectFile)
-			{
-				return Project.OnGetDefaultResourceId (projectFile);
 			}
 
 			internal protected override IEnumerable<string> OnGetStandardBuildActions ()

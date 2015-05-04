@@ -38,6 +38,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -140,8 +141,8 @@ namespace MonoDevelop.Projects
 
 			var resId = ResourceId;
 
-			//For EmbeddedResource, emit LogicalName only when it does not match the default Id
-			if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && project.GetDefaultResourceId (this) == resId)
+			// For EmbeddedResource, emit LogicalName only when it does not match the default msbuild resource Id
+			if (project is DotNetProject && BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && ((DotNetProject)project).GetDefaultMSBuildResourceId (this) == resId)
 				resId = "";
 
 			buildItem.Metadata.SetValue ("LogicalName", resId, "");
@@ -196,10 +197,13 @@ namespace MonoDevelop.Projects
 
 		string resourceId = String.Empty;
 
-		internal string GetResourceId (IResourceHandler resourceHandler)
+		/// <summary>
+		/// Gets the resource id of this file for the provided policy
+		/// </summary>
+		internal string GetResourceId (ResourceNamePolicy policy)
 		{
-			if (string.IsNullOrEmpty (resourceId))
-				return resourceHandler.GetDefaultResourceId (this);
+			if (string.IsNullOrEmpty (resourceId) && (Project is DotNetProject))
+				return ((DotNetProject)Project).GetDefaultResourceIdForPolicy (this, policy);
 			return resourceId;
 		}
 
@@ -448,8 +452,9 @@ namespace MonoDevelop.Projects
 		// FIXME: rename this to LogicalName for a better mapping to the MSBuild property
 		public string ResourceId {
 			get {
+				// If the resource id is not set, return the project's default
 				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && project is DotNetProject)
-					return ((DotNetProject)project).ResourceHandler.GetDefaultResourceId (this);
+					return ((DotNetProject)project).GetDefaultResourceId (this);
 
 				return resourceId;
 			}

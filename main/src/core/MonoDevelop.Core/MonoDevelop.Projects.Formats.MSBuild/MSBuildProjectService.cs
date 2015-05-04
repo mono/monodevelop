@@ -1069,38 +1069,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool? RawValue { get; private set; }
 	}
 	
-	public class MSBuildResourceHandler: IResourceHandler
-	{
-		public static MSBuildResourceHandler Instance = new MSBuildResourceHandler ();
-		
-		public virtual string GetDefaultResourceId (ProjectFile file)
-		{
-			string fname = file.ProjectVirtualPath;
-			fname = FileService.NormalizeRelativePath (fname);
-			fname = Path.Combine (Path.GetDirectoryName (fname).Replace (' ','_'), Path.GetFileName (fname));
-
-			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
-				fname = Path.ChangeExtension (fname, ".resources");
-			} else {
-				string only_filename, culture, extn;
-				if (MSBuildProjectService.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
-					//remove the culture from fname
-					//foo.it.bmp -> foo.bmp
-					fname = only_filename + "." + extn;
-				}
-			}
-
-			string rname = fname.Replace (Path.DirectorySeparatorChar, '.');
-			
-			DotNetProject dp = file.Project as DotNetProject;
-
-			if (dp == null || String.IsNullOrEmpty (dp.DefaultNamespace))
-				return rname;
-			else
-				return dp.DefaultNamespace + "." + rname;
-		}
-	}
-	
 	[ExportProjectType (MSBuildProjectService.GenericItemGuid, Extension="mdproj")]
 	class GenericItemFactory: SolutionItemFactory
 	{

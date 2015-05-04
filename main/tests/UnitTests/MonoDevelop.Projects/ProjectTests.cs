@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using System.Xml;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects
 {
@@ -570,6 +571,59 @@ namespace MonoDevelop.Projects
 			} finally {
 				WorkspaceObject.UnregisterCustomExtension (node);
 			}
+		}
+
+		[Test]
+		public async Task MSBuildResourceNamingPolicy ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+
+			var pol = new DotNetNamingPolicy (DirectoryNamespaceAssociation.Flat, ResourceNamePolicy.MSBuild);
+			p.Policies.Set (pol);
+
+			var f = p.AddFile (p.BaseDirectory.Combine ("foo/SomeFile.txt"), BuildAction.EmbeddedResource);
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var p2 = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), p.FileName);
+			f = p2.GetProjectFile (f.FilePath);
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+		}
+
+		[Test]
+		public async Task MDResourceNamingPolicy ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (DotNetProject) sol.Items [0];
+
+			var pol = new DotNetNamingPolicy (DirectoryNamespaceAssociation.Flat, ResourceNamePolicy.FileName);
+			p.Policies.Set (pol);
+
+			var f = p.AddFile (p.BaseDirectory.Combine ("foo/SomeFile.txt"), BuildAction.EmbeddedResource);
+			Assert.AreEqual ("SomeFile.txt", f.ResourceId);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var p2 = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), p.FileName);
+			f = p2.GetProjectFile (f.FilePath);
+			Assert.AreEqual ("SomeFile.txt", f.ResourceId);
+		}
+
+		[Test]
+		public async Task LoadResourceWithCorrectId ()
+		{
+			string projFile = Util.GetSampleProject ("test-resource-id", "ConsoleProject.csproj");
+			var p = (DotNetProject) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var f = p.Files.FirstOrDefault (pf => pf.FilePath.FileName == "SomeFile.txt");
+			Assert.AreEqual ("ConsoleProject.foo.SomeFile.txt", f.ResourceId);
+
+			var pol = p.Policies.Get<DotNetNamingPolicy> ();
+			Assert.AreEqual (ResourceNamePolicy.FileName, pol.ResourceNamePolicy);
 		}
 	}
 

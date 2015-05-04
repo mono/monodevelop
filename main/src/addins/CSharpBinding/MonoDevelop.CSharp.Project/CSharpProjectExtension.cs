@@ -48,8 +48,6 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("CodePage", DefaultValue = 0)]
 		int codePage;
 
-		static CSharpResourceIdBuilder resourceHandler = new CSharpResourceIdBuilder ();
-
 		// Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
 		public static IList<string> SupportedPlatforms = new string[] { "anycpu", "x86", "x64", "itanium" };
 
@@ -61,7 +59,6 @@ namespace MonoDevelop.CSharp.Project
 		protected override void OnInitialize ()
 		{
 			base.OnInitialize ();
-			DefaultResourceHandler = resourceHandler;
 			StockIcon = "md-csharp-project";
 		}
 
@@ -163,6 +160,11 @@ namespace MonoDevelop.CSharp.Project
 				ClrVersion.Net_4_0,
 				ClrVersion.Net_4_5
 			};
+		}
+
+		protected override string OnGetDefaultResourceId (ProjectFile projectFile)
+		{
+			return CSharpResourceIdBuilder.GetDefaultResourceId (projectFile) ?? base.OnGetDefaultResourceId (projectFile);
 		}
 	}
 

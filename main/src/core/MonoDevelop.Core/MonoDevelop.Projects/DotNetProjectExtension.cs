@@ -92,6 +92,11 @@ namespace MonoDevelop.Projects
 			next.OnReferenceAddedToProject (e);
 		}
 
+		internal protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
+		{
+			return next.OnGetDefaultResourceId (projectFile);
+		}
+
 		#region Framework management
 
 		internal protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()

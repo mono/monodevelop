@@ -393,33 +393,6 @@ namespace MonoDevelop.Projects
 
 		public bool DefaultNamespaceIsImplicit { get; set; }
 
-		IResourceHandler resourceHandler;
-
-		public IResourceHandler ResourceHandler {
-			get {
-				if (resourceHandler == null) {
-					DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
-					if (pol.ResourceNamePolicy == ResourceNamePolicy.FileFormatDefault || pol.ResourceNamePolicy == ResourceNamePolicy.MSBuild) {
-						resourceHandler = DefaultResourceHandler ?? GetService<IResourceHandler> ();
-						if (resourceHandler == null)
-							resourceHandler = MSBuildResourceHandler.Instance;
-					}
-					else
-						resourceHandler = MonoDevelop.Projects.Extensions.DefaultResourceHandler.Instance;
-				}
-				return resourceHandler;
-			}
-		}
-
-		/// <summary>
-		/// The resource handle that will be used when the user selects the format default naming policy
-		/// </summary>
-		/// <value>The default resource handler.</value>
-		public IResourceHandler DefaultResourceHandler {
-			get;
-			set;
-		}
-
 		TargetFramework targetFramework;
 
 		public TargetFramework TargetFramework {
@@ -1229,15 +1202,9 @@ namespace MonoDevelop.Projects
 
 		protected override void OnEndLoad ()
 		{
-			// The resource handler policy may have changed after loading, so reset any
-			// previously allocated resource handler
-			resourceHandler = null;
-
 			// Just after loading, the resource Ids are using the file format's policy.
 			// They have to be converted to the new policy
-			IResourceHandler handler = GetService<IResourceHandler> ();
-			if (handler != null)
-				MigrateResourceIds (handler, ResourceHandler);
+			MigrateResourceIds (ResourceNamePolicy.FileFormatDefault, Policies.Get<DotNetNamingPolicy>().ResourceNamePolicy);
 
 			base.OnEndLoad ();
 		}
@@ -1251,25 +1218,77 @@ namespace MonoDevelop.Projects
 
 		protected abstract ClrVersion[] OnGetSupportedClrVersions ();
 
-		public void UpdateResourceHandler (bool keepOldIds)
+		internal string GetDefaultResourceId (ProjectFile projectFile)
 		{
-			IResourceHandler oldHandler = resourceHandler;
-			resourceHandler = null;
-			if (keepOldIds && oldHandler != null)
-				MigrateResourceIds (oldHandler, ResourceHandler);
+			DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
+			return GetDefaultResourceIdForPolicy (projectFile, pol.ResourceNamePolicy);
 		}
 
-		void MigrateResourceIds (IResourceHandler oldHandler, IResourceHandler newHandler)
+		internal string GetDefaultResourceIdForPolicy (ProjectFile projectFile, ResourceNamePolicy policy)
 		{
-			if (oldHandler.GetType () != newHandler.GetType ()) {
+			if (policy == ResourceNamePolicy.FileFormatDefault || policy == ResourceNamePolicy.MSBuild)
+				return GetDefaultMSBuildResourceId (projectFile);
+			else
+				return projectFile.FilePath.FileName;
+		}
+
+		internal string GetDefaultMSBuildResourceId (ProjectFile projectFile)
+		{
+			return ProjectExtension.OnGetDefaultResourceId (projectFile);
+		}
+
+		/// <summary>
+		/// Returns the resource id that the provided file will have if none is explicitly set
+		/// </summary>
+		/// <param name="projectFile">Project file.</param>
+		/// <remarks>The algorithm for getting the resource id is usually language-specific.</remarks>
+		protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
+		{
+			string fname = projectFile.ProjectVirtualPath;
+			fname = FileService.NormalizeRelativePath (fname);
+			fname = Path.Combine (Path.GetDirectoryName (fname).Replace (' ','_'), Path.GetFileName (fname));
+
+			if (String.Compare (Path.GetExtension (fname), ".resx", true) == 0) {
+				fname = Path.ChangeExtension (fname, ".resources");
+			} else {
+				string only_filename, culture, extn;
+				if (MSBuildProjectService.TrySplitResourceName (fname, out only_filename, out culture, out extn)) {
+					//remove the culture from fname
+					//foo.it.bmp -> foo.bmp
+					fname = only_filename + "." + extn;
+				}
+			}
+
+			string rname = fname.Replace (Path.DirectorySeparatorChar, '.');
+
+			DotNetProject dp = projectFile.Project as DotNetProject;
+
+			if (dp == null || String.IsNullOrEmpty (dp.DefaultNamespace))
+				return rname;
+			else
+				return dp.DefaultNamespace + "." + rname;
+		}
+
+		/// <summary>
+		/// Migrates resource identifiers from a policy to the current policy of the project.
+		/// </summary>
+		/// <param name="oldPolicy">Old policy.</param>
+		public void MigrateResourceIds (ResourceNamePolicy oldPolicy)
+		{
+			MigrateResourceIds (oldPolicy, Policies.Get<DotNetNamingPolicy>().ResourceNamePolicy);
+		}
+
+		void MigrateResourceIds (ResourceNamePolicy oldPolicy, ResourceNamePolicy newPolicy)
+		{
+			if (oldPolicy != newPolicy) {
 				// If the file format has a default resource handler different from the one
 				// choosen for this project, then all resource ids must be converted
 				foreach (ProjectFile file in Files.Where (f => f.BuildAction == BuildAction.EmbeddedResource)) {
 					if (file.Subtype == Subtype.Directory)
 						continue;
-					string oldId = file.GetResourceId (oldHandler);
-					string newId = file.GetResourceId (newHandler);
-					string newDefault = newHandler.GetDefaultResourceId (file);
+					string oldId = file.GetResourceId (oldPolicy);
+					string newId = file.GetResourceId (newPolicy);
+					string newDefault = GetDefaultResourceIdForPolicy (file, newPolicy);
 					if (oldId != newId) {
 						if (newDefault == oldId)
 							file.ResourceId = null;
@@ -1486,6 +1505,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<BuildResult> OnCompile (ProgressMonitor monitor, BuildData buildData)
 			{
 				return Project.OnCompile (monitor, buildData);
+			}
+
+			internal protected override string OnGetDefaultResourceId (ProjectFile projectFile)
+			{
+				return Project.OnGetDefaultResourceId (projectFile);
 			}
 
 			#region Framework management

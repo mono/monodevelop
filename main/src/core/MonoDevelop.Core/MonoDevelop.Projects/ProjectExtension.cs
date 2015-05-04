@@ -137,11 +137,6 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultBuildAction (fileName);
 		}
 
-		internal protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)
-		{
-			return next.OnGetDefaultResourceId (projectFile);
-		}
-
 		internal protected virtual IEnumerable<string> OnGetStandardBuildActions ()
 		{
 			return next.OnGetStandardBuildActions ();

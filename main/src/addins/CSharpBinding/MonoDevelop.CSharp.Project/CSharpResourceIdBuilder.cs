@@ -38,12 +38,12 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.CSharp.Project
 {
-	class CSharpResourceIdBuilder : MSBuildResourceHandler
+	class CSharpResourceIdBuilder
 	{
-		public override string GetDefaultResourceId (ProjectFile pf)
+		public static string GetDefaultResourceId (ProjectFile pf)
 		{
 			if (String.IsNullOrEmpty (pf.DependsOn) || !File.Exists (pf.DependsOn) || Path.GetExtension (pf.DependsOn).ToLower () != ".cs")
-				return base.GetDefaultResourceId (pf);
+				return null;
 
 			string ns = null;
 			string classname = null;
@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Project
 				}
 
 				if (classname == null)
-					return base.GetDefaultResourceId (pf);
+					return null;
 
 				string culture, extn, only_filename;
 				if (MSBuildProjectService.TrySplitResourceName (pf.ProjectVirtualPath, out only_filename, out culture, out extn))
@@ -101,7 +101,7 @@ namespace MonoDevelop.CSharp.Project
 		 * skips strings "foo", 
 		 * skips anything after a # , eg. #region, #if 
 		 * Won't handle #if false etc kinda blocks*/
-		string GetNextToken (StreamReader sr)
+		static string GetNextToken (StreamReader sr)
 		{
 			StringBuilder sb = new StringBuilder ();
 
