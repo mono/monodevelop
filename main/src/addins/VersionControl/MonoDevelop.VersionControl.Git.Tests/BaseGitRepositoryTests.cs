@@ -63,11 +63,11 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		protected override int RepoItemsCount {
-			get { return 0; }
+			get { return 1; }
 		}
 
 		protected override int RepoItemsCountRecursive {
-			get { return 7; }
+			get { return 10; }
 		}
 
 		protected override void TestDiff ()
