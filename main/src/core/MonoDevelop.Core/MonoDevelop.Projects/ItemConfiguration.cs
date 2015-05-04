@@ -38,12 +38,11 @@ namespace MonoDevelop.Projects
 {
 	public class ItemConfiguration: IExtendedDataItem
 	{
-		[ItemProperty]
 		string name = null;
 		
 		string platform;
 		
-		[ItemProperty ("CustomCommands")]
+		[ItemProperty ("CustomCommands", SkipEmpty = true)]
 		[ItemProperty ("Command", Scope="*")]
 		CustomCommandCollection customCommands = new CustomCommandCollection ();
 
