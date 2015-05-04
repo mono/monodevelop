@@ -327,8 +327,8 @@ namespace MonoDevelop.VersionControl.Subversion
 					Svn.Move (localSrcPath, localDestPath, force, monitor);
 				} else {
 					base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
-					if (!destIsVersioned)
-						Add (localDestPath, false, monitor);
+					Add (localDestPath, false, monitor);
+					DeleteFile (localSrcPath, force, monitor, keepLocal: false);
 				}
 			} else {
 				if (!destIsVersioned && IsVersioned (localSrcPath)) {

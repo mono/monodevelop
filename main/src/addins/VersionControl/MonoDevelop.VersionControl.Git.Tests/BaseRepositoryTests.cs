@@ -586,8 +586,8 @@ namespace MonoDevelop.VersionControl.Tests
 			string dirFile = Path.Combine (dir, "testfile");
 			AddFile ("testfile", "test", true, true);
 			AddDirectory ("testdir", true, false);
-			Repo.MoveFile (added, dirFile, false, new NullProgressMonitor ());
-			Repo.MoveFile (dirFile, added, false, new NullProgressMonitor ());
+			Repo.MoveFile (added, dirFile, true, new NullProgressMonitor ());
+			Repo.MoveFile (dirFile, added, true, new NullProgressMonitor ());
 
 			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (dirFile, VersionInfoQueryFlags.IgnoreCache).Status);
 			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
