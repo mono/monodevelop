@@ -255,7 +255,7 @@ namespace MonoDevelop.CSharp.Formatting
 		B = 2
 	};
 }");
-			AddOption (newLineOptions, category, "NewLinesForBracesInObjectInitializers", GettextCatalog.GetString ("Place open brace on new line for object initializers"), @"void Example()
+			AddOption (newLineOptions, category, "NewLinesForBracesInObjectCollectionArrayInitializers", GettextCatalog.GetString ("Place open brace on new line for object initializers"), @"void Example()
 {
 	new MyObject
 	{

@@ -37,7 +37,7 @@ THE SOFTWARE.
 	<NewLinesForBracesInAnonymousMethods>True</NewLinesForBracesInAnonymousMethods>
 	<NewLinesForBracesInControlBlocks>True</NewLinesForBracesInControlBlocks>
 	<NewLinesForBracesInAnonymousTypes>True</NewLinesForBracesInAnonymousTypes>
-	<NewLinesForBracesInObjectInitializers>True</NewLinesForBracesInObjectInitializers>
+	<NewLinesForBracesInObjectCollectionArrayInitializers>True</NewLinesForBracesInObjectCollectionArrayInitializers>
 	<NewLinesForBracesInLambdaExpressionBody>True</NewLinesForBracesInLambdaExpressionBody>
 	<NewLineForElse>True</NewLineForElse>
 	<NewLineForCatch>True</NewLineForCatch>

@@ -169,6 +169,7 @@ namespace MonoDevelop.CSharp.Project
 				UnsafeCode,
 				null,
 				null,
+				ImmutableArray<byte>.Empty,
 				null,
 				Microsoft.CodeAnalysis.Platform.AnyCpu,
 				ReportDiagnostic.Default,
