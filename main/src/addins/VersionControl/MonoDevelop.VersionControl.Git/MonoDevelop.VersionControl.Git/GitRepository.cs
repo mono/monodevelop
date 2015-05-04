@@ -161,6 +161,35 @@ namespace MonoDevelop.VersionControl.Git
 			return true;
 		}
 
+		static bool OnTransferProgress (TransferProgress tp, IProgressMonitor monitor, ref int progress)
+		{
+			if (progress == 0 && tp.ReceivedObjects == 0)
+				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
+
+			int currentProgress = tp.ReceivedObjects + tp.IndexedObjects;
+			int steps = currentProgress - progress;
+			monitor.Step (steps);
+			progress = currentProgress;
+
+			if (tp.IndexedObjects >= tp.TotalObjects)
+				monitor.EndTask ();
+
+			return !monitor.IsCancelRequested;
+		}
+
+		static void OnCheckoutProgress (int completedSteps, int totalSteps, IProgressMonitor monitor, ref int progress)
+		{
+			if (progress == 0 && completedSteps == 0)
+				monitor.BeginTask ("Checking out files", totalSteps);
+
+			int steps = completedSteps - progress;
+			monitor.Step (steps);
+			progress = completedSteps;
+
+			if (completedSteps >= totalSteps)
+				monitor.EndTask ();
+		}
+
 		void NotifyFilesChangedForStash (Stash stash)
 		{
 			// HACK: Notify file changes.
@@ -178,10 +207,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
 
+			int progress = 0;
 			var res = RootRepository.Stashes.Apply (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
+				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				OnCheckoutNotify = RefreshFile,
 				CheckoutNotifyFlags = refreshFlags,
 			});
+
 			NotifyFilesChangedForStash (RootRepository.Stashes [stashIndex]);
 			if (monitor != null)
 				monitor.EndTask ();
@@ -193,9 +225,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (monitor != null)
 				monitor.BeginTask ("Applying stash", 1);
-			
+
 			var stash = RootRepository.Stashes [stashIndex];
+			int progress = 0;
 			var res = RootRepository.Stashes.Pop (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
+				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				OnCheckoutNotify = RefreshFile,
 				CheckoutNotifyFlags = refreshFlags,
 			});
@@ -573,12 +607,11 @@ namespace MonoDevelop.VersionControl.Git
 		public void Fetch (IProgressMonitor monitor, string remote)
 		{
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
+			int progress = 0;
 			RetryUntilSuccess (monitor, delegate {
 				RootRepository.Fetch (remote, new FetchOptions {
 					CredentialsProvider = GitCredentials.TryGet,
-					OnProgress = null,
-					OnTransferProgress = null,
-					OnUpdateTips = null,
+					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref progress),
 				});
 			});
 			monitor.Step (1);
@@ -800,14 +833,20 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
+			int transferProgress = 0;
+			int checkoutProgress = 0;
 			RetryUntilSuccess (monitor, delegate {
 				RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
 					CredentialsProvider = GitCredentials.TryGet,
-					// TODO:
-					OnCheckoutProgress = null,
-					OnTransferProgress = null
+
+					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
+					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress),
 				});
 			});
+
+			if (monitor.IsCancelRequested)
+				return;
+			
 			RootPath = RootPath.ParentDirectory;
 			RootRepository = new LibGit2Sharp.Repository (RootPath);
 		}
@@ -818,7 +857,9 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 1);
 
+				int progress = 0;
 				repository.CheckoutPaths ("HEAD", group.ToPathStrings (), new CheckoutOptions {
+					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					CheckoutModifiers = CheckoutModifiers.Force,
 					CheckoutNotifyFlags = refreshFlags,
 					OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
@@ -844,7 +885,9 @@ namespace MonoDevelop.VersionControl.Git
 			var gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.
+			int progress = 0;
 			repo.CheckoutPaths (gitRev.Commit.Sha, new [] { repo.ToGitPath (localPath) }, new CheckoutOptions {
+				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 				CheckoutModifiers = CheckoutModifiers.Force
 			});
 
@@ -1135,8 +1178,11 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				RootRepository.Reset (ResetMode.Hard);
+				int progress = 0;
 				RootRepository.Checkout (branch, new CheckoutOptions {
-					OnCheckoutNotify = null
+					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+					OnCheckoutNotify = RefreshFile,
+					CheckoutNotifyFlags = refreshFlags,
 				});
 			} finally {
 				// Restore the branch stash
