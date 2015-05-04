@@ -1259,6 +1259,7 @@ namespace MonoDevelop.VersionControl.Git
 				RootRepository.Unstage (localDestPath);
 
 			RootRepository.Move (localSrcPath, localDestPath);
+			ClearCachedVersionInfo (localSrcPath, localDestPath);
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
