@@ -337,6 +337,7 @@ namespace MonoDevelop.VersionControl.Subversion
 				} else
 					base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
 			}
+			ClearCachedVersionInfo (localSrcPath, localDestPath);
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
