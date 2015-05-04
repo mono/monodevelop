@@ -1185,6 +1185,13 @@ namespace Mono.TextEditor
 			else
 				return 1d;
 		}
+
+		public static int ConvertToPixelScale (int size)
+		{
+			double scale = GetPixelScale ();
+
+			return (int)(size * scale);
+		}
 		
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)
 		{
