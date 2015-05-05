@@ -11,7 +11,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 {
 	public class GtkProjectServiceExtension: DotNetProjectExtension
 	{
-		[ItemProperty ("GtkDesignInfo", IsExternal = true)]
+		[ItemProperty ("GtkDesignInfo", IsExternal = true, SkipEmpty = true)]
 		GtkDesignInfo info;
 
 		protected override bool SupportsObject (WorkspaceObject item)
