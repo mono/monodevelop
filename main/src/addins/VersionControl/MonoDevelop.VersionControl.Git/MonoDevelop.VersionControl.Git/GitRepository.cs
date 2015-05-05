@@ -855,10 +855,20 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
+				HashSet<FilePath> files = new HashSet<FilePath> ();
+
+				foreach (var item in group)
+					if (item.IsDirectory) {
+						foreach (var vi in GetDirectoryVersionInfo (item, false, recurse))
+							if (!vi.IsDirectory)
+								files.Add (vi.LocalPath);
+					} else
+						files.Add (item);
+
 				monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 1);
 
 				int progress = 0;
-				repository.CheckoutPaths ("HEAD", group.ToPathStrings (), new CheckoutOptions {
+				repository.CheckoutPaths ("HEAD", repository.ToGitPath (files), new CheckoutOptions {
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					CheckoutModifiers = CheckoutModifiers.Force,
 					CheckoutNotifyFlags = refreshFlags,
@@ -881,17 +891,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			LibGit2Sharp.Repository repo = GetRepository (localPath);
-			var gitRev = (GitRevision)revision;
-
-			// Rewrite file data from selected revision.
-			int progress = 0;
-			repo.CheckoutPaths (gitRev.Commit.Sha, new [] { repo.ToGitPath (localPath) }, new CheckoutOptions {
-				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-				CheckoutModifiers = CheckoutModifiers.Force
-			});
-
-			monitor.ReportSuccess (GettextCatalog.GetString ("Successfully reverted {0} to revision {1}", localPath, gitRev));
+			throw new NotSupportedException ();
 		}
 
 		protected override void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)

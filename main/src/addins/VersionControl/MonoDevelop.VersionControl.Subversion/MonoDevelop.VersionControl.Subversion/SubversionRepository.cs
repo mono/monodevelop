@@ -59,6 +59,10 @@ namespace MonoDevelop.VersionControl.Subversion
 			get { return true; }
 		}
 
+		public override bool SupportsRevertToRevision {
+			get { return true; }
+		}
+
 		new SubversionVersionControl VersionControlSystem {
 			get { return (SubversionVersionControl)base.VersionControlSystem; }
 		}
