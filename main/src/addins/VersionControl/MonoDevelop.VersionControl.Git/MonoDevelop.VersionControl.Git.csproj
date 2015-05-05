@@ -67,8 +67,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
