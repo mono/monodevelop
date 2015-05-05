@@ -583,6 +583,7 @@ namespace MonoDevelop.Projects
 				string dir = Util.CreateTmpDir ("WriteExtendedProperties");
 				mp.FileName = Path.Combine (dir, "test.sln");
 				mp.Data = new MyProjectData { Foo = "bar" };
+				mp.DataProperty = new MyProjectData { Foo = "rep" };
 				mp.SimpleData = "Test";
 				await p.SaveAsync (Util.GetMonitor ());
 
@@ -708,12 +709,6 @@ namespace MonoDevelop.Projects
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 			}
 		}
-
-		[Test]
-		public async Task SerializeFlavorProperties ()
-		{
-		}
-
 
 		[Test]
 		public async Task FlavorLoadExtendedProperties ()
@@ -1105,6 +1100,9 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty (IsExternal = true)]
 		public MyProjectData Data;
+
+		[ItemProperty]
+		public MyProjectData DataProperty;
 	}
 
 	class MyProjectData
