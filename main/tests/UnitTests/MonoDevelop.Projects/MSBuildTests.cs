@@ -62,12 +62,12 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, cr.WarningCount);
 			
 			string solXml = File.ReadAllText (solFile);
-			string projectXml = Util.GetXmlFileInfoset (projectFile);
+			string projectXml = File.ReadAllText (projectFile);
 			
 			await sol.SaveAsync (Util.GetMonitor ());
 			
 			Assert.AreEqual (solXml, File.ReadAllText (solFile));
-			Assert.AreEqual (projectXml, Util.GetXmlFileInfoset (projectFile));
+			Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
 		}
 
 		[Test]
@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects
 			// msbuild format
 
 			string solXml = File.ReadAllText (sol.FileName);
-			string projectXml = Util.GetXmlFileInfoset (((SolutionItem)sol.Items [0]).FileName);
+			string projectXml = File.ReadAllText (((SolutionItem)sol.Items [0]).FileName);
 			
 			// Make sure we compare using the same guid
 			Project p = sol.Items [0] as Project;
@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject.csproj");
 			
 			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (solFile)), solXml);
-			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
+			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (projectFile)), projectXml);
 		}
 
 		[Test]
@@ -121,14 +121,14 @@ namespace MonoDevelop.Projects
 
 			await sol.SaveAsync (Util.GetMonitor ());
 
-			string projectXml = Util.GetXmlFileInfoset (((SolutionItem)sol.Items [0]).FileName);
+			string projectXml = File.ReadAllText (((SolutionItem)sol.Items [0]).FileName);
 
 			// Make sure we compare using the same guid
 			projectXml = projectXml.Replace (p.ItemId, "{969F05E2-0E79-4C5B-982C-8F3DD4D46311}");
 
 			string projectFile = Util.GetSampleProjectPath ("generated-console-project", "TestProject2.csproj");
 
-			Assert.AreEqual (Util.ToWindowsEndings (Util.GetXmlFileInfoset (projectFile)), projectXml);
+			Assert.AreEqual (Util.ToWindowsEndings (File.ReadAllText (projectFile)), projectXml);
 		}
 
 		[Test]
@@ -199,7 +199,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, pars.WarningLevel);
 
 			string savedFile = Path.Combine (p.BaseDirectory, "TestConfigurationMergingSaved.csproj");
-			Assert.AreEqual (Util.GetXmlFileInfoset (savedFile), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (savedFile), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -217,11 +217,11 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (p.Configurations ["Release|x86-64"]);
 			Assert.IsNotNull (p.Configurations ["Release|Other"]);
 			
-			string originalContent = Util.GetXmlFileInfoset (p.FileName);
+			string originalContent = File.ReadAllText (p.FileName);
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (originalContent, Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (originalContent, File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -241,7 +241,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -267,7 +267,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -310,7 +310,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -332,7 +332,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -382,11 +382,11 @@ namespace MonoDevelop.Projects
 			Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
 
-			string projectXml1 = Util.GetXmlFileInfoset (p.FileName);
+			string projectXml1 = File.ReadAllText (p.FileName);
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+			string projectXml2 = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (projectXml1, projectXml2);
 		}
@@ -401,11 +401,11 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("property-save-test", "property-save-test.csproj");
 			Project p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile) as Project;
 
-			string projectXml1 = Util.GetXmlFileInfoset (p.FileName);
+			string projectXml1 = File.ReadAllText (p.FileName);
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			string projectXml2 = Util.GetXmlFileInfoset (p.FileName);
+			string projectXml2 = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (projectXml1, projectXml2);
 		}
@@ -512,10 +512,10 @@ namespace MonoDevelop.Projects
 
 			string proj = sol.GetAllProjects ().First ().FileName;
 
-			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			string projectXml1 = File.ReadAllText (proj);
 			await sol.SaveAsync (new ProgressMonitor ());
 
-			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			string projectXml2 = File.ReadAllText (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
 		}
 
@@ -563,10 +563,10 @@ namespace MonoDevelop.Projects
 
 			string proj = sol.GetAllProjects ().First ().FileName;
 
-			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			string projectXml1 = File.ReadAllText (proj);
 			await sol.SaveAsync (new ProgressMonitor ());
 
-			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			string projectXml2 = File.ReadAllText (proj);
 			Assert.AreEqual (projectXml1, projectXml2);
 		}
 
@@ -588,9 +588,9 @@ namespace MonoDevelop.Projects
 
 				string referenceFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
 
-				string projectXml1 = Util.GetXmlFileInfoset (referenceFile);
-				string projectXml2 = Util.GetXmlFileInfoset (mp.FileName);
-				Assert.AreEqual (projectXml1, projectXml2);
+				string projectXml1 = File.ReadAllText (referenceFile);
+				string projectXml2 = File.ReadAllText (mp.FileName);
+				Assert.AreEqual (Util.ToWindowsEndings (projectXml1), projectXml2);
 			} finally {
 				MSBuildProjectService.UnregisterCustomItemType (tn);
 			}
@@ -622,7 +622,7 @@ namespace MonoDevelop.Projects
 			// Unknown data should be kept in the file
 
 			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
-			string projectXml1 = Util.GetXmlFileInfoset (projFile);
+			string projectXml1 = File.ReadAllText (projFile);
 
 			var tn = new MyProjectTypeNode ();
 			MSBuildProjectService.RegisterCustomItemType (tn);
@@ -637,7 +637,7 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -667,9 +667,9 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
+				string projectXml1 = File.ReadAllText (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -699,9 +699,9 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
+				string projectXml1 = File.ReadAllText (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -745,7 +745,7 @@ namespace MonoDevelop.Projects
 			// Unknown data should be kept in the file
 
 			string projFile = Util.GetSampleProject ("extended-project-properties", "test-unknown-data.myproj");
-			string projectXml1 = Util.GetXmlFileInfoset (projFile);
+			string projectXml1 = File.ReadAllText (projFile);
 
 			var tn = new MyEmptyProjectTypeNode ();
 			var fn = new CustomItemNode<FlavorWithData> ();
@@ -763,7 +763,7 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -797,9 +797,9 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
+				string projectXml1 = File.ReadAllText (Util.GetSampleProject ("extended-project-properties", "test-empty.myproj"));
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -833,9 +833,9 @@ namespace MonoDevelop.Projects
 
 				await mp.SaveAsync (Util.GetMonitor ());
 
-				string projectXml1 = Util.GetXmlFileInfoset (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
+				string projectXml1 = File.ReadAllText (Util.GetSampleProject ("extended-project-properties", "test-extra-data.myproj"));
 
-				string projectXml2 = Util.GetXmlFileInfoset (projFile);
+				string projectXml2 = File.ReadAllText (projFile);
 				Assert.AreEqual (projectXml1, projectXml2);
 
 			} finally {
@@ -890,7 +890,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved1"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved1"), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -910,7 +910,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved2"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved2"), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -978,16 +978,16 @@ namespace MonoDevelop.Projects
 			var p3 = sol.Items[2];
 
 			var solContent = File.ReadAllText (solFile);
-			var refXml1 = Util.GetXmlFileInfoset (p1.FileName);
-			var refXml2 = Util.GetXmlFileInfoset (p2.FileName);
-			var refXml3 = Util.GetXmlFileInfoset (p3.FileName);
+			var refXml1 = File.ReadAllText (p1.FileName);
+			var refXml2 = File.ReadAllText (p2.FileName);
+			var refXml3 = File.ReadAllText (p3.FileName);
 
 			await sol.SaveAsync (Util.GetMonitor());
 
 			var savedSol = File.ReadAllText (solFile);
-			var savedXml1 = Util.GetXmlFileInfoset (p1.FileName);
-			var savedXml2 = Util.GetXmlFileInfoset (p2.FileName);
-			var savedXml3 = Util.GetXmlFileInfoset (p3.FileName);
+			var savedXml1 = File.ReadAllText (p1.FileName);
+			var savedXml2 = File.ReadAllText (p2.FileName);
+			var savedXml3 = File.ReadAllText (p3.FileName);
 
 			Assert.AreEqual (solContent, savedSol);
 			Assert.AreEqual (refXml1, savedXml1);
@@ -1006,12 +1006,12 @@ namespace MonoDevelop.Projects
 			var p1 = sol.Items[0];
 
 			var solContent = File.ReadAllText (solFile);
-			var refXml1 = Util.GetXmlFileInfoset (p1.FileName);
+			var refXml1 = File.ReadAllText (p1.FileName);
 
 			await sol.SaveAsync (Util.GetMonitor());
 
 			var savedSol = File.ReadAllText (solFile);
-			var savedXml1 = Util.GetXmlFileInfoset (p1.FileName);
+			var savedXml1 = File.ReadAllText (p1.FileName);
 
 			Assert.AreEqual (solContent, savedSol);
 			Assert.AreEqual (refXml1, savedXml1);
@@ -1046,9 +1046,9 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = sol.Items [0];
 
-			var refXml = Util.GetXmlFileInfoset (p.FileName);
+			var refXml = File.ReadAllText (p.FileName);
 			await sol.SaveAsync (Util.GetMonitor ());
-			var savedXml = Util.GetXmlFileInfoset (p.FileName);
+			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
 		}
@@ -1060,9 +1060,9 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = sol.Items [0];
 
-			var refXml = Util.GetXmlFileInfoset (p.FileName);
+			var refXml = File.ReadAllText (p.FileName);
 			await sol.SaveAsync (Util.GetMonitor ());
-			var savedXml = Util.GetXmlFileInfoset (p.FileName);
+			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
 		}

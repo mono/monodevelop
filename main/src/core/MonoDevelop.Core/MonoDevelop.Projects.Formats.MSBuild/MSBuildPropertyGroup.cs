@@ -221,6 +221,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				Element.AppendChild (pelem);
 
+			XmlUtil.Indent (Project.TextFormat, pelem, false);
 			var prop = new MSBuildProperty (parent, pelem);
 			prop.Owner = this;
 			properties [name] = prop;
@@ -327,19 +328,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			InitProperties ();
 			properties.Remove (prop.Name);
 			propertyList.Remove (prop);
-			Element.RemoveChild (prop.Element);
+			XmlUtil.RemoveElementAndIndenting (prop.Element);
 		}
 
 		public void RemoveAllProperties ()
 		{
 			InitProperties ();
-			List<XmlNode> toDelete = new List<XmlNode> ();
+			var toDelete = new List<XmlElement> ();
 			foreach (XmlNode node in Element.ChildNodes) {
 				if (node is XmlElement)
-					toDelete.Add (node);
+					toDelete.Add ((XmlElement)node);
 			}
-			foreach (XmlNode node in toDelete)
-				Element.RemoveChild (node);
+			foreach (var node in toDelete)
+				XmlUtil.RemoveElementAndIndenting (node);
 			properties.Clear ();
 			propertyList.Clear ();
 		}

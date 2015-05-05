@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects
 					val.SetAttributeValue ("value", v.Value);
 					e.Add (val);
 				}
-				pset.SetValue ("EnvironmentVariables", e.ToString ());
+				pset.SetValue ("EnvironmentVariables", e.ToString (SaveOptions.DisableFormatting));
 			} else
 				pset.RemoveProperty ("EnvironmentVariables");
 

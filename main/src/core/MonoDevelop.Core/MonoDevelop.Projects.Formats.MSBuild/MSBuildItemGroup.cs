@@ -50,6 +50,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement elem = AddChildElement (name);
 			MSBuildItem it = parent.GetItem (elem);
 			it.Include = include;
+			XmlUtil.Indent (parent.TextFormat, elem, false);
 			return it;
 		}
 
@@ -57,6 +58,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			XmlElement elem = item.Element;
 			Element.AppendChild (elem);
+			XmlUtil.Indent (parent.TextFormat, elem, false);
 			parent.AddToItemCache (item);
 		}
 		

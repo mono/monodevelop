@@ -11,6 +11,7 @@
     <RootNamespace>propertyevaluationtest</RootNamespace>
     <AssemblyName>property-evaluation-test</AssemblyName>
     <BaseIntermediateOutputPath>obj\1.0</BaseIntermediateOutputPath>
+    <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AAA>test1</AAA>
     <BBB>test2</BBB>
@@ -23,10 +24,10 @@
     <GGG>yes</GGG>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(CCC)' == 'yes' ">
-  	<DDD>yes_value</DDD>
+    <DDD>yes_value</DDD>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(CCC)' == 'no' ">
-  	<DDD>no_value</DDD>
+    <DDD>no_value</DDD>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,7 +53,7 @@
     <Reference Include="System" />
     <Reference Include="TestReference">
       <HintPath>$(SOME_PLACE)\MonoDevelop.Core.dll</HintPath>
-    </Reference><!-- Test -->
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program1_$(AAA).cs" />
@@ -62,6 +63,9 @@
     <Compile Include="Program5_$(EEE).cs" />
     <Compile Include="Program6_$(FFF).cs" />
     <Compile Include="Program7_$(AAA).cs" Condition=" '$(Foo)' == 'Bar' " />
+    <EmbeddedResource Include="Program6_$(FFF).cs">
+      <LogicalName>Foo</LogicalName>
+    </EmbeddedResource><!-- Test -->
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

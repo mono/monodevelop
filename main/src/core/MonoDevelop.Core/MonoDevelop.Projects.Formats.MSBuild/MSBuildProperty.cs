@@ -126,6 +126,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				try {
 					// Attempt to store it verbatim as XML.
 					Element.InnerXml = value;
+					XmlUtil.FormatElement (Project.TextFormat, Element);
 					return;
 				}
 				catch (XmlException) {
@@ -147,7 +148,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return string.Empty;
 
 			if (Element.ChildNodes.Count == 1 && (Element.FirstChild.NodeType == XmlNodeType.Text || Element.FirstChild.NodeType == XmlNodeType.CDATA))
-				return Element.InnerText;
+				return Element.InnerText.Trim ();
 
 			string innerXml = Element.InnerXml;
 
@@ -156,7 +157,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			int firstLessThan = innerXml.IndexOf('<');
 			if (firstLessThan == -1) {
 				// return the inner text so it gets properly unescaped
-				return Element.InnerText;
+				return Element.InnerText.Trim ();
 			}
 
 			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
@@ -165,7 +166,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (containsNoTagsOtherThanComments) {
 				// return the inner text so the comments are stripped
 				// (this is how one might comment out part of a list in a property value)
-				return Element.InnerText;
+				return Element.InnerText.Trim ();
 			}
 
 			// ...or it looks like the whole thing is a big CDATA tag ...
@@ -173,7 +174,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (startsWithCData) {
 				// return the inner text so it gets properly extracted from the CDATA
-				return Element.InnerText;
+				return Element.InnerText.Trim ();
 			}
 
 			// otherwise, it looks like genuine XML; return the inner XML so that

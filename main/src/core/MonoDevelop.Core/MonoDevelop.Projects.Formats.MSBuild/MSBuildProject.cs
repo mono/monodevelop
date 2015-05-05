@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
 
-		TextFormatInfo format = new TextFormatInfo ();
+		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
 
 		public static XmlNamespaceManager XmlNamespaceManager {
 			get {
@@ -78,6 +78,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set;
 		}
 
+		internal TextFormatInfo TextFormat {
+			get { return format; }
+		}
+
 		public bool IsNewProject { get; internal set; }
 		
 		public XmlDocument Document {
@@ -88,8 +92,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			doc = new XmlDocument ();
-			doc.PreserveWhitespace = false;
+			doc.AppendChild (doc.CreateXmlDeclaration ("1.0","utf-8", null));
 			doc.AppendChild (doc.CreateElement (null, "Project", Schema));
+			XmlUtil.Indent (format, doc.DocumentElement, true);
+			doc.PreserveWhitespace = true;
 			UseMSBuildEngine = true;
 			IsNewProject = true;
 			AddNewPropertyGroup (false);
@@ -112,7 +118,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Load the XML document
 			doc = new XmlDocument ();
-			doc.PreserveWhitespace = false;
+			doc.PreserveWhitespace = true;
 			
 			// HACK: XmlStreamReader will fail if the file is encoded in UTF-8 but has <?xml version="1.0" encoding="utf-16"?>
 			// To work around this, we load the XML content into a string and use XmlDocument.LoadXml() instead.
@@ -162,7 +168,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// XmlDocument will write the UTF8 header.
 			ProjectWriter sw = new ProjectWriter (format.ByteOrderMark);
 			sw.NewLine = format.NewLine;
-			doc.Save (sw);
+			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
+				OmitXmlDeclaration = !doc.ChildNodes.OfType<XmlDeclaration> ().Any ()
+			});
+			doc.Save (xw);
 
 			string content = sw.ToString ();
 			if (format.EndsWithEmptyLine && !content.EndsWith (format.NewLine))
@@ -392,6 +401,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					doc.DocumentElement.AppendChild (elem);
 			}
+			XmlUtil.Indent (format, elem, false);
 			return GetImport (elem);
 		}
 
@@ -404,7 +414,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
 			if (elem != null)
-				elem.ParentNode.RemoveChild (elem);
+				XmlUtil.RemoveElementAndIndenting (elem);
 			else
 				//FIXME: should this actually log an error?
 				Console.WriteLine ("ppnf:");
@@ -412,7 +422,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public void RemoveImport (MSBuildImport import)
 		{
-			import.Element.ParentNode.RemoveChild (import.Element);
+			XmlUtil.RemoveElementAndIndenting (import.Element);
 		}
 
 		public IEnumerable<MSBuildImport> Imports {
@@ -465,6 +475,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.AppendChild (elem);
 			}
 			
+			XmlUtil.Indent (format, elem, true);
 			return GetGroup (elem);
 		}
 		
@@ -514,6 +525,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				doc.DocumentElement.InsertAfter (elem, refNode);
 			else
 				doc.DocumentElement.AppendChild (elem);
+			XmlUtil.Indent (format, elem, true);
 			return GetItemGroup (elem);
 		}
 		
@@ -586,8 +598,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				elem.AppendChild (value);
 			else {
 				elem.InsertAfter (value, sec);
-				elem.RemoveChild (sec);
+				XmlUtil.RemoveElementAndIndenting (sec);
 			}
+			XmlUtil.Indent (format, value, true);
 		}
 
 		public void SetMonoDevelopProjectExtension (string section, XmlElement value)
@@ -599,26 +612,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (elem == null) {
 				elem = doc.CreateElement (null, "ProjectExtensions", MSBuildProject.Schema);
 				doc.DocumentElement.AppendChild (elem);
+				XmlUtil.Indent (format, elem, true);
 			}
 			var parent = elem;
 			elem = parent ["MonoDevelop", MSBuildProject.Schema];
 			if (elem == null) {
 				elem = doc.CreateElement (null, "MonoDevelop", MSBuildProject.Schema);
 				parent.AppendChild (elem);
+				XmlUtil.Indent (format, elem, true);
 			}
 			parent = elem;
 			elem = parent ["Properties", MSBuildProject.Schema];
 			if (elem == null) {
 				elem = doc.CreateElement (null, "Properties", MSBuildProject.Schema);
 				parent.AppendChild (elem);
+				XmlUtil.Indent (format, elem, true);
 			}
 			XmlElement sec = elem [section];
 			if (sec == null)
 				elem.AppendChild (value);
 			else {
 				elem.InsertAfter (value, sec);
-				elem.RemoveChild (sec);
+				XmlUtil.RemoveElementAndIndenting (sec);
 			}
+			XmlUtil.Indent (format, value, false);
 			var xmlns = value.GetAttribute ("xmlns");
 			if (xmlns == Schema)
 				value.RemoveAttribute ("xmlns");
@@ -629,9 +646,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement elem = doc.DocumentElement.SelectSingleNode ("tns:ProjectExtensions/tns:" + section, XmlNamespaceManager) as XmlElement;
 			if (elem != null) {
 				XmlElement parent = (XmlElement) elem.ParentNode;
-				parent.RemoveChild (elem);
-				if (!parent.HasChildNodes)
-					parent.ParentNode.RemoveChild (parent);
+				XmlUtil.RemoveElementAndIndenting (elem);
+				if (parent.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace))
+					XmlUtil.RemoveElementAndIndenting (parent);
 			}
 		}
 		
@@ -641,10 +658,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (elem != null) {
 				do {
 					XmlElement parent = (XmlElement) elem.ParentNode;
-					parent.RemoveChild (elem);
+					XmlUtil.RemoveElementAndIndenting (elem);
 					elem = parent;
 				}
-				while (!elem.HasChildNodes);
+				while (elem.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace));
 			}
 		}
 
@@ -652,10 +669,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			elemCache.Remove (item.Element);
 			XmlElement parent = (XmlElement) item.Element.ParentNode;
-			item.Element.ParentNode.RemoveChild (item.Element);
-			if (parent.ChildNodes.Count == 0) {
+			XmlUtil.RemoveElementAndIndenting (item.Element);
+			if (parent.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace)) {
 				elemCache.Remove (parent);
-				parent.ParentNode.RemoveChild (parent);
+				XmlUtil.RemoveElementAndIndenting (parent);
 				bestGroups = null;
 			}
 		}
@@ -708,7 +725,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void RemoveGroup (MSBuildPropertyGroup grp)
 		{
 			elemCache.Remove (grp.Element);
-			grp.Element.ParentNode.RemoveChild (grp.Element);
+			XmlUtil.RemoveElementAndIndenting (grp.Element);
 		}
 
 		public IEnumerable<MSBuildTarget> Targets {
@@ -758,6 +775,154 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string Name {
 			get { return Element.GetAttribute ("Name"); }
 			set { Element.SetAttribute ("Name", value); }
+		}
+	}
+
+	static class XmlUtil
+	{
+		public static void RemoveElementAndIndenting (XmlElement elem)
+		{
+			var ws = elem.PreviousSibling as XmlWhitespace;
+			elem.ParentNode.RemoveChild (elem);
+
+			while (ws != null) {
+				var t = ws.InnerText;
+				t = t.TrimEnd (' ');
+				bool hasNewLine = t.Length > 0 && (t[t.Length - 1] == '\r' || t[t.Length - 1] == '\n');
+				if (hasNewLine)
+					t = RemoveLineEnd (t);
+
+				if (t.Length == 0) {
+					var nextws = ws.PreviousSibling as XmlWhitespace;
+					ws.ParentNode.RemoveChild (ws);
+					ws = nextws;
+					if (hasNewLine)
+						break;
+				} else {
+					ws.InnerText = t;
+					break;
+				}
+			}
+		}
+
+		static string RemoveLineEnd (string s)
+		{
+			if (s[s.Length - 1] == '\n') {
+				if (s.Length > 1 && s[s.Length - 2] == '\r')
+					return s.Substring (0, s.Length - 2);
+			}
+			return s.Substring (0, s.Length - 1);
+		}
+
+		static string GetIndentString (XmlNode elem)
+		{
+			var node = elem.PreviousSibling;
+			StringBuilder res = new StringBuilder ();
+
+			while (node != null) {
+				var ws = node as XmlWhitespace;
+				if (ws != null) {
+					var t = ws.InnerText;
+					int i = t.LastIndexOfAny (new [] { '\r','\n' });
+					if (i == -1) {
+						res.Append (t);
+					} else {
+						res.Append (t.Substring (i + 1));
+						return res.ToString ();
+					}
+				} else
+					res.Clear ();
+				node = node.PreviousSibling;
+			}
+			return res.ToString ();
+		}
+
+		public static void FormatElement (TextFormatInfo format, XmlElement elem)
+		{
+			foreach (var e in elem.ChildNodes.OfType<XmlElement> ().ToArray ()) {
+				Indent (format, e, false);
+				FormatElement (format, e);
+			}
+		}
+
+		public static void Indent (TextFormatInfo format, XmlElement elem, bool closeInNewLine)
+		{
+			var prev = FindPreviousSibling (elem);
+
+			string indent;
+			if (prev != null)
+				indent = GetIndentString (prev);
+			else if (elem != elem.OwnerDocument.DocumentElement)
+				indent = GetIndentString (elem.ParentNode) + "  ";
+			else
+				indent = "";
+			
+			Indent (format, elem, indent);
+			if (elem.ChildNodes.Count == 0 && closeInNewLine) {
+				var ws = elem.OwnerDocument.CreateWhitespace (format.NewLine + indent);
+				elem.AppendChild (ws);
+			}
+
+			if (elem.NextSibling is XmlElement)
+				SetIndent (format, (XmlElement)elem.NextSibling, indent);
+			
+			if (elem.NextSibling == null && elem != elem.OwnerDocument.DocumentElement) {
+				var parentIndent = GetIndentString (elem.ParentNode);
+				var ws = elem.OwnerDocument.CreateWhitespace (format.NewLine + parentIndent);
+				elem.ParentNode.InsertAfter (ws, elem);
+			}
+		}
+
+		static XmlElement FindPreviousSibling (XmlElement elem)
+		{
+			XmlNode node = elem;
+			do {
+				node = node.PreviousSibling;
+			} while (node != null && !(node is XmlElement));
+			return node as XmlElement;
+		}
+
+		static void Indent (TextFormatInfo format, XmlElement elem, string indent)
+		{
+			SetIndent (format, elem, indent);
+			foreach (var c in elem.ChildNodes.OfType<XmlElement> ())
+				Indent (format, c, indent + "  ");
+		}
+
+		static void SetIndent (TextFormatInfo format, XmlElement elem, string indent)
+		{
+			bool foundLineBreak = RemoveIndent (elem.PreviousSibling);
+			string newIndent = foundLineBreak ? indent : format.NewLine + indent;
+			elem.ParentNode.InsertBefore (elem.OwnerDocument.CreateWhitespace (newIndent), elem);
+
+			if (elem.ChildNodes.OfType<XmlElement> ().Any ()) {
+				foundLineBreak = RemoveIndent (elem.LastChild);
+				newIndent = foundLineBreak ? indent : format.NewLine + indent;
+				elem.AppendChild (elem.OwnerDocument.CreateWhitespace (newIndent));
+			}
+		}
+
+		static bool RemoveIndent (XmlNode node)
+		{
+			List<XmlNode> toDelete = new List<XmlNode> ();
+			bool foundLineBreak = false;
+
+			var ws = node as XmlWhitespace;
+			while (ws != null) {
+				var t = ws.InnerText;
+				int i = t.LastIndexOfAny (new [] { '\r','\n' });
+				if (i == -1) {
+					toDelete.Add (ws);
+				} else {
+					ws.InnerText = t.Substring (0, i + 1);
+					foundLineBreak = true;
+					break;
+				}
+				ws = ws.PreviousSibling as XmlWhitespace;
+			}
+			foreach (var n in toDelete)
+				n.ParentNode.RemoveChild (n);
+			return foundLineBreak;
 		}
 	}
 }
