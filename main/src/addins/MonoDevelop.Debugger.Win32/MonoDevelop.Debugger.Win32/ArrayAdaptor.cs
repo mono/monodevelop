@@ -47,7 +47,11 @@ namespace MonoDevelop.Debugger.Win32
 
 		public int[] GetLowerBounds ()
 		{
-			return new int[array != null ? array.Rank : 0];
+			if (array != null && array.HasBaseIndicies) {
+				return array.GetBaseIndicies ();
+			} else {
+				return new int[GetDimensions ().Length];
+			}
 		}
 		
 		public int[] GetDimensions ()

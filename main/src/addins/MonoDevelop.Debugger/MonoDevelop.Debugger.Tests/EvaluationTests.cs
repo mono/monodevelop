@@ -2014,6 +2014,9 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("int", val.TypeName);
 				Assert.AreEqual ("114", val.Value);
 			}
+
+			var children = Eval ("arrayWithLowerBounds").GetAllChildrenSync ();
+			Assert.AreEqual ("[5, ...]", children [0].Name);
 		}
 	}
 }
