@@ -33,6 +33,7 @@ using MonoDevelop.CSharpBinding;
 using UnitTests;
 using MonoDevelop.CSharpBinding.Tests;
 using System.Linq;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -71,7 +72,61 @@ namespace MonoDevelop.Ide.Editor
 				Assert.AreEqual (2 + i * 4 + "foo".Length, projection.ProjectedSegments.ElementAt (i).ProjectedOffset);
 				Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (i).Length);
 			}
+		}
 
+
+		[Test]
+		public void TestProjectionHighlighting ()
+		{
+			var editor = TextEditorFactory.CreateNewEditor ();
+			var options = new CustomEditorOptions (editor.Options);
+			options.ColorScheme = "Tango";
+			editor.Options = options;
+			editor.Text = "1234567890";
+
+			var projectedDocument = TextEditorFactory.CreateNewDocument (
+				new StringTextSource ("__12__34__56__78__90"), 
+				"a"
+			);
+
+			var segments = new List<ProjectedSegment> ();
+			for (int i = 0; i < 5; i++) {
+				segments.Add (new ProjectedSegment (i * 2, 2 + i * 4, 2));
+			}
+			var projection = new Projection.Projection (projectedDocument, segments);
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+
+			var originalContext = new Document (tww);
+			var projectedEditor = projection.CreateProjectedEditor (originalContext);
+			projectedEditor.SemanticHighlighting = new TestSemanticHighlighting (projectedEditor, originalContext);
+			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
+
+			var markup = editor.GetPangoMarkup (0, editor.Length);
+			var color = "#75507B";
+			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#000000\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#000000\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#000000\">0</span>", markup);
+		}
+
+
+		class TestSemanticHighlighting : SemanticHighlighting
+		{
+			public TestSemanticHighlighting (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext documentContext) : base (editor, documentContext)
+			{
+			}
+
+			public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)
+			{
+				for (int i = 0; i < segment.Length; i++) {
+					char ch = base.editor.GetCharAt (segment.Offset + i);
+					if (ch == '1' || ch == '5' || ch == '9')
+						yield return new ColoredSegment (segment.Offset + i, 1, ColorScheme.UserTypesKey);
+				}
+			}
+
+			protected override void DocumentParsed ()
+			{
+			}
 		}
 	}
 }

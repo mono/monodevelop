@@ -55,5 +55,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			this.colorStyleKey = colorStyleKey;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ColoredSegment: Offset={0}, Length={1},ColorStyleKey={2}]", Offset, Length, ColorStyleKey);
+		}
 	}
 }

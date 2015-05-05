@@ -327,6 +327,11 @@ namespace MonoDevelop.Core.Text
 			this.offset = segment.Offset;
 			this.length = segment.Length;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[AbstractSegment: Offset={0}, Length={1}]", Offset, Length);
+		}
 	}
 
 
