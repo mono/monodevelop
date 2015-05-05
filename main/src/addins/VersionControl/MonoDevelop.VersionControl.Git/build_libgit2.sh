@@ -7,6 +7,9 @@ SHORTSHA=${LIBGIT2SHA:0:7}
 if [[ -d libgit2/build ]]
 then
     pushd libgit2/build
+    cp ../CMakeLists.txt ../CMakeLists.txt.mdcopy
+    echo 'SET(CMAKE_INSTALL_RPATH "$ORIGIN/")' >> ../CMakeLists.txt
+    mv ../CMakeLists.txt.mdcopy ../CMakeLists.txt
 
     if [[ -n $(ls libgit2-${SHORTSHA}.*) ]]
     then
