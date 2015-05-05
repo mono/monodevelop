@@ -686,7 +686,7 @@ namespace MonoDevelop.Ide.Editor
 					break;
 			}
 			startOffset = i;
-			for (int j = 0; j < commentTag.Length; j++) {
+			for (int j = 0; j < commentTag.Length && i < text.Length; j++) {
 				if (text.GetCharAt (i) != commentTag [j])
 					return false;
 				i++;
