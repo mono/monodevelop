@@ -923,18 +923,21 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		SolutionLoadContext currentLoadContext;
+
 		internal void ReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
-			SolutionExtension.OnReadSolution (monitor, file);
-			var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess); 
-			if (s != null)
-				s.ReadObjectProperties (this);
+			using (currentLoadContext = new SolutionLoadContext (this))
+				SolutionExtension.OnReadSolution (monitor, file);
+			currentLoadContext = null;
 		}
 
 		/*protected virtual*/ void OnReadSolution (ProgressMonitor monitor, SlnFile file)
 		{
-			using (var ctx = new SolutionLoadContext (this))
-				FileFormat.SlnFileFormat.LoadSolution (this, file, monitor, ctx);
+			FileFormat.SlnFileFormat.LoadSolution (this, file, monitor, currentLoadContext);
+			var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess); 
+			if (s != null)
+				s.ReadObjectProperties (this);
 		}
 
 		internal void ReadConfigurationData (ProgressMonitor monitor, SlnPropertySet properties, SolutionConfiguration configuration)
