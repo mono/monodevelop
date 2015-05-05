@@ -864,6 +864,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		internal TextEditorExtension TextEditorExtensionChain {
+			get {
+				return textEditorImpl.EditorExtension;
+			}
+		} 
+
 		internal ITextMarkerFactory TextMarkerFactory {
 			get {
 				return textEditorImpl.TextMarkerFactory;
@@ -970,8 +976,9 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException (nameof (documentContext));
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			TextEditorExtension last = null;
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			var newExtensions = new List<TextEditorExtension> ();
+
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName, mimetypeChain))
 					continue;
@@ -979,12 +986,25 @@ namespace MonoDevelop.Ide.Editor
 				try {
 					var instance = extNode.CreateInstance ();
 					ext = instance as TextEditorExtension;
-					if (ext == null)
-						continue;
+					if (ext != null)
+						newExtensions.Add (ext);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type + ")", e);
 					continue;
 				}
+			}
+			SetExtensionChain (documentContext, newExtensions);
+		}
+
+		internal void SetExtensionChain (DocumentContext documentContext, IEnumerable<TextEditorExtension> extensions)
+		{
+			if (documentContext == null)
+				throw new ArgumentNullException (nameof (documentContext));
+			if (extensions == null)
+				throw new ArgumentNullException (nameof (extensions));
+			
+			TextEditorExtension last = null;
+			foreach (var ext in extensions) {
 				if (ext.IsValidInContext (documentContext)) {
 					if (last != null) {
 						last.Next = ext;
@@ -997,6 +1017,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 			DocumentContext = documentContext;
 		}
+
 
 		void DetachExtensionChain ()
 		{

@@ -65,10 +65,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		#endregion
 
+		ICompletionWidget completionWidget;
 		internal virtual ICompletionWidget CompletionWidget
 		{
-			get;
-			set;
+			get { return completionWidget; }
+			set
+			{
+				completionWidget = value;
+			}
 		}
 
 
@@ -520,7 +524,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> ();
+			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Editor.CaretPositionChanged += HandlePositionChanged;

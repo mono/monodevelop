@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			var projection = GetProjectionAt (offset);
 			if (projection != null) {
 				var result = projection.ProjectedEditor.GetContent<CompletionTextEditorExtension> ();
-				if (result != null) {
+				if (result != null && CompletionWidget != null) {
 					result.CompletionWidget = new ProjectedCompletionWidget (CompletionWidget, projection);
 					if (result.CurrentCompletionContext == null)
 						result.CurrentCompletionContext = result.CompletionWidget.CurrentCodeCompletionContext;

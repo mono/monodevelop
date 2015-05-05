@@ -34,6 +34,13 @@ using UnitTests;
 using MonoDevelop.CSharpBinding.Tests;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.CodeCompletion;
+using System.Threading.Tasks;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using ICSharpCode.NRefactory.CSharp;
+using Gtk;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -47,7 +54,7 @@ namespace MonoDevelop.Ide.Editor
 			editor.Text = "1234567890";
 
 			var projectedDocument = TextEditorFactory.CreateNewDocument (
-				new StringTextSource ("__12__34__56__78__90"), 
+				new StringTextSource ("__12__34__56__78__90"),
 				"a"
 			);
 
@@ -66,14 +73,13 @@ namespace MonoDevelop.Ide.Editor
 			editor.InsertText (1, "foo");
 			Assert.AreEqual ("__1foo2__34__56__78__90", projectedEditor.Text);
 
-			Assert.AreEqual (2 , projection.ProjectedSegments.ElementAt (0).ProjectedOffset);
+			Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (0).ProjectedOffset);
 			Assert.AreEqual (2 + "foo".Length, projection.ProjectedSegments.ElementAt (0).Length);
 			for (int i = 1; i < 5; i++) {
 				Assert.AreEqual (2 + i * 4 + "foo".Length, projection.ProjectedSegments.ElementAt (i).ProjectedOffset);
 				Assert.AreEqual (2, projection.ProjectedSegments.ElementAt (i).Length);
 			}
 		}
-
 
 		[Test]
 		public void TestProjectionHighlighting ()
@@ -85,7 +91,7 @@ namespace MonoDevelop.Ide.Editor
 			editor.Text = "1234567890";
 
 			var projectedDocument = TextEditorFactory.CreateNewDocument (
-				new StringTextSource ("__12__34__56__78__90"), 
+				new StringTextSource ("__12__34__56__78__90"),
 				"a"
 			);
 
@@ -108,7 +114,6 @@ namespace MonoDevelop.Ide.Editor
 			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#000000\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#000000\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#000000\">0</span>", markup);
 		}
 
-
 		class TestSemanticHighlighting : SemanticHighlighting
 		{
 			public TestSemanticHighlighting (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext documentContext) : base (editor, documentContext)
@@ -125,6 +130,186 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			protected override void DocumentParsed ()
+			{
+			}
+		}
+
+		[Test]
+		public void TestProjectionCompletion ()
+		{
+			var editor = TextEditorFactory.CreateNewEditor ();
+			var options = new CustomEditorOptions (editor.Options);
+			options.ColorScheme = "Tango";
+			editor.Options = options;
+			editor.Text = "12345678901234567890";
+
+			var projectedDocument = TextEditorFactory.CreateNewDocument (
+				new StringTextSource ("__12__34__56__78__90"),
+				"a"
+			);
+
+			var segments = new List<ProjectedSegment> ();
+			for (int i = 0; i < 5; i++) {
+				segments.Add (new ProjectedSegment (i * 2, 2 + i * 4, 2));
+			}
+			var projection = new Projection.Projection (projectedDocument, segments);
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+
+			var originalContext = new Document (tww);
+			var projectedEditor = projection.CreateProjectedEditor (originalContext);
+			TestCompletionExtension orignalExtension;
+			editor.SetExtensionChain (originalContext, new [] { orignalExtension = new TestCompletionExtension (editor) });
+			TestCompletionExtension projectedExtension;
+			projectedEditor.SetExtensionChain (originalContext, new [] { projectedExtension = new TestCompletionExtension (editor) });
+
+			orignalExtension.CompletionWidget = new EmptyCompletionWidget (editor);
+			projectedExtension.CompletionWidget = new EmptyCompletionWidget (projectedEditor);
+
+			editor.SetOrUpdateProjections (originalContext, new [] { projection }, TypeSystem.DisabledProjectionFeatures.None);
+			editor.CaretOffset = 1;
+
+			var service = new CommandManager ();
+			service.LoadCommands ("/MonoDevelop/Ide/Commands");
+			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
+			Assert.IsFalse (orignalExtension.CompletionRun);
+			Assert.IsTrue (projectedExtension.CompletionRun);
+
+			editor.CaretOffset = 15;
+
+			service.DispatchCommand (TextEditorCommands.ShowCompletionWindow, null, editor.CommandRouter);
+			Assert.IsTrue (orignalExtension.CompletionRun);
+		}
+
+		class TestCompletionExtension : CompletionTextEditorExtension
+		{
+			internal bool CompletionRun;
+
+			public TestCompletionExtension (TextEditor editor)
+			{
+				Editor = editor;
+			}
+
+			public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+			{
+				CompletionRun = true;
+				var list = new CompletionDataList ();
+				list.Add ("foo");
+				return Task.FromResult<CodeCompletion.ICompletionDataList> (list);
+			}
+
+			public override bool CanRunCompletionCommand ()
+			{
+				return true;
+			}
+		}
+
+		class EmptyCompletionWidget : ICompletionWidget
+		{
+			TextEditor editor;
+
+			public EmptyCompletionWidget (TextEditor editor)
+			{
+				this.editor = editor;
+			}
+
+			int ICompletionWidget.CaretOffset
+			{
+				get
+				{
+					return 0;
+				}
+
+				set
+				{
+				}
+			}
+
+			CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext
+			{
+				get
+				{
+					return null;
+				}
+			}
+
+			Style ICompletionWidget.GtkStyle
+			{
+				get
+				{
+					return null;
+				}
+			}
+
+			int ICompletionWidget.SelectedLength
+			{
+				get
+				{
+					return 1;
+				}
+			}
+
+			int ICompletionWidget.TextLength
+			{
+				get
+				{
+					return 1;
+				}
+			}
+
+			double ICompletionWidget.ZoomLevel
+			{
+				get
+				{
+					return 1;
+				}
+			}
+
+			event EventHandler ICompletionWidget.CompletionContextChanged
+			{
+				add
+				{
+				}
+
+				remove
+				{
+				}
+			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+			}
+
+			CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
+			{
+				return new CodeCompletionContext () { TriggerOffset = editor.CaretOffset };
+			}
+
+			char ICompletionWidget.GetChar (int offset)
+			{
+				return 'a';
+			}
+
+			string ICompletionWidget.GetCompletionText (CodeCompletionContext ctx)
+			{
+				return "";
+			}
+
+			string ICompletionWidget.GetText (int startOffset, int endOffset)
+			{
+				return "";
+			}
+
+			void ICompletionWidget.Replace (int offset, int count, string text)
+			{
+			}
+
+			void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
+			{
+			}
+
+			void ICompletionWidget.SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset)
 			{
 			}
 		}
