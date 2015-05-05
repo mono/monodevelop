@@ -2005,11 +2005,15 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 			Assert.AreEqual ("24", val.Value);
 
-			IgnoreCorDebugger ("TODO: Win32 support arrays with LowerBound different then zero");
-
-			val = Eval ("arrayWithLowerBounds.GetValue(5,6,7)");
+			val = Eval ("arrayWithLowerBounds[5,6,7]");
 			Assert.AreEqual ("int", val.TypeName);
 			Assert.AreEqual ("114", val.Value);
+
+			if (AllowTargetInvokes) {
+				val = Eval ("arrayWithLowerBounds.GetValue(5,6,7)");
+				Assert.AreEqual ("int", val.TypeName);
+				Assert.AreEqual ("114", val.Value);
+			}
 		}
 	}
 }
