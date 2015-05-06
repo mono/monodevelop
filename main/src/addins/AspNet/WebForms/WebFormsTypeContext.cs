@@ -77,7 +77,12 @@ namespace MonoDevelop.AspNet.WebForms
 					return;
 				project = value;
 				compilation = null;
-				aspFlavor = project.GetFlavor<AspNetAppProjectFlavor> ();
+			}
+		}
+
+		public AspNetAppProjectFlavor ProjectFlavor {
+			get {
+				return project != null ? project.GetFlavor<AspNetAppProjectFlavor> () : null;
 			}
 		}
 
@@ -339,8 +344,8 @@ namespace MonoDevelop.AspNet.WebForms
 
 		IList<RegistrationInfo> GetRegistrationInfos ()
 		{
-			if (project != null && doc != null)
-				return aspFlavor.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
+			if (ProjectFlavor != null && doc != null)
+				return ProjectFlavor.RegistrationCache.GetInfosForPath (Path.GetDirectoryName (doc.FileName));
 			return new[] { WebFormsRegistrationCache.MachineRegistrationInfo };
 		}
 
@@ -622,9 +627,9 @@ namespace MonoDevelop.AspNet.WebForms
 		public string GetUserControlTypeName (string virtualPath)
 		{
 			string typeName = null;
-			if (project != null && doc != null) {
-				string absolute = aspFlavor.VirtualToLocalPath (virtualPath, doc.FileName);
-				typeName = aspFlavor.GetCodebehindTypeName (absolute);
+			if (ProjectFlavor != null && doc != null) {
+				string absolute = ProjectFlavor.VirtualToLocalPath (virtualPath, doc.FileName);
+				typeName = ProjectFlavor.GetCodebehindTypeName (absolute);
 			}
 			return typeName ?? "System.Web.UI.UserControl";
 		}
