@@ -18,11 +18,10 @@ then
 fi
 
 cp libgit2/CMakeLists.txt libgit2/.CMakeLists.txt.mdcopy
-echo 'SET(CMAKE_INSTALL_RPATH "$ORIGIN/")' >> libgit2/CMakeLists.txt
+echo 'SET(CMAKE_SKIP_BUILD_RPATH TRUE)' >> libgit2/CMakeLists.txt
 
 mkdir libgit2/build
 pushd libgit2/build
-PATH="/usr/local/bin:/usr/local:$PATH"
 
 cmake -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
       -DTHREADSAFE:BOOL=ON \
