@@ -427,8 +427,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					return null;
 				
 				if (info.GuiBuilderProject.HasError) {
-					monitor.ReportError (GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile), null);
-					return null;
+					var error = GettextCatalog.GetString ("GUI code generation failed for project '{0}'. The file '{1}' could not be loaded.", project.Name, info.SteticFile);
+					monitor.ReportError (error, null);
+					throw new UserException (error);
 				}
 				
 				if (info.GuiBuilderProject.IsEmpty) 

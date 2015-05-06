@@ -82,13 +82,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			try {
 				Stetic.CodeGenerationResult res = await GuiBuilderService.GenerateSteticCode (monitor, project, configuration);
-				if (res != null) {
+				if (res != null)
 					Messages = res.Warnings;
-					return true;
-				} else {
-					Messages = new [] { GettextCatalog.GetString ("Code generation failed") };
-					return false;
-				}
+				return true;
 			} catch (Exception ex) {
 				Error = ex;
 				LoggingService.LogError (ex.ToString ());
