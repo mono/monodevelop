@@ -258,6 +258,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		internal Signature GetSignature()
 		{
+			// TODO: Investigate Configuration.BuildSignature.
 			string name;
 			string email;
 
