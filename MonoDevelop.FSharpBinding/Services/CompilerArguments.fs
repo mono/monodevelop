@@ -253,7 +253,7 @@ module CompilerArguments =
 
   let getDefaultInteractive() =
 
-    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
     let framework = getDefaultTargetFramework runtime
 
     match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsharpi" with
@@ -285,7 +285,7 @@ module CompilerArguments =
   // file finds FSharp.Build.dll which finds the F# compiler.
   let getDefaultFSharpCompiler() =
   
-    let runtime = IdeApp.Preferences.DefaultTargetRuntime
+    let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
     let framework = getDefaultTargetFramework runtime
 
     match getCompilerFromEnvironment runtime framework with

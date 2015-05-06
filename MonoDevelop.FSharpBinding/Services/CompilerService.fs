@@ -110,17 +110,17 @@ module CompilerService =
       | None -> 
         match PropertyService.Get<string>("FSharpBinding.FscPath","") with
         | result when result <> "" -> 
-          if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
-            br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
+          if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Value.Id then
+            br.AddWarning("No compiler found for the selected runtime; using default compiler instead.") |> ignore
           Some(result)
         | _ ->
           match CompilerArguments.getDefaultFSharpCompiler() with
           | Some(result) ->
-            if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Id then
-              br.AddWarning("No compiler found for the selected runtime; using default compiler instead.")
+            if runtime.Id <> IdeApp.Preferences.DefaultTargetRuntime.Value.Id then
+              br.AddWarning("No compiler found for the selected runtime; using default compiler instead.") |> ignore
             Some(result)
           | None ->
-            br.AddError("No compiler found; add a default compiler in the F# settings.")
+            br.AddError("No compiler found; add a default compiler in the F# settings.") |> ignore
             None
     
     let args = String.concat "\n" argsList

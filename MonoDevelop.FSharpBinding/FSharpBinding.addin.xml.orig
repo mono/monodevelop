@@ -411,6 +411,7 @@
         <ProjectTemplate file="Templates/ios/LibraryProject.xpt.xml"/>
       </Condition>
     </Extension>
+  </Module>
 
   <!-- MonoMac-->
   <Module>

@@ -13,7 +13,6 @@ type FSharpProject() =
     
     override x.OnInitialize() = 
         base.OnInitialize()
-        x.DefaultResourceHandler <- new MSBuildResourceHandler()
     
     override x.OnWriteProject(monitor, msproject) = 
         base.OnWriteProject(monitor, msproject)
