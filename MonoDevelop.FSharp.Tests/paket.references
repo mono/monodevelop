@@ -1,0 +1,5 @@
+ExtCore
+FSharp.Compiler.Service
+Microsoft.CodeAnalysis
+Mono.Cecil
+NUnit

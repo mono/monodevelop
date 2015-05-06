@@ -1,0 +1,6 @@
+ExtCore
+Fantomas
+FSharp.Compiler.Service
+FSharp.Compiler.CodeDom
+Microsoft.CodeAnalysis
+Mono.Cecil
