@@ -67,7 +67,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 
 		RazorCSharpParsedDocument Parse (string text, bool isPreprocessed)
 		{
-			var project = new AspNetAppProject ("C#");
+			var project = Services.ProjectService.CreateDotNetProject ("C#", "AspNetApp");
 
 			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");
 			string file = UnitTests.TestBase.GetTempFile (".cshtml");
