@@ -242,10 +242,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public Stash CreateStash (IProgressMonitor monitor, string message)
 		{
+			Signature sig = GetSignature ();
+			if (sig == null)
+				return null;
+
 			if (monitor != null)
 				monitor.BeginTask ("Stashing changes", 1);
 
-			var stash = RootRepository.Stashes.Add (GetSignature (), message, StashModifiers.Default | StashModifiers.IncludeUntracked);
+			var stash = RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked);
 
 			if (monitor != null)
 				monitor.EndTask ();
@@ -256,7 +260,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			string name;
 			string email;
+
 			GetUserInfo (out name, out email);
+			if (name == null || email == null)
+				return null;
+
 			return new Signature (name, email, DateTimeOffset.Now);
 		}
 
@@ -723,12 +731,16 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int stashIndex = -1;
 
+			Signature sig = GetSignature ();
+			if (sig == null)
+				return;
+
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
 				CommonPreMergeRebase (options, monitor, out stashIndex);
 
 				// Do a merge.
-				MergeResult mergeResult = RootRepository.Merge (branch, GetSignature (), new MergeOptions {
+				MergeResult mergeResult = RootRepository.Merge (branch, sig, new MergeOptions {
 					CheckoutNotifyFlags = refreshFlags,
 					OnCheckoutNotify = RefreshFile,
 				});
@@ -774,6 +786,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (string.IsNullOrEmpty (message))
 				throw new ArgumentException ("Commit message must not be null or empty!", "message");
 
+			Signature sig = GetSignature ();
+			if (sig == null)
+				return;
+
 			var repo = (GitRepository)changeSet.Repository;
 			repo.RootRepository.Stage (changeSet.Items.Select (i => i.LocalPath).ToPathStrings ());
 
@@ -781,9 +797,9 @@ namespace MonoDevelop.VersionControl.Git
 				repo.RootRepository.Commit (message, new Signature (
 					(string)changeSet.ExtendedProperties ["Git.AuthorName"],
 					(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
-					DateTimeOffset.Now), GetSignature ());
+					DateTimeOffset.Now), sig);
 			else
-				repo.RootRepository.Commit (message, GetSignature ());
+				repo.RootRepository.Commit (message, sig);
 		}
 
 		public bool IsUserInfoDefault ()
@@ -1130,8 +1146,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void AddTag (string name, Revision rev, string message)
 		{
+			Signature sig = GetSignature ();
+			if (sig == null)
+				return;
+
 			var gitRev = (GitRevision)rev;
-			RootRepository.Tags.Add (name, gitRev.Commit, GetSignature(), message);
+			RootRepository.Tags.Add (name, gitRev.Commit, sig, message);
 		}
 
 		public void RemoveTag (string name)
@@ -1160,6 +1180,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void SwitchToBranch (IProgressMonitor monitor, string branch)
 		{
+			Signature sig = GetSignature ();
+			if (sig == null)
+				return;
+
 			monitor.BeginTask (GettextCatalog.GetString ("Switching to branch {0}", branch), GitService.StashUnstashWhenSwitchingBranches ? 4 : 2);
 
 			// Get a list of files that are different in the target branch
@@ -1189,7 +1213,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (GitService.StashUnstashWhenSwitchingBranches) {
 					var stash = GetStashForBranch (RootRepository.Stashes, branch);
 					if (stash != null)
-						RootRepository.Merge (stash.Index, GetSignature ());
+						RootRepository.Merge (stash.Index, sig);
 					monitor.Step (1);
 				}
 			}
