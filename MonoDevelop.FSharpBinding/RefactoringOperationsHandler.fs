@@ -251,7 +251,7 @@ module Refactoring =
                                             else
                                                 let projectsRefSymbol =
                                                     proj.GetReferencedItems(config)
-                                                    |> Seq.cast<DotNetAssemblyProject>
+                                                    |> Seq.cast<DotNetProject>
                                                     |> Seq.tryFind (fun rp -> let projectOutput = getProjectOutputFilename config rp
                                                                               projectOutput = symbolAssemblyFilename)
                                                 projectsRefSymbol.IsSome )
