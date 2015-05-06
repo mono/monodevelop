@@ -34,26 +34,23 @@ type FSharpLanguageBinding() =
         if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
             invalidateProjectFile(projectFileEvent.Project)
 
-  let invalidateConfig _args =
-      IdeApp.Workspace.GetAllProjects()
-      |> Seq.iter invalidateProjectFile
-
-  let eventDisposer =
-      ResizeArray<IDisposable> ()
-                 
+  let eventDisposer = ResizeArray<IDisposable> ()
+            
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
   do if IdeApp.IsInitialized then
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
-      IdeApp.Workspace.ActiveConfigurationChanged.Subscribe(invalidateConfig) |> eventDisposer.Add
       IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateFiles) |> eventDisposer.Add
       IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateFiles) |> eventDisposer.Add
       IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateFiles) |> eventDisposer.Add
       IdeApp.Workspace.FilePropertyChangedInProject.Subscribe(invalidateFiles) |> eventDisposer.Add
       IdeApp.Workspace.ReferenceAddedToProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
       IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
-      IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
+      IdeApp.Workspace.SolutionUnloaded.Subscribe
+        (fun _ -> 
+            IdeApp.Workspace.GetAllProjects() |> Seq.iter invalidateProjectFile
+            langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
   interface IDisposable with
     member x.Dispose () = 

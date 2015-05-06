@@ -22,6 +22,8 @@ module Refactoring =
     | External of string
     | Unknown      
 
+    let langServ = MDLanguageService.Instance
+
     let private performChanges (symbol:FSharpSymbolUse) (locations:array<string * Microsoft.CodeAnalysis.Text.TextSpan> ) =
         Func<_,_>(fun (renameProperties:Rename.RenameRefactoring.RenameProperties) -> 
         let results =
@@ -158,7 +160,7 @@ module Refactoring =
         let symbols = 
             let activeDocFileName = editor.FileName.ToString ()
             Async.RunSynchronously
-                (MDLanguageService.Instance.GetUsesOfSymbolInProject (ctx.Project.FileName.ToString(), activeDocFileName, editor.Text, symbol.Symbol),
+                (langServ.GetUsesOfSymbolInProject (ctx.Project.FileName.ToString(), activeDocFileName, editor.Text, symbol.Symbol),
                  ServiceSettings.maximumTimeout)
 
         let locations =
@@ -226,26 +228,50 @@ module Refactoring =
                         monitor.ReportResult (getJumpTypePartSearchResult (editor, ctx, symbolUse, part))
                         |> ignore
 
+    let getProjectOutputFilename config (p:Project) =
+        p.GetOutputFileName(config).ToString() |> Path.GetFileNameWithoutExtension
+
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
         let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
         let findAsync = async { 
+            let dependentProjects =
+                try
+                    let allProjects = ctx.Project.ParentSolution.GetAllProjects()
+                    let config = IdeApp.Workspace.ActiveConfiguration
+                    let currentContextProjectFilename = getProjectOutputFilename config ctx.Project
+                    let symbolAssemblyFilename = symbolUse.Symbol.Assembly.SimpleName
+                    let filteredProjects = 
+                        allProjects
+                        |> Seq.filter (fun proj ->
+                                            let projectOutputfilename = getProjectOutputFilename config proj 
+                                            //filter out the current project as this will be included with current dirty source file
+                                            if currentContextProjectFilename = projectOutputfilename then false
+                                            //if the symbol and project and symbol match include it
+                                            elif projectOutputfilename = symbolAssemblyFilename then true
+                                            else
+                                                let projectsRefSymbol =
+                                                    proj.GetReferencedItems(config)
+                                                    |> Seq.cast<DotNetAssemblyProject>
+                                                    |> Seq.tryFind (fun rp -> let projectOutput = getProjectOutputFilename config rp
+                                                                              projectOutput = symbolAssemblyFilename)
+                                                projectsRefSymbol.IsSome )
 
-            let! symbolrefs = MDLanguageService.Instance.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol)
-            let referenceSearchResults =
-                symbolrefs |> List.ofArray
+                    filteredProjects
+                    |> Seq.map (fun p -> p.FileName.ToString()) 
+                    |> Seq.toList
+                with _ -> []
 
-            let secondSet = 
-                referenceSearchResults
-                |> List.map (fun su -> Symbols.getOffsetsTrimmed lastIdent su)
-            
-            let debug =         
-                secondSet 
-                |> List.distinct
+            let! symbolrefs =
+                langServ.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
-            debug 
-            |> List.iter (fun (filename, startOffset, endOffset) -> 
-                                let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
-                                monitor.ReportResult sr)
+            let distinctRefs = 
+                symbolrefs
+                |> Array.map (Symbols.getOffsetsTrimmed lastIdent)
+                |> Seq.distinct
+
+            for (filename, startOffset, endOffset) in distinctRefs do
+                let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+                monitor.ReportResult sr
 
             }
         let onComplete _ = monitor.Dispose()
@@ -329,7 +355,7 @@ type CurrentRefactoringOperationsHandler() =
                                     match bs with
                                     | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
                                     | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
-                                let ident = symbol.DisplayName
+                                let _baseIdent = symbol.DisplayName
                                 let locations = Symbols.getLocationFromSymbol symbol
                                 match locations with
                                 | [] -> ()
@@ -354,6 +380,7 @@ type CurrentRefactoringOperationsHandler() =
                             command.Enabled <- true
                             ainfo.Add (command, Action (fun () -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)))
                             //this one finds all overloads of a given symbol
+                            //All that needs to happen here is to pass all dependent project infos
                             //ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), Action (fun () -> Refactoring.FindRefs (sym)))
 
                         //TODO: find derived symbols, find overloads, find extension methods, find type extensions

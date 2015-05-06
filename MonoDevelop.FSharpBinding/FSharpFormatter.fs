@@ -13,13 +13,14 @@ open Fantomas.FormatConfig
 open Microsoft.FSharp.Compiler
 open FSharp.CompilerBinding
 open ExtCore.Control
+open MonoDevelop.Core.Text
 
 type FormattingOption = 
     | Document
     | Selection of int * int
 
 type FSharpFormatter()  = 
-    inherit AbstractAdvancedFormatter()
+    inherit AbstractCodeFormatter()
 
     let offsetToPos (positions : _ []) offset = 
         let rec searchPos start finish = 
@@ -71,7 +72,7 @@ type FSharpFormatter()  =
         if trimLinefeed then output.TrimEnd('\n') 
         else output
                     
-    let format (editor : Editor.TextEditor option) style formatting input options =
+    let format (editor : Editor.TextEditor option) style formatting input options : ITextSource =
         let isFsiFile = 
             match editor with 
             | Some d -> d.FileName.Extension.Equals(".fsi", StringComparison.OrdinalIgnoreCase)
@@ -91,11 +92,11 @@ type FSharpFormatter()  =
                         let col = editor.CaretColumn
                         editor.ReplaceText(0, input.Length, result)
                         editor.SetCaretLocation (line, col, false))
-                    result
+                    StringTextSource (result)
                 with exn -> 
                     LoggingService.LogError("Error occured: {0}", exn.Message)
-                    null
-            output
+                    StringTextSource.Empty
+            output :> ITextSource
 
         | Selection(fromOffset, toOffset) ->
             // Convert from offsets to line and column position
@@ -128,22 +129,23 @@ type FSharpFormatter()  =
                              None
                     return result }
 
-            match tryFormat with
-            | Some newCode -> newCode
-            | None -> null
+            let formatted =
+                match tryFormat with
+                | Some newCode -> StringTextSource (newCode)
+                | None -> StringTextSource.Empty
+            formatted :> ITextSource
 
-    let formatText (editor : Editor.TextEditor option) (policyParent : PolicyContainer) (mimeTypeInheritanceChain : string seq) input formattingOption = 
-        let textStylePolicy = policyParent.Get<TextStylePolicy>(mimeTypeInheritanceChain)
-        let formattingPolicy = policyParent.Get<FSharpFormattingPolicy>(mimeTypeInheritanceChain)
+    let formatText (editor : Editor.TextEditor option) (policyParent : PolicyContainer) (mimeType:string) input formattingOption = 
+        let textStylePolicy = policyParent.Get<TextStylePolicy>(mimeType)
+        let formattingPolicy = policyParent.Get<FSharpFormattingPolicy>(mimeType)
         format editor textStylePolicy formattingPolicy input formattingOption
 
     static member MimeType = "text/x-fsharp"
 
     override x.SupportsOnTheFlyFormatting = true
     override x.SupportsCorrectingIndent = false
-    override x.CorrectIndenting(_policyParent, _mimeTypeChain, _data, _line) = raise (NotSupportedException())
 
-    override x.OnTheFlyFormat(editor, context, fromOffset, toOffset) =
+    override x.OnTheFlyFormatImplementation(editor, context, fromOffset, toOffset) =
         let policyParent : PolicyContainer =
             match context.Project with
             | null -> PolicyService.DefaultPolicies
@@ -151,18 +153,18 @@ type FSharpFormatter()  =
             match project.Policies with 
             | null -> PolicyService.DefaultPolicies
             | policyBag -> policyBag  :> PolicyContainer
-
-        let mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (FSharpFormatter.MimeType)
+        
+        let mimeType = DesktopService.GetMimeTypeForUri (editor.FileName.ToString())
         let input = editor.Text
         if fromOffset = 0 && toOffset = String.length input then 
-            formatText (Some editor) policyParent mimeTypeChain input Document
+            formatText (Some editor) policyParent mimeType input Document
             |> ignore
         else 
-            formatText (Some editor) policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
+            formatText (Some editor) policyParent mimeType input (Selection(fromOffset, toOffset))
             |> ignore
 
-    override x.FormatText(policyParent, mimeTypeChain, input, fromOffset, toOffset) = 
-        if fromOffset = 0 && toOffset = String.length input then 
-            formatText None policyParent mimeTypeChain input Document
+    override x.FormatImplementation(policyParent, mimeType, input, fromOffset, toOffset) = 
+        if fromOffset = 0 && toOffset = String.length input.Text then 
+            formatText None policyParent mimeType input.Text Document
         else 
-            formatText None policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
+            formatText None policyParent mimeType input.Text (Selection(fromOffset, toOffset))

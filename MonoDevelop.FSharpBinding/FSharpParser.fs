@@ -107,7 +107,7 @@ type FSharpParser() =
                 let! results =
                     try
                         LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        languageService.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, content.Text, false)
+                        languageService.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, content.Text)
                     with
                     | :? TimeoutException ->
                         doc.IsInvalid <- true
