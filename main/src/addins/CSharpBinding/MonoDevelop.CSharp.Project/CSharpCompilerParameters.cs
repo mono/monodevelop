@@ -35,6 +35,7 @@ using Mono.Collections.Generic;
 using System.Linq;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -221,7 +222,7 @@ namespace MonoDevelop.CSharp.Project
 
 		public override IEnumerable<string> GetDefineSymbols ()
 		{
-			return definesymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s));
+			return definesymbols.Split (';', ',', ' ', '\t').Where (s => SyntaxFacts.IsValidIdentifier (s) && !string.IsNullOrWhiteSpace (s));
 		}
 
 		[Obsolete]
