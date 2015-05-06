@@ -7,9 +7,6 @@ SHORTSHA=${LIBGIT2SHA:0:7}
 if [[ -d libgit2/build ]]
 then
     pushd libgit2/build
-    cp ../CMakeLists.txt ../CMakeLists.txt.mdcopy
-    echo 'SET(CMAKE_INSTALL_RPATH "$ORIGIN/")' >> ../CMakeLists.txt
-    mv ../CMakeLists.txt.mdcopy ../CMakeLists.txt
 
     if [[ -n $(ls libgit2-${SHORTSHA}.*) ]]
     then
@@ -19,6 +16,9 @@ then
         rm -rf libgit2/build
     fi
 fi
+
+cp libgit2/CMakeLists.txt libgit2/.CMakeLists.txt.mdcopy
+echo 'SET(CMAKE_INSTALL_RPATH "$ORIGIN/")' >> libgit2/CMakeLists.txt
 
 mkdir libgit2/build
 pushd libgit2/build
@@ -34,4 +34,6 @@ cmake -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
 
 cmake --build .
 popd
+
+mv libgit2/.CMakeLists.txt.mdcopy libgit2/CMakeLists.txt
 popd
