@@ -430,7 +430,7 @@ namespace MonoDevelop.Ide.Projects
 				if (wizardProvider.MoveToPreviousPage ()) {
 					return;
 				}
-			} else if (IsLastPage && wizardProvider.HasWizard) {
+			} else if (IsLastPage && wizardProvider.HasWizard && wizardProvider.CurrentWizard.TotalPages != 0) {
 				IsLastPage = false;
 				return;
 			}

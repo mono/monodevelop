@@ -1524,7 +1524,7 @@ namespace MonoDevelop.Debugger
 
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
-			if (PreviewWindowManager.IsVisible) {
+			if (PreviewWindowManager.IsVisible || editing) {
 				return;
 			}
 			if (!it.Equals (TreeIter.Zero)) {
@@ -1766,27 +1766,32 @@ namespace MonoDevelop.Debugger
 					startPreviewCaret = GetCellRendererArea (path, col, cr);
 					startHAdj = Hadjustment.Value;
 					startVAdj = Vadjustment.Value;
+					int w, h;
 					using (var layout = new Pango.Layout (PangoContext)) {
 						layout.FontDescription = crtExp.FontDesc.Copy ();
 						layout.FontDescription.Family = crtExp.Family;
 						layout.SetText ((string)store.GetValue (it, NameColumn));
-						int w, h;
 						layout.GetPixelSize (out w, out h);
-						startPreviewCaret.X += (int)(w + cr.Xpad * 3);
-						startPreviewCaret.Width = 16;
-						ConvertTreeToWidgetCoords (startPreviewCaret.X, startPreviewCaret.Y, out startPreviewCaret.X, out startPreviewCaret.Y);
-						startPreviewCaret.X += (int)Hadjustment.Value;
-						startPreviewCaret.Y += (int)Vadjustment.Value;
-						if (startPreviewCaret.X < evnt.X &&
-						    startPreviewCaret.X + 16 > evnt.X) {
-							if (CompactView) {
-								SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
-							} else {
-								SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
-							}
-							DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
-							closePreviewWindow = false;
+					}
+					startPreviewCaret.X += (int)(w + cr.Xpad * 3);
+					startPreviewCaret.Width = 16;
+					ConvertTreeToWidgetCoords (startPreviewCaret.X, startPreviewCaret.Y, out startPreviewCaret.X, out startPreviewCaret.Y);
+					startPreviewCaret.X += (int)Hadjustment.Value;
+					startPreviewCaret.Y += (int)Vadjustment.Value;
+					if (startPreviewCaret.X < evnt.X &&
+						startPreviewCaret.X + 16 > evnt.X) {
+						if (CompactView) {
+							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+						} else {
+							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
 						}
+						DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
+						closePreviewWindow = false;
+					} else {
+						if (editing)
+							base.OnButtonPressEvent (evnt);//End current editing
+						if (!Selection.IterIsSelected (it))
+							base.OnButtonPressEvent (evnt);//Select row, so base.OnButtonPressEvent below starts editing
 					}
 				} else if (cr == crtValue) {
 					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||
@@ -1797,6 +1802,11 @@ namespace MonoDevelop.Debugger
 							DesktopService.ShowUrl (url);
 						}
 					}
+				} else if (cr == crtExp) {
+					if (editing)
+						base.OnButtonPressEvent (evnt);//End current editing
+					if (!Selection.IterIsSelected (it))
+						base.OnButtonPressEvent (evnt);//Select row, so base.OnButtonPressEvent below starts editing
 				} else if (!editing) {
 					if (cr == crpButton) {
 						HandleValueButton (it);
@@ -1861,6 +1871,10 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void UpdateSelectAll (CommandInfo cmd)
 		{
+			if (editing) {
+				cmd.Bypass = true;
+				return;
+			}
 			TreeIter iter;
 
 			cmd.Enabled = store.GetIterFirst (out iter);
@@ -1869,6 +1883,10 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.SelectAll)]
 		protected new void OnSelectAll ()
 		{
+			if (editing) {
+				base.OnSelectAll ();
+				return;
+			}
 			Selection.SelectAll ();
 		}
 		

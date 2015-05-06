@@ -87,7 +87,7 @@ namespace MonoDevelop.AspNet.Razor
 		{
 			currentDocument = openDocuments.FirstOrDefault (d => d != null && d.FileName == parseOptions.FileName);
 			// We need document and project to be loaded to correctly initialize Razor Host.
-			this.project = project as DotNetProject;
+			this.project = parseOptions.Project as DotNetProject;
 			if (currentDocument == null && !TryAddDocument (parseOptions.FileName))
 				return System.Threading.Tasks.Task.FromResult((ParsedDocument)new RazorCSharpParsedDocument (parseOptions.FileName, new RazorCSharpPageInfo ()));
 

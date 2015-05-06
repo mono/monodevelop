@@ -41,10 +41,11 @@ using Microsoft.CodeAnalysis.Formatting;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpFormatter : AbstractAdvancedFormatter
+	class CSharpFormatter : AbstractCodeFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
 
@@ -52,63 +53,59 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
-		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditor data, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
-			var lineSegment = data.GetLine (line);
+			var lineSegment = editor.GetLine (line);
 			if (lineSegment == null)
 				return;
 
 			try {
-				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-				var textpolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+				var policy = policyParent.Get<CSharpFormattingPolicy> (MimeType);
+				var textpolicy = policyParent.Get<TextStylePolicy> (MimeType);
 				var tracker = new CSharpIndentEngine (policy.CreateOptions (textpolicy));
 
 				tracker.Update (IdeApp.Workbench.ActiveDocument.Editor, lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-					tracker.Push (data.GetCharAt (i));
+					tracker.Push (editor.GetCharAt (i));
 				}
 
-				string curIndent = lineSegment.GetIndentation (data);
+				string curIndent = lineSegment.GetIndentation (editor);
 
 				int nlwsp = curIndent.Length;
-				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && editor.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
 					if (newIndent != curIndent) 
-						data.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
+						editor.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
 
-		public override void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
 		{
 			OnTheFlyFormatter.Format (editor, context, startOffset, endOffset);
 		}
 
-
-		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
+		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string input, int startOffset, int endOffset)
 		{
-			var inputTree = CSharpSyntaxTree.ParseText (SourceText.From (input));
+			var inputTree = CSharpSyntaxTree.ParseText (input);
 
 			var root = inputTree.GetRoot ();
 			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
 			var result = doc.ToFullString ();
 			if (textPolicy.GetEolMarker () != "\r\n")
 				result = result.Replace ("\r", "");
-			
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int endOffset)
 		{
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeType);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeType);
 
-			return FormatText (policy, textPolicy, mimeTypeChain.First (), input, startOffset, endOffset);
-
+			return new StringTextSource (FormatText (policy, textPolicy, input.Text, startOffset, endOffset));
 		}
 	}
 }

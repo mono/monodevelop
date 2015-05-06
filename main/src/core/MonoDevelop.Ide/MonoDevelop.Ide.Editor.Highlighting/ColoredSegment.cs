@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		readonly string colorStyleKey;
 
-		//// <summary>
+		/// <summary>
 		/// Gets the color style. The style is looked up in the current color scheme.
 		/// </summary>
 		public string ColorStyleKey {
@@ -54,6 +54,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public ColoredSegment (ISegment segment, string colorStyleKey) : base (segment)
 		{
 			this.colorStyleKey = colorStyleKey;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ColoredSegment: Offset={0}, Length={1},ColorStyleKey={2}]", Offset, Length, ColorStyleKey);
 		}
 	}
 }

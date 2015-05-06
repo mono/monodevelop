@@ -38,9 +38,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	
-	
-	public partial class EditTemplateDialog : Gtk.Dialog
+	partial class EditTemplateDialog : Gtk.Dialog
 	{
 		CodeTemplate template;
 		TextEditor textEditor = TextEditorFactory.CreateNewEditor ();

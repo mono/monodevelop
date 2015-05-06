@@ -327,6 +327,11 @@ namespace MonoDevelop.Core.Text
 			this.offset = segment.Offset;
 			this.length = segment.Length;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[AbstractSegment: Offset={0}, Length={1}]", Offset, Length);
+		}
 	}
 
 
@@ -369,6 +374,16 @@ namespace MonoDevelop.Core.Text
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
 			return unchecked((uint)(offset - segment.Offset) < (uint)segment.Length);
+		}
+
+		/// <summary>
+		/// Gets whether the offset is within the <paramref name="segment"/>.
+		/// </summary>
+		public static bool IsInside (this ISegment segment, int offset)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return unchecked((uint)(offset - segment.Offset) <= (uint)segment.Length);
 		}
 
 		/// <summary>

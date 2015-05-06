@@ -39,6 +39,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Concurrent;
 using MonoDevelop.Ide.CodeFormatting;
 using Gtk;
+using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -149,6 +150,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
 			var mdProjects = solution.GetAllProjects ();
+			projectionList.Clear ();
 			Parallel.ForEach (mdProjects, proj => {
 				if (token.IsCancellationRequested)
 					return;
@@ -353,13 +355,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			return info;
 		}
 
+		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
+		{
+			foreach (var entry in projectionList) {
+				if (entry.File.FilePath == projectFile.FilePath) {
+					projectionList.Remove (entry);
+					break;
+				}
+			}
+			projectionList.Add (new ProjectionEntry { File = projectFile, Projections = projections});
+
+		}
+
 		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
 		static DocumentInfo CreateDocumentInfo (string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
 		{
 			var sourceCodeKind = f.FilePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
-				id.GetOrCreateDocumentId (f.Name),
+				id.GetOrCreateDocumentId (f.FilePath),
 				f.FilePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				sourceCodeKind,
@@ -368,24 +382,35 @@ namespace MonoDevelop.Ide.TypeSystem
 				false
 			);
 		}
+		List<ProjectionEntry> projectionList = new List<ProjectionEntry>();
 
-		IEnumerable<DocumentInfo> CreateDocuments (ProjectData id, MonoDevelop.Projects.Project p, CancellationToken token)
+		internal IReadOnlyList<ProjectionEntry> ProjectionList {
+			get {
+				return projectionList;
+			}
+		}
+
+		internal class ProjectionEntry
+		{
+			public MonoDevelop.Projects.ProjectFile File;
+			public IReadOnlyList<Projection> Projections;
+		}
+
+		IEnumerable<DocumentInfo> CreateDocuments (ProjectData projectData, MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			var duplicates = new HashSet<DocumentId> ();
 			foreach (var f in p.Files) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
-					if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
+					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (p.Name, id, f);
+					yield return CreateDocumentInfo (p.Name, projectData, f);
 					continue;
 				}
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
 				var node = TypeSystemService.GetTypeSystemParserNode (mimeType, f.BuildAction);
 				if (node == null || !node.Parser.CanGenerateProjection (mimeType, f.BuildAction, p.SupportedLanguages))
-					continue;
-				if (!duplicates.Add (id.GetOrCreateDocumentId (f.Name)))
 					continue;
 				var options = new ParseOptions {
 					FileName = f.FilePath,
@@ -393,17 +418,26 @@ namespace MonoDevelop.Ide.TypeSystem
 					Content = StringTextSource.ReadFrom (f.FilePath),
 				};
 				var projections = node.Parser.GenerateProjections (options);
+				var entry = new ProjectionEntry ();
+				entry.File = f;
+				var list = new List<Projection> ();
+				entry.Projections = list;
 				foreach (var projection in projections.Result) {
+					list.Add (projection);
+					if (!duplicates.Add (projectData.GetOrCreateDocumentId (projection.Document.FileName)))
+						continue;
+					var plainName = projection.Document.FileName.FileName;
 					yield return DocumentInfo.Create (
-						id.GetOrCreateDocumentId (projection.Document.FileName),
-						projection.Document.FileName,
-						null,
+						projectData.GetOrCreateDocumentId (projection.Document.FileName),
+						plainName,
+						new [] { p.Name }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 						SourceCodeKind.Regular,
 						TextLoader.From (TextAndVersion.Create (new MonoDevelopSourceText (projection.Document), VersionStamp.Create (), projection.Document.FileName)),
-						f.Name,
+						projection.Document.FileName,
 						false
 					);
 				}
+				projectionList.Add (entry);
 			}
 		}
 
@@ -583,12 +617,32 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (document == null)
 				return;
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath, out isOpen);
+			var filePath = document.FilePath;
+
+			Projection projection = null;
+			foreach (var entry in ProjectionList) {
+				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+				if (p != null) {
+					filePath = entry.File.FilePath;
+					projection = p;
+					break;
+				}
+			}
+
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 			var changes = text.GetTextChanges (document.GetTextAsync ().Result).OrderByDescending (c => c.Span.Start).ToList ();
 
 			int delta = 0;
 			foreach (var change in changes) {
-				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
+				var offset = change.Span.Start;
+
+				if (projection != null) {
+					int originalOffset;
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset))
+						offset = originalOffset;
+				}
+
+				data.ReplaceText (offset, change.Span.Length, change.NewText);
 				delta += change.Span.Length - change.NewText.Length;
 			}
 
@@ -599,18 +653,33 @@ namespace MonoDevelop.Ide.TypeSystem
 				foreach (var change in changes) {
 					delta -= change.Span.Length - change.NewText.Length;
 					var startOffset = change.Span.Start - delta;
+
+					if (projection != null) {
+						int originalOffset;
+						if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+							startOffset = originalOffset;
+					}
+
+
 					var str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
-				FileService.NotifyFileChanged (document.FilePath);
+				FileService.NotifyFileChanged (filePath);
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType); 
-				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, document.FilePath) == 0);
+				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				if (documentContext != null) {
 					foreach (var change in changes) {
 						delta -= change.Span.Length - change.NewText.Length;
 						var startOffset = change.Span.Start - delta;
+
+						if (projection != null) {
+							int originalOffset;
+							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+								startOffset = originalOffset;
+						}
+
 						formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
 					}
 				}
@@ -700,11 +769,21 @@ namespace MonoDevelop.Ide.TypeSystem
 		public void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
-			foreach (var project in this.projectDataMap.Keys) {
-				var docId = this.GetDocumentId (project, fileName);
-				if (docId == null)
-					continue;
-				base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+			foreach (var kv in this.projectDataMap) {
+				var projectId = kv.Key;
+				var docId = this.GetDocumentId (projectId, fileName);
+				if (docId != null) {
+					base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+				}
+				var monoProject = GetMonoProject (projectId);
+				if (monoProject != null) {
+					var pf = monoProject.GetProjectFile (fileName);
+					if (pf != null) {
+						TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction },
+														   DesktopService.GetMimeTypeForUri (fileName));
+					}
+				}
+
 			}
 		}
 
@@ -806,7 +885,29 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-	
+
+
+
+		/// <summary>
+		/// Tries the get original file from projection. If the fileName / offset is inside a projection this method tries to convert it 
+		/// back to the original physical file.
+		/// </summary>
+		internal bool TryGetOriginalFileFromProjection (string fileName, int offset, out string originalName, out int originalOffset)
+		{
+			foreach (var projectionEntry in ProjectionList) {
+				var projection = projectionEntry.Projections.FirstOrDefault (p => FilePath.PathComparer.Equals (p.Document.FileName, fileName));
+				if (projection != null) {
+					if (projection.TryConvertFromProjectionToOriginal (offset, out originalOffset)) {
+						originalName = projectionEntry.File.FilePath;
+						return true;
+					}
+				}
+			}
+
+			originalName = fileName;
+			originalOffset = offset;
+			return false;
+		}
 	}
 
 //	static class MonoDevelopWorkspaceFeatures

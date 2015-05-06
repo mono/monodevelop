@@ -93,7 +93,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var docId = TypeSystemService.GetDocumentId (project, file);
 			if (docId == null)
 				return null;
-			var doc = TypeSystemService.GetCodeAnysisDocument (docId);
+			var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
 			if (doc == null)
 				return null;
 			Microsoft.CodeAnalysis.SemanticModel semanticModel;

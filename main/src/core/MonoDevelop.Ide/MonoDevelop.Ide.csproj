@@ -109,20 +109,20 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc1\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
@@ -202,9 +202,9 @@
       <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
       <Name>ICSharpCode.NRefactory6.CSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory6.CSharp.Refactoring.csproj">
+    <ProjectReference Include="..\..\..\external\NRefactory6\NR6Pack\NR6Pack.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp.Refactoring</Name>
+      <Name>NR6Pack</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
@@ -3099,17 +3099,13 @@
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\ICodeFormatter.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\IAdvancedCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\GtkSynchronizationContext.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewPolicySetDialog.cs" />
     <Compile Include="MonoDevelop.Components\HeaderBox.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\StartupHandlerExtensionAttribute.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\ReferencesFinder.cs" />
     <Compile Include="MonoDevelop.Components\SectionList.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\TemplatePickerWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewProjectOptionsWidget.cs" />
@@ -3177,8 +3173,6 @@
     <Compile Include="MonoDevelop.Components.Commands\CustomCommandTargetAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\ServiceUrlExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide\ProjectCreatedEventArgs.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollector.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollector.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemService.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\Ambience.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\StockIcons.cs" />
@@ -3481,6 +3475,13 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\TypeOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\AbstractCodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatter.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemOutputTrackingNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorType.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractBraceMatcher.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatcherTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatchingResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

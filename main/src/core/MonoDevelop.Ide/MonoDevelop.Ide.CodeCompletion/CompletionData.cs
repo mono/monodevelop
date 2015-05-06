@@ -104,8 +104,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			int partialWordLength = window.PartialWord != null ? window.PartialWord.Length : 0;
 			int replaceLength = window.CodeCompletionContext.TriggerWordLength + partialWordLength - window.InitialWordLength;
-			int endOffset = Math.Min (window.CodeCompletionContext.TriggerOffset + replaceLength, window.CompletionWidget.TextLength);
-			var result = window.CompletionWidget.GetText (window.CodeCompletionContext.TriggerOffset, endOffset);
+			int endOffset = Math.Min (window.StartOffset + replaceLength, window.CompletionWidget.TextLength);
+			var result = window.CompletionWidget.GetText (window.StartOffset, endOffset);
 			return result;
 		}
 

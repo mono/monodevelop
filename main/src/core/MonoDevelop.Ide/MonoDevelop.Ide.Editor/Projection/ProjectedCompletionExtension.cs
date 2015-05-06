@@ -98,9 +98,12 @@ namespace MonoDevelop.Ide.Editor.Projection
 			var projection = GetProjectionAt (offset);
 			if (projection != null) {
 				var result = projection.ProjectedEditor.GetContent<CompletionTextEditorExtension> ();
-				if (result != null) {
+				if (result != null && CompletionWidget != null) {
 					result.CompletionWidget = new ProjectedCompletionWidget (CompletionWidget, projection);
+					if (result.CurrentCompletionContext == null)
+						result.CurrentCompletionContext = result.CompletionWidget.CurrentCodeCompletionContext;
 				}
+				result.Next = Next;
 				return result;
 			}
 			return null;
@@ -139,7 +142,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			string ICompletionWidget.GetText (int startOffset, int endOffset)
 			{
-				return projection.ProjectedEditor.GetTextBetween (startOffset, endOffset);
+				return completionWidget.GetText(startOffset, endOffset);
 			}
 
 			char ICompletionWidget.GetChar (int offset)
@@ -149,13 +152,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			void ICompletionWidget.Replace (int offset, int count, string text)
 			{
-				foreach (var seg in projection.ProjectedSegments) {
-					if (seg.ContainsProjected (offset)) {
-						offset = seg.FromProjectedToOriginal (offset);
-						break;
-					}
-				}
-
 				completionWidget.Replace (offset, count, text);
 			}
 
@@ -219,7 +215,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 			int ICompletionWidget.CaretOffset {
 				get {
-					return ConvertOffset (completionWidget.CaretOffset);
+					return projection.ProjectedEditor.CaretOffset = ConvertOffset (completionWidget.CaretOffset);
 				}
 				set {
 					completionWidget.CaretOffset = ProjectOffset (value);
@@ -330,10 +326,13 @@ namespace MonoDevelop.Ide.Editor.Projection
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			projections = ctx.GetPartialProjectionsAsync ().Result;
+			var task = ctx.GetPartialProjectionsAsync ();
+			if (task != null)
+				projections = task.Result;
 			var projectedExtension = GetCurrentExtension();
-			if (projectedExtension != null)
+			if (projectedExtension != null) {
 				return projectedExtension.KeyPress (descriptor);
+			}
 			return base.KeyPress (descriptor);
 		}
 
@@ -433,6 +432,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 						var loc = projection.ProjectedEditor.OffsetToLocation (offset);
 						line = loc.Line;
 						lineOffset = loc.Column - 1;
+						break;
 					}
 				}
 			}
@@ -446,6 +446,25 @@ namespace MonoDevelop.Ide.Editor.Projection
 				TriggerTextHeight  = completionContext.TriggerTextHeight,
 				TriggerWordLength  = completionContext.TriggerWordLength
 			};
+		}
+	
+		internal protected override void OnCompletionContextChanged (object o, EventArgs a)
+		{
+			if (!IsActiveExtension ())
+				return;
+			var ext = GetExtensionAt (Editor.CaretOffset);
+			if (ext != null) {
+				ext.CurrentCompletionContext = ext.CompletionWidget.CurrentCodeCompletionContext;
+			}
+		}
+
+		internal protected override void HandlePositionChanged (object sender, EventArgs e)
+		{
+			if (!IsActiveExtension ())
+				return;
+			var ext = GetExtensionAt (Editor.CaretOffset);
+			if (ext != null)
+				ext.HandlePositionChanged (sender, e);
 		}
 	}
 }

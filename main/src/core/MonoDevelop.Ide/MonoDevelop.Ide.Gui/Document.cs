@@ -723,8 +723,19 @@ namespace MonoDevelop.Ide.Gui
 				var currentParseText = editor.CreateDocumentSnapshot ();
 				CancelOldParsing();
 				var project = Project ?? adhocProject;
+
 				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
-					var task = TypeSystemService.ParseProjection (project, currentParseFile, editor.MimeType, currentParseText);
+
+					var options = new ParseOptions {
+						Project = project,
+						Content = currentParseText,
+						FileName = currentParseFile
+					};
+					var projectFile = project.GetProjectFile (currentParseFile);
+                    if (projectFile != null)
+						options.BuildAction = projectFile.BuildAction;
+					
+					var task = TypeSystemService.ParseProjection (options, editor.MimeType);
 					if (task.Result != null) {
 						var p = task.Result;
 						this.parsedDocument = p.ParsedDocument;
@@ -830,10 +841,19 @@ namespace MonoDevelop.Ide.Gui
 				CancelOldParsing ();
 				var token = parseTokenSource.Token;
 				var project = Project ?? adhocProject;
+				var projectFile = project.GetProjectFile (currentParseFile);
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-						TypeSystemService.ParseProjection (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+						var options = new ParseOptions {
+							Project = project,
+							Content = currentParseText,
+							FileName = currentParseFile
+						};
+
+						if (projectFile != null)
+							options.BuildAction = projectFile.BuildAction;
+						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
 							Application.Invoke (delegate {

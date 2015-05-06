@@ -70,7 +70,7 @@ namespace MonoDevelop.CodeIssues
 				var assemblyName = asm.GetName ().Name;
 				if (assemblyName == "MonoDevelop.AspNet" ||
 					assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
-					assemblyName != "ICSharpCode.NRefactory6.CSharp.Refactoring" &&
+					assemblyName != "NR6Pack" &&
 					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
 					return;
 			}

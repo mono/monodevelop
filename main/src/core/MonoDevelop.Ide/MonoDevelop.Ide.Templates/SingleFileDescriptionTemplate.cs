@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.Templates
 			content = ProcessContent (content, model);
 
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
-			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
+			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			
 			if (formatter != null) {
 				var formatted = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
@@ -362,7 +362,7 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void ModifyTags (SolutionFolderItem policyParent, Project project, string language,
 			string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
-			DotNetProject netProject = project as DotNetProject;
+			//DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
 			LanguageBinding binding = null;
 			if (!string.IsNullOrEmpty (language)) {

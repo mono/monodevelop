@@ -160,7 +160,7 @@ namespace MonoDevelop.Components.MainToolbar
 					return new  TooltipInformation ();
 				}
 				var cancellationToken = default(CancellationToken);
-				var task = type.GetSymbolAsync (TypeSystemService.GetCodeAnysisDocument (docId, cancellationToken), cancellationToken);
+				var task = type.GetSymbolAsync (TypeSystemService.GetCodeAnalysisDocument (docId, cancellationToken), cancellationToken);
 				var tooltipInformation = Ambience.GetTooltip (task.Result);
 				return tooltipInformation;
 			}

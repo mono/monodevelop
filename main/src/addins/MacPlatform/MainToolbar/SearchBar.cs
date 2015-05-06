@@ -28,6 +28,7 @@ using AppKit;
 using Foundation;
 using Gtk;
 using MonoDevelop.Components.Mac;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -57,16 +58,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void Initialize ()
 		{
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => DispatchService.GuiDispatch (() => {
 				if (notification.Object == Window)
 					if (LostFocus != null)
 						LostFocus (this, null);
-			});
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => {
+			}));
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => DispatchService.GuiDispatch (() => {
 				if (notification.Object == Window)
 					if (LostFocus != null)
 						LostFocus (this, null);
-			});
+			}));
 		}
 
 		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)

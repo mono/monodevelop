@@ -343,7 +343,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = TypeSystemService.GetCodeAnysisDocument (docId);
+				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
 	
@@ -376,7 +376,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				var docId = TypeSystemService.GetDocumentId (args.Project, args.ProjectFile.Name);
 				if (docId == null)
 					continue;
-				var doc = TypeSystemService.GetCodeAnysisDocument (docId);
+				var doc = TypeSystemService.GetCodeAnalysisDocument (docId);
 				if (doc == null)
 					continue;
 				var semanticModel = doc.GetSemanticModelAsync ().Result;

@@ -39,6 +39,17 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public sealed class ParseOptions
 	{
+		string buildAction;
+
+		public string BuildAction {
+			get {
+				return buildAction ?? "Compile";
+			}
+			set {
+				buildAction = value;
+			}
+		}
+
 		public string FileName { get; set; } 
 
 		public ITextSource Content { get; set; }
@@ -84,17 +95,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <summary>
 		/// Parse the specified file. The file content is provided as text reader.
 		/// </summary>
-		/// <param name='storeAst'>
-		/// If set to <c>true</c> the ast should be stored in the parsed document.
+		/// <param name='options'>
+		/// The parse options.
 		/// </param>
-		/// <param name='fileName'>
-		/// The name of the file.
-		/// </param>
-		/// <param name='content'>
-		/// A text reader providing the file contents.
-		/// </param>
-		/// <param name='project'>
-		/// The project the file belongs to.
+		/// <param name='cancellationToken'>
+		/// The cancellation token to cancel the parsing task.
 		/// </param>
 		public abstract Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken = default(CancellationToken));
 

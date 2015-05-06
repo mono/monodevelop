@@ -55,6 +55,7 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Components;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Ide.Editor.Extension;
@@ -674,7 +675,7 @@ namespace MonoDevelop.SourceEditor
 	//						writeBom =!Mono.TextEditor.Utils.TextFileUtility.IsASCII (writeText);
 						}
 					}
-					TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
+					MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, writeText, writeEncoding, writeBom);
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -684,7 +685,7 @@ namespace MonoDevelop.SourceEditor
 					if (result != AlertButton.Cancel) {
 						hadBom = true;
 						this.encoding = Encoding.UTF8;
-						TextFileUtility.WriteText (fileName, Document.Text, encoding, hadBom);
+						MonoDevelop.Core.Text.TextFileUtility.WriteText (fileName, Document.Text, encoding, hadBom);
 					} else {
 						return;
 					}
@@ -775,10 +776,10 @@ namespace MonoDevelop.SourceEditor
 			else {
 				inLoad = true;
 				if (loadEncoding == null) {
-					text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 				} else {
 					encoding = loadEncoding;
-					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				text = ProcessLoadText (text);
 				if (reload) {
@@ -1431,7 +1432,7 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.DeleteSelectedText ();
 				var offset = TextEditor.Caret.Offset;
 				int length = TextEditor.Insert (offset, value);
-				TextEditor.SelectionRange = new TextSegment (offset, length);
+				TextEditor.SelectionRange = new Mono.TextEditor.TextSegment (offset, length);
 			}
 		}
 
@@ -1703,7 +1704,12 @@ namespace MonoDevelop.SourceEditor
 			result.TriggerLineOffset = loc.Column - 1;
 			var p = widget.TextEditor.LocationToPoint (loc);
 			int tx, ty;
-			editor.ParentWindow.GetOrigin (out tx, out ty);
+			var parentWindow = editor.ParentWindow;
+			if (parentWindow != null) {
+				parentWindow.GetOrigin (out tx, out ty);
+			} else {
+				tx = ty = 0;
+			}
 			tx += editor.Allocation.X + p.X;
 			ty += editor.Allocation.Y + p.Y + (int)editor.LineHeight;
 
@@ -2619,7 +2625,7 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
 		{
-			return TextEditor.Document.GetTextSegmentMarkersAt (new TextSegment (segment.Offset, segment.Length)).OfType<ITextSegmentMarker> ();
+			return TextEditor.Document.GetTextSegmentMarkersAt (new Mono.TextEditor.TextSegment (segment.Offset, segment.Length)).OfType<ITextSegmentMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (int offset)
@@ -2701,7 +2707,7 @@ namespace MonoDevelop.SourceEditor
 				return MonoDevelop.Core.Text.TextSegment.FromBounds (range.Offset, range.EndOffset);
 			}
 			set {
-				TextEditor.SelectionRange = new TextSegment (value.Offset, value.Length);
+				TextEditor.SelectionRange = new Mono.TextEditor.TextSegment (value.Offset, value.Length);
 			}
 		}
 		
@@ -2907,6 +2913,28 @@ namespace MonoDevelop.SourceEditor
 			widget.ClearQuickTaskProvider ();
 			foreach (var p in providers) {
 				widget.AddQuickTaskProvider (p);
+			}
+		}
+
+		void ITextEditorImpl.UpdateBraceMatchingResult (BraceMatchingResult? result)
+		{
+			var oldOffset = widget.TextEditor.TextViewMargin.HighlightBracketOffset;
+
+			if (result.HasValue) {
+				if (result.Value.IsCaretInLeft) {
+					widget.TextEditor.TextViewMargin.HighlightBracketOffset = result.Value.RightSegment.Offset;
+				} else {
+					widget.TextEditor.TextViewMargin.HighlightBracketOffset = result.Value.LeftSegment.Offset;
+				}
+			} else {
+				widget.TextEditor.TextViewMargin.HighlightBracketOffset = -1;
+			}
+
+			if (oldOffset >= 0) {
+				widget.Document.CommitLineUpdate (widget.TextEditor.OffsetToLineNumber (oldOffset));
+			}
+			if (widget.TextEditor.TextViewMargin.HighlightBracketOffset >= 0) {
+				widget.Document.CommitLineUpdate (widget.TextEditor.OffsetToLineNumber (widget.TextEditor.TextViewMargin.HighlightBracketOffset));
 			}
 		}
 
@@ -3214,9 +3242,9 @@ namespace MonoDevelop.SourceEditor
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
 			case TextSegmentMarkerEffect.WavedLine:
-				return new GenericUnderlineMarker (new TextSegment (offset, length), effect);
+				return new GenericUnderlineMarker (new Mono.TextEditor.TextSegment (offset, length), effect);
 			case TextSegmentMarkerEffect.GrayOut:
-				return new GrayOutMarker (new TextSegment (offset, length));
+				return new GrayOutMarker (new Mono.TextEditor.TextSegment (offset, length));
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}

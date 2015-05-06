@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet.Razor.Dom
 
 		public bool FindFirstBracket (DocumentLocation currentLocation)
 		{
-			if (Document.LineCount < Region.BeginLine)
+			if (Document == null || Document.LineCount < Region.BeginLine)
 				return false;
 
 			int firstBracketPosition = Document.GetTextBetween (Region.Begin, currentLocation).IndexOf ('{');

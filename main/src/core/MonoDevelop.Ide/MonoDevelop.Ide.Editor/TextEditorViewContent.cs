@@ -44,7 +44,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Gdk;
 using MonoDevelop.Ide.CodeFormatting;
@@ -687,7 +686,7 @@ namespace MonoDevelop.Ide.Editor
 					break;
 			}
 			startOffset = i;
-			for (int j = 0; j < commentTag.Length; j++) {
+			for (int j = 0; j < commentTag.Length && i < text.Length; j++) {
 				if (text.GetCharAt (i) != commentTag [j])
 					return false;
 				i++;

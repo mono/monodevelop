@@ -71,16 +71,16 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
-		public static TextEditor CreateNewEditor ()
+		public static TextEditor CreateNewEditor (TextEditorType textEditorType = TextEditorType.Default)
 		{
-			return new TextEditor (currentFactory.CreateNewEditor ());
+			return new TextEditor (currentFactory.CreateNewEditor (), textEditorType);
 		}
 
-		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
+		public static TextEditor CreateNewEditor (IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
-			return new TextEditor (currentFactory.CreateNewEditor (document));
+			return new TextEditor (currentFactory.CreateNewEditor (document), textEditorType);
 		}
 
 		public static string[] GetSyntaxProperties (string mimeType, string name)

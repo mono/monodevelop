@@ -198,13 +198,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static bool CanParseProjections (Project project, string mimeType, string fileName)
 		{
-			var parser = GetParser (mimeType);
-			if (parser == null)
-				return false;
 			var projectFile = project.GetProjectFile (fileName);
 			if (projectFile == null)
 				return false;
-
+			var parser = GetParser (mimeType, projectFile.BuildAction);
+			if (parser == null)
+				return false;
 			return parser.CanGenerateProjection (mimeType, projectFile.BuildAction, project.SupportedLanguages);
 		}
 
@@ -230,7 +229,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (options.FileName == null)
 				throw new ArgumentNullException ("fileName");
 
-			var parser = GetParser (mimeType);
+			var parser = GetParser (mimeType, options.BuildAction);
 			if (parser == null)
 				return Task.FromResult ((ParsedDocumentProjection)null);
 
@@ -238,17 +237,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
-					var Workspace = Workspaces.First () ;
-					var projectId = Workspace.GetProjectId (options.Project);
+					var ws = Workspaces.First () ;
+					var projectId = ws.GetProjectId (options.Project);
+
 					if (projectId != null) {
+						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Result.Projections);
 						foreach (var projection in result.Result.Projections) {
-							var docId = Workspace.GetDocumentId (projectId, projection.Document.FileName);
-							if (docId != null)
-								Workspace.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
+							if (docId != null) {
+								ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
+							}
 						}
 					}
 				}
 				return result;
+			} catch (AggregateException ae) {
+				ae.Flatten ().Handle (x => x is OperationCanceledException);
+				return Task.FromResult ((ParsedDocumentProjection)null);
 			} catch (OperationCanceledException) {
 				return Task.FromResult ((ParsedDocumentProjection)null);
 			} catch (Exception e) {
@@ -628,16 +633,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#endregion
-	
-		internal static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId analysisDocument, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			foreach (var w in Workspaces) {
-				var doc = w.GetDocument (analysisDocument, cancellationToken);
-				if (doc != null)
-					return doc;
-			}
-			return null;
-		}
 
 		internal static void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, FilePath fileName)
 		{
@@ -682,7 +677,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static Microsoft.CodeAnalysis.Document GetCodeAnysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
+		public static Microsoft.CodeAnalysis.Document GetCodeAnalysisDocument (Microsoft.CodeAnalysis.DocumentId docId, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (docId == null)
 				throw new ArgumentNullException ("docId");

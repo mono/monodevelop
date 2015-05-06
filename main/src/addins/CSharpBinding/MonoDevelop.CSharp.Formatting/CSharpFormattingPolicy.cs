@@ -70,7 +70,6 @@ namespace MonoDevelop.CSharp.Formatting
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart);
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.TabSize, LanguageNames.CSharp, policy.TabWidth);
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabs, LanguageNames.CSharp, !policy.TabsToSpaces);
-				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabOnlyForIndentation, LanguageNames.CSharp, !policy.TabsToSpaces);
 			}
 			return result;
 		}
@@ -84,7 +83,6 @@ namespace MonoDevelop.CSharp.Formatting
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart);
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.TabSize, LanguageNames.CSharp, policy.TabSize);
 				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabs, LanguageNames.CSharp, !policy.TabsToSpaces);
-				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabOnlyForIndentation, LanguageNames.CSharp, !policy.TabsToSpaces);
 			}
 			return result;
 		}
@@ -217,12 +215,12 @@ namespace MonoDevelop.CSharp.Formatting
 		}
 
 		[ItemProperty]
-		public bool NewLinesForBracesInObjectInitializers {
+		public bool NewLinesForBracesInObjectCollectionArrayInitializers {
 			get {
-				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectInitializers);
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectCollectionArrayInitializers);
 			}
 			set {
-				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectInitializers, value);
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectCollectionArrayInitializers, value);
 			}
 		}
 

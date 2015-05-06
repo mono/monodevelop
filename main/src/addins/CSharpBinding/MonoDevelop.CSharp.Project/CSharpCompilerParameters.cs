@@ -36,6 +36,7 @@ using System.Linq;
 using MonoDevelop.Projects.Formats.MSBuild;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -129,6 +130,7 @@ namespace MonoDevelop.CSharp.Project
 				UnsafeCode,
 				null,
 				null,
+				ImmutableArray<byte>.Empty,
 				null,
 				Microsoft.CodeAnalysis.Platform.AnyCpu,
 				ReportDiagnostic.Default,
@@ -180,7 +182,7 @@ namespace MonoDevelop.CSharp.Project
 
 		public override IEnumerable<string> GetDefineSymbols ()
 		{
-			return definesymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s));
+			return definesymbols.Split (';', ',', ' ', '\t').Where (s => SyntaxFacts.IsValidIdentifier (s) && !string.IsNullOrWhiteSpace (s));
 		}
 
 		[Obsolete]

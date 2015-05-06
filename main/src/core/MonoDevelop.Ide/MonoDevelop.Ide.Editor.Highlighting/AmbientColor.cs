@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new HslColor (0, 0, 0);
 		}
 
-		public static AmbientColor Create (XElement element, Dictionary<string, HslColor> palette)
+		internal static AmbientColor Create (XElement element, Dictionary<string, HslColor> palette)
 		{
 			var result = new AmbientColor ();
 			foreach (var node in element.DescendantNodes ()) {
@@ -148,9 +148,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return (Colors != null ? Colors.GetHashCode () : 0) ^ (Name != null ? Name.GetHashCode () : 0);
 			}
 		}
-		
 
-		public static AmbientColor Import (Dictionary<string, ColorScheme.VSSettingColor> colors, string vsSetting)
+		internal static AmbientColor Import (Dictionary<string, ColorScheme.VSSettingColor> colors, string vsSetting)
 		{
 			var result = new AmbientColor ();
 			var attrs = vsSetting.Split (',');

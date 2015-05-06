@@ -74,7 +74,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var project = (Project)dataObject;
+			//var project = (Project)dataObject;
 			// TODO: Roslyn port.
 //			var ctx = TypeSystemService.GetProjectContext (project);
 //			if (ctx == null)
@@ -98,7 +98,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var project = (Project)dataObject;
+			//var project = (Project)dataObject;
 			// TODO: Roslyn port.
 			//var ctx = TypeSystemService.GetProjectContext (project);
 			//if (ctx == null)

@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		void InsertTemplate (CodeTemplate template, TextEditor editor, DocumentContext context);
 	}
 	
-	public class CodeTemplateCompletionData : CompletionData
+	class CodeTemplateCompletionData : CompletionData
 	{
 		readonly TextEditorExtension doc;
 		readonly CodeTemplate template;

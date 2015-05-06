@@ -42,14 +42,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public class CompletionTextEditorExtension : TextEditorExtension
 	{
-		protected CodeCompletionContext currentCompletionContext;
+		internal protected CodeCompletionContext CurrentCompletionContext {
+			get;
+			set;
+		}
 
 		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
 
+		ICompletionWidget completionWidget;
 		internal virtual ICompletionWidget CompletionWidget
 		{
-			get;
-			set;
+			get { return completionWidget; }
+			set
+			{
+				completionWidget = value;
+			}
 		}
 
 
@@ -63,16 +70,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset);
+			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset);
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
 				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
-			currentCompletionContext.TriggerOffset = cpos;
-			currentCompletionContext.TriggerWordLength = wlen;
+			CurrentCompletionContext.TriggerOffset = cpos;
+			CurrentCompletionContext.TriggerWordLength = wlen;
 
-			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, currentCompletionContext);
+			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, CurrentCompletionContext);
 		}
 		CancellationTokenSource completionTokenSrc = new CancellationTokenSource ();
 		CancellationTokenSource parameterHintingSrc = new CancellationTokenSource ();
@@ -81,7 +88,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool res;
-			if (currentCompletionContext != null) {
+			if (CurrentCompletionContext != null) {
 				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
 					CompletionWindowManager.PostProcessKeyEvent (descriptor);
 					autoHideCompletionWindow = true;
@@ -123,13 +130,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			// Handle code completion
 			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
-				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
+				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
 				completionTokenSrc = new CancellationTokenSource ();
 				var token = completionTokenSrc.Token;
 				var caretOffset = Editor.CaretOffset;
 				try {
-					var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
+					var task = HandleCodeCompletionAsync (CurrentCompletionContext, descriptor.KeyChar, token);
 					if (task != null) {
 						var result = task.Result;
 						if (result != null) {
@@ -137,22 +144,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 							if (triggerWordLength > 0 && (triggerWordLength < caretOffset
 								|| (triggerWordLength == 1 && caretOffset == 1))) {
-								currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
-								currentCompletionContext.TriggerWordLength = triggerWordLength;
+								CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (caretOffset - triggerWordLength);
+								CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 							}
-
-							if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, result, CompletionWidget, currentCompletionContext))
-								currentCompletionContext = null;
+							if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, result, CompletionWidget, CurrentCompletionContext))
+								CurrentCompletionContext = null;
 						} else {
-							currentCompletionContext = null;
+							CurrentCompletionContext = null;
 						}
 					} else {
-						currentCompletionContext = null;
+						CurrentCompletionContext = null;
 					}
 				} catch (TaskCanceledException) {
-					currentCompletionContext = null;
+					CurrentCompletionContext = null;
 				} catch (AggregateException) {
-					currentCompletionContext = null;
+					CurrentCompletionContext = null;
 				}
 			}
 
@@ -183,17 +189,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
-			if (CompletionWidget != null && currentCompletionContext == null) {
-				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
+			if (CompletionWidget != null && CurrentCompletionContext == null) {
+				CurrentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				if (triggerWordLength > 0 && triggerWordLength < Editor.CaretOffset) {
-					currentCompletionContext =
+					CurrentCompletionContext =
 						CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
-					currentCompletionContext.TriggerWordLength = triggerWordLength;
+					CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 				}
 				if (completionList != null)
-					CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext);
+					CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, CurrentCompletionContext);
 				else
-					currentCompletionContext = null;
+					CurrentCompletionContext = null;
 			}
 			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
@@ -204,12 +210,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 
-		protected void OnCompletionContextChanged (object o, EventArgs a)
+		internal protected virtual void OnCompletionContextChanged (object o, EventArgs a)
 		{
 			if (!IsActiveExtension ())
 				return;
-			if (autoHideCompletionWindow)
+			if (autoHideCompletionWindow) {
 				CompletionWindowManager.HideWindow ();
+			}
 			if (autoHideParameterWindow)
 				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
 			ParameterInformationWindowManager.UpdateCursorPosition (this, CompletionWidget);
@@ -248,13 +255,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
-			currentCompletionContext.TriggerWordLength = wlen;
-			completionList = CodeCompletionCommand (currentCompletionContext);
+			CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (cpos);
+			CurrentCompletionContext.TriggerWordLength = wlen;
+			completionList = CodeCompletionCommand (CurrentCompletionContext);
 			if (completionList != null)
-				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, currentCompletionContext);
+				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else
-				currentCompletionContext = null;
+				CurrentCompletionContext = null;
 		}
 
 		[CommandHandler(TextEditorCommands.ShowCodeTemplateWindow)]
@@ -322,7 +329,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public virtual bool CanRunCompletionCommand ()
 		{
-			return (CompletionWidget != null && currentCompletionContext == null);
+			return (CompletionWidget != null && CurrentCompletionContext == null);
 		}
 
 		public virtual bool CanRunParameterCompletionCommand ()
@@ -501,7 +508,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
-			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> ();
+			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Editor.CaretPositionChanged += HandlePositionChanged;
@@ -515,7 +522,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Initialize ();
 		}
 
-		void HandlePositionChanged (object sender, EventArgs e)
+		internal protected virtual void HandlePositionChanged (object sender, EventArgs e)
 		{
 			if (!IsActiveExtension ())
 				return;
@@ -524,26 +531,32 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void HandleWindowClosed (object sender, EventArgs e)
 		{
-			currentCompletionContext = null;
+			CurrentCompletionContext = null;
 		}
 
 		bool disposed = false;
 		public override void Dispose ()
 		{
-			if (!disposed) {
-				CompletionWindowManager.HideWindow ();
-				ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+			if (!disposed)
+            {
+                CompletionWindowManager.HideWindow();
+                ParameterInformationWindowManager.HideWindow(this, CompletionWidget);
 
-				disposed = true;
-//				if (document.Editor.Parent != null)
-//					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
-//				document.Editor.Paste -= HandlePaste;
-				Editor.CaretPositionChanged -= HandlePositionChanged;
-				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
-				if (CompletionWidget != null)
-					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
-			}
-			base.Dispose ();
+                disposed = true;
+                //				if (document.Editor.Parent != null)
+                //					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
+                //				document.Editor.Paste -= HandlePaste;
+				Deinitialize();
+            }
+            base.Dispose ();
+		}
+
+		internal void Deinitialize ()
+		{
+			Editor.CaretPositionChanged -= HandlePositionChanged;
+			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
+			if (CompletionWidget != null)
+				CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 		}
 	}
 

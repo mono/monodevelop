@@ -1,9 +1,10 @@
-// IXmlProvider.cs
+//
+// BraceMatchingResult.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,67 +23,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System;
-using System.IO;
-using System.Reflection;
-using System.Xml;
+using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.Ide.Editor.Highlighting
+namespace MonoDevelop.Ide.Editor
 {
-	public interface IStreamProvider
+	struct BraceMatchingResult
 	{
-		Stream Open ();
-	}
+		public ISegment LeftSegment { get; }
 
-	class ResourceStreamProvider : IStreamProvider
-	{
-		Assembly assembly;
-		string   manifestResourceName;
-		
-		public string ManifestResourceName {
-			get {
-				return manifestResourceName;
-			}
-		}
-		
-		public Assembly Assembly {
-			get {
-				return assembly;
-			}
-		}
-		
-		public ResourceStreamProvider (Assembly assembly, string manifestResourceName)
+		public ISegment RightSegment { get; }
+
+		public bool IsCaretInLeft { get; }
+
+		public BraceMatchingResult (ISegment leftSegment, ISegment rightSegment, bool isCaretInLeft) : this ()
 		{
-			this.assembly             = assembly;
-			this.manifestResourceName = manifestResourceName;
-		}
-		
-		public Stream Open ()
-		{
-			return assembly.GetManifestResourceStream (this.ManifestResourceName);
-		}
-	}
-	
-	class UrlStreamProvider : IStreamProvider
-	{
-		string  url;
-		
-		public string Url {
-			get {
-				return url;
-			}
-		}
-		
-		public UrlStreamProvider (string url)
-		{
-			this.url = url;
-		}
-		
-		public Stream Open ()
-		{
-			return File.OpenRead (url);
+			if (leftSegment == null)
+				throw new ArgumentNullException (nameof (leftSegment));
+			if (rightSegment == null)
+				throw new ArgumentNullException (nameof (rightSegment));
+			LeftSegment = leftSegment;
+			RightSegment = rightSegment;
+			IsCaretInLeft = isCaretInLeft;
 		}
 	}
 }

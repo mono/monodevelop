@@ -59,6 +59,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+		public static ColorScheme DefaultColorStyle {
+			get {
+				return GetColorStyle ("Default");
+			}
+		}
+
 		public static ColorScheme GetColorStyle (string name)
 		{
 			if (styles.ContainsKey (name))
@@ -70,7 +76,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return GetColorStyle ("Default");
 		}
 
-		public static IStreamProvider GetProvider (ColorScheme style)
+		static IStreamProvider GetProvider (ColorScheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name)) 
 				return styleLookup[style.Name];
@@ -104,7 +110,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 		
 
-		public static void Remove (ColorScheme style)
+		static void Remove (ColorScheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name))
 				styleLookup.Remove (style.Name);
@@ -118,14 +124,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 		
 
-		public static List<ValidationEventArgs> ValidateStyleFile (string fileName)
+		static List<ValidationEventArgs> ValidateStyleFile (string fileName)
 		{
 			List<ValidationEventArgs> result = new List<ValidationEventArgs> ();
 			return result;
 		}
 
 
-		public static void LoadStylesAndModes (string path)
+		internal static void LoadStylesAndModes (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
 				if (file.EndsWith (".json", StringComparison.Ordinal)) {
@@ -146,7 +152,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static void LoadStylesAndModes (Assembly assembly)
+		static void LoadStylesAndModes (Assembly assembly)
 		{
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
 				if (resource.EndsWith ("Style.json", StringComparison.Ordinal)) {
@@ -176,12 +182,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static void AddStyle (ColorScheme style)
+		internal static void AddStyle (ColorScheme style)
 		{
 			styles [style.Name] = style;
 		}
 
-		public static void AddStyle (IStreamProvider provider)
+		internal static void AddStyle (IStreamProvider provider)
 		{
 			using (var stream = provider.Open ()) {
 				string styleName = ScanStyle (stream);
@@ -189,20 +195,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static void RemoveStyle (IStreamProvider provider)
+		internal static void RemoveStyle (IStreamProvider provider)
 		{
 			using (var stream = provider.Open ()) {
 				string styleName = ScanStyle (stream);
 				styleLookup.Remove (styleName);
 			}
 		}
-		
-		public static ColorScheme DefaultColorStyle {
-			get {
-				return GetColorStyle ("Default");
-			}
-		}
-		
+
 		static SyntaxModeService ()
 		{
 			var textEditorAssembly = Assembly.Load ("Mono.TextEditor");

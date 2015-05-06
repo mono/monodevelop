@@ -382,6 +382,8 @@ namespace Mono.TextEditor
 				var styleStack = new Stack<ChunkStyle> ();
 
 				foreach (var chunk in mode.GetChunks (style, line, curOffset, toOffset - curOffset)) {
+					if (chunk.Length == 0)
+						continue;
 					var chunkStyle = style.GetChunkStyle (chunk);
 					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
 						chunkStyle.FontWeight != FontWeight.Normal;

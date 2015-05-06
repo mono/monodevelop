@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
 			{
-				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault ();
+				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.EndOffset > chunk.Offset);
 				if (segment == null) {
 					style = null;
 					return false;
@@ -142,7 +142,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					return;
 				}
 				int endLoc = -1;
-				string semanticStyle = null;
+				StyledTreeSegment treeseg = null;
 
 				try {
 					HighlightingSegmentTree tree;
@@ -154,21 +154,23 @@ namespace MonoDevelop.SourceEditor.Wrappers
 						}
 						semanticMode.lineSegments[line] = tree;
 					}
-					string style;
-					if (tree.GetStyle (chunk, ref endLoc, out style)) {
-						semanticStyle = style;
-					}
+					treeseg = tree.GetSegmentsOverlapping (chunk).FirstOrDefault (s => s.Offset < chunk.EndOffset && s.EndOffset > chunk.Offset);
 				} catch (Exception e) {
 					Console.WriteLine ("Error in semantic highlighting: " + e);
 				}
 
-				if (semanticStyle != null) {
-					if (endLoc < chunk.EndOffset) {
-						base.AddRealChunk (new Chunk (chunk.Offset, endLoc - chunk.Offset, semanticStyle));
-						base.AddRealChunk (new Chunk (endLoc, chunk.EndOffset - endLoc, chunk.Style));
-						return;
-					}
-					chunk.Style = semanticStyle;
+				if (treeseg != null) {
+					if (treeseg.Offset - chunk.Offset > 0)
+						AddRealChunk (new Chunk (chunk.Offset, treeseg.Offset - chunk.Offset, chunk.Style));
+
+					var startOffset = Math.Max (chunk.Offset, treeseg.Offset);
+					var endOffset = Math.Min (treeseg.EndOffset, chunk.EndOffset);
+
+					base.AddRealChunk (new Chunk (startOffset, endOffset - startOffset, treeseg.Style));
+
+					if (endOffset < chunk.EndOffset)
+						AddRealChunk (new Chunk (treeseg.EndOffset, chunk.EndOffset - endOffset, chunk.Style));
+					return;
 				}
 
 				base.AddRealChunk (chunk);
