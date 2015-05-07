@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects
 		{
 			base.OnEndLoad ();
 
-			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata ());
+			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
 		}
 
 		/// <summary>

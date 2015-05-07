@@ -33,6 +33,8 @@ namespace UserInterfaceTests
 	{
 		readonly string aspCategory = "ASP.NET";
 
+		public ASPNetTemplatesTest () : base (Util.TestRunId) {}
+
 		[Test]
 		public void TestEmptyASPMVCProject ()
 		{
