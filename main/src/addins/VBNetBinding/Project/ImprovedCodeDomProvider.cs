@@ -24,13 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.CodeDom.Compiler;
 
-namespace Project
+namespace MonoDevelop.VBNetBinding
 {
-	public class ImprovedCodeDomProvider
+	public class ImprovedCodeDomProvider : Microsoft.VisualBasic.VBCodeProvider
 	{
-		public ImprovedCodeDomProvider ()
+		[Obsolete ("Use CodeDomProvider class")]
+		public override ICodeGenerator CreateGenerator ()
 		{
+			return new VBCodeGenerator ();
 		}
 	}
 }

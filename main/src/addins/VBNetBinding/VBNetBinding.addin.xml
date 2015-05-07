@@ -61,7 +61,7 @@
 		<LanguageBinding id = "VBNet"
 			extensions = ".vb"
 			singleLineCommentTag = "'"
-			codeDomType = "MonoDevelop.VBNetBinding.VBLanguageBinding+ImprovedCodeDomProvider" />
+			codeDomType = "MonoDevelop.VBNetBinding.ImprovedCodeDomProvider" />
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
