@@ -70,8 +70,8 @@ namespace MonoDevelop.Ide
 					template.CreateWorkspaceItem (cinfo);
 				} catch (Exception ex) {
 					builder.AppendFormat (
-						"Could not create a project from the template '{0} / {1}': {2}",
-						template.Category, template.Name, ex
+						"Could not create a project from the template '{0} / {1} ({2})': {3}",
+						template.Category, template.Name, template.LanguageName, ex
 					);
 					builder.AppendLine ();
 					builder.AppendLine ();
