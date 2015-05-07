@@ -204,12 +204,6 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Checking System");
-			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
-			
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Build;
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Revision != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			CheckFileWatcher ();
 			
@@ -230,9 +224,6 @@ namespace MonoDevelop.Ide
 
 				if (!CheckSCPlugin ())
 					return 1;
-
-				// no alternative for Application.ThreadException?
-				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
