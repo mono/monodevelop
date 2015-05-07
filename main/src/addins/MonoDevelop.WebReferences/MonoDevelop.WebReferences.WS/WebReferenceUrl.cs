@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.WebReferences.WS
 {
+	[ExportProjectItemType ("WebReferenceUrl")]
 	public class WebReferenceUrl: ProjectItem
 	{
 		public WebReferenceUrl ()
@@ -42,9 +43,11 @@ namespace MonoDevelop.WebReferences.WS
 			Include = url;
 			UpdateFromURL = url;
 		}
-		
-		[ItemProperty]
-		public string Include { get; private set; }
+
+		protected override void Read (Project project, MonoDevelop.Projects.Formats.MSBuild.IMSBuildItemEvaluated buildItem)
+		{
+			base.Read (project, buildItem);
+		}
 		
 		[ItemProperty]
 		public string UrlBehavior { get; set; }

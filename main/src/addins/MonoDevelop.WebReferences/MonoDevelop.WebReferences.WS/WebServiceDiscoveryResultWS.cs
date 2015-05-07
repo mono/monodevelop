@@ -80,8 +80,7 @@ namespace MonoDevelop.WebReferences.WS
 		protected override string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath)
 		{
 			if (!dotNetProject.Items.GetAll<WebReferencesDir> ().Any ()) {
-				var met = new WebReferencesDir ();
-				met.Path = basePath.ParentDirectory;
+				var met = new WebReferencesDir (basePath.ParentDirectory);
 				dotNetProject.Items.Add (met);
 			}
 			

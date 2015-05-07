@@ -26,12 +26,20 @@
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.WebReferences.WCF
 {
-	public class WCFMetadata: ProjectItem
+	[ExportProjectItemType ("WCFMetadata")]
+	public class WCFMetadata: PathBasedProjectItem
 	{
-		[ProjectPathItemProperty ("Include")]
-		public FilePath Path { get; set; }
+		WCFMetadata ()
+		{
+		}
+
+		public WCFMetadata (FilePath path)
+		{
+			Path = path;
+		}
 	}
 }
