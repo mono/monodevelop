@@ -47,20 +47,16 @@ namespace MonoDevelop.Projects.Extensions
 		string extension = null;
 		
 		[NodeAttribute]
-		string import = null;
-		
-		[NodeAttribute]
 		string type = null;
 
 		protected SolutionItemTypeNode ()
 		{
 		}
 		
-		protected SolutionItemTypeNode (string guid, string extension, string import)
+		protected SolutionItemTypeNode (string guid, string extension)
 		{
 			this.guid = guid;
 			this.extension = extension;
-			this.import = import;
 		}
 		
 		[NodeAttribute ("alias")]
@@ -74,11 +70,6 @@ namespace MonoDevelop.Projects.Extensions
 		public string Extension {
 			get { return extension; }
 			set { extension = value; }
-		}
-
-		public string Import {
-			get { return import; }
-			set { import = value; }
 		}
 
 		internal string ItemTypeName {
