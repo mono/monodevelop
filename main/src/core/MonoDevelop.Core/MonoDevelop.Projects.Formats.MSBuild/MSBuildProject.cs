@@ -48,6 +48,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		List<IMSBuildItemEvaluated> evaluatedItems = new List<IMSBuildItemEvaluated> ();
 		List<IMSBuildItemEvaluated> evaluatedItemsIgnoringCondition;
 		MSBuildEvaluatedPropertyCollection evaluatedProperties;
+		MSBuildTarget[] targets;
 
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
@@ -307,6 +308,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var props = new MSBuildEvaluatedPropertyCollection (this);
 			evaluatedProperties = props;
 			props.SyncCollection (e, project);
+
+			targets = e.GetTargets (project).ToArray ();
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)
@@ -730,8 +733,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public IEnumerable<MSBuildTarget> Targets {
 			get {
-				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Target", XmlNamespaceManager))
-					yield return new MSBuildTarget (elem);
+				return targets;
 			}
 		}
 	}
@@ -744,8 +746,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string Name {
 			get { return Element.GetAttribute ("Name"); }
-			set { Element.SetAttribute ("Name", value); }
 		}
+
+		public bool IsImported { get; internal set; }
 
 		public IEnumerable<MSBuildTask> Tasks {
 			get {
@@ -774,7 +777,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string Name {
 			get { return Element.GetAttribute ("Name"); }
-			set { Element.SetAttribute ("Name", value); }
 		}
 	}
 

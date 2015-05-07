@@ -668,8 +668,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual bool OnGetSupportsTarget (string target)
 		{
-			// TODO NPM: get the targets from the msbuild file
-			return target == "Build" || target == "Clean";
+			return sourceProject.Targets.Any (t => t.Name == target);
 		}
 
 		/// <summary>

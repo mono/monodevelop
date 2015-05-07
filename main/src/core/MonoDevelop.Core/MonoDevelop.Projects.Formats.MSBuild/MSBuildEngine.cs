@@ -77,6 +77,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public abstract bool GetItemHasMetadata (object item, string name);
 
 		public abstract void GetPropertyInfo (object property, out string name, out string value, out string finalValue);
+
+		public abstract IEnumerable<MSBuildTarget> GetTargets (object project);
 	}
 
 	#if WINDOWS
@@ -173,6 +175,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			name = p.Name;
 			value = p.UnevaluatedValue;
 			finalValue = p.EvaluatedValue;
+		}
+
+		public override IEnumerable<MSBuildTarget> GetTargets (object project)
+		{
+			var doc = new XmlDocument ();
+			var p = (MSProject)project;
+			foreach (var t in p.Targets) {
+				var te = doc.CreateElement (t.Key, MSBuildProject.Schema);
+				te.SetAttribute ("Name", t.Key);
+				if (!string.IsNullOrEmpty (t.Value.Condition))
+					te.SetAttribute ("Condition", t.Value.Condition);
+				foreach (var task in t.Value.Tasks) {
+					var tke = doc.CreateElement (task.Name, MSBuildProject.Schema);
+					tke.SetAttribute ("Name", task.Name);
+					if (!string.IsNullOrEmpty (task.Condition))
+						tke.SetAttribute ("Condition", task.Condition);
+					te.AppendChild (tke);
+				}
+				yield return new MSBuildTarget (te) {
+					IsImported = t.Value.Location.File == p.FullPath
+				};
+			}
 		}
 	}
 
@@ -292,6 +316,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			name = p.Name;
 			value = p.Value;
 			finalValue = p.FinalValue;
+		}
+
+		public override IEnumerable<MSBuildTarget> GetTargets (object project)
+		{
+			var doc = new XmlDocument ();
+			var p = (MSProject)project;
+			foreach (var t in p.Targets.Cast<Target> ()) {
+				var te = doc.CreateElement ("Target", MSBuildProject.Schema);
+				te.SetAttribute ("Name", t.Name);
+				if (!string.IsNullOrEmpty (t.Condition))
+					te.SetAttribute ("Condition", t.Condition);
+				foreach (var task in t.OfType<BuildTask> ()) {
+					var tke = doc.CreateElement (task.Name, MSBuildProject.Schema);
+					tke.SetAttribute ("Name", task.Name);
+					if (!string.IsNullOrEmpty (task.Condition))
+						tke.SetAttribute ("Condition", task.Condition);
+					te.AppendChild (tke);
+				}
+				yield return new MSBuildTarget (te) {
+					IsImported = t.IsImported
+				};
+			}
 		}
 	}
 	#endif

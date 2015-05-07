@@ -197,6 +197,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			finalValue = prop.Value;
 		}
 
+		public override IEnumerable<MSBuildTarget> GetTargets (object project)
+		{
+			var doc = ((ProjectInfo)project).Project.Document;
+			foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Target", MSBuildProject.XmlNamespaceManager))
+				yield return new MSBuildTarget (elem);
+
+			// Return dummy Build and Clean targets
+
+			foreach (var t in new [] { "Build", "Clean" }) {
+				var te = doc.CreateElement ("Target", MSBuildProject.Schema);
+				te.SetAttribute ("Name", t);
+				yield return new MSBuildTarget (te);
+			}
+		}
+
 		#endregion
 	}
 }

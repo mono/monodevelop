@@ -156,6 +156,20 @@ namespace MonoDevelop.Projects
 			Assert.IsNotNull (it.SourceItem);
 			Assert.AreSame (it.SourceItem, p.ItemGroups.ToArray ()[1].Items.ToArray()[1]);
 		}
+
+		[Test]
+		public void Targets ()
+		{
+			var p = LoadProject ();
+			p.Evaluate ();
+			var tn = p.Targets.Select (t => t.Name).ToArray ();
+
+			// Verify that some of the imported targets are returned
+			Assert.IsTrue (tn.Contains ("Build"));
+			Assert.IsTrue (tn.Contains ("Clean"));
+			Assert.IsTrue (tn.Contains ("ResolveReferences"));
+			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
+		}
 	}
 }
 
