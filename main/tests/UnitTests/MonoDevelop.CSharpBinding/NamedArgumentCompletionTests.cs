@@ -176,7 +176,7 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
-			var project = IdeApp.Services.ProjectService.CreateProject ("C#");
+			var project = MonoDevelop.Projects.Services.ProjectService.CreateProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 

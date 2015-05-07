@@ -55,6 +55,9 @@ namespace MonoDevelop.Ide
 
 		internal static void Initialize ()
 		{
+			if (guiContext != null)
+				return;
+			
 			guiContext = new GuiSyncContext ();
 			guiThread = Thread.CurrentThread;
 			

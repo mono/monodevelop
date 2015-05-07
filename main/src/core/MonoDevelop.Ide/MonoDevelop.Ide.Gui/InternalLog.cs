@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Gui
 		public static void EnableErrorNotification ()
 		{
 			errorNotificationEnabled = true;
-			if (logger.LastError != null)
+			if (logger != null && logger.LastError != null)
 				NotifyError (logger.LastError);
 		}
 		

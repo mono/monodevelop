@@ -167,6 +167,9 @@ namespace MonoDevelop.Ide
 		
 		public static void Initialize (ProgressMonitor monitor)
 		{
+			// Already done in IdeSetup, but called again since unit tests don't use IdeSetup.
+			DispatchService.Initialize ();
+
 			Counters.Initialization.Trace ("Creating Workbench");
 			workbench = new Workbench ();
 			Counters.Initialization.Trace ("Creating Root Workspace");
@@ -224,7 +227,8 @@ namespace MonoDevelop.Ide
 			// Perser service initialization
 			TypeSystemService.TrackFileChanges = true;
 
-			Customizer.OnIdeInitialized ();
+			if (Customizer != null)
+				Customizer.OnIdeInitialized ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
