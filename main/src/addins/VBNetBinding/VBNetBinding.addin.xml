@@ -29,7 +29,7 @@
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">
-		<Condition id="TypeTag" value="VBNet">
+		<Condition id="ProjectTypeId" value="VBNet">
 			<Panel id = "VBNetProjectOptionsPanel"
 				_label = "General Options" 
 				class = "MonoDevelop.VBNetBinding.ProjectOptionsPanel"/>
@@ -40,7 +40,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
-		<Condition id="TypeTag" value="VBNet">
+		<Condition id="ProjectTypeId" value="VBNet">
 			<Panel id = "VBNetConfigurationOptionsPanel"
 				_label = "Compiler Options" 
 				class = "MonoDevelop.VBNetBinding.ConfigurationOptionsPanel"/>

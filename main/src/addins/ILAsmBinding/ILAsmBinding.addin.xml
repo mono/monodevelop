@@ -8,7 +8,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build">
-		<Condition id="TypeTag" value = "IL">
+		<Condition id="ProjectTypeId" value = "IL">
 			<Section id = "ILAsmCompilerParametersPanel" _label = "Compiler" class = "ILAsmBinding.CompilerParametersPanel"/>
 		</Condition>
 	</Extension>

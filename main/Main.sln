@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9D360D43-0C05-49D6-84DB-4E7AB2F38F82}"
@@ -1875,6 +1875,7 @@ Global
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5390DA4-08B7-47E3-B6F3-D50683316AB4}.Release|Any CPU.Build.0 = Release|Any CPU
@@ -2098,7 +2099,6 @@ Global
 		{73D4CC8B-BAB9-4A29-841B-F25C6311F067} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = src\core\MonoDevelop.Startup\MonoDevelop.Startup.csproj
 		Policies = $0
 		$0.StandardHeader = $1
 		$1.Text = @\n${FileName}\n \nAuthor:\n      ${AuthorName} <${AuthorEmail}>\n\nCopyright (c) ${Year} ${CopyrightHolder}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.

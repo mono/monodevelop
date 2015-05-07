@@ -26,16 +26,17 @@
 using System;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	public class TypeTagCondition: ConditionType
+	public class ProjectTypeIdCondition: ConditionType
 	{
 		string[] tags;
 
-		public TypeTagCondition (Project project)
+		public ProjectTypeIdCondition (Project project)
 		{
-			tags = project.GetTypeTags ().ToArray (); 
+			tags = project.FlavorGuids.Concat (Enumerable.Repeat (project.TypeGuid, 1)).ToArray ();
 		}
 
 		public override bool Evaluate (NodeElement conditionNode)
@@ -57,12 +58,13 @@ namespace MonoDevelop.Projects.Extensions
 			if (val.IndexOf ('&') != -1) {
 				var ands = val.Split ('&');
 				foreach (var tag in ands) {
-					if (!tags.Contains (tag.Trim ()))
+					var id = MSBuildProjectService.ConvertTypeAliasToGuid (tag.Trim ());
+					if (!tags.Contains (id))
 						return false;
 				}
 				return true;
 			}
-			return tags.Contains (val.Trim ());
+			return tags.Contains (MSBuildProjectService.ConvertTypeAliasToGuid (val.Trim ()));
 		}
 	}
 }

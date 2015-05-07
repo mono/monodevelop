@@ -9,8 +9,8 @@
 	<ConditionType id="FlavorType" type="MonoDevelop.Projects.Extensions.FlavorTypeCondition">
 		<Description>Type of a flavor that a project must have. If no namespace is provided, MonoDevelop.Projects is assumed.</Description>
 	</ConditionType>
-	<ConditionType id="TypeTag" type="MonoDevelop.Projects.Extensions.TypeTagCondition">
-		<Description>Tag or tags that a project must have.</Description>
+	<ConditionType id="ProjectTypeId" type="MonoDevelop.Projects.Extensions.ProjectTypeIdCondition">
+		<Description>The id can be a project type guid or a flavor guid, or the corresponding type alias</Description>
 	</ConditionType>
 </ExtensionPoint>
 	

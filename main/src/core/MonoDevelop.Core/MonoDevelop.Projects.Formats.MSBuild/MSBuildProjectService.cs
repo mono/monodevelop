@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static bool CanCreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			type = ConvertTypeTag (type);
+			type = ConvertTypeAliasToGuid (type);
 
 			foreach (var node in GetItemTypeNodes ()) {
 				if (node.CanCreateSolutionItem (type, info, projectOptions))
@@ -303,7 +303,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			flavorGuids = ConvertTypeTags (flavorGuids);
+			flavorGuids = ConvertTypeAliasesToGuids (flavorGuids);
 
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || node.TypeAlias == typeGuid) {
@@ -318,7 +318,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			type = ConvertTypeTag (type);
+			type = ConvertTypeAliasToGuid (type);
 
 			foreach (var node in GetItemTypeNodes ()) {
 				if (node.CanCreateSolutionItem (type, info, projectOptions)) {
@@ -332,7 +332,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal static Project CreateProject (string typeGuid, ProjectCreateInformation info, System.Xml.XmlElement projectOptions, params string[] flavorGuids)
 		{
-			flavorGuids = ConvertTypeTags (flavorGuids);
+			flavorGuids = ConvertTypeAliasesToGuids (flavorGuids);
 
 			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
 				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase) || typeGuid == node.TypeAlias) {
@@ -346,7 +346,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
 		}
 
-		static string ConvertTypeTag (string type)
+		public  static string ConvertTypeAliasToGuid (string type)
 		{
 			var node = GetItemTypeNodes ().FirstOrDefault (n => n.TypeAlias == type);
 			if (node != null)
@@ -357,11 +357,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return type;
 		}
 
-		static string[] ConvertTypeTags (string[] types)
+		public static string[] ConvertTypeAliasesToGuids (string[] types)
 		{
 			string[] copy = null;
 			for (int n=0; n<types.Length; n++) {
-				var nt = ConvertTypeTag (types[n]);
+				var nt = ConvertTypeAliasToGuid (types[n]);
 				if (nt != types[n]) {
 					if (copy == null)
 						copy = types.ToArray ();
