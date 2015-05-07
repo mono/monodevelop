@@ -271,7 +271,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var configs = GetConfigurations (item, configuration);
 
 				string[] refs;
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (Item.GetProjectEventMetadata ()))
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (Item.GetProjectEventMetadata (configuration)))
 					refs = builder.ResolveAssemblyReferences (configs);
 				foreach (var r in refs)
 					yield return r;
@@ -303,8 +303,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (Item.GetProjectEventMetadata ());
-					var t2 = buildTimer != null ? buildTimer.BeginTiming (Item.GetProjectEventMetadata ()) : null;
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (Item.GetProjectEventMetadata (configuration));
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (Item.GetProjectEventMetadata (configuration)) : null;
 
 					MSBuildResult result;
 

@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Diagnostics;
+using MonoDevelop.Debugger.Tests.NonUserCodeTestLib;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -415,6 +416,16 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			} catch {
 
 			}
+		}
+
+		/// <summary>
+		/// Bug 9615
+		/// </summary>
+		public void CatchpointIgnoreExceptionsInNonUserCode ()
+		{
+			NonUserCodeClass.ThrowDelayedHandledException ();
+			Thread.Sleep (200);
+			var a = 0;/*999b8a83-8c32-4640-a8e1-f74309cda79c*/
 		}
 
 		public void SimpleMethod ()

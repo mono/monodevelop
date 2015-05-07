@@ -24,6 +24,7 @@ obj/
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
+/main/src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.Tests.NonUserCodeTestLib/bin
 /main/src/core/MonoDevelop.Core/BuildVariables.cs
 /scripts/configure.exe
 /main/packages

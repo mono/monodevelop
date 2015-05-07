@@ -1334,6 +1334,10 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("(null)", val.Value);
 			Assert.AreEqual ("byte[]", val.TypeName);
 			Assert.IsTrue (val.IsNull);
+
+			val = Eval ("arrayWithLowerBounds");
+			Assert.AreEqual ("int[,,]", val.TypeName);
+			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 		}
 
 		[Test]
@@ -1986,6 +1990,33 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("DebuggerDisplayMethodTest", val.TypeName);
 				Assert.AreEqual ("First Int:32 Second Int:43", val.Value);
 			}
+		}
+
+		[Test]
+		public void ArrayTests ()
+		{
+			ObjectValue val;
+
+			val = Eval ("numbersMulti[1,2,3]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("133", val.Value);
+
+			val = Eval ("numbersArrays[0][7]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("24", val.Value);
+
+			val = Eval ("arrayWithLowerBounds[5,6,7]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("114", val.Value);
+
+			if (AllowTargetInvokes) {
+				val = Eval ("arrayWithLowerBounds.GetValue(5,6,7)");
+				Assert.AreEqual ("int", val.TypeName);
+				Assert.AreEqual ("114", val.Value);
+			}
+
+			var children = Eval ("arrayWithLowerBounds").GetAllChildrenSync ();
+			Assert.AreEqual ("[5, ...]", children [0].Name);
 		}
 	}
 }

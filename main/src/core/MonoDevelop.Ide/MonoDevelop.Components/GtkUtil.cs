@@ -180,6 +180,15 @@ namespace MonoDevelop.Components
 			return new Gdk.Point (x + p.X, y + p.Y);
 		}
 
+		public static bool IsClickedNodeSelected (this Gtk.TreeView tree, int x, int y)
+		{
+			Gtk.TreePath path;
+			if (tree.GetPathAtPos (x, y, out path))
+				return tree.Selection.PathIsSelected (path);
+
+			return false;
+		}
+
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();

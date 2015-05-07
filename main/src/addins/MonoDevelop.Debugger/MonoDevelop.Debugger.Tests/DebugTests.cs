@@ -283,6 +283,13 @@ namespace MonoDevelop.Debugger.Tests
 			return Frame.GetExpressionValue (exp, true).Sync ();
 		}
 
+		public void WaitStop (int miliseconds)
+		{
+			if (!targetStoppedEvent.WaitOne (miliseconds)) {
+				Assert.Fail ("WaitStop failure: Target stop timeout");
+			}
+		}
+
 		public bool CheckPosition (string guid, int offset = 0, string statement = null, bool silent = false)
 		{
 			if (!targetStoppedEvent.WaitOne (3000)) {
