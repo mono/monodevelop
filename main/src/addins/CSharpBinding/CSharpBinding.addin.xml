@@ -7,8 +7,6 @@
 
 	<!-- Extensions -->
 
-	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
-
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				_label = "S_how Code Generation Window"
@@ -45,7 +43,6 @@
 			language="C#"
 			extension="csproj"
 			guid="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-			import="$(MSBuildBinPath)\Microsoft.CSharp.targets"
 			type="MonoDevelop.CSharp.Project.CSharpProject"
 			/>
 	</Extension>
