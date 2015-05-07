@@ -305,10 +305,10 @@ namespace Mono.TextEditor.PopupWindow
 					RenderTriangleDown (cr, x + w / 3 - 1, y + (h - triangleSize) / 2, triangleSize, triangleSize);
 				} else if (Symbol == SymbolTokenType.Up) {
 					RenderTriangleUp (cr, x + w / 3 - 1, y + (h - triangleSize) / 2, triangleSize, triangleSize);
+				} else {
+					cr.MoveTo (x + outlinePadding, y + (max_height - Height - 0.5));
+					cr.ShowLayout (layout);
 				}
-
-				cr.MoveTo (x + outlinePadding, y + (max_height - Height - 0.5));
-				cr.ShowLayout (layout);
 			} else {
 				cr.MoveTo (x, y);
 				cr.SetSourceColor (textColor);
