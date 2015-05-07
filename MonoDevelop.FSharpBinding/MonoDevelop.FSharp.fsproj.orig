@@ -86,7 +86,6 @@
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
-    <Compile Include="FSharpLanguageBinding.fs" />
     <Compile Include="FSharpProject.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
