@@ -127,6 +127,13 @@ namespace MonoDevelop.VBNetBinding
 		{
 			return VBNetResourceIdBuilder.GetDefaultResourceId (projectFile) ?? base.OnGetDefaultResourceId (projectFile);
 		}
+
+		protected override ProjectItem OnCreateProjectItem (IMSBuildItemEvaluated item)
+		{
+			if (item.Name == "Import")
+				return new Import ();
+			return base.OnCreateProjectItem (item);
+		}
 	}
 }
 
