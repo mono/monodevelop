@@ -518,6 +518,8 @@
     <Compile Include="MonoDevelop.Core.Execution\OperationConsole.cs" />
     <Compile Include="MonoDevelop.Core.Execution\OutputProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.Execution\OperationConsoleFactory.cs" />
+    <Compile Include="MonoDevelop.Projects\PathBasedProjectItem.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectItemTypeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -4,6 +4,7 @@
 	<ConditionType id="PackageNotInstalled" type="MonoDevelop.Core.AddIns.PackageNotInstalledCondition" />
 	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
 	<ConditionType id="AssemblyInstalled" type="MonoDevelop.Core.AddIns.AssemblyInstalledCondition" />
+	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.Formats.MSBuild.TargetsAvailableCondition" />
 
 	
 	<!-- Extension points -->
@@ -147,6 +148,11 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects" name = "MSBuild import redirects">
 		<Description>Allows replacing an import by another one when a project is evaluated</Description>
 		<ExtensionNode name="Import" type="MonoDevelop.Projects.Extensions.ImportRedirectTypeNode"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildProjectItemTypes" name = "MSBuild project item subclasses">
+		<Description>Allows defining ProjectItem subclasses to be used for specific msbuild project items</Description>
+		<ExtensionNode name="Item" customAttributeType="MonoDevelop.Projects.ExportProjectItemTypeAttribute" />
 	</ExtensionPoint>
 
 	<!-- Extensions -->

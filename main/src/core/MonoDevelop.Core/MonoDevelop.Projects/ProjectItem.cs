@@ -38,6 +38,11 @@ namespace MonoDevelop.Projects
 		ProjectItemMetadata metadata;
 		static Dictionary<Type,HashSet<string>> knownMetadataCache = new Dictionary<Type, HashSet<string>> ();
 
+		public ProjectItem ()
+		{
+			ItemName = MSBuildProjectService.GetNameForProjectItem (GetType());
+		}
+
 		public IDictionary ExtendedProperties {
 			get {
 				if (extendedProperties == null)
@@ -86,12 +91,16 @@ namespace MonoDevelop.Projects
 
 			if (buildItem.SourceItem != null) {
 				HashSet<string> knownProps = GetKnownMetadata ();
-				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
-					if (!knownProps.Contains (prop.Name)) {
-						if (metadata == null)
-							metadata = new ProjectItemMetadata (project.ToolsVersion);
-						Metadata.SetValue (prop.Name, prop.Value);
+				if (knownProps.Count > 0) {
+					foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
+						if (knownProps.Contains (prop.Name)) {
+							if (metadata == null)
+								metadata = new ProjectItemMetadata (project.MSBuildProject);
+							metadata.SetValue (prop.Name, prop.Value);
+						}
 					}
+					if (metadata != null)
+						metadata.ReadObjectProperties (this, GetType (), true);
 				}
 			}
 		}
@@ -101,9 +110,11 @@ namespace MonoDevelop.Projects
 			buildItem.Condition = Condition;
 
 			if (metadata != null) {
+				metadata.SetProject (project.MSBuildProject);
 				foreach (var prop in metadata.GetProperties ())
 					buildItem.Metadata.SetValue (prop.Name, prop.Value);
-				metadata.WriteDataObjects (project.ToolsVersion);
+				metadata.WriteDataObjects ();
+				metadata.WriteObjectProperties (this, GetType(), true);
 			}
 		}
 
@@ -114,7 +125,11 @@ namespace MonoDevelop.Projects
 		/// <returns>The known metadata properties.</returns>
 		protected virtual IEnumerable<string> GetKnownMetadataProperties ()
 		{
-			yield break;
+			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
+			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, this);
+			foreach (var prop in props)
+				if (!prop.IsExternal)
+					yield return prop.Name;
 		}
 
 		HashSet<string> GetKnownMetadata ()

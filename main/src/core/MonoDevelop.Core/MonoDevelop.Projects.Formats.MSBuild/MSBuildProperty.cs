@@ -322,6 +322,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProject Project {
 			get { return project; }
+			internal set { project = value; }
 		}
 
 		public string Name {

@@ -495,6 +495,10 @@ namespace MonoDevelop.Projects
 			if (item.Name == "Folder")
 				return new ProjectFile ();
 
+			var type = MSBuildProjectService.GetProjectItemType (item.Name);
+			if (type != null)
+				return (ProjectItem) Activator.CreateInstance (type, true);
+
 			// Unknown item. Must be a file.
 			if (!string.IsNullOrEmpty (item.Include) && !UnsupportedItems.Contains (item.Name) && IsValidFile (item.Include))
 				return new ProjectFile ();
@@ -664,6 +668,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual bool OnGetSupportsTarget (string target)
 		{
+			// TODO NPM: get the targets from the msbuild file
 			return target == "Build" || target == "Clean";
 		}
 

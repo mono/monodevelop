@@ -36,12 +36,18 @@ namespace MonoDevelop.Projects
 	{
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		string toolsVersion;
 		int initialMetadataCount;
+		MSBuildProject project;
 
-		public ProjectItemMetadata (string toolsVersion)
+		internal ProjectItemMetadata (MSBuildProject project)
 		{
-			this.toolsVersion = toolsVersion;
+			this.project = project;
+		}
+
+		internal void SetProject (MSBuildProject project)
+		{
+			foreach (var p in propertyList)
+				p.Project = project;
 		}
 
 		internal void LoadProperties (XmlElement element)
@@ -56,7 +62,7 @@ namespace MonoDevelop.Projects
 					propertyList = new List<MSBuildProperty> ();
 				}
 
-				var prop = new MSBuildProperty (null, pelem);
+				var prop = new MSBuildProperty (project, pelem);
 				propertyList.Add (prop);
 				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 			}
@@ -146,7 +152,7 @@ namespace MonoDevelop.Projects
 			object ob;
 			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
 				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, toolsVersion);
+				((IMSBuildDataObject)ob).Read (this, project.ToolsVersion);
 			}
 			return (T)ob;
 		}
@@ -156,10 +162,10 @@ namespace MonoDevelop.Projects
 			customDataObjects [typeof(T)] = t;
 		}
 
-		public void WriteDataObjects (string toolsVersion)
+		public void WriteDataObjects ()
 		{
 			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, this.toolsVersion ?? toolsVersion);
+				ob.Write (this, project.ToolsVersion);
 		}
 
 		MSBuildProperty AddProperty (string name, string condition = null)
@@ -182,6 +188,7 @@ namespace MonoDevelop.Projects
 			}
 
 			var prop = new ItemMetadataProperty (name);
+			prop.Project = project;
 			properties [name] = prop;
 
 			if (insertIndex != -1)

@@ -52,6 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal const string ImportRedirectsExtensionPath = "/MonoDevelop/ProjectModel/MSBuildImportRedirects";
 		internal const string GlobalPropertyProvidersExtensionPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
 		internal const string UnknownMSBuildProjectTypesExtensionPath = "/MonoDevelop/ProjectModel/UnknownMSBuildProjectTypes";
+		internal const string MSBuildProjectItemTypesPath = "/MonoDevelop/ProjectModel/MSBuildProjectItemTypes";
 
 		public const string GenericItemGuid = "{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}";
 		public const string FolderTypeGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
@@ -67,6 +68,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
 		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
 		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
+		static IDictionary<string,TypeExtensionNode> projecItemTypeNodes;
 
 		internal static bool ShutDown { get; private set; }
 
@@ -102,7 +104,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (args.Path == ItemTypesExtensionPath || 
 				args.Path == ImportRedirectsExtensionPath || 
 				args.Path == UnknownMSBuildProjectTypesExtensionPath || 
-				args.Path == GlobalPropertyProvidersExtensionPath)
+				args.Path == GlobalPropertyProvidersExtensionPath ||
+				args.Path == MSBuildProjectItemTypesPath)
 				LoadExtensionData ();
 		}
 
@@ -134,6 +137,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Unknown project type information
 
 			unknownProjectTypeNodes = AddinManager.GetExtensionNodes<UnknownProjectTypeNode> (UnknownMSBuildProjectTypesExtensionPath).ToArray ();
+
+			projecItemTypeNodes = AddinManager.GetExtensionNodes<TypeExtensionNode> (MSBuildProjectItemTypesPath).ToDictionary (e => e.TypeName);
 		}
 
 		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
@@ -153,6 +158,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		internal static MSBuildVerbosity DefaultMSBuildVerbosity { get; private set; }
+
+		public static bool IsTargetsAvailable (string targetsPath)
+		{
+			if (string.IsNullOrEmpty (targetsPath))
+				return false;
+
+			string msbuild = Runtime.SystemAssemblyService.CurrentRuntime.GetMSBuildExtensionsPath ();
+			Dictionary<string, string> variables = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase) {
+				{ "MSBuildExtensionsPath64", msbuild },
+				{ "MSBuildExtensionsPath32", msbuild },
+				{ "MSBuildExtensionsPath",   msbuild }
+			};
+
+			string path = StringParserService.Parse (targetsPath, variables);
+			if (Path.DirectorySeparatorChar != '\\')
+				path = path.Replace ('\\', Path.DirectorySeparatorChar);
+
+			return File.Exists (path);
+		}
 
 		/// <summary>
 		/// Given a project referenced in an Import, returns a project that should be loaded instead, or null if there is no redirect
@@ -472,14 +496,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return node.Guid;
 			}
 			return null;
-		}
-
-		internal static IEnumerable<string> GetDefaultImports (string typeGuid)
-		{
-			foreach (var node in GetItemTypeNodes ()) {
-				if (node.Guid == typeGuid && !string.IsNullOrEmpty (node.Import))
-					yield return node.Import;
-			}
 		}
 
 		public static void CheckHandlerUsesMSBuildEngine (SolutionFolderItem item, out bool useByDefault, out bool require)
@@ -994,6 +1010,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var ext = fileName != null ? Path.GetExtension (fileName).TrimStart ('.') : null;
 			var nodes = unknownProjectTypeNodes.Where (p => guids.Any (p.MatchesGuid) || (ext != null && p.Extension == ext)).ToList ();
 			return nodes.FirstOrDefault (n => !n.IsSolvable) ?? nodes.FirstOrDefault (n => n.IsSolvable);
+		}
+
+		internal static Type GetProjectItemType (string itemName)
+		{
+			var node = projecItemTypeNodes.Values.FirstOrDefault (e => e.Id == itemName);
+			if (node != null) {
+				var t = node.Addin.GetType (node.TypeName, true);
+				if (!typeof(ProjectItem).IsAssignableFrom (t))
+					throw new InvalidOperationException ("Project item type '" + node.TypeName + "' is not a subclass of ProjectItem");
+				return t;
+			}
+			else
+				return null;
+		}
+
+		internal static string GetNameForProjectItem (Type type)
+		{
+			TypeExtensionNode node;
+			if (projecItemTypeNodes.TryGetValue (type.FullName, out node))
+				return node.Id;
+			else
+				return null;
 		}
 	}
 	
