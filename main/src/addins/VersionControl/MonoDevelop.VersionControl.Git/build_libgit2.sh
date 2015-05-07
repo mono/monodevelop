@@ -18,7 +18,8 @@ then
 fi
 
 cp libgit2/CMakeLists.txt libgit2/.CMakeLists.txt.mdcopy
-echo 'SET(CMAKE_SKIP_BUILD_RPATH TRUE)' >> libgit2/CMakeLists.txt
+echo 'SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)' > libgit2/CmakeLists.txt
+cat libgit2/.CMakeLists.txt.mdcopy >> libgit2/CMakeLists.txt
 
 mkdir libgit2/build
 pushd libgit2/build
