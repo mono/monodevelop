@@ -403,6 +403,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var f in p.Files) {
 				if (token.IsCancellationRequested)
 					yield break;
+				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
+					continue;
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
@@ -692,7 +694,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var id = info.Id;
 			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, true);
-
 			MonoDevelop.Projects.Project mdProject = null;
 
 			if (id.ProjectId != null) {
@@ -823,10 +824,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			foreach (MonoDevelop.Projects.ProjectFileEventInfo fargs in args) {
-				if (!TypeSystemParserNode.IsCompileBuildAction (fargs.ProjectFile.BuildAction))
+				var projectFile = fargs.ProjectFile;
+				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
+					continue;
+				if (!TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					continue;
 				var projectId = GetProjectId (project);
-				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), fargs.ProjectFile);
+				var newDocument = CreateDocumentInfo(project.Name, GetProjectData(projectId), projectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
@@ -854,7 +858,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			foreach (MonoDevelop.Projects.ProjectFileRenamedEventInfo fargs in args) {
-				if (!TypeSystemParserNode.IsCompileBuildAction (fargs.ProjectFile.BuildAction))
+				var projectFile = fargs.ProjectFile;
+				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
+					continue;
+				if (!TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					continue;
 
 				var projectId = GetProjectId (project);
@@ -869,7 +876,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					data.RemoveDocument (fargs.OldName);
 				}
 
-				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), fargs.ProjectFile);
+				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), projectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
