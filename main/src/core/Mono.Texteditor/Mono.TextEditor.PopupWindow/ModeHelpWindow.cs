@@ -342,10 +342,10 @@ namespace Mono.TextEditor.PopupWindow
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 		public int Spacing { get; private set; }
+		static Regex rx = new Regex (@"^\[.+\]$", RegexOptions.Compiled);
 
 		public LineRenderer (Pango.Context ctx, string str)
 		{
-			var rx = new Regex (@"^\[.+\]$");
 			var pieces = str.Split (null as string[], StringSplitOptions.RemoveEmptyEntries);
 			List<TokenRenderer> line = new List<TokenRenderer> ();
 			var currentLine = "";
