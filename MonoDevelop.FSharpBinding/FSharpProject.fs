@@ -4,13 +4,28 @@ open System
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Projects.Formats.MSBuild
+open MonoDevelop.Ide
 open System.Xml
 
-type FSharpProject() = 
+type FSharpProject() as self = 
     inherit DotNetProject()
     // Keep the platforms combo of CodeGenerationPanelWidget in sync with this list
     let supportedPlatforms = [| "anycpu"; "x86"; "x64"; "itanium" |]
     
+    let langServ = MDLanguageService.Instance
+    
+    let invalidateProjectFile() =
+        try
+            let options = langServ.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+            langServ.InvalidateConfiguration(options)
+            langServ.ClearProjectInfoCache()
+        with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
+    
+    let invalidateFiles (args:#ProjectFileEventInfo seq) =
+        for projectFileEvent in args do
+            if MDLanguageService.SupportedFileName (projectFileEvent.ProjectFile.FilePath.ToString()) then
+                invalidateProjectFile()
+
     override x.OnInitialize() = 
         base.OnInitialize()
     
@@ -64,3 +79,34 @@ type FSharpProject() =
     
     override x.OnGetSupportedClrVersions() = 
         [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5; ClrVersion.Clr_2_1 |]
+
+    override x.OnFileAddedToProject(e) =
+        base.OnFileAddedToProject(e)
+        invalidateFiles(e)
+
+    override x.OnFileRemovedFromProject(e) =
+        base.OnFileRemovedFromProject(e)
+        invalidateFiles(e)
+
+    override x.OnFileRenamedInProject(e) =
+        base.OnFileRenamedInProject(e)
+        invalidateFiles(e)
+
+    override x.OnFilePropertyChangedInProject(e) =
+        base.OnFilePropertyChangedInProject(e)
+        invalidateFiles(e)
+
+    override x.OnReferenceAddedToProject(e) =
+        base.OnReferenceAddedToProject(e)
+        invalidateProjectFile()
+
+    override x.OnReferenceRemovedFromProject(e) =
+        base.OnReferenceRemovedFromProject(e)
+        invalidateProjectFile()
+
+    override x.OnDispose () =
+        invalidateProjectFile()
+
+        // FIXME: is it correct to do it every time a project is disposed?
+        langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
+        base.OnDispose ()
