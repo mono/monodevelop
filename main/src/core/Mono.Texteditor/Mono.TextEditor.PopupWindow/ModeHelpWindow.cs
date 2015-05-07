@@ -227,13 +227,12 @@ namespace Mono.TextEditor.PopupWindow
 
 	class TokenRenderer
 	{
-		const int triangleSize = 8;
-		const int normalFontSize = 14;
+		const int normalFontSize = 11;
 		const int outlinedFontSize = 8;
-		const int outlinePadding = 2;
-		const int textInnerPadding = 2;
-		static readonly Cairo.Color outlineColor = HslColor.Parse ("#7d7d7d");
-		static readonly Cairo.Color textColor = HslColor.Parse ("#4c4c4c");
+		const int outlinePadding = 1;
+		const int textInnerPadding = 1;
+		static readonly Cairo.Color outlineColor = HslColor.Parse ("#666666");
+		static readonly Cairo.Color textColor = HslColor.Parse ("#555555");
 
 		Pango.Layout layout;
 		SymbolTokenType Symbol;
@@ -246,14 +245,16 @@ namespace Mono.TextEditor.PopupWindow
 		public TokenRenderer (Pango.Context ctx, string str, bool outlined)
 		{
 			Outlined = outlined;
-			Spacing = 12;
+			Spacing = 6;
 
 			if (str == "%UP%") {
 				Symbol = SymbolTokenType.Up;
-				Width = Height = 14;
+				Width = 14;
+				Height = 10;
 			} else if (str == "%DOWN%") {
 				Symbol = SymbolTokenType.Down;
-				Width = Height = 14;
+				Width = 14;
+				Height = 10;
 			} else {
 				Symbol = SymbolTokenType.None;
 
@@ -272,7 +273,7 @@ namespace Mono.TextEditor.PopupWindow
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				Width = w;
-				Height = h;
+				Height = h - 1;
 			}
 		}
 
@@ -280,8 +281,8 @@ namespace Mono.TextEditor.PopupWindow
 		{
 			double x = _x;
 			double y = _y;
-			int h = max_height;
 			int w = Width;
+			int h = max_height;
 			int inner_padding = 0;
 
 			if (Outlined) {
@@ -297,14 +298,18 @@ namespace Mono.TextEditor.PopupWindow
 				if (Symbol == SymbolTokenType.None)
 					inner_padding = textInnerPadding;
 
-				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x - inner_padding, y, 10, w + inner_padding * 2, h);
+				// -0.5f to fix the @1x stroke problem:
+				// 1px stroke is rendered on the center of the shape edge, resulting in
+				// two semitransparent pixels. Even worse the rounded rectangle renders
+				// transparency artifacts on edge overlaps. See http://vncr.in/atks
+				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, x - inner_padding - 0.5f, y - 0.5f, 8, w + inner_padding * 2 + 1, h + 1);
 
 				cr.Stroke ();
 
 				if (Symbol == SymbolTokenType.Down) {
-					RenderTriangleDown (cr, x + w / 3 - 1, y + (h - triangleSize) / 2, triangleSize, triangleSize);
+					RenderTriangleDown (cr, x + 4, y + 3, 8, 6);
 				} else if (Symbol == SymbolTokenType.Up) {
-					RenderTriangleUp (cr, x + w / 3 - 1, y + (h - triangleSize) / 2, triangleSize, triangleSize);
+					RenderTriangleUp (cr, x + 4, y + 3, 8, 6);
 				} else {
 					cr.MoveTo (x + outlinePadding, y + (max_height - Height - 0.5));
 					cr.ShowLayout (layout);
@@ -401,14 +406,14 @@ namespace Mono.TextEditor.PopupWindow
 			// %UP% and %DOWN% should not be translated, those will be rendered as up- or down-facing triangles.
 			// Words surrounded by brackets will be rendered with a rounded-rectangle outline.
 			descTexts = new LineRenderer[] {
-				new LineRenderer (PangoContext, Catalog.GetString ("Use [%UP%] [%DOWN%] to move to another location")),
-				new LineRenderer (PangoContext, Catalog.GetString ("Press [ENTER] to select the location")),
-				new LineRenderer (PangoContext, Catalog.GetString ("Press [ESC] to cancel this operation"))
+				new LineRenderer (PangoContext, Catalog.GetString ("Use [%UP%] [%DOWN%] to move to another location.")),
+				new LineRenderer (PangoContext, Catalog.GetString ("Press [ENTER] to select the location.")),
+				new LineRenderer (PangoContext, Catalog.GetString ("Press [ESC] to cancel this operation."))
 			};
 
 			titleLayout = new Pango.Layout (PangoContext);
 			var desc = PangoContext.FontDescription.Copy ();
-			desc.AbsoluteSize = Pango.Units.FromPixels (14);
+			desc.AbsoluteSize = Pango.Units.FromPixels (12);
 			desc.Weight = Pango.Weight.Bold;
 			titleLayout.FontDescription = desc;
 		}
@@ -472,7 +477,7 @@ namespace Mono.TextEditor.PopupWindow
 				width += xDescriptionBorder * 2;
 
 				if (SupportsAlpha) {
-					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 16, Allocation.Width - 1 - tw, Allocation.Height);
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
 				} else {
 					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
 				}
@@ -508,7 +513,7 @@ namespace Mono.TextEditor.PopupWindow
 				g.SetSourceColor (textColor);
 
 				foreach (var desc in descTexts) {
-					desc.Render (g, x, y);
+					desc.Render (g, x, y + 4);
 					y += desc.Height + 8;
 				}
 			}
