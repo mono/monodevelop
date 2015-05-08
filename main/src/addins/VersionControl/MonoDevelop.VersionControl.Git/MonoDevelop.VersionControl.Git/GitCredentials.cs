@@ -109,6 +109,7 @@ namespace MonoDevelop.VersionControl.Git
 
 						DispatchService.GuiSyncDispatch (() => {
 							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
+							dlg.ShowHidden = true;
 							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 							success = dlg.Run ();
 						});
