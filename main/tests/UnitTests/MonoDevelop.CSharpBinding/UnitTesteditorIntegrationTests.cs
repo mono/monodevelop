@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
-			var project = IdeApp.Services.ProjectService.CreateDotNetProject ("C#");
+			var project = MonoDevelop.Ide.Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 

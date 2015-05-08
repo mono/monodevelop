@@ -1605,9 +1605,9 @@ namespace MonoDevelop.Projects
 		internal void ReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			OnReadProjectHeader (monitor, msproject);
-			ProjectExtension.OnReadProject (monitor, msproject);
 			modifiedInMemory = false;
 			msbuildUpdatePending = false;
+			ProjectExtension.OnReadProject (monitor, msproject);
 			NeedsReload = false;
 		}
 

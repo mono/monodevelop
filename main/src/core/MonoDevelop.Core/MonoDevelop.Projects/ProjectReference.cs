@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects
 	/// <summary>
 	/// This class represent a reference information in an Project object.
 	/// </summary>
-	[DataItem (FallbackType=typeof(UnknownProjectReference))]
 	public class ProjectReference : ProjectItem, ICloneable
 	{
 		ReferenceType referenceType = ReferenceType.Custom;
@@ -80,7 +79,7 @@ namespace MonoDevelop.Projects
 
 		public event EventHandler StatusChanged;
 		
-		[ItemProperty ("Package", DefaultValue="")]
+		[ItemProperty ("Package", DefaultValue=null)]
 		internal string packageName {
 			get {
 				SystemPackage sp = Package;
@@ -649,7 +648,7 @@ namespace MonoDevelop.Projects
 					if (cachedPackage != null)
 						return cachedPackage;
 					
-					if (package != null)
+					if (!string.IsNullOrEmpty (package))
 						return AssemblyContext.GetPackage (package);
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies

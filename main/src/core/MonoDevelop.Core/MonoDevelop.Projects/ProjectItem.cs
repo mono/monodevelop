@@ -91,16 +91,17 @@ namespace MonoDevelop.Projects
 
 			if (buildItem.SourceItem != null) {
 				HashSet<string> knownProps = GetKnownMetadata ();
-				if (knownProps.Count > 0) {
-					foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
-						if (knownProps.Contains (prop.Name)) {
-							if (metadata == null)
-								metadata = new ProjectItemMetadata (project.MSBuildProject);
-							metadata.SetValue (prop.Name, prop.Value);
-						}
+				foreach (var prop in buildItem.SourceItem.Metadata.GetProperties ()) {
+					if (!knownProps.Contains (prop.Name)) {
+						if (metadata == null)
+							metadata = new ProjectItemMetadata (project.MSBuildProject);
+						metadata.SetValue (prop.Name, prop.Value);
 					}
-					if (metadata != null)
-						metadata.ReadObjectProperties (this, GetType (), true);
+				}
+				if (knownProps.Count > 0) {
+					if (metadata == null)
+						metadata = new ProjectItemMetadata (project.MSBuildProject);
+					metadata.ReadObjectProperties (this, GetType (), true);
 				}
 			}
 		}
