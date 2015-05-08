@@ -53,6 +53,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.HeadersVisible = false;
 			this.treeviewColors.Model = colorStore;
 			this.treeviewColors.Selection.Changed += HandleTreeviewColorsSelectionChanged;
+			this.treeviewColors.WidthRequest = 250;
+			this.DefaultWidth = 800;
+			this.DefaultHeight = 600;
+
 			this.colorbuttonFg.ColorSet += Stylechanged;
 			this.colorbuttonBg.ColorSet += Stylechanged;
 			this.colorbuttonPrimary.ColorSet += Stylechanged;
