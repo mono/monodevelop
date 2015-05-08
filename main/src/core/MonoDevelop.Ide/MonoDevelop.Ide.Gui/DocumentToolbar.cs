@@ -26,8 +26,6 @@
 using System;
 using Gtk;
 using MonoDevelop.Components;
-using Mono.TextEditor;
-
 
 namespace MonoDevelop.Ide.Gui
 {

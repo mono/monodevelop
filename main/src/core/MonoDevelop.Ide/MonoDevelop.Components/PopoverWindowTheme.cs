@@ -27,8 +27,9 @@ using System;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using Gdk;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Components
 {
@@ -264,7 +265,7 @@ namespace MonoDevelop.Components
 			Font = Pango.FontDescription.FromString ("Normal");
 		}
 
-		public void SetSchemeColors (Mono.TextEditor.Highlighting.ColorScheme scheme)
+		public void SetSchemeColors (ColorScheme scheme)
 		{
 			TopColor = scheme.TooltipText.Background.AddLight (0.03);
 			BottomColor = scheme.TooltipText.Background;

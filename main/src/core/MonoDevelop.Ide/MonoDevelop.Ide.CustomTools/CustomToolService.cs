@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.CustomTools
 				if (result.Errors.Count > 0) {
 					DispatchService.GuiDispatch (delegate {
 						foreach (CompilerError err in result.Errors)
-							TaskService.Errors.Add (new Task (file.FilePath, err.ErrorText, err.Column, err.Line,
+							TaskService.Errors.Add (new TaskListEntry (file.FilePath, err.ErrorText, err.Column, err.Line,
 								err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error,
 								TaskPriority.Normal, file.Project.ParentSolution, file));
 					});

@@ -37,7 +37,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {

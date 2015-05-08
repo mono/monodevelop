@@ -34,7 +34,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class NewIdeViMode : Mono.TextEditor.Vi.NewViEditMode
+	class NewIdeViMode : Mono.TextEditor.Vi.NewViEditMode
 	{
 		public NewIdeViMode (ExtensibleTextEditor editor)
 		{
@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public class IdeViMode : Mono.TextEditor.Vi.ViEditMode
+	class IdeViMode : Mono.TextEditor.Vi.ViEditMode
 	{
 		new ExtensibleTextEditor editor;
 		TabAction tabAction;

@@ -42,6 +42,7 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -323,7 +324,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				component = item.Component;
 			
 			CodeCompileUnit cu = new CodeCompileUnit ();
-			
 			if (project.UsePartialTypes) {
 				CodeNamespace cns = new CodeNamespace (ns);
 				cu.Namespaces.Add (cns);
@@ -333,6 +333,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				type.Attributes = MemberAttributes.Public;
 				type.TypeAttributes = System.Reflection.TypeAttributes.Public;
 				cns.Types.Add (type);
+				type.Members.Add (
+					new CodeMemberMethod () {
+						Name = "Build"
+					}
+				);
 				
 				foreach (Stetic.ObjectBindInfo binfo in component.GetObjectBindInfo ()) {
 					// When a component is being renamed, we have to generate the 
@@ -369,10 +374,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				text = fileStream.ToString ();
 				text = FormatGeneratedFile (fileName, text, project, provider);
 			}
-			
 			if (saveToFile)
 				File.WriteAllText (fileName, text);
-			TypeSystemService.ParseFile (project, fileName);
+			TypeSystemService.NotifyFileChange (fileName, text);
 //			
 //			if (ProjectDomService.HasDom (project)) {
 //				// Only update the parser database if the project is actually loaded in the IDE.
@@ -592,7 +596,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
@@ -610,11 +614,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				bool previousWasBlank = false;
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
+					var line = doc.GetLine (i);
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.LengthIncludingDelimiter > 0) {
-						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
+						doc.RemoveText (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;
@@ -622,10 +626,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.TextLength - offset);
+			return doc.GetTextAt (offset, doc.Length - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line, out bool isBlank, out bool isBracket)
+		static void CheckLine (IReadonlyTextDocument doc, IDocumentLine line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;

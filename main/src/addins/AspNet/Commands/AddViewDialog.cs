@@ -29,14 +29,15 @@ using System.IO;
 using System.Collections.Generic;
 using PP = System.IO.Path;
 
-using MonoDevelop.Ide;
+using Gtk;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms;
-using Gtk;
+using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -363,7 +364,7 @@ namespace MonoDevelop.AspNet.Commands
 			if (!File.Exists (realPath))
 				return;
 			
-			var pd = TypeSystemService.ParseFile (project, realPath) as WebFormsParsedDocument;
+			var pd = TypeSystemService.ParseFile (project, realPath).Result as WebFormsParsedDocument;
 			
 			if (pd != null) {
 				try {
@@ -467,22 +468,18 @@ namespace MonoDevelop.AspNet.Commands
 
 		class TypeDataProvider
 		{
-			public List<ITypeDefinition> TypesList { get; private set; }
+			public List<INamedTypeSymbol> TypesList { get; private set; }
 			public List<string> TypeNamesList { get; private set; }
-			Ambience ambience;
 
 			public TypeDataProvider (MonoDevelop.Projects.DotNetProject project)
 			{
 				TypeNamesList = new List<string> ();
-				var ctx = TypeSystemService.GetCompilation (project);
-				TypesList = new List<ITypeDefinition> (ctx.MainAssembly.GetAllTypeDefinitions ());
-				this.ambience = AmbienceService.GetAmbience (project.LanguageName);
+				var ctx = TypeSystemService.GetCompilationAsync (project).Result;
+				TypesList = new List<INamedTypeSymbol> (ctx.GetAllTypesInMainAssembly ());
 				foreach (var typeDef in TypesList) {
-					TypeNamesList.Add (ambience.GetString ((IEntity)typeDef, OutputFlags.IncludeGenerics | OutputFlags.UseFullName | OutputFlags.IncludeMarkup));
+					TypeNamesList.Add (Ambience.EscapeText (typeDef.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat)));
 				}
 			}
 		}
 	}
 }
-
-		

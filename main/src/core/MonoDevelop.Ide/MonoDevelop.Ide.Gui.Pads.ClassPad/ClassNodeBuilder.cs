@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			ClassData classData = dataObject as ClassData;
-			nodeInfo.Label = AmbienceService.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
-			nodeInfo.Icon = Context.GetIcon (classData.Class.GetStockIcon ());
+			// ClassData classData = dataObject as ClassData;
+			// nodeInfo.Label = Ambience.DefaultAmbience.GetString (classData.Class.GetDefinition (), OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup);
+			// nodeInfo.Icon = Context.GetIcon (classData.Class.GetStockIcon ());
 		}
 		/*
 		private string GetNameWithGenericParameters (IType c)
@@ -137,8 +137,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 	{
 		public override void ActivateItem ()
 		{
-			ClassData cls = CurrentNode.DataItem as ClassData;
-			IdeApp.ProjectOperations.JumpToDeclaration (cls.Class, true);
+//			ClassData cls = CurrentNode.DataItem as ClassData;
+//			IdeApp.ProjectOperations.JumpToDeclaration (cls.Class, true);
 		}
 	}	
 }

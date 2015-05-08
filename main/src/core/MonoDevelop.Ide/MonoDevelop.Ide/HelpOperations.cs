@@ -35,7 +35,6 @@ using MonoDevelop.Core.Execution;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using ICSharpCode.NRefactory.Semantics;
 
 namespace MonoDevelop.Ide
 {
@@ -60,6 +59,7 @@ namespace MonoDevelop.Ide
 					AddDirArgs (builder);
 					builder.AddQuoted (extraArgs);
 				} else {
+					LoggingService.LogWarning ("MonoDoc.app folder not found at {0}.", mdapp);
 					builder.AddQuoted (url);
 					builder.AddQuoted (extraArgs);
 				}
@@ -227,14 +227,14 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public bool CanShowHelp (ResolveResult result)
-		{
-			try {
-				return CanShowHelp (HelpService.GetMonoDocHelpUrl (result));
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while trying to get monodoc help.", e);
-				return false;
-			}
-		}
+//		public bool CanShowHelp (ResolveResult result)
+//		{
+//			try {
+//				return CanShowHelp (HelpService.GetMonoDocHelpUrl (result));
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Error while trying to get monodoc help.", e);
+//				return false;
+//			}
+//		}
 	}
 }

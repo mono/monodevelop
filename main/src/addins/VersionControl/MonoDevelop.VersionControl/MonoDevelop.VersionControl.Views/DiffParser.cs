@@ -32,6 +32,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -50,16 +51,16 @@ namespace MonoDevelop.VersionControl.Views
 		static Regex eolExpression = new Regex (@"(?<eol>\r\n|\n|\r)", RegexOptions.Compiled);
 		
 		#region AbstractParser overrides
-		
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader textReader, Project project = null)
+
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
-			var doc = new DefaultParsedDocument (fileName);
+			ParsedDocument doc = new DefaultParsedDocument (parseOptions.FileName);
 			
 			DefaultUnresolvedTypeDefinition currentFile = null;
 			DefaultUnresolvedProperty currentRegion = null;
 			
 			string eol = Environment.NewLine;
-			string content = textReader.ReadToEnd ();
+			string content = parseOptions.Content.Text;
 			Match eolMatch = eolExpression.Match (content);
 			if (eolMatch != null && eolMatch.Success)
 				eol = eolMatch.Groups ["eol"].Value;
@@ -82,7 +83,7 @@ namespace MonoDevelop.VersionControl.Views
 					// Create new file region
 					currentFile = new DefaultUnresolvedTypeDefinition (string.Empty, string.Empty);
 					currentFile.Region = currentFile.BodyRegion = new DomRegion (lastToken (lineMatch.Groups ["filepath"].Value), linenum, line.Length + 1, linenum, int.MaxValue);
-					doc.TopLevelTypeDefinitions.Add (currentFile);
+					// doc.TopLevelTypeDefinitions.Add (currentFile);
 				} else {
 					lineMatch = chunkExpression.Match (line);
 					if (lineMatch != null && lineMatch.Success && currentFile != null) {
@@ -110,7 +111,7 @@ namespace MonoDevelop.VersionControl.Views
 				                                          currentRegion.BodyRegion.BeginColumn, 
 				                                          Math.Max (1, linenum - 2), int.MaxValue);
 			
-			return doc;
+			return System.Threading.Tasks.Task.FromResult (doc);
 		}
 		
 		#endregion

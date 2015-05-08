@@ -481,9 +481,16 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
 			_label = "_Open Folder"
 			_description = "Opens the folder in a file manager."/>
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+	<Condition id="Platform" value="!mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 			_label = "O_pen Containing Folder"
 			_description = "Opens the folder that contains this file."/>
+	</Condition>
+	<Condition id="Platform" value="mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+			_label = "Reveal in Finder"
+			_description = "Reveals the file in Finder."/>
+	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
 			_label = "Build action" />
@@ -1021,8 +1028,28 @@
 			_label = "Toggle block selection mode"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev"
+			defaultHandler = "MonoDevelop.Ide.Editor.DynamicAbbrevHandler"
+			_label = "Dynamic abbrev"
+			_description = "Cycles completing the current word from matching words in all open files"
+			macShortcut = "Ctrl|/"
+			shortcut = "Alt|/" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret"
+			_label = "Find caret"
+			_description = "Animates the text editor caret to help find it"
+			shortcut = "Ctrl||"
+			macShortcut = "Meta||" />
+			
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle"
+			_label = "Toggle message bubble"
+			_description = "Toggles message bubble on/off"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
+			_label = "_Hide Issues"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
+			_label = "Toggle Issues"
+			type="array"/>
 	</Category>
-
 </Extension>
-
 </ExtensionModel>

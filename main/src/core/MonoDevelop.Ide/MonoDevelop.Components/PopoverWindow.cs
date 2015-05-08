@@ -27,7 +27,6 @@ using System;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using Gdk;
 using Xwt.Motion;
 

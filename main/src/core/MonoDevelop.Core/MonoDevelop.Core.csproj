@@ -83,6 +83,18 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
@@ -173,7 +185,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\XmlElementDataType.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\XmlMapAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Collections\Set.cs" />
-    <Compile Include="MonoDevelop.Core.Collections\ReadOnlyDictionary.cs" />
     <Compile Include="MonoDevelop.Core\Gettext.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />
@@ -366,9 +377,7 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\IEditableTextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\ITextFile.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\ITextFileProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextEncoding.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFileReader.cs" />
@@ -464,10 +473,18 @@
     <Compile Include="MonoDevelop.Core.Web\STSAuthHelper.cs" />
     <Compile Include="MonoDevelop.Core.Web\WIFTypeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ISegment.cs" />
+    <Compile Include="MonoDevelop.Core.Text\UnicodeNewLine.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextChangeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
+    <Compile Include="MonoDevelop.Core.Text\TextSourceVersionProvider.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
@@ -478,6 +495,7 @@
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
@@ -528,14 +546,6 @@
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
@@ -555,10 +565,6 @@
     <ProjectReference Include="..\..\..\external\cecil\symbols\pdb\Mono.Cecil.Pdb.csproj">
       <Project>{63E6915C-7EA4-4D76-AB28-0D7191EEA626}</Project>
       <Name>Mono.Cecil.Pdb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
-      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
-      <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

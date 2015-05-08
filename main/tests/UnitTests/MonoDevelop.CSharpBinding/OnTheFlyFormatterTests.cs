@@ -26,37 +26,35 @@
 using System;
 using NUnit.Framework;
 
-using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
-using UnitTests;
-using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.CSharpBinding
 {
 	[TestFixture]
 	public class OnTheFlyFormatterTests : UnitTests.TestBase
 	{
-		static CSharpTextEditorIndentation Setup (string input, out TestViewContent content)
+		static void Simulate (string input, Action<TestViewContent, CSharpTextEditorIndentation> act)
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			content = new TestViewContent ();
-			content.Data.Options.IndentStyle = IndentStyle.Auto;
-			tww.ViewContent = content;
-			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			var content = new TestViewContent ();
+			content.Data.Options = new CustomEditorOptions {
+				IndentStyle = IndentStyle.Auto
+			};
 
-			Document doc = new Document (tww);
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+
+			var doc = new Document (tww);
 
 			var sb = new StringBuilder ();
 			int cursorPosition = 0, selectionStart = -1, selectionEnd = -1;
@@ -94,70 +92,153 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = sb.ToString ();
 			content.CursorPosition = cursorPosition;
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+			project.Policies.Set (Projects.Policies.PolicyService.InvariantPolicies.Get<CSharpFormattingPolicy> (), CSharpFormatter.MimeType);
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor, false);
+			content.Project = project;
+			doc.SetProject (project);
+
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			
 			var ext = new CSharpTextEditorIndentation ();
 			CSharpTextEditorIndentation.OnTheFlyFormatting = true;
-			ext.Initialize (doc);
+			ext.Initialize (doc.Editor, doc);
 			content.Contents.Add (ext);
 			
 			doc.UpdateParseDocument ();
 			if (selectionStart >= 0 && selectionEnd >= 0)
 				content.GetTextEditorData ().SetSelection (selectionStart, selectionEnd);
-			return ext;
+			try {
+				act (content, ext);
+			} finally {
+				TypeSystemService.Unload (solution);
+			}
 		}
 
-		[Ignore("Semicolon formatting partially deactivated.")]
 		[Test]
 		public void TestSemicolon ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"class Foo
+			Simulate (@"class Foo
 {
 	void Test ()
 	{
 		Console.WriteLine ()      ;$
 	}
-}", out content);
-			ext.KeyPress (Gdk.Key.semicolon, ';', Gdk.ModifierType.None);
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
 			
-			var newText = content.Text;
-			Assert.AreEqual (@"class Foo
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
 {
 	void Test ()
 	{
-		Console.WriteLine ();
+		Console.WriteLine();
 	}
 }", newText);
-
+			});
 		}
 
-		[Ignore("FIXME")]
 		[Test]
 		public void TestCloseBrace ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"class Foo
+			Simulate (@"class Foo
 {
 	void Test ()
 	{
 		Console.WriteLine()                   ;
 	}$
-}", out content);
-			ext.KeyPress (Gdk.Key.braceright, '}', Gdk.ModifierType.None);
-			
-			var newText = content.Text;
-			Console.WriteLine (newText);
-			Assert.AreEqual (@"class Foo
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+
+				var newText = content.Text;
+				Console.WriteLine (newText);
+				Assert.AreEqual (@"class Foo
 {
-	void Test ()
+	void Test()
 	{
-		Console.WriteLine ();
+		Console.WriteLine();
 	}
 }", newText);
+			});
 
+		}
+
+		[Test]
+		public void TestCloseBraceIf ()
+		{
+			//Notice that some text stay unformatted by design
+			Simulate (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		if(true){
+		Console.WriteLine()                   ;
+	}$
+	}
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Console.WriteLine (newText);
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		if (true)
+		{
+			Console.WriteLine();
+		}
+	}
+}", newText);
+			});
+		}
+
+		[Test]
+		public void TestCloseBraceCatch ()
+		{
+			//Notice that some text stay unformatted by design
+			Simulate (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+					try{
+		Console.WriteLine()                   ;
+	}catch(Exception e){
+	}$
+	}
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Console.WriteLine (newText);
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+			{
+		Console.WriteLine()                   ;
+		try
+		{
+			Console.WriteLine();
+		}
+		catch (Exception e)
+		{
+		}
+	}
+}", newText);
+			});
 		}
 
 		
@@ -167,34 +248,34 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug5080 ()
 		{
-			TestViewContent content;
-			var ext = Setup ("\"Hello\n\t$", out content);
-			ext.ReindentOnTab ();
+			Simulate ("\"Hello\n\t$", (content, ext) => {
+				ext.ReindentOnTab ();
 
-			var newText = content.Text;
-			Assert.AreEqual ("\"Hello\n", newText);
+				var newText = content.Text;
+				Assert.AreEqual ("\"Hello\n", newText);
+			});
 		}
 
 
 		[Test]
 		public void TestVerbatimToNonVerbatimConversion ()
 		{
-			TestViewContent content;
-			Setup ("@$\"\t\"", out content);
-			content.GetTextEditorData ().Remove (0, 1);
-			var newText = content.Text;
-			Assert.AreEqual ("\"\\t\"", newText);
+			Simulate ("@$\"\t\"", (content, ext) => {
+				content.Data.RemoveText (0, 1);
+				var newText = content.Text;
+				Assert.AreEqual ("\"\\t\"", newText);
+			});
 		}
 
 		[Test]
 		public void TestNonVerbatimToVerbatimConversion ()
 		{
-			TestViewContent content;
-			var ext = Setup ("$\"\\t\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
-			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
-			var newText = content.Text;
-			Assert.AreEqual ("@\"\t\"", newText);
+			Simulate ("$\"\\t\"", (content, ext) => {
+				content.Data.InsertText (0, "@");
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				var newText = content.Text;
+				Assert.AreEqual ("@\"\t\"", newText);
+			});
 		}
 
 		/// <summary>
@@ -203,36 +284,36 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public void TestBug14686 ()
 		{
-			TestViewContent content;
-			var ext = Setup ("$\"\\\\\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
-			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
-			var newText = content.Text;
-			Assert.AreEqual ("@\"\\\"", newText);
+			Simulate ("$\"\\\\\"", (content, ext) => {
+				content.Data.InsertText (0, "@");
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				var newText = content.Text;
+				Assert.AreEqual ("@\"\\\"", newText);
+			});
 		}
 
 		[Test]
 		public void TestBug14686Case2 ()
 		{
-			TestViewContent content;
-			var ext = Setup ("$\"\\\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
-			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
-			var newText = content.Text;
-			Assert.AreEqual ("@\"\\\"", newText);
+			Simulate ("$\"\\\"", (content, ext) => {
+				content.Data.InsertText (0, "@");
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				var newText = content.Text;
+				Assert.AreEqual ("@\"\\\"", newText);
+			});
 
-			ext = Setup ("$\"\\\"a", out content);
-			content.GetTextEditorData ().Insert (0, "@");
-			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
-			newText = content.Text;
-			Assert.AreEqual ("@\"\\\"a", newText);
+			Simulate ("$\"\\\"a", (content, ext) => {
+				content.Data.InsertText (0, "@");
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				var newText = content.Text;
+				Assert.AreEqual ("@\"\\\"a", newText);
+			});
 
 		}
 		[Test]
 		public void TestCorrectReindentNextLine ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"
+			Simulate (@"
 class Foo
 {
 	void Bar ()
@@ -241,14 +322,14 @@ class Foo
 		} catch (Exception e) {$}
 	}
 }
-", out content);
-			ext.ReindentOnTab ();
-			MiscActions.InsertNewLine (content.Data);
-			ext.KeyPress ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None);
+", (content, ext) => {
+				ext.ReindentOnTab ();
+				EditActions.NewLine (ext.Editor);
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None));
 
-			var newText = content.Text;
+				var newText = content.Text;
 
-			var expected = @"
+				var expected = @"
 class Foo
 {
 	void Bar ()
@@ -259,9 +340,10 @@ class Foo
 	}
 }
 ";
-			if (newText != expected)
-				Console.WriteLine (newText);
-			Assert.AreEqual (expected, newText);
+				if (newText != expected)
+					Console.WriteLine (newText);
+				Assert.AreEqual (expected, newText);
+			});
 		}
 
 		/// <summary>
@@ -270,37 +352,39 @@ class Foo
 		[Test]
 		public void TestBug16174_AutoIndent ()
 		{
-			TestViewContent content;
+			Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
+				var options = DefaultSourceEditorOptions.Instance;
+				options.IndentStyle = IndentStyle.Auto;
+				ext.Editor.Options = options;
+				EditActions.NewLine (ext.Editor);
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 
-			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Auto;
-			MiscActions.InsertNewLine (content.Data);
-			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+				var newText = content.Text;
 
-			var newText = content.Text;
-
-			var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
-			if (newText != expected)
-				Console.WriteLine (newText);
-			Assert.AreEqual (expected, newText);
+				var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
+				if (newText != expected)
+					Console.WriteLine (newText);
+				Assert.AreEqual (expected, newText);
+			});
 		}
 
 		[Test]
 		public void TestBug16174_VirtualIndent ()
 		{
-			TestViewContent content;
+			Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
+				var options = DefaultSourceEditorOptions.Instance;
+				options.IndentStyle = IndentStyle.Virtual;
+				ext.Editor.Options = options;
+				EditActions.NewLine (ext.Editor);
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 
-			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Virtual;
-			MiscActions.InsertNewLine (content.Data);
-			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+				var newText = content.Text;
 
-			var newText = content.Text;
-
-			var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
-			if (newText != expected)
-				Console.WriteLine (newText);
-			Assert.AreEqual (expected, newText);
+				var expected = "namespace Foo\n{\n\tpublic class Bar\n\t{\n\n\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n";
+				if (newText != expected)
+					Console.WriteLine (newText);
+				Assert.AreEqual (expected, newText);
+			});
 		}
 
 
@@ -310,12 +394,12 @@ class Foo
 		[Test]
 		public void TestBug16283 ()
 		{
-			TestViewContent content;
-			var ext = Setup ("$\"\\dev\\null {0}\"", out content);
-			content.GetTextEditorData ().Insert (0, "@");
-			ext.KeyPress ((Gdk.Key)'@', '@', Gdk.ModifierType.None);
-			var newText = content.Text;
-			Assert.AreEqual ("@\"\\dev\null {0}\"", newText);
+			Simulate ("$\"\\dev\\null {0}\"", (content, ext) => {
+				content.Data.InsertText (0, "@");
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				var newText = content.Text;
+				Assert.AreEqual ("@\"\\dev\null {0}\"", newText);
+			});
 		}
 
 		/// <summary>
@@ -324,8 +408,7 @@ class Foo
 		[Test]
 		public void TestBug17765 ()
 		{
-			TestViewContent content;
-			var ext = Setup (@"
+			Simulate (@"
 namespace FormatSelectionTest
 {
 	public class EmptyClass
@@ -334,24 +417,51 @@ namespace FormatSelectionTest
 		{
 		}->
 	}
-}", out content);
+}", (content, ext) => {
 
-			OnTheFlyFormatter.Format (ext.document, ext.document.Editor.SelectionRange.Offset, ext.document.Editor.SelectionRange.EndOffset); 
+				OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
 
 
-			Assert.AreEqual (@"
+				Assert.AreEqual (@"
 namespace FormatSelectionTest
 {
 	public class EmptyClass
 	{
-		public EmptyClass ()
+		public EmptyClass()
 		{
 		}
 	}
-}", ext.document.Editor.Text);
+}", ext.Editor.Text);
+			});
 		}
 
+		[Test]
+		public void TestAfterCommentLine ()
+		{
+			Simulate (@"class Foo
+{
+	void Test ()
+	{
+		//random comment
+		Console.WriteLine ()      ;$
 	}
-
+}", (content, ext) => {
+				content.Data.Options = new CustomEditorOptions {
+					IndentStyle = IndentStyle.Virtual
+				};
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
+			
+				var newText = content.Text;
+				Assert.AreEqual (@"class Foo
+{
+	void Test ()
+	{
+		//random comment
+		Console.WriteLine();
+	}
+}", newText);
+			});
+		}
+	}
 }
 

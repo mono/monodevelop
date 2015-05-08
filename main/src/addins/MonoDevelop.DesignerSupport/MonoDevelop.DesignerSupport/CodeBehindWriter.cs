@@ -86,8 +86,8 @@ namespace MonoDevelop.DesignerSupport
 						return openFiles;
 					DispatchService.GuiSyncDispatch (delegate {
 						foreach (var doc in IdeApp.Workbench.Documents)
-						if (doc.GetContent<IEditableTextBuffer> () != null)
-							openFiles.Add (doc.FileName);
+							if (doc.Editor != null)
+								openFiles.Add (doc.FileName);
 					});
 				}
 				return openFiles;
@@ -170,7 +170,7 @@ namespace MonoDevelop.DesignerSupport
 						bool updated = false;
 						foreach (MonoDevelop.Ide.Gui.Document doc in IdeApp.Workbench.Documents) {
 							if (doc.FileName == item.Key) {
-								var textFile = doc.GetContent<MonoDevelop.Projects.Text.IEditableTextFile> ();
+								var textFile = doc.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 								if (textFile == null)
 									continue;
 								

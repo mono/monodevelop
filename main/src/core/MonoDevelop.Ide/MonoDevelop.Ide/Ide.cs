@@ -223,7 +223,6 @@ namespace MonoDevelop.Ide
 
 			// Perser service initialization
 			TypeSystemService.TrackFileChanges = true;
-			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
 			Customizer.OnIdeInitialized ();
 			

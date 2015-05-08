@@ -41,7 +41,7 @@ namespace UnitTests
 		
 		
 		[TestFixtureSetUp]
-		public virtual void Setup ()
+		public void Simulate ()
 		{
 			if (firstRun) {
 				string rootDir = Path.Combine (Util.TestsRootDir, "config");
@@ -61,12 +61,13 @@ namespace UnitTests
 			}
 		}
 
-		static void InternalSetup (string rootDir)
+		protected virtual void InternalSetup (string rootDir)
 		{
 			Util.ClearTmpDir ();
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
+			Xwt.Application.Initialize ();
 			Gtk.Application.Init ();
 			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();

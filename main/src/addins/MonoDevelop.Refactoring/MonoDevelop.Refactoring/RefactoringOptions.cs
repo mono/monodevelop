@@ -28,36 +28,32 @@ using MonoDevelop.Ide.Gui;
  
 using System.Text;
 using MonoDevelop.Projects.Text;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
+using System.Threading;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		readonly Task<CSharpAstResolver> resolver;
-
-		public Document Document {
+		public TextEditor Editor {
 			get;
 			private set;
 		}
-		
-		public object SelectedItem {
+
+		public DocumentContext DocumentContext {
 			get;
-			set;
+			private set;
 		}
-		
-		public ResolveResult ResolveResult {
+
+		public object SelectedItem {
 			get;
 			set;
 		}
@@ -70,43 +66,48 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
-		public TextLocation Location {
+		public DocumentLocation Location {
 			get {
-				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+				return Editor.CaretLocation;
 			}
 		}
-		//public readonly SyntaxTree Unit;
+
 
 		public RefactoringOptions ()
 		{
 		}
 
-		public RefactoringOptions (Document doc)
+		public RefactoringOptions (MonoDevelop.Ide.Gui.Document doc) : this(doc.Editor, doc)
 		{
-			this.Document = doc;
-			if (doc != null && doc.ParsedDocument != null) {
+		}
+
+		public RefactoringOptions (TextEditor editor, DocumentContext doc)
+		{
+			this.DocumentContext = doc;
+			this.Editor = editor;
+			/*if (doc != null && doc.ParsedDocument != null) {
 				var sharedResolver = doc.GetSharedResolver ();
 				if (sharedResolver == null)
 					return;
 				resolver = sharedResolver;
 				//Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
-			}
+			}*/
 		}
 
-		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+		public TextEditor GetTextEditorData ()
 		{
-			return Document.Editor;
+			return Editor;
 		}
 		
-		public static string GetWhitespaces (Document document, int insertionOffset)
+		public static string GetWhitespaces (TextEditor editor, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.Editor.Length; i++) {
-				char ch = document.Editor.GetCharAt (i);
+			for (int i = insertionOffset; i < editor.Length; i++) {
+				char ch = editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {
@@ -115,96 +116,56 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
-		
-		public string OutputNode (AstNode node)
+
+		public static string GetIndent (TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
-			using (var stringWriter = new System.IO.StringWriter ()) {
-				var formatter = new TextWriterTokenWriter (stringWriter);
-//				formatter.Indentation = indentLevel;
-				stringWriter.NewLine = Document.Editor.EolMarker;
-				
-				var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
-				node.AcceptVisitor (visitor);
-				return stringWriter.ToString ();
-			}
-		}
-		
-		public CodeGenerator CreateCodeGenerator ()
-		{
-			var result = CodeGenerator.CreateGenerator (Document);
-			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
-			return result;
-		}
-		
-		public static string GetIndent (Document document, IEntity member)
-		{
-			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Region.BeginLine, 1));
+			return GetWhitespaces (editor, member.SpanStart);
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
 		{
-			return GetWhitespaces (Document, insertionOffset);
+			return GetWhitespaces (Editor, insertionOffset);
 		}
 		
-		public string GetIndent (IEntity member)
+		public Task<ImmutableArray<string>> GetUsedNamespacesAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return GetIndent (Document, member);
-		}
-//		
-//		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
-//		{
-//			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-//		}
-//		
-//		public ParsedDocument ParseDocument ()
-//		{
-//			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
-//		}
-		
-		public List<string> GetUsedNamespaces ()
-		{
-			return GetUsedNamespaces (Document, Location);
+			return GetUsedNamespacesAsync (Editor, DocumentContext,  Editor.LocationToOffset (Location));
 		}
 		
-		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
+		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, DocumentContext doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var result = new List<string> ();
-			var pf = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			if (pf == null)
-				return result;
-			var scope = pf.GetUsingScope (loc);
-			if (scope == null)
-				return result;
-			var resolver = pf.GetResolver (doc.Compilation, loc);
-			for (var n = scope; n != null; n = n.Parent) {
-				result.Add (n.NamespaceName);
-				result.AddRange (n.Usings.Select (u => u.ResolveNamespace (resolver))
-					.Where (nr => nr != null)
-					.Select (nr => nr.FullName));
+			if (editor == null)
+				throw new System.ArgumentNullException ("editor");
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return ImmutableArray<string>.Empty;
+			var result = ImmutableArray<string>.Empty.ToBuilder ();
+			var sm = parsedDocument.GetAst<SemanticModel> (); 
+			var node = sm.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset)); 
+			
+			while (node != null) {
+				var cu = node as CompilationUnitSyntax;
+				if (cu != null) {
+					foreach (var u in cu.Usings) {
+						if (u.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective)
+							result.Add (u.Name.ToString ());
+					}
+				}
+				var ns = node as NamespaceDeclarationSyntax;
+				if (ns != null) {
+					var name = ns.Name.ToString ();
+					result.Add (name);
+					foreach (var u in ns.Usings) {
+						if (u.Kind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective) 
+							result.Add (u.Name.ToString ());
+					}
+				}
+
+				node = node.Parent;
 			}
-			return result;
-		}
-		
-		public ResolveResult Resolve (AstNode node)
-		{
-			if (!resolver.IsCompleted)
-				resolver.Wait (2000);
-			if (!resolver.IsCompleted)
-				return null;
-			return resolver.Result.Resolve (node);
-		}
-		
-		public AstType CreateShortType (IType fullType)
-		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
-			
-			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
+			return result.ToImmutable ();
 		}
-	
 		
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{

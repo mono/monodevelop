@@ -35,6 +35,8 @@ namespace UserInterfaceTests
 		readonly string genericKindRoot = "Generic";
 		readonly string cCPlusKindRoot = "C/C++";
 
+		public MiscTemplatesTest () : base (Util.TestRunId) {}
+
 		#region Generic
 
 		[Test]

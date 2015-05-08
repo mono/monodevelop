@@ -88,6 +88,19 @@ namespace MonoDevelop.Components
 			return c.ToGdkColor ();
 		}
 
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static HslColor AddLight (this HslColor color, double lightAmount)
+		{
+			color.L += lightAmount;
+			return color;
+		}
+
 		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
 		{
 			var c = color.ToXwtColor ();
@@ -165,6 +178,15 @@ namespace MonoDevelop.Components
 			x += a.X;
 			y += a.Y;
 			return new Gdk.Point (x + p.X, y + p.Y);
+		}
+
+		public static bool IsClickedNodeSelected (this Gtk.TreeView tree, int x, int y)
+		{
+			Gtk.TreePath path;
+			if (tree.GetPathAtPos (x, y, out path))
+				return tree.Selection.PathIsSelected (path);
+
+			return false;
 		}
 
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)

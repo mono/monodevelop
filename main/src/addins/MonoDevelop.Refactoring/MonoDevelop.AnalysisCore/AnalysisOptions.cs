@@ -26,14 +26,15 @@
 
 using System;
 using MonoDevelop.Core;
-using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.AnalysisCore
 {
 	public static class AnalysisOptions
 	{
+		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
+
 		public static PropertyWrapper<bool> AnalysisEnabled {
-			get { return QuickTaskStrip.EnableFancyFeatures; }
+			get { return EnableFancyFeatures; }
 		}
 
 		public readonly static PropertyWrapper<bool> EnableUnitTestEditorIntegration = new PropertyWrapper<bool> ("Testing.EnableUnitTestEditorIntegration", false);

@@ -28,7 +28,7 @@ using MonoDevelop.Components.Commands;
 using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -63,10 +63,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (ext.IsTimerOnQueue)
 				ext.ForceUpdate ();
 
-			var caretOffset = doc.Editor.Caret.Offset;
-			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
-				if (ext.UsagesSegments [i].TextSegment.Contains (caretOffset))
-					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + ext.UsagesSegments.Count - 1) % ext.UsagesSegments.Count]);
+			var caretOffset = doc.Editor.CaretOffset;
+			for (int i = 0; i < ext.Markers.Count; i++) {
+				if (ext.Markers [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers [(i + ext.Markers.Count - 1) % ext.Markers.Count]);
 			}
 		}
 	}
@@ -95,24 +95,23 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (ext == null || ext.Markers.Count == 0)
 				return;
 			
-			var caretOffset = doc.Editor.Caret.Offset;
-			for (int i = 0; i < ext.UsagesSegments.Count; i++) {
-				if (ext.UsagesSegments [i].TextSegment.Contains (caretOffset))
-					MoveToNextUsageHandler.MoveToSegment (doc, ext.UsagesSegments [(i + 1) % ext.UsagesSegments.Count]);
+			var caretOffset = doc.Editor.CaretOffset;
+			for (int i = 0; i < ext.Markers.Count; i++) {
+				if (ext.Markers [i].Contains (caretOffset))
+					MoveToNextUsageHandler.MoveToSegment (doc, ext.Markers [(i + 1) % ext.Markers.Count]);
 			}
 		}
 		
-		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, TextSegment segment)
+		public static void MoveToSegment (MonoDevelop.Ide.Gui.Document doc, ISegment segment)
 		{
-			if (segment.IsInvalid || segment.IsEmpty)
+			if (segment == null || segment.Offset < 0 || segment.Length == 0)
 				return;
-			TextEditorData data = doc.Editor;
-			data.Caret.Offset = segment.Offset;
-			data.Parent.ScrollTo (segment.EndOffset);
-			
-			var loc = data.Document.OffsetToLocation (segment.EndOffset);
-			if (data.Parent.TextViewMargin.ColumnToX (data.Document.GetLine (loc.Line), loc.Column) < data.HAdjustment.PageSize)
-				data.HAdjustment.Value = 0;
+			var data = doc.Editor;
+			data.CaretOffset = segment.Offset;
+
+//			var loc = data.OffsetToLocation (segment.EndOffset);
+//			if (data.ColumnToX (data.GetLine (loc.Line), loc.Column) < data.HAdjustment.PageSize)
+//				data.HAdjustment.Value = 0;
 		}
 	}
 }

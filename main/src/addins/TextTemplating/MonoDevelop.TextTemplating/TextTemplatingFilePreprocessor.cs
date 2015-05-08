@@ -106,4 +106,3 @@ namespace MonoDevelop.TextTemplating
 		}
 	}
 }
-

@@ -168,7 +168,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			store = new Gtk.ListStore (typeof (Xwt.Drawing.Image), // image - type
 			                           typeof (bool),       // read?
-			                           typeof (Task));       // read? -- use Pango weight
+			                           typeof (TaskListEntry));       // read? -- use Pango weight
 
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
 			filter = new TreeModelFilter (store, null);
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sw.SizeAllocated += HandleSwSizeAllocated;
 			
 			// Load existing tasks
-			foreach (Task t in TaskService.Errors) {
+			foreach (TaskListEntry t in TaskService.Errors) {
 				AddTask (t);
 			}
 
@@ -266,7 +266,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (!view.Model.GetIterFirst (out it))
 				return;
 			do {
-				Task t = (Task) view.Model.GetValue (it, DataColumns.Task);
+				TaskListEntry t = (TaskListEntry) view.Model.GetValue (it, DataColumns.Task);
 				if (t == TaskService.Errors.CurrentLocationTask) {
 					view.Selection.SelectIter (it);
 					view.ScrollToCell (view.Model.GetPath (it), view.Columns[0], false, 0, 0);
@@ -421,13 +421,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return menu;
 		}
 
-		Task SelectedTask
+		TaskListEntry SelectedTask
 		{
 			get {
 				TreeModel model;
 				TreeIter iter;
 				if (view.Selection.GetSelected (out model, out iter)) 
-					return model.GetValue (iter, DataColumns.Task) as Task;
+					return model.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				return null; // no one selected
 			}
 		}
@@ -440,7 +440,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskCopied (object o, EventArgs args)
 		{
-			Task task = SelectedTask;
+			TaskListEntry task = SelectedTask;
 			if (task != null) {
 				StringBuilder text = new StringBuilder ();
 				if (!string.IsNullOrEmpty (task.FileName)) {
@@ -480,7 +480,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		bool GetSelectedErrorReference (out string reference)
 		{
-			Task task = SelectedTask;
+			TaskListEntry task = SelectedTask;
 			if (task != null && !String.IsNullOrEmpty (task.Code)) {
 				reference = task.Code;
 				return true;
@@ -496,7 +496,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			if (view.Selection.GetSelected (out model, out iter)) {
 				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
 				store.SetValue (iter, DataColumns.Read, true);
-				Task task = store.GetValue (iter, DataColumns.Task) as Task;
+				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
 					TaskService.ShowStatus (task);
 					task.JumpToPosition ();
@@ -552,7 +552,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void ToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererToggle toggleRenderer = (Gtk.CellRendererToggle)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			toggleRenderer.Active = task.Completed;
@@ -561,7 +561,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void LineDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			SetText (textRenderer, model, iter, task, task.Line != 0 ? task.Line.ToString () : "");
@@ -570,7 +570,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void DescriptionDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			SetText (textRenderer, model, iter, task, task.Description);
@@ -579,7 +579,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void FileDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			
@@ -595,7 +595,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			SetText (textRenderer, model, iter, task, fileName);
 		}
 		
-		static string GetPath (Task task)
+		static string GetPath (TaskListEntry task)
 		{
 			if (task.WorkspaceObject != null)
 				return FileService.AbsoluteToRelativePath (task.WorkspaceObject.BaseDirectory, task.FileName);
@@ -606,13 +606,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void ProjectDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			SetText (textRenderer, model, iter, task, GetProject(task));
 		}
 		
-		static string GetProject (Task task)
+		static string GetProject (TaskListEntry task)
 		{
 			return (task != null && task.WorkspaceObject is SolutionItem)? task.WorkspaceObject.Name: string.Empty;
 		}
@@ -620,13 +620,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 		static void PathDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
-			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			TaskListEntry task = model.GetValue (iter, DataColumns.Task) as TaskListEntry; 
 			if (task == null)
 				return;
 			SetText (textRenderer, model, iter, task, GetPath (task));
 		}
 		
-		static void SetText (CellRendererText textRenderer, TreeModel model, TreeIter iter, Task task, string text)
+		static void SetText (CellRendererText textRenderer, TreeModel model, TreeIter iter, TaskListEntry task, string text)
 		{
 			textRenderer.Text = text;
 			textRenderer.Weight = (int)((bool)model.GetValue (iter, DataColumns.Read) ? Pango.Weight.Normal : Pango.Weight.Bold);
@@ -669,7 +669,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			bool canShow = false;
 
 			try {
-				Task task = store.GetValue (iter, DataColumns.Task) as Task;
+				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task == null)
 					return true;
 				if (task.Severity == TaskSeverity.Error && errorBtn.Active) canShow = true;
@@ -713,10 +713,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 			AddTasks (e.Tasks);
 		}
 		
-		public void AddTasks (IEnumerable<Task> tasks)
+		public void AddTasks (IEnumerable<TaskListEntry> tasks)
 		{
 			int n = 1;
-			foreach (Task t in tasks) {
+			foreach (TaskListEntry t in tasks) {
 				AddTaskInternal (t);
 				if ((n++ % 100) == 0) {
 					// Adding many tasks is a bit slow, so refresh the
@@ -727,13 +727,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 		
-		public void AddTask (Task t)
+		public void AddTask (TaskListEntry t)
 		{
 			AddTaskInternal (t);
 			filter.Refilter ();
 		}
 		
-		void AddTaskInternal (Task t)
+		void AddTaskInternal (TaskListEntry t)
 		{
 			if (tasks.Contains (t)) return;
 			
@@ -795,7 +795,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.TreeIter iter;
 			if (store.GetIterFromString (out iter, args.Path)) {
-				Task task = (Task)store.GetValue (iter, DataColumns.Task);
+				TaskListEntry task = (TaskListEntry)store.GetValue (iter, DataColumns.Task);
 				task.Completed = !task.Completed;
 				TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
 			}
@@ -803,8 +803,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		static int SeverityIterSort(TreeModel model, TreeIter a, TreeIter z)
 		{
-			Task aTask = model.GetValue(a, DataColumns.Task) as Task,
-			     zTask = model.GetValue(z, DataColumns.Task) as Task;
+			TaskListEntry aTask = model.GetValue(a, DataColumns.Task) as TaskListEntry,
+			     zTask = model.GetValue(z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
 			       aTask.Severity.CompareTo(zTask.Severity) :
@@ -813,8 +813,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		static int ProjectIterSort (TreeModel model, TreeIter a, TreeIter z)
 		{
-			Task aTask = model.GetValue (a, DataColumns.Task) as Task,
-			     zTask = model.GetValue (z, DataColumns.Task) as Task;
+			TaskListEntry aTask = model.GetValue (a, DataColumns.Task) as TaskListEntry,
+			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
 			       GetProject (aTask).CompareTo (GetProject (zTask)) :
@@ -823,8 +823,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		static int FileIterSort (TreeModel model, TreeIter a, TreeIter z)
 		{
-			Task aTask = model.GetValue (a, DataColumns.Task) as Task,
-			     zTask = model.GetValue (z, DataColumns.Task) as Task;
+			TaskListEntry aTask = model.GetValue (a, DataColumns.Task) as TaskListEntry,
+			     zTask = model.GetValue (z, DataColumns.Task) as TaskListEntry;
 			     
 			return (aTask != null && zTask != null) ?
 			       aTask.FileName.CompareTo (zTask.FileName) :

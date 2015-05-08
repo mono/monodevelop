@@ -105,6 +105,8 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var withToString = new WithToString ();
 
 			var numbersArrays = new int [2][];
+			numbersArrays [0] = new int [10];
+			numbersArrays [0] [7] = 24;
 			var numbersMulti = new int [3, 4, 5];
 
 			var ops1 = new BinaryOperatorOverrides (1);
@@ -138,6 +140,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 			var richObject = new RichClass ();
 			byte[] nulledByteArray = null;
+
+			var arrayWithLowerBounds = Array.CreateInstance (typeof(int), new int[] { 3, 4, 5 }, new int[] { 5, 4, 3 });
+			int m = 100;
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 4; j++) {
+					for (int k = 0; k < 5; k++) {
+						numbersMulti.SetValue (m, i, j, k);
+						arrayWithLowerBounds.SetValue (m++, i + 5, j + 4, k + 3);
+					}
+				}
+			}
 
 			Console.WriteLine (n); /*break*/
 		}

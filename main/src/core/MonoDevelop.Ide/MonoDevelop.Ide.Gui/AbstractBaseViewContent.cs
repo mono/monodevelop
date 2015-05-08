@@ -69,6 +69,14 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 		}
 
+		public virtual IEnumerable<T> GetContents<T> () where T : class
+		{
+			var t = this as T;
+			if (t != null)
+				yield return t;
+		}
+
+
 		#endregion
 
 		#region IDisposable Members

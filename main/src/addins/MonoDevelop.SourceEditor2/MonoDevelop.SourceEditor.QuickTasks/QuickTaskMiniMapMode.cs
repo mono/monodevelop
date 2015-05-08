@@ -33,10 +33,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
-	public class QuickTaskMiniMapMode : HBox
+	class QuickTaskMiniMapMode : HBox
 	{
 		QuickTaskOverviewMode rightMap;
 
@@ -49,7 +50,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			PackStart (rightMap, true, true, 0);
 		}
 
-		public class Minimpap : QuickTaskOverviewMode
+		class Minimpap : QuickTaskOverviewMode
 		{
 			const double lineHeight = 2;
 

@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
@@ -374,7 +375,7 @@ namespace MonoDevelop.Ide
 			else
 				PlaceDialog (dialog, parent);
 			#endif
-			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
+			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
 		#if MAC

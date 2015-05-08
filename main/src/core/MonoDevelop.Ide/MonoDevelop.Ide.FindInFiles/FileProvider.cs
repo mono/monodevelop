@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui;
 using System.Text;
 using MonoDevelop.Core;
 using System;
-using Mono.TextEditor.Utils;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buffer.Insert (offset, replacement);
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {
-					document.Editor.Replace (offset, length, replacement);
+					document.Editor.ReplaceText (offset, length, replacement);
 				});
 				return;
 			}
@@ -159,7 +159,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						undoGroup.Dispose ();
 						undoGroup = null;
 					}
-					document.Editor.Document.CommitUpdateAll (); });
+					/*document.Editor.Document.CommitUpdateAll (); */
+				});
 				return;
 			}
 			if (buffer != null && somethingReplaced) {
@@ -167,6 +168,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding, hadBom);
 				DesktopService.SetFileAttributes (FileName, attributes);
 			}
+			FileService.NotifyFileChanged (FileName);
 			buffer = null;
 		}
 	}

@@ -30,12 +30,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Completion;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using NUnit.Framework;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Tests.Parser
 {
@@ -65,7 +65,7 @@ namespace MonoDevelop.Xml.Tests.Parser
 			var p = new TestXmlParser (new XmlRootState (), true);
 
 			//parse and capture line/col info
-			var list = new List<TextLocation> ();
+			var list = new List<DocumentLocation> ();
 			p.Parse (txt, Array.ConvertAll (asserts, a => (Action)(() => list.Add (p.Location))));
 
 			var doc = (XDocument) p.Nodes.Last ();

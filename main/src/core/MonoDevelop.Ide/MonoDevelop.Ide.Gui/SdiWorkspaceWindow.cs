@@ -121,7 +121,10 @@ namespace MonoDevelop.Ide.Gui
 			Add (box);
 			
 			SetTitleEvent(null, null);
+		}
 
+		internal void CreateCommandHandler ()
+		{
 			commandHandler = new ViewCommandHandlers (this);
 		}
 

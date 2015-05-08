@@ -43,6 +43,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.Execution;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -659,31 +660,29 @@ namespace MonoDevelop.Ide
 				if (reloading)
 					SetReloading (false);
 			}
-			
-			Gtk.Application.Invoke (delegate {
-				using (monitor) {
-					try {
-						// Add the item in the GUI thread. It is not safe to do it in the background thread.
-						if (!monitor.IsCancelRequested)
-							Items.Add (item);
-						else {
-							item.Dispose ();
-							return;
-						}
-						if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
-							IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
-						if (Items.Count == 1 && loadPreferences) {
-							timer.Trace ("Restoring workspace preferences");
-							RestoreWorkspacePreferences (item);
-						}
-						timer.Trace ("Reattaching documents");
-						ReattachDocumentProjects (null);
-						monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
-					} finally {
-						timer.End ();
-					}
+			try {
+				if (!monitor.IsCancelRequested)
+					Items.Add (item);
+				else {
+					item.Dispose ();
+					monitor.Dispose ();
+					return;
 				}
-			});
+				Gtk.Application.Invoke (delegate {
+					if (IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem == null)
+						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = GetAllSolutions ().FirstOrDefault ();
+					if (Items.Count == 1 && loadPreferences) {
+						timer.Trace ("Restoring workspace preferences");
+						RestoreWorkspacePreferences (item);
+					}
+					timer.Trace ("Reattaching documents");
+					ReattachDocumentProjects (null);
+					monitor.ReportSuccess (GettextCatalog.GetString ("Solution loaded."));
+					monitor.Dispose ();
+				});
+			} finally {
+				timer.End ();
+			}
 		}
 
 		void RestoreWorkspacePreferences (WorkspaceItem item)
@@ -1013,6 +1012,11 @@ namespace MonoDevelop.Ide
 		
 		internal void NotifyItemAdded (WorkspaceItem item)
 		{
+			try {
+				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item, null);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not load parser database.", ex);
+			}
 			if (DispatchService.IsGuiThread)
 				NotifyItemAddedGui (item, IsReloading);
 			else {
@@ -1022,18 +1026,9 @@ namespace MonoDevelop.Ide
 				});
 			}
 		}
-		
+
 		void NotifyItemAddedGui (WorkspaceItem item, bool reloading)
 		{
-			try {
-//				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item);
-//				Mono.Profiler.RuntimeControls.DisableProfiler ();
-//				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Could not load parser database.", ex);
-			}
-
 			Workspace ws = item as Workspace;
 			if (ws != null) {
 				ws.DescendantItemAdded += descendantItemAddedHandler;
@@ -1085,10 +1080,8 @@ namespace MonoDevelop.Ide
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
-			
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
-//			ParserDatabase.Unload (item);
-			
+
 			NotifyDescendantItemRemoved (this, args);
 		}
 		
@@ -1326,7 +1319,7 @@ namespace MonoDevelop.Ide
 		/// once for the workspace, and once for each solution.
 		/// </remarks>
 		public event EventHandler<WorkspaceItemEventArgs> WorkspaceItemLoaded;
-		
+
 		/// <summary>
 		/// Fired when a workspace item (a solution or workspace) is unloaded
 		/// </summary>

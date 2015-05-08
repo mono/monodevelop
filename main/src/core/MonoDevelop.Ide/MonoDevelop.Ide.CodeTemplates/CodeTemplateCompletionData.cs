@@ -28,20 +28,22 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
 	public interface ICodeTemplateHandler
 	{
-		void InsertTemplate (CodeTemplate template, Document document);
+		void InsertTemplate (CodeTemplate template, TextEditor editor, DocumentContext context);
 	}
 	
-	public class CodeTemplateCompletionData : CompletionData
+	class CodeTemplateCompletionData : CompletionData
 	{
-		Document doc;
-		CodeTemplate template;
+		readonly TextEditorExtension doc;
+		readonly CodeTemplate template;
 		
-		public CodeTemplateCompletionData (Document doc, CodeTemplate template)
+		public CodeTemplateCompletionData (TextEditorExtension doc, CodeTemplate template)
 		{
 			this.doc      = doc;
 			this.template = template;
@@ -51,9 +53,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.Description = template.Shortcut + Environment.NewLine + GettextCatalog.GetString (template.Description);
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			template.Insert (doc);
+			template.Insert (doc.Editor, doc.DocumentContext);
 		}
 	}
 }

@@ -29,6 +29,8 @@
 using System;
 using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -40,11 +42,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor editor 
-				= consumer as MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor;
+			var editor = consumer as IReadonlyTextDocument;
 			if (editor != null) {
-				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.Name)) {
+				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.FileName)) {
 					if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 						continue;
 					yield return new TemplateToolboxNode (ct) {

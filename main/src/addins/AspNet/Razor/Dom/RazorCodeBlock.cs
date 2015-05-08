@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Xml.Parser;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {
 	public class RazorCodeBlock : RazorCodeFragment
 	{
-		public RazorCodeBlock (TextLocation start) : base (start)
+		public RazorCodeBlock (DocumentLocation start) : base (start)
 		{
 		}
 

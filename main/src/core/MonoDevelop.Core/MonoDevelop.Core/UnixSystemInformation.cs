@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.Core
 {
-	public class UnixSystemInformation : SystemInformation
+	public abstract class UnixSystemInformation : SystemInformation
 	{
 		internal override void AppendOperatingSystem (System.Text.StringBuilder sb)
 		{

@@ -32,7 +32,7 @@ using Mono.Addins.Gui;
 using MonoDevelop.Ide.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Core.Setup;
-using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Updater
 {

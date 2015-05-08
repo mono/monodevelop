@@ -61,6 +61,24 @@
     <Reference Include="GuiUnit">
       <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -202,6 +220,11 @@
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.NUnit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
+      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
@@ -219,17 +242,12 @@
     <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBaseTest.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestWorkbenchWindow.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestViewContent.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\MemberTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding\ProjectDomTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\TestDocument.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FoldingParserTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\OnTheFlyFormatterTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\CompletionListWindowTests.cs" />
-    <Compile Include="MonoDevelop.CSharpBinding.Refactoring\ResolveNamespaceTests.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\MemberCollectorTests.cs" />
-    <Compile Include="MonoDevelop.Ide.FindInFiles\SearchCollectorTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Refactoring\GenerateNewMemberTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileServiceTests.cs" />
@@ -237,20 +255,10 @@
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
     <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
-    <Compile Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\LogViewTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
@@ -265,21 +273,47 @@
     <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplateParserTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectCreateInformationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextSourceTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ReadonlyTextDocumentTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextDocumentTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Tests\StringTextSource_Tests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorTestBase.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Tests\SimpleReadonlyDocument_Tests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Tests\MonoTextEditorImplementationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Commands\CodeCommentTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorProjectionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcherTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Commands\SortSelectedLinesTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\TypeSystemServiceTestExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileServiceTests.cs" />
     <Compile Include="MonoDevelop.Core\FilePathTests.cs" />
+    <Compile Include="MonoDevelop.Core\BaseCredentialsProviderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
-    <None Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
-    <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
-    <None Include="MonoDevelop.Projects\DomTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
+    <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
+    <None Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
+    <None Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
+    <None Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
+    <None Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
+    <None Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
+    <None Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
+    <Folder Include="MonoDevelop.Xml.StateEngine\" />
     <Folder Include="MonoDevelop.Ide.Templates\" />
+    <Folder Include="MonoDevelop.Ide.Editor\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Tests\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
   </ItemGroup>
 </Project>

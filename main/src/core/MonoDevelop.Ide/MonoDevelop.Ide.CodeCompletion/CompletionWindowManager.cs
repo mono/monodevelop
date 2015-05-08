@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -80,20 +81,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 		
 		// ext may be null, but then parameter completion don't work
-		public static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		internal static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
 			try {
 				if (ext != null) {
-					int inserted = ext.document.Editor.EnsureCaretIsNotVirtual ();
+					int inserted = ext.Editor.EnsureCaretIsNotVirtual ();
 					if (inserted > 0)
-						completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
+						completionContext.TriggerOffset = ext.Editor.CaretOffset;
 				}
 				if (wnd == null) {
 					wnd = new CompletionListWindow ();
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
-				if (ext != null)
-					wnd.TransientFor = ext.document.Editor.Parent.Toplevel as Gtk.Window;
+				if (ext != null) {
+					var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
+					wnd.TransientFor = widget?.Parent?.Toplevel as Gtk.Window;
+				}
 				wnd.Extension = ext;
 				try {
 					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {
@@ -136,21 +139,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return false;
-			if (keyChar != '\0') {
+			if (descriptor.KeyChar != '\0') {
 				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
 			}
-			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
+			return wnd.PreProcessKeyEvent (descriptor);
 		}
 
 		public static void UpdateCursorPosition ()
 		{
 			if (!IsVisible)
 				return;
-
+			if (wnd.IsInCompletion)
+				return;
 			var caretOffset = wnd.CompletionWidget.CaretOffset;
 			if (caretOffset < wnd.StartOffset || caretOffset > wnd.EndOffset)
 				HideWindow ();
@@ -164,11 +168,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return;
-			wnd.PostProcessKeyEvent (key, keyChar, modifier);
+			wnd.PostProcessKeyEvent (descriptor);
 		}
 
 		public static void RepositionWindow ()
@@ -184,7 +188,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
 			if (wnd.Extension != null)
-				wnd.Extension.document.Editor.FixVirtualIndentation ();
+				wnd.Extension.Editor.FixVirtualIndentation ();
 			wnd.HideWindow ();
 			OnWindowClosed (EventArgs.Empty);
 			//DestroyWindow ();

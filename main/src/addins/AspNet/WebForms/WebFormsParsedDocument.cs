@@ -29,11 +29,12 @@
 using System;
 using System.Collections.Generic;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Ide.Editor;
+using System.Linq;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -51,8 +52,13 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		public WebFormsPageInfo Info { get; private set; }
 		public WebSubtype Type { get; private set; }
-		
-		public override IEnumerable<FoldingRegion> Foldings {
+
+		public override System.Threading.Tasks.Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (System.Threading.CancellationToken cancellationToken)
+		{
+			return System.Threading.Tasks.Task.FromResult((IReadOnlyList<FoldingRegion>)Foldings.ToList ());
+		}
+
+		public IEnumerable<FoldingRegion> Foldings {
 			get {				
 				if (XDocument == null)
 					yield break;
@@ -70,7 +76,7 @@ namespace MonoDevelop.AspNet.WebForms
 							
 							yield return new FoldingRegion (
 								string.Format ("<{0}#{1}... >", el.Name.FullName, controlId),
-							    new DomRegion (el.Region.Begin, el.ClosingTag.Region.End));       
+							    new DocumentRegion (el.Region.Begin, el.ClosingTag.Region.End));       
 						}
 						continue;
 					}

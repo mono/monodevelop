@@ -35,6 +35,7 @@ using Mono.Addins;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Text;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -107,6 +108,10 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.ProjectOperations.CurrentSelectedSolutionChanged += HandleCurrentSelectedSolutionChanged;
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+			MonoDevelopWorkspace.LoadingFinished += delegate {
+				ProjectSearchCategory.UpdateSymbolInfos ();
+				HandleSearchEntryChanged (null, EventArgs.Empty);
+			};
 		}
 
 		public void Initialize ()
@@ -533,7 +538,6 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.ShowAll ();
 			}
-
 			popup.Update (pattern);
 		}
 
@@ -545,9 +549,9 @@ namespace MonoDevelop.Components.MainToolbar
 				var doc = IdeApp.Workbench.ActiveDocument;
 				if (doc != null && doc.Editor != null) {
 					doc.Select ();
-					doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+					doc.Editor.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 					doc.Editor.CenterToCaret ();
-					doc.Editor.Parent.StartCaretPulseAnimation ();
+					doc.Editor.StartCaretPulseAnimation ();
 				}
 				return;
 			}

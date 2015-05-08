@@ -34,24 +34,25 @@ using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Components;
 using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
+	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker, MonoDevelop.Ide.Editor.IMessageBubbleLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
 		internal const int border = 4;
 		
-		TextEditor editor {
+		MonoTextEditor editor {
 			get { return cache.editor;}
 		}
 
 		public override bool IsVisible {
 			get { return !task.Completed; }
-			set { task.Completed = !value; }
+			set { task.Completed = !value; editor.QueueDraw (); }
 		}
 
 		public bool UseVirtualLines { get; set; }
@@ -61,13 +62,14 @@ namespace MonoDevelop.SourceEditor
 			get { return errors; }
 		}
 
-		Task task;
+		TaskListEntry task;
+		TaskListEntry primaryTask;
 		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
 		internal double lastHeight = 0;
 
-		public double GetLineHeight (TextEditor editor)
+		public double GetLineHeight (MonoTextEditor editor)
 		{
 			return editor.LineHeight;
 			/*
@@ -96,8 +98,10 @@ namespace MonoDevelop.SourceEditor
 			return height;*/
 		}
 
-		public void SetPrimaryError (string text)
+		public void SetPrimaryError (TaskListEntry task)
 		{
+			this.primaryTask = task;
+			var text = task.Description;
 			EnsureLayoutCreated (editor);
 			
 			var match = mcsErrorFormat.Match (text);
@@ -143,7 +147,16 @@ namespace MonoDevelop.SourceEditor
 
 		string initialText;
 		bool isError;
-		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
+
+		public MessageBubbleTextMarker (MessageBubbleCache cache)
+		{
+			if (cache == null)
+				throw new ArgumentNullException ("cache");
+			this.cache = cache;
+			this.IsVisible = true;
+		}
+
+		internal MessageBubbleTextMarker (MessageBubbleCache cache, TaskListEntry task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			if (cache == null)
 				throw new ArgumentNullException ("cache");
@@ -158,15 +171,18 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		static System.Text.RegularExpressions.Regex mcsErrorFormat = new System.Text.RegularExpressions.Regex ("(.+)\\(CS\\d+\\)\\Z");
-		public void AddError (Task task, bool isError, string errorMessage)
+		public void AddError (TaskListEntry task, bool isError, string errorMessage)
 		{
+			if (this.task == null) {
+				this.task = task;
+			}
 			var match = mcsErrorFormat.Match (errorMessage);
 			if (match.Success)
 				errorMessage = match.Groups [1].Value;
 			errors.Add (new ErrorText (task, isError, errorMessage));
 			DisposeLayout ();
 		}
-		
+
 		public void DisposeLayout ()
 		{
 			layouts = null;
@@ -271,7 +287,7 @@ namespace MonoDevelop.SourceEditor
 			get { return layouts; }
 		}
 		
-		internal void EnsureLayoutCreated (TextEditor editor)
+		internal void EnsureLayoutCreated (MonoTextEditor editor)
 		{
 			if (layouts != null)
 				return;
@@ -332,12 +348,12 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region IActionTextMarker implementation
-		public bool MousePressed (TextEditor editor, MarginMouseEventArgs args)
+		public bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args)
 		{
 			return false;
 		}
 
-		public void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
+		public void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
 		{
 			if (!IsVisible)
 				return;
@@ -355,12 +371,12 @@ namespace MonoDevelop.SourceEditor
 		double bubbleWidth;
 		bool bubbleIsReduced;
 		
-		public override void Draw (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
+		public override void Draw (MonoTextEditor editor, Cairo.Context g, LineMetrics metrics)
 		{
 
 		}
 
-		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, double y, EndOfLineMetrics metrics)
+		public override void DrawAfterEol (MonoTextEditor textEditor, Cairo.Context g, EndOfLineMetrics metrics)
 		{
 			if (!IsVisible)
 				return;
@@ -374,6 +390,7 @@ namespace MonoDevelop.SourceEditor
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
 			var drawLayout = layouts[0].Layout;
+			var y = metrics.LineYRenderStartPosition;
 			bool customLayout = true; //sx + width > editor.Allocation.Width;
 			bool hideText = false;
 			bubbleIsReduced = customLayout;
@@ -494,7 +511,7 @@ namespace MonoDevelop.SourceEditor
 			return margin is IconMargin;
 		}
 
-		void DrawIconMarginBackground (TextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
+		void DrawIconMarginBackground (MonoTextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
 			cr.SetSourceColor (IconMarginColor.Color);
@@ -510,7 +527,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var tx = Math.Round (metrics.X + (metrics.Width - cache.errorPixbuf.Width) / 2) - 1;
 			var ty = Math.Floor (metrics.Y + (metrics.Height - cache.errorPixbuf.Height) / 2);
@@ -521,7 +538,7 @@ namespace MonoDevelop.SourceEditor
 			cr.Restore ();
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			if (metrics.Margin is FoldMarkerMargin || metrics.Margin is GutterMargin || metrics.Margin is ActionMargin)
 				return DrawMarginBackground (editor, metrics.Margin, cr, metrics.Area, lineSegment, metrics.LineNumber, metrics.X, metrics.Y, metrics.Height);
@@ -532,7 +549,7 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 
-		bool DrawMarginBackground (TextEditor e, Margin margin, Cairo.Context cr, Cairo.Rectangle area, DocumentLine documentLine, long line, double x, double y, double lineHeight)
+		bool DrawMarginBackground (MonoTextEditor e, Margin margin, Cairo.Context cr, Cairo.Rectangle area, DocumentLine documentLine, long line, double x, double y, double lineHeight)
 		{
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this)
 				return false;
@@ -547,7 +564,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region text background
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context g, LineMetrics metrics)
 		{
 			if (!IsVisible)
 				return false;
@@ -569,7 +586,7 @@ namespace MonoDevelop.SourceEditor
 
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			bool highlighted = active == 0 && isCaretInLine;
-
+			var y = metrics.LineYRenderStartPosition;
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
 				DrawRectangle (g, x, y, right, editor.LineHeight);
@@ -627,7 +644,7 @@ namespace MonoDevelop.SourceEditor
 			return true;
 		}
 
-		void DrawErrorMarkers (TextEditor editor, Cairo.Context g, LineMetrics metrics, double y)
+		void DrawErrorMarkers (MonoTextEditor editor, Cairo.Context g, LineMetrics metrics, double y)
 		{
 			uint curIndex = 0, byteIndex = 0;
 
@@ -652,5 +669,38 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
+			get {
+				return new DocumentLineWrapper (LineSegment);
+			}
+		}
+
+		void MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.AddTask (TaskListEntry task)
+		{
+			AddError (task, task.Severity == TaskSeverity.Error, task.Description);
+		}
+
+		TaskListEntry MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.PrimaryTask {
+			get {
+				return primaryTask;
+			}
+			set {
+				SetPrimaryError (task);
+			}
+		}
+
+		int MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.TaskCount {
+			get {
+				return errors.Count;
+			}
+		}
+
+		IEnumerable<TaskListEntry> MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.Tasks {
+			get {
+				return errors.Select (e => e.Task);
+			}
+		}
+
 	}
 }

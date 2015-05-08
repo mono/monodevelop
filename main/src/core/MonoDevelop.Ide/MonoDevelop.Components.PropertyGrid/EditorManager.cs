@@ -158,7 +158,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					return kvp.Value;
 
 			if (tc.CanConvertTo (typeof(string)) || tc.GetStandardValuesSupported (context)) {
-				return typeof(TextEditor);
+				return typeof(PropertyTextEditor);
 			}
 
 			//nothing found - just display type

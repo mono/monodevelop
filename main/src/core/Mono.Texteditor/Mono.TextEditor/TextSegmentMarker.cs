@@ -53,7 +53,11 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public virtual void Draw (MonoTextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		{
+		}
+
+		public virtual void DrawBackground (MonoTextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 		}
 		
@@ -67,7 +71,7 @@ namespace Mono.TextEditor
 	{
 		void TransformChunks (List<Chunk> chunks);
 
-		void ChangeForeColor (TextEditor editor, Chunk chunk, ref Cairo.Color color);
+		void ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color);
 	}
 
 	public class UnderlineTextSegmentMarker : TextSegmentMarker
@@ -88,14 +92,16 @@ namespace Mono.TextEditor
 		public Cairo.Color Color { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
-			
-			
+			var layout = metrics.Layout.Layout;
+			double startXPos = metrics.TextRenderStartPosition;
+			double endXPos = metrics.TextRenderEndPosition;
+			double y = metrics.LineYRenderStartPosition;
 			if (editor.IsSomethingSelected) {
 				var range = editor.SelectionRange;
 				if (range.Contains (markerStart)) {
@@ -121,7 +127,7 @@ namespace Mono.TextEditor
 			InternalDraw (markerStart, markerEnd, editor, cr, layout, false, startOffset, endOffset, y, startXPos, endXPos);
 		}
 		
-		void InternalDraw (int markerStart, int markerEnd, TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		void InternalDraw (int markerStart, int markerEnd, MonoTextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
 			if (markerStart >= markerEnd)
 				return;

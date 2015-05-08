@@ -50,5 +50,15 @@ namespace Mono.TextEditor
 			this.ItemSegment = new TextSegment (offset, length);
 			this.Item = item;
 		}
+
+		public override bool Equals (object obj)
+		{
+			return ItemSegment.Equals (((TooltipItem)obj).ItemSegment);
+		}
+
+		public override int GetHashCode ()
+		{
+			return ItemSegment.GetHashCode ();
+		}
 	}
 }

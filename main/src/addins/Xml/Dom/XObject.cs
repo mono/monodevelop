@@ -26,21 +26,20 @@
 
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public abstract class XObject
 	{
-		DomRegion region;
+		DocumentRegion region;
 
-		protected XObject (TextLocation start)
+		protected XObject (DocumentLocation start)
 		{
-			region = new DomRegion (start, TextLocation.Empty);
+			region = new DocumentRegion (start, DocumentLocation.Empty);
 		}
 
-		protected XObject (DomRegion region)
+		protected XObject (DocumentRegion region)
 		{
 			this.region = region;
 		}
@@ -57,13 +56,13 @@ namespace MonoDevelop.Xml.Dom
 			}
 		}
 
-		public DomRegion Region {
+		public DocumentRegion Region {
 			get { return region; }
 		}
 
-		public void End (TextLocation endLocation)
+		public void End (DocumentLocation endLocation)
 		{
-			region = new DomRegion (region.Begin, endLocation);
+			region = new DocumentRegion (region.Begin, endLocation);
 		}
 
 		public bool IsEnded {

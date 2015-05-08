@@ -25,7 +25,6 @@
 
 using System;
 using System.IO;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
@@ -39,12 +38,10 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 
-using GLib;
 using MonoDevelop.Components.DockToolbars;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
-using Mono.TextEditor;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
 
@@ -368,7 +365,7 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
+		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
 		{
 			bool isFile = content.IsFile;
 			if (!isFile) {
@@ -404,6 +401,10 @@ namespace MonoDevelop.Ide.Gui
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
 			sdiWorkspaceWindow.Closed += CloseWindowEvent;
 			sdiWorkspaceWindow.Show ();
+			if (binding != null)
+				DisplayBindingService.AttachSubWindows (sdiWorkspaceWindow, binding);
+
+			sdiWorkspaceWindow.CreateCommandHandler ();
 
 			tab.Content = sdiWorkspaceWindow;
 			if (mimeimage != null)

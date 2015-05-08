@@ -24,15 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public class XClosingTag : XNode, INamedXObject
 	{
-		public XClosingTag (TextLocation start) : base (start) {}
+		public XClosingTag (DocumentLocation start) : base (start) {}
 
-		public XClosingTag (XName name, TextLocation start) : base (start)
+		public XClosingTag (XName name, DocumentLocation start) : base (start)
 		{
 			this.Name = name;
 		}

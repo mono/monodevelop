@@ -76,6 +76,9 @@ namespace Mono.TextEditor
 			get {
 				return textEditorData.Document;
 			}
+			set {
+				textEditorData.Document = value;
+			}
 		}
 
 		public bool IsDisposed {
@@ -296,8 +299,8 @@ namespace Mono.TextEditor
 			ResizeMode = ResizeMode.Queue;
 		}
 
-		TextEditor editor;
-		internal void Initialize (TextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
+		MonoTextEditor editor;
+		internal void Initialize (MonoTextEditor editor, TextDocument doc, ITextEditorOptions options, EditMode initialMode)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -1479,8 +1482,10 @@ namespace Mono.TextEditor
 			} else {
 				double caretX = ColumnToX (Document.GetLine (p.Line), p.Column);
 				double textWith = Allocation.Width - textViewMargin.XOffset;
-				if (this.textEditorData.HAdjustment.Value > caretX) {
-					this.textEditorData.HAdjustment.Value = caretX;
+				if (caretX < this.textEditorData.HAdjustment.Upper) {
+					this.textEditorData.HAdjustment.Value = 0;
+				} else if (this.textEditorData.HAdjustment.Value > caretX) {
+					this.textEditorData.HAdjustment.Value = System.Math.Max (0, caretX - this.textEditorData.HAdjustment.Upper / 2);
 				} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
 					double adjustment = System.Math.Max (0, caretX - textWith + TextViewMargin.CharWidth);
 					this.textEditorData.HAdjustment.Value = adjustment;
@@ -1953,7 +1958,16 @@ namespace Mono.TextEditor
 				this.textEditorData.SelectionAnchor = value;
 			}
 		}
-		
+
+		public int SelectionLead {
+			get {
+				return this.textEditorData.SelectionLead;
+			}
+			set {
+				this.textEditorData.SelectionLead = value;
+			}
+		}
+
 		public IEnumerable<DocumentLine> SelectedLines {
 			get {
 				return this.textEditorData.SelectedLines;
@@ -2277,7 +2291,7 @@ namespace Mono.TextEditor
 		
 		class CaretPulseAnimation : IAnimationDrawer
 		{
-			TextEditor editor;
+			MonoTextEditor editor;
 			
 			public double Percent { get; set; }
 			
@@ -2294,7 +2308,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public CaretPulseAnimation (TextEditor editor)
+			public CaretPulseAnimation (MonoTextEditor editor)
 			{
 				this.editor = editor;
 			}
@@ -2331,7 +2345,7 @@ namespace Mono.TextEditor
 		
 		public class RegionPulseAnimation : IAnimationDrawer
 		{
-			TextEditor editor;
+			MonoTextEditor editor;
 			
 			public PulseKind Kind { get; set; }
 			public double Percent { get; set; }
@@ -2352,10 +2366,10 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public RegionPulseAnimation (TextEditor editor, Gdk.Point position, Gdk.Size size)
+			public RegionPulseAnimation (MonoTextEditor editor, Gdk.Point position, Gdk.Size size)
 				: this (editor, new Gdk.Rectangle (position, size)) {}
 			
-			public RegionPulseAnimation (TextEditor editor, Gdk.Rectangle region)
+			public RegionPulseAnimation (MonoTextEditor editor, Gdk.Rectangle region)
 			{
 				if (region.X < 0 || region.Y < 0 || region.Width < 0 || region.Height < 0)
 					throw new ArgumentException ("region is invalid");
@@ -2478,7 +2492,7 @@ namespace Mono.TextEditor
 				set;
 			}
 			
-			public SearchHighlightPopupWindow (TextEditor editor) : base (editor)
+			public SearchHighlightPopupWindow (MonoTextEditor editor) : base (editor)
 			{
 			}
 			
@@ -2753,9 +2767,11 @@ namespace Mono.TextEditor
 				tipItem = item;
 				Gtk.Window tw = null;
 				try {
-					tw = provider.ShowTooltipWindow (editor, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
+					tw = provider.CreateTooltipWindow (editor, nextTipOffset, nextTipModifierState, item);
+					if (tw != null)
+						provider.ShowTooltipWindow (editor, tw, nextTipOffset, nextTipModifierState, tipX + (int) TextViewMargin.XOffset, tipY, item);
 				} catch (Exception e) {
-					Console.WriteLine ("-------- Exception while creating tooltip:");
+					Console.WriteLine ("-------- Exception while creating tooltip: " + provider);
 					Console.WriteLine (e);
 				}
 				if (tw == tipWindow)
@@ -2821,9 +2837,12 @@ namespace Mono.TextEditor
 			nextTipOffset = -1;
 		}
 		
-		void OnDocumentStateChanged (object s, EventArgs a)
+		void OnDocumentStateChanged (object s, DocumentChangeEventArgs args)
 		{
 			HideTooltip ();
+			var start = editor.Document.OffsetToLineNumber (args.Offset);
+			var end = editor.Document.OffsetToLineNumber (args.Offset + args.InsertionLength);
+			editor.Document.CommitMultipleLineUpdate (start, end);
 		}
 		
 		void OnTextSet (object sender, EventArgs e)
@@ -3047,12 +3066,12 @@ namespace Mono.TextEditor
 
 		class SetCaret 
 		{
-			TextEditor view;
+			MonoTextEditor view;
 			int line, column;
 			bool highlightCaretLine;
 			bool centerCaret;
 			
-			public SetCaret (TextEditor view, int line, int column, bool highlightCaretLine, bool centerCaret)
+			public SetCaret (MonoTextEditor view, int line, int column, bool highlightCaretLine, bool centerCaret)
 			{
 				this.view = view;
 				this.line = line;
@@ -3122,12 +3141,12 @@ namespace Mono.TextEditor
 			return Gtk.Widget.GType;
 		}
 		
-		internal List<TextEditor.EditorContainerChild> containerChildren = new List<TextEditor.EditorContainerChild> ();
+		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
 		
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
 			widget.Parent = this;
-			TextEditor.EditorContainerChild info = new TextEditor.EditorContainerChild (this, widget);
+			MonoTextEditor.EditorContainerChild info = new MonoTextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
 			containerChildren.Add (info);
@@ -3218,7 +3237,7 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (child => child.Child.Unmap ());
 		}
 
-		void ResizeChild (Rectangle allocation, TextEditor.EditorContainerChild child)
+		void ResizeChild (Rectangle allocation, MonoTextEditor.EditorContainerChild child)
 		{
 			Requisition req = child.Child.SizeRequest ();
 			var childRectangle = new Gdk.Rectangle (child.X, child.Y, req.Width, req.Height);

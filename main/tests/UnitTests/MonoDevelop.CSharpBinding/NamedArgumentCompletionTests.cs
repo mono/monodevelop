@@ -26,23 +26,18 @@
 using System;
 using NUnit.Framework;
 
-using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.CSharp.Formatting;
 using UnitTests;
-using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharpBinding.Tests;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -51,11 +46,14 @@ namespace MonoDevelop.CSharpBinding
 	{
 		class TestCompletionWidget : ICompletionWidget 
 		{
-			Document doc;
+			DocumentContext documentContext;
 
-			public TestCompletionWidget (Document doc)
+			TextEditor editor;
+
+			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext documentContext)
 			{
-				this.doc = doc;
+				this.editor = editor;
+				this.documentContext = documentContext;
 			}
 
 			public string CompletedWord {
@@ -70,17 +68,17 @@ namespace MonoDevelop.CSharpBinding
 
 			public string GetText (int startOffset, int endOffset)
 			{
-				return doc.Editor.GetTextBetween (startOffset, endOffset);
+				return editor.GetTextBetween (startOffset, endOffset);
 			}
 
 			public char GetChar (int offset)
 			{
-				return  doc.Editor.GetCharAt (offset);
+				return  editor.GetCharAt (offset);
 			}
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var line = doc.Editor.GetLineByOffset (triggerOffset); 
+				var line = editor.GetLineByOffset (triggerOffset); 
 				return new CodeCompletionContext {
 					TriggerOffset = triggerOffset,
 					TriggerLine = line.LineNumber,
@@ -94,7 +92,7 @@ namespace MonoDevelop.CSharpBinding
 
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					return CreateCodeCompletionContext (doc.Editor.Caret.Offset);
+					return CreateCodeCompletionContext (editor.CaretOffset);
 				}
 			}
 
@@ -119,13 +117,16 @@ namespace MonoDevelop.CSharpBinding
 
 			public int CaretOffset {
 				get {
-					return doc.Editor.Caret.Offset;
+					return editor.CaretOffset;
+				}
+				set {
+					editor.CaretOffset = value;
 				}
 			}
 
 			public int TextLength {
 				get {
-					return doc.Editor.Document.TextLength;
+					return editor.Length;
 				}
 			}
 
@@ -140,19 +141,30 @@ namespace MonoDevelop.CSharpBinding
 					return null;
 				}
 			}
+
+			double ICompletionWidget.ZoomLevel {
+				get {
+					return 1;
+				}
+			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
+			}
 			#endregion
 		}
 
 
 		static CSharpCompletionTextEditorExtension Setup (string input, out TestViewContent content)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			var tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
 			tww.ViewContent = content;
-			content.ContentName = "a.cs";
-			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
 
-			Document doc = new Document (tww);
+			var doc = new MonoDevelop.Ide.Gui.Document (tww);
 
 			var text = input;
 			int endPos = text.IndexOf ('$');
@@ -162,12 +174,25 @@ namespace MonoDevelop.CSharpBinding
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile (content.ContentName, BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new NullProgressMonitor ())
+				TypeSystemService.Load (solution, monitor, false);
+			content.Project = project;
+			doc.SetProject (project);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
+			TypeSystemService.Unload (solution);
 			return compExt;
 		}
 
@@ -176,17 +201,19 @@ namespace MonoDevelop.CSharpBinding
 			TestViewContent content;
 			var ext = Setup (input, out content);
 
-			ListWindow.ClearHistory ();
 			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Document);
+			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var t = ext.Document.Compilation.FindType (new FullTypeName (type)); 
-			var foundMember = t.GetMembers (m => m.Name == member).First ();
-			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
-			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
+			var sm = ext.DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+
+			var t = sm.Compilation.GetTypeByMetadataName (type); 
+			var foundMember = t.GetMembers().First (m => m.Name == member);
+			var data = new RoslynSymbolCompletionData (null, ext, foundMember);
+			data.DisplayFlags |= DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, key, (char)key, Gdk.ModifierType.None, true, false); 
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
+
 			return widget.CompletedWord;
 		}
 

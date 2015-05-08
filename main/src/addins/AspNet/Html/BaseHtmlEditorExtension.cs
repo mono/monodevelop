@@ -84,7 +84,7 @@ namespace MonoDevelop.AspNet.Html
 			return new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			

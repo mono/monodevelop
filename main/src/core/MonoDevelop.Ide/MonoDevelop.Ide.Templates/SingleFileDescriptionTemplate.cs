@@ -40,6 +40,7 @@ using MonoDevelop.Ide.StandardHeader;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using MonoDevelop.Core.StringParsing;
 
@@ -297,7 +298,7 @@ namespace MonoDevelop.Ide.Templates
 			content = ProcessContent (content, model);
 
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
-			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
+			var formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			
 			if (formatter != null) {
 				var formatted = formatter.FormatText (policyParent != null ? policyParent.Policies : null, content);
@@ -317,7 +318,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
@@ -327,7 +328,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
 			
-			foreach (Mono.TextEditor.DocumentLine line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);
@@ -361,7 +362,7 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void ModifyTags (SolutionItem policyParent, Project project, string language,
 			string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
-			DotNetProject netProject = project as DotNetProject;
+			//DotNetProject netProject = project as DotNetProject;
 			string languageExtension = "";
 			ILanguageBinding binding = null;
 			if (!string.IsNullOrEmpty (language)) {

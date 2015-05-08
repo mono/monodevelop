@@ -30,11 +30,11 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using Gtk;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -84,7 +84,13 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				throw new NotImplementedException ();
 			}
-			DomRegion ISearchDataSource.GetRegion (int item)
+			
+			ISegment ISearchDataSource.GetRegion (int item)
+			{
+				throw new NotImplementedException ();
+			}
+			
+			string ISearchDataSource.GetFileName (int item)
 			{
 				throw new NotImplementedException ();
 			}
@@ -176,16 +182,18 @@ namespace MonoDevelop.Components.MainToolbar
 				var region = SelectedItemRegion;
 				Destroy ();
 
-				if (string.IsNullOrEmpty (region.FileName))
+				if (string.IsNullOrEmpty (SelectedItemFileName))
 					return;
-				if (region.Begin.IsEmpty) {
+				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
-						IdeApp.Workbench.OpenDocument (region.FileName);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName);
 					} else {
-						IdeApp.Workbench.OpenDocument (region.FileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
+						IdeApp.Workbench.OpenDocument (SelectedItemFileName, Pattern.LineNumber, Pattern.HasColumn ? Pattern.Column : 1);
 					}
 				} else {
-					IdeApp.Workbench.OpenDocument (region.FileName, region.BeginLine, region.BeginColumn);
+					IdeApp.Workbench.OpenDocument (new FileOpenInformation (SelectedItemFileName, null) {
+						Offset = region.Offset
+					});
 				}
 			}
 		}
@@ -226,6 +234,8 @@ namespace MonoDevelop.Components.MainToolbar
 						LoggingService.LogError ("Error getting search results", t.Exception);
 					} else {
 						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
 							ShowResult (cat, t.Result ?? new NullDataSource ());
 						});
 					}
@@ -344,13 +354,13 @@ namespace MonoDevelop.Components.MainToolbar
 						return new ItemIdentifier (category, dataSrc, i);
 					}
 
-					var region = dataSrc.GetRegion (i);
-					if (!region.Begin.IsEmpty) {
-						layout.SetMarkup (region.BeginLine.ToString ());
-						int w2, h2;
-						layout.GetPixelSize (out w2, out h2);
-						w += w2;
-					}
+//					var region = dataSrc.GetRegion (i);
+//					if (!region.IsEmpty) {
+//						layout.SetMarkup (region.BeginLine.ToString ());
+//						int w2, h2;
+//						layout.GetPixelSize (out w2, out h2);
+//						w += w2;
+//					}
 					itemsAdded++;
 				}
 				if (itemsAdded > 0)
@@ -743,11 +753,19 @@ namespace MonoDevelop.Components.MainToolbar
 				handler (this, e);
 		}
 
-		public DomRegion SelectedItemRegion {
+		public ISegment SelectedItemRegion {
 			get {
 				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
-					return DomRegion.Empty;
+					return TextSegment.Invalid;
 				return selectedItem.DataSource.GetRegion (selectedItem.Item);
+			}
+		}
+
+		public string SelectedItemFileName {
+			get {
+				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
+					return null;
+				return selectedItem.DataSource.GetFileName (selectedItem.Item);
 			}
 		}
 
@@ -820,13 +838,13 @@ namespace MonoDevelop.Components.MainToolbar
 							return new Cairo.Rectangle (0, y, Allocation.Width, h + itemSeparatorHeight);
 						y += h + itemSeparatorHeight;
 
-						var region = dataSrc.GetRegion (i);
-						if (!region.Begin.IsEmpty) {
-							layout.SetMarkup (region.BeginLine.ToString ());
-							int w2, h2;
-							layout.GetPixelSize (out w2, out h2);
-							w += w2;
-						}
+//						var region = dataSrc.GetRegion (i);
+//						if (!region.IsEmpty) {
+//							layout.SetMarkup (region.BeginLine.ToString ());
+//							int w2, h2;
+//							layout.GetPixelSize (out w2, out h2);
+//							w += w2;
+//						}
 						itemsAdded++;
 					}
 					if (itemsAdded > 0)

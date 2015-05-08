@@ -24,13 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
-	public class CodeTemplateListDataProvider : IListDataProvider<string>
+	class CodeTemplateListDataProvider : IListDataProvider<string>
 	{
 		List<CodeTemplateVariableValue> itemList;
 		

@@ -42,7 +42,7 @@ namespace Mono.TextEditor
 {
 	public class TextViewMargin : Margin
 	{
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
 		Pango.Layout markerLayout, defaultLayout;
 		Pango.Layout[] eolMarkerLayout;
@@ -50,6 +50,15 @@ namespace Mono.TextEditor
 
 		internal double charWidth;
 		int highlightBracketOffset = -1;
+
+		public int HighlightBracketOffset {
+			get {
+				return highlightBracketOffset;
+			}
+			set {
+				highlightBracketOffset = value;
+			}
+		}
 		
 		double LineHeight {
 			get {
@@ -120,7 +129,7 @@ namespace Mono.TextEditor
 		}
 
 
-		public TextViewMargin (TextEditor textEditor)
+		public TextViewMargin (MonoTextEditor textEditor)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -137,13 +146,8 @@ namespace Mono.TextEditor
 			markerLayout = PangoUtil.CreateLayout (textEditor);
 			defaultLayout = PangoUtil.CreateLayout (textEditor);
 
-			textEditor.Document.EndUndo += HandleEndUndo;
-			textEditor.SelectionChanged += UpdateBracketHighlighting;
-			textEditor.Document.Undone += HandleUndone; 
-			textEditor.Document.Redone += HandleUndone;
 			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
-			Caret.PositionChanged += UpdateBracketHighlighting;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
 		}
 
@@ -157,17 +161,6 @@ namespace Mono.TextEditor
 		{
 			selectionColor = ColorStyle.SelectedInactiveText;
 			currentLineColor = ColorStyle.LineMarkerInactive;
-		}
-
-		void HandleUndone (object sender, EventArgs e)
-		{
-			UpdateBracketHighlighting (this, EventArgs.Empty);
-		}
-
-		void HandleEndUndo (object sender, EventArgs e)
-		{
-			if (!textEditor.Document.IsInAtomicUndo)
-				UpdateBracketHighlighting (this, EventArgs.Empty);
 		}
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
@@ -357,85 +350,6 @@ namespace Mono.TextEditor
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
-		void UpdateBracketHighlighting (object sender, EventArgs e)
-		{
-			HighlightCaretLine = false;
-			
-			if (!textEditor.Options.HighlightMatchingBracket || textEditor.IsSomethingSelected) {
-				if (highlightBracketOffset >= 0) {
-					textEditor.RedrawLine (Document.OffsetToLineNumber (highlightBracketOffset));
-					highlightBracketOffset = -1;
-				}
-				return;
-			}
-
-			int offset = Caret.Offset - 1;
-			if (Caret.Mode != CaretMode.Insert || (offset >= 0 && offset < Document.TextLength && !TextDocument.IsBracket (Document.GetCharAt (offset))))
-				offset++;
-			offset = System.Math.Max (0, offset);
-			if (highlightBracketOffset >= 0 && (offset >= Document.TextLength || !TextDocument.IsBracket (Document.GetCharAt (offset)))) {
-				int old = highlightBracketOffset;
-				highlightBracketOffset = -1;
-				if (old >= 0)
-					textEditor.RedrawLine (Document.OffsetToLineNumber (old));
-				return;
-			}
-			if (offset < 0)
-				offset = 0;
-
-			DisposeHighightBackgroundWorker ();
-
-			highlightBracketWorker = new System.ComponentModel.BackgroundWorker ();
-			highlightBracketWorker.WorkerSupportsCancellation = true;
-			highlightBracketWorker.DoWork += HighlightBracketWorkerDoWork;
-			highlightBracketWorker.RunWorkerAsync (offset);
-		}
-
-		void HighlightBracketWorkerDoWork (object sender, System.ComponentModel.DoWorkEventArgs e)
-		{
-			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
-			int offset = (int)e.Argument;
-			int oldIndex = highlightBracketOffset;
-			int caretOffset = Caret.Offset;
-			int matchingBracket;
-			matchingBracket = Document.GetMatchingBracketOffset (worker, offset);
-			if (worker.CancellationPending)
-				return;
-			if (matchingBracket == caretOffset && offset + 1 < Document.TextLength)
-				matchingBracket = Document.GetMatchingBracketOffset (worker, offset + 1);
-			if (worker.CancellationPending)
-				return;
-			if (matchingBracket == caretOffset)
-				matchingBracket = -1;
-			if (matchingBracket != oldIndex) {
-				int line1 = oldIndex >= 0 ? Document.OffsetToLineNumber (oldIndex) : -1;
-				int line2 = matchingBracket >= 0 ? Document.OffsetToLineNumber (matchingBracket) : -1;
-				//DocumentLocation matchingBracketLocation = Document.OffsetToLocation (matchingBracket);
-				if (worker.CancellationPending)
-					return;
-				highlightBracketOffset = matchingBracket;
-				Application.Invoke (delegate {
-					if (textEditor.IsDisposed)
-						return;
-					if (line1 >= 0)
-						textEditor.RedrawLine (line1);
-					if (line1 != line2 && line2 >= 0)
-						textEditor.RedrawLine (line2);
-				});
-			}
-		}
-
-		void DisposeHighightBackgroundWorker ()
-		{
-			if (highlightBracketWorker == null)
-				return;
-			if (highlightBracketWorker.IsBusy)
-				highlightBracketWorker.CancelAsync ();
-			highlightBracketWorker.DoWork -= HighlightBracketWorkerDoWork;
-			highlightBracketWorker.Dispose ();
-			highlightBracketWorker = null;
-		}
-
 		static readonly string[] markerTexts = {
 			"<EOF>",
 			"\\n",
@@ -552,19 +466,12 @@ namespace Mono.TextEditor
 		{
 			CancelCodeSegmentTooltip ();
 			StopCaretThread ();
-			DisposeHighightBackgroundWorker ();
 			DisposeSearchPatternWorker ();
 			
 			textEditor.Document.TextReplaced -= HandleTextReplaced;
 			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
-			textEditor.Document.EndUndo -= HandleEndUndo;
-			textEditor.Document.Undone -= HandleUndone; 
-			textEditor.Document.Redone -= HandleUndone;
-			
-			textEditor.Document.EndUndo -= UpdateBracketHighlighting;
 			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;
-			Caret.PositionChanged -= UpdateBracketHighlighting;
 
 			textEditor.GetTextEditorData ().SearchChanged -= HandleSearchChanged;
 
@@ -1630,17 +1537,25 @@ namespace Mono.TextEditor
 				TextRenderEndPosition = xPos + width,
 
 				LineHeight = _lineHeight,
-				WholeLineWidth = textEditor.Allocation.Width - xPos
+				WholeLineWidth = textEditor.Allocation.Width - xPos,
+
+				LineYRenderStartPosition = y
 			};
 
 			foreach (TextLineMarker marker in line.Markers) {
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, y, metrics)) {
+				if (marker.DrawBackground (textEditor, cr, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
 			}
+
+			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+				if (layout.Layout != null)
+					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
+			}
+
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
@@ -1819,12 +1734,12 @@ namespace Mono.TextEditor
 			}
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, y, metrics);
+					marker.Draw (textEditor, cr, metrics);
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, metrics, offset, offset + length);
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
@@ -2037,7 +1952,7 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
-						textEditor.SetSelection (clickLocation, clickLocation);
+						textEditor.MainSelection = new Selection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
 				}
@@ -2417,6 +2332,8 @@ namespace Mono.TextEditor
 
 		public static int GetNextTabstop (TextEditorData textEditor, int currentColumn, int tabSize)
 		{
+			if (tabSize == 0)
+				return currentColumn;
 			int result = currentColumn - 1 + tabSize;
 			return 1 + (result / tabSize) * tabSize;
 		}
@@ -2878,10 +2795,11 @@ namespace Mono.TextEditor
 				var metrics = new EndOfLineMetrics {
 					LineSegment = line,
 					TextRenderEndPosition = TextStartPosition + position,
-					LineHeight = _lineHeight
+					LineHeight = _lineHeight,
+					LineYRenderStartPosition = y
 				};
 				foreach (var marker in line.Markers) {
-					marker.DrawAfterEol (textEditor, cr, y, metrics);
+					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
 

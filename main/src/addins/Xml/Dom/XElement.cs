@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
@@ -35,12 +35,12 @@ namespace MonoDevelop.Xml.Dom
 		XNode closingTag;
 		readonly XAttributeCollection attributes;
 
-		public XElement (TextLocation start) : base (start)
+		public XElement (DocumentLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 
-		public XElement (TextLocation start, XName name) : this (start)
+		public XElement (DocumentLocation start, XName name) : this (start)
 		{
 			this.Name = name;
 		}

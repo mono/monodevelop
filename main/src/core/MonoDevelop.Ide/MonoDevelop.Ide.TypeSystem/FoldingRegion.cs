@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -38,37 +38,37 @@ namespace MonoDevelop.Ide.TypeSystem
 		//NOTE: thsi is only respected if the FoldType is set to "Undefined"
 		public bool IsFoldedByDefault { get; set; }
 		
-		public DomRegion Region { get; set; }
+		public DocumentRegion Region { get; set; }
 		
 		public FoldType Type { get; set; }
 		
-		public FoldingRegion (DomRegion region) : this (null, region)
+		public FoldingRegion (DocumentRegion region) : this (null, region)
 		{
 		}
 		
-		public FoldingRegion (string name, DomRegion region)
+		public FoldingRegion (string name, DocumentRegion region)
 		{
 			this.Name = name ?? defaultName;
 			this.Region = region;
 		}
 		
-		public FoldingRegion (string name, DomRegion region, bool isFoldedByDefault) : this (name, region)
+		public FoldingRegion (string name, DocumentRegion region, bool isFoldedByDefault) : this (name, region)
 		{
 			this.IsFoldedByDefault = isFoldedByDefault;
 		}
 		
-		public FoldingRegion (string name, DomRegion region, FoldType type) : this (name, region)
+		public FoldingRegion (string name, DocumentRegion region, FoldType type) : this (name, region)
 		{
 			this.Type = type;
 		}
 		
-		public FoldingRegion (string name, DomRegion region, FoldType type, bool isFoldedByDefault) : this (name, region)
+		public FoldingRegion (string name, DocumentRegion region, FoldType type, bool isFoldedByDefault) : this (name, region)
 		{
 			this.Type = type;
 			this.IsFoldedByDefault = isFoldedByDefault;
 		}
 		
-		public FoldingRegion (DomRegion region, FoldType type) : this (null, region, type)
+		public FoldingRegion (DocumentRegion region, FoldType type) : this (null, region, type)
 		{
 		}
 	}

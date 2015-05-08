@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Extensions
 			}
 		}
 
-		public string TypeName {
+		public new string TypeName {
 			get {
 				return typeName;
 			}

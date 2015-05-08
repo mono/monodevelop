@@ -36,10 +36,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.IO;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -130,10 +130,10 @@ namespace MonoDevelop.AssemblyBrowser
 		void PrintAssemblyHeader (StringBuilder result, AssemblyDefinition assemblyDefinition)
 		{
 			result.Append ("<span style=\"comment\">");
-			result.Append (Ambience.SingleLineComment (
+			result.Append ("// " +
                                String.Format (GettextCatalog.GetString ("Assembly <b>{0}</b>, Version {1}"),
 			                                  assemblyDefinition.Name.Name,
-			                                  assemblyDefinition.Name.Version)));
+			                                  assemblyDefinition.Name.Version));
 			result.Append ("</span>");
 			result.AppendLine ();
 		}
@@ -151,7 +151,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return GettextCatalog.GetString ("Unknown");
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
@@ -163,7 +163,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
@@ -177,7 +177,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);

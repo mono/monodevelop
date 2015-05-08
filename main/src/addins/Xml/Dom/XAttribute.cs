@@ -23,21 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public class XAttribute : XObject, INamedXObject
 	{
 
-		public XAttribute (TextLocation start, XName name, string value) : base (start)
+		public XAttribute (DocumentLocation start, XName name, string value) : base (start)
 		{
 			this.Name = name;
 			this.Value = value;
 		}
 
-		public XAttribute (TextLocation start) : base (start)
+		public XAttribute (DocumentLocation start) : base (start)
 		{
 		}
 

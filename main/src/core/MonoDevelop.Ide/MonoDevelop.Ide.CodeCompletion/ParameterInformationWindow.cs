@@ -25,16 +25,15 @@
 //
 //
 
-
 using System;
-using System.Text;
 using MonoDevelop.Core;
 using Gtk;
 using MonoDevelop.Components;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
-using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -74,7 +73,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
-			Mono.TextEditor.PopupWindow.WindowTransparencyDecorator.Attach (this);
+			WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
@@ -96,7 +95,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 
 			foreColor = scheme.PlainText.Foreground;
@@ -107,22 +106,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		int lastParam = -2;
-		public void ShowParameterInfo (ParameterDataProvider provider, int overload, int _currentParam, int maxSize)
+		TooltipInformation currentTooltipInformation;
+
+		public void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
-			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
+			int numParams = System.Math.Max (0, provider[overload].ParameterCount);
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
-			if (lastParam == currentParam) {
+			if (lastParam == currentParam && (currentTooltipInformation != null)) {
 				return;
 			}
 
 			lastParam = currentParam;
 			ClearDescriptions ();
-			var o = provider.CreateTooltipInformation (overload, currentParam, false);
-
+			var parameterHintingData = (ParameterHintingData)provider [overload];
+			currentTooltipInformation = parameterHintingData.CreateTooltipInformation (ext.Editor, ext.DocumentContext, currentParam, false);
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
 			if (provider.Count > 1) {
@@ -130,17 +131,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 				Theme.PagerVertical = true;
 			}
 
-			headlabel.Markup = o.SignatureMarkup;
+			headlabel.Markup = currentTooltipInformation.SignatureMarkup;
 			headlabel.Visible = true;
 			if (Theme.DrawPager)
 				headlabel.WidthRequest = headlabel.RealWidth + 70;
 			
-			foreach (var cat in o.Categories) {
+			foreach (var cat in currentTooltipInformation.Categories) {
 				descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
 			}
 			
-			if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-				descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
+			if (!string.IsNullOrEmpty (currentTooltipInformation.SummaryMarkup)) {
+				descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), currentTooltipInformation.SummaryMarkup), true, true, 4);
 			}
 			descriptionBox.ShowAll ();
 			QueueResize ();
@@ -185,6 +186,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void ChangeOverload ()
 		{
 			lastParam = -2;
+			currentTooltipInformation = null;
 		}
 		
 		public void HideParameterInfo ()

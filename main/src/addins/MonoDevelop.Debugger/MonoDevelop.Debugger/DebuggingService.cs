@@ -38,8 +38,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Debugger.Viewers;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -47,6 +45,7 @@ using ICSharpCode.NRefactory.TypeSystem;
  */
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Debugger
 {
@@ -1059,13 +1058,18 @@ namespace MonoDevelop.Debugger
 			if (doc != null) {
 				ITextEditorResolver textEditorResolver = doc.GetContent <ITextEditorResolver> ();
 				if (textEditorResolver != null) {
-					var rr = textEditorResolver.GetLanguageItem (doc.Editor.Document.LocationToOffset (location.Line, 1), identifier);
-					var ns = rr as NamespaceResolveResult;
+					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
+					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
 					if (ns != null)
-						return ns.NamespaceName;
-					var result = rr as TypeResolveResult;
-					if (result != null && !result.IsError && !(result.Type.Kind == TypeKind.Dynamic && result.Type.FullName == "dynamic"))
-						return result.Type.FullName;
+						return ns.GetFullName ();
+					var result = rr as Microsoft.CodeAnalysis.INamedTypeSymbol;
+					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
+						return result.ToDisplayString (new Microsoft.CodeAnalysis.SymbolDisplayFormat (
+							typeQualificationStyle: Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
+							miscellaneousOptions:
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
+							Microsoft.CodeAnalysis.SymbolDisplayMiscellaneousOptions.UseSpecialTypes));
+					}
 				}
 			}
 			return null;
