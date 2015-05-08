@@ -410,7 +410,7 @@ namespace MonoDevelop.Projects
 			}
 			else {
 				if (modelExtensions == null)
-					Runtime.RunInMainThread (InitExtensions).Wait ();
+					Runtime.RunInMainThread ((Action)InitExtensions).Wait ();
 				return modelExtensions;
 			}
 		}

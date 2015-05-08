@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 					if (args.Path == LanguageBindingExtensionPath)
 						LoadExtensions ();
 				};
-				Runtime.RunInMainThread (LoadExtensions).Wait ();
+				Runtime.RunInMainThread ((Action)LoadExtensions).Wait ();
 			}
 		}
 

@@ -28,7 +28,6 @@ using System;
 using System.Threading;
 using System.Runtime.Remoting;
 using System.Collections.Generic;
-using Microsoft.Build.BuildEngine;
 using System.Globalization;
 using System.IO;
 
