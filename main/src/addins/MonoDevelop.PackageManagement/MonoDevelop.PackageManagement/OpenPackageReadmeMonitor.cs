@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class OpenPackageReadMeMonitor : IDisposable
+	public class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
 		IPackageManagementProject project;
 		IPackageManagementFileService fileService;
@@ -70,7 +70,6 @@ namespace MonoDevelop.PackageManagement
 
 			IsDisposed = true;
 			project.PackageInstalled -= PackageInstalled;
-			OpenReadMeFile ();
 		}
 
 		void PackageInstalled (object sender, PackageOperationEventArgs e)
@@ -90,7 +89,7 @@ namespace MonoDevelop.PackageManagement
 				.FirstOrDefault ();
 		}
 
-		void OpenReadMeFile ()
+		public void OpenReadMeFile ()
 		{
 			if ((ReadMeFile != null) && fileService.FileExists (ReadMeFile)) {
 				fileService.OpenFile (ReadMeFile);

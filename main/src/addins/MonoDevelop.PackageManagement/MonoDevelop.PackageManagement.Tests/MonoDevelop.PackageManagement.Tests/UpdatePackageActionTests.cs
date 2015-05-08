@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
@@ -43,6 +44,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		UpdatePackageHelper updatePackageHelper;
 		FakeFileRemover fileRemover;
 		List<PackageOperationMessage> messagesLogged;
+		FakeFileService fileService;
 
 		void CreateSolution ()
 		{
@@ -76,6 +78,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			List<string> messages = messagesLogged.Select (m => m.ToString ()).ToList ();
 
 			Assert.That (messages, Contains.Item (expectedMessage));
+		}
+
+		IOpenPackageReadMeMonitor CreateReadMeMonitor (string packageId)
+		{
+			fileService = new FakeFileService (fakeProject.FakeDotNetProject);
+			return new OpenPackageReadMeMonitor (packageId, fakeProject, fileService);
 		}
 
 		[Test]
@@ -484,6 +492,55 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
 			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfullyWithReadmeTxt_ReadmeTxtFileIsOpened ()
+		{
+			CreateSolution ();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile ("readme.txt");
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				return CreateReadMeMonitor (packageId);
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+			};
+			updatePackageHelper.UpdateTestPackage ();
+
+			Assert.IsTrue (fileService.IsOpenFileCalled);
+			Assert.AreEqual (readmeFileName, fileService.FileNamePassedToOpenFile);
+		}
+
+		[Test]
+		public void Execute_PackageWithReadmeTxtIsInstalledButExceptionThrownWhenAddingPackageToProject_ReadmeFileIsNotOpened ()
+		{
+			CreateSolution ();
+			updatePackageHelper.TestPackage.Id = "Test";
+			updatePackageHelper.TestPackage.AddFile ("readme.txt");
+			OpenPackageReadMeMonitor monitor = null;
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				monitor = CreateReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
+				return monitor;
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.UpdatePackageAction = (package, updateAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+				throw new ApplicationException ();
+			};
+			Assert.Throws<ApplicationException> (() => {
+				updatePackageHelper.UpdateTestPackage ();
+			});
+
+			Assert.IsFalse (fileService.IsOpenFileCalled);
+			Assert.IsTrue (monitor.IsDisposed);
 		}
 	}
 }

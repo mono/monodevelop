@@ -1,5 +1,5 @@
 ﻿//
-// TestableUpdatePackageAction.cs
+// IOpenPackageReadMeMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,31 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class TestableUpdatePackageAction : UpdatePackageAction
+	public interface IOpenPackageReadMeMonitor : IDisposable
 	{
-		public TestableUpdatePackageAction (
-			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents,
-			IFileRemover fileRemover)
-			: base (project, packageManagementEvents, fileRemover)
-		{
-			CreateOpenPackageReadMeMonitorAction = packageId => {
-				OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
-				return OpenPackageReadMeMonitor;
-			};
-		}
-
-		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
-		public Func<string, IOpenPackageReadMeMonitor> CreateOpenPackageReadMeMonitorAction;
-
-		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
-		{
-			return CreateOpenPackageReadMeMonitorAction (packageId);
-		}
+		void OpenReadMeFile ();
 	}
 }
 

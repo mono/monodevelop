@@ -36,16 +36,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementEvents packageManagementEvents)
 			: base (project, packageManagementEvents)
 		{
+			CreateOpenPackageReadMeMonitorAction = packageId => {
+				IOpenPackageReadMeMonitor monitor = base.CreateOpenPackageReadMeMonitor (packageId);
+				OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
+				NullOpenPackageReadMeMonitorIsCreated = monitor is NullOpenPackageReadMeMonitor;
+				return monitor;
+			};
 		}
 
 		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
+		public Func<string, IOpenPackageReadMeMonitor> CreateOpenPackageReadMeMonitorAction;
 
-		protected override IDisposable CreateOpenPackageReadMeMonitor (string packageId)
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
 		{
-			IDisposable monitor = base.CreateOpenPackageReadMeMonitor (packageId);
-			OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
-			NullOpenPackageReadMeMonitorIsCreated = monitor is NullDisposable;
-			return monitor;
+			return CreateOpenPackageReadMeMonitorAction (packageId);
 		}
 
 		public bool NullOpenPackageReadMeMonitorIsCreated;

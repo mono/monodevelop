@@ -58,86 +58,107 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Dispose_PackageInstalledWithReadmeTxt_ReadmeTxtIsOpened ()
+		public void OpenReadMeFile_PackageInstalledWithReadmeTxt_ReadmeTxtIsOpened ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
 			string expectedFileOpened = Path.Combine (installPath, "readme.txt");
 
-			using (IDisposable monitor = CreateMonitor ("Test")) {
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
 				fileService.ExistingFileNames.Add (expectedFileOpened);
 				FakePackage package = CreatePackageWithFile ("Test", "readme.txt");
 				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
 				project.FirePackageInstalledEvent (e);
+				monitor.OpenReadMeFile ();
 			}
 
 			Assert.AreEqual (expectedFileOpened, fileService.FileNamePassedToOpenFile);
 		}
 
 		[Test]
-		public void Dispose_PackageDependencyIsInstalledWithReadmeTxt_ReadmeTxtIsNotOpened ()
+		public void Dispose_PackageInstalledWithReadmeTxtButOpenReadMeFileMethodIsNotCalled_ReadmeTxtIsNotOpened ()
+		{
+			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
+			string expectedFileOpened = Path.Combine (installPath, "readme.txt");
+
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
+				fileService.ExistingFileNames.Add (expectedFileOpened);
+				FakePackage package = CreatePackageWithFile ("Test", "readme.txt");
+				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
+				project.FirePackageInstalledEvent (e);
+			}
+
+			Assert.IsFalse (fileService.IsOpenFileCalled);
+		}
+
+		[Test]
+		public void OpenReadMeFile_PackageDependencyIsInstalledWithReadmeTxt_ReadmeTxtIsNotOpened ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.Dependency.1.2.0";
 			string expectedFileOpened = Path.Combine (installPath, "readme.txt");
 
-			using (IDisposable monitor = CreateMonitor ("Test")) {
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
 				fileService.ExistingFileNames.Add (expectedFileOpened);
 				FakePackage package = CreatePackageWithFile ("Test.Dependency", "readme.txt");
 				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
 				project.FirePackageInstalledEvent (e);
+				monitor.OpenReadMeFile ();
 			}
 
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 		}
 
 		[Test]
-		public void Dispose_PackageInstalledWithoutReadmeTxt_ReadmeTxtIsNotOpened ()
+		public void OpenReadMeFile_PackageInstalledWithoutReadmeTxt_ReadmeTxtIsNotOpened ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
 			string expectedFileOpened = Path.Combine (installPath, "readme.txt");
 
-			using (IDisposable monitor = CreateMonitor ("Test")) {
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
 				fileService.ExistingFileNames.Add (expectedFileOpened);
 				var package = new FakePackage ("Test");
 				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
 				project.FirePackageInstalledEvent (e);
+				monitor.OpenReadMeFile ();
 			}
 
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 		}
 
 		[Test]
-		public void Dispose_PackageDependencyIsInstalledWithReadmeTxtWithDifferentCase_ReadmeTxtIsOpened ()
+		public void OpenReadMeFile_PackageDependencyIsInstalledWithReadmeTxtWithDifferentCase_ReadmeTxtIsOpened ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
 			string expectedFileOpened = Path.Combine (installPath, "ReadMe.TXT");
 
-			using (IDisposable monitor = CreateMonitor ("Test")) {
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
 				fileService.ExistingFileNames.Add (expectedFileOpened);
 				FakePackage package = CreatePackageWithFile ("Test", "ReadMe.TXT");
 				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
 				project.FirePackageInstalledEvent (e);
+				monitor.OpenReadMeFile ();
 			}
 
 			Assert.AreEqual (expectedFileOpened, fileService.FileNamePassedToOpenFile);
 		}
 
 		[Test]
-		public void Dispose_PackageInstalledWithReadmeTxtButFileDoesNotExistOnFileSystem_ReadmeTxtIsNotOpened ()
+		public void OpenReadMeFile_PackageInstalledWithReadmeTxtButFileDoesNotExistOnFileSystem_ReadmeTxtIsNotOpened ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
 			string readmeFileName = Path.Combine (installPath, "readme.txt");
 
-			using (IDisposable monitor = CreateMonitor ("Test")) {
+			using (OpenPackageReadMeMonitor monitor = CreateMonitor ("Test")) {
 				FakePackage package = CreatePackageWithFile ("Test", "readme.txt");
 				PackageOperationEventArgs e = CreatePackageInstallEventWithFile (installPath, package);
 				project.FirePackageInstalledEvent (e);
+				monitor.OpenReadMeFile ();
 			}
 
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 		}
 
 		[Test]
-		public void Constructor_PackageDependencyIsInstalledWithReadmeTxt_ReadmeTxtIsNotOpenedUntilDisposeIsCalled ()
+		public void Constructor_PackageDependencyIsInstalledWithReadmeTxt_ReadmeTxtIsNotOpenedUntilOpenReadMeFileMethodIsCalled ()
 		{
 			const string installPath = @"d:\projects\myproject\packages\Test.1.2.0";
 			string expectedFileOpened = Path.Combine (installPath, "ReadMe.TXT");

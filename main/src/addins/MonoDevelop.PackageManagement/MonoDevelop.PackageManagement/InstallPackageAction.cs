@@ -53,8 +53,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			using (IDisposable monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
+			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
 				Project.InstallPackage (Package, this);
+				monitor.OpenReadMeFile ();
 				OnParentPackageInstalled ();
 			}
 		}
@@ -63,12 +64,12 @@ namespace ICSharpCode.PackageManagement
 			get { return "Adding {0}..."; }
 		}
 
-		protected override IDisposable CreateOpenPackageReadMeMonitor (string packageId)
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
 		{
 			if (OpenReadMeText) {
 				return base.CreateOpenPackageReadMeMonitor (packageId);
 			}
-			return NullDisposable.Null;
+			return NullOpenPackageReadMeMonitor.Null;
 		}
 	}
 }

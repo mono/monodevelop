@@ -1,5 +1,5 @@
 ﻿//
-// NullDisposable.cs
+// NullOpenPackageReadMeMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,15 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace MonoDevelop.PackageManagement
 {
-	public class NullDisposable : IDisposable
+	public class NullOpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
-		public static readonly IDisposable Null = new NullDisposable ();
+		public static readonly IOpenPackageReadMeMonitor Null = new NullOpenPackageReadMeMonitor ();
 
 		public void Dispose ()
+		{
+		}
+
+		public void OpenReadMeFile ()
 		{
 		}
 	}
