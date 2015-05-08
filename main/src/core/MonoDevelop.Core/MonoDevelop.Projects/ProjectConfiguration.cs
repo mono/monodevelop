@@ -36,9 +36,8 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectConfiguration : SolutionItemConfiguration, IMSBuildDataObject
+	public class ProjectConfiguration : SolutionItemConfiguration
 	{
-
 		public ProjectConfiguration ()
 		{
 		}
@@ -46,20 +45,6 @@ namespace MonoDevelop.Projects
 		public ProjectConfiguration (string name) : base(name)
 		{
 		}
-
-		#region IProjectConfigurationData implementation
-
-		void IMSBuildDataObject.Read (IPropertySet pset, string toolsVersion)
-		{
-			Read (pset, toolsVersion);
-		}
-
-		void IMSBuildDataObject.Write (IPropertySet pset, string toolsVersion)
-		{
-			Write (pset, toolsVersion);
-		}
-
-		#endregion
 
 		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
 		{

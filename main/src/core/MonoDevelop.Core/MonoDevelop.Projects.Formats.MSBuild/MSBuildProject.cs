@@ -181,16 +181,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return content;
 		}
 
-		void WriteDataObjects ()
-		{
-			foreach (var ob in elemCache.Values) {
-				if (ob is MSBuildPropertyGroup)
-					((MSBuildPropertyGroup)ob).WriteDataObjects ();
-				else if (ob is MSBuildItem)
-					((MSBuildItem)ob).WriteDataObjects ();
-			}
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether this project uses the msbuild engine for evaluation.
 		/// </summary>

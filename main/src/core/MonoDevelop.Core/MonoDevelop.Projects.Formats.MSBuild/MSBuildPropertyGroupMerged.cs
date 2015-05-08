@@ -38,11 +38,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class MSBuildPropertyGroupMerged: IMSBuildPropertySet
 	{
 		List<IMSBuildPropertySet> groups = new List<IMSBuildPropertySet> ();
-		string toolsVersion;
 
-		public MSBuildPropertyGroupMerged (MSBuildProject project, string toolsVersion)
+		public MSBuildPropertyGroupMerged (MSBuildProject project)
 		{
-			this.toolsVersion = toolsVersion;
 			Project = project;
 		}
 
@@ -93,29 +91,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return g;
 			}
 			return groups[0];
-		}
-
-		Dictionary<Type,object> customDataObjects = new Dictionary<Type, object> ();
-
-		public T GetObject<T> () where T:IMSBuildDataObject, new()
-		{
-			object ob;
-			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
-				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, toolsVersion);
-			}
-			return (T)ob;
-		}
-
-		public void SetObject<T> (T t, bool persist = true) where T:IMSBuildDataObject
-		{
-			customDataObjects [typeof(T)] = t;
-		}
-
-		public void WriteDataObjects ()
-		{
-			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, toolsVersion);
 		}
 
 		public void SetPropertyValue (string name, string value, bool preserveExistingCase)
@@ -211,11 +186,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				// Remove this group since it's now empty
 				g.Project.RemoveGroup (g);
 			}
-		}
-
-		public void SetObject<T> (T t) where T : IMSBuildDataObject
-		{
-			throw new NotImplementedException ();
 		}
 
 		public bool HasProperty (string name)

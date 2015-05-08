@@ -172,7 +172,6 @@ namespace MonoDevelop.CSharp.Project
 
 #region Code Generation
 
-		[Obsolete]
 		public override void AddDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());
@@ -185,7 +184,6 @@ namespace MonoDevelop.CSharp.Project
 			return definesymbols.Split (';', ',', ' ', '\t').Where (s => SyntaxFacts.IsValidIdentifier (s) && !string.IsNullOrWhiteSpace (s));
 		}
 
-		[Obsolete]
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());

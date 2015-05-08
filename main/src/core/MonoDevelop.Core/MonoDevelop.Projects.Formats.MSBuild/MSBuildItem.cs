@@ -94,13 +94,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return this; }
 		}
 
-		public void WriteDataObjects ()
-		{
-			metadata.WriteDataObjects ();
-			if (!Element.HasChildNodes)
-				Element.IsEmpty = true;
-		}
-
 		internal int EvaluatedItemCount { get; set; }
 
 		internal bool IsWildcardItem {

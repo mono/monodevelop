@@ -145,29 +145,6 @@ namespace MonoDevelop.Projects
 				return defaultValue;
 		}
 
-		Dictionary<Type,object> customDataObjects = new Dictionary<Type, object> ();
-
-		public T GetObject<T> () where T:IMSBuildDataObject, new()
-		{
-			object ob;
-			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
-				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, project.ToolsVersion);
-			}
-			return (T)ob;
-		}
-
-		public void SetObject<T> (T t) where T:IMSBuildDataObject
-		{
-			customDataObjects [typeof(T)] = t;
-		}
-
-		public void WriteDataObjects ()
-		{
-			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, project.ToolsVersion);
-		}
-
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
 			if (properties == null) {

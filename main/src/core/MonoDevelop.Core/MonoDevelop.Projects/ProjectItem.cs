@@ -113,7 +113,6 @@ namespace MonoDevelop.Projects
 				metadata.SetProject (project.MSBuildProject);
 				foreach (var prop in metadata.GetProperties ())
 					buildItem.Metadata.SetValue (prop.Name, prop.Value);
-				metadata.WriteDataObjects ();
 				metadata.WriteObjectProperties (this, GetType(), true);
 			}
 		}

@@ -175,29 +175,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return defaultValue;
 		}
 
-		Dictionary<Type,object> customDataObjects = new Dictionary<Type, object> ();
-
-		public T GetObject<T> () where T:IMSBuildDataObject, new()
-		{
-			object ob;
-			if (!customDataObjects.TryGetValue (typeof(T), out ob)) {
-				customDataObjects [typeof(T)] = ob = new T ();
-				((IMSBuildDataObject)ob).Read (this, parent.ToolsVersion);
-			}
-			return (T)ob;
-		}
-
-		public void SetObject<T> (T t, bool persist = true) where T:IMSBuildDataObject
-		{
-			customDataObjects [typeof(T)] = t;
-		}
-
-		public void WriteDataObjects ()
-		{
-			foreach (IMSBuildDataObject ob in customDataObjects.Values)
-				ob.Write (this, parent.ToolsVersion);
-		}
-
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
 			InitProperties ();
@@ -372,11 +349,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			foreach (MSBuildProperty prop in GetProperties ())
 				s += " " + prop.Name + "=" + prop.Value;
 			return s + "]";
-		}
-
-		public void SetObject<T> (T t) where T : IMSBuildDataObject
-		{
-			throw new NotImplementedException ();
 		}
 
 		public bool HasProperty (string name)

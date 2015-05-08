@@ -473,7 +473,6 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImport.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildObject.cs" />
     <Compile Include="MonoDevelop.Projects\IPropertySet.cs" />
-    <Compile Include="MonoDevelop.Projects\IMSBuildDataObject.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildPropertySet.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyGroupEvaluated.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\SlnFile.cs" />

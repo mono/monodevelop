@@ -34,9 +34,6 @@ namespace MonoDevelop.Projects
 {
 	public interface IPropertySet
 	{
-		T GetObject<T> () where T:IMSBuildDataObject, new();
-		void SetObject<T> (T t) where T:IMSBuildDataObject;
-
 		bool HasProperty (string name);
 		IMetadataProperty GetProperty (string name);
 		IEnumerable<IMetadataProperty> GetProperties ();

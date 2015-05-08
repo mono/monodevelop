@@ -58,18 +58,15 @@ namespace MonoDevelop.Projects
 			yield break;
 		}
 		
-		[Obsolete]
 		public virtual void AddDefineSymbol (string symbol)
 		{
 		}
 
-		[Obsolete]
 		public virtual void RemoveDefineSymbol (string symbol)
 		{
 		}
 
-		[Obsolete]
-		public virtual bool HasDefineSymbol (string symbol)
+		public bool HasDefineSymbol (string symbol)
 		{
 			return GetDefineSymbols ().Any (s => s == symbol);
 		}
