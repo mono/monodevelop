@@ -67,9 +67,6 @@ type FSharpCompilerParameters() =
     x.DefineConstants.Split (';', ',', ' ', '\t')
     |> Seq.where (String.IsNullOrWhiteSpace >> not)
 
-  override x.HasDefineSymbol(symbol) =
-    x.DefineConstants.Split(';', ',', ' ', '\t') |> Array.exists (fun s -> symbol = s)
-
   override x.CreateCompilationOptions () =
       null //TODO
 
