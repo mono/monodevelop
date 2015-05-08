@@ -28,6 +28,16 @@ type FSharpProject() as self =
 
     override x.OnInitialize() = 
         base.OnInitialize()
+
+    override x.OnGetDefaultImports (imports) = 
+        base.OnGetDefaultImports (imports);
+        // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
+        // New projects will be created with this targets file
+        // If FSharp 3.1 is available, use it. If not, use 3.0
+        if MSBuildProjectService.IsTargetsAvailable("$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.FSharp.Targets") then
+            imports.Add ("$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.FSharp.Targets");
+        else
+            imports.Add ("$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\Microsoft.FSharp.Targets");
     
     override x.OnWriteProject(monitor, msproject) = 
         base.OnWriteProject(monitor, msproject)

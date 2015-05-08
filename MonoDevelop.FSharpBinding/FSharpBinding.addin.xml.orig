@@ -123,16 +123,8 @@
 
   </Dependencies>
 
-  <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
-  <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
-    <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
-	<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
-      <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" type="MonoDevelop.FSharp.FSharpProject"/>
-	</Condition>
-
-    <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
-    <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  type="MonoDevelop.FSharp.FSharpProject"/>
+    <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
