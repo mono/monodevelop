@@ -342,6 +342,8 @@
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
     <Compile Include="Commands\MethodDeclarationAtCaret.cs" />
     <Compile Include="Razor\Dom\RazorWorkbenchService.cs" />
+    <Compile Include="Razor\RazorCSharpParserContext.cs" />
+    <Compile Include="Razor\OpenRazorDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
