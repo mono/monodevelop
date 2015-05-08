@@ -66,9 +66,6 @@
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\mono.cecil\Mono.Cecil.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <Choose>
