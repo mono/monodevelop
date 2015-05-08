@@ -1192,7 +1192,7 @@ namespace MonoDevelop.SourceEditor
 		void UpdatePinnedWatches ()
 		{
 			foreach (PinnedWatchInfo wi in pinnedWatches) {
-				widget.TextEditor.Remove (wi.Widget);
+				widget.TextEditor.TextArea.Remove (wi.Widget);
 				wi.Widget.Destroy ();
 			}
 			pinnedWatches.Clear ();
