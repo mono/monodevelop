@@ -35,7 +35,7 @@ using System.Globalization;
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	
-	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty
+	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty, IMSBuildPropertyEvaluated
 	{
 		bool preserverCase;
 
@@ -96,9 +96,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			// If the path is normalized in the property, keep the value
-			if (!string.IsNullOrEmpty (UnevaluatedValue) && UnevaluatedValue == MSBuildProjectService.ToMSBuildPath (baseDir, value, true))
+			if (!string.IsNullOrEmpty (Value) && new FilePath (MSBuildProjectService.FromMSBuildPath (baseDir, Value)).CanonicalPath == value.CanonicalPath)
 				return;
-			
+
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
 		}
 
@@ -281,7 +281,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	class MSBuildPropertyEvaluated: MSBuildPropertyCore
+	class MSBuildPropertyEvaluated: MSBuildPropertyCore, IMSBuildPropertyEvaluated
 	{
 		string value;
 		string evaluatedValue;
@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	public abstract class MSBuildPropertyCore: MSBuildObject, IMSBuildPropertyEvaluated
+	public abstract class MSBuildPropertyCore: MSBuildObject
 	{
 		MSBuildProject project;
 
@@ -364,7 +364,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else if (relativeToProject) {
 				baseDir = project.BaseDirectory;
 			}
-			return MSBuildProjectService.FromMSBuildPath (baseDir, val);
+			var p = MSBuildProjectService.FromMSBuildPath (baseDir, val);
+
+			// Remove the trailing slash
+			if (p.Length > 0 && p[p.Length - 1] == System.IO.Path.DirectorySeparatorChar && p != "." + System.IO.Path.DirectorySeparatorChar)
+				return p.TrimEnd (System.IO.Path.DirectorySeparatorChar);
+			
+			return p;
 		}
 
 		public bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath))
@@ -388,10 +394,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal abstract string GetPropertyValue ();
 
 		internal abstract string GetName ();
+
+		public override string ToString ()
+		{
+			return "[" + Name + " = " + Value + "]";
+		}
 	}
 
 	public interface IMSBuildPropertyEvaluated
 	{
+		bool IsImported { get; }
+
 		string Name { get; }
 
 		MSBuildProject Project { get; }

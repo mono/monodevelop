@@ -227,7 +227,7 @@ namespace Foo {
 			
 			DotNetProjectConfiguration pcDebug = project.AddNewConfiguration ("Debug") as DotNetProjectConfiguration;
 			CSharpCompilerParameters csparamsDebug = (CSharpCompilerParameters) pcDebug.CompilationParameters;
-			csparamsDebug.DebugType = "full";
+			pcDebug.DebugType = "full";
 			pcDebug.OutputDirectory = Path.Combine (dir, "bin/Debug");
 			pcDebug.OutputAssembly = name;
 			pcDebug.DebugMode = true;
@@ -236,7 +236,7 @@ namespace Foo {
 			
 			DotNetProjectConfiguration pcRelease = project.AddNewConfiguration ("Release") as DotNetProjectConfiguration;
 			CSharpCompilerParameters csparamsRelease = (CSharpCompilerParameters) pcRelease.CompilationParameters;
-			csparamsRelease.DebugType = "none";
+			pcRelease.DebugType = "none";
 			pcRelease.OutputDirectory = Path.Combine (dir, "bin/Release");
 			pcRelease.OutputAssembly = name;
 			csparamsRelease.DefineSymbols = "TRACE";

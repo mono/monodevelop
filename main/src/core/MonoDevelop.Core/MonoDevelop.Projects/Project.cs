@@ -1857,15 +1857,21 @@ namespace MonoDevelop.Projects
 
 		void LoadConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)
 		{
-			IMSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
 			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
 
+			var pi = sourceProject.CreateInstance ();
+			pi.SetGlobalProperty ("Configuration", conf);
+			if (!string.IsNullOrEmpty (platform))
+				pi.SetGlobalProperty ("Platform", platform);
+			
+			pi.Evaluate ();
+
 			config.Platform = platform;
-			projectExtension.OnReadConfiguration (monitor, config, grp);
+			projectExtension.OnReadConfiguration (monitor, config, pi.EvaluatedProperties);
 			Configurations.Add (config);
 		}
 
-		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
+		protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection grp)
 		{
 			config.Read (grp, ToolsVersion);
 		}
@@ -2137,17 +2143,6 @@ namespace MonoDevelop.Projects
 					msproject.RemoveImport (i);
 			}
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
-		}
-
-		void WriteConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)
-		{
-			IMSBuildPropertySet grp = GetMergedConfiguration (configData, conf, platform, null);
-			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
-
-			config.Platform = platform;
-			config.Read (grp, ToolsVersion);
-			Configurations.Add (config);
-			projectExtension.OnWriteConfiguration (monitor, config, grp);
 		}
 
 		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
@@ -2557,7 +2552,7 @@ namespace MonoDevelop.Projects
 				Project.OnWriteProject (monitor, msproject);
 			}
 
-			internal protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
+			internal protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection grp)
 			{
 				Project.OnReadConfiguration (monitor, config, grp);
 			}

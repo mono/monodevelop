@@ -39,11 +39,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		class ProjectInfo
 		{
 			public MSBuildProject Project;
-			public MSBuildEvaluationContext Content;
+			public MSBuildEvaluationContext Context;
 			public List<MSBuildItem> EvaluatedItemsIgnoringCondition = new List<MSBuildItem> ();
 			public List<MSBuildItem> EvaluatedItems = new List<MSBuildItem> ();
-			public List<MSBuildProperty> Properties = new List<MSBuildProperty> ();
+			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> ();
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
+		}
+
+		class PropertyInfo
+		{
+			public string Name;
+			public string Value;
+			public string FinalValue;
 		}
 
 		#region implemented abstract members of MSBuildEngine
@@ -53,17 +60,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var context = new MSBuildEvaluationContext ();
 			var pi = new ProjectInfo {
 				Project = project,
-				Content = context
+				Context = context
 			};
 
-			context.InitEvaluation (project);
-			foreach (var pg in project.PropertyGroups)
-				Evaluate (pi, context, pg);
-			foreach (var pg in project.ItemGroups)
-				Evaluate (pi, context, pg);
-			foreach (var i in project.Imports)
-				Evaluate (pi, context, i);
 			return pi;
+		}
+
+		public override void Evaluate (object project)
+		{
+			var pi = (ProjectInfo)project;
+			pi.Context.InitEvaluation (pi.Project);
+			foreach (var pg in pi.Project.PropertyGroups)
+				Evaluate (pi, pi.Context, pg);
+			foreach (var pg in pi.Project.ItemGroups)
+				Evaluate (pi, pi.Context, pg);
+			foreach (var i in pi.Project.Imports)
+				Evaluate (pi, pi.Context, i);
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildPropertyGroup group)
@@ -108,7 +120,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement e;
 			context.Evaluate (prop.Element, out e);
 			var ep = new MSBuildProperty (project.Project, e);
-			project.Properties.Add (ep);
+			if (string.IsNullOrEmpty (ep.Condition) || ConditionParser.ParseAndEvaluate (ep.Condition, context)) {
+				project.Properties [ep.Name] = new PropertyInfo { Name = ep.Name, Value = prop.Element.Value, FinalValue = ep.Value };
+				context.SetPropertyValue (prop.Name, ep.Value);
+			}
 		}
 
 		MSBuildItem Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
@@ -162,7 +177,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<object> GetEvaluatedProperties (object project)
 		{
-			return ((ProjectInfo)project).Properties;
+			return ((ProjectInfo)project).Properties.Values;
 		}
 
 		public override void GetItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported)
@@ -191,10 +206,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue)
 		{
-			var prop = (MSBuildProperty)property;
+			var prop = (PropertyInfo)property;
 			name = prop.Name;
 			value = prop.Value;
-			finalValue = prop.Value;
+			finalValue = prop.FinalValue;
 		}
 
 		public override IEnumerable<MSBuildTarget> GetTargets (object project)
@@ -210,6 +225,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				te.SetAttribute ("Name", t);
 				yield return new MSBuildTarget (te);
 			}
+		}
+
+		public override void SetGlobalProperty (object project, string property, string value)
+		{
+			var pi = (ProjectInfo)project;
+			pi.Context.SetPropertyValue (property, value);
+			pi.Properties [property] = new PropertyInfo { Name = property, Value = value, FinalValue = value };
+		}
+
+		public override void RemoveGlobalProperty (object project, string property)
+		{
+			var pi = (ProjectInfo)project;
+			pi.Context.ClearPropertyValue (property);
+			pi.Properties.Remove (property);
 		}
 
 		#endregion

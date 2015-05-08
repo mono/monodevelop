@@ -93,16 +93,14 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
 
-		[ItemProperty("DebugType", DefaultValue="")]
-		string debugType = "";
-		
 		protected override void Write (IPropertySet pset, string toolsVersion)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
+
 			base.Write (pset, toolsVersion);
 		}
 
-		protected override void Read (IPropertySet pset, string toolsVersion)
+		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
 		{
 			base.Read (pset, toolsVersion);
 
@@ -246,15 +244,6 @@ namespace MonoDevelop.CSharp.Project
 			}
 			set {
 				platformTarget = value ?? string.Empty;
-			}
-		}
-
-		public override string DebugType {
-			get {
-				return debugType;
-			}
-			set {
-				debugType = value;
 			}
 		}
 

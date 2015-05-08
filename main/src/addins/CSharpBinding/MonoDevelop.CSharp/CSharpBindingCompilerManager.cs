@@ -192,7 +192,7 @@ namespace MonoDevelop.CSharp
 					sb.AppendLine ("/delaySign");
 			}
 
-			var debugType = compilerParameters.DebugType;
+			var debugType = configuration.DebugType;
 			if (string.IsNullOrEmpty (debugType)) {
 				debugType = configuration.DebugMode ? "full" : "none";
 			} else if (string.Equals (debugType, "pdbonly", StringComparison.OrdinalIgnoreCase)) {

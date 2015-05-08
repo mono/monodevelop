@@ -12,6 +12,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>True</DebugSymbols>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <LangVersion>Default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
   </PropertyGroup>

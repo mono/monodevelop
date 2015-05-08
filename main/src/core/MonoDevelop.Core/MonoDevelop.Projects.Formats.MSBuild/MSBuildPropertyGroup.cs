@@ -243,12 +243,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				value = "";
 			var prop = GetProperty (name, condition);
 			var isDefault = value == defaultValue;
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && (!string.Equals (defaultValue ?? "", prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal)))
-					RemoveProperty (prop);
-				return;
+				if (prop != null && string.Equals (defaultValue ?? "", prop.Value, preserveExistingCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+					return;
+				if (!IgnoreDefaultValues) {
+					if (prop != null)
+						RemoveProperty (prop);
+					return;
+				}
 			}
 			if (prop == null)
 				prop = AddProperty (name, condition);
@@ -260,12 +264,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var prop = GetProperty (name, condition);
 			var isDefault = value.CanonicalPath == defaultValue.CanonicalPath;
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && (defaultValue == null || defaultValue != prop.GetPathValue (relativeToProject, relativeToPath)))
-					RemoveProperty (prop);
-				return;
+				if (prop != null && defaultValue != null && defaultValue == prop.GetPathValue (relativeToProject, relativeToPath))
+					return;
+				if (!IgnoreDefaultValues) {
+					if (prop != null)
+						RemoveProperty (prop);
+					return;
+				}
 			}
 			if (prop == null)
 				prop = AddProperty (name, condition);
@@ -277,12 +285,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			var prop = GetProperty (name, condition);
 			var isDefault = object.Equals (value, defaultValue);
-			if (isDefault && !mergeToMainGroup && !IgnoreDefaultValues) {
+			if (isDefault && !mergeToMainGroup) {
 				// if the value is default, only remove the property if it was not already the default
 				// to avoid unnecessary project file churn
-				if (prop != null && (defaultValue == null || !object.Equals (defaultValue, prop.GetValue (defaultValue.GetType ()))))
-					RemoveProperty (prop);
-				return;
+				if (prop != null && defaultValue != null && object.Equals (defaultValue, prop.GetValue (defaultValue.GetType ())))
+					return;
+				if (!IgnoreDefaultValues) {
+					if (prop != null)
+						RemoveProperty (prop);
+					return;
+				}
 			}
 			if (prop == null)
 				prop = AddProperty (name, condition);
@@ -380,22 +392,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	public interface IMSBuildPropertyGroupEvaluated
+	public interface IMSBuildPropertyGroupEvaluated: IReadOnlyPropertySet
 	{
 		bool HasProperty (string name);
 
 		IMSBuildPropertyEvaluated GetProperty (string name);
-
-		string GetValue (string name, string defaultValue = null);
-
-		FilePath GetPathValue (string name, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
-
-		bool TryGetPathValue (string name, out FilePath value, FilePath defaultValue = default(FilePath), bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
-
-		T GetValue<T> (string name);
-
-		T GetValue<T> (string name, T defaultValue);
-
-		object GetValue (string name, Type type, object defaultValue);
 	}
 }

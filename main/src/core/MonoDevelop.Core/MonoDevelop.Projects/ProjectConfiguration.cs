@@ -46,15 +46,25 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		internal protected virtual void Read (IPropertySet pset, string toolsVersion)
+		bool debugTypeWasNone;
+
+		internal protected virtual void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
 		{
 			intermediateOutputDirectory = pset.GetPathValue ("IntermediateOutputPath");
 			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
-			debugMode = pset.GetValue<bool> ("DebugSymbols");
+			debugMode = pset.GetValue<bool> ("DebugSymbols", false);
 			pauseConsoleOutput = pset.GetValue ("ConsolePause", true);
 			externalConsole = pset.GetValue<bool> ("ExternalConsole");
 			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
 			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
+
+			// Special case: when DebugType=none, xbuild returns an empty string
+			debugType = pset.GetValue ("DebugType");
+			if (string.IsNullOrEmpty (debugType)) {
+				debugType = "none";
+				debugTypeReadAsEmpty = true;
+			}
+			debugTypeWasNone = debugType == "none";
 
 			var svars = pset.GetValue ("EnvironmentVariables");
 			if (svars != null) {
@@ -72,14 +82,30 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual void Write (IPropertySet pset, string toolsVersion)
 		{
-			pset.SetValue ("IntermediateOutputPath", intermediateOutputDirectory, defaultValue:FilePath.Null);
-			pset.SetValue ("DebugSymbols", debugMode, false);
+			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport");
+
+			FilePath defaultImPath;
+			if (!string.IsNullOrEmpty (Platform))
+				defaultImPath = ParentItem.BaseIntermediateOutputPath.Combine (Platform, Name);
+			else
+				defaultImPath = ParentItem.BaseIntermediateOutputPath.Combine (Name);
+
+			pset.SetValue ("IntermediateOutputPath", IntermediateOutputDirectory, defaultImPath);
+
+			// xbuild returns 'false' for DebugSymbols if DebugType==none, no matter which value is defined
+			// in the project file. Here we avoid overwriting the value if it has not changed.
+			if (debugType != "none" || !debugTypeWasNone)
+				pset.SetValue ("DebugSymbols", debugMode, false);
+			
 			pset.SetValue ("OutputPath", outputDirectory);
 			pset.SetValue ("ConsolePause", pauseConsoleOutput, true);
 			pset.SetValue ("ExternalConsole", externalConsole, false);
 			pset.SetValue ("Commandlineparameters", commandLineParameters, "");
 			pset.SetValue ("RunWithWarnings", runWithWarnings, true);
 
+			if (debugType != "none" || !debugTypeReadAsEmpty)
+				pset.SetValue ("DebugType", debugType);
+			
 			if (environmentVariables.Count > 0) {
 				XElement e = new XElement ("EnvironmentVariables");
 				foreach (var v in environmentVariables) {
@@ -143,6 +169,14 @@ namespace MonoDevelop.Projects
 			get { return commandLineParameters; }
 			set { commandLineParameters = value; }
 		}
+
+		bool debugTypeReadAsEmpty;
+		string debugType = "";
+		public string DebugType {
+			get { return debugType; }
+			set { debugType = value; }
+		}
+
 
 		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
 		public Dictionary<string, string> EnvironmentVariables {

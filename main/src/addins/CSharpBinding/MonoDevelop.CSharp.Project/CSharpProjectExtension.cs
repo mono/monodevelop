@@ -104,7 +104,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
 		{
 			base.OnReadConfiguration (monitor, config, pset);
 
@@ -142,7 +142,6 @@ namespace MonoDevelop.CSharp.Project
 				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
 				if (string.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) == 0) {
 					pars.AddDefineSymbol ("DEBUG");
-					pars.DebugType = "full";
 				}
 				string releaseAtt = projectOptions.GetAttribute ("Release");
 				if (string.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) == 0)

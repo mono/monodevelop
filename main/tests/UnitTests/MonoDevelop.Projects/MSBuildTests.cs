@@ -193,6 +193,7 @@ namespace MonoDevelop.Projects
 			
 			pars.WarningLevel = 1;
 			Assert.AreEqual (1, pars.WarningLevel);
+			conf.DebugType = "full";
 			conf.DebugMode = true;
 
 			await sol.SaveAsync (Util.GetMonitor ());
@@ -233,9 +234,9 @@ namespace MonoDevelop.Projects
 
 			DotNetProjectConfiguration conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
-			Assert.IsTrue (conf.DebugMode);
-			conf.DebugMode = false;
 			CSharpCompilerParameters cparams = (CSharpCompilerParameters) conf.CompilationParameters;
+			Assert.AreEqual (LangVersion.Default, cparams.LangVersion);
+			cparams.LangVersion = LangVersion.Version5;
 			Assert.IsTrue (cparams.UnsafeCode);
 			cparams.UnsafeCode = false;
 			

@@ -103,7 +103,7 @@ namespace MonoDevelop.Projects
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
 		{
 			next.OnReadConfiguration (monitor, config, pset);
 		}

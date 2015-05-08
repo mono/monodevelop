@@ -143,6 +143,7 @@ namespace MonoDevelop.Projects
 				configDebug.CompilationParameters = OnCreateCompilationParameters (projectOptions);
 				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
 				configDebug.DebugMode = true;
+				configDebug.DebugType = "full";
 				configDebug.ExternalConsole = externalConsole;
 				configDebug.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configDebug);

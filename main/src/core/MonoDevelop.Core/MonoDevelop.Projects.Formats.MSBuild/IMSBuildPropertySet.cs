@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		public static void ReadObjectProperties (this IPropertySet pset, object ob, Type typeToScan, bool includeBaseMembers = false)
+		public static void ReadObjectProperties (this IReadOnlyPropertySet pset, object ob, Type typeToScan, bool includeBaseMembers = false)
 		{
 			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
 			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);

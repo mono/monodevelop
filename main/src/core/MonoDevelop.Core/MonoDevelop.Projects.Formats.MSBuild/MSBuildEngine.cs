@@ -30,15 +30,12 @@ using System.Xml;
 using System.IO;
 using System.Text;
 
-#if WINDOWS
 using Microsoft.Build.Evaluation;
-using MSProject = Microsoft.Build.Evaluation.Project;
-using MSProjectItem = Microsoft.Build.Evaluation.ProjectItem;
+using EvalProject = Microsoft.Build.Evaluation.Project;
+using EvalProjectItem = Microsoft.Build.Evaluation.ProjectItem;
 
-#else
 using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
-#endif
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -48,11 +45,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (!supportsMSBuild)
 				return new DefaultMSBuildEngine ();
-			else
+			else {
+				#if !WINDOWS
 				return new MSBuildEngineV4 ();
+				#else
+				return new MSBuildEngineV12 ();
+				#endif
+			}
 		}
 
 		public abstract object LoadProjectFromXml (MSBuildProject project, string fileName, string xml);
+
+		public virtual void Evaluate (object project)
+		{
+		}
 
 		public abstract IEnumerable<object> GetAllItems (object project, bool includeImported);
 
@@ -79,12 +85,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public abstract void GetPropertyInfo (object property, out string name, out string value, out string finalValue);
 
 		public abstract IEnumerable<MSBuildTarget> GetTargets (object project);
+
+		public abstract void SetGlobalProperty (object project, string property, string value);
+
+		public abstract void RemoveGlobalProperty (object project, string property);
 	}
 
-	#if WINDOWS
-	class MSBuildEngineV4: MSBuildEngine
+	class MSBuildEngineV12: MSBuildEngine
 	{
-	public override object LoadProjectFromXml (MSBuildProject project, string fileName, string xml)
+		public override object LoadProjectFromXml (MSBuildProject project, string fileName, string xml)
 		{
 			var d = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (fileName);
@@ -100,12 +109,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<object> GetAllItems (object project, bool includeImported)
 		{
-			return ((MSProject)project).Items.Where (it => includeImported || !it.IsImported);
+			return ((EvalProject)project).Items.Where (it => includeImported || !it.IsImported);
 		}
 
 		public override string GetItemMetadata (object item, string name)
 		{
-			var m = ((MSProjectItem)item).GetMetadata(name);
+			var m = ((EvalProjectItem)item).GetMetadata(name);
 			if (m != null)
 				return m.UnevaluatedValue;
 			else
@@ -114,7 +123,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<object> GetImports (object project)
 		{
-			return ((MSProject)project).Imports.Cast<object> ();
+			return ((EvalProject)project).Imports.Cast<object> ();
 		}
 
 		public override string GetImportEvaluatedProjectPath (object project, object import)
@@ -124,7 +133,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override void GetItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported)
 		{
-			var it = (MSProjectItem)item;
+			var it = (EvalProjectItem)item;
 			name = it.ItemType;
 			include = it.UnevaluatedInclude;
 			if (it.UnevaluatedInclude.Contains ("*"))
@@ -137,7 +146,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override void GetEvaluatedItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported)
 		{
-			var it = (MSProjectItem)item;
+			var it = (EvalProjectItem)item;
 			name = it.ItemType;
 			include = it.UnevaluatedInclude;
 			finalItemSpec = it.EvaluatedInclude;
@@ -146,27 +155,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override bool GetItemHasMetadata (object item, string name)
 		{
-			return ((MSProjectItem)item).HasMetadata (name);
+			return ((EvalProjectItem)item).HasMetadata (name);
 		}
 
 		public override string GetEvaluatedMetadata (object item, string name)
 		{
-			return ((MSProjectItem)item).GetMetadataValue (name);
+			return ((EvalProjectItem)item).GetMetadataValue (name);
 		}
 
 		public override IEnumerable<object> GetEvaluatedItems (object project)
 		{
-			return ((MSProject)project).AllEvaluatedItems;
+			return ((EvalProject)project).AllEvaluatedItems;
 		}
 
 		public override IEnumerable<object> GetEvaluatedItemsIgnoringCondition (object project)
 		{
-			return ((MSProject)project).ItemsIgnoringCondition;
+			return ((EvalProject)project).ItemsIgnoringCondition;
 		}
 
 		public override IEnumerable<object> GetEvaluatedProperties (object project)
 		{
-			return ((MSProject)project).AllEvaluatedProperties;
+			return ((EvalProject)project).AllEvaluatedProperties;
 		}
 
 		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue)
@@ -180,7 +189,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public override IEnumerable<MSBuildTarget> GetTargets (object project)
 		{
 			var doc = new XmlDocument ();
-			var p = (MSProject)project;
+			var p = (EvalProject)project;
 			foreach (var t in p.Targets) {
 				var te = doc.CreateElement (t.Key, MSBuildProject.Schema);
 				te.SetAttribute ("Name", t.Key);
@@ -198,11 +207,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				};
 			}
 		}
+
+		public override void SetGlobalProperty (object project, string property, string value)
+		{
+			var p = (EvalProject)project;
+			p.SetGlobalProperty (property, value);
+		}
+
+		public override void RemoveGlobalProperty (object project, string property)
+		{
+			var p = (EvalProject)project;
+			p.RemoveGlobalProperty (property);
+		}
 	}
 
-
-#else
-
+	#if !WINDOWS
 	class MSBuildEngineV4: MSBuildEngine
 	{
 		public override object LoadProjectFromXml (MSBuildProject p, string fileName, string xml)
@@ -339,9 +358,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				};
 			}
 		}
+
+		public override void SetGlobalProperty (object project, string property, string value)
+		{
+			var p = (MSProject)project;
+			p.GlobalProperties.SetProperty (property, value);
+		}
+
+		public override void RemoveGlobalProperty (object project, string property)
+		{
+			var p = (MSProject)project;
+			p.GlobalProperties.RemoveProperty (property);
+		}
 	}
 	#endif
-
-
 }
 
