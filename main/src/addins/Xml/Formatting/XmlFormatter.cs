@@ -47,7 +47,7 @@ namespace MonoDevelop.Xml.Formatting
 			} catch (Exception ex) {
 				// Ignore malformed xml
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
-				return null;
+				return input;
 			}
 			
 			var sw = new StringWriter ();
