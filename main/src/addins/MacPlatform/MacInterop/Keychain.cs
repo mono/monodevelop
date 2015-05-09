@@ -553,12 +553,15 @@ namespace MonoDevelop.MacInterop
 				0, null, (uint) path.Length, path, (ushort) uri.Port,
 				protocol, auth, out passwordLength, out passwordData, ref item);
 
-			if (result != OSStatus.Ok)
-				return null;
+			try {
+				if (result != OSStatus.Ok)
+					return null;
 
-			var username = GetUsernameFromKeychainItemRef (item);
-
-			return Tuple.Create (username, Marshal.PtrToStringAuto (passwordData, (int) passwordLength));
+				var username = GetUsernameFromKeychainItemRef (item);
+				return Tuple.Create (username, Marshal.PtrToStringAuto (passwordData, (int) passwordLength));
+			} finally {
+				CFRelease (item);
+			}
 		}
 
 		public static string FindInternetPassword (Uri uri)
@@ -590,6 +593,64 @@ namespace MonoDevelop.MacInterop
 				return null;
 
 			return Marshal.PtrToStringAuto (passwordData, (int) passwordLength);
+		}
+
+		public static void RemoveInternetPassword (Uri uri)
+		{
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] user = Encoding.UTF8.GetBytes (Uri.UnescapeDataString (uri.UserInfo));
+			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
+			var auth = GetSecAuthenticationType (uri.Query);
+			var protocol = GetSecProtocolType (uri.Scheme);
+			IntPtr passwordData = IntPtr.Zero;
+			IntPtr item = IntPtr.Zero;
+			uint passwordLength = 0;
+
+			// Look for an internet password for the given protocol and auth mechanism
+			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
+				(uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
+				protocol, auth, out passwordLength, out passwordData, ref item);
+
+			// Fall back to looking for a password for SecProtocolType.Any && SecAuthenticationType.Any
+			if (result == OSStatus.ItemNotFound && protocol != SecProtocolType.Any)
+				result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
+					(uint) user.Length, user, (uint) path.Length, path, (ushort) uri.Port,
+					0, auth, out passwordLength, out passwordData, ref item);
+
+			try {
+				if (result != OSStatus.Ok)
+					return;
+
+				SecKeychainItemDelete (item);
+			} finally {
+				CFRelease (item);
+			}
+		}
+
+		public static void RemoveInternetUserNameAndPassword (Uri uri)
+		{
+			var pathStr = string.Join (string.Empty, uri.Segments);
+			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
+			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
+			var auth = GetSecAuthenticationType (uri.Query);
+			IntPtr passwordData;
+			IntPtr item = IntPtr.Zero;
+			uint passwordLength = 0;
+
+			var result = SecKeychainFindInternetPassword (
+				CurrentKeychain, (uint) host.Length, host, 0, null,
+				0, null, (uint) path.Length, path, (ushort) uri.Port,
+				GetSecProtocolType (uri.Scheme), auth, out passwordLength, out passwordData, ref item);
+
+			try {
+				if (result != OSStatus.Ok)
+					return;
+
+				SecKeychainItemDelete (item);
+			} finally {
+				CFRelease (item);
+			}
 		}
 	}
 

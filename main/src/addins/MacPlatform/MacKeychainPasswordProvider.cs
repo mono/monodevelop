@@ -52,5 +52,15 @@ namespace MonoDevelop.MacIntegration
 		{
 			return Keychain.FindInternetUserNameAndPassword (url);
 		}
+
+		public void RemoveWebPassword (Uri uri)
+		{
+			Keychain.RemoveInternetPassword (uri);
+		}
+
+		public void RemoveWebUserNameAndPassword (Uri uri)
+		{
+			Keychain.RemoveInternetUserNameAndPassword (uri);
+		}
 	}
 }

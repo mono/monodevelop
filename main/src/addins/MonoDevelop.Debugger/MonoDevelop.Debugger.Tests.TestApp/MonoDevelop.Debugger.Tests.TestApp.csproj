@@ -36,6 +36,9 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MonoDevelop.Debugger.Tests.NonUserCodeTestLib">
+      <HintPath>..\MonoDevelop.Debugger.Tests.NonUserCodeTestLib\bin\Debug\MonoDevelop.Debugger.Tests.NonUserCodeTestLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
@@ -45,4 +48,11 @@
     <Compile Include="AdvancedEvaluation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\MonoDevelop.Debugger.Tests.NonUserCodeTestLib\MonoDevelop.Debugger.Tests.NonUserCodeTestLib.csproj">
+      <Project>{8AFA4FB4-BD2D-478F-942B-7AE3451535BB}</Project>
+      <Name>MonoDevelop.Debugger.Tests.NonUserCodeTestLib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

@@ -38,6 +38,12 @@ namespace MonoDevelop.Components.AutoTest
 {
 	public class AutoTestSession: MarshalByRefObject
 	{		
+		[System.Runtime.InteropServices.DllImport ("/System/Library/Frameworks/QuartzCore.framework/QuartzCore")]
+		static extern IntPtr CGDisplayCreateImage (int displayID);
+
+		[System.Runtime.InteropServices.DllImport("/System/Library/Frameworks/ApplicationServices.framework/Versions/Current/ApplicationServices", EntryPoint="CGMainDisplayID")]
+		internal static extern int MainDisplayID();
+
 		readonly ManualResetEvent syncEvent = new ManualResetEvent (false);
 		public readonly AutoTestSessionDebug SessionDebug = new AutoTestSessionDebug ();
 		public IAutoTestSessionDebug<MarshalByRefObject> DebugObject { 
@@ -54,10 +60,10 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		public void ExecuteCommand (object cmd)
+		public void ExecuteCommand (object cmd, object dataItem = null)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, null, null);
+				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null);
 			});
 		}
 		
@@ -102,6 +108,18 @@ namespace MonoDevelop.Components.AutoTest
 			return Sync (del, false);
 		}
 
+		public void ExitApp ()
+		{
+			Sync (delegate {
+				try {
+					IdeApp.Exit ();
+				} catch (Exception e) {
+					Console.WriteLine (e);
+				}
+				return true;
+			});
+		}
+
 		public object GlobalInvoke (string name, object[] args)
 		{
 			return Sync (delegate {
@@ -123,6 +141,24 @@ namespace MonoDevelop.Components.AutoTest
 			return Sync (delegate {
 				return GetGlobalObject (name);
 			});
+		}
+
+		public void TakeScreenshot (string screenshotPath)
+		{
+			#if MAC
+			DispatchService.GuiDispatch (delegate {
+				try {
+					IntPtr handle = CGDisplayCreateImage (MainDisplayID ());
+					CoreGraphics.CGImage screenshot = ObjCRuntime.Runtime.GetINativeObject <CoreGraphics.CGImage> (handle, true);
+					AppKit.NSBitmapImageRep imgRep =  new AppKit.NSBitmapImageRep (screenshot);
+					var imageData = imgRep.RepresentationUsingTypeProperties (AppKit.NSBitmapImageFileType.Png);
+					imageData.Save (screenshotPath, true);
+				} catch (Exception e) {
+					Console.WriteLine (e);
+					throw;
+				}
+			});
+			#endif
 		}
 		
 		public void SetGlobalValue (string name, object value)
@@ -230,7 +266,12 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppResult[] ExecuteQuery (AppQuery query)
 		{
-			return query.Execute ();
+			var results = query.Execute ();
+			Sync (() => {
+				DispatchService.RunPendingEvents ();
+				return true;
+			});
+			return results;
 		}
 
 		public AppResult[] WaitForElement (AppQuery query, int timeout)

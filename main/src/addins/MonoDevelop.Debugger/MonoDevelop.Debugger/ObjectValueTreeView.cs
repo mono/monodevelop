@@ -741,7 +741,6 @@ namespace MonoDevelop.Debugger
 		public void ClearAll ()
 		{
 			values.Clear ();
-			valueNames.Clear ();
 			cachedValues.Clear ();
 			frame = null;
 			Refresh (true);
@@ -1007,8 +1006,8 @@ namespace MonoDevelop.Debugger
 				string val = (string) store.GetValue (it, ValueColumn);
 				oldValues [path + name] = val;
 				TreeIter cit;
-				if (store.IterChildren (out cit, it))
-					ChangeCheckpoint (cit, name + "/");
+				if (GetRowExpanded (store.GetPath (it)) && store.IterChildren (out cit, it))
+					ChangeCheckpoint (cit, path + name + "/");
 			} while (store.IterNext (ref it));
 		}
 		
@@ -1147,6 +1146,13 @@ namespace MonoDevelop.Debugger
 				store.AppendValues (it, GettextCatalog.GetString ("Loading..."), "", "", null, true);
 				if (!ShowExpanders)
 					ShowExpanders = true;
+				valPath += "/";
+				foreach (var oldPath in oldValues.Keys) {
+					if (oldPath.StartsWith (valPath, StringComparison.Ordinal)) {
+						ExpandRow (store.GetPath (it), false);
+						break;
+					}
+				}
 			}
 		}
 		
@@ -1346,7 +1352,16 @@ namespace MonoDevelop.Debugger
 			var entry = (Entry) args.Editable;
 			
 			var val = store.GetValue (it, ObjectColumn) as ObjectValue;
-			string strVal = val != null ? val.Value : null;
+			string strVal = null;
+			if (val != null) {
+				if (val.TypeName == "string") {
+					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+					opt.EllipsizeStrings = false;
+					strVal = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)val.GetRawValue (opt)) + '"';
+				} else {
+					strVal = val.Value;
+				}
+			}
 			if (!string.IsNullOrEmpty (strVal))
 				entry.Text = strVal;
 			
@@ -1519,7 +1534,7 @@ namespace MonoDevelop.Debugger
 
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
-			if (PreviewWindowManager.IsVisible) {
+			if (PreviewWindowManager.IsVisible || editing) {
 				return;
 			}
 			if (!it.Equals (TreeIter.Zero)) {
@@ -1761,27 +1776,32 @@ namespace MonoDevelop.Debugger
 					startPreviewCaret = GetCellRendererArea (path, col, cr);
 					startHAdj = Hadjustment.Value;
 					startVAdj = Vadjustment.Value;
+					int w, h;
 					using (var layout = new Pango.Layout (PangoContext)) {
 						layout.FontDescription = crtExp.FontDesc.Copy ();
 						layout.FontDescription.Family = crtExp.Family;
 						layout.SetText ((string)store.GetValue (it, NameColumn));
-						int w, h;
 						layout.GetPixelSize (out w, out h);
-						startPreviewCaret.X += (int)(w + cr.Xpad * 3);
-						startPreviewCaret.Width = 16;
-						ConvertTreeToWidgetCoords (startPreviewCaret.X, startPreviewCaret.Y, out startPreviewCaret.X, out startPreviewCaret.Y);
-						startPreviewCaret.X += (int)Hadjustment.Value;
-						startPreviewCaret.Y += (int)Vadjustment.Value;
-						if (startPreviewCaret.X < evnt.X &&
-						    startPreviewCaret.X + 16 > evnt.X) {
-							if (CompactView) {
-								SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
-							} else {
-								SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
-							}
-							DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
-							closePreviewWindow = false;
+					}
+					startPreviewCaret.X += (int)(w + cr.Xpad * 3);
+					startPreviewCaret.Width = 16;
+					ConvertTreeToWidgetCoords (startPreviewCaret.X, startPreviewCaret.Y, out startPreviewCaret.X, out startPreviewCaret.Y);
+					startPreviewCaret.X += (int)Hadjustment.Value;
+					startPreviewCaret.Y += (int)Vadjustment.Value;
+					if (startPreviewCaret.X < evnt.X &&
+						startPreviewCaret.X + 16 > evnt.X) {
+						if (CompactView) {
+							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+						} else {
+							SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
 						}
+						DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
+						closePreviewWindow = false;
+					} else {
+						if (editing)
+							base.OnButtonPressEvent (evnt);//End current editing
+						if (!Selection.IterIsSelected (it))
+							base.OnButtonPressEvent (evnt);//Select row, so base.OnButtonPressEvent below starts editing
 					}
 				} else if (cr == crtValue) {
 					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||
@@ -1792,6 +1812,11 @@ namespace MonoDevelop.Debugger
 							DesktopService.ShowUrl (url);
 						}
 					}
+				} else if (cr == crtExp) {
+					if (editing)
+						base.OnButtonPressEvent (evnt);//End current editing
+					if (!Selection.IterIsSelected (it))
+						base.OnButtonPressEvent (evnt);//Select row, so base.OnButtonPressEvent below starts editing
 				} else if (!editing) {
 					if (cr == crpButton) {
 						HandleValueButton (it);
@@ -1818,14 +1843,18 @@ namespace MonoDevelop.Debugger
 				PreviewWindowManager.DestroyWindow ();
 			}
 
-			bool retval = base.OnButtonPressEvent (evnt);
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 				//	ShowPopup (evnt);
+				if (!this.IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
+					//pass click to base so it can update the selection
+					//unless the node is already selected, in which case we don't want to change the selection(deselect multi selection)
+					base.OnButtonPressEvent (evnt);
+				}
 				return true;
+			} else {
+				return base.OnButtonPressEvent (evnt);
 			}
-			
-			return retval;
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
@@ -1856,6 +1885,10 @@ namespace MonoDevelop.Debugger
 		[CommandUpdateHandler (EditCommands.SelectAll)]
 		protected void UpdateSelectAll (CommandInfo cmd)
 		{
+			if (editing) {
+				cmd.Bypass = true;
+				return;
+			}
 			TreeIter iter;
 
 			cmd.Enabled = store.GetIterFirst (out iter);
@@ -1864,6 +1897,10 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (EditCommands.SelectAll)]
 		protected new void OnSelectAll ()
 		{
+			if (editing) {
+				base.OnSelectAll ();
+				return;
+			}
 			Selection.SelectAll ();
 		}
 		
@@ -1898,6 +1935,14 @@ namespace MonoDevelop.Debugger
 				string value = (string) store.GetValue (iter, ValueColumn);
 				string name = (string) store.GetValue (iter, NameColumn);
 				string type = (string) store.GetValue (iter, TypeColumn);
+				if (type == "string") {
+					var objVal = store.GetValue (iter, ObjectColumn) as ObjectValue;
+					if (objVal != null) {
+						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+						opt.EllipsizeStrings = false;
+						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
+					}
+				}
 
 				maxValue = Math.Max (maxValue, value.Length);
 				maxName = Math.Max (maxName, name.Length);

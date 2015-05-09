@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	public enum PathMode {
 		Absolute,
+		Relative,
 		Hidden
 	}
 

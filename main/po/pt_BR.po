@@ -16043,7 +16043,7 @@ msgstr "Apenas e_rros"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
 #, fuzzy
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr "O esquema padrão de cores."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

@@ -112,7 +112,7 @@ http://www.monodevelop.com
 
 **Gnome Human Interface Guidelines (HIG)**
 
-http://developer.gnome.org/projects/gup/hig/1.0/
+https://developer.gnome.org/hig/stable/
 
 **freedesktop.org standards**
 

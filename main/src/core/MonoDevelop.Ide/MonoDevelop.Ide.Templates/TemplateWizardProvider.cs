@@ -93,8 +93,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			CurrentWizard.Parameters = parameters;
-			CurrentWizard.UpdateSupportedParameters (template.SupportedParameters);
-			CurrentWizard.UpdateDefaultParameters (template.DefaultParameters);
+			CurrentWizard.UpdateParameters (template);
 			IsFirstPage = true;
 			CurrentPageNumber = 1;
 

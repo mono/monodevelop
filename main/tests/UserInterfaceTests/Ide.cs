@@ -66,7 +66,7 @@ namespace UserInterfaceTests
 		public static void CloseAll ()
 		{
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			Session.ExecuteCommand (FileCommands.CloseAllFiles);
+			Session.ExitApp ();
 		}
 
 		public static FilePath GetActiveDocumentFilename ()
@@ -76,7 +76,8 @@ namespace UserInterfaceTests
 
 		public static bool BuildSolution (bool isPass = true)
 		{
-			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution), "Ide.Shell.ProjectBuilt");
+			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
+				"Ide.Shell.ProjectBuilt", timeout: 60000);
 			var status = IsBuildSuccessful ();
 			return isPass == status;
 		}
@@ -90,7 +91,7 @@ namespace UserInterfaceTests
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new Exception ("Timed out waiting for event");
+			throw new TimeoutException ("Timed out waiting for Function: "+done.Method.Name);
 		}
 
 		//no saner way to do this
@@ -111,7 +112,7 @@ namespace UserInterfaceTests
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
-		public static bool IsBuildSuccessful (int timeout = 3000)
+		public static bool IsBuildSuccessful ()
 		{
 			return Session.IsBuildSuccessful ();
 		}

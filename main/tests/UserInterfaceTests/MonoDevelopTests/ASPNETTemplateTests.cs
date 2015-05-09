@@ -33,6 +33,8 @@ namespace UserInterfaceTests
 	{
 		readonly string aspCategory = "ASP.NET";
 
+		public ASPNetTemplatesTest () : base (Util.TestRunId) {}
+
 		[Test]
 		public void TestEmptyASPMVCProject ()
 		{
@@ -77,7 +79,13 @@ namespace UserInterfaceTests
 
 		void RunASPTest (string templateName, Action beforeBuild)
 		{
-			CreateBuildProject (GenerateProjectName (templateName), OtherCategoryRoot, aspCategory, GeneralKindRoot, templateName, beforeBuild);
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = aspCategory,
+				TemplateKindRoot = GeneralKindRoot,
+				TemplateKind = templateName
+			};
+			CreateBuildProject (templateOptions, beforeBuild);
 		}
 	}
 }

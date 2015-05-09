@@ -173,7 +173,6 @@
     <Compile Include="MonoDevelop.Core.Serialization\XmlElementDataType.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\XmlMapAttributeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Collections\Set.cs" />
-    <Compile Include="MonoDevelop.Core.Collections\ReadOnlyDictionary.cs" />
     <Compile Include="MonoDevelop.Core\Gettext.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\AsyncOperation.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PackageInstalledCondition.cs" />

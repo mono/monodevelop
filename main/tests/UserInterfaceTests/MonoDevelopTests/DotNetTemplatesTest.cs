@@ -33,6 +33,8 @@ namespace UserInterfaceTests
 {
 	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
+		public MonoDevelopTemplatesTest () : base (Util.TestRunId) {}
+
 		readonly string dotNetCategory = ".NET";
 
 		[Test]
@@ -61,7 +63,13 @@ namespace UserInterfaceTests
 
 		void RunDotNetTests (string templateName, Action beforeBuild)
 		{
-			CreateBuildProject (GenerateProjectName (templateName), OtherCategoryRoot, dotNetCategory, GeneralKindRoot, templateName, beforeBuild);
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = dotNetCategory,
+				TemplateKindRoot = GeneralKindRoot,
+				TemplateKind = templateName
+			};
+			CreateBuildProject (templateOptions, beforeBuild);
 		}
 	}
 }

@@ -152,6 +152,9 @@ check-addins:
 test:
 	cd tests && $(MAKE) test assembly=$(assembly)
 
+uitest:
+	cd tests && $(MAKE) uitest assembly=$(assembly)
+
 coverage:
 	cd tests && $(MAKE) coverage
 

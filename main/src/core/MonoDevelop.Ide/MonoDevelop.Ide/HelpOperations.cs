@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide
 					AddDirArgs (builder);
 					builder.AddQuoted (extraArgs);
 				} else {
+					LoggingService.LogWarning ("MonoDoc.app folder not found at {0}.", mdapp);
 					builder.AddQuoted (url);
 					builder.AddQuoted (extraArgs);
 				}
