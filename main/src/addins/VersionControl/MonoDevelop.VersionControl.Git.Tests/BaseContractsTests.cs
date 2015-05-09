@@ -102,6 +102,22 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			Assert.False (cmds.Any (), "The following commands don't have an enum associated:" + Environment.NewLine + String.Join (Environment.NewLine, cmds));
 		}
+
+		[Test]
+		public void AllCommandItemsAreCorrectlyBound ()
+		{
+			var mgr = new CommandManager ();
+			mgr.LoadCommands ("/MonoDevelop/Ide/Commands");
+
+			var cmdPath = "/MonoDevelop/Ide/MainMenu/VersionControl";
+			var cmd = mgr.CreateCommandEntrySet (cmdPath)
+				.Where (entry => entry.CommandId == null)
+				.Select (entry => entry.ToString ());
+
+			Assert.False (cmd.Any (), "Some of the commands under \"" + cmdPath + "\" are not mapped correctly");
+		}
+
+		// Ideas: Check that icons are bound.
 	}
 
 	[TestFixture]
