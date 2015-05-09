@@ -10,3 +10,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright ("LGPL")]
 
 [assembly: InternalsVisibleTo ("MonoDevelop.VersionControl.Git.Tests")]
+[assembly: InternalsVisibleTo ("MonoDevelop.VersionControl.Subversion.Tests")]
+[assembly: InternalsVisibleTo ("VersionControl.Subversion.Win32.Tests")]
