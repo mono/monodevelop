@@ -18,7 +18,7 @@ then
 fi
 
 cp libgit2/CMakeLists.txt libgit2/.CMakeLists.txt.mdcopy
-echo 'SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)' > libgit2/CmakeLists.txt
+echo 'SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)' > libgit2/CMakeLists.txt
 cat libgit2/.CMakeLists.txt.mdcopy >> libgit2/CMakeLists.txt
 
 mkdir libgit2/build
