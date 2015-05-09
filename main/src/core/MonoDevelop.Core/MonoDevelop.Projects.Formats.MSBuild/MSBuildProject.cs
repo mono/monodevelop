@@ -755,7 +755,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			bool foundLineBreak = RemoveIndent (elem.PreviousSibling);
 			string newIndent = foundLineBreak ? indent : format.NewLine + indent;
-			elem.ParentNode.InsertBefore (elem.OwnerDocument.CreateWhitespace (newIndent), elem);
+
+			var ws = elem.OwnerDocument.CreateWhitespace (newIndent);
+			if (elem.ParentNode is XmlDocument) {
+				// MS.NET doesn't allow inserting whitespace if there is a document element. The workaround
+				// is to remove the element, add the space, then add back the element
+				var doc = elem.OwnerDocument;
+				doc.RemoveChild (elem);
+				doc.AppendChild (ws);
+				doc.AppendChild (elem);
+			} else
+				elem.ParentNode.InsertBefore (ws, elem);
 
 			if (elem.ChildNodes.OfType<XmlElement> ().Any ()) {
 				foundLineBreak = RemoveIndent (elem.LastChild);
