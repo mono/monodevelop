@@ -30,6 +30,7 @@ using System.Reflection;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -87,6 +88,19 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				uiTypes = uiTypes.Concat (NoVisibleUI (Assembly.LoadFrom (path)));
 			}
 			Assert.False (uiTypes.Any (), "The following UI types should not be public:" + Environment.NewLine + String.Join (Environment.NewLine, uiTypes));
+		}
+
+		[Test]
+		public void AllCommandsAreCorrectlyBound ()
+		{
+			var mgr = new CommandManager ();
+			mgr.LoadCommands ("/MonoDevelop/Ide/Commands");
+			var cmds = mgr.GetCommands ()
+				.Where (c => c.Category == "Version Control")
+				.Where (c => CommandManager.ToCommandId (c.Id) == null)
+				.Select (c => c.Id);
+
+			Assert.False (cmds.Any (), "The following commands don't have an enum associated:" + Environment.NewLine + String.Join (Environment.NewLine, cmds));
 		}
 	}
 
