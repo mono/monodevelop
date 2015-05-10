@@ -152,11 +152,11 @@
         { "name":"Completion Text", "fore":"#434343" },
         { "name":"Completion Matching Substring", "fore":"#BA3373" },
         
-        { "name":"Completion Selected Text", "fore":"#ffffff" },
+        { "name":"Completion Selected Text", "fore":"#434343" },
         { "name":"Completion Selected Matching Substring", "fore":"#BA3373" },
 
-        { "name":"Completion Selected Text(Inactive)", "fore":"#A9A9A9" },
-        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"#A9A9A9" },
+        { "name":"Completion Selected Text(Inactive)", "fore":"#434343" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"#BA3373" },
 
         { "name":"Keyword(Access)", "fore":"violet" },
         { "name":"Keyword(Type)", "fore":"green" },
