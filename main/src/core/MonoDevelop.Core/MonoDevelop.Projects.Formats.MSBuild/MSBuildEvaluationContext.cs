@@ -212,7 +212,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				int j = str.IndexOf (")", i);
 				if (j == -1) {
 					allResolved = false;
-					return "";
+					return str;
 				}
 
 				string prop = str.Substring (i, j - i);

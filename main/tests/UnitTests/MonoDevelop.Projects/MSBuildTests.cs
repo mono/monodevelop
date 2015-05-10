@@ -372,7 +372,7 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
+		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		public async Task SaveItemsWithProperties ()
 		{
 			string dir = Path.GetDirectoryName (typeof(Project).Assembly.Location);
@@ -434,7 +434,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
-		[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
+		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		[Test]
 		public async Task EvaluatePropertiesWithConditionalGroup ()
 		{
@@ -446,7 +446,7 @@ namespace MonoDevelop.Projects
 			Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
 			var p = (DotNetProject) sol.GetAllProjects ().First ();
 			Assert.AreEqual ("Program8_test1.cs", p.Files[7].FilePath.FileName, "Item group conditions are not ignored");
-			Assert.AreEqual ("Program9_$(GGG).cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
+			Assert.AreEqual ("Program9_yes.cs", p.Files[8].FilePath.FileName, "Non-evaluable property group clears properties");
 			Assert.AreEqual ("Program10_$(AAA", p.Files[9].FilePath.FileName, "Invalid property reference");
 			Assert.AreEqual ("Program11_EnvTest.cs", p.Files[10].FilePath.FileName, "Environment variable");
 		}

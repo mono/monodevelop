@@ -36,15 +36,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildEngine GetEngine (bool supportsMSBuild)
 		{
-			if (!supportsMSBuild) {
-				lock (localLock) {
-					if (disposed)
-						throw new ObjectDisposedException ("MSBuildEngineManager");
-					if (internalEngine == null)
-						internalEngine = new DefaultMSBuildEngine ();
-					return internalEngine;
-				}
-			} else {
+/*			if (supportsMSBuild) {
 				lock (localLock) {
 					if (disposed)
 						throw new ObjectDisposedException ("MSBuildEngineManager");
@@ -57,6 +49,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					return msbuildEngine;
 				}
+			}*/
+			lock (localLock) {
+				if (disposed)
+					throw new ObjectDisposedException ("MSBuildEngineManager");
+				if (internalEngine == null)
+					internalEngine = new DefaultMSBuildEngine ();
+				return internalEngine;
 			}
 		}
 
