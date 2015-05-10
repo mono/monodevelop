@@ -101,7 +101,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.TypeHint = WindowTypeHint.Menu;
 			Theme.CornerRadius = 4;
 			var style = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetFlatColor (style.CompletionText.Background);
+			Theme.SetFlatColor (style.CompletionWindow.Color);
+			if (style.CompletionWindow.HasBorderColor)
+				Theme.BorderColor = style.CompletionWindow.BorderColor;
 		}
 
 		protected virtual void DoubleClick ()

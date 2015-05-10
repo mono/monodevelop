@@ -57,9 +57,12 @@
 
         { "name":"Notification Border", "color":"#D2B457" },
 
-        { "name":"Completion Matching Substring", "color":"#BA3373" },
-        { "name":"Completion Border", "color":"#C9C9C9" },
-        { "name":"Completion Border(Inactive)", "color":"#666666" },
+        { "name":"Completion Window", "color":"#edf1f2", "bordercolor":"#edf1f2" },
+		{ "name":"Completion Tooltip Window", "color":"#fafae2", "bordercolor":"#fafae2" },
+        { "name":"Completion Selection Bar Border", "color":"#1379f1" },
+        { "name":"Completion Selection Bar Border(Inactive)", "color":"#a9a9a9" },
+        { "name":"Completion Selection Bar Background", "color":"#1379f1", "secondcolor":"#1379f1" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"#a9a9a9", "secondcolor":"a9a9a9" },
 
         { "name":"Bookmarks", "color":"white", "secondcolor":"skyblue" },
 
@@ -155,9 +158,14 @@
         { "name":"Tooltip Text", "fore":"text-black", "back":"#feffe9" },
         { "name":"Notification Text", "fore":"text-black", "back":"#feffe9" },
 
-        { "name":"Completion Text", "fore":"#434343", "back":"#F0F6F8" },
-        { "name":"Completion Selected Text", "fore":"#f8fcfc", "back":"#dff4f0" },
-        { "name":"Completion Selected Text(Inactive)", "fore":"#434343", "back":"#FFFFFF" },
+        { "name":"Completion Text", "fore":"#434343" },
+        { "name":"Completion Matching Substring", "fore":"#BA3373", "weight":"bold" },
+        
+        { "name":"Completion Selected Text", "fore":"#ffffff" },
+        { "name":"Completion Selected Matching Substring", "fore":"#ffffff", "weight":"bold" },
+
+        { "name":"Completion Selected Text(Inactive)", "fore":"#ffffff" },
+        { "name":"Completion Selected Matching Substring(Inactive)", "fore":"#ffffff" },
 
         { "name":"Keyword(Access)", "fore":"keyword-teal" },
         { "name":"Keyword(Type)", "fore":"keyword-teal" },

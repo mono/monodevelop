@@ -154,14 +154,23 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Column Ruler")] // not defined
 		public AmbientColor Ruler { get; private set; }
 
-		[ColorDescription("Completion Matching Substring")]
-		public AmbientColor CompletionHighlight { get; private set; }
+		[ColorDescription("Completion Selection Bar Border")]
+		public AmbientColor CompletionSelectionBarBorder { get; private set; }
 
-		[ColorDescription("Completion Border")]
-		public AmbientColor CompletionBorder { get; private set; }
+		[ColorDescription("Completion Window")]
+		public AmbientColor CompletionWindow { get; private set; }
 
-		[ColorDescription("Completion Border(Inactive)")]
-		public AmbientColor CompletionInactiveBorder { get; private set; }
+		[ColorDescription("Completion Tooltip Window")]
+		public AmbientColor CompletionTooltipWindow { get; private set; }
+
+		[ColorDescription("Completion Selection Bar Border(Inactive)")]
+		public AmbientColor CompletionSelectionBarBorderInactive { get; private set; }
+
+		[ColorDescription("Completion Selection Bar Background")]
+		public AmbientColor CompletionSelectionBarBackground { get; private set; }
+
+		[ColorDescription("Completion Selection Bar Background(Inactive)")]
+		public AmbientColor CompletionSelectionBarBackgroundInactive { get; private set; }
 
 		[ColorDescription("Message Bubble Error Marker")]
 		public AmbientColor MessageBubbleErrorMarker { get; private set; }
@@ -324,13 +333,25 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription(CompletionTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionText { get; private set; }
 
+		public const string CompletionMatchingSubstringKey = "Completion Matching Substring";
+		[ColorDescription(CompletionMatchingSubstringKey)] //not defined in vs.net
+		public ChunkStyle CompletionMatchingSubstring { get; private set; }
+
 		public const string CompletionSelectedTextKey = "Completion Selected Text";
 		[ColorDescription(CompletionSelectedTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionSelectedText { get; private set; }
 
+		public const string CompletionSelectedMatchingSubstringKey = "Completion Selected Matching Substring";
+		[ColorDescription(CompletionSelectedMatchingSubstringKey)] //not defined in vs.net
+		public ChunkStyle CompletionSelectedMatchingSubstring { get; private set; }
+
 		public const string CompletionSelectedInactiveTextKey = "Completion Selected Text(Inactive)";
 		[ColorDescription(CompletionSelectedInactiveTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionSelectedInactiveText { get; private set; }
+
+		public const string CompletionSelectedInactiveMatchingSubstringKey = "Completion Selected Matching Substring(Inactive)";
+		[ColorDescription(CompletionSelectedInactiveMatchingSubstringKey)] //not defined in vs.net
+		public ChunkStyle CompletionSelectedInactiveMatchingSubstring { get; private set; }
 
 		public const string KeywordAccessorsKey = "Keyword(Access)";
 		[ColorDescription(KeywordAccessorsKey, VSSetting = "Keyword")]
