@@ -62,7 +62,7 @@
         { "name":"Completion Selection Bar Border", "color":"#1379f1" },
         { "name":"Completion Selection Bar Border(Inactive)", "color":"#a9a9a9" },
         { "name":"Completion Selection Bar Background", "color":"#1379f1", "secondcolor":"#1379f1" },
-        { "name":"Completion Selection Bar Background(Inactive)", "color":"#a9a9a9", "secondcolor":"a9a9a9" },
+        { "name":"Completion Selection Bar Background(Inactive)", "color":"#a9a9a9", "secondcolor":"#a9a9a9" },
 
         { "name":"Bookmarks", "color":"white", "secondcolor":"skyblue" },
 
