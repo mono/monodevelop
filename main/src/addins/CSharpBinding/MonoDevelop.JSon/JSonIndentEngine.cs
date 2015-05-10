@@ -56,11 +56,26 @@ namespace MonoDevelop.JSon
 			Reset ();
 		}
 
+		JSonIndentEngine (JSonIndentEngine jSonIndentEngine)
+		{
+			this.editor = jSonIndentEngine.editor;
+			this.ctx = jSonIndentEngine.ctx;
+			this.offset = jSonIndentEngine.offset;
+			this.line = jSonIndentEngine.line;
+			this.column = jSonIndentEngine.column;
+			this.thisLineIndent = jSonIndentEngine.thisLineIndent.Clone ();
+			this.nextLineIndent = jSonIndentEngine.nextLineIndent.Clone ();
+			this.currentIndent = jSonIndentEngine.currentIndent != null ? new StringBuilder (jSonIndentEngine.currentIndent.ToString ()) : null;
+			this.previousChar = jSonIndentEngine.previousChar;
+			this.isLineStart = jSonIndentEngine.isLineStart;
+			this.isInString = jSonIndentEngine.isInString;
+		}
+
 		#region IStateMachineIndentEngine implementation
 
 		public IStateMachineIndentEngine Clone ()
 		{
-			return (IStateMachineIndentEngine)MemberwiseClone ();
+			return new JSonIndentEngine (this);
 		}
 
 		public bool IsInsidePreprocessorDirective {
@@ -228,6 +243,8 @@ namespace MonoDevelop.JSon
 		}
 
 		SourceText sourceText;
+		JSonIndentEngine jSonIndentEngine;
+
 		public SourceText Document {
 			get {
 				return sourceText ?? (sourceText = new MonoDevelopSourceText (editor));
