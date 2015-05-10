@@ -162,11 +162,7 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
 		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".json" class = "MonoDevelop.SourceEditor.JSon.JSonTextEditorExtension" />
-	</Extension>
-
+	
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="syntaxmodes" targetPath="HighlightingSchemes" isDirectory="true" />
