@@ -46,6 +46,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		Dictionary<XmlElement,MSBuildObject> elemCache = new Dictionary<XmlElement,MSBuildObject> ();
 		Dictionary<string, MSBuildItemGroup> bestGroups;
 		MSBuildProjectInstance mainProjectInstance;
+		int changeStamp;
+
+		MSBuildEngineManager engineManager;
+		bool engineManagerIsLocal;
+
+		MSBuildProjectInstanceInfo nativeProjectInfo;
 
 		public const string Schema = "http://schemas.microsoft.com/developer/msbuild/2003";
 		static XmlNamespaceManager manager;
@@ -86,6 +92,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return doc; }
 		}
 
+		internal int ChangeStamp {
+			get { return changeStamp; }
+		}
+
 		public MSBuildProject ()
 		{
 			mainProjectInstance = new MSBuildProjectInstance (this);
@@ -97,6 +107,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			UseMSBuildEngine = true;
 			IsNewProject = true;
 			AddNewPropertyGroup (false);
+		}
+
+		internal MSBuildProject (MSBuildEngineManager manager): this ()
+		{
+			engineManager = manager;
+		}
+
+		~MSBuildProject ()
+		{
+			if (!engineManagerIsLocal && nativeProjectInfo != null && !nativeProjectInfo.Engine.Disposed)
+				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
+		}
+
+		internal MSBuildEngineManager EngineManager {
+			get {
+				return engineManager;
+			}
+			set {
+				engineManager = value;
+			}
 		}
 
 		public static Task<MSBuildProject> LoadAsync (string file)
@@ -178,6 +208,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return content;
 		}
 
+		internal void NotifyChanged ()
+		{
+			changeStamp++;
+		}
+
+		MSBuildProjectInstanceInfo cachedProjectInfo;
+
+		internal MSBuildProjectInstanceInfo GetCachedProject (int stamp, MSBuildEngine engine)
+		{
+			if (cachedProjectInfo != null && stamp == cachedProjectInfo.ProjectStamp && engine == cachedProjectInfo.Engine)
+				return cachedProjectInfo;
+			return null;
+		}
+
+		internal void SetCachedProject (MSBuildProjectInstanceInfo projectInfo)
+		{
+			cachedProjectInfo = projectInfo;
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this project uses the msbuild engine for evaluation.
 		/// </summary>
@@ -187,10 +236,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Evaluate ()
 		{
-			DateTime t = DateTime.Now;
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			mainProjectInstance.Evaluate ();
-			Console.WriteLine ("ET: " + (DateTime.Now - t).TotalMilliseconds + " " + FileName.FileName);
 		}
 
 		public MSBuildProjectInstance CreateInstance ()
@@ -198,9 +245,90 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new MSBuildProjectInstance (this);
 		}
 
+		internal MSBuildProjectInstanceInfo LoadNativeInstance ()
+		{
+			var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
+
+			if (engineManager == null) {
+				engineManager = new MSBuildEngineManager ();
+				engineManagerIsLocal = true;
+			}
+
+			MSBuildEngine e = engineManager.GetEngine (supportsMSBuild);
+
+			if (nativeProjectInfo != null && nativeProjectInfo.Engine != null && (nativeProjectInfo.Engine != e || nativeProjectInfo.ProjectStamp != ChangeStamp)) {
+				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
+				nativeProjectInfo = null;
+			}
+
+			if (nativeProjectInfo == null) {
+				nativeProjectInfo = new MSBuildProjectInstanceInfo {
+					Engine = e,
+					ProjectStamp = ChangeStamp
+				};
+			}
+
+			if (nativeProjectInfo.Project == null) {
+				// Use a private metadata property to assign an id to each item. This id is used to match
+				// evaluated items with the items that generated them.
+				int id = 0;
+				List<XmlElement> idElems = new List<XmlElement> ();
+
+				try {
+					nativeProjectInfo.ItemMap = new Dictionary<string,MSBuildItem> ();
+					foreach (var it in GetAllItems ()) {
+						var c = Document.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
+						string nid = (id++).ToString ();
+						c.InnerXml = nid;
+						it.Element.AppendChild (c);
+						nativeProjectInfo.ItemMap [nid] = it;
+						idElems.Add (c);
+						it.EvaluatedItemCount = 0;
+					}
+
+					OnEvaluationStarting ();
+
+					nativeProjectInfo.Project = e.LoadProject (this, FileName);
+				}
+				catch (Exception ex) {
+					// If the project can't be evaluated don't crash
+					LoggingService.LogError ("MSBuild project could not be evaluated", ex);
+					throw new ProjectEvaluationException (this, ex.Message);
+				}
+				finally {
+					OnEvaluationFinished ();
+					// Now remove the item id property
+					foreach (var el in idElems)
+						el.ParentNode.RemoveChild (el);
+				}
+			}
+			return nativeProjectInfo;
+		}
+
+
+		void OnEvaluationStarting ()
+		{
+			foreach (var g in PropertyGroups)
+				g.OnEvaluationStarting ();
+			foreach (var g in ItemGroups)
+				g.OnEvaluationStarting ();
+			foreach (var i in Imports)
+				i.OnEvaluationStarting ();
+		}
+
+		void OnEvaluationFinished ()
+		{
+			foreach (var g in PropertyGroups)
+				g.OnEvaluationFinished ();
+			foreach (var g in ItemGroups)
+				g.OnEvaluationFinished ();
+			foreach (var i in Imports)
+				i.OnEvaluationFinished ();
+		}
+
 		public string DefaultTargets {
 			get { return doc.DocumentElement.GetAttribute ("DefaultTargets"); }
-			set { doc.DocumentElement.SetAttribute ("DefaultTargets", value); }
+			set { doc.DocumentElement.SetAttribute ("DefaultTargets", value); NotifyChanged (); }
 		}
 		
 		public string ToolsVersion {
@@ -210,6 +338,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.SetAttribute ("ToolsVersion", value);
 				else
 					doc.DocumentElement.RemoveAttribute ("ToolsVersion");
+				NotifyChanged ();
 			}
 		}
 
@@ -260,6 +389,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.AppendChild (elem);
 			}
 			XmlUtil.Indent (format, elem, false);
+			NotifyChanged ();
 			return GetImport (elem);
 		}
 
@@ -271,16 +401,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void RemoveImport (string name)
 		{
 			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
-			if (elem != null)
+			if (elem != null) {
 				XmlUtil.RemoveElementAndIndenting (elem);
-			else
-				//FIXME: should this actually log an error?
-				Console.WriteLine ("ppnf:");
+				NotifyChanged ();
+			}
 		}
 		
 		public void RemoveImport (MSBuildImport import)
 		{
 			XmlUtil.RemoveElementAndIndenting (import.Element);
+			NotifyChanged ();
 		}
 
 		public IEnumerable<MSBuildImport> Imports {
@@ -334,6 +464,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			XmlUtil.Indent (format, elem, true);
+			NotifyChanged ();
 			return GetGroup (elem);
 		}
 		
@@ -384,6 +515,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				doc.DocumentElement.AppendChild (elem);
 			XmlUtil.Indent (format, elem, true);
+			NotifyChanged ();
 			return GetItemGroup (elem);
 		}
 		
@@ -459,6 +591,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlUtil.RemoveElementAndIndenting (sec);
 			}
 			XmlUtil.Indent (format, value, true);
+			NotifyChanged ();
 		}
 
 		public void SetMonoDevelopProjectExtension (string section, XmlElement value)
@@ -497,6 +630,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var xmlns = value.GetAttribute ("xmlns");
 			if (xmlns == Schema)
 				value.RemoveAttribute ("xmlns");
+			NotifyChanged ();
 		}
 
 		public void RemoveProjectExtension (string section)
@@ -507,6 +641,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlUtil.RemoveElementAndIndenting (elem);
 				if (parent.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace))
 					XmlUtil.RemoveElementAndIndenting (parent);
+				NotifyChanged ();
 			}
 		}
 		
@@ -520,6 +655,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					elem = parent;
 				}
 				while (elem.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace));
+				NotifyChanged ();
 			}
 		}
 
@@ -533,6 +669,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlUtil.RemoveElementAndIndenting (parent);
 				bestGroups = null;
 			}
+			NotifyChanged ();
 		}
 		
 		internal MSBuildImport GetImport (XmlElement elem)
@@ -584,6 +721,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			elemCache.Remove (grp.Element);
 			XmlUtil.RemoveElementAndIndenting (grp.Element);
+			NotifyChanged ();
 		}
 
 		public IEnumerable<MSBuildTarget> Targets {

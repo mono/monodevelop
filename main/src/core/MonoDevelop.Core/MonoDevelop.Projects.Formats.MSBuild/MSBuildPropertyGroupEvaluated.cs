@@ -32,8 +32,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class MSBuildPropertyGroupEvaluated: IMSBuildPropertyGroupEvaluated
 	{
-		internal Dictionary<string,MSBuildPropertyEvaluated> properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
-		internal MSBuildProject parent;
+		protected Dictionary<string,MSBuildPropertyEvaluated> properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
+		protected MSBuildProject parent;
 		object sourceItem;
 		MSBuildEngine engine;
 
@@ -51,10 +51,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool HasProperty (string name)
 		{
-			if (!properties.ContainsKey (name)) {
-				if (sourceItem != null)
-					return engine.GetItemHasMetadata (sourceItem, name);
-			}
+			if (properties.ContainsKey (name))
+				return true;
+			if (sourceItem != null)
+				return engine.GetItemHasMetadata (sourceItem, name);
 			return false;
 		}
 
@@ -64,12 +64,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!properties.TryGetValue (name, out prop)) {
 				if (sourceItem != null) {
 					if (engine.GetItemHasMetadata (sourceItem, name)) {
-						prop = new MSBuildPropertyEvaluated (parent, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedMetadata (sourceItem, name));
+						prop = new MSBuildPropertyEvaluated (parent, name, engine.GetItemMetadata (sourceItem, name), engine.GetEvaluatedItemMetadata (sourceItem, name));
 						properties [name] = prop;
 					}
 				}
 			}
 			return prop;
+		}
+
+		internal void SetProperties (Dictionary<string,MSBuildPropertyEvaluated> properties)
+		{
+			this.properties = properties;
+		}
+
+		internal void RemoveProperty (string name)
+		{
+			if (properties != null)
+				properties.Remove (name);
 		}
 
 		public string GetValue (string name, string defaultValue = null)

@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal MSBuildProperty (MSBuildProject project, XmlElement elem): base (project, elem)
 		{
+			NotifyChanges = true;
 		}
 
 		internal override string GetName ()
@@ -59,6 +60,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool MergeToMainGroup { get; set; }
 		internal bool HasDefaultValue { get; set; }
+
+		internal bool NotifyChanges { get; set; }
 
 		internal MergedProperty CreateMergedProperty ()
 		{
@@ -81,6 +84,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			SetPropertyValue (value);
+			if (Project != null && NotifyChanges)
+				Project.NotifyChanged ();
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
@@ -100,6 +105,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
+			if (Project != null && NotifyChanges)
+				Project.NotifyChanged ();
 		}
 
 		public void SetValue (object value, bool mergeToMainGroup = false)
@@ -118,6 +125,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (Element.IsEmpty && string.IsNullOrEmpty (value))
 				return;
+
+			if (value == null)
+				value = string.Empty;
 
 			// This code is from Microsoft.Build.Internal.Utilities
 
@@ -138,6 +148,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// The value does not contain valid XML markup.  Store it as text, so it gets 
 			// escaped properly.
 			Element.InnerText = value;
+			if (Project != null && NotifyChanges)
+				Project.NotifyChanged ();
 		}
 
 		internal override string GetPropertyValue ()
@@ -254,8 +266,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string value;
 		string name;
 
-		public ItemMetadataProperty (string name): base (null, null)
+		public ItemMetadataProperty (MSBuildProject project, string name): base (project, null)
 		{
+			NotifyChanges = false;
 			this.name = name;
 		}
 

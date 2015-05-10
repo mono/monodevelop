@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects
 					if (!knownProps.Contains (prop.Name)) {
 						if (metadata == null)
 							metadata = new ProjectItemMetadata (project.MSBuildProject);
-						metadata.SetValue (prop.Name, prop.Value);
+						metadata.SetValue (prop.Name, buildItem.Metadata.GetValue (prop.Name));
 					}
 				}
 				if (knownProps.Count > 0) {

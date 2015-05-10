@@ -91,10 +91,8 @@ namespace MonoDevelop.Projects
 
 			it = ar [1];
 			Assert.AreEqual ("Foo", it.Name);
-			Assert.AreEqual ("Foo.$(EvalProp)", it.UnevaluatedInclude);
-			Assert.AreEqual ("Foo.TestVal", it.Include);
+			Assert.AreEqual ("Foo.$(EvalProp)", it.Include);
 			Assert.AreEqual ("$(Configuration)", it.Metadata.GetValue ("Meta1"));
-			Assert.AreEqual ("Debug", it.EvaluatedMetadata.GetValue ("Meta1"));
 
 			ig = igs [1];
 			ar = ig.Items.ToArray ();
@@ -103,7 +101,6 @@ namespace MonoDevelop.Projects
 			it = ar [0];
 			Assert.AreEqual ("None", it.Name);
 			Assert.AreEqual ("*.txt", it.Include);
-			Assert.AreEqual ("*.txt", it.UnevaluatedInclude);
 		}
 
 		[Test]

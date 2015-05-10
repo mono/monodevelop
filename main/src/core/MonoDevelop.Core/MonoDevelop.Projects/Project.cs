@@ -1863,7 +1863,8 @@ namespace MonoDevelop.Projects
 			pi.SetGlobalProperty ("Configuration", conf);
 			if (!string.IsNullOrEmpty (platform))
 				pi.SetGlobalProperty ("Platform", platform);
-			
+
+			pi.OnlyEvaluateProperties = true;
 			pi.Evaluate ();
 
 			config.Platform = platform;
@@ -1878,7 +1879,7 @@ namespace MonoDevelop.Projects
 
 		void RemoveDuplicateItems (MSBuildProject msproject)
 		{
-			timer.Trace ("Checking for duplicate items");
+/*			timer.Trace ("Checking for duplicate items");
 
 			var uniqueIncludes = new Dictionary<string,object> ();
 			var toRemove = new List<MSBuildItem> ();
@@ -1919,7 +1920,7 @@ namespace MonoDevelop.Projects
 			timer.Trace ("Removing duplicate items");
 
 			foreach (var t in toRemove)
-				msproject.RemoveItem (t);
+				msproject.RemoveItem (t);*/
 		}
 
 		IMSBuildPropertySet GetMergedConfiguration (List<ConfigData> configData, string conf, string platform, IMSBuildPropertySet propGroupLimit)

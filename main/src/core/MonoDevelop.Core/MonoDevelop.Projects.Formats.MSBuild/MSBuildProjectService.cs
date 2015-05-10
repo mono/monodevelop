@@ -207,7 +207,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var node = GetItemTypeNodes ().FirstOrDefault (n => n.CanHandleFile (fileName, typeGuid));
 
 			if (node != null) {
-				item = await node.CreateSolutionItem (monitor, fileName);
+				item = await node.CreateSolutionItem (monitor, ctx, fileName);
 				if (item == null)
 					return null;
 			}
@@ -991,18 +991,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				return cultureNamesTable;
 			}
-		}
-
-		static string LoadProjectTypeGuids (string fileName)
-		{
-			MSBuildProject project = new MSBuildProject ();
-			project.Load (fileName);
-			
-			IMSBuildPropertySet globalGroup = project.GetGlobalPropertyGroup ();
-			if (globalGroup == null)
-				return null;
-
-			return globalGroup.GetValue ("ProjectTypeGuids");
 		}
 
 		internal static UnknownProjectTypeNode GetUnknownProjectTypeInfo (string[] guids, string fileName = null)

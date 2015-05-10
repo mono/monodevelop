@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		SolutionItemFactory factory;
 		
-		public virtual async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName)
+		public virtual async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, SolutionLoadContext ctx, string fileName)
 		{
 			SolutionItem item;
 
@@ -114,7 +114,7 @@ namespace MonoDevelop.Projects.Extensions
 
 		public virtual SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
-			var item = CreateSolutionItem (new ProgressMonitor (), null).Result;
+			var item = CreateSolutionItem (new ProgressMonitor (), null, null).Result;
 			item.EnsureInitialized ();
 			item.InitializeFromTemplate (info, projectOptions);
 			return item;

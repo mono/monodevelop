@@ -60,6 +60,8 @@ namespace MonoDevelop.Projects
 		
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
+
+		MSBuildEngineManager msbuildEngineManager = new MSBuildEngineManager ();
 		
 		[ItemProperty ("description", DefaultValue = "")]
 		string description;
@@ -128,6 +130,10 @@ namespace MonoDevelop.Projects
 			internal set {
 				rootFolder = value;
 			}
+		}
+
+		internal MSBuildEngineManager MSBuildEngineManager {
+			get { return msbuildEngineManager; }
 		}
 
 		/// <summary>
@@ -587,6 +593,7 @@ namespace MonoDevelop.Projects
 		{
 			RootFolder.Dispose ();
 			Counters.SolutionsLoaded--;
+			msbuildEngineManager.Dispose ();
 			base.OnDispose ();
 		}
 

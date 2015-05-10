@@ -164,7 +164,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var prop = new ItemMetadataProperty (name);
+			var prop = new ItemMetadataProperty (project, name);
 			prop.Project = project;
 			properties [name] = prop;
 

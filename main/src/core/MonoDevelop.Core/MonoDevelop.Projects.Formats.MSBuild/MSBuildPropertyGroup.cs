@@ -210,6 +210,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (condition != null)
 				prop.Condition = condition;
+			parent.NotifyChanged ();
 			return prop;
 		}
 
@@ -318,6 +319,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			properties.Remove (prop.Name);
 			propertyList.Remove (prop);
 			XmlUtil.RemoveElementAndIndenting (prop.Element);
+			parent.NotifyChanged ();
 		}
 
 		public void RemoveAllProperties ()
@@ -332,6 +334,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlUtil.RemoveElementAndIndenting (node);
 			properties.Clear ();
 			propertyList.Clear ();
+			parent.NotifyChanged ();
 		}
 
 		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)

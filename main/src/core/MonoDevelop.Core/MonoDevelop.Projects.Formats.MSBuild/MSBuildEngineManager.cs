@@ -1,10 +1,10 @@
-//
-// MSBuildItemGroup.cs
+﻿//
+// MSBuildEngineManager.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,62 +23,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System.Collections.Generic;
-using System.Xml;
-
+using System;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	
-	public class MSBuildItemGroup: MSBuildObject
+	class MSBuildEngineManager: IDisposable
 	{
-		MSBuildProject parent;
-		
-		internal MSBuildItemGroup (MSBuildProject parent, XmlElement elem): base (elem)
-		{
-			this.parent = parent;
-		}
+		MSBuildEngine internalEngine;
+		MSBuildEngine msbuildEngine;
+		object localLock = new object ();
+		bool disposed;
 
-		public bool IsImported {
-			get;
-			set;
-		}
-		
-		public MSBuildItem AddNewItem (string name, string include)
+		public MSBuildEngine GetEngine (bool supportsMSBuild)
 		{
-			XmlElement elem = AddChildElement (name);
-			MSBuildItem it = parent.GetItem (elem);
-			it.Include = include;
-			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.NotifyChanged ();
-			return it;
-		}
-
-		public void AddItem (MSBuildItem item)
-		{
-			XmlElement elem = item.Element;
-			Element.AppendChild (elem);
-			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.AddToItemCache (item);
-			parent.NotifyChanged ();
-		}
-		
-		public IEnumerable<MSBuildItem> Items {
-			get {
-				foreach (XmlNode node in Element.ChildNodes) {
-					XmlElement elem = node as XmlElement;
-					if (elem != null)
-						yield return parent.GetItem (elem);
+			if (!supportsMSBuild) {
+				lock (localLock) {
+					if (disposed)
+						throw new ObjectDisposedException ("MSBuildEngineManager");
+					if (internalEngine == null)
+						internalEngine = new DefaultMSBuildEngine ();
+					return internalEngine;
+				}
+			} else {
+				lock (localLock) {
+					if (disposed)
+						throw new ObjectDisposedException ("MSBuildEngineManager");
+					if (msbuildEngine == null) {
+						#if !WINDOWS
+						msbuildEngine = new MSBuildEngineV4 ();
+						#else
+						msbuildEngine = new MSBuildEngineV12 ();
+						#endif
+					}
+					return msbuildEngine;
 				}
 			}
 		}
 
-		internal override void Evaluate (MSBuildEvaluationContext context)
+		public void Dispose ()
 		{
-			foreach (var item in Items)
-				item.Evaluate (context);
+			lock (localLock) {
+				if (internalEngine != null)
+					internalEngine.Dispose ();
+				if (msbuildEngine != null)
+					msbuildEngine.Dispose ();
+				internalEngine = null;
+				msbuildEngine = null;
+				disposed = true;
+			}
 		}
 	}
-	
 }
+

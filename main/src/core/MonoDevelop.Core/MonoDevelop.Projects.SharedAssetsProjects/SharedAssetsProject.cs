@@ -95,7 +95,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			projItemsPath = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
 
-			MSBuildProject p = new MSBuildProject ();
+			MSBuildProject p = new MSBuildProject (msproject.EngineManager);
 			p.Load (projItemsPath);
 			p.Evaluate ();
 
@@ -116,7 +116,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
 			
 			if (projitemsProject == null) {
-				projitemsProject = new MSBuildProject ();
+				projitemsProject = new MSBuildProject (msproject.EngineManager);
 				projitemsProject.FileName = projItemsPath;
 				var grp = projitemsProject.GetGlobalPropertyGroup ();
 				if (grp == null)

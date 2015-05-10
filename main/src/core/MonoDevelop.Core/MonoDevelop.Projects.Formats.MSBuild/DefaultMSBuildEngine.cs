@@ -31,19 +31,22 @@ using System.Xml;
 using System.IO;
 using System.Text;
 using Microsoft.Build.BuildEngine;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	class DefaultMSBuildEngine: MSBuildEngine
 	{
+		internal static DefaultMSBuildEngine Instance = new DefaultMSBuildEngine ();
+
 		class ProjectInfo
 		{
 			public MSBuildProject Project;
-			public MSBuildEvaluationContext Context;
-			public List<MSBuildItem> EvaluatedItemsIgnoringCondition = new List<MSBuildItem> ();
-			public List<MSBuildItem> EvaluatedItems = new List<MSBuildItem> ();
+			public List<IMSBuildItemEvaluated> EvaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
+			public List<IMSBuildItemEvaluated> EvaluatedItems = new List<IMSBuildItemEvaluated> ();
 			public Dictionary<string,PropertyInfo> Properties = new Dictionary<string, PropertyInfo> ();
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
+			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> ();
 		}
 
 		class PropertyInfo
@@ -55,27 +58,47 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		#region implemented abstract members of MSBuildEngine
 
-		public override object LoadProjectFromXml (MSBuildProject project, string fileName, string xml)
+		public override object LoadProject (MSBuildProject project, string fileName)
 		{
-			var context = new MSBuildEvaluationContext ();
 			var pi = new ProjectInfo {
-				Project = project,
-				Context = context
+				Project = project
 			};
 
 			return pi;
 		}
 
+		public override void UnloadProject (object project)
+		{
+			
+		}
+
+		public override object CreateProjectInstance (object project)
+		{
+			return project;
+		}
+
 		public override void Evaluate (object project)
 		{
 			var pi = (ProjectInfo)project;
-			pi.Context.InitEvaluation (pi.Project);
+
+			pi.EvaluatedItemsIgnoringCondition.Clear ();
+			pi.EvaluatedItems.Clear ();
+			pi.Properties.Clear ();
+			pi.Imports.Clear ();
+
+			var context = new MSBuildEvaluationContext ();
+			foreach (var p in pi.GlobalProperties) {
+				context.SetPropertyValue (p.Key, p.Value);
+				pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
+			}
+
+			context.InitEvaluation (pi.Project);
 			foreach (var pg in pi.Project.PropertyGroups)
-				Evaluate (pi, pi.Context, pg);
+				Evaluate (pi, context, pg);
 			foreach (var pg in pi.Project.ItemGroups)
-				Evaluate (pi, pi.Context, pg);
+				Evaluate (pi, context, pg);
 			foreach (var i in pi.Project.Imports)
-				Evaluate (pi, pi.Context, i);
+				Evaluate (pi, context, i);
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildPropertyGroup group)
@@ -93,7 +116,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return;
 			}
 
-			foreach (var prop in group.GetProperties ())
+			foreach (var prop in group.Element.ChildNodes.OfType<XmlElement> ())
 				Evaluate (project, context, prop);
 		}
 
@@ -109,28 +132,120 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			foreach (var item in items.Items) {
 				var it = Evaluate (project, context, item);
-				if (conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || ConditionParser.ParseAndEvaluate (it.Condition, context)))
-					project.EvaluatedItems.Add (it);
-				project.EvaluatedItemsIgnoringCondition.Add (it);
+				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || ConditionParser.ParseAndEvaluate (it.Condition, context));
+				if (it.Include.IndexOf ('*') != -1) {
+					var path = it.Include;
+					if (path == "**" || path.EndsWith ("\\**"))
+						path = path + "/*";
+					var subpath = path.Split ('\\');
+					foreach (var eit in ExpandWildcardFilePath (project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
+						project.EvaluatedItemsIgnoringCondition.Add (eit);
+						if (trueCond)
+							project.EvaluatedItems.Add (eit);
+					}
+				} else {
+					project.EvaluatedItemsIgnoringCondition.Add (it);
+					if (trueCond)
+						project.EvaluatedItems.Add (it);
+				}
 			}
 		}
 
-		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
+		static IEnumerable<IMSBuildItemEvaluated> ExpandWildcardFilePath (MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
+		{
+			var res = Enumerable.Empty<IMSBuildItemEvaluated> ();
+
+			if (index >= filePath.Length)
+				return res;
+
+			var path = filePath [index];
+
+			if (path == "..")
+				return ExpandWildcardFilePath (project, context, sourceItem, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1);
+			
+			if (path == ".")
+				return ExpandWildcardFilePath (project, context, sourceItem, basePath, baseRecursiveDir, recursive, filePath, index + 1);
+
+			if (!Directory.Exists (basePath))
+				return res;
+
+			if (path == "**") {
+				// if this is the last component of the path, there isn't any file specifier, so there is no possible match
+				if (index + 1 >= filePath.Length)
+					return res;
+				
+				// If baseRecursiveDir has already been set, don't overwrite it.
+				if (baseRecursiveDir.IsNullOrEmpty)
+					baseRecursiveDir = basePath;
+				
+				return ExpandWildcardFilePath (project, context, sourceItem, basePath, baseRecursiveDir, true, filePath, index + 1);
+			}
+
+			if (recursive) {
+				// Recursive search. Try to match the remaining subpath in all subdirectories.
+				foreach (var dir in Directory.GetDirectories (basePath))
+					res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index));
+			}
+
+			if (index == filePath.Length - 1) {
+				// Last path component. It has to be a file specifier.
+				string baseDir = basePath.ToRelative (project.BaseDirectory).ToString().Replace ('/','\\');
+				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => {
+					context.SetItemContext (f, basePath.ToRelative (baseRecursiveDir));
+					XmlElement e;
+					context.Evaluate (sourceItem.Element, out e);
+					var ev = baseDir + "\\" + Path.GetFileName (f);
+					return CreateEvaluatedItem (project, sourceItem, e, ev);
+				}));
+			}
+			else {
+				// Directory specifier
+				// Look for matching directories.
+				// The search here is non-recursive, not matter what the 'recursive' parameter says, since we are trying to match a subpath.
+				// The recursive search is done below.
+
+				if (path.IndexOfAny (wildcards) != -1) {
+					foreach (var dir in Directory.GetDirectories (basePath, path))
+						res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1));
+				} else
+					res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1));
+			}
+
+			return res;
+		}
+
+		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildProject project, MSBuildItem sourceItem, XmlElement e, string include)
+		{
+			var it = new MSBuildItemEvaluated (project, e.LocalName, sourceItem.Include, include);
+			var md = new Dictionary<string,MSBuildPropertyEvaluated> ();
+			foreach (var c in e.ChildNodes.OfType<XmlElement> ()) {
+				var cm = sourceItem.Element.ChildNodes.OfType<XmlElement> ().FirstOrDefault (me => me.LocalName == c.LocalName);
+				md [c.LocalName] = new MSBuildPropertyEvaluated (project, c.LocalName, cm.InnerXml, c.InnerXml);
+			}
+			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
+			it.SourceItem = sourceItem;
+			it.Condition = sourceItem.Condition;
+			return it;
+		}
+
+		static char[] wildcards = { '*', '%' };
+
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, XmlElement prop)
 		{
 			XmlElement e;
-			context.Evaluate (prop.Element, out e);
+			context.Evaluate (prop, out e);
 			var ep = new MSBuildProperty (project.Project, e);
 			if (string.IsNullOrEmpty (ep.Condition) || ConditionParser.ParseAndEvaluate (ep.Condition, context)) {
-				project.Properties [ep.Name] = new PropertyInfo { Name = ep.Name, Value = prop.Element.Value, FinalValue = ep.Value };
+				project.Properties [ep.Name] = new PropertyInfo { Name = ep.Name, Value = prop.Value, FinalValue = ep.Value };
 				context.SetPropertyValue (prop.Name, ep.Value);
 			}
 		}
 
-		MSBuildItem Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
+		MSBuildItemEvaluated Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
 		{
 			XmlElement e;
 			context.Evaluate (item.Element, out e);
-			return new MSBuildItem (project.Project, e);
+			return CreateEvaluatedItem (project.Project, item, e, e.GetAttribute ("Include"));
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import)
@@ -138,15 +253,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.Imports [import] = context.EvaluateString (import.Project);
 		}
 
-		public override string GetItemMetadata (object item, string name)
+		public override bool GetItemHasMetadata (object item, string name)
 		{
-			MSBuildItem it = (MSBuildItem) item;
-			return it.Metadata.GetValue (name);
+			var it = item as MSBuildItem;
+			if (it != null)
+				return it.Metadata.HasProperty (name);
+			return ((IMSBuildItemEvaluated) item).Metadata.HasProperty (name);
 		}
 
-		public override string GetEvaluatedMetadata (object item, string name)
+		public override string GetItemMetadata (object item, string name)
 		{
-			MSBuildItem it = (MSBuildItem) item;
+			var it = item as MSBuildItem;
+			if (it != null)
+				return it.Metadata.GetValue (name);
+			return ((IMSBuildItemEvaluated)item).Metadata.GetValue (name);
+		}
+
+		public override string GetEvaluatedItemMetadata (object item, string name)
+		{
+			IMSBuildItemEvaluated it = (IMSBuildItemEvaluated) item;
 			return it.Metadata.GetValue (name);
 		}
 
@@ -191,17 +316,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override void GetEvaluatedItemInfo (object item, out string name, out string include, out string finalItemSpec, out bool imported)
 		{
-			var it = (MSBuildItem) item;
+			var it = (IMSBuildItemEvaluated) item;
 			name = it.Name;
 			include = it.Include;
 			finalItemSpec = it.Include;
 			imported = false;
-		}
-
-		public override bool GetItemHasMetadata (object item, string name)
-		{
-			var it = (MSBuildItem) item;
-			return it.Metadata.HasProperty (name);
 		}
 
 		public override void GetPropertyInfo (object property, out string name, out string value, out string finalValue)
@@ -230,15 +349,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public override void SetGlobalProperty (object project, string property, string value)
 		{
 			var pi = (ProjectInfo)project;
-			pi.Context.SetPropertyValue (property, value);
-			pi.Properties [property] = new PropertyInfo { Name = property, Value = value, FinalValue = value };
+			pi.GlobalProperties [property] = value;
 		}
 
 		public override void RemoveGlobalProperty (object project, string property)
 		{
 			var pi = (ProjectInfo)project;
-			pi.Context.ClearPropertyValue (property);
-			pi.Properties.Remove (property);
+			pi.GlobalProperties.Remove (property);
 		}
 
 		#endregion

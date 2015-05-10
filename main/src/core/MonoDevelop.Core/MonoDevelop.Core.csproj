@@ -520,6 +520,9 @@
     <Compile Include="MonoDevelop.Projects\PathBasedProjectItem.cs" />
     <Compile Include="MonoDevelop.Projects\ExportProjectItemTypeAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectInstance.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV12.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV4.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

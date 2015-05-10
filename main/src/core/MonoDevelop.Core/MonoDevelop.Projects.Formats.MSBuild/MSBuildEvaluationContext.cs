@@ -32,6 +32,7 @@ using System.Xml;
 using System.Text;
 
 using Microsoft.Build.BuildEngine;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -41,6 +42,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
 		bool allResolved;
 		MSBuildProject project;
+
+		string itemFile;
+		string recursiveDir;
 
 		public MSBuildEvaluationContext ()
 		{
@@ -57,6 +61,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			SetPropertyValue ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
 		}
 
+		internal void SetItemContext (string itemFile, string recursiveDir)
+		{
+			this.itemFile = itemFile;
+			this.recursiveDir = recursiveDir;
+		}
+
+		internal void ClearItemContext ()
+		{
+			this.itemFile = null;
+			this.recursiveDir = null;
+		}
+
 		public string GetPropertyValue (string name)
 		{
 			string val;
@@ -64,6 +80,63 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return val;
 			else
 				return Environment.GetEnvironmentVariable (name);
+		}
+
+		public string GetMetadataValue (string name)
+		{
+			if (itemFile == null)
+				return "";
+
+			switch (name.ToLower ()) {
+			case "fullpath": return ToMSBuildPath (Path.GetFullPath (itemFile));
+			case "rootdir": return ToMSBuildDir (Path.GetPathRoot (itemFile));
+			case "filename": return Path.GetFileNameWithoutExtension (itemFile);
+			case "extension": return Path.GetExtension (itemFile);
+			case "relativedir": return ToMSBuildDir (new FilePath (itemFile).ToRelative (project.BaseDirectory).ParentDirectory);
+			case "directory": {
+					var root = Path.GetPathRoot (itemFile);
+					if (!string.IsNullOrEmpty (root))
+						return ToMSBuildDir (Path.GetFullPath (itemFile).Substring (root.Length));
+					return ToMSBuildDir (Path.GetFullPath (itemFile));
+				}
+			case "recursivedir": return ToMSBuildDir (recursiveDir);
+			case "identity": return ToMSBuildPath (itemFile);
+			case "modifiedtime": {
+					try {
+						return File.GetLastWriteTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
+					} catch {
+						return "";
+					}
+				}
+			case "createdtime": {
+				try {
+					return File.GetCreationTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
+				} catch {
+					return "";
+				}
+			}
+			case "accessedtime": {
+					try {
+						return File.GetLastAccessTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
+					} catch {
+						return "";
+					}
+				}
+			}
+			return "";
+		}
+
+		string ToMSBuildPath (string path)
+		{
+			return path.Replace ('/','\\');
+		}
+
+		string ToMSBuildDir (string path)
+		{
+			path = path.Replace ('/','\\');
+			if (!path.EndsWith ("\\", StringComparison.Ordinal))
+				path = path + '\\';
+			return path;
 		}
 
 		public void SetPropertyValue (string name, string value)
@@ -121,9 +194,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return allResolved;
 		}
 
+		static char[] tagStart = new [] {'$','%'};
+
 		string Evaluate (string str)
 		{
-			int i = str.IndexOf ("$(");
+			int i = FindNextTag (str, 0);
 			if (i == -1)
 				return str;
 
@@ -131,6 +206,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			StringBuilder sb = new StringBuilder ();
 			do {
+				var tag = str[i];
 				sb.Append (str, last, i - last);
 				i += 2;
 				int j = str.IndexOf (")", i);
@@ -140,20 +216,35 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				string prop = str.Substring (i, j - i);
-				string val = GetPropertyValue (prop);
+				string val = tag == '$' ? GetPropertyValue (prop) : GetMetadataValue (prop);
 				if (val == null) {
 					allResolved = false;
-					return "";
+					val = string.Empty;
 				}
 
 				sb.Append (val);
 				last = j + 1;
-				i = str.IndexOf ("$(", last);
+
+				i = FindNextTag (str, last);
 			}
 			while (i != -1);
 
 			sb.Append (str, last, str.Length - last);
 			return sb.ToString ();
+		}
+
+		int FindNextTag (string str, int i)
+		{
+			do {
+				i = str.IndexOfAny (tagStart, i);
+				if (i == -1 || i == str.Length - 1)
+					break;
+				if (str[i + 1] == '(')
+					return i;
+				i++;
+			} while (i < str.Length);
+
+			return -1;
 		}
 
 		#region IExpressionContext implementation
