@@ -1,5 +1,5 @@
 // 
-// BlameCommand.cs
+// MergeCommand.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -29,21 +29,22 @@ using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
+using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public class BlameCommand
+	class MergeCommand
 	{
-		internal static readonly string BlameViewHandlers = "/MonoDevelop/VersionControl/BlameViewHandler";
+		internal static readonly string MergeViewHandlers = "/MonoDevelop/VersionControl/MergeViewHandler";
 		
 		static bool CanShow (VersionControlItem item)
 		{
 			return !item.IsDirectory
 				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IBlameViewHandler> (BlameViewHandlers).Any (h => h.CanHandle (item, null));
+				&& MergeViewHandler.Default.CanHandle (item, null);
 		}
 		
-		public static bool Show (VersionControlItemList items, bool test)
+		public static bool Show (List<VersionControlItem> items, bool test)
 		{
 			if (test)
 				return items.All (CanShow);
@@ -51,7 +52,7 @@ namespace MonoDevelop.VersionControl
 			foreach (var item in items) {
 				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IBlameView> ());
+					document.Window.SwitchView (document.Window.FindView<MergeView> ());
 			}
 			
 			return true;

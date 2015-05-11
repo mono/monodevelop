@@ -1,10 +1,10 @@
 ﻿//
-// VersionControlException.cs
+// RevisionTests.cs
 //
 // Author:
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2014 Marius Ungureanu
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,45 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.VersionControl
+using NUnit.Framework;
+
+namespace MonoDevelop.VersionControl.Git.Tests
 {
-	public abstract class VersionControlException : Exception
+	class MockRevision : Revision
 	{
-		protected VersionControlException (string message) : base (message)
+		public MockRevision (string message) : base (null, DateTime.Now, "me", message)
 		{
 		}
 
-		protected VersionControlException (string message, Exception native) : base (message, native)
+		public override Revision GetPrevious ()
 		{
+			return this;
+		}
+	}
+
+	[TestFixture]
+	public class RevisionTests
+	{
+		const string shorterThan80 = @"I'm a string";
+		const string longerThan80 = @"Hey, I'm a string that's longer than 80 characters.
+
+Lorem ipsum, something-something test string is long now.";
+
+		[Test]
+		public void ShortMessageFormatting ()
+		{
+			var rev = new MockRevision (shorterThan80);
+			Assert.AreEqual (shorterThan80, rev.Message);
+			Assert.AreEqual (shorterThan80, rev.ShortMessage);
+
+			rev = new MockRevision (longerThan80);
+
+			Assert.AreEqual (longerThan80, rev.Message);
+			Assert.AreEqual (longerThan80.Substring (0, 80), rev.ShortMessage);
+
+			rev.ShortMessage = shorterThan80;
+			Assert.AreEqual (longerThan80, rev.Message);
+			Assert.AreEqual (shorterThan80, rev.ShortMessage);
 		}
 	}
 }

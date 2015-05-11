@@ -6,7 +6,7 @@ using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl 
+namespace MonoDevelop.VersionControl.Commands 
 {
 	internal class PublishCommand 
 	{

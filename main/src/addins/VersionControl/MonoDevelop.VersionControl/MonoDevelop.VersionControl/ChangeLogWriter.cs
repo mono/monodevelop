@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	class ChangeLogWriter
+	sealed class ChangeLogWriter
 	{
 		private Dictionary<string, List<string>> messages = new Dictionary<string, List<string>> ();
 		private string changelog_path;

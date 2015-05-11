@@ -4,7 +4,7 @@ using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using System.Linq;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	internal class CheckoutCommand : CommandHandler
 	{

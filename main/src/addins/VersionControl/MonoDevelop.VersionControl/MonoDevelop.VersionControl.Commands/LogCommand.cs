@@ -1,5 +1,5 @@
 // 
-// MergeCommand.cs
+// LogCommand.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -29,29 +29,38 @@ using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
+using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public class MergeCommand
+	class LogCommand
 	{
-		internal static readonly string MergeViewHandlers = "/MonoDevelop/VersionControl/MergeViewHandler";
-		
 		static bool CanShow (VersionControlItem item)
 		{
-			return !item.IsDirectory
-				&& item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<IMergeViewHandler> (MergeViewHandlers).Any (h => h.CanHandle (item, null));
+			// We want directories to be able to view the log for an entire directory
+			// by selecting it from the solution pane
+			return item.VersionInfo.IsVersioned
+				&& LogViewHandler.Default.CanHandle (item, null);
 		}
 		
-		public static bool Show (VersionControlItemList items, bool test)
+		public static bool Show (List<VersionControlItem> items, bool test)
 		{
 			if (test)
 				return items.All (CanShow);
 			
 			foreach (var item in items) {
-				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-				if (document != null)
-					document.Window.SwitchView (document.Window.FindView<IMergeView> ());
+				Document document = null;
+				if (!item.IsDirectory)
+					document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+
+				if (document != null) {
+					document.Window.SwitchView (document.Window.FindView<LogView> ());
+				} else {
+					VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
+					LogView logView = new LogView (info);
+					info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
+					logView.Selected ();	
+				}
 			}
 			
 			return true;

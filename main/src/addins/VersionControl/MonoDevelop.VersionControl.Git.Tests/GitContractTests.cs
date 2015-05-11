@@ -1,9 +1,10 @@
-// Lock.cs
+﻿//
+// GitContractTests.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Marius Ungureanu <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,50 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
+using System;
 
-using System.Linq;
-using MonoDevelop.Core;
-
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Git.Tests
 {
-	public class LockCommand
+	public class GitContractTests
 	{
-		public static bool Lock (VersionControlItemList items, bool test)
+		public GitContractTests ()
 		{
-			if (!items.All (i => i.VersionInfo.CanLock))
-				return false;
-			if (test)
-				return true;
-			
-			new LockWorker (items).Start();
-			return true;
-		}
-
-		private class LockWorker : Task 
-		{
-			VersionControlItemList items;
-						
-			public LockWorker (VersionControlItemList items) {
-				this.items = items;
-			}
-			
-			protected override string GetDescription() {
-				return GettextCatalog.GetString ("Locking...");
-			}
-			
-			protected override void Run ()
-			{
-				foreach (VersionControlItemList list in items.SplitByRepository ())
-					list[0].Repository.Lock (Monitor, list.Paths);
-				
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Lock operation completed."));
-				
-				Gtk.Application.Invoke (delegate {
-					VersionControlService.NotifyFileStatusChanged (items);
-				});
-			}
 		}
 	}
 }
+

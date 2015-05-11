@@ -1,5 +1,5 @@
 // 
-// DefaultDiffViewHandler.cs
+// LogCommand.cs
 //  
 // Author:
 //       Alan McGovern <alan@xamarin.com>
@@ -24,24 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
+using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.VersionControl.Views;
-using MonoDevelop.Projects.Text;
+using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
-	public class DefaultDiffViewHandler : IDiffViewHandler
+	class DiffCommand
 	{
-		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
+		static bool CanShow (VersionControlItem item)
 		{
-			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
-				&& DesktopService.GetFileIsText (item.Path);
+			return !item.IsDirectory
+				&& item.VersionInfo.IsVersioned
+				&& DiffViewHandler.Default.CanHandle (item, null);
 		}
-
-		public IDiffView CreateView (VersionControlDocumentInfo info)
+		
+		public static bool Show (List<VersionControlItem> items, bool test)
 		{
-			return new DiffView (info);
+			if (test)
+				return items.All (CanShow);
+			
+			foreach (var item in items) {
+				var document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+				if (document != null)
+					document.Window.SwitchView (document.Window.FindView<DiffView> ());
+			}
+			
+			return true;
 		}
 	}
 }
+

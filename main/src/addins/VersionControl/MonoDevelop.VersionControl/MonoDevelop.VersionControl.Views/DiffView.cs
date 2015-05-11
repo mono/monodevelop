@@ -31,11 +31,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IDiffView : IAttachableViewContent
-	{
-	}
-	
-	public class DiffView : BaseView, IDiffView, IUndoHandler, IClipboardHandler
+	public class DiffView : BaseView, IAttachableViewContent, IUndoHandler, IClipboardHandler
 	{
 		DiffWidget widget;
 

@@ -43,7 +43,7 @@ namespace MonoDevelop.VersionControl.Views
 		ShowLog
 	}
 	
-	public class BlameWidget : Bin
+	class BlameWidget : Bin
 	{
 		Adjustment vAdjustment;
 		Gtk.VScrollbar vScrollBar;

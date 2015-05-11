@@ -6,7 +6,7 @@ namespace MonoDevelop.VersionControl
 	/// <summary>
 	/// Base class for commit dialog extensions.
 	/// </summary>
-	public class CommitDialogExtension: Gtk.EventBox
+	public abstract class CommitDialogExtension: Gtk.EventBox
 	{
 		/// <summary>
 		/// Initialize the extension.
@@ -19,14 +19,7 @@ namespace MonoDevelop.VersionControl
 		/// False otherwise (the OnBeginCommit and OnEndCommit methods
 		/// won't be called).
 		/// </returns>
-		public virtual bool Initialize (ChangeSet changeSet)
-		{
-			return true;
-		}
-
-		public virtual void CommitMessageTextViewHook (Gtk.TextView textView)
-		{
-		}
+		public abstract bool Initialize (ChangeSet changeSet);
 		
 		/// <summary>
 		/// Called when the commit operation starts.
@@ -37,10 +30,7 @@ namespace MonoDevelop.VersionControl
 		/// <returns>
 		/// False if the commit cannot continue.
 		/// </returns>
-		public virtual bool OnBeginCommit (ChangeSet changeSet)
-		{
-			return true;
-		}
+		public abstract bool OnBeginCommit (ChangeSet changeSet);
 		
 		/// <summary>
 		/// Called when the commit operation ends
@@ -51,7 +41,9 @@ namespace MonoDevelop.VersionControl
 		/// <param name='success'>
 		/// True if the commit succeeded.
 		/// </param>
-		public virtual void OnEndCommit (ChangeSet changeSet, bool success)
+		public abstract void OnEndCommit (ChangeSet changeSet, bool success);
+
+		public virtual void CommitMessageTextViewHook (Gtk.TextView textView)
 		{
 		}
 		

@@ -6,14 +6,11 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface ILogView : IAttachableViewContent
-	{
-	}
-	
-	public class LogView : BaseView, ILogView
+	public class LogView : BaseView, IAttachableViewContent
 	{
 		LogWidget widget;
 		VersionInfo vinfo;
@@ -26,7 +23,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public static bool CanShow (VersionControlItemList items, Revision since)
+		public static bool CanShow (List<VersionControlItem> items, Revision since)
 		{
 			return items.All (i => i.VersionInfo.CanLog);
 		}
@@ -44,37 +41,15 @@ namespace MonoDevelop.VersionControl.Views
 			widget = lw;
 			info.Updated += delegate {
 				lw.History = this.info.History;
-				vinfo   = this.info.VersionInfo;
+				vinfo   = this.info.Item.VersionInfo;
 			};
 			lw.History = this.info.History;
-			vinfo   = this.info.VersionInfo;
+			vinfo   = this.info.Item.VersionInfo;
 		
 			if (WorkbenchWindow != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
 
-		[Obsolete]
-		public LogView (string filepath, bool isDirectory, Revision [] history, Repository vc) 
-			: base (Path.GetFileName (filepath) + " Log")
-		{
-			try {
-				this.vinfo = vc.GetVersionInfo (filepath, VersionInfoQueryFlags.IgnoreCache);
-			}
-			catch (Exception ex) {
-				MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
-			}
-			
-			// Widget setup
-			VersionControlDocumentInfo info  =new VersionControlDocumentInfo (null, null, vc);
-			info.History = history;
-			info.VersionInfo = vinfo;
-			var lw = new LogWidget (info);
-			
-			widget = lw;
-			lw.History = history;
-		}
-
-		
 		public override Gtk.Widget Control { 
 			get {
 				if (widget == null)

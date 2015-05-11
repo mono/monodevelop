@@ -34,12 +34,12 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	/// <summary>
 	/// Class for creating patches from VersionControlItems
 	/// </summary>
-	public class CreatePatchCommand
+	class CreatePatchCommand
 	{
 		/// <summary>
 		/// Creates a patch from a VersionControlItemList
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl
 		/// <returns>
 		/// A <see cref="System.Boolean"/>: Whether the patch creation succeeded.
 		/// </returns>
-		public static bool CreatePatch (VersionControlItemList items, bool test)
+		public static bool CreatePatch (List<VersionControlItem> items, bool test)
 		{
 			bool can = CanCreatePatch (items);
 			if (test || !can){ return can; }
@@ -118,9 +118,9 @@ namespace MonoDevelop.VersionControl
 		
 		/// <summary>
 		/// Determines whether a patch can be created 
-		/// from a VersionControlItemList.
+		/// from a List<VersionControlItem>.
 		/// </summary>
-		public static bool CanCreatePatch (VersionControlItemList items) 
+		public static bool CanCreatePatch (List<VersionControlItem> items)
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			return items.All (i => i.VersionInfo.CanRevert);

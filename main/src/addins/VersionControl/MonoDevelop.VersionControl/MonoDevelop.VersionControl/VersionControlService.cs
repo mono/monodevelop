@@ -116,11 +116,11 @@ namespace MonoDevelop.VersionControl
 		
 		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
 		{
+			if ((status & VersionStatus.Unversioned) != 0)
+				return overlay_unversioned;
+
 			if ((status & VersionStatus.Ignored) != 0)
 				return overlay_ignored;
-
-			if ((status & VersionStatus.Versioned) == 0)
-				return overlay_unversioned;
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
@@ -167,7 +167,7 @@ namespace MonoDevelop.VersionControl
 
 		public static string GetStatusLabel (VersionStatus status)
 		{
-			if ((status & VersionStatus.Versioned) == 0)
+			if ((status & VersionStatus.Unversioned) != 0)
 				return GettextCatalog.GetString ("Unversioned");
 			
 			switch (status & VersionStatus.LocalChangesMask) {
@@ -704,57 +704,13 @@ namespace MonoDevelop.VersionControl
 		{
 			configuration = null;
 		}
-		
-		public static void StoreRepositoryReference (Repository repo, string path, string id)
-		{
-			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
-		}
-		
+
 		public static bool CheckVersionControlInstalled ()
 		{
-			if (IsGloballyDisabled)
-				return false;
+			return !IsGloballyDisabled && GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 
-			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
-		}
-		
-		internal static Repository InternalGetRepositoryReference (string path, string id)
-		{
-			string file = InternalGetRepositoryPath (path, id);
-			if (file == null)
-				return null;
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
-			try {
-				return (Repository) ser.Deserialize (reader, typeof(Repository));
-			} finally {
-				reader.Close ();
-			}
 		}
 
-		internal static string InternalGetRepositoryPath (string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
-				return null;
-
-			return file;
-		}
-		
-		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextWriter tw = new XmlTextWriter (new StreamWriter (file));
-			try {
-				ser.Serialize (tw, repo, typeof(Repository));
-			} finally {
-				tw.Close ();
-			}
-		}
-		
 		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
 		{
 			CommitMessageFormat format = new CommitMessageFormat ();

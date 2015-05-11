@@ -28,11 +28,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface IMergeView : IAttachableViewContent
-	{
-	}
-	
-	class MergeView : BaseView, IMergeView
+	class MergeView : BaseView, IAttachableViewContent
 	{
 		VersionControlDocumentInfo info;
 		MergeWidget widget;

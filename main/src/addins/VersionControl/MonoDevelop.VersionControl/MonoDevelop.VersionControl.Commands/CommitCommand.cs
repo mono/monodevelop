@@ -5,7 +5,7 @@ using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Commands
 {
 	class CommitCommand
 	{

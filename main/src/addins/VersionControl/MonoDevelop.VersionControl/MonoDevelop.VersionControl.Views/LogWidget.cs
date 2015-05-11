@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using System.Text;
 using System.Threading;
 using MonoDevelop.Components;
+using MonoDevelop.VersionControl.Commands;
 
 namespace MonoDevelop.VersionControl.Views
 {

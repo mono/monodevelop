@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlItem
+	public sealed class VersionControlItem
 	{
 		VersionInfo versionInfo;
 
@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl
 		
 		public VersionInfo VersionInfo {
 			get {
-				if (versionInfo == null) {
+				if (versionInfo == null || versionInfo.RequiresRefresh) {
 					try {
 						versionInfo = Repository.GetVersionInfo (Path, VersionInfoQueryFlags.IgnoreCache);
 						if (versionInfo == null)

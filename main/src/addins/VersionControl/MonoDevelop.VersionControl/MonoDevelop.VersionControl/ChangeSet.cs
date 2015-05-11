@@ -6,18 +6,23 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
-	public class ChangeSet
+	public sealed class ChangeSet
 	{
 		// Commits should be atomic and small. Therefore having a List instead
 		// of a HashSet should be faster in most cases.
-		List<ChangeSetItem> items = new List<ChangeSetItem> ();
-		Repository repo;
-		FilePath basePath;
+		readonly List<ChangeSetItem> items;
+		readonly Repository repo;
+		readonly FilePath basePath;
 		Hashtable extendedProperties;
 
-		internal protected ChangeSet (Repository repo, FilePath basePath)
+		internal ChangeSet (Repository repo, FilePath basePath) : this (repo, basePath, Enumerable.Empty<ChangeSetItem> ())
+		{
+		}
+
+		ChangeSet (Repository repo, FilePath basePath, IEnumerable<ChangeSetItem> items)
 		{
 			this.repo = repo;
+			this.items = items.ToList ();
 
 			// Make sure the path has a trailing slash or the ChangeLogWriter's
 			// call to GetDirectoryName will take us one extra directory up.
@@ -77,7 +82,7 @@ namespace MonoDevelop.VersionControl
 			get { return basePath; }
 		}
 		
-		public IEnumerable<ChangeSetItem> Items {
+		public IReadOnlyList<ChangeSetItem> Items {
 			get { return items; }
 		}
 		
@@ -134,22 +139,13 @@ namespace MonoDevelop.VersionControl
 		
 		public ChangeSet Clone ()
 		{
-			var cs = (ChangeSet) MemberwiseClone ();
-			cs.CopyFrom (this);
-			return cs;
-		}
-		
-		public virtual void CopyFrom (ChangeSet other)
-		{
-			repo = other.repo;
-			basePath = other.basePath;
-			items = new List<ChangeSetItem> (other.items.Select (cit => cit.Clone()));
+			return new ChangeSet (repo, basePath, items.Select (cit => cit.Clone ()));
 		}
 	}
 	
-	public class ChangeSetItem
+	public sealed class ChangeSetItem
 	{
-		VersionInfo versionInfo;
+		readonly VersionInfo versionInfo;
 		
 		internal ChangeSetItem (VersionInfo versionInfo)
 		{
@@ -179,14 +175,7 @@ namespace MonoDevelop.VersionControl
 		
 		public ChangeSetItem Clone ()
 		{
-			var cs = (ChangeSetItem) MemberwiseClone ();
-			cs.CopyFrom (this);
-			return cs;
-		}
-		
-		public virtual void CopyFrom (ChangeSetItem other)
-		{
-			versionInfo = other.versionInfo;
+			return new ChangeSetItem (versionInfo);
 		}
 	}
 }

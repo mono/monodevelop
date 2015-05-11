@@ -1,10 +1,10 @@
 ﻿//
-// VersionControlException.cs
+// VersionControlServiceTests.cs
 //
 // Author:
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2014 Marius Ungureanu
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using NUnit.Framework;
 
-namespace MonoDevelop.VersionControl
+namespace MonoDevelop.VersionControl.Git.Tests
 {
-	public abstract class VersionControlException : Exception
+	[TestFixture]
+	public class VersionControlServiceTests
 	{
-		protected VersionControlException (string message) : base (message)
+		[Test]
+		public void IsGloballyDisabledDisablesEntryPoints ()
 		{
+			VersionControlService.IsGloballyDisabled = true;
+			Assert.IsNull (VersionControlService.GetRepository (null));
+			Assert.IsFalse (VersionControlService.CheckVersionControlInstalled ());
+			VersionControlService.IsGloballyDisabled = false;
 		}
 
-		protected VersionControlException (string message, Exception native) : base (message, native)
-		{
-		}
+		// TODO: More tests.
 	}
 }
 
