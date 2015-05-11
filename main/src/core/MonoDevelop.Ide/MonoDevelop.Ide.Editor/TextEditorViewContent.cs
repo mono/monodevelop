@@ -697,12 +697,19 @@ namespace MonoDevelop.Ide.Editor
 
 		static IEnumerable<IDocumentLine> GetSelectedLines (TextEditor textEditor)
 		{
-			var selection = textEditor.SelectionRange;
-			var line = textEditor.GetLineByOffset (selection.EndOffset);
-			do {
+			if (!textEditor.IsSomethingSelected) {
+				yield return textEditor.GetLine (textEditor.CaretLine);
+				yield break;
+            }
+			var selection = textEditor.SelectionRegion;
+			var line = textEditor.GetLine(selection.EndLine);
+			if (selection.EndColumn == 1 && textEditor.SelectionLeadOffset < textEditor.SelectionAnchorOffset)
+				line = line.PreviousLine;
+			
+			while (line != null && line.LineNumber >= selection.BeginLine) {
 				yield return line;
 				line = line.PreviousLine;
-			} while (line != null && line.EndOffset > selection.Offset);
+			}
 		}
 
 		[CommandHandler (EditCommands.AddCodeComment)]

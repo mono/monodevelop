@@ -1351,7 +1351,16 @@ namespace MonoDevelop.Debugger
 			var entry = (Entry) args.Editable;
 			
 			var val = store.GetValue (it, ObjectColumn) as ObjectValue;
-			string strVal = val != null ? val.Value : null;
+			string strVal = null;
+			if (val != null) {
+				if (val.TypeName == "string") {
+					var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+					opt.EllipsizeStrings = false;
+					strVal = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)val.GetRawValue (opt)) + '"';
+				} else {
+					strVal = val.Value;
+				}
+			}
 			if (!string.IsNullOrEmpty (strVal))
 				entry.Text = strVal;
 			
@@ -1833,14 +1842,18 @@ namespace MonoDevelop.Debugger
 				PreviewWindowManager.DestroyWindow ();
 			}
 
-			bool retval = base.OnButtonPressEvent (evnt);
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 				//	ShowPopup (evnt);
+				if (!this.IsClickedNodeSelected ((int)evnt.X, (int)evnt.Y)) {
+					//pass click to base so it can update the selection
+					//unless the node is already selected, in which case we don't want to change the selection(deselect multi selection)
+					base.OnButtonPressEvent (evnt);
+				}
 				return true;
+			} else {
+				return base.OnButtonPressEvent (evnt);
 			}
-			
-			return retval;
 		}
 		
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
@@ -1921,6 +1934,14 @@ namespace MonoDevelop.Debugger
 				string value = (string) store.GetValue (iter, ValueColumn);
 				string name = (string) store.GetValue (iter, NameColumn);
 				string type = (string) store.GetValue (iter, TypeColumn);
+				if (type == "string") {
+					var objVal = store.GetValue (iter, ObjectColumn) as ObjectValue;
+					if (objVal != null) {
+						var opt = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+						opt.EllipsizeStrings = false;
+						value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString ((string)objVal.GetRawValue (opt)) + '"';
+					}
+				}
 
 				maxValue = Math.Max (maxValue, value.Length);
 				maxName = Math.Max (maxName, name.Length);

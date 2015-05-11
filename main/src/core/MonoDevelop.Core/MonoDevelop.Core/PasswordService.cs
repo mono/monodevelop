@@ -32,32 +32,50 @@ namespace MonoDevelop.Core
 {
 	public static class PasswordService
 	{
-		const string PasswordProvidersPath = "/MonoDevelop/Core/PasswordProvider";
+		static IPasswordProvider GetPasswordProvider ()
+		{
+			const string PasswordProvidersPath = "/MonoDevelop/Core/PasswordProvider";
+			return AddinManager.GetExtensionObjects <IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+		}
 
 		public static void AddWebPassword (Uri url, string password)
 		{
-			var provider = AddinManager.GetExtensionObjects <IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			var provider = GetPasswordProvider ();
 			if (provider != null)
 				provider.AddWebPassword (url, password);
 		}
 
 		public static void AddWebUserNameAndPassword (Uri url, string username, string password)
 		{
-			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			var provider = GetPasswordProvider ();
 			if (provider != null)
 				provider.AddWebUserNameAndPassword (url, username, password);
 		}
 
 		public static string GetWebPassword (Uri url)
 		{
-			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			var provider = GetPasswordProvider ();
 			return provider != null ? provider.GetWebPassword (url) : null;
 		}
 
 		public static Tuple<string, string> GetWebUserNameAndPassword (Uri url)
 		{
-			var provider = AddinManager.GetExtensionObjects<IPasswordProvider> (PasswordProvidersPath).FirstOrDefault ();
+			var provider = GetPasswordProvider ();
 			return provider != null ? provider.GetWebUserNameAndPassword (url) : null;
+		}
+
+		public static void RemoveWebPassword (Uri url)
+		{
+			var provider = GetPasswordProvider ();
+			if (provider != null)
+				provider.RemoveWebPassword (url);
+		}
+
+		public static void RemoveWebUsernameAndPassword (Uri url)
+		{
+			var provider = GetPasswordProvider ();
+			if (provider != null)
+				provider.RemoveWebUserNameAndPassword (url);
 		}
 	}
 }

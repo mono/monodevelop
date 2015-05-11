@@ -212,6 +212,12 @@
     <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml">
       <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project.png">
+      <LogicalName>aspnet-empty-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
+      <LogicalName>aspnet-empty-project@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
@@ -341,6 +347,8 @@
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
     <Compile Include="Commands\MethodDeclarationAtCaret.cs" />
     <Compile Include="Razor\Dom\RazorWorkbenchService.cs" />
+    <Compile Include="Razor\RazorCSharpParserContext.cs" />
+    <Compile Include="Razor\OpenRazorDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -566,6 +574,7 @@
     <Folder Include="Commands\" />
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
+    <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
   <Target Name="BeforeBuild">

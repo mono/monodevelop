@@ -331,7 +331,8 @@ namespace MonoDevelop.Projects
 		protected override void OnEndLoad ()
 		{
 			base.OnEndLoad ();
-			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata ());
+
+			ProjectOpenedCounter.Inc (1, null, GetProjectEventMetadata (null));
 		}
 
 		/// <summary>
@@ -753,8 +754,8 @@ namespace MonoDevelop.Projects
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata ());
-					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata ()) : null;
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
 					try {
 						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null, monitor.CancellationToken);

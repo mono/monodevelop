@@ -225,6 +225,24 @@ namespace MonoDevelop.Ide.Editor
 ");
 		}
 
+		[Test]
+		public void TestToggleWithoutSelection()
+		{
+			var editor = CreateTextEditor ( @"class Foo
+{
+	$void Bar ()
+	{
+	}
+}");
+			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			AssertEditorState (editor,@"class Foo
+{
+	//void Bar ()
+	{
+	}
+}");
+		}
+
 	}
 }
 

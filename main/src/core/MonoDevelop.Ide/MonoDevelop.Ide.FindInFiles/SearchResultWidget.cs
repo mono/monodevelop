@@ -67,18 +67,16 @@ namespace MonoDevelop.Ide.FindInFiles
 		TextView textviewLog;
 		TreeViewColumn pathColumn;
 
-		public string BasePath {
-			get;
-			set;
-		}
-
 		public CancellationTokenSource CancellationTokenSource {
 			get;
 			set;
 		}
 
+		private PathMode pathMode;
 		internal PathMode PathMode {
 			set {
+				pathMode = value;
+
 				pathColumn.Visible = (value != PathMode.Hidden);
 			}
 		}
@@ -472,7 +470,19 @@ namespace MonoDevelop.Ide.FindInFiles
 			string pathMarkup = searchResult.PathMarkup;
 			if (pathMarkup == null) {
 				bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-				pathMarkup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
+
+				var fileName = searchResult.FileName;
+				string baseSolutionPath = null;
+				if (pathMode == PathMode.Relative) {
+					var workspace = IdeApp.Workspace;
+					var solutions = workspace != null ? workspace.GetAllSolutions () : null;
+					baseSolutionPath = solutions != null && solutions.Count () == 1 ? solutions.First ().BaseDirectory : null;
+				}
+				var finalFileName = baseSolutionPath == null ? fileName :
+					FileService.AbsoluteToRelativePath (baseSolutionPath, fileName);
+				var directory = System.IO.Path.GetDirectoryName (finalFileName);
+
+				pathMarkup = MarkupText (directory, didRead);
 				searchResult.PathMarkup = pathMarkup;
 			}
 			pathRenderer.Markup = pathMarkup;

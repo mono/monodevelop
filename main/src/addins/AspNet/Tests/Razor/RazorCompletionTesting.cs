@@ -171,7 +171,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
 			Doc.Editor.FileName = parseOptions.FileName;
-			OpenDocuments.Add (Doc.Editor);
+			OpenDocuments.Add (new OpenRazorDocument (Doc.Editor));
 			return base.Parse (parseOptions, cancellationToken);
 		}
 	}

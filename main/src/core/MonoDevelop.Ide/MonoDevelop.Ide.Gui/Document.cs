@@ -841,7 +841,7 @@ namespace MonoDevelop.Ide.Gui
 				CancelOldParsing ();
 				var token = parseTokenSource.Token;
 				var project = Project ?? adhocProject;
-				var projectFile = project.GetProjectFile (currentParseFile);
+				var projectFile = project?.GetProjectFile (currentParseFile);
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {

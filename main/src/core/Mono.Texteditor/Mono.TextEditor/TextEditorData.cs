@@ -904,8 +904,6 @@ namespace Mono.TextEditor
 		
 		public void ClearSelection ()
 		{
-			if (!IsSomethingSelected)
-				return;
 			MainSelection = Selection.Empty;
 		}
 		

@@ -45,7 +45,15 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		public virtual PathMode PathMode {
-			get { return PathMode.Absolute; }
+			get {
+				var workspace = IdeApp.Workspace;
+				var solutions = workspace != null ? workspace.GetAllSolutions () : null;
+
+				if (solutions != null && solutions.Count () == 1)
+					return PathMode.Relative;
+
+				return PathMode.Absolute;
+			}
 		}
 
 		public abstract int GetTotalWork (FilterOptions filterOptions);
@@ -227,6 +235,10 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		readonly string path;
 		readonly bool recurse;
+
+		public override PathMode PathMode {
+			get { return PathMode.Absolute; }
+		}
 
 		public bool IncludeHiddenFiles {
 			get;

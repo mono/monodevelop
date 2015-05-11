@@ -47,11 +47,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			outputPad.CancellationTokenSource = CancellationTokenSource;
 			outputPad.BeginProgress (pad.Title);
 		}
-		
-		public void SetBasePath (string path)
-		{
-			outputPad.BasePath = path;
-		}
 
 		public PathMode PathMode {
 			set { outputPad.PathMode = value; }

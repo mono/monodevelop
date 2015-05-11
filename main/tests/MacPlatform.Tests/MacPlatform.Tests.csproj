@@ -42,6 +42,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MacPlatformTest.cs" />
     <Compile Include="KeychainTests.cs" />
+    <Compile Include="CredentialsProviderTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

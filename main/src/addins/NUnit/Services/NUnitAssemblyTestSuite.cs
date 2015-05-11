@@ -402,6 +402,7 @@ namespace MonoDevelop.NUnit
 			testContext.Monitor.CancelRequested += new TestHandler (rd.Cancel);
 
 			UnitTestResult result;
+			var crashLogFile = Path.GetTempFileName ();
 
 			try {
 				if (string.IsNullOrEmpty (AssemblyPath)) {
@@ -413,11 +414,17 @@ namespace MonoDevelop.NUnit
 				string testRunnerAssembly, testRunnerType;
 				GetCustomTestRunner (out testRunnerAssembly, out testRunnerType);
 
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly);
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly, crashLogFile);
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
+				
+				ReportCrash (testContext, crashLogFile);
+				
 			} catch (Exception ex) {
-				if (!localMonitor.Canceled) {
+				if (ReportCrash (testContext, crashLogFile)) {
+					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Undhandled exception"), null);
+				}
+				else if (!localMonitor.Canceled) {
 					LoggingService.LogError (ex.ToString ());
 					if (localMonitor.RunningTest != null) {
 						RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
@@ -430,6 +437,7 @@ namespace MonoDevelop.NUnit
 					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Canceled"), null);
 				}
 			} finally {
+				File.Delete (crashLogFile);
 				testContext.Monitor.CancelRequested -= new TestHandler (rd.Cancel);
 				runner.Dispose ();
 				System.Runtime.Remoting.RemotingServices.Disconnect (localMonitor);
@@ -437,7 +445,18 @@ namespace MonoDevelop.NUnit
 			
 			return result;
 		}
-		
+
+		bool ReportCrash (TestContext testContext, string crashLogFile)
+		{
+			var crash = File.ReadAllText (crashLogFile);
+			if (crash.Length == 0)
+				return false;
+
+			var ex = RemoteUnhandledException.Parse (crash);
+			testContext.Monitor.ReportRuntimeError (GettextCatalog.GetString ("Unhandled exception"), ex);
+			return true;
+		}
+
 		void RuntimeErrorCleanup (TestContext testContext, UnitTest t, Exception ex)
 		{
 			UnitTestResult result = UnitTestResult.CreateFailure (ex);

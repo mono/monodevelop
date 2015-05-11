@@ -307,10 +307,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 
 			var removeFromProject = new AlertButton (GettextCatalog.GetString ("_Remove from Project"), Gtk.Stock.Remove);
-			string question, secondaryText;
-			
-			secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
-				"Click Remove from Project if you only want to remove it from your current solution.");
+			string question;
+			string secondaryText = null;
+
+			bool filesExist = CheckAnyFileExists (files);
+			if (filesExist) {
+				secondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. " +
+					"Click Remove from Project if you only want to remove it from your current solution.");
+			}
 			
 			if (hasChildren) {
 				if (files.Count == 1)
@@ -328,7 +332,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					question = GettextCatalog.GetString ("Are you sure you want to remove the selected files from the project?");
 			}
 
-			var result = MessageService.AskQuestion (question, secondaryText, AlertButton.Delete, AlertButton.Cancel, removeFromProject);
+			var result = MessageService.AskQuestion (question, secondaryText, GetDeleteConfirmationButtons (filesExist, removeFromProject));
 			if (result != removeFromProject && result != AlertButton.Delete) 
 				return;
 
@@ -358,6 +362,29 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			}
 
 			IdeApp.ProjectOperations.SaveAsync (projects);
+		}
+
+		static bool CheckAnyFileExists (IEnumerable<ProjectFile> files)
+		{
+			foreach (ProjectFile file in files) {
+				if (!file.IsLink && File.Exists (file.Name))
+					return true;
+
+				if (file.HasChildren) {
+					foreach (var child in file.DependentChildren.ToArray()) {
+						if (File.Exists (child.Name))
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		static AlertButton[] GetDeleteConfirmationButtons (bool includeDelete, AlertButton removeFromProject)
+		{
+			if (includeDelete)
+				return new [] { AlertButton.Delete, AlertButton.Cancel, removeFromProject };
+			return new [] { AlertButton.Cancel, removeFromProject };
 		}
 		
 		[CommandUpdateHandler (EditCommands.Delete)]

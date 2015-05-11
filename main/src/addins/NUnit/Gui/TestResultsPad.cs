@@ -45,6 +45,7 @@ using MonoDevelop.Components;
 using System.Threading;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.NUnit.External;
 
 namespace MonoDevelop.NUnit
 {
@@ -370,13 +371,19 @@ namespace MonoDevelop.NUnit
 
 		public void AddErrorMessage ()
 		{
-			string msg = GettextCatalog.GetString ("Internal error");
-			if (errorMessage != null)
-				msg += ": " + Escape (errorMessage);
+			string msg;
+			if (error is RemoteUnhandledException)
+				msg = Escape (errorMessage);
+			else {
+				msg = GettextCatalog.GetString ("Internal error");
+				if (errorMessage != null)
+					msg += ": " + Escape (errorMessage);
+			}
 
 			var stock = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 			TreeIter testRow = failuresStore.AppendValues (stock, msg, null, null, 0);
-			failuresStore.AppendValues (testRow, null, Escape (error.GetType ().Name + ": " + error.Message), null);
+			string name = error is RemoteUnhandledException ? ((RemoteUnhandledException)error).RemoteExceptionName : error.GetType ().Name;
+			failuresStore.AppendValues (testRow, null, Escape (name + ": " + error.Message), null);
 			TreeIter row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), null, null, 0);
 			AddStackTrace (row, error.StackTrace, null);
 		}

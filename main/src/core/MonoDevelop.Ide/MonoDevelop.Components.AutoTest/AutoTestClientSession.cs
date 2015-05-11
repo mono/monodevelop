@@ -161,6 +161,11 @@ namespace MonoDevelop.Components.AutoTest
 			return session.GetGlobalValue (name);
 		}
 
+		public void TakeScreenshot (string screenshotPath)
+		{
+			session.TakeScreenshot (screenshotPath);
+		}
+
 		public T GetGlobalValue<T> (string name)
 		{
 			return (T) session.GetGlobalValue (name);
