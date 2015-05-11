@@ -369,15 +369,20 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public async Task SaveAsync (IEnumerable<SolutionItem> entries)
+		public Task SaveAsync (IEnumerable<SolutionItem> entries)
 		{
 			List<IWorkspaceFileObject> items = new List<IWorkspaceFileObject> ();
 			foreach (IWorkspaceFileObject it in entries)
 				items.Add (it);
-			await SaveAsync (items);
+			return SaveAsync (items);
 		}
 		
-		public async Task SaveAsync (SolutionItem entry)
+		public Task SaveAsync (SolutionItem entry)
+		{
+			return SaveAsyncInernal (entry);
+		}
+
+		async Task SaveAsyncInernal (SolutionItem entry)
 		{
 			if (!entry.FileFormat.CanWriteFile (entry)) {
 				var itemContainer = (IMSBuildFileObject) GetContainer (entry);
@@ -400,7 +405,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public async Task SaveAsync (Solution item)
+		public Task SaveAsync (Solution item)
+		{
+			return SaveAsyncInternal (item);
+		}
+
+		async Task SaveAsyncInternal (Solution item)
 		{
 			if (!item.FileFormat.CanWriteFile (item)) {
 				if (!SelectValidFileFormat (item))
@@ -421,7 +431,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public async Task SaveAsync (IEnumerable<IWorkspaceFileObject> items)
+		public Task SaveAsync (IEnumerable<IWorkspaceFileObject> items)
+		{
+			return SaveAsyncInternal (items);
+		}
+
+		async Task SaveAsyncInternal (IEnumerable<IWorkspaceFileObject> items)
 		{
 			int count = items.Count ();
 			if (count == 0)

@@ -309,7 +309,7 @@ namespace MonoDevelop.Ide.Commands
 			info.Enabled = ((buildTarget != null) && (!(buildTarget is Workspace)) && IdeApp.ProjectOperations.CanExecute (buildTarget) && IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted);
 		}
 
-		protected override async void Run ()
+		protected override void Run ()
 		{
 			var target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			IdeApp.ProjectOperations.Execute (target);
@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 
-		protected override async void Run (object dataItem)
+		protected override void Run (object dataItem)
 		{
 			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
 			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;

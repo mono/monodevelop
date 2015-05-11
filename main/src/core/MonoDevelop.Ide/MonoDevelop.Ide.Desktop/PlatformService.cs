@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Desktop
 	public abstract class PlatformService
 	{
 		Hashtable iconHash = new Hashtable ();
-		const bool UsePlatformFileIcons = false;
+		static readonly bool UsePlatformFileIcons = false;
 		
 		public abstract string DefaultMonospaceFont { get; }
 		public virtual string DefaultSansFont { get { return null; } }

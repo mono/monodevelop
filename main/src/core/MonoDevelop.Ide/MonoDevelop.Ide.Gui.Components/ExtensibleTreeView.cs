@@ -2308,8 +2308,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				layout.SetMarkup (TextMarkup);
 			}
 
-			const int iconMode = 0;
-
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
 				Gtk.StateType st = Gtk.StateType.Normal;
@@ -2332,18 +2330,14 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				bool hasStatusIcon = StatusIcon != CellRendererImage.NullImage && StatusIcon != null;
 
-				if (hasStatusIcon && iconMode != 2) {
-					var x = iconMode == 1 ? tx : tx + w + StatusIconSpacing;
+				if (hasStatusIcon) {
+					var x = tx + w + StatusIconSpacing;
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
 						ctx.DrawImage (widget, StatusIcon, x, cell_area.Y + (cell_area.Height - StatusIcon.Height) / 2);
 					}
-					if (iconMode == 1)
-						tx += (int)StatusIcon.Width + StatusIconSpacing;
 				}
 
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
-
-				hasStatusIcon &= iconMode == 2;
 
 				if (ShowPopupButton || hasStatusIcon) {
 					if (!bound) {
@@ -2421,15 +2415,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				layout.GetPixelSize (out w, out h);
 
 				int tx = cell_area.X + (int)Xpad;
-				if (iconMode == 0) {
-					var x = tx + w + StatusIconSpacing;
-					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				} else if (iconMode == 1) {
-					var x = tx;
-					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				} else {
-					return new Gdk.Rectangle (cell_area.Width - (int) StatusIcon.Width, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				}
+				var x = tx + w + StatusIconSpacing;
+				return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
 			}
 
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)

@@ -481,7 +481,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 
 				if (project != null)
-					IdeApp.ProjectOperations.SaveAsync (project).RunSynchronously ();
+					IdeApp.ProjectOperations.SaveAsync (project);
 
 				if (OnOked != null)
 					OnOked (null, null);
