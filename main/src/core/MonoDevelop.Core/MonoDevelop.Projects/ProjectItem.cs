@@ -51,11 +51,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal IMSBuildItemEvaluated BackingItem { get; set; }
+		internal MSBuildItem BackingItem { get; set; }
+		internal IMSBuildItemEvaluated BackingEvalItem { get; set; }
 
 		internal bool IsFromWildcardItem {
 			get {
-				return BackingItem != null && BackingItem.SourceItem.IsWildcardItem;
+				return BackingEvalItem != null && BackingEvalItem.SourceItem.IsWildcardItem;
 			}
 		}
 

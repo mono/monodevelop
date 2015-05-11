@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects
 				if (sp != null && !sp.IsGacPackage)
 					return sp.Name;
 				else
-					return string.Empty;
+					return null;
 			}
 			set {
 				package = value;

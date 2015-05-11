@@ -625,6 +625,54 @@ namespace MonoDevelop.Projects
 			var pol = p.Policies.Get<DotNetNamingPolicy> ();
 			Assert.AreEqual (ResourceNamePolicy.FileName, pol.ResourceNamePolicy);
 		}
+
+		[Test]
+		public async Task AddReference ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = File.ReadAllText (p.FileName + ".reference-added");
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task ChangeBuildAction ()
+		{
+			// Check that the in-memory project data is used when the builder is loaded for the first time.
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			var f = p.Files.FirstOrDefault (fi => fi.FilePath.FileName == "Program.cs");
+			f.BuildAction = BuildAction.EmbeddedResource;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = File.ReadAllText (p.FileName + ".build-action-change1");
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+
+			f.BuildAction = BuildAction.Compile;
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			refXml = File.ReadAllText (p.FileName + ".build-action-change2");
+			savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension

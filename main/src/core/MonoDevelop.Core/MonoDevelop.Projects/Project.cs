@@ -1993,7 +1993,8 @@ namespace MonoDevelop.Projects
 		{
 			var item = CreateProjectItem (buildItem);
 			item.Read (this, buildItem);
-			item.BackingItem = buildItem;
+			item.BackingItem = buildItem.SourceItem;
+			item.BackingEvalItem = buildItem;
 			return item;
 		}
 
@@ -2207,7 +2208,7 @@ namespace MonoDevelop.Projects
 
 		HashSet<MSBuildItem> usedMSBuildItems = new HashSet<MSBuildItem> ();
 
-		internal void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
+		internal virtual void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix = null)
 		{
 			HashSet<MSBuildItem> unusedItems = new HashSet<MSBuildItem> (loadedItems);
 			Dictionary<MSBuildItem,ExpandedItemList> expandedItems = new Dictionary<MSBuildItem, ExpandedItemList> ();
@@ -2242,8 +2243,8 @@ namespace MonoDevelop.Projects
 			if (item.IsFromWildcardItem) {
 				// Store the item in the list of expanded items
 				ExpandedItemList items;
-				if (!expandedItems.TryGetValue (item.BackingItem.SourceItem, out items))
-					items = expandedItems [item.BackingItem.SourceItem] = new ExpandedItemList ();
+				if (!expandedItems.TryGetValue (item.BackingItem, out items))
+					items = expandedItems [item.BackingItem] = new ExpandedItemList ();
 
 				// We need to check if the item has changed, in which case all the items included by the wildcard
 				// must be individually included
@@ -2251,9 +2252,9 @@ namespace MonoDevelop.Projects
 				item.Write (this, bitem);
 				items.Add (bitem);
 
-				unusedItems.Remove (item.BackingItem.SourceItem);
+				unusedItems.Remove (item.BackingItem);
 
-				if (!items.Modified && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingItem)))
+				if (!items.Modified && (item.Metadata.PropertyCountHasChanged || !ItemsAreEqual (bitem, item.BackingEvalItem)))
 					items.Modified = true;
 				return;
 			}
@@ -2261,10 +2262,12 @@ namespace MonoDevelop.Projects
 			var include = GetPrefixedInclude (pathPrefix, item.UnevaluatedInclude ?? item.Include);
 
 			MSBuildItem buildItem;
-			if (item.BackingItem != null && item.BackingItem.SourceItem.Name == item.ItemName) {
-				buildItem = item.BackingItem.SourceItem;
+			if (item.BackingItem != null && item.BackingItem.Name == item.ItemName) {
+				buildItem = item.BackingItem;
 			} else {
 				buildItem = msproject.AddNewItem (item.ItemName, include);
+				item.BackingItem = buildItem;
+				item.BackingEvalItem = null;
 			}
 
 			loadedItems.Add (buildItem);

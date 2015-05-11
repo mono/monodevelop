@@ -108,13 +108,17 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			projitemsProject = p;
 		}
 
+		internal override void SaveProjectItems (ProgressMonitor monitor, MSBuildProject msproject, HashSet<MSBuildItem> loadedItems, string pathPrefix)
+		{
+			// Save project items in the .projitems file
+			base.SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
+		}
+
 		protected override void OnWriteProject (ProgressMonitor monitor, MonoDevelop.Projects.Formats.MSBuild.MSBuildProject msproject)
 		{
-			base.OnWriteProject (monitor, msproject);
-
 			if (projItemsPath == FilePath.Null)
 				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
-			
+
 			if (projitemsProject == null) {
 				projitemsProject = new MSBuildProject (msproject.EngineManager);
 				projitemsProject.FileName = projItemsPath;
@@ -125,6 +129,15 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				grp.SetValue ("HasSharedItems", true);
 				grp.SetValue ("SharedGUID", ItemId, preserveExistingCase:true);
 			}
+
+			IMSBuildPropertySet configGrp = projitemsProject.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
+			if (configGrp == null) {
+				configGrp = projitemsProject.AddNewPropertyGroup (true);
+				configGrp.Label = "Configuration";
+			}
+			configGrp.SetValue ("Import_RootNamespace", DefaultNamespace);
+
+			base.OnWriteProject (monitor, msproject);
 
 			var newProject = FileName == null || !File.Exists (FileName);
 			if (newProject) {
@@ -150,20 +163,6 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				msproject.ToolsVersion = null;
 			else
 				msproject.ToolsVersion = "2.0";
-
-			IMSBuildPropertySet configGrp = projitemsProject.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
-			if (configGrp == null) {
-				configGrp = projitemsProject.AddNewPropertyGroup (true);
-				configGrp.Label = "Configuration";
-			}
-			configGrp.SetValue ("Import_RootNamespace", DefaultNamespace);
-
-			SaveProjectItems (monitor, projitemsProject, usedMSBuildItems, "$(MSBuildThisFileDirectory)");
-
-			// Remove all items of this project, since items are saved in the projitems file
-
-			foreach (var it in msproject.GetAllItems ().ToArray ())
-				msproject.RemoveItem (it);
 
 			projitemsProject.Save (projItemsPath);
 		}
