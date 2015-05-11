@@ -52,58 +52,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.evaluatedProjectPath = evaluatedProjectPath;
 		}
-
-		internal override void OnEvaluationStarting ()
-		{
-			base.OnEvaluationStarting ();
-
-			var newTarget = MSBuildProjectService.GetImportRedirect (Project);
-			if (newTarget != null) {
-				originalCondition = Condition;
-
-				// If an import redirect exists, add a fake import to the project which will be used only
-				// if the original import doesn't exist.
-
-				// Modify the original import by adding a condition, so that this import will be used only
-				// if the targets file exists.
-
-				string cond = "Exists('" + Project + "')";
-				if (!string.IsNullOrEmpty (originalCondition))
-					cond = "( " + originalCondition + " ) AND " + cond;
-				Element.SetAttribute ("Condition", cond);
-
-				// Now add the fake import, with a condition so that it will be used only if the original
-				// import does not exist.
-
-				fakeImport = Element.OwnerDocument.CreateElement ("Import", MSBuildProject.Schema);
-
-				cond = "!Exists('" + Project + "')";
-				if (!string.IsNullOrEmpty (originalCondition))
-					cond = "( " + originalCondition + " ) AND " + cond;
-
-				fakeImport.SetAttribute ("Project", MSBuildProjectService.ToMSBuildPath (null, newTarget));
-				fakeImport.SetAttribute ("Condition", cond);
-				Element.ParentNode.InsertAfter (fakeImport, Element);
-				return;
-			}
-		}
-
-		internal override void OnEvaluationFinished ()
-		{
-			base.OnEvaluationFinished ();
-			if (fakeImport != null) {
-
-				// Remove the fake import and restore the original import condition
-
-				fakeImport.ParentNode.RemoveChild (fakeImport);
-				fakeImport = null;
-
-				if (!string.IsNullOrEmpty (originalCondition))
-					Element.SetAttribute ("Condition", originalCondition);
-				else
-					Element.RemoveAttribute ("Condition");
-			}
-		}
 	}
 
 }

@@ -48,12 +48,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			projects = new ProjectCollection ();
 		}
 
-		public override object LoadProject (MSBuildProject project, FilePath fileName)
+		public override object LoadProject (MSBuildProject project, XmlDocument doc, FilePath fileName)
 		{
 			var d = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (fileName);
 			try {
-				var p = projects.LoadProject (new XmlTextReader (new StringReader (project.Document.OuterXml)));
+				var p = projects.LoadProject (new XmlTextReader (new StringReader (doc.OuterXml)));
 				p.FullPath = fileName;
 				return p;
 			} finally {

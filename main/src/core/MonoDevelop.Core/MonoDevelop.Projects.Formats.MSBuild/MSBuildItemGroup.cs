@@ -81,12 +81,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			lock (parent.ReadLock)
 				items = null;
 		}
-
-		internal override void Evaluate (MSBuildEvaluationContext context)
-		{
-			foreach (var item in Items)
-				item.Evaluate (context);
-		}
 	}
 	
 }

@@ -46,26 +46,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine = new Engine ();
 		}
 
-		public override object LoadProject (MSBuildProject p, FilePath fileName)
+		public override object LoadProject (MSBuildProject p, XmlDocument doc, FilePath fileName)
 		{
 			lock (engine) {
-				var project = engine.GetLoadedProject (fileName);
-				if (project != null)
-					return project;
-
 				engine.GlobalProperties.Clear ();
 
-				project = new MSProject (engine);
+				var project = new MSProject (engine);
 				project.BuildEnabled = false;
 				project.FullFileName = fileName;
-				project.LoadXml (p.Document.OuterXml);
+				project.LoadXml (doc.OuterXml);
 				return project;
 			}
 		}
 
 		public override void UnloadProject (object project)
 		{
-			engine.UnloadProject ((MSProject)project);
 		}
 
 		public override object CreateProjectInstance (object project)

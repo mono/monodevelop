@@ -66,18 +66,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					Element.SetAttribute ("Condition", value);
 			}
 		}
-
-		internal virtual void Evaluate (MSBuildEvaluationContext context)
-		{
-		}
-
-		internal virtual void OnEvaluationStarting ()
-		{
-		}
-
-		internal virtual void OnEvaluationFinished ()
-		{
-		}
 	}
 
 }

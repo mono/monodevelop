@@ -309,19 +309,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					try {
 						DisableChangeTracking ();
 						nativeProjectInfo.ItemMap = new Dictionary<string,MSBuildItem> ();
-						foreach (var it in GetAllItems ()) {
-							var c = Document.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
+
+						var docClone = (XmlDocument) doc.Clone ();
+
+						var items = GetAllItems ().ToArray ();
+						var clonedElements = docClone.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager).Cast<XmlElement> ().ToArray ();
+
+						if (items.Length != clonedElements.Length)
+							throw new InvalidOperationException ("Items collection out of sync"); // Should never happen
+
+						for (int n=0; n<items.Length; n++) {
+							var it = items [n];
+							var elem = clonedElements [n];
+							var c = docClone.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
 							string nid = (id++).ToString ();
 							c.InnerXml = nid;
-							it.Element.AppendChild (c);
+							elem.AppendChild (c);
 							nativeProjectInfo.ItemMap [nid] = it;
 							idElems.Add (c);
-							it.EvaluatedItemCount = 0;
 						}
+						foreach (var it in elemCache.Values.OfType<MSBuildItem> ())
+							it.EvaluatedItemCount = 0;
 
-						OnEvaluationStarting ();
+						PrepareForEvaluation (docClone);
 
-						nativeProjectInfo.Project = e.LoadProject (this, FileName);
+						nativeProjectInfo.Project = e.LoadProject (this, docClone, FileName);
 					}
 					catch (Exception ex) {
 						// If the project can't be evaluated don't crash
@@ -329,10 +341,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						throw new ProjectEvaluationException (this, ex.Message);
 					}
 					finally {
-						OnEvaluationFinished ();
-						// Now remove the item id property
-						foreach (var el in idElems)
-							el.ParentNode.RemoveChild (el);
 						EnableChangeTracking ();
 					}
 				}
@@ -340,24 +348,52 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void OnEvaluationStarting ()
+		internal void PrepareForEvaluation (XmlDocument doc)
 		{
-			foreach (var g in PropertyGroups)
-				g.OnEvaluationStarting ();
-			foreach (var g in ItemGroups)
-				g.OnEvaluationStarting ();
-			foreach (var i in Imports)
-				i.OnEvaluationStarting ();
+			foreach (var import in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager).Cast<XmlElement> ())
+				PatchImport (import);
 		}
 
-		void OnEvaluationFinished ()
+		void PatchImport (XmlElement import)
 		{
-			foreach (var g in PropertyGroups)
-				g.OnEvaluationFinished ();
-			foreach (var g in ItemGroups)
-				g.OnEvaluationFinished ();
-			foreach (var i in Imports)
-				i.OnEvaluationFinished ();
+			var target = import.GetAttribute ("Project");
+			var newTarget = MSBuildProjectService.GetImportRedirect (target);
+			if (newTarget == null)
+				return;
+			
+			var originalCondition = import.GetAttribute ("Condition");
+
+			/* If an import redirect exists, add a fake import to the project which will be used only
+			   if the original import doesn't exist. That is, the following import:
+
+			   <Import Project = "PathToReplace" />
+
+			   will be converted into:
+
+			   <Import Project = "PathToReplace" Condition = "Exists('PathToReplace')"/>
+			   <Import Project = "ReplacementPath" Condition = "!Exists('PathToReplace')" />
+			*/
+
+			// Modify the original import by adding a condition, so that this import will be used only
+			// if the targets file exists.
+
+			string cond = "Exists('" + target + "')";
+			if (!string.IsNullOrEmpty (originalCondition))
+				cond = "( " + originalCondition + " ) AND " + cond;
+			import.SetAttribute ("Condition", cond);
+
+			// Now add the fake import, with a condition so that it will be used only if the original
+			// import does not exist.
+
+			var fakeImport = import.OwnerDocument.CreateElement ("Import", MSBuildProject.Schema);
+
+			cond = "!Exists('" + target + "')";
+			if (!string.IsNullOrEmpty (originalCondition))
+				cond = "( " + originalCondition + " ) AND " + cond;
+
+			fakeImport.SetAttribute ("Project", MSBuildProjectService.ToMSBuildPath (null, newTarget));
+			fakeImport.SetAttribute ("Condition", cond);
+			import.ParentNode.InsertAfter (fakeImport, import);
 		}
 
 		public string DefaultTargets {

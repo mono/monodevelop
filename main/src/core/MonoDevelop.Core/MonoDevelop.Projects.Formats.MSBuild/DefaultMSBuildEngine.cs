@@ -72,33 +72,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		public override object LoadProject (MSBuildProject project, FilePath fileName)
+		public override object LoadProject (MSBuildProject project, XmlDocument doc, FilePath fileName)
 		{
-/*			fileName = fileName.CanonicalPath;
-			lock (loadedProjects) {
-				LoadedProjectInfo pi;
-				if (loadedProjects.TryGetValue (fileName, out pi)) {
-					pi.ReferenceCount++;
-					return pi.Project;
-				}
-				loadedProjects [fileName] = new LoadedProjectInfo { Project = project };
-			}*/
 			return project;
 		}
 
 		public override void UnloadProject (object project)
 		{
-/*			MSBuildProject p = (MSBuildProject) project;
-
-			var fileName = p.FileName.CanonicalPath;
-			lock (loadedProjects) {
-				LoadedProjectInfo pi;
-				if (loadedProjects.TryGetValue (fileName, out pi)) {
-					pi.ReferenceCount--;
-					if (pi.ReferenceCount == 0)
-						loadedProjects.Remove (fileName);
-				}
-			}*/
 		}
 
 		MSBuildProject LoadProject (FilePath fileName)
