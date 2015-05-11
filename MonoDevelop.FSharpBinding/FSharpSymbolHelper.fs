@@ -164,6 +164,15 @@ module ExtendedPatterns =
     let (|Class|_|) symbol =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsClass -> Some symbol
+        | CorePatterns.Entity s when s.IsFSharp &&
+                                     s.IsOpaque &&
+                                     not s.IsFSharpModule &&
+                                     not s.IsNamespace &&
+                                     not s.IsDelegate &&
+                                     not s.IsFSharpUnion &&
+                                     not s.IsFSharpRecord &&
+                                     not s.IsInterface &&
+                                     not s.IsValueType -> Some s
         | _ -> None
 
     let (|Delegate|_|) symbol =
