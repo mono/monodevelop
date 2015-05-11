@@ -60,7 +60,8 @@
 
     <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
     <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-  
+
+    <!-- Disable this until the new project system is available
     <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets">		
       <DotNetProjectSubtype		
         guid="{f2a71f9b-5d33-465a-a702-920d77279786}"		
@@ -69,7 +70,7 @@
         <AddImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />		
         <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />		
       </DotNetProjectSubtype>		
-    </Condition>
+    </Condition> --!>
   
   </Extension>
 
