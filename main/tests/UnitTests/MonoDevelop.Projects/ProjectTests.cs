@@ -637,6 +637,9 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject) sol.Items [0];
 			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
 
+			var asm = p.AssemblyContext.GetAssemblies ().FirstOrDefault (a => a.Name == "System.Net");
+			p.References.Add (new ProjectReference (asm));
+
 			await p.SaveAsync (Util.GetMonitor ());
 
 			var refXml = File.ReadAllText (p.FileName + ".reference-added");

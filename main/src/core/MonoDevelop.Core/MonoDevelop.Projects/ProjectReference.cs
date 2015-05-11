@@ -185,15 +185,13 @@ namespace MonoDevelop.Projects
 
 		public ProjectReference (Project referencedProject)
 		{
-			referenceType = ReferenceType.Project;
-			reference = referencedProject.Name;
+			Init (ReferenceType.Project, referencedProject.Name, null);
 			specificVersion = true;
 		}
 		
 		public ProjectReference (SystemAssembly asm)
 		{
-			referenceType = ReferenceType.Package;
-			reference = asm.FullName;
+			Init (ReferenceType.Package, asm.FullName, null);
 			if (asm.Package.IsFrameworkPackage)
 				specificVersion = false;
 			if (!asm.Package.IsGacPackage)
