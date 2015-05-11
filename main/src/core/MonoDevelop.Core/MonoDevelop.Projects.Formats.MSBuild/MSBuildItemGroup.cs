@@ -52,7 +52,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildItem it = parent.GetItem (elem);
 			it.Include = include;
 			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.ResetAllItemsList ();
 			parent.NotifyChanged ();
 			return it;
 		}
@@ -63,7 +62,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Element.AppendChild (elem);
 			XmlUtil.Indent (parent.TextFormat, elem, false);
 			parent.AddToItemCache (item);
-			parent.ResetAllItemsList ();
 			parent.NotifyChanged ();
 		}
 
@@ -76,6 +74,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return items;
 				}
 			}
+		}
+
+		internal void ResetItemCache ()
+		{
+			lock (parent.ReadLock)
+				items = null;
 		}
 
 		internal override void Evaluate (MSBuildEvaluationContext context)

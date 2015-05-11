@@ -111,6 +111,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			UseMSBuildEngine = true;
 			IsNewProject = true;
 			AddNewPropertyGroup (false);
+			EnableChangeTracking ();
 		}
 
 		internal MSBuildProject (MSBuildEngineManager manager): this ()
@@ -133,6 +134,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Dispose ();
 		}
 
+		void EnableChangeTracking ()
+		{
+			doc.NodeRemoved += OnNodeAddedRemoved;
+			doc.NodeInserted += OnNodeAddedRemoved;
+		}
+
+		void DisableChangeTracking ()
+		{
+			doc.NodeRemoved -= OnNodeAddedRemoved;
+			doc.NodeInserted -= OnNodeAddedRemoved;
+		}
+
 		internal MSBuildEngineManager EngineManager {
 			get {
 				return engineManager;
@@ -153,19 +166,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Load (string file)
 		{
-			this.file = file;
-			IsNewProject = false;
-			format = FileUtil.GetTextFormatInfo (file);
+			try {
+				DisableChangeTracking ();
+				this.file = file;
+				IsNewProject = false;
+				format = FileUtil.GetTextFormatInfo (file);
 
-			// Load the XML document
-			doc = new XmlDocument ();
-			doc.PreserveWhitespace = true;
-			
-			// HACK: XmlStreamReader will fail if the file is encoded in UTF-8 but has <?xml version="1.0" encoding="utf-16"?>
-			// To work around this, we load the XML content into a string and use XmlDocument.LoadXml() instead.
-			string xml = File.ReadAllText (file);
-			
-			doc.LoadXml (xml);
+				// Load the XML document
+				doc = new XmlDocument ();
+				doc.PreserveWhitespace = true;
+				
+				// HACK: XmlStreamReader will fail if the file is encoded in UTF-8 but has <?xml version="1.0" encoding="utf-16"?>
+				// To work around this, we load the XML content into a string and use XmlDocument.LoadXml() instead.
+				string xml = File.ReadAllText (file);
+				
+				doc.LoadXml (xml);
+				ClearCachedData ();
+
+			} finally {
+				EnableChangeTracking ();
+			}
+		}
+
+		void ClearCachedData ()
+		{
+			lock (readLock) {
+				itemGroups = null;
+				allItems = null;
+				propertyGroups = null;
+				targets = null;
+			}
 		}
 		
 		class ProjectWriter : StringWriter
@@ -277,6 +307,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					List<XmlElement> idElems = new List<XmlElement> ();
 
 					try {
+						DisableChangeTracking ();
 						nativeProjectInfo.ItemMap = new Dictionary<string,MSBuildItem> ();
 						foreach (var it in GetAllItems ()) {
 							var c = Document.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
@@ -302,6 +333,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						// Now remove the item id property
 						foreach (var el in idElems)
 							el.ParentNode.RemoveChild (el);
+						EnableChangeTracking ();
 					}
 				}
 				return nativeProjectInfo;
@@ -391,7 +423,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.AppendChild (elem);
 			}
 			XmlUtil.Indent (format, elem, false);
-			ResetImportsList ();
 			NotifyChanged ();
 			return GetImport (elem);
 		}
@@ -406,7 +437,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
 			if (elem != null) {
 				XmlUtil.RemoveElementAndIndenting (elem);
-				ResetImportsList ();
 				NotifyChanged ();
 			}
 		}
@@ -414,24 +444,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void RemoveImport (MSBuildImport import)
 		{
 			XmlUtil.RemoveElementAndIndenting (import.Element);
-			ResetImportsList ();
 			NotifyChanged ();
-		}
-
-		MSBuildImport[] imports;
-		public IEnumerable<MSBuildImport> Imports {
-			get {
-				lock (readLock) {
-					if (imports == null)
-						imports = doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetImport (e)).ToArray ();
-					return imports;
-				}
-			}
-		}
-		void ResetImportsList ()
-		{
-			lock (readLock)
-				imports = null;
 		}
 
 		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
@@ -482,25 +495,55 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			XmlUtil.Indent (format, elem, true);
-			ResetPropertyGroupsList ();
 			NotifyChanged ();
 			return GetGroup (elem);
 		}
-		
+
+		void OnNodeAddedRemoved (object sender, XmlNodeChangedEventArgs e)
+		{
+			if (!(e.Node is XmlElement))
+				return;
+
+			if (e.Node.ParentNode != null && e.Node.ParentNode.LocalName == "ItemGroup") {
+				lock (readLock) allItems = null;
+				var g = GetItemGroup ((XmlElement)e.Node.ParentNode);
+				if (g != null)
+					g.ResetItemCache ();
+			}
+			if (e.Node.ParentNode == doc.DocumentElement) {
+				if (e.Node.LocalName == "ItemGroup")
+					lock (readLock) {
+						itemGroups = null;
+						allItems = null;
+						allObjects = null;
+					}
+				else if (e.Node.LocalName == "PropertyGroup")
+					lock (readLock) { propertyGroups = null; allObjects = null; }
+				else if (e.Node.LocalName == "Target")
+					lock (readLock) { targets = null; allObjects = null; }
+				else if (e.Node.LocalName == "Import")
+					lock (readLock) { imports = null; allObjects = null; }
+			}
+		}
+
+		MSBuildObject[] allObjects;
 		internal IEnumerable<MSBuildObject> GetAllObjects ()
 		{
-			List<MSBuildObject> list = new List<MSBuildObject> ();
 			lock (readLock) {
-				foreach (XmlElement elem in doc.DocumentElement.ChildNodes.OfType<XmlElement> ()) {
-					switch (elem.LocalName) {
-					case "ItemGroup": list.Add (GetItemGroup (elem)); break;
-					case "PropertyGroup": list.Add (GetGroup (elem)); break;
-					case "Import": list.Add (GetImport (elem)); break;
-					case "Target": list.Add (GetTarget (elem)); break;
+				if (allObjects == null) {
+					List<MSBuildObject> list = new List<MSBuildObject> ();
+					foreach (XmlElement elem in doc.DocumentElement.ChildNodes.OfType<XmlElement> ()) {
+						switch (elem.LocalName) {
+						case "ItemGroup": list.Add (GetItemGroup (elem)); break;
+						case "PropertyGroup": list.Add (GetGroup (elem)); break;
+						case "Import": list.Add (GetImport (elem)); break;
+						case "Target": list.Add (GetTarget (elem)); break;
+						}
 					}
+					allObjects = list.ToArray ();
 				}
+				return allObjects;
 			}
-			return list.ToArray ();
 		}
 
 		MSBuildItem[] allItems;
@@ -511,11 +554,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					allItems = doc.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetItem (e)).ToArray ();
 				return allItems;
 			}
-		}
-		internal void ResetAllItemsList ()
-		{
-			lock (readLock)
-				allItems = null;
 		}
 
 		MSBuildPropertyGroup[] propertyGroups;
@@ -528,11 +566,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 		}
-		void ResetPropertyGroupsList ()
-		{
-			lock (readLock)
-				propertyGroups = null;
-		}
 
 		MSBuildItemGroup[] itemGroups;
 		public IEnumerable<MSBuildItemGroup> ItemGroups {
@@ -544,13 +577,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 		}
-		void ResetItemGroupsList ()
-		{
-			lock (readLock) {
-				itemGroups = null;
-				ResetAllItemsList ();
-			}
-		}
 
 		MSBuildTarget[] targets;
 		public IEnumerable<MSBuildTarget> Targets {
@@ -559,6 +585,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (targets == null)
 						targets = doc.DocumentElement.SelectNodes ("tns:Target", XmlNamespaceManager).Cast<XmlElement> ().Select (t => GetTarget (t)).ToArray ();
 					return targets;
+				}
+			}
+		}
+
+		MSBuildImport[] imports;
+		public IEnumerable<MSBuildImport> Imports {
+			get {
+				lock (readLock) {
+					if (imports == null)
+						imports = doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetImport (e)).ToArray ();
+					return imports;
 				}
 			}
 		}
@@ -581,14 +618,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				doc.DocumentElement.AppendChild (elem);
 			XmlUtil.Indent (format, elem, true);
-			ResetItemGroupsList ();
 			NotifyChanged ();
 			return GetItemGroup (elem);
 		}
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
-			ResetAllItemsList ();
 			MSBuildItemGroup grp = FindBestGroupForItem (name);
 			return grp.AddNewItem (name, include);
 		}
@@ -603,7 +638,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void AddItem (MSBuildItem it)
 		{
-			ResetAllItemsList ();
 			MSBuildItemGroup grp = FindBestGroupForItem (it.Name);
 			grp.AddItem (it);
 		}
@@ -739,7 +773,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				lock (readLock)
 					bestGroups = null;
 			}
-			ResetItemGroupsList ();
 			NotifyChanged ();
 		}
 		
@@ -792,7 +825,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			elemCache.Remove (grp.Element);
 			XmlUtil.RemoveElementAndIndenting (grp.Element);
-			ResetPropertyGroupsList ();
 			NotifyChanged ();
 		}
 
