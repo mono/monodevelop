@@ -151,7 +151,7 @@ namespace CBinding
 		{
 			StringBuilder args = new StringBuilder ();
 			
-			if (configuration.DebugMode)
+			if (configuration.DebugSymbols)
 				args.Append ("-g ");
 			
 			if (configuration.CompileTarget == CBinding.CompileTarget.SharedLibrary)

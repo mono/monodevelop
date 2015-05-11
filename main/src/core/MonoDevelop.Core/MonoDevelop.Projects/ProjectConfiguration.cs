@@ -147,7 +147,7 @@ namespace MonoDevelop.Projects
 		}
 
 		bool debugMode = false;
-		public bool DebugMode {
+		public bool DebugSymbols {
 			get { return debugMode; }
 			set { debugMode = value; }
 		}

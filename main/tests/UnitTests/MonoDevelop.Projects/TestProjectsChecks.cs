@@ -230,7 +230,7 @@ namespace Foo {
 			pcDebug.DebugType = "full";
 			pcDebug.OutputDirectory = Path.Combine (dir, "bin/Debug");
 			pcDebug.OutputAssembly = name;
-			pcDebug.DebugMode = true;
+			pcDebug.DebugSymbols = true;
 			csparamsDebug.DefineSymbols = "DEBUG;TRACE";
 			csparamsDebug.Optimize = false;
 			

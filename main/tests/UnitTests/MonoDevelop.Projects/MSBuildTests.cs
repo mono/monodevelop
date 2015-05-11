@@ -194,7 +194,7 @@ namespace MonoDevelop.Projects
 			pars.WarningLevel = 1;
 			Assert.AreEqual (1, pars.WarningLevel);
 			conf.DebugType = "full";
-			conf.DebugMode = true;
+			conf.DebugSymbols = true;
 
 			await sol.SaveAsync (Util.GetMonitor ());
 			Assert.AreEqual (1, pars.WarningLevel);
@@ -254,14 +254,14 @@ namespace MonoDevelop.Projects
 
 			DotNetProjectConfiguration conf = p.Configurations ["Debug|x86"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
-			Assert.IsTrue (conf.DebugMode);
+			Assert.IsTrue (conf.DebugSymbols);
 			CSharpCompilerParameters cparams = (CSharpCompilerParameters) conf.CompilationParameters;
 			Assert.IsTrue (cparams.UnsafeCode);
 			
 			conf = p.Configurations ["Release|x86"] as DotNetProjectConfiguration;
 			Assert.IsNotNull (conf);
-			Assert.IsFalse (conf.DebugMode);
-			conf.DebugMode = true;
+			Assert.IsFalse (conf.DebugSymbols);
+			conf.DebugSymbols = true;
 			cparams = (CSharpCompilerParameters) conf.CompilationParameters;
 			Assert.IsFalse (cparams.UnsafeCode);
 			cparams.UnsafeCode = true;

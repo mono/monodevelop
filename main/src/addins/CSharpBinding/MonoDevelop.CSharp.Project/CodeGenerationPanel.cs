@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Project
 			int i = CSharpProject.SupportedPlatforms.IndexOf (compilerParameters.PlatformTarget);
 			comboPlatforms.Active = i != -1 ? i : 0;
 
-			if (!configuration.DebugMode || string.Equals ("none", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
+			if (!configuration.DebugSymbols || string.Equals ("none", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
 				comboDebug.Active = DEBUG_NONE;
 			} else if (string.Equals ("pdbonly", configuration.DebugType, StringComparison.OrdinalIgnoreCase)) {
 				comboDebug.Active = DEBUG_PDB_ONLY;
@@ -95,17 +95,17 @@ namespace MonoDevelop.CSharp.Project
 
 			switch (comboDebug.Active) {
 			case DEBUG_FULL:
-				configuration.DebugMode = true;
+				configuration.DebugSymbols = true;
 				if (!string.Equals (configuration.DebugType, "full", StringComparison.OrdinalIgnoreCase)) {
 					configuration.DebugType = "";
 				}
 				break;
 			case DEBUG_PDB_ONLY:
-				configuration.DebugMode = true;
+				configuration.DebugSymbols = true;
 				configuration.DebugType = "pdbonly";
 				break;
 			case DEBUG_NONE:
-				configuration.DebugMode = false;
+				configuration.DebugSymbols = false;
 				if (!string.Equals (configuration.DebugType, "none", StringComparison.OrdinalIgnoreCase)) {
 					configuration.DebugType = "";
 				}

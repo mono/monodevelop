@@ -69,7 +69,7 @@ namespace ILAsmBinding
 					break;
 			}
 			
-			if (configuration.DebugMode)
+			if (configuration.DebugSymbols)
 				sb.Append ("/debug ");
 			
 			foreach (ProjectFile finfo in projectItems.GetAll<ProjectFile> ()) {

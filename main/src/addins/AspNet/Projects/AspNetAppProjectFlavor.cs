@@ -145,7 +145,7 @@ namespace MonoDevelop.AspNet.Projects
 		{
 			return new AspNetExecutionCommand {
 				ClrVersion = configuration.ClrVersion,
-				DebugMode = configuration.DebugMode,
+				DebugMode = configuration.DebugSymbols,
 				XspParameters = XspParameters,
 				BaseDirectory = Project.BaseDirectory,
 				TargetRuntime = Project.TargetRuntime,

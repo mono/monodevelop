@@ -194,7 +194,7 @@ namespace MonoDevelop.CSharp
 
 			var debugType = configuration.DebugType;
 			if (string.IsNullOrEmpty (debugType)) {
-				debugType = configuration.DebugMode ? "full" : "none";
+				debugType = configuration.DebugSymbols ? "full" : "none";
 			} else if (string.Equals (debugType, "pdbonly", StringComparison.OrdinalIgnoreCase)) {
 				//old Mono compilers don't support pdbonly
 				if (monoRuntime != null && !monoRuntime.HasMultitargetingMcs)

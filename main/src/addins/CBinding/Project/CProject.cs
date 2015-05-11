@@ -137,14 +137,14 @@ namespace CBinding
 				(CProjectConfiguration)CreateConfiguration ("Debug");
 			
 			configuration.DefineSymbols = "DEBUG MONODEVELOP";		
-			configuration.DebugMode = true;
+			configuration.DebugSymbols = true;
 				
 			Configurations.Add (configuration);
 			
 			configuration =
 				(CProjectConfiguration)CreateConfiguration ("Release");
 				
-			configuration.DebugMode = false;
+			configuration.DebugSymbols = false;
 			configuration.OptimizationLevel = 3;
 			configuration.DefineSymbols = "MONODEVELOP";
 			Configurations.Add (configuration);

@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
 				configDebug.CompilationParameters = OnCreateCompilationParameters (projectOptions);
 				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
-				configDebug.DebugMode = true;
+				configDebug.DebugSymbols = true;
 				configDebug.DebugType = "full";
 				configDebug.ExternalConsole = externalConsole;
 				configDebug.PauseConsoleOutput = externalConsole;
@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects
 				}
 
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
-				configRelease.DebugMode = false;
+				configRelease.DebugSymbols = false;
 				configRelease.ExternalConsole = externalConsole;
 				configRelease.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configRelease);
@@ -594,7 +594,7 @@ namespace MonoDevelop.Projects
 
 			// Debug info file
 
-			if (conf.DebugMode) {
+			if (conf.DebugSymbols) {
 				string mdbFile = TargetRuntime.GetAssemblyDebugInfoFile (conf.CompiledOutputName);
 				list.Add (mdbFile);
 			}
@@ -967,7 +967,7 @@ namespace MonoDevelop.Projects
 
 			//if the debug file is newer than the output file, use that as the build time
 			var conf = (DotNetProjectConfiguration) GetConfiguration (configuration);
-			if (GeneratesDebugInfoFile && conf != null && conf.DebugMode) {
+			if (GeneratesDebugInfoFile && conf != null && conf.DebugSymbols) {
 				string file = GetOutputFileName (configuration);
 				if (file != null) {
 					file = TargetRuntime.GetAssemblyDebugInfoFile (file);

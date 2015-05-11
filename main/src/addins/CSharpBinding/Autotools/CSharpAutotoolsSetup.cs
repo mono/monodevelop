@@ -63,7 +63,7 @@ namespace CSharpBinding.Autotools
 				writer.Write(" \"-nowarn:" + parameters.NoWarnings + '"');
 			}
 
-			if(config.DebugMode) {
+			if(config.DebugSymbols) {
 				writer.Write(" -debug");
 				//Check whether we have a DEBUG define
 				bool hasDebugDefine = false;
