@@ -74,12 +74,12 @@ type FSharpProject() as self =
             let debugAtt = options.GetAttribute("DefineDebug")
             if (System.String.Compare("True", debugAtt, StringComparison.OrdinalIgnoreCase) = 0) then 
                 pars.AddDefineSymbol "DEBUG"
-                pars.DebugSymbols <- true
+                pars.ParentConfiguration.DebugSymbols <- true
                 pars.Optimize <- false
                 pars.GenerateTailCalls <- false
             let releaseAtt = options.GetAttribute("Release")
             if (System.String.Compare("True", releaseAtt, StringComparison.OrdinalIgnoreCase) = 0) then 
-                pars.DebugSymbols <- false
+                pars.ParentConfiguration.DebugSymbols <- false
                 pars.Optimize <- true
                 pars.GenerateTailCalls <- true
         // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)

@@ -139,7 +139,7 @@ module CompilerArguments =
             else ConfigurationSelector.Default
 
   let generateDebug (config:FSharpCompilerParameters) =
-      match config.DebugSymbols, config.DebugType with
+      match config.ParentConfiguration.DebugSymbols, config.ParentConfiguration.DebugType with
       | true, typ ->
         match typ with
         | "full" -> "--debug:full"

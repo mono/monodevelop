@@ -16,18 +16,11 @@ type FSharpCompilerParameters() =
   [<ItemProperty ("Optimize")>]           
   let mutable optimize = true
      
-  [<ItemProperty ("DebugSymbols")>]    
-  let mutable debugSymbols = true
-
   [<ItemProperty ("GenerateTailCalls", DefaultValue = false)>] 
   let mutable generateTailCalls = false
     
   [<ItemProperty ("NoStdLib", DefaultValue = false)>]
   let mutable noStdLib = false
-
-  //can be "pdbonly", "full"
-  [<ItemProperty ("DebugType", DefaultValue = "full")>]
-  let mutable debugType = "full"
 
   [<ItemProperty("DefineConstants")>]
   let mutable defineConstants = ""
@@ -42,10 +35,8 @@ type FSharpCompilerParameters() =
   let mutable platformTarget = "anycpu"
 
   member x.Optimize with get () = optimize and set v = optimize <- v
-  member x.DebugSymbols with get () = debugSymbols and set v = debugSymbols <- v
   member x.GenerateTailCalls with get () = generateTailCalls and set v = generateTailCalls <- v
   override x.NoStdLib with get () = noStdLib and set v = noStdLib <- v
-  override x.DebugType with get () = debugType and set v = debugType <- v
   member x.DefineConstants with get () = defineConstants and set v = defineConstants <- v
   member x.OtherFlags with get () = otherFlags and set v = otherFlags <- v
   member x.DocumentationFile with get () = documentationFile and set v = documentationFile <- v
