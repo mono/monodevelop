@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildProject
+	public sealed class MSBuildProject: IDisposable
 	{
 		XmlDocument doc;
 		FilePath file;
@@ -96,6 +96,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return changeStamp; }
 		}
 
+		internal object ReadLock {
+			get { return readLock; }
+		}
+
 		public MSBuildProject ()
 		{
 			mainProjectInstance = new MSBuildProjectInstance (this);
@@ -114,10 +118,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engineManager = manager;
 		}
 
+		public void Dispose ()
+		{
+			if (nativeProjectInfo != null) {
+				mainProjectInstance.Dispose ();
+				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
+				if (engineManagerIsLocal)
+					nativeProjectInfo.Engine.Dispose ();
+			}
+		}
+
 		~MSBuildProject ()
 		{
-			if (!engineManagerIsLocal && nativeProjectInfo != null && !nativeProjectInfo.Engine.Disposed)
-				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
+			Dispose ();
 		}
 
 		internal MSBuildEngineManager EngineManager {
@@ -213,20 +226,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			changeStamp++;
 		}
 
-		MSBuildProjectInstanceInfo cachedProjectInfo;
-
-		internal MSBuildProjectInstanceInfo GetCachedProject (int stamp, MSBuildEngine engine)
-		{
-			if (cachedProjectInfo != null && stamp == cachedProjectInfo.ProjectStamp && engine == cachedProjectInfo.Engine)
-				return cachedProjectInfo;
-			return null;
-		}
-
-		internal void SetCachedProject (MSBuildProjectInstanceInfo projectInfo)
-		{
-			cachedProjectInfo = projectInfo;
-		}
-
 		/// <summary>
 		/// Gets or sets a value indicating whether this project uses the msbuild engine for evaluation.
 		/// </summary>
@@ -245,66 +244,69 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return new MSBuildProjectInstance (this);
 		}
 
+		object readLock = new object ();
+
 		internal MSBuildProjectInstanceInfo LoadNativeInstance ()
 		{
-			var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
+			lock (readLock) {
+				var supportsMSBuild = UseMSBuildEngine && GetGlobalPropertyGroup ().GetValue ("UseMSBuildEngine", true);
 
-			if (engineManager == null) {
-				engineManager = new MSBuildEngineManager ();
-				engineManagerIsLocal = true;
-			}
+				if (engineManager == null) {
+					engineManager = new MSBuildEngineManager ();
+					engineManagerIsLocal = true;
+				}
 
-			MSBuildEngine e = engineManager.GetEngine (supportsMSBuild);
+				MSBuildEngine e = engineManager.GetEngine (supportsMSBuild);
 
-			if (nativeProjectInfo != null && nativeProjectInfo.Engine != null && (nativeProjectInfo.Engine != e || nativeProjectInfo.ProjectStamp != ChangeStamp)) {
-				nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
-				nativeProjectInfo = null;
-			}
+				if (nativeProjectInfo != null && nativeProjectInfo.Engine != null && (nativeProjectInfo.Engine != e || nativeProjectInfo.ProjectStamp != ChangeStamp)) {
+					nativeProjectInfo.Engine.UnloadProject (nativeProjectInfo.Project);
+					nativeProjectInfo = null;
+				}
 
-			if (nativeProjectInfo == null) {
-				nativeProjectInfo = new MSBuildProjectInstanceInfo {
-					Engine = e,
-					ProjectStamp = ChangeStamp
-				};
-			}
+				if (nativeProjectInfo == null) {
+					nativeProjectInfo = new MSBuildProjectInstanceInfo {
+						Engine = e,
+						ProjectStamp = ChangeStamp
+					};
+				}
 
-			if (nativeProjectInfo.Project == null) {
-				// Use a private metadata property to assign an id to each item. This id is used to match
-				// evaluated items with the items that generated them.
-				int id = 0;
-				List<XmlElement> idElems = new List<XmlElement> ();
+				if (nativeProjectInfo.Project == null) {
+					// Use a private metadata property to assign an id to each item. This id is used to match
+					// evaluated items with the items that generated them.
+					int id = 0;
+					List<XmlElement> idElems = new List<XmlElement> ();
 
-				try {
-					nativeProjectInfo.ItemMap = new Dictionary<string,MSBuildItem> ();
-					foreach (var it in GetAllItems ()) {
-						var c = Document.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
-						string nid = (id++).ToString ();
-						c.InnerXml = nid;
-						it.Element.AppendChild (c);
-						nativeProjectInfo.ItemMap [nid] = it;
-						idElems.Add (c);
-						it.EvaluatedItemCount = 0;
+					try {
+						nativeProjectInfo.ItemMap = new Dictionary<string,MSBuildItem> ();
+						foreach (var it in GetAllItems ()) {
+							var c = Document.CreateElement (MSBuildProjectInstance.NodeIdPropertyName, MSBuildProject.Schema);
+							string nid = (id++).ToString ();
+							c.InnerXml = nid;
+							it.Element.AppendChild (c);
+							nativeProjectInfo.ItemMap [nid] = it;
+							idElems.Add (c);
+							it.EvaluatedItemCount = 0;
+						}
+
+						OnEvaluationStarting ();
+
+						nativeProjectInfo.Project = e.LoadProject (this, FileName);
 					}
-
-					OnEvaluationStarting ();
-
-					nativeProjectInfo.Project = e.LoadProject (this, FileName);
+					catch (Exception ex) {
+						// If the project can't be evaluated don't crash
+						LoggingService.LogError ("MSBuild project could not be evaluated", ex);
+						throw new ProjectEvaluationException (this, ex.Message);
+					}
+					finally {
+						OnEvaluationFinished ();
+						// Now remove the item id property
+						foreach (var el in idElems)
+							el.ParentNode.RemoveChild (el);
+					}
 				}
-				catch (Exception ex) {
-					// If the project can't be evaluated don't crash
-					LoggingService.LogError ("MSBuild project could not be evaluated", ex);
-					throw new ProjectEvaluationException (this, ex.Message);
-				}
-				finally {
-					OnEvaluationFinished ();
-					// Now remove the item id property
-					foreach (var el in idElems)
-						el.ParentNode.RemoveChild (el);
-				}
+				return nativeProjectInfo;
 			}
-			return nativeProjectInfo;
 		}
-
 
 		void OnEvaluationStarting ()
 		{
@@ -389,6 +391,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					doc.DocumentElement.AppendChild (elem);
 			}
 			XmlUtil.Indent (format, elem, false);
+			ResetImportsList ();
 			NotifyChanged ();
 			return GetImport (elem);
 		}
@@ -403,6 +406,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
 			if (elem != null) {
 				XmlUtil.RemoveElementAndIndenting (elem);
+				ResetImportsList ();
 				NotifyChanged ();
 			}
 		}
@@ -410,14 +414,24 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void RemoveImport (MSBuildImport import)
 		{
 			XmlUtil.RemoveElementAndIndenting (import.Element);
+			ResetImportsList ();
 			NotifyChanged ();
 		}
 
+		MSBuildImport[] imports;
 		public IEnumerable<MSBuildImport> Imports {
 			get {
-				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager))
-					yield return GetImport (elem);
+				lock (readLock) {
+					if (imports == null)
+						imports = doc.DocumentElement.SelectNodes ("tns:Import", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetImport (e)).ToArray ();
+					return imports;
+				}
 			}
+		}
+		void ResetImportsList ()
+		{
+			lock (readLock)
+				imports = null;
 		}
 
 		public IMSBuildEvaluatedPropertyCollection EvaluatedProperties {
@@ -430,6 +444,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public IEnumerable<IMSBuildItemEvaluated> EvaluatedItemsIgnoringCondition {
 			get { return mainProjectInstance.EvaluatedItemsIgnoringCondition; }
+		}
+
+		public IEnumerable<MSBuildTarget> EvaluatedTargets {
+			get { return mainProjectInstance.Targets; }
 		}
 
 		public IMSBuildPropertySet GetGlobalPropertyGroup ()
@@ -464,39 +482,87 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			
 			XmlUtil.Indent (format, elem, true);
+			ResetPropertyGroupsList ();
 			NotifyChanged ();
 			return GetGroup (elem);
 		}
 		
+		internal IEnumerable<MSBuildObject> GetAllObjects ()
+		{
+			List<MSBuildObject> list = new List<MSBuildObject> ();
+			lock (readLock) {
+				foreach (XmlElement elem in doc.DocumentElement.ChildNodes.OfType<XmlElement> ()) {
+					switch (elem.LocalName) {
+					case "ItemGroup": list.Add (GetItemGroup (elem)); break;
+					case "PropertyGroup": list.Add (GetGroup (elem)); break;
+					case "Import": list.Add (GetImport (elem)); break;
+					case "Target": list.Add (GetTarget (elem)); break;
+					}
+				}
+			}
+			return list.ToArray ();
+		}
+
+		MSBuildItem[] allItems;
 		public IEnumerable<MSBuildItem> GetAllItems ()
 		{
-			foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager)) {
-				yield return GetItem (elem);
+			lock (readLock) {
+				if (allItems == null)
+					allItems = doc.DocumentElement.SelectNodes ("tns:ItemGroup/*", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetItem (e)).ToArray ();
+				return allItems;
 			}
 		}
-		
-		public IEnumerable<MSBuildItem> GetAllItems (params string[] names)
+		internal void ResetAllItemsList ()
 		{
-			string name = string.Join ("|tns:ItemGroup/tns:", names);
-			foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:ItemGroup/tns:" + name, XmlNamespaceManager)) {
-				yield return GetItem (elem);
-			}
+			lock (readLock)
+				allItems = null;
 		}
-		
+
+		MSBuildPropertyGroup[] propertyGroups;
 		public IEnumerable<MSBuildPropertyGroup> PropertyGroups {
 			get {
-				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:PropertyGroup", XmlNamespaceManager))
-					yield return GetGroup (elem);
+				lock (readLock) {
+					if (propertyGroups == null)
+						propertyGroups = doc.DocumentElement.SelectNodes ("tns:PropertyGroup", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetGroup (e)).ToArray ();
+					return propertyGroups;
+				}
 			}
 		}
-		
+		void ResetPropertyGroupsList ()
+		{
+			lock (readLock)
+				propertyGroups = null;
+		}
+
+		MSBuildItemGroup[] itemGroups;
 		public IEnumerable<MSBuildItemGroup> ItemGroups {
 			get {
-				foreach (XmlElement elem in doc.DocumentElement.SelectNodes ("tns:ItemGroup", XmlNamespaceManager))
-					yield return GetItemGroup (elem);
+				lock (readLock) {
+					if (itemGroups == null)
+						itemGroups = doc.DocumentElement.SelectNodes ("tns:ItemGroup", XmlNamespaceManager).Cast<XmlElement> ().Select (e => GetItemGroup (e)).ToArray ();
+					return itemGroups;
+				}
 			}
 		}
-		
+		void ResetItemGroupsList ()
+		{
+			lock (readLock) {
+				itemGroups = null;
+				ResetAllItemsList ();
+			}
+		}
+
+		MSBuildTarget[] targets;
+		public IEnumerable<MSBuildTarget> Targets {
+			get {
+				lock (readLock) {
+					if (targets == null)
+						targets = doc.DocumentElement.SelectNodes ("tns:Target", XmlNamespaceManager).Cast<XmlElement> ().Select (t => GetTarget (t)).ToArray ();
+					return targets;
+				}
+			}
+		}
+
 		public MSBuildItemGroup AddNewItemGroup ()
 		{
 			XmlElement elem = doc.CreateElement (null, "ItemGroup", MSBuildProject.Schema);
@@ -515,12 +581,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				doc.DocumentElement.AppendChild (elem);
 			XmlUtil.Indent (format, elem, true);
+			ResetItemGroupsList ();
 			NotifyChanged ();
 			return GetItemGroup (elem);
 		}
 		
 		public MSBuildItem AddNewItem (string name, string include)
 		{
+			ResetAllItemsList ();
 			MSBuildItemGroup grp = FindBestGroupForItem (name);
 			return grp.AddNewItem (name, include);
 		}
@@ -535,6 +603,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void AddItem (MSBuildItem it)
 		{
+			ResetAllItemsList ();
 			MSBuildItemGroup grp = FindBestGroupForItem (it.Name);
 			grp.AddItem (it);
 		}
@@ -542,7 +611,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		MSBuildItemGroup FindBestGroupForItem (string itemName)
 		{
 			MSBuildItemGroup group;
-			
+
 			if (bestGroups == null)
 			    bestGroups = new Dictionary<string, MSBuildItemGroup> ();
 			else {
@@ -667,12 +736,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (parent.ChildNodes.OfType<XmlNode>().All (n => n is XmlWhitespace)) {
 				elemCache.Remove (parent);
 				XmlUtil.RemoveElementAndIndenting (parent);
-				bestGroups = null;
+				lock (readLock)
+					bestGroups = null;
 			}
+			ResetItemGroupsList ();
 			NotifyChanged ();
 		}
 		
-		internal MSBuildImport GetImport (XmlElement elem)
+		MSBuildImport GetImport (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
@@ -721,13 +792,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			elemCache.Remove (grp.Element);
 			XmlUtil.RemoveElementAndIndenting (grp.Element);
+			ResetPropertyGroupsList ();
 			NotifyChanged ();
 		}
 
-		public IEnumerable<MSBuildTarget> Targets {
-			get {
-				return mainProjectInstance.Targets;
-			}
+		MSBuildTarget GetTarget (XmlElement elem)
+		{
+			MSBuildObject ob;
+			if (elemCache.TryGetValue (elem, out ob))
+				return (MSBuildTarget) ob;
+			MSBuildTarget it = new MSBuildTarget (elem);
+			elemCache [elem] = it;
+			return it;
 		}
 	}
 	

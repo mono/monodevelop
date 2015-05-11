@@ -28,7 +28,7 @@
 using System;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal sealed class ConditionAndExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;
@@ -70,7 +70,9 @@ namespace Microsoft.Build.BuildEngine {
 		
 		public override bool CanEvaluateToBool (IExpressionContext context)
 		{
-			return left.CanEvaluateToBool (context) && right.CanEvaluateToBool (context);
+			// Short-circuiting, check only left expr, right
+			// would be required only if left == true
+			return left.CanEvaluateToBool (context);
 		}
 		
 		public override bool CanEvaluateToNumber (IExpressionContext context)

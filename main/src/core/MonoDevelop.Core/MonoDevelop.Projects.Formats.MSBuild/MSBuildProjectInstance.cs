@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildProjectInstance
+	public sealed class MSBuildProjectInstance: IDisposable
 	{
 		MSBuildProject msproject;
 		List<IMSBuildItemEvaluated> evaluatedItems = new List<IMSBuildItemEvaluated> ();
@@ -42,11 +42,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		MSBuildProjectInstanceInfo info;
 
+		object projectInstance;
+		MSBuildEngine engine;
+
 		public MSBuildProjectInstance (MSBuildProject project)
 		{
 			msproject = project;
 			evaluatedItemsIgnoringCondition = new List<IMSBuildItemEvaluated> ();
 			evaluatedProperties = new MSBuildEvaluatedPropertyCollection (msproject);
+		}
+
+		public void Dispose ()
+		{
+			if (projectInstance != null) {
+				engine.DisposeProjectInstance (projectInstance);
+				projectInstance = null;
+				engine = null;
+			}
 		}
 
 		public void SetGlobalProperty (string property, string value)
@@ -58,17 +70,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Evaluate ()
 		{
+			if (projectInstance != null)
+				engine.DisposeProjectInstance (projectInstance);
+			
 			info = msproject.LoadNativeInstance ();
-			var e = info.Engine;
-			var pi = e.CreateProjectInstance (info.Project);
+
+			engine = info.Engine;
+			projectInstance = engine.CreateProjectInstance (info.Project);
 
 			try {
 				foreach (var prop in globalProperties)
-					e.SetGlobalProperty (pi, prop.Key, prop.Value);
+					engine.SetGlobalProperty (projectInstance, prop.Key, prop.Value);
 
-				e.Evaluate (pi);
+				engine.Evaluate (projectInstance);
 
-				SyncBuildProject (info.ItemMap, info.Engine, pi);
+				SyncBuildProject (info.ItemMap, info.Engine, projectInstance);
 			}
 			catch (Exception ex) {
 				// If the project can't be evaluated don't crash
@@ -87,18 +103,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (!OnlyEvaluateProperties) {
 				
-/*				foreach (var it in e.GetAllItems (project, false)) {
-					string name, include, finalItemSpec;
-					bool imported;
-					e.GetItemInfo (it, out name, out include, out finalItemSpec, out imported);
-					var iid = e.GetItemMetadata (it, NodeIdPropertyName);
-					MSBuildItem xit;
-					if (currentItems.TryGetValue (iid, out xit)) {
-						xit.SetEvalResult (finalItemSpec);
-						((MSBuildPropertyGroupEvaluated)xit.EvaluatedMetadata).Sync (e, it);
-					}
-				}*/
-
 				Console.WriteLine ("t1:" + (DateTime.Now - t).TotalMilliseconds);
 				t = DateTime.Now;
 

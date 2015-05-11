@@ -36,6 +36,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects.Extensions;
 using Microsoft.Build.BuildEngine;
 using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild.Conditions;
 	
 namespace MonoDevelop.Projects.Formats.MD1
 {

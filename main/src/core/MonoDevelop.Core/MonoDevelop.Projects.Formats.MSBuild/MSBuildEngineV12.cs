@@ -34,19 +34,26 @@ using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using MSProject = Microsoft.Build.Evaluation.Project;
 using MSProjectItem = Microsoft.Build.Evaluation.ProjectItem;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 
 	class MSBuildEngineV12: MSBuildEngine
 	{
-		public override object LoadProject (MSBuildProject project, string fileName)
+		ProjectCollection projects;
+
+		public MSBuildEngineV12 (MSBuildEngineManager manager): base (manager)
+		{
+			projects = new ProjectCollection ();
+		}
+
+		public override object LoadProject (MSBuildProject project, FilePath fileName)
 		{
 			var d = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (fileName);
 			try {
-				ProjectCollection col = new ProjectCollection ();
-				var p = col.LoadProject (new XmlTextReader (new StringReader (project.Document.OuterXml)));
+				var p = projects.LoadProject (new XmlTextReader (new StringReader (project.Document.OuterXml)));
 				p.FullPath = fileName;
 				return p;
 			} finally {
@@ -56,17 +63,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override void UnloadProject (object project)
 		{
-			
+			projects.UnloadProject ((MSProject)project);
 		}
 
 		public override object CreateProjectInstance (object project)
 		{
-			return this;
+			return project;
 		}
 
-		public override IEnumerable<object> GetAllItems (object project, bool includeImported)
+		public override void DisposeProjectInstance (object projectInstance)
 		{
-			return ((MSProject)project).Items.Where (it => includeImported || !it.IsImported);
 		}
 
 		public override string GetItemMetadata (object item, string name)

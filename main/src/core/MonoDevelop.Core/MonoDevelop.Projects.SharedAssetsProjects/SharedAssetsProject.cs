@@ -283,6 +283,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override void OnDispose ()
 		{
+			if (projitemsProject != null)
+				projitemsProject.Dispose ();
 			DisconnectFromSolution ();
 			base.OnDispose ();
 		}

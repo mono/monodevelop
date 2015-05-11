@@ -47,13 +47,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					projitemsFile = MSBuildProjectService.FromMSBuildPath (Project.ItemDirectory, projitemsFile);
 					projitemsFile = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
 					if (File.Exists (projitemsFile)) {
-						MSBuildProject p = new MSBuildProject (msproject.EngineManager);
-						p.Load (projitemsFile);
-						Project.LoadProjectItems (p, ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist, null);
-						var r = new ProjectReference (ReferenceType.Project, Path.GetFileNameWithoutExtension (projitemsFile));
-						r.Flags = ProjectItemFlags.DontPersist;
-						r.SetItemsProjectPath (projitemsFile);
-						Project.References.Add (r);
+						using (MSBuildProject p = new MSBuildProject (msproject.EngineManager)) {
+							p.Load (projitemsFile);
+							Project.LoadProjectItems (p, ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist, null);
+							var r = new ProjectReference (ReferenceType.Project, Path.GetFileNameWithoutExtension (projitemsFile));
+							r.Flags = ProjectItemFlags.DontPersist;
+							r.SetItemsProjectPath (projitemsFile);
+							Project.References.Add (r);
+						}
 					}
 				}
 			}

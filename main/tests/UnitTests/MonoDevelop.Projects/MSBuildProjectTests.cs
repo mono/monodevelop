@@ -159,7 +159,7 @@ namespace MonoDevelop.Projects
 		{
 			var p = LoadProject ();
 			p.Evaluate ();
-			var tn = p.Targets.Select (t => t.Name).ToArray ();
+			var tn = p.EvaluatedTargets.Select (t => t.Name).ToArray ();
 
 			// Verify that some of the imported targets are returned
 			Assert.IsTrue (tn.Contains ("Build"));

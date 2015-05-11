@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Xml;
+using System.Linq;
 
 
 namespace MonoDevelop.Projects.Formats.MSBuild
@@ -34,7 +35,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildItemGroup: MSBuildObject
 	{
 		MSBuildProject parent;
-		
+
 		internal MSBuildItemGroup (MSBuildProject parent, XmlElement elem): base (elem)
 		{
 			this.parent = parent;
@@ -51,6 +52,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildItem it = parent.GetItem (elem);
 			it.Include = include;
 			XmlUtil.Indent (parent.TextFormat, elem, false);
+			parent.ResetAllItemsList ();
 			parent.NotifyChanged ();
 			return it;
 		}
@@ -61,15 +63,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Element.AppendChild (elem);
 			XmlUtil.Indent (parent.TextFormat, elem, false);
 			parent.AddToItemCache (item);
+			parent.ResetAllItemsList ();
 			parent.NotifyChanged ();
 		}
-		
+
+		MSBuildItem[] items;
 		public IEnumerable<MSBuildItem> Items {
 			get {
-				foreach (XmlNode node in Element.ChildNodes) {
-					XmlElement elem = node as XmlElement;
-					if (elem != null)
-						yield return parent.GetItem (elem);
+				lock (parent.ReadLock) {
+					if (items == null)
+						items = Element.ChildNodes.OfType<XmlElement> ().Select (e => parent.GetItem (e)).ToArray ();
+					return items;
 				}
 			}
 		}

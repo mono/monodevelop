@@ -42,9 +42,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						throw new ObjectDisposedException ("MSBuildEngineManager");
 					if (msbuildEngine == null) {
 						#if !WINDOWS
-						msbuildEngine = new MSBuildEngineV4 ();
+						msbuildEngine = new MSBuildEngineV4 (this);
 						#else
-						msbuildEngine = new MSBuildEngineV12 ();
+						msbuildEngine = new MSBuildEngineV12 (this);
 						#endif
 					}
 					return msbuildEngine;
@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (disposed)
 					throw new ObjectDisposedException ("MSBuildEngineManager");
 				if (internalEngine == null)
-					internalEngine = new DefaultMSBuildEngine ();
+					internalEngine = new DefaultMSBuildEngine (this);
 				return internalEngine;
 			}
 		}

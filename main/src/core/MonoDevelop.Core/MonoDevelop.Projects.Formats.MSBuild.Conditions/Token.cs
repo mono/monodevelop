@@ -27,20 +27,20 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 using System;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 
 	internal class Token {
 	
 		string		tokenValue;
 		TokenType	tokenType;
 	
-		public Token (string tokenValue, TokenType tokenType)
+		public Token (string tokenValue, TokenType tokenType, int position)
 		{
 			this.tokenValue = tokenValue;
 			this.tokenType = tokenType;
+			this.Position = position + 1;
 		}
 		
 		public string Value {
@@ -51,9 +51,42 @@ namespace Microsoft.Build.BuildEngine {
 			get { return tokenType; }
 		}
 
+		// this is 1-based
+		public int Position {
+			get; private set;
+		}
+
+		public static string TypeAsString (TokenType tokenType)
+		{
+			switch (tokenType) {
+				case TokenType.Item:return "@";
+				case TokenType.Property:return "$";
+				case TokenType.Metadata:return "%";
+				case TokenType.Transform:return "->";
+				case TokenType.Less:return "<";
+				case TokenType.Greater:return ">";
+				case TokenType.LessOrEqual:return "<=";
+				case TokenType.GreaterOrEqual:return ">=";
+				case TokenType.Equal:return "=";
+				case TokenType.NotEqual:return "!=";
+				case TokenType.LeftParen:return "(";
+				case TokenType.RightParen:return ")";
+				case TokenType.Dot:return ".";
+				case TokenType.Comma:return ",";
+				case TokenType.Not:return "!";
+				case TokenType.And:return "and";
+				case TokenType.Or:return "or";
+				case TokenType.Apostrophe:return "'";
+				default: return tokenType.ToString ();
+			}
+		}
+
 		public override string ToString ()
 		{
-			return String.Format ("Token (Type: {0} -> Value: {1})", tokenType, tokenValue);
+			if (tokenType == TokenType.EOF || tokenType == TokenType.BOF)
+				return String.Format ("{0} at character position {1}", tokenType.ToString (), Position);
+
+			return String.Format ("\"{0}\" at character position {1}", tokenValue, Position);
 		}
 	}
 	
@@ -93,4 +126,3 @@ namespace Microsoft.Build.BuildEngine {
 		Invalid,
 	}
 }
-

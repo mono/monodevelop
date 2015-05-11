@@ -31,7 +31,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal sealed class ConditionFactorExpression : ConditionExpression {
 	
 		readonly Token token;
@@ -75,7 +75,9 @@ namespace Microsoft.Build.BuildEngine {
 			else if (falseValues [evaluatedToken.Value] != null)
 				return false;
 			else
-				throw new InvalidOperationException ();
+				throw new ExpressionEvaluationException (
+						String.Format ("Expression \"{0}\" evaluated to \"{1}\" instead of a boolean value",
+								token.Value, evaluatedToken.Value));
 		}
 		
 		public override float NumberEvaluate (IExpressionContext context)
@@ -107,6 +109,11 @@ namespace Microsoft.Build.BuildEngine {
 		{
 			if (token.Type == TokenType.Number)
 				return true;
+			else if (token.Type == TokenType.String) {
+				var text = StringEvaluate (context);
+				Single number;
+				return Single.TryParse (text, out number);
+			}
 			else
 				return false;
 		}
@@ -120,7 +127,7 @@ namespace Microsoft.Build.BuildEngine {
 		static Token EvaluateToken (Token token, IExpressionContext context)
 		{
 			string val = context.EvaluateString (token.Value);
-			return new Token (val, TokenType.String);
+			return new Token (val, TokenType.String, 0);
 		}
 	}
 }

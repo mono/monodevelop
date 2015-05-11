@@ -114,6 +114,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -523,6 +524,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV12.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV4.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineManager.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionEvaluationException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

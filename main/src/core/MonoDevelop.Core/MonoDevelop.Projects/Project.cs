@@ -638,6 +638,11 @@ namespace MonoDevelop.Projects
 			FileService.FileChanged -= OnFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 			CleanupProjectBuilder ();
+
+			if (sourceProject != null) {
+				sourceProject.Dispose ();
+				sourceProject = null;
+			}
 			base.OnDispose ();
 		}
 
@@ -668,7 +673,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual bool OnGetSupportsTarget (string target)
 		{
-			return sourceProject.Targets.Any (t => t.Name == target);
+			return sourceProject.EvaluatedTargets.Any (t => t.Name == target);
 		}
 
 		/// <summary>

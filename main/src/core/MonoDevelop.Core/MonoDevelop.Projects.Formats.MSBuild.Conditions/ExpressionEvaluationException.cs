@@ -1,10 +1,10 @@
 //
-// ConditionNotExpression.cs
+// ExpressionEvaluationException.cs
 //
 // Author:
-//   Marek Sieradzki (marek.sieradzki@gmail.com)
-// 
-// (C) 2006 Marek Sieradzki
+//   Ankit Jain (jankit@novell.com)
+//
+// Copyright 2011 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,51 +25,33 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-
 using System;
-using System.Xml;
+using System.Runtime.Serialization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
-	internal sealed class ConditionNotExpression : ConditionExpression {
-	
-		readonly ConditionExpression expression;
-		
-		public ConditionNotExpression (ConditionExpression expression)
+	[Serializable]
+	internal class ExpressionEvaluationException : Exception {
+
+		public ExpressionEvaluationException ()
+			: base ("Exception occured when evaluating the expression.")
 		{
-			this.expression = expression;
 		}
-		
-		public override  bool BoolEvaluate (IExpressionContext context)
+
+		public ExpressionEvaluationException (string message)
+			: base (message)
 		{
-			return !(expression.BoolEvaluate (context));
 		}
-		
-		
-		public override float NumberEvaluate (IExpressionContext context)
+
+		public ExpressionEvaluationException (string message,
+					Exception innerException)
+			: base (message, innerException)
 		{
-			throw new NotSupportedException ();
 		}
-		
-		public override string StringEvaluate (IExpressionContext context)
+
+		protected ExpressionEvaluationException (SerializationInfo info,
+					   StreamingContext context)
+			: base (info, context)
 		{
-			throw new NotSupportedException ();
-		}
-		
-		public override bool CanEvaluateToBool (IExpressionContext context)
-		{
-			return expression.CanEvaluateToBool (context);
-		}
-		
-		public override bool CanEvaluateToNumber (IExpressionContext context)
-		{
-			return false;
-		}
-		
-		public override bool CanEvaluateToString (IExpressionContext context)
-		{
-			return false;
 		}
 	}
 }
-

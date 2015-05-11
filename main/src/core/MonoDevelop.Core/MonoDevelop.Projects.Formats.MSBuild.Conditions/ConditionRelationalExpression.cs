@@ -25,12 +25,11 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 using System;
 using System.Collections;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	internal sealed class ConditionRelationalExpression : ConditionExpression {
 	
 		readonly ConditionExpression left;
@@ -164,4 +163,3 @@ namespace Microsoft.Build.BuildEngine {
 		GreaterOrEqual
 	}
 }
-

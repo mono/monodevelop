@@ -48,21 +48,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void InitProperties ()
 		{
-			if (properties != null)
-				return;
+			lock (parent.ReadLock) {
+				if (properties != null)
+					return;
 
-			properties = new Dictionary<string,MSBuildProperty> ();
-			propertyList = new List<MSBuildProperty> ();
+				properties = new Dictionary<string,MSBuildProperty> ();
+				propertyList = new List<MSBuildProperty> ();
 
-			foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
-				MSBuildProperty prevSameName;
-				if (properties.TryGetValue (pelem.Name, out prevSameName))
-					prevSameName.Overwritten = true;
+				foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
+					MSBuildProperty prevSameName;
+					if (properties.TryGetValue (pelem.Name, out prevSameName))
+						prevSameName.Overwritten = true;
 
-				var prop = new MSBuildProperty (parent, pelem);
-				prop.Owner = this;
-				propertyList.Add (prop);
-				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+					var prop = new MSBuildProperty (parent, pelem);
+					prop.Owner = this;
+					propertyList.Add (prop);
+					properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+				}
 			}
 		}
 

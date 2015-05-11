@@ -33,15 +33,19 @@ using System.Text;
 
 using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
+using System.Reflection;
+using Microsoft.Build.Utilities;
+using MonoDevelop.Projects.Formats.MSBuild.Conditions;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-
 	public class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
+
 		bool allResolved;
 		MSBuildProject project;
+		MSBuildEvaluationContext parentContext;
 
 		string itemFile;
 		string recursiveDir;
@@ -50,15 +54,82 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
+		public MSBuildEvaluationContext (MSBuildEvaluationContext parentContext)
+		{
+			this.parentContext = parentContext;
+		}
+
 		internal void InitEvaluation (MSBuildProject project)
 		{
 			this.project = project;
-			SetPropertyValue ("MSBuildThisFile", Path.GetFileName (project.FileName));
-			SetPropertyValue ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
-			SetPropertyValue ("MSBuildThisFileDirectory", Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar);
-			SetPropertyValue ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
-			SetPropertyValue ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
-			SetPropertyValue ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
+
+			// Project file properties
+
+			properties.Add ("MSBuildThisFile", Path.GetFileName (project.FileName));
+			properties.Add ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
+			properties.Add ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
+			properties.Add ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
+			properties.Add ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
+
+			string dir = Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar;
+			properties.Add ("MSBuildThisFileDirectory", dir);
+			properties.Add ("MSBuildThisFileDirectoryNoRoot", dir.Substring (Path.GetPathRoot (dir).Length));
+
+			if (project.BaseDirectory.IsNullOrEmpty)
+				properties.Add ("MSBuildProjectDirectory", Environment.CurrentDirectory);
+			else
+				properties.Add ("MSBuildProjectDirectory", project.BaseDirectory);
+
+			properties.Add ("MSBuildProjectDefaultTargets", project.DefaultTargets);
+
+			// Tools
+
+			if (parentContext == null) {
+				
+				string toolsVersion = project.ToolsVersion;
+				if (string.IsNullOrEmpty (toolsVersion) || Version.Parse (toolsVersion) < new Version ("12.0"))
+					toolsVersion = "12.0";
+				string toolsPath = ToolLocationHelper.GetPathToBuildTools ("12.0");
+
+				var frameworkToolsPath = ToolLocationHelper.GetPathToDotNetFramework (TargetDotNetFrameworkVersion.VersionLatest);
+
+				properties.Add ("MSBuildBinPath", toolsPath);
+				properties.Add ("MSBuildToolsPath", toolsPath);
+				properties.Add ("MSBuildToolsRoot", Path.GetDirectoryName (toolsPath));
+				properties.Add ("MSBuildToolsVersion", toolsVersion);
+				properties.Add ("OS", "");
+
+				properties.Add ("MSBuildBinPath32", toolsPath);
+
+				properties.Add ("MSBuildFrameworkToolsPath", frameworkToolsPath);
+				properties.Add ("MSBuildFrameworkToolsPath32", frameworkToolsPath);
+
+				if (!String.IsNullOrEmpty (extensionsPath)) {
+					properties.Add ("MSBuildExtensionsPath", extensionsPath);
+					properties.Add ("MSBuildExtensionsPath32", extensionsPath);
+					properties.Add ("MSBuildExtensionsPath64", extensionsPath);
+				}
+			}
+		}
+
+		static string extensionsPath;
+
+		internal static string DefaultExtensionsPath {
+			get {
+				if (extensionsPath == null) {
+					// NOTE: code from mcs/tools/gacutil/driver.cs
+					PropertyInfo gac = typeof (System.Environment).GetProperty (
+						"GacPath", BindingFlags.Static | BindingFlags.NonPublic);
+
+					if (gac != null) {
+						MethodInfo get_gac = gac.GetGetMethod (true);
+						string gac_path = (string) get_gac.Invoke (null, null);
+						extensionsPath = Path.GetFullPath (Path.Combine (
+							gac_path, Path.Combine ("..", "xbuild")));
+					}
+				}
+				return extensionsPath;
+			}
 		}
 
 		internal void SetItemContext (string itemFile, string recursiveDir)
@@ -78,6 +149,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string val;
 			if (properties.TryGetValue (name, out val))
 				return val;
+			if (parentContext != null)
+				return parentContext.GetPropertyValue (name);
 			else
 				return Environment.GetEnvironmentVariable (name);
 		}
@@ -141,12 +214,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void SetPropertyValue (string name, string value)
 		{
-			properties [name] = value;
+			if (parentContext != null)
+				parentContext.SetPropertyValue (name, value);
+			else
+				properties [name] = value;
 		}
 
 		public void ClearPropertyValue (string name)
 		{
 			properties.Remove (name);
+			if (parentContext != null)
+				parentContext.ClearPropertyValue (name);
 		}
 
 		public bool Evaluate (XmlElement source, out XmlElement result)
@@ -194,7 +272,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return allResolved;
 		}
 
-		static char[] tagStart = new [] {'$','%'};
+		readonly static char[] tagStart = new [] {'$','%'};
 
 		string Evaluate (string str)
 		{
@@ -251,10 +329,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string EvaluateString (string value)
 		{
-			if (value.StartsWith ("$(") && value.EndsWith (")"))
-				return GetPropertyValue (value.Substring (2, value.Length - 3)) ?? value;
-			else
-				return value;
+			return Evaluate (value);
 		}
 
 		public string FullFileName {

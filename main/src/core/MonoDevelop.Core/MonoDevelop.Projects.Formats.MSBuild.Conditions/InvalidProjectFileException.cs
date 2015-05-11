@@ -25,14 +25,12 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-
 using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Xml;
 
-namespace Microsoft.Build.BuildEngine {
+namespace MonoDevelop.Projects.Formats.MSBuild.Conditions {
 	[Serializable]
 	public sealed class InvalidProjectFileException : Exception {
 		
@@ -83,6 +81,7 @@ namespace Microsoft.Build.BuildEngine {
 		}
 
 		// FIXME: set line/column numbers?
+		[MonoTODO]
 		public InvalidProjectFileException (XmlNode xmlNode,
 						    string message,
 						    string errorSubcategory,
@@ -189,4 +188,3 @@ namespace Microsoft.Build.BuildEngine {
 		}
 	}
 }
-

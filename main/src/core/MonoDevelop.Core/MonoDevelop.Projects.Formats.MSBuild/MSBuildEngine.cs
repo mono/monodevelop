@@ -36,6 +36,7 @@ using EvalProjectItem = Microsoft.Build.Evaluation.ProjectItem;
 
 using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -43,21 +44,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		bool disposed;
 
-		public static MSBuildEngine Create (bool supportsMSBuild)
+		protected MSBuildEngine (MSBuildEngineManager manager)
 		{
-//			return DefaultMSBuildEngine.Instance;
-			if (!supportsMSBuild)
-				return new DefaultMSBuildEngine ();
-			else {
-				#if !WINDOWS
-				return MSBuildEngineV4.Instance;
-				#else
-				return new MSBuildEngineV12 ();
-				#endif
-			}
+			EngineManager = manager;
 		}
 
-		public abstract object LoadProject (MSBuildProject project, string fileName);
+		public MSBuildEngineManager EngineManager { get; private set; }
+
+		public abstract object LoadProject (MSBuildProject project, FilePath fileName);
 
 		public abstract void UnloadProject (object project);
 
@@ -79,11 +73,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public abstract object CreateProjectInstance (object project);
 
+		public abstract void DisposeProjectInstance (object projectInstance);
+
 		public virtual void Evaluate (object projectInstance)
 		{
 		}
-
-		public abstract IEnumerable<object> GetAllItems (object projectInstance, bool includeImported);
 
 		public abstract bool GetItemHasMetadata (object item, string name);
 

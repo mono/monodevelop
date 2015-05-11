@@ -32,22 +32,21 @@ using System.Text;
 
 using Microsoft.Build.BuildEngine;
 using MSProject = Microsoft.Build.BuildEngine.Project;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	#if !WINDOWS
 	class MSBuildEngineV4: MSBuildEngine
 	{
-		public static MSBuildEngineV4 Instance = new MSBuildEngineV4 ();
-
 		Engine engine;
 
-		public MSBuildEngineV4 ()
+		public MSBuildEngineV4 (MSBuildEngineManager manager): base (manager)
 		{
 			engine = new Engine ();
 		}
 
-		public override object LoadProject (MSBuildProject p, string fileName)
+		public override object LoadProject (MSBuildProject p, FilePath fileName)
 		{
 			lock (engine) {
 				var project = engine.GetLoadedProject (fileName);
@@ -74,9 +73,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return project;
 		}
 
-		public override IEnumerable<object> GetAllItems (object project, bool includeImported)
+		public override void DisposeProjectInstance (object projectInstance)
 		{
-			return ((MSProject)project).ItemGroups.Cast<BuildItemGroup> ().SelectMany (g => g.Cast<BuildItem> ()).Where (it => includeImported || !it.IsImported);
+			// Don't unload, since we are using the same instance as the project
 		}
 
 		public override string GetItemMetadata (object item, string name)
