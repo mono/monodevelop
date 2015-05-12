@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> AddOpeningOnly = ConfigurationProperty.Create ("AddOpeningOnly", false);
 		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
-		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 10);
+		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 7);
 
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
