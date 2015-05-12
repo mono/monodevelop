@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public bool SupportsType (string guid)
 		{
-			return string.Compare (this.guid, guid, true) == 0;
+			return string.Compare (this.guid, guid, StringComparison.OrdinalIgnoreCase) == 0;
 		}
 		
 		public DotNetProject CreateInstance (string language)
