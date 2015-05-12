@@ -91,18 +91,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			HBox hb = new HBox (false, 0);
 			hb.PackStart (vb, true, true, 0);
 			
-			
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetSchemeColors (scheme);
-
-			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
+		}
 
+		protected override void OnShown ()
+		{
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			Theme.SetSchemeColors (scheme);
+			foreColor = scheme.PlainText.Foreground;
+			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+
+			base.OnShown ();
 		}
 
 		int lastParam = -2;
