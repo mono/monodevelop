@@ -46,7 +46,8 @@ namespace MonoDevelop.Ide.Projects
 		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
-			this.DefaultHeight = 640;
+			this.DefaultWidth = 960;
+			this.DefaultHeight = 680;
 		}
 		
 		public static void RenameItem (IWorkspaceFileObject item, string newName)

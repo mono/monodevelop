@@ -256,11 +256,18 @@ namespace MonoDevelop.Components.MainToolbar
 				results.Clear ();
 				results.AddRange (incompleteResults);
 				topItem = null;
+
 				for (int i = 0; i < results.Count; i++) {
-					if (results[i].Item2.ItemCount == 0)
+					var tuple = results [i];
+					try {
+						if (tuple.Item2.ItemCount == 0)
+							continue;
+						if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) < tuple.Item2.GetWeight (0))
+							topItem = new ItemIdentifier(tuple.Item1, tuple.Item2, 0);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while showing result " + i, e);
 						continue;
-					if (topItem == null || topItem.DataSource.GetWeight (topItem.Item) <  results[i].Item2.GetWeight (0)) 
-						topItem = new ItemIdentifier (results[i].Item1, results[i].Item2, 0);
+					}
 				}
 				selectedItem = topItem;
 

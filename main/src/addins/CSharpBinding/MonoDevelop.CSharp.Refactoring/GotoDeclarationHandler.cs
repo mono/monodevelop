@@ -45,33 +45,7 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	class GotoDeclarationHandler : CommandHandler
 	{
-		static GotoDeclarationHandler ()
-		{
-			GoToDefinitionService.TryNavigateToSymbol = delegate(ISymbol symbol, Microsoft.CodeAnalysis.Project project, bool usePreviewTab) {
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
-				return true;
-			};
-
-			GoToDefinitionService.TryNavigateToSpan = delegate(Workspace workspace, DocumentId documentId, Microsoft.CodeAnalysis.Text.TextSpan textSpan, bool usePreviewTab) {
-				var project = workspace.CurrentSolution.GetProject (documentId.ProjectId);
-				if (project == null)
-					return false;
-
-				IdeApp.Workbench.OpenDocument (new FileOpenInformation (project.GetDocument (documentId).FilePath, TypeSystemService.GetMonoProject (project)) {
-					Offset = textSpan.Start
-				});
-				return true;
-			};
-
-			GoToDefinitionService.DisplayMultiple = delegate(IEnumerable<Tuple<Solution, ISymbol, Location>> list) {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					foreach (var part in list)
-						monitor.ReportResult (GetJumpTypePartSearchResult (part.Item2, part.Item3));
-				}
-			};
-		}
-
-		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
+		internal static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (Microsoft.CodeAnalysis.ISymbol part, Microsoft.CodeAnalysis.Location location)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();

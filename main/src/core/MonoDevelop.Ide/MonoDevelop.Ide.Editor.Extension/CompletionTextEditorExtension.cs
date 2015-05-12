@@ -47,6 +47,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 			set;
 		}
 
+		// (Settings have been moved to IdeApp.Preferences)
+
 		bool autoHideCompletionWindow = true, autoHideParameterWindow = true;
 
 		ICompletionWidget completionWidget;
