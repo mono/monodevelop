@@ -83,9 +83,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			case Gdk.Key.End:
 			case Gdk.Key.KP_End:
 				return SpecialKey.End;
-			case Gdk.Key.Begin:
-			case Gdk.Key.KP_Begin:
-				return SpecialKey.Begin;
 			case Gdk.Key.Home:
 			case Gdk.Key.KP_Home:
 				return SpecialKey.Home;
@@ -176,9 +173,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			case NSKey.End:
 				ch = '\0';
 				return SpecialKey.End;
-			case NSKey.Begin:
-				ch = '\0';
-				return SpecialKey.Begin;
 			case NSKey.Home:
 				ch = '\0';
 				return SpecialKey.Home;
@@ -194,7 +188,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			case NSKey.DownArrow:
 				ch = '\0';
 				return SpecialKey.Down;
-			case NSKey.DeleteChar:
+			case NSKey.ForwardDelete:
 				ch = '\0';
 				return SpecialKey.Delete;
 			}

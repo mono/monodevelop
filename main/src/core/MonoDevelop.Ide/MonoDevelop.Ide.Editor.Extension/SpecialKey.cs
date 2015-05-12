@@ -38,7 +38,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		PageUp = 0xff55,
 		PageDown = 0xff56,
 		End = 0xff57,
-		Begin = 0xff58,
 		Home = 0xff50,
 		Left = 0xff51,
 		Up = 0xff52,
