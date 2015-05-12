@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>MonoDevelop</AssemblyName>
+    <RootNamespace>MonoDevelop.Startup</RootNamespace>
+    <ApplicationIcon>..\..\..\theme-icons\Windows\monodevelop.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
+        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
+    <PlatformTarget>x86</PlatformTarget>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
+        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <Commandlineparameters>-no-redirect</Commandlineparameters>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

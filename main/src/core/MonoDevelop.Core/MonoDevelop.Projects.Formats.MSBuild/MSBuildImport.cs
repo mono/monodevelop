@@ -32,8 +32,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildImport: MSBuildObject
 	{
 		string evaluatedProjectPath;
-		XmlElement fakeImport;
-		string originalCondition;
 
 		public MSBuildImport (XmlElement elem): base (elem)
 		{

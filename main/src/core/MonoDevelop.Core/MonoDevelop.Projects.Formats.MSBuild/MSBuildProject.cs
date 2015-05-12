@@ -129,11 +129,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		~MSBuildProject ()
-		{
-			Dispose ();
-		}
-
 		void EnableChangeTracking ()
 		{
 			doc.NodeRemoved += OnNodeAddedRemoved;
