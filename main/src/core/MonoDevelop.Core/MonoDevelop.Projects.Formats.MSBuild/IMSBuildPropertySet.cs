@@ -74,6 +74,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					pset.SetValue (prop.Name, (string)prop.GetValue (ob), (string)prop.DefaultValue, merge);
 				} else if (prop.DataType.IsSimpleType) {
 					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, merge);
+				} else if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition () == typeof(Nullable<>)) {
+					pset.SetValue (prop.Name, prop.GetValue (ob), prop.DefaultValue, merge);
 				} else {
 					var val = prop.GetValue (ob);
 					if (val != null) {
@@ -111,6 +113,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				} else if (prop.PropertyType == typeof(string)) {
 					readVal = pset.GetValue (prop.Name, (string)prop.DefaultValue);
 				} else if (prop.DataType.IsSimpleType) {
+					readVal = pset.GetValue (prop.Name, prop.PropertyType, prop.DefaultValue);
+				} else if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition () == typeof(Nullable<>)) {
 					readVal = pset.GetValue (prop.Name, prop.PropertyType, prop.DefaultValue);
 				} else {
 					var val = pset.GetValue (prop.Name);
