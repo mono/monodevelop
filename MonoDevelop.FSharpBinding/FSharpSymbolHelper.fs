@@ -374,11 +374,16 @@ module SymbolTooltips =
                     else "Unknown"
                 with _ -> "Unknown"
 
-        let padLength = 
-            let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
+        let padLength =
+            let allLengths = argInfos |> List.concat |> List.map (fun p -> match p.Name with None -> 0 | Some name -> name.Length)
             match allLengths with
             | [] -> 0
             | l -> l |> List.max
+
+        let formatName indent padding (parameter:FSharpParameter) =
+          match parameter.Name with
+          | None -> indent
+          | Some name -> indent + name.PadRight (padding) + asType Symbol ":" 
 
         match argInfos with
         | [] ->
@@ -392,12 +397,13 @@ module SymbolTooltips =
             else asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
         | many ->
                 let allParams =
-                    many
-                    |> List.map(fun listOfParams ->
-                                    listOfParams
-                                    |> List.map(fun p -> indent + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
-                                    |> String.concat (asType Symbol " *" ++ "\n"))
-                    |> String.concat (asType Symbol " ->" + "\n") 
+                  many
+                  |> List.map(fun listOfParams ->
+                                  listOfParams
+                                  |> List.map(fun p -> formatName indent padLength p ++ asType UserType (escapeText (p.Type.Format displayContext)))
+                                  |> String.concat (asType Symbol " *" ++ "\n"))
+                  |> String.concat (asType Symbol " ->" + "\n") 
+
                 let typeArguments =
                     allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
                 if signatureOnly then typeArguments
@@ -526,7 +532,7 @@ module SymbolTooltips =
             let signature = getUnioncaseSignature symbol.DisplayContext uc
             ToolTip(signature, getSummaryFromSymbol uc)
 
-        | ActivePatternCase _apc ->
+        | ActivePatternCase apc ->
             //There is actually enough information, but we need a sane way of presenting FSharpType in
             //rather than using the Format method.  E.g. Like CurriedParameterGroups
             ToolTips.EmptyTip
