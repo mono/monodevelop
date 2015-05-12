@@ -1088,6 +1088,46 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test()]
+		public async Task DefaultProjectConfiguration ()
+		{
+			string projFile = Util.GetSampleProject ("default-project-config", "ConsoleProject.csproj");
+			Project p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var refXml = File.ReadAllText (projFile);
+			await p.SaveAsync (Util.GetMonitor ());
+			var savedXml = File.ReadAllText (projFile);
+
+			Assert.AreEqual (refXml, savedXml);
+
+			var c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Test");
+			p.Configurations.Remove (c);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			refXml = File.ReadAllText (projFile + ".saved2");
+			savedXml = File.ReadAllText (projFile);
+			Assert.AreEqual (refXml, savedXml);
+
+			c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Test|x86");
+			p.Configurations.Remove (c);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			refXml = File.ReadAllText (projFile + ".saved3");
+			savedXml = File.ReadAllText (projFile);
+			Assert.AreEqual (refXml, savedXml);
+
+			c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Debug");
+			p.Configurations.Remove (c);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			refXml = File.ReadAllText (projFile + ".saved4");
+			savedXml = File.ReadAllText (projFile);
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

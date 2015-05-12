@@ -2024,12 +2024,24 @@ namespace MonoDevelop.Projects
 				globalGroup = msproject.AddNewPropertyGroup (false);
 
 			if (Configurations.Count > 0) {
-				ItemConfiguration conf = Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == "Debug");
-				if (conf == null) conf = Configurations [0];
-				globalGroup.SetValue ("Configuration", conf.Name, condition:" '$(Configuration)' == '' ");
+				// Set the default configuration of the project.
+				// First of all get the properties that define the default configuration and platform
+				var defaultConfProp = globalGroup.GetProperties ().FirstOrDefault (p => p.Name == "Configuration" && IsDefaultSetter (p));
+				var defaultPlatProp = globalGroup.GetProperties ().FirstOrDefault (p => p.Name == "Platform" && IsDefaultSetter (p));
 
-				string platform = conf.Platform.Length == 0 ? "AnyCPU" : conf.Platform;
-				globalGroup.SetValue ("Platform", platform, condition:" '$(Platform)' == '' ");
+				// If there is no config property, or if the config doesn't exist anymore, give it a new value
+				if (defaultConfProp == null || !Configurations.Any<SolutionItemConfiguration> (c => c.Name == defaultConfProp.Value)) {
+					ItemConfiguration conf = Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == "Debug");
+					if (conf == null) conf = Configurations [0];
+					string platform = conf.Platform.Length == 0 ? "AnyCPU" : conf.Platform;
+					globalGroup.SetValue ("Configuration", conf.Name, condition:" '$(Configuration)' == '' ");
+					globalGroup.SetValue ("Platform", platform, condition:" '$(Platform)' == '' ");
+				}
+				else if (defaultPlatProp == null || !Configurations.Any<SolutionItemConfiguration> (c => c.Name == defaultConfProp.Value && c.Platform == defaultPlatProp.Value)) {
+					ItemConfiguration conf = Configurations.FirstOrDefault<ItemConfiguration> (c => c.Name == defaultConfProp.Value);
+					string platform = conf.Platform.Length == 0 ? "AnyCPU" : conf.Platform;
+					globalGroup.SetValue ("Platform", platform, condition:" '$(Platform)' == '' ");
+				}
 			}
 
 			if (TypeGuid == MSBuildProjectService.GenericItemGuid) {
@@ -2201,6 +2213,15 @@ namespace MonoDevelop.Projects
 				properties.Remove (pinfo);
 				mergeToProjectProperties.Remove (pinfo.Name);
 			}
+		}
+
+		bool IsDefaultSetter (MSBuildProperty prop)
+		{
+			var val = prop.Condition;
+			int i = val.IndexOf ("==");
+			if (i == -1)
+				return false;
+			return val.Substring (0, i).Trim () == "'$(" + prop.Name + ")'" && val.Substring (i + 2).Trim () == "''";
 		}
 
 		class ExpandedItemList: List<MSBuildItem>
