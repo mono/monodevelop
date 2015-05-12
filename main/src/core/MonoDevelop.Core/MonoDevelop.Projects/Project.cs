@@ -1867,7 +1867,9 @@ namespace MonoDevelop.Projects
 
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("Configuration", conf);
-			if (!string.IsNullOrEmpty (platform))
+			if (platform == string.Empty)
+				pi.SetGlobalProperty ("Platform", "AnyCPU");
+			else
 				pi.SetGlobalProperty ("Platform", platform);
 
 			pi.OnlyEvaluateProperties = true;
