@@ -136,6 +136,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return null;
 			}
 
+			if (column == null) {
+				return new GtkTreeModelResult (resultWidget, model, 0);
+			}
+
 			// Check if the class has the SemanticModelAttribute
 			Type modelType = model.GetType ();
 			SemanticModelAttribute attr = modelType.GetCustomAttribute<SemanticModelAttribute> ();
