@@ -176,9 +176,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			case NSKey.End:
 				ch = '\0';
 				return SpecialKey.End;
-			case NSKey.Begin:
-				ch = '\0';
-				return SpecialKey.Begin;
+//			case NSKey.Begin:
+//				ch = '\0';
+//				return SpecialKey.Begin;
 			case NSKey.Home:
 				ch = '\0';
 				return SpecialKey.Home;
@@ -194,9 +194,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			case NSKey.DownArrow:
 				ch = '\0';
 				return SpecialKey.Down;
-			case NSKey.DeleteChar:
-				ch = '\0';
-				return SpecialKey.Delete;
+//			case NSKey.DeleteChar:
+//				ch = '\0';
+//				return SpecialKey.Delete;
 			}
 			return SpecialKey.None;
 		}
