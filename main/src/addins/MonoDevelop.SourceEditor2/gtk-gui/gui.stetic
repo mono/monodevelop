@@ -1456,7 +1456,7 @@
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor" design-size="760 458">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">Edit color sheme</property>
+    <property name="Title" translatable="yes">Edit Color Scheme</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
     <property name="Buttons">2</property>
