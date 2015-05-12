@@ -2339,6 +2339,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
 
+				hasStatusIcon = false;
+
 				if (ShowPopupButton || hasStatusIcon) {
 					if (!bound) {
 						bound = true;
