@@ -524,6 +524,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineV4.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEngineManager.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild.Conditions\ExpressionEvaluationException.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildValueType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

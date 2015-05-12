@@ -347,7 +347,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					continue;
 				baseProps.Add (prop.Name);
 				MSBuildProperty thisProp = GetProperty (prop.Name);
-				if (thisProp != null && prop.Value.Equals (thisProp.Value, StringComparison.OrdinalIgnoreCase))
+				if (thisProp != null && thisProp.ValueType.Equals (prop.Value, thisProp.Value))
 					RemoveProperty (prop.Name);
 			}
 

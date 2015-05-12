@@ -337,6 +337,32 @@ namespace MonoDevelop.Projects
 		}
 		
 		[Test]
+		public async Task TestConfigurationMergingChangeMergeToParent3 ()
+		{
+			string projectFile = Util.GetSampleProject ("test-configuration-merging", "TestConfigurationMerging8.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (refXml, File.ReadAllText (p.FileName));
+		}
+
+		[Test]
+		public async Task TestConfigurationWithAnyCpu ()
+		{
+			string projectFile = Util.GetSampleProject ("test-multi-configuration", "project.csproj");
+			DotNetProject p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (refXml, File.ReadAllText (p.FileName));
+		}
+
+		[Test]
 		public async Task ProjectReferenceWithSpace ()
 		{
 			string solFile = Util.GetSampleProject ("project-ref-with-spaces", "project-ref-with-spaces.sln");

@@ -66,6 +66,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			globalProperties [property] = value;
 		}
 
+		public void RemoveGlobalProperty (string property)
+		{
+			globalProperties.Remove (property);
+		}
+
 		internal bool OnlyEvaluateProperties { get; set; }
 
 		public void Evaluate ()
@@ -97,22 +102,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void SyncBuildProject (Dictionary<string,MSBuildItem> currentItems, MSBuildEngine e, object project)
 		{
-			DateTime t = DateTime.Now;
 			evaluatedItemsIgnoringCondition.Clear ();
 			evaluatedItems.Clear ();
 
 			if (!OnlyEvaluateProperties) {
 				
-				Console.WriteLine ("t1:" + (DateTime.Now - t).TotalMilliseconds);
-				t = DateTime.Now;
-
 				var xmlImports = msproject.Imports.ToArray ();
 				var buildImports = e.GetImports (project).ToArray ();
 				for (int n = 0; n < xmlImports.Length && n < buildImports.Length; n++)
 					xmlImports [n].SetEvalResult (e.GetImportEvaluatedProjectPath (project, buildImports [n]));
-
-				Console.WriteLine ("t2:" + (DateTime.Now - t).TotalMilliseconds);
-				t = DateTime.Now;
 
 				var evalItems = new Dictionary<string,MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItems (project)) {
@@ -132,9 +130,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					evaluatedItems.Add (xit);
 				}
-
-				Console.WriteLine ("t3:" + (DateTime.Now - t).TotalMilliseconds);
-				t = DateTime.Now;
 
 				var evalItemsNoCond = new Dictionary<string,MSBuildItemEvaluated> ();
 				foreach (var it in e.GetEvaluatedItemsIgnoringCondition (project)) {
@@ -165,20 +160,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				foreach (var it in evaluatedItems.Concat (evaluatedItemsIgnoringCondition))
 					((MSBuildPropertyGroupEvaluated)it.Metadata).RemoveProperty (NodeIdPropertyName);
 
-				Console.WriteLine ("t4:" + (DateTime.Now - t).TotalMilliseconds);
-				t = DateTime.Now;
-
 				targets = e.GetTargets (project).ToArray ();
-
-				Console.WriteLine ("t5:" + (DateTime.Now - t).TotalMilliseconds);
-				t = DateTime.Now;
 			}
 
 			var props = new MSBuildEvaluatedPropertyCollection (msproject);
 			evaluatedProperties = props;
 			props.SyncCollection (e, project);
-
-			Console.WriteLine ("t6:" + (DateTime.Now - t).TotalMilliseconds);
 		}
 
 		MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEngine e, object it)

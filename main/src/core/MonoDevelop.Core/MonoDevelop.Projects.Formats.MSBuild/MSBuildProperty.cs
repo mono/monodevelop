@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildProperty: MSBuildPropertyCore, IMetadataProperty, IMSBuildPropertyEvaluated
 	{
 		bool preserverCase;
+		MSBuildValueType valueType = MSBuildValueType.Default;
 
 		internal MSBuildProperty (MSBuildProject project, XmlElement elem): base (project, elem)
 		{
@@ -54,14 +55,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set;
 		}
 
+		public bool MergeToMainGroup { get; set; }
+
 		internal bool Overwritten { get; set; }
 
 		internal MSBuildPropertyGroup Owner { get; set; }
 
-		public bool MergeToMainGroup { get; set; }
 		internal bool HasDefaultValue { get; set; }
 
 		internal bool NotifyChanges { get; set; }
+
+		internal MSBuildValueType ValueType {
+			get { return valueType; }
+		}
 
 		internal MergedProperty CreateMergedProperty ()
 		{
@@ -72,6 +78,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = preserveCase;
+			valueType = preserveCase ? MSBuildValueType.Default : MSBuildValueType.DefaultPreserveCase;
 
 			if (value == null)
 				value = String.Empty;
@@ -92,6 +99,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			MergeToMainGroup = mergeToMainGroup;
 			this.preserverCase = false;
+			valueType = MSBuildValueType.Path;
 
 			string baseDir = null;
 			if (relativeToPath != null) {
@@ -116,6 +124,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SetValue ((bool)value ? "True" : "False", preserveCase: true, mergeToMainGroup: mergeToMainGroup);
 				else
 					SetValue ((bool)value ? "true" : "false", preserveCase: true, mergeToMainGroup: mergeToMainGroup);
+				valueType = MSBuildValueType.Boolean;
 			}
 			else
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
