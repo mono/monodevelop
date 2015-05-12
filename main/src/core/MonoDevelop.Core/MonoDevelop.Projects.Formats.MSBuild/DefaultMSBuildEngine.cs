@@ -93,6 +93,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				MSBuildProject p = new MSBuildProject (EngineManager);
 				p.Load (fileName);
 				loadedProjects [fileName] = new LoadedProjectInfo { Project = p };
+				//Console.WriteLine ("Loaded: " + fileName);
 				return p;
 			}
 		}
@@ -107,6 +108,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (pi.ReferenceCount == 0) {
 						loadedProjects.Remove (fileName);
 						project.Dispose ();
+						//Console.WriteLine ("Unloaded: " + fileName);
 					}
 				}
 			}
@@ -135,6 +137,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			pi.EvaluatedItems.Clear ();
 			pi.Properties.Clear ();
 			pi.Imports.Clear ();
+			pi.Targets.Clear ();
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -153,16 +156,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
 		{
-			context.InitEvaluation (pi.Project);
-			foreach (var ob in pi.Project.GetAllObjects ()) {
-				if (ob is MSBuildPropertyGroup)
-					Evaluate (pi, context, (MSBuildPropertyGroup)ob);
-				if (ob is MSBuildItemGroup)
-					Evaluate (pi, context, (MSBuildItemGroup)ob);
-				if (ob is MSBuildImport)
-					Evaluate (pi, context, (MSBuildImport)ob);
-				if (ob is MSBuildTarget)
-					Evaluate (pi, context, (MSBuildTarget)ob);
+			lock (pi.Project) {
+				// XmlDocument is not thread safe, so we need to lock while evaluating
+				context.InitEvaluation (pi.Project);
+				foreach (var ob in pi.Project.GetAllObjects ()) {
+					if (ob is MSBuildPropertyGroup)
+						Evaluate (pi, context, (MSBuildPropertyGroup)ob);
+					if (ob is MSBuildItemGroup)
+						Evaluate (pi, context, (MSBuildItemGroup)ob);
+					if (ob is MSBuildImport)
+						Evaluate (pi, context, (MSBuildImport)ob);
+					if (ob is MSBuildTarget)
+						Evaluate (pi, context, (MSBuildTarget)ob);
+				}
 			}
 		}
 
