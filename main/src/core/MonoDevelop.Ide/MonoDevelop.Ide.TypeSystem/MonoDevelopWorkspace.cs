@@ -466,6 +466,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (hashSet.Contains (fileName))
 					continue;
 				hashSet.Add (fileName);
+				if (!File.Exists (fileName))
+					continue;
 				yield return MetadataReferenceCache.LoadReference (projectId, fileName);
 				addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
 			}
@@ -475,8 +477,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (netProject != null) {
 					var runtime = netProject.TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
 					var facades = runtime.FindFacadeAssembliesForPCL (netProject.TargetFramework);
-					foreach (var facade in facades)
+					foreach (var facade in facades) {
+						if (!File.Exists (facade))
+							continue;
 						yield return MetadataReferenceCache.LoadReference (projectId, facade);
+					}
 				}
 			}
 
@@ -488,6 +493,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (configurationSelector);
+					if (!File.Exists (fileName))
+						continue;
 					yield return MetadataReferenceCache.LoadReference (projectId, fileName);
 				}
 			}
