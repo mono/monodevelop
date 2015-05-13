@@ -87,14 +87,12 @@
     <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
-    <Compile Include="FSharpLanguageBinding.fs" />
-    <Compile Include="FSharpResourceIdBuilder.fs" />
+    <Compile Include="FSharpProject.fs" />
     <Compile Include="FSharpFoldingParser.fs" />
     <Compile Include="FSharpParser.fs" />
     <Compile Include="FSharpTextEditorCompletion.fs" />
     <Compile Include="FSharpPathExtension.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
-    <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
@@ -149,6 +147,10 @@
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Projects.Formats.MSBuild">
+      <Private>False</Private>
+      <HintPath>INSERT_FSPROJ_MDROOT\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
       <Private>False</Private>

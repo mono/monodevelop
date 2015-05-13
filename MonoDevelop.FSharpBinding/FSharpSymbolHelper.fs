@@ -264,7 +264,7 @@ module internal Highlight =
     | Symbol | Keyword | UserType | Number
 
     let getColourScheme () =
-        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme)
+        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
 
     let hl str (style: Highlighting.ChunkStyle) =
         let color = getColourScheme().GetForeground (style) |> GtkUtil.ToGdkColor

@@ -106,7 +106,8 @@ module TestHelpers =
             if endPos > 0 then text.Substring (0, endPos) + text.Substring (endPos + 1)
             else text
 
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
+        let project = Services.ProjectService.CreateDotNetProject ("F#")
+        project.FileName <- FilePath("test.fsproj")
         project.References.AddRange references
         project.Files.Add (new ProjectFile ("/a.fs", BuildAction.Compile))
 
@@ -120,7 +121,7 @@ module TestHelpers =
         use solution = new MonoDevelop.Projects.Solution ()
         solution.AddConfiguration ("", true) |> ignore
         solution.DefaultSolutionFolder.AddItem (project)
-        using ( new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ())
+        using ( new MonoDevelop.Core.ProgressMonitor ())
             (fun monitor -> 
                  let typeSystemService = typeof<MonoDevelop.Ide.TypeSystem.TypeSystemService>
                  typeSystemService?Load (solution, monitor, false) |> ignore)

@@ -70,8 +70,8 @@ type FSharpInteractivePad() as this =
   let setupSession() =
     try
         let ses = InteractiveSession()
-        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ))
-        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ))
+        let textReceived = ses.TextReceived.Subscribe(fun t -> DispatchService.GuiDispatch(fun () -> view.WriteOutput t ) |> ignore)
+        let promptReady = ses.PromptReady.Subscribe(fun () -> DispatchService.GuiDispatch(fun () -> view.Prompt true ) |> ignore)
         let colourSchemChanged =
             PropertyService.PropertyChanged.Subscribe
                 (fun _ (eventArgs:PropertyChangedEventArgs) -> 
@@ -85,10 +85,10 @@ type FSharpInteractivePad() as this =
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
               LoggingService.LogInfo (sprintf "Interactive: process stopped")
-              view.WriteOutput("\nSession termination detected. Press Enter to restart."))
+              view.WriteOutput("\nSession termination detected. Press Enter to restart.")) |> ignore
             isPrompting <- true
           elif killIntent = Restart then 
-            DispatchService.GuiDispatch view.Clear
+            DispatchService.GuiDispatch view.Clear |> ignore
           killIntent <- NoIntent)
         ses.StartReceiving()
         // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
@@ -194,7 +194,7 @@ type FSharpInteractivePad() as this =
   member x.UpdateColors() =
     match view.Child with
     | :? Gtk.TextView as v -> 
-          let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme)
+          let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
           
           let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", false)
           let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk

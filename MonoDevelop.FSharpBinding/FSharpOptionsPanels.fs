@@ -180,10 +180,10 @@ type CodeGenerationPanel() =
     widget.EntryCommandLine.Text <- if String.IsNullOrWhiteSpace fsconfig.OtherFlags then "" else fsconfig.OtherFlags
     widget.EntryDefines.Text <- fsconfig.DefineConstants
 
-    if fsconfig.DebugSymbols then
+    if fsconfig.ParentConfiguration.DebugSymbols then
         widget.CheckDebugInformation.Active <- true
         widget.ComboDebugInformation.Sensitive <- true
-        widget.ComboDebugInformation.Active <- debugInformationToIndex fsconfig.DebugType
+        widget.ComboDebugInformation.Active <- debugInformationToIndex fsconfig.ParentConfiguration.DebugType
  
   override x.ApplyChanges () =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
@@ -204,5 +204,5 @@ type CodeGenerationPanel() =
         fsconfig.OtherFlags <-  widget.EntryCommandLine.Text
     fsconfig.DefineConstants <- widget.EntryDefines.Text
 
-    fsconfig.DebugSymbols <- widget.CheckDebugInformation.Active
-    fsconfig.DebugType <- indexToDebugInformation widget.ComboDebugInformation.Active
+    fsconfig.ParentConfiguration.DebugSymbols <- widget.CheckDebugInformation.Active
+    fsconfig.ParentConfiguration.DebugType <- indexToDebugInformation widget.ComboDebugInformation.Active

@@ -45,33 +45,8 @@
 
   </Dependencies>
 
-  <!-- This updates the old guid to the new one on saving the project -->
-  <Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
-    <Class class="MonoDevelop.FSharp.CorrectGuidMSBuildExtension"/>
-  </Extension>
-
-  <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
-  <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
-    <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
-	<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
-      <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-	</Condition>
-
-    <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
-    <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-
-    <!-- Disable this until the new project system is available
-    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets">		
-      <DotNetProjectSubtype		
-        guid="{f2a71f9b-5d33-465a-a702-920d77279786}"		
-        type="MonoDevelop.Projects.DotNetProject"		
-        useXBuild="false">
-        <AddImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />		
-        <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />		
-      </DotNetProjectSubtype>		
-    </Condition> -->
-  
+    <DotNetProjectType language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" type="MonoDevelop.FSharp.FSharpProject"/>
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
@@ -131,11 +106,6 @@
     </Condition>
   </Extension>
 
-  <Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
-    <DataType class = "MonoDevelop.FSharp.FSharpCompilerParameters" />
-    <DataType class = "MonoDevelop.FSharp.FSharpProjectParameters" />
-  </Extension>
-
   <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/Compiler">
     <Condition id="ActiveLanguage" value="F#">
       <Panel id = "FSharpCodeGenerationPanel" _label = "Compiler" class = "MonoDevelop.FSharp.CodeGenerationPanel"/>
@@ -159,8 +129,12 @@
   </Extension>
 
   <Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
-    <LanguageBinding id="F#" supportedextensions=".fs,.fsi,.fsx,.fsscript"
-                     class="MonoDevelop.FSharp.FSharpLanguageBinding" />
+    <LanguageBinding id="F#"
+    				 extensions=".fs,.fsi,.fsx,.fsscript,.sketchfs"
+    				 singleLineCommentTag="//"
+    				 blockCommentStartTag="(*"
+    				 blockCommentEndTag="*)"
+                     codeDomType="FSharp.Compiler.CodeDom.FSharpCleanCodeProvider" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/ReferenceFinder">
@@ -187,10 +161,6 @@
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
-  </Extension>
-
-  <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
-    <Class class = "MonoDevelop.FSharp.FSharpProjectServiceExtension" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/CodeTemplates">
