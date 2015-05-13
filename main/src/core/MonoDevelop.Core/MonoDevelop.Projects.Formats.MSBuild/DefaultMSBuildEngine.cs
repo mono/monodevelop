@@ -184,7 +184,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						context.ClearPropertyValue (prop.Name);
 					return;
 				}
-				if (!ConditionParser.ParseAndEvaluate (cond, context))
+				if (!SafeParseAndEvaluate (cond, context))
 					return;
 			}
 
@@ -199,12 +199,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (items.Condition)) {
 				string cond;
 				if (context.Evaluate (items.Condition, out cond))
-					conditionIsTrue = ConditionParser.ParseAndEvaluate (cond, context);
+					conditionIsTrue = SafeParseAndEvaluate (cond, context);
 			}
 
 			foreach (var item in items.Items) {
 				var it = Evaluate (project, context, item);
-				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || ConditionParser.ParseAndEvaluate (it.Condition, context));
+				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (it.Condition, context));
 				if (it.Include.IndexOf ('*') != -1) {
 					var path = it.Include;
 					if (path == "**" || path.EndsWith ("\\**"))
@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement e;
 			context.Evaluate (prop, out e);
 			var ep = new MSBuildProperty (project.Project, e);
-			if (string.IsNullOrEmpty (ep.Condition) || ConditionParser.ParseAndEvaluate (ep.Condition, context)) {
+			if (string.IsNullOrEmpty (ep.Condition) || SafeParseAndEvaluate (ep.Condition, context)) {
 				project.Properties [ep.Name] = new PropertyInfo { Name = ep.Name, Value = prop.Value, FinalValue = ep.Value };
 				context.SetPropertyValue (prop.Name, ep.Value);
 			}
@@ -366,6 +366,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			XmlElement e;
 			context.Evaluate (target.Element, out e);
 			project.Targets.Add (new MSBuildTarget (e));
+		}
+
+		static bool SafeParseAndEvaluate (string cond, MSBuildEvaluationContext context)
+		{
+			try {
+				return ConditionParser.ParseAndEvaluate (cond, context);
+			}
+			catch {
+				// The condition is likely to be invalid
+				return false;
+			}
 		}
 
 		public override bool GetItemHasMetadata (object item, string name)
