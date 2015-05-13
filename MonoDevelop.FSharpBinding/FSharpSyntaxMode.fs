@@ -332,20 +332,21 @@ type FSharpSyntaxMode(editor, context) =
     let mutable segments = [||]
 
     let makeChunk symbolsInFile colourisations (line: IDocumentLine) (style: ColorScheme) (token: FSharpTokenInfo) =
+        let lineNumber = line.LineNumber
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
             | None -> None
             | Some(symbols) ->
                 symbols
-                |> Array.tryFind (fun (s:FSharpSymbolUse) -> s.RangeAlternate.StartLine = line.LineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
+                |> Array.tryFind (fun (s:FSharpSymbolUse) -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
             match colourisations with
             | None -> None
             | Some(extraColourInfo) ->
                 extraColourInfo
-                |> Array.tryFind (fun (rng:Range.range, _) -> rng.StartLine = line.LineNumber && rng.EndColumn = token.RightColumn+1)
+                |> Array.tryFind (fun (rng:Range.range, _) -> rng.StartLine = lineNumber && rng.EndColumn = token.RightColumn+1)
 
         let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
         let chunkStyle =
