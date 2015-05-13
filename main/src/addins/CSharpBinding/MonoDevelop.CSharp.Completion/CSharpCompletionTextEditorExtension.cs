@@ -880,19 +880,19 @@ namespace MonoDevelop.CSharp.Completion
 				{
 					var def = type.GetDefinition ();
 					var result = def != null ? MemberCompletionData.CreateTooltipInformation (compilation, file, List.Resolver, ext.TextEditorData, ext.FormattingPolicy, def, smartWrap)  : new TooltipInformation ();
-					if (ConflictingTypes != null) {
-						var conflicts = new StringBuilder ();
-						var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
-						for (int i = 0; i < ConflictingTypes.Count; i++) {
-							var ct = ConflictingTypes[i];
-							if (i > 0)
-								conflicts.AppendLine (",");
-//							if ((i + 1) % 5 == 0)
-//								conflicts.Append (Environment.NewLine + "\t");
-							conflicts.Append (sig.GetTypeReferenceString (((TypeCompletionData)ct).type));
-						}
-						result.AddCategory ("Type Conflicts", conflicts.ToString ());
-					}
+//					if (ConflictingTypes != null) {
+//						var conflicts = new StringBuilder ();
+//						var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
+//						for (int i = 0; i < ConflictingTypes.Count; i++) {
+//							var ct = ConflictingTypes[i];
+//							if (i > 0)
+//								conflicts.AppendLine (",");
+////							if ((i + 1) % 5 == 0)
+////								conflicts.Append (Environment.NewLine + "\t");
+//							conflicts.Append (sig.GetTypeReferenceString (((TypeCompletionData)ct).type));
+//						}
+//						result.AddCategory ("Type Conflicts", conflicts.ToString ());
+//					}
 					return result;
 				}
 
