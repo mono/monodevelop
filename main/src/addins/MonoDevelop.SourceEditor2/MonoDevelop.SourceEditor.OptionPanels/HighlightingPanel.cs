@@ -213,6 +213,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy syntax mode file.", e);
 			}
 			if (success) {
+				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
