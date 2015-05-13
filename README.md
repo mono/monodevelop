@@ -80,6 +80,8 @@ Dependencies
 	Gtk# >= 2.12.8
 	monodoc >= 1.0
 	mono-addins >= 0.6
+	cmake (Linux only for git support)
+	libssh2 (Linux only for git support)
 
 Special Environment Variables
 -----------------------------

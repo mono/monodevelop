@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			svnAdmin = new Process ();
 			info = new ProcessStartInfo ();
 			info.FileName = "svnadmin";
-			info.Arguments = "create " + RemotePath + Path.DirectorySeparatorChar + "repo";
+			info.Arguments = "create " + RemotePath.Combine ("repo");
 			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnAdmin.StartInfo = info;
 			svnAdmin.Start ();
@@ -68,8 +68,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 				SvnServe.Start ();
 
 				// Create user to auth.
-				using (var perm = File. CreateText (RemotePath + Path.DirectorySeparatorChar + "repo" +
-				                                    Path.DirectorySeparatorChar + "conf" + Path.DirectorySeparatorChar + "svnserve.conf")) {
+				using (var perm = File. CreateText (RemotePath.Combine("repo", "conf", "svnserve.conf"))) {
 					perm.WriteLine ("[general]");
 					perm.WriteLine ("anon-access = write");
 					perm.WriteLine ("[sasl]");

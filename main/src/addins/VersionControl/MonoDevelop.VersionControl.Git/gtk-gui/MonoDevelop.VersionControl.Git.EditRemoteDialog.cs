@@ -165,7 +165,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.DefaultHeight = 206;
 			this.Hide ();
 			this.entryUrl.Changed += new global::System.EventHandler (this.OnEntryUrlChanged);
-			this.entryPushUrl.Changed += new global::System.EventHandler (this.OnEntryPushUrlChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 		}
 	}

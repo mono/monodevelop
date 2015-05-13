@@ -109,6 +109,7 @@ namespace MonoDevelop.MacIntegration
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
+				openPanel.ShowsHiddenFiles = data.ShowHidden;
 			}
 		}
 		
