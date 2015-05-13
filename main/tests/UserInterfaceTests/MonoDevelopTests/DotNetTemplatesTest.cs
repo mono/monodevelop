@@ -31,6 +31,8 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
+	[TestFixture]
+	[Category("DotNet")]
 	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		public MonoDevelopTemplatesTest () : base (Util.TestRunId) {}

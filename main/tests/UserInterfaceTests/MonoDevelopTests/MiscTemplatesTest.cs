@@ -28,6 +28,8 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
+	[TestFixture]
+	[Category("Misc")]
 	public class MiscTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		readonly string miscCategory = "Miscellaneous";
