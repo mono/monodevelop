@@ -895,7 +895,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			var projectId = GetProjectId (project);
-			OnProjectReloaded (LoadProject (project, default(CancellationToken))); 
+			if (CurrentSolution.ContainsProject (projectId))
+				OnProjectReloaded (LoadProject (project, default(CancellationToken))); 
 		}
 
 		#endregion
