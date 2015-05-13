@@ -35,9 +35,22 @@ namespace MonoDevelop.NUnit
 {
 	public class NUnitProjectServiceExtension: ProjectExtension
 	{
+		bool checkingCanExecute;
+		object canExecuteCheckLock = new object ();
+
 		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (Project.CanExecute (context, configuration)) {
+			bool defaultCanExecute;
+
+			lock (canExecuteCheckLock) {
+				try {
+					checkingCanExecute = true;
+					defaultCanExecute = Project.CanExecute (context, configuration);
+				} finally {
+					checkingCanExecute = false;
+				}
+			}
+			if (defaultCanExecute) {
 				// It is executable by default
 				await base.OnExecute (monitor, context, configuration);
 				return;
@@ -54,7 +67,11 @@ namespace MonoDevelop.NUnit
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
-			bool res = base.OnGetCanExecute (context, configuration);
+			var res = base.OnGetCanExecute (context, configuration);
+			lock (canExecuteCheckLock) {
+				if (checkingCanExecute)
+					return res;
+			}
 			if (res)
 				return true;
 			UnitTest test = NUnitService.Instance.FindRootTest (Project);
