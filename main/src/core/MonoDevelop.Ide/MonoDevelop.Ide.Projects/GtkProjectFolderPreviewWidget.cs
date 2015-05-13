@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			folderTreeStore = new TreeStore (typeof(string), typeof(string), typeof (Xwt.Drawing.Image));
 			folderTreeView.Model = folderTreeStore;
+			folderTreeView.Selection.SelectFunction = TreeViewSelection;
 			folderTreeView.ShowExpanders = false;
 			folderTreeView.LevelIndentation = 10;
 			folderTreeView.CanFocus = false;
@@ -78,6 +79,11 @@ namespace MonoDevelop.Ide.Projects
 			column.AddAttribute (textRenderer, "markup", TextColumn);
 
 			folderTreeView.AppendColumn (column);
+		}
+
+		static bool TreeViewSelection (TreeSelection selection, TreeModel model, TreePath path, bool path_currently_selected)
+		{
+			return false;
 		}
 
 		public void Load (FinalProjectConfigurationPage projectConfiguration)
