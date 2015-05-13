@@ -225,7 +225,7 @@ namespace MonoDevelop.Platform
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();
-			return proc;
+			return proc.ProcessAsyncOperation;
 		}
 		
 #region Terminal runner implementations
