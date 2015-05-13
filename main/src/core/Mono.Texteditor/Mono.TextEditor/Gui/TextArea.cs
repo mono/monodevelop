@@ -297,6 +297,25 @@ namespace Mono.TextEditor
 
 			// This is required to properly handle resizing and rendering of children
 			ResizeMode = ResizeMode.Queue;
+			snooperID = Gtk.Key.SnooperInstall (TooltipKeySnooper);
+		}
+
+		uint snooperID;
+
+		int TooltipKeySnooper (Gtk.Widget widget, EventKey evnt)
+		{
+			if (evnt != null && (evnt.Key == Gdk.Key.Alt_L || evnt.Key == Gdk.Key.Alt_R)) {
+				if (tipWindow != null && (nextTipModifierState & ModifierType.Mod1Mask) == 0) {
+					nextTipModifierState |= ModifierType.Mod1Mask;
+					nextTipX = tipX;
+					nextTipY = tipY;
+					nextTipOffset = tipOffset;
+					nextTipScheduledTime = DateTime.FromBinary (0);
+					tipItem = null;
+                    TooltipTimer ();
+				}
+			}
+			return 0; //FALSE
 		}
 
 		MonoTextEditor editor;
@@ -760,7 +779,7 @@ namespace Mono.TextEditor
 		{
 			if (popupWindow != null)
 				popupWindow.Destroy ();
-
+			Gtk.Key.SnooperRemove (snooperID);
 			HideTooltip ();
 			Document.EndUndo -= HandleDocumenthandleEndUndo;
 			Document.TextReplaced -= OnDocumentStateChanged;
@@ -2659,7 +2678,7 @@ namespace Mono.TextEditor
 		const int TooltipTimeout = 650;
 		TooltipItem tipItem;
 		
-		int tipX, tipY;
+		int tipX, tipY, tipOffset;
 		uint tipHideTimeoutId = 0;
 		uint tipShowTimeoutId = 0;
 		static Gtk.Window tipWindow;
@@ -2754,7 +2773,6 @@ namespace Mono.TextEditor
 					break;
 				}
 			}
-			
 			if (item != null) {
 				// Tip already being shown for this item?
 				if (tipWindow != null && tipItem != null && tipItem.Equals (item)) {
@@ -2764,6 +2782,7 @@ namespace Mono.TextEditor
 				
 				tipX = nextTipX;
 				tipY = nextTipY;
+				tipOffset = nextTipOffset;
 				tipItem = item;
 				Gtk.Window tw = null;
 				try {
@@ -3142,7 +3161,7 @@ namespace Mono.TextEditor
 		}
 		
 		internal List<MonoTextEditor.EditorContainerChild> containerChildren = new List<MonoTextEditor.EditorContainerChild> ();
-		
+
 		public void AddTopLevelWidget (Gtk.Widget widget, int x, int y)
 		{
 			widget.Parent = this;

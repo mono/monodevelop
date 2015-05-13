@@ -425,7 +425,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int height = alloc.Height;
 				context.Rectangle (args.Area.X, args.Area.Y, args.Area.Width, args.Area.Height);
 				var backgroundColor = ColorScheme.CompletionWindow.Color;
-				var textColor = ColorScheme.CompletionText.Foreground;
+				var textColor = ColorScheme.GetForeground (ColorScheme.CompletionText);
 				context.SetSourceColor (backgroundColor);
 				context.Fill ();
 				int xpos = iconTextSpacing;
@@ -506,7 +506,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 								} else {
 									stringStyle= ColorScheme.CompletionMatchingSubstring;
 								}
-								var highlightColor = (Cairo.Color)stringStyle.Foreground;
+								var highlightColor = (Cairo.Color)ColorScheme.GetForeground (stringStyle);
 								var fg = new AttrForeground ((ushort)(highlightColor.R * ushort.MaxValue), (ushort)(highlightColor.G * ushort.MaxValue), (ushort)(highlightColor.B * ushort.MaxValue));
 								fg.StartIndex = (uint)idx;
 								fg.EndIndex = (uint)(idx + 1);
@@ -560,7 +560,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						context.DrawImage (this, icon, xpos, iypos);
 						xpos += iconTextSpacing;
 					}
-					context.SetSourceColor (item == SelectedItem ? ColorScheme.CompletionSelectedText.Foreground : textColor);
+					context.SetSourceColor (item == SelectedItem ? ColorScheme.GetForeground (ColorScheme.CompletionSelectedText) : textColor);
 					var textXPos = xpos + iconWidth + 2;
 					context.MoveTo (textXPos, typos);
 					layout.Width = (int)((Allocation.Width - textXPos) * Pango.Scale.PangoScale);
