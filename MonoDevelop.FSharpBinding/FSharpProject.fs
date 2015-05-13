@@ -65,23 +65,17 @@ type FSharpProject() as self =
     override x.OnCompileSources(items, config, configSel, monitor) : BuildResult = 
         CompilerService.Compile(items, config, configSel, monitor)
     
-    override x.OnCreateCompilationParameters(options : XmlElement) : DotNetCompilerParameters = 
+    override x.OnCreateCompilationParameters(config : DotNetProjectConfiguration, kind : ConfigurationKind) : DotNetCompilerParameters = 
         let pars = new FSharpCompilerParameters()
         // Set up the default options
-        if options <> null then 
-            let platform = options.GetAttribute("Platform")
-            if (supportedPlatforms |> Array.exists (fun x -> x.Contains(platform))) then pars.PlatformTarget <- platform
-            let debugAtt = options.GetAttribute("DefineDebug")
-            if (System.String.Compare("True", debugAtt, StringComparison.OrdinalIgnoreCase) = 0) then 
-                pars.AddDefineSymbol "DEBUG"
-                pars.ParentConfiguration.DebugSymbols <- true
-                pars.Optimize <- false
-                pars.GenerateTailCalls <- false
-            let releaseAtt = options.GetAttribute("Release")
-            if (System.String.Compare("True", releaseAtt, StringComparison.OrdinalIgnoreCase) = 0) then 
-                pars.ParentConfiguration.DebugSymbols <- false
-                pars.Optimize <- true
-                pars.GenerateTailCalls <- true
+        if (supportedPlatforms |> Array.exists (fun x -> x.Contains(config.Platform))) then pars.PlatformTarget <- config.Platform
+        if (kind = ConfigurationKind.Debug) then 
+            pars.AddDefineSymbol "DEBUG"
+            pars.Optimize <- false
+            pars.GenerateTailCalls <- false
+        if (kind = ConfigurationKind.Release) then 
+            pars.Optimize <- true
+            pars.GenerateTailCalls <- true
         // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
         // pars.DocumentationFile <- ""
         //    System.IO.Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".xml" 
