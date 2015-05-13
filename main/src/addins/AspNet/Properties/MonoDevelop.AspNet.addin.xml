@@ -220,7 +220,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Run">
-		<Condition id="FlavorType" value="MonoDevelop.AspNet.Projects.AspNetFlavor">
+		<Condition id="FlavorType" value="MonoDevelop.AspNet.Projects.AspNetAppProjectFlavor">
 			<Section id = "XspOptions"
 			             _label = "XSP Web Server"
 			             class = "MonoDevelop.AspNet.Execution.XspOptionsPanel"/>
