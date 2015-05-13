@@ -172,7 +172,7 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery Model (string column)
+		public AppQuery Model (string column = null)
 		{
 			operations.Add (new ModelOperation (column));
 			return this;

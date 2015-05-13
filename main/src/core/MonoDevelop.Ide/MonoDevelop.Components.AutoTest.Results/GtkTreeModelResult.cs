@@ -31,22 +31,22 @@ namespace MonoDevelop.Components.AutoTest.Results
 {
 	public class GtkTreeModelResult : AppResult
 	{
-		TreeView TView;
+		Widget ParentWidget;
 		TreeModel TModel;
 		int Column;
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column)
 		{
-			TView = treeView;
+			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column, TreeIter iter)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter)
 		{
-			TView = treeView;
+			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 			resultIter = iter;
@@ -119,7 +119,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				TreeIter currentIter = (TreeIter) resultIter;
 
 				while (TModel.IterNext (ref currentIter)) {
-					newList.Add (new GtkTreeModelResult (TView, TModel, Column, currentIter));
+					newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, currentIter));
 				}
 
 				return newList;
@@ -133,8 +133,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				TView.Selection.SelectIter ((TreeIter)resultIter);
-
+				if (ParentWidget is TreeView) {
+					TreeView treeView = (TreeView) ParentWidget;
+					treeView.Selection.SelectIter ((TreeIter) resultIter);
+				} else if (ParentWidget is ComboBox) {
+					ComboBox comboBox = (ComboBox) ParentWidget;
+					comboBox.SetActiveIter ((TreeIter) resultIter);
+				}
 				return true;
 			});
 		}
