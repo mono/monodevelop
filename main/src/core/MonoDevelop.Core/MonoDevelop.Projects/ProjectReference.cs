@@ -255,7 +255,7 @@ namespace MonoDevelop.Projects
 		{
 			// Get the project name from the path, since the Name attribute may other stuff other than the name
 			string path = MSBuildProjectService.FromMSBuildPath (project.ItemDirectory, buildItem.Include);
-			string name = Path.GetFileNameWithoutExtension (path);
+			string name = buildItem.Metadata.GetValue ("Name", Path.GetFileNameWithoutExtension (path));
 			Init (ReferenceType.Project, name, null);
 		}
 
