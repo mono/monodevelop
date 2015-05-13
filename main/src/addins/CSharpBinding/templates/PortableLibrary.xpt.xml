@@ -25,8 +25,8 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "Library" TargetFrameworkVersion = ".NETPortable,Version=v4.5,Profile=Profile78" flavorIds="{786C830F-07A1-408B-BD7F-6EE04809D6DB}"/>
+		<Project name = "${ProjectName}" directory = "." type="C#PortableLibrary">
+			<Options Target = "Library" TargetFrameworkVersion = ".NETPortable,Version=v4.5,Profile=Profile78"/>
 			<References>
 			</References>
 			<Files>
