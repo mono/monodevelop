@@ -1128,6 +1128,25 @@ namespace MonoDevelop.Projects
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+
+		[Test]
+		public async Task ProjectSerializationRoundtrip (
+			[Values (
+				"broken-condition.csproj"
+				//"ICSharpCode.NRefactory.Cecil.csproj"
+			)]
+			string project)
+		{
+			string solFile = Util.GetSampleProject ("roundtrip-test-projects", project);
+			var p = (SolutionItem) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
