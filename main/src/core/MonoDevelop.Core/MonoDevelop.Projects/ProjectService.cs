@@ -324,15 +324,15 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public DotNetProject CreateDotNetProject (string language, params string[] typeGuids)
+		public DotNetProject CreateDotNetProject (string language, params string[] flavorGuids)
 		{
 			string typeGuid = MSBuildProjectService.GetLanguageGuid (language);
-			return (DotNetProject) MSBuildProjectService.CreateProject (typeGuid, typeGuids);
+			return (DotNetProject) MSBuildProjectService.CreateProject (typeGuid, flavorGuids);
 		}
 
-		public Project CreateProject (string typeGuid, params string[] typeGuids)
+		public Project CreateProject (string typeGuid, params string[] flavorGuids)
 		{
-			return MSBuildProjectService.CreateProject (typeGuid, typeGuids);
+			return MSBuildProjectService.CreateProject (typeGuid, flavorGuids);
 		}
 
 		public Project CreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions, params string[] flavorGuids)
@@ -340,13 +340,12 @@ namespace MonoDevelop.Projects
 			return MSBuildProjectService.CreateProject (typeAlias, info, projectOptions, flavorGuids);
 		}
 
-		public bool CanCreateProject (string typeAlias)
+		public bool CanCreateProject (string typeAlias, params string[] flavorGuids)
 		{
-			// TODO NPM: review
-			return MSBuildProjectService.CanCreateSolutionItem (typeAlias, null, null);
+			return MSBuildProjectService.CanCreateProject (typeAlias, flavorGuids);
 		}
 
-		public bool CanCreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)
+		public bool CanCreateSolutionItem (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)
 		{
 			return MSBuildProjectService.CanCreateSolutionItem (typeAlias, info, projectOptions);
 		}

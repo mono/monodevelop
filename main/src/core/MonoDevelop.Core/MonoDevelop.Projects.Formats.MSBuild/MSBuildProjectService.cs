@@ -316,6 +316,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
 		}
 
+		internal static bool CanCreateProject (string typeGuid, params string[] flavorGuids)
+		{
+			return IsKnownTypeGuid (ConvertTypeAliasToGuid (typeGuid)) && ConvertTypeAliasesToGuids (flavorGuids).All (id => IsKnownFlavorGuid (id));
+		}
+
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			type = ConvertTypeAliasToGuid (type);
