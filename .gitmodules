@@ -32,7 +32,7 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/fsharpbinding"]
 	path = main/external/fsharpbinding
-	url = https://github.com/slluis/FSharpMDXS.git
+	url = https://github.com/fsharp/FSharpMDXS.git
 	branch = new-project-model
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
