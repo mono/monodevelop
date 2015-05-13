@@ -126,41 +126,27 @@ namespace MonoDevelop.Projects
 				bool externalConsole = false;
 
 				string platform = null;
-				if (projectOptions != null) {
-					projectOptions.SetAttribute ("DefineDebug", "True");
-					if (!projectOptions.HasAttribute ("Platform")) {
-						// Clone the element since we are going to change it
-						platform = GetDefaultTargetPlatform (projectCreateInfo);
-						projectOptions = (XmlElement)projectOptions.CloneNode (true);
-						projectOptions.SetAttribute ("Platform", platform);
-					} else
-						platform = projectOptions.GetAttribute ("Platform");
-					if (projectOptions.GetAttribute ("ExternalConsole") == "True")
-						externalConsole = true;
-				}
+				if (!projectOptions.HasAttribute ("Platform")) {
+					// Clone the element since we are going to change it
+					platform = GetDefaultTargetPlatform (projectCreateInfo);
+					projectOptions = (XmlElement)projectOptions.CloneNode (true);
+					projectOptions.SetAttribute ("Platform", platform);
+				} else
+					platform = projectOptions.GetAttribute ("Platform");
+				
+				if (projectOptions.GetAttribute ("ExternalConsole") == "True")
+					externalConsole = true;
+
 				string platformSuffix = string.IsNullOrEmpty (platform) ? string.Empty : "|" + platform;
-				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix) as DotNetProjectConfiguration;
-				configDebug.CompilationParameters = OnCreateCompilationParameters (projectOptions);
+				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix, ConfigurationKind.Debug) as DotNetProjectConfiguration;
 				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
-				configDebug.DebugSymbols = true;
-				configDebug.DebugType = "full";
 				configDebug.ExternalConsole = externalConsole;
 				configDebug.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configDebug);
 
-				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix) as DotNetProjectConfiguration;
-
-				if (projectOptions != null) {
-					XmlElement releaseProjectOptions = (XmlElement)projectOptions.CloneNode (true);
-					releaseProjectOptions.SetAttribute ("Release", "True");
-					configRelease.CompilationParameters = OnCreateCompilationParameters (releaseProjectOptions);
-					DefineSymbols (configRelease.CompilationParameters, projectOptions, "DefineConstantsRelease");
-				} else {
-					configRelease.CompilationParameters = OnCreateCompilationParameters (null);
-				}
-
+				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix, ConfigurationKind.Release) as DotNetProjectConfiguration;
+				DefineSymbols (configRelease.CompilationParameters, projectOptions, "DefineConstantsRelease");
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
-				configRelease.DebugSymbols = false;
 				configRelease.ExternalConsole = externalConsole;
 				configRelease.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configRelease);
@@ -887,7 +873,7 @@ namespace MonoDevelop.Projects
 			return LanguageBindingService.GetBindingPerLanguageName (languageName);
 		}
 
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			DotNetProjectConfiguration conf = new DotNetProjectConfiguration (name);
 			string dir;
@@ -898,15 +884,17 @@ namespace MonoDevelop.Projects
 
 			conf.OutputDirectory = String.IsNullOrEmpty (BaseDirectory) ? dir : Path.Combine (BaseDirectory, dir);
 			conf.OutputAssembly = Name;
-			if (LanguageBinding != null) {
-				XmlElement xconf = null;
-				if (!string.IsNullOrEmpty (conf.Platform)) {
-					XmlDocument doc = new XmlDocument ();
-					xconf = doc.CreateElement ("Options");
-					xconf.SetAttribute ("Platform", conf.Platform);
-				}
-				conf.CompilationParameters = OnCreateCompilationParameters (xconf);
+
+			if (kind == ConfigurationKind.Debug) {
+				conf.DebugSymbols = true;
+				conf.DebugType = "full";
+			} else {
+				conf.DebugSymbols = false;
 			}
+
+			if (LanguageBinding != null)
+				conf.CompilationParameters = OnCreateCompilationParameters (conf, kind);
+
 			return conf;
 		}
 
@@ -1210,7 +1198,7 @@ namespace MonoDevelop.Projects
 			base.OnEndLoad ();
 		}
 
-		protected abstract DotNetCompilerParameters OnCreateCompilationParameters (XmlElement projectOptions);
+		protected abstract DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind);
 
 		internal protected virtual BuildResult OnCompileSources (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{

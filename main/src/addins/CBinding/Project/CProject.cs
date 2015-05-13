@@ -389,7 +389,7 @@ namespace CBinding
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
 		}
 		
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			CProjectConfiguration conf = new CProjectConfiguration ();
 			

@@ -36,7 +36,7 @@ namespace ILAsmBinding
 			return ILAsmCompilerManager.Compile (items, configuration, configSelector, monitor);
 		}
 
-		protected override DotNetCompilerParameters OnCreateCompilationParameters (System.Xml.XmlElement projectOptions)
+		protected override DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind)
 		{
 			return new ILAsmCompilerParameters();
 		}

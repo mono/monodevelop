@@ -369,7 +369,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name)
+		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name, ConfigurationKind kind)
 		{
 			return new SolutionConfiguration (name);
 		}

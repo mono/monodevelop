@@ -1,9 +1,10 @@
-// GenericProject.cs
+﻿//
+// ConfigurationKind.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,50 +23,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
-
-using System.Xml;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using System;
 
 namespace MonoDevelop.Projects
 {
-	[ProjectModelDataItem]
-	public class GenericProject: Project
+	public enum ConfigurationKind
 	{
-		public GenericProject ()
-		{
-		}
-		
-		public GenericProject (ProjectCreateInformation info, XmlElement projectOptions)
-		{
-			Configurations.Add (CreateConfiguration ("Default"));
-		}
-
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
-		{
-			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);
-			return conf;
-		}
-
-		protected override void OnGetTypeTags (HashSet<string> types)
-		{
-			base.OnGetTypeTags (types);
-			types.Add ("GenericProject");
-		}
-	}
-	
-	[ProjectModelDataItem]
-	public class GenericProjectConfiguration: ProjectConfiguration
-	{
-		public GenericProjectConfiguration ()
-		{
-		}
-		
-		public GenericProjectConfiguration (string name): base (name)
-		{
-		}
+		Blank,
+		Debug,
+		Release
 	}
 }
+

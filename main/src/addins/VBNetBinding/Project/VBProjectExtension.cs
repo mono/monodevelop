@@ -113,9 +113,14 @@ namespace MonoDevelop.VBNetBinding
 			return compilerServices.Compile (items, configuration, configSelector, monitor);
 		}
 
-		protected override DotNetCompilerParameters OnCreateCompilationParameters (System.Xml.XmlElement projectOptions)
+		protected override DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind)
 		{
-			return new VBCompilerParameters ();
+			var pars = new VBCompilerParameters ();
+			if (kind == ConfigurationKind.Debug)
+				pars.AddDefineSymbol ("DEBUG");
+			else if (kind == ConfigurationKind.Release)
+				pars.Optimize = true;
+			return pars;
 		}
 
 		protected override ClrVersion[] OnGetSupportedClrVersions ()

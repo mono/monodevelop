@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects
 			types.Add ("CompiledAssembly");
 		}
 
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			return new ProjectConfiguration (name);
 		}

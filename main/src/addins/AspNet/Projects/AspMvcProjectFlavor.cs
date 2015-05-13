@@ -33,10 +33,10 @@ namespace MonoDevelop.AspNet.Projects
 {
 	abstract class AspMvcProjectFlavor : AspNetAppProjectFlavor
 	{
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			var conf = new AspMvcProjectConfiguration (name);
-			conf.CopyFrom (base.OnCreateConfiguration (name));			
+			conf.CopyFrom (base.OnCreateConfiguration (name, kind));
 			return conf;
 		}
 

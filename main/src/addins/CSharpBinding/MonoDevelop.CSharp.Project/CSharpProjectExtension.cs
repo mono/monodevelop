@@ -132,21 +132,16 @@ namespace MonoDevelop.CSharp.Project
 			return CSharpBindingCompilerManager.Compile (items, configuration, configSelector, monitor);
 		}
 
-		protected override DotNetCompilerParameters OnCreateCompilationParameters (System.Xml.XmlElement projectOptions)
+		protected override DotNetCompilerParameters OnCreateCompilationParameters (DotNetProjectConfiguration config, ConfigurationKind kind)
 		{
-			CSharpCompilerParameters pars = new CSharpCompilerParameters ();
-			if (projectOptions != null) {
-				string platform = projectOptions.GetAttribute ("Platform");
-				if (SupportedPlatforms.Contains (platform))
-					pars.PlatformTarget = platform;
-				string debugAtt = projectOptions.GetAttribute ("DefineDebug");
-				if (string.Compare ("True", debugAtt, StringComparison.OrdinalIgnoreCase) == 0) {
-					pars.AddDefineSymbol ("DEBUG");
-				}
-				string releaseAtt = projectOptions.GetAttribute ("Release");
-				if (string.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) == 0)
-					pars.Optimize = true;
-			}
+			var pars = new CSharpCompilerParameters ();
+			if (SupportedPlatforms.Contains (config.Platform))
+				pars.PlatformTarget = config.Platform;
+			
+			if (kind == ConfigurationKind.Debug)
+				pars.AddDefineSymbol ("DEBUG");
+			else if (kind == ConfigurationKind.Release)
+				pars.Optimize = true;
 			return pars;
 		}
 

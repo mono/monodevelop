@@ -99,10 +99,10 @@ namespace MonoDevelop.AspNet.Projects
 				cfg.OutputDirectory = binPath;
 		}
 
-		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 		{
 			var conf = new AspNetAppProjectConfiguration (name);
-			conf.CopyFrom (base.OnCreateConfiguration (name));
+			conf.CopyFrom (base.OnCreateConfiguration (name, kind));
 			conf.OutputDirectory = Project.BaseDirectory.IsNullOrEmpty? "bin" : (string)Project.BaseDirectory.Combine ("bin");
 			return conf;
 		}

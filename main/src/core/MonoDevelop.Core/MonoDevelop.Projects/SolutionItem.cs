@@ -1088,24 +1088,24 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionItemConfiguration AddNewConfiguration (string name)
+		public SolutionItemConfiguration AddNewConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
-			SolutionItemConfiguration config = CreateConfiguration (name);
+			SolutionItemConfiguration config = CreateConfiguration (name, kind);
 			Configurations.Add (config);
 			return config;
 		}
 		
-		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name)
+		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name, ConfigurationKind kind)
 		{
-			return CreateConfiguration (name);
+			return CreateConfiguration (name, kind);
 		}
 
-		public SolutionItemConfiguration CreateConfiguration (string name)
+		public SolutionItemConfiguration CreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
-			return ItemExtension.OnCreateConfiguration (name);
+			return ItemExtension.OnCreateConfiguration (name, kind);
 		}
 		
-		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name)
+		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
 			return new SolutionItemConfiguration (name);
 		}
@@ -1334,9 +1334,9 @@ namespace MonoDevelop.Projects
 				return Item.OnGetItemFiles (includeReferencedFiles);
 			}
 
-			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name)
+			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
 			{
-				return Item.OnCreateConfiguration (name);
+				return Item.OnCreateConfiguration (name, kind);
 			}
 
 			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public ItemConfiguration AddConfiguration (string name, string sourceName, bool createChildConfigurations)
 		{
-			ItemConfiguration conf = entry.CreateConfiguration (name);
+			ItemConfiguration conf = entry.CreateConfiguration (name, ConfigurationKind.Blank);
 
 			if (sourceName != null) {
 				ItemConfiguration sc = configurations [sourceName];
