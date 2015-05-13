@@ -934,6 +934,14 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (true);
 		}
 
+		protected virtual bool DoGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			SolutionItemConfiguration conf = GetConfiguration (configuration) as SolutionItemConfiguration;
+			if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Execute))
+				return conf.CustomCommands.CanExecute (this, CustomCommandType.Execute, context, configuration);
+			return OnGetCanExecute (context, configuration);
+		}
+
 		/// <summary>
 		/// Determines whether this solution item can be executed using the specified context and configuration.
 		/// </summary>
@@ -1371,7 +1379,7 @@ namespace MonoDevelop.Projects
 
 			internal protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 			{
-				return Item.OnGetCanExecute (context, configuration);
+				return Item.DoGetCanExecute (context, configuration);
 			}
 
 			internal protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
