@@ -42,6 +42,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.parent = parent;
 		}
+
+		public MSBuildProject Project {
+			get { return parent; }
+		}
 		
 		public string Include {
 			get { return Element.GetAttribute ("Include"); }

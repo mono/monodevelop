@@ -205,7 +205,7 @@ namespace MonoDevelop.Projects
 
 		public MSBuildProject MSBuildProject {
 			get { 
-				if (msbuildUpdatePending)
+				if (msbuildUpdatePending && !saving)
 					WriteProject (new ProgressMonitor ());
 				return sourceProject;
 			}
@@ -1619,12 +1619,25 @@ namespace MonoDevelop.Projects
 
 		internal void WriteProject (ProgressMonitor monitor)
 		{
-			msbuildUpdatePending = false;
-			sourceProject.FileName = FileName;
-			OnWriteProjectHeader (monitor, sourceProject);
-			ProjectExtension.OnWriteProject (monitor, sourceProject);
-			sourceProject.IsNewProject = false;
+			if (saving) {
+				LoggingService.LogError ("WriteProject called while the project is already being written");
+				return;
+			}
+			
+			saving = true;
+			try {
+				msbuildUpdatePending = false;
+				sourceProject.FileName = FileName;
+				DateTime t = DateTime.Now;
+				OnWriteProjectHeader (monitor, sourceProject);
+				ProjectExtension.OnWriteProject (monitor, sourceProject);
+				sourceProject.IsNewProject = false;
+			} finally {
+				saving = false;
+			}
 		}
+
+		bool saving;
 
 		class ConfigData
 		{

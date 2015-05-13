@@ -112,7 +112,7 @@ namespace MonoDevelop.Projects
 			buildItem.Condition = Condition;
 
 			if (metadata != null) {
-				metadata.SetProject (project.MSBuildProject);
+				metadata.SetProject (buildItem.Project);
 				foreach (var prop in metadata.GetProperties ())
 					buildItem.Metadata.SetValue (prop.Name, prop.Value);
 				metadata.WriteObjectProperties (this, GetType(), true);
