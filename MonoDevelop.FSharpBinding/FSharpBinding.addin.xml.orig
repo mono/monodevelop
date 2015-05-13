@@ -61,10 +61,9 @@
     <Parser class = "MonoDevelop.FSharp.FSharpFoldingParser" mimeType="text/x-fsharp" />
   </Extension>
 
-<!-- TODO NPM type loading fails for some reason -->
-<!--  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
+  <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
     <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpTooltipProvider" mimeType="text/x-fsharp" />
-  </Extension>-->
+  </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
     <Resolver class="MonoDevelop.FSharp.FSharpResolverProvider" mimeType="text/x-fsharp" />
