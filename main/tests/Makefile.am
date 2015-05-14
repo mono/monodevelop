@@ -76,7 +76,12 @@ uitest:
 	@if test -n "$(assembly)"; then \
 		for asm in $(UITEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
+				if test -n "$(categories)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \
+				fi; \
+				if ! test -n "$(categories)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
+				fi; \
 			fi; \
 		done; \
 	fi
