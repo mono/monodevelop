@@ -185,8 +185,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var repo = Repository;
 			if (repo != null) {
-				var s = repo.GetStashes ();
-				info.Enabled = s.Any ();
+				info.Enabled = repo.GetStashes ().Any ();
 			} else
 				info.Visible = false;
 		}
