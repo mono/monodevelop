@@ -154,7 +154,8 @@ namespace MonoDevelop.VersionControl.Git
 					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
-							Repository.CreateStash (monitor, comment);
+							Stash stash;
+							Repository.TryCreateStash (monitor, comment, out stash);
 						} catch (Exception ex) {
 							MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 						}

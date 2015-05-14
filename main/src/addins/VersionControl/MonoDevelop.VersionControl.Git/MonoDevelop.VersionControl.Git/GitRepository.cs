@@ -240,20 +240,21 @@ namespace MonoDevelop.VersionControl.Git
 			return res;
 		}
 
-		public Stash CreateStash (IProgressMonitor monitor, string message)
+		public bool TryCreateStash (IProgressMonitor monitor, string message, out Stash stash)
 		{
 			Signature sig = GetSignature ();
+			stash = null;
 			if (sig == null)
-				return null;
+				return false;
 
 			if (monitor != null)
 				monitor.BeginTask ("Stashing changes", 1);
 
-			var stash = RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked);
+			stash = RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked);
 
 			if (monitor != null)
 				monitor.EndTask ();
-			return stash;
+			return true;
 		}
 
 		internal Signature GetSignature()
@@ -651,7 +652,10 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-				Stash stash = CreateStash (monitor, GetStashName ("_tmp_"));
+				Stash stash;
+				if (!TryCreateStash (monitor, GetStashName ("_tmp_"), out stash))
+					return false;
+
 				if (stash != null)
 					stashIndex = 0;
 				monitor.Step (1);
@@ -1197,6 +1201,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void SwitchToBranch (IProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
+			int stashIndex = -1;
 			if (sig == null)
 				return;
 
@@ -1212,7 +1217,11 @@ namespace MonoDevelop.VersionControl.Git
 				if (stash != null)
 					RootRepository.Stashes.Remove (stash);
 
-				CreateStash (monitor, currentBranch);
+				if (!TryCreateStash (monitor, currentBranch, out stash))
+					return;
+				if (stash != null)
+					stashIndex = 0;
+				
 				monitor.Step (1);
 			}
 
@@ -1227,9 +1236,8 @@ namespace MonoDevelop.VersionControl.Git
 			} finally {
 				// Restore the branch stash
 				if (GitService.StashUnstashWhenSwitchingBranches) {
-					var stash = GetStashForBranch (RootRepository.Stashes, branch);
-					if (stash != null)
-						RootRepository.Merge (stash.Index, sig);
+					if (stashIndex != -1)
+						PopStash (monitor, stashIndex);
 					monitor.Step (1);
 				}
 			}
