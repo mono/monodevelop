@@ -23,15 +23,94 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#if MAC
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using AppKit;
+using Foundation;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
-	public class NSViewResult
+	public class NSObjectResult : AppResult
 	{
-		public NSViewResult ()
+		NSObject ResultObject;
+
+		public NSObjectResult (NSObject resultObject)
 		{
+			ResultObject = resultObject;
+		}
+
+		public override AppResult Marked (string mark)
+		{
+			return null;
+		}
+
+		public override AppResult CheckType (Type desiredType)
+		{
+			return null;
+		}
+
+		public override AppResult Text (string text, bool exact)
+		{
+			return null;
+		}
+
+		public override AppResult Model (string column)
+		{
+			return null;
+		}
+
+		object GetPropertyValue (string propertyName)
+		{
+			return AutoTestService.CurrentSession.UnsafeSync (delegate {
+				PropertyInfo propertyInfo = ResultObject.GetType().GetProperty(propertyName);
+				if (propertyInfo != null) {
+					var propertyValue = propertyInfo.GetValue (ResultObject);
+					if (propertyValue != null) {
+						return propertyValue;
+					}
+				}
+
+				return null;
+			});
+		}
+
+		public override AppResult Property (string propertyName, object value)
+		{
+			return (GetPropertyValue (propertyName) == value) ? this : null;
+		}
+
+		public override List<AppResult> NextSiblings ()
+		{
+			return null;
+		}
+
+		public override bool Select ()
+		{
+			return false;
+		}
+
+		public override bool Click ()
+		{
+			return false;
+		}
+
+		public override bool EnterText (string text)
+		{
+			return false;
+		}
+
+		public override bool TypeKey (char key, string state)
+		{
+			return false;
+		}
+
+		public override bool Toggle (bool active)
+		{
+			return false;
 		}
 	}
 }
 
+#endif

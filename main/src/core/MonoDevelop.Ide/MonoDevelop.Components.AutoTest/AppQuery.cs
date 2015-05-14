@@ -30,6 +30,10 @@ using Gtk;
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
 
+#if MAC
+using AppKit;
+#endif
+
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AppQuery : MarshalByRefObject
@@ -66,8 +70,10 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
-		List<AppResult> ResultSetFromWindowList (Gtk.Window[] windows)
+		List<AppResult> ResultSetFromWindows ()
 		{
+			Gtk.Window[] windows = Gtk.Window.ListToplevels ();
+
 			// null for AppResult signifies root node
 			rootNode = new GtkWidgetResult (null);
 			List<AppResult> fullResultSet = new List<AppResult> ();
@@ -93,6 +99,20 @@ namespace MonoDevelop.Components.AutoTest
 				node.FirstChild = children;
 			}
 
+#if MAC
+			NSWindow[] nswindows = NSApplication.SharedApplication.Windows;
+			if (nswindows != null) {
+				foreach (var window in nswindows) {
+					AppResult node = new NSObjectResult (window);
+					fullResultSet.Add (node);
+
+					foreach (var child in window.ContentView.Subviews) {
+						AppResult childNode = new NSObjectResult (child);
+						fullResultSet.Add (childNode);
+					}
+				}
+			}
+#endif
 			return fullResultSet;
 		}
 
@@ -102,7 +122,8 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppResult[] Execute ()
 		{
-			List<AppResult> resultSet = ResultSetFromWindowList (Gtk.Window.ListToplevels ());
+			List<AppResult> resultSet = ResultSetFromWindows ();
+
 			foreach (var subquery in operations) {
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
