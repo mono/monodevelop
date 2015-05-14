@@ -1128,6 +1128,14 @@ namespace MonoDevelop.VersionControl.Git
 			);
 		}
 
+		public void ChangeRemotePushUrl (string name, string url)
+		{
+			RootRepository.Network.Remotes.Update (
+				RootRepository.Network.Remotes [name],
+				r => r.PushUrl = url
+			);
+		}
+
 		public void AddRemote (string name, string url, bool importTags)
 		{
 			if (string.IsNullOrEmpty (name))

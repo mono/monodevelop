@@ -223,6 +223,8 @@ namespace MonoDevelop.VersionControl.Git
 						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					if (remote.Url != dlg.RemoteUrl)
 						repo.ChangeRemoteUrl (remote.Name, dlg.RemoteUrl);
+					if (remote.Url != dlg.RemotePushUrl)
+						repo.ChangeRemotePushUrl (remote.Name, dlg.RemotePushUrl);
 					FillRemotes ();
 				}
 			} finally {

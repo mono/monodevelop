@@ -41,6 +41,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (remote != null) {
 				entryName.Text = remote.Name;
 				entryUrl.Text = remote.Url ?? "";
+				entryPushUrl.Text = remote.PushUrl ?? "";
 			}
 			checkImportTags.Visible = remote == null;
 			UpdateButtons ();
@@ -52,6 +53,10 @@ namespace MonoDevelop.VersionControl.Git
 
 		public string RemoteUrl {
 			get { return entryUrl.Text; }
+		}
+
+		public string RemotePushUrl {
+			get { return entryPushUrl.Text; }
 		}
 
 		public bool ImportTags {
