@@ -184,6 +184,10 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.AreEqual (commitCount, repo2.GetHistory (repo2.RootPath, null).Length, "stash2 added extra commit.");
 		}
 
+		static string GetStashMessageForBranch (string branch)
+		{
+			return string.Format ("On {0}: __MD_{0}\n\n", branch);
+		}
 		[Test]
 		public void TestGitBranchCreation ()
 		{
@@ -193,15 +197,27 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.CreateBranch ("branch1", null);
 
 			repo2.SwitchToBranch (new NullProgressMonitor (), "branch1");
+			// Nothing could be stashed for master. Branch1 should be popped in any case if it exists.
+			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("master")));
+			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+
 			Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
 			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
 			AddFile ("file2", "text", true, false);
 			repo2.CreateBranch ("branch2", null);
-			repo2.SwitchToBranch (new NullProgressMonitor (), "branch2");
-			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
-			repo2.PopStash (new NullProgressMonitor (), 0);
 
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch2");
+			// Branch1 has a stash created and assert clean workdir. Branch2 should be popped in any case.
+			Assert.IsTrue (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
+			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
+			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
+
+			AddFile ("file2", "text", true, false);
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch1");
+			// Branch2 has a stash created. Branch1 should be popped with file2 reinstated.
+			Assert.True (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch2")));
+			Assert.IsFalse (repo2.GetStashes ().Any (s => s.Message == GetStashMessageForBranch ("branch1")));
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
 
 			repo2.SwitchToBranch (new NullProgressMonitor (), "master");

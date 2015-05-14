@@ -1201,6 +1201,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void SwitchToBranch (IProgressMonitor monitor, string branch)
 		{
 			Signature sig = GetSignature ();
+			Stash stash;
 			int stashIndex = -1;
 			if (sig == null)
 				return;
@@ -1213,20 +1214,17 @@ namespace MonoDevelop.VersionControl.Git
 			if (GitService.StashUnstashWhenSwitchingBranches) {
 				// Remove the stash for this branch, if exists
 				string currentBranch = GetCurrentBranch ();
-				var stash = GetStashForBranch (RootRepository.Stashes, branch);
-				if (stash != null)
-					RootRepository.Stashes.Remove (stash);
+				stashIndex = GetStashForBranch (RootRepository.Stashes, currentBranch);
+				if (stashIndex != -1)
+					RootRepository.Stashes.Remove (stashIndex);
 
-				if (!TryCreateStash (monitor, currentBranch, out stash))
+				if (!TryCreateStash (monitor, GetStashName (currentBranch), out stash))
 					return;
-				if (stash != null)
-					stashIndex = 0;
 				
 				monitor.Step (1);
 			}
 
 			try {
-				RootRepository.Reset (ResetMode.Hard);
 				int progress = 0;
 				RootRepository.Checkout (branch, new CheckoutOptions {
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
@@ -1236,6 +1234,7 @@ namespace MonoDevelop.VersionControl.Git
 			} finally {
 				// Restore the branch stash
 				if (GitService.StashUnstashWhenSwitchingBranches) {
+					stashIndex = GetStashForBranch (RootRepository.Stashes, branch);
 					if (stashIndex != -1)
 						PopStash (monitor, stashIndex);
 					monitor.Step (1);
@@ -1277,14 +1276,15 @@ namespace MonoDevelop.VersionControl.Git
 			return stashName.StartsWith ("__MD_", StringComparison.Ordinal) ? stashName.Substring (5) : null;
 		}
 
-		static Stash GetStashForBranch (StashCollection stashes, string branchName)
+		static int GetStashForBranch (StashCollection stashes, string branchName)
 		{
 			string sn = GetStashName (branchName);
-			foreach (Stash ss in stashes) {
-				if (ss.Name.IndexOf (sn, StringComparison.InvariantCulture) != -1)
-					return ss;
+			int count = stashes.Count ();
+			for (int i = 0; i < count; ++i) {
+				if (stashes[i].Message.IndexOf (sn, StringComparison.InvariantCulture) != -1)
+					return i;
 			}
-			return null;
+			return -1;
 		}
 
 		public ChangeSet GetPushChangeSet (string remote, string branch)
