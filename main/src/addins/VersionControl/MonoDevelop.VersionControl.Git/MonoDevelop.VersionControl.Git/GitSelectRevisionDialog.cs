@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			var vbox = new Xwt.VBox ();
 			vbox.MinHeight = 400;
-			vbox.MinWidth = 600;
+			vbox.MinWidth = 800;
 
 			vbox.PackStart(new Xwt.Label (GettextCatalog.GetString ("Tag Name")));
 
@@ -80,13 +80,26 @@ namespace MonoDevelop.VersionControl.Git
 			revisionStore = new Xwt.ListStore (messageField, dateField, authorField, shaField, revisionField);
 			revisionList.DataSource = revisionStore;
 
-			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), new Xwt.TextCellView (messageField) { Ellipsize = Xwt.EllipsizeMode.End });
+			messageColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Message"), new Xwt.TextCellView (messageField)) {
+				CanResize = true,
+				Alignment = Xwt.Alignment.Center,
+			};
+
 			revisionList.Columns.Add (messageColumn);
-			dateColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Date"), new Xwt.TextCellView (dateField));
+			dateColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Date"), new Xwt.TextCellView (dateField)) {
+				CanResize = true,
+				Alignment = Xwt.Alignment.Center,
+			};
 			revisionList.Columns.Add (dateColumn);
-			authorColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Author"), new Xwt.TextCellView (authorField));
+			authorColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Author"), new Xwt.TextCellView (authorField)) {
+				CanResize = true,
+				Alignment = Xwt.Alignment.Center,
+			};
 			revisionList.Columns.Add (authorColumn);
-			shaColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Revision"), new Xwt.TextCellView (shaField));
+			shaColumn = new Xwt.ListViewColumn (GettextCatalog.GetString ("Revision"), new Xwt.TextCellView (shaField)) {
+				CanResize = true,
+				Alignment = Xwt.Alignment.Center,
+			};
 			revisionList.Columns.Add (shaColumn);
 
 			var history = repo.GetHistory (repo.RootPath, null);
