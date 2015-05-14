@@ -16,7 +16,7 @@ type FSharpProject() as self =
     let FSharp31PortableImport = "$(MSBuildExtensionsPath32)\\..\\Microsoft SDKs\\F#\\3.1\\Framework\\v4.0\\Microsoft.Portable.FSharp.Targets"
 
     let langServ = MDLanguageService.Instance
-    let mutable initilisedAsPortable = false
+    let mutable initialisedAsPortable = false
     
     let invalidateProjectFile() =
         try 
@@ -43,7 +43,7 @@ type FSharpProject() as self =
 
     override x.OnInitializeFromTemplate(createInfo, options) =
       base.OnInitializeFromTemplate(createInfo, options)
-      if options.HasAttribute "FSharpPortable" then initilisedAsPortable <- true
+      if options.HasAttribute "FSharpPortable" then initialisedAsPortable <- true
       if options.HasAttribute "TargetProfile" then x.TargetProfile <- options.GetAttribute "TargetProfile"
       if options.HasAttribute "TargetFSharpCoreVersion" then x.TargetFSharpCoreVersion <- options.GetAttribute "TargetFSharpCoreVersion"
 
@@ -52,7 +52,7 @@ type FSharpProject() as self =
         // By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine.
         // New projects will be created with this targets file
         // If FSharp 3.1 is available, use it. If not, use 3.0
-        if initilisedAsPortable then
+        if initialisedAsPortable then
           if MSBuildProjectService.IsTargetsAvailable(FSharp31PortableImport) then imports.Add (FSharp31PortableImport)
           else failwith "F# portable target not found"
         
