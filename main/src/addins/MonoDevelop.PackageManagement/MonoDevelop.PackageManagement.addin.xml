@@ -7,6 +7,7 @@
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "NuGet" id = "NuGet">
 		<Command
 			id = "MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
 			_description = "Add NuGet packages to the project"
@@ -54,6 +55,7 @@
 			_description="Retargets all packages"
 			_label="Re_target"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
+		</Category>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
