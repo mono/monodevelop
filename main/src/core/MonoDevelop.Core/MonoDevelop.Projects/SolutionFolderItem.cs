@@ -54,7 +54,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty ("UseMSBuildEngine", DefaultValue = null)]
 		public bool? UseMSBuildEngine { get; set; }
 		
-		PropertyBag userProperties = new PropertyBag ();
+		PropertyBag userProperties;
 
 		internal List<string> UnresolvedProjectDependencies { get; set; }
 
@@ -224,6 +224,8 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		public PropertyBag UserProperties {
 			get {
+				if (userProperties == null)
+					userProperties = new PropertyBag ();
 				return userProperties; 
 			}
 		}
