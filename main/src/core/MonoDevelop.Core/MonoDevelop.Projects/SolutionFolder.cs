@@ -463,13 +463,13 @@ namespace MonoDevelop.Projects
 				if (item is SolutionFolder)
 					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
 				else if ((item is SolutionItem) && conf.BuildEnabledForItem ((SolutionItem) item) && ((SolutionItem)item).SupportsBuild ())
-					GetAllBuildableReferences (list, (SolutionItem)item, configuration, includeExternalReferences, false);
+					GetAllBuildableReferences (list, (SolutionItem)item, configuration, conf, includeExternalReferences, false);
 			}
 		}
 
-		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, bool includeExternalReferences, bool isDirectReference)
+		void GetAllBuildableReferences (List<SolutionItem> list, SolutionItem item, ConfigurationSelector configuration, SolutionConfiguration conf, bool includeExternalReferences, bool isDirectReference)
 		{
-			if (list.Contains (item))
+			if (list.Contains (item) || !conf.BuildEnabledForItem (item))
 				return;
 			// Skip unsupported projects which are not directly referenced by other (supported) projects
 			if (!isDirectReference && item.IsUnsupportedProject)
@@ -477,7 +477,7 @@ namespace MonoDevelop.Projects
 			list.Add (item);
 			if (includeExternalReferences) {
 				foreach (var it in item.GetReferencedItems (configuration))
-					GetAllBuildableReferences (list, it, configuration, includeExternalReferences, true);
+					GetAllBuildableReferences (list, it, configuration, conf, includeExternalReferences, true);
 			}
 		}
 

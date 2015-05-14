@@ -676,6 +676,35 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test()]
+		public async Task ProjectReferencingDisabledProject_SolutionBuildWorks ()
+		{
+			// If a project references another project that is disabled for the solution configuration it should
+			// not be built when building the solution as a whole.
+
+			// Build the solution. It should work.
+			string solFile = Util.GetSampleProject ("invalid-reference-resolution", "InvalidReferenceResolution.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var res = await sol.Build (Util.GetMonitor (), "Debug");
+			Assert.AreEqual (0, res.ErrorCount);
+		}
+
+		[Test()]
+		public async Task ProjectReferencingDisabledProject_ProjectBuildFails ()
+		{
+			// If a project references another project that is disabled for the solution configuration, the referenced
+			// project should build when directly building the referencing project.
+
+			// Build the solution. It should work.
+			string solFile = Util.GetSampleProject ("invalid-reference-resolution", "InvalidReferenceResolution.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = sol.Items.FirstOrDefault (pr => pr.Name == "ReferencingProject");
+
+			var res = await p.Build (Util.GetMonitor (), (SolutionConfigurationSelector) "Debug", true);
+			Assert.AreEqual (1, res.ErrorCount);
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension

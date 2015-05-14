@@ -1129,7 +1129,6 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refXml, savedXml);
 		}
 
-
 		[Test]
 		public async Task ProjectSerializationRoundtrip (
 			[Values (

@@ -24,11 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
 using System.Text;
 using UnitTests;
+using System.Linq;
 
 namespace MonoDevelop.Ide
 {
@@ -45,14 +47,22 @@ namespace MonoDevelop.Ide
 			// reliably start/shutdown XS as part of the test suite.
 		}
 
+		static IEnumerable<string> Templates {
+			get {
+				return ProjectTemplate.ProjectTemplates.Select (t => t.Category + t.Name + t.LanguageName);
+			}
+		}
+
 		[Test]
-		public void CreateEveryProjectTemplate ()
+		[TestCaseSource ("Templates")]
+		public void CreateEveryProjectTemplate (string tt)
 		{
-			var builder = new StringBuilder ();
-			foreach (var template in ProjectTemplate.ProjectTemplates) {
+//			var builder = new StringBuilder ();
+//			foreach (var template in ProjectTemplate.ProjectTemplates) {
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Category + t.Name + t.LanguageName == tt);
 				if (template.Name.Contains ("Gtk#"))
-					continue;
-				try {
+					return;
+//				try {
 					var dir = Util.CreateTmpDir (template.Id);
 					var cinfo = new ProjectCreateInformation {
 						ProjectBasePath = dir,
@@ -68,7 +78,7 @@ namespace MonoDevelop.Ide
 					cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
 					template.CreateWorkspaceItem (cinfo);
-				} catch (Exception ex) {
+/*				} catch (Exception ex) {
 					builder.AppendFormat (
 						"Could not create a project from the template '{0} / {1} ({2})': {3}",
 						template.Category, template.Name, template.LanguageName, ex
@@ -77,11 +87,11 @@ namespace MonoDevelop.Ide
 					builder.AppendLine ();
 					builder.AppendLine (ex.ToString ());
 					builder.AppendLine ();
-				}
-			}
+				}*/
+			//}
 
-			if (builder.Length > 0)
-				Assert.Fail (builder.ToString ());
+//			if (builder.Length > 0)
+//				Assert.Fail (builder.ToString ());
 		}
 	}
 }
