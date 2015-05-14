@@ -61,9 +61,16 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
+		protected GitRepository UpdateVisibility (CommandInfo info)
+		{
+			var repo = Repository;
+			info.Visible = Repository != null;
+			return repo;
+		}
+
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = Repository != null;
+			UpdateVisibility (info);
 		}
 	}
 
@@ -71,8 +78,9 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Update (CommandInfo info)
 		{
-			base.Update (info);
-			info.Enabled |= Repository.GetCurrentRemote () != null;
+			var repo = UpdateVisibility (info);
+			if (repo != null)
+				info.Enabled = repo.GetCurrentRemote () != null;
 		}
 
 		protected override void Run ()
@@ -183,11 +191,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void Update (CommandInfo info)
 		{
-			var repo = Repository;
-			if (repo != null) {
+			var repo = UpdateVisibility (info);
+			if (repo != null)
 				info.Enabled = repo.GetStashes ().Any ();
-			} else
-				info.Visible = false;
 		}
 	}
 
