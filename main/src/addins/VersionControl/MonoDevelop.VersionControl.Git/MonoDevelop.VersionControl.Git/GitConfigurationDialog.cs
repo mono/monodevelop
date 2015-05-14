@@ -57,13 +57,16 @@ namespace MonoDevelop.VersionControl.Git
 
 			listBranches.Selection.Changed += delegate {
 				TreeIter it;
-				if (!listBranches.Selection.GetSelected (out it))
-					return;
+				bool anythingSelected =
+					buttonRemoveBranch.Sensitive = buttonEditBranch.Sensitive = buttonSetDefaultBranch.Sensitive = listBranches.Selection.GetSelected (out it);
+				if (!anythingSelected)
+						return;
 
 				string currentBranch = repo.GetCurrentBranch ();
 				var b = (Branch) storeBranches.GetValue (it, 0);
 				buttonRemoveBranch.Sensitive = b.Name != currentBranch;
 			};
+			buttonRemoveBranch.Sensitive = buttonEditBranch.Sensitive = buttonSetDefaultBranch.Sensitive = false;
 
 			// Sources tree
 
@@ -74,6 +77,12 @@ namespace MonoDevelop.VersionControl.Git
 			treeRemotes.AppendColumn ("Remote Source / Branch", new CellRendererText (), "markup", 1);
 			treeRemotes.AppendColumn ("Url", new CellRendererText (), "text", 2);
 
+			treeRemotes.Selection.Changed += delegate {
+				TreeIter it;
+				buttonTrackRemote.Sensitive = buttonFetch.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = treeRemotes.Selection.GetSelected (out it);
+			};
+			buttonTrackRemote.Sensitive = buttonFetch.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = false;
+
 			// Tags list
 
 			storeTags = new ListStore (typeof(string));
@@ -81,6 +90,12 @@ namespace MonoDevelop.VersionControl.Git
 			listTags.HeadersVisible = true;
 
 			listTags.AppendColumn (GettextCatalog.GetString ("Tag"), new CellRendererText (), "text", 0);
+
+			listTags.Selection.Changed += delegate {
+				TreeIter it;
+				buttonRemoveTag.Sensitive = buttonPushTag.Sensitive = listTags.Selection.GetSelected (out it);
+			};
+			buttonRemoveTag.Sensitive = buttonPushTag.Sensitive = false;
 
 			// Fill data
 
