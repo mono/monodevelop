@@ -301,7 +301,8 @@ namespace MonoDevelop.VersionControl.Git
 		protected void OnButtonNewTagClicked (object sender, EventArgs e)
 		{
 			using (var dlg = new GitSelectRevisionDialog (repo)) {
-				if (dlg.Run () != Xwt.Command.Ok)
+				Xwt.WindowFrame parent = Xwt.Toolkit.CurrentEngine.WrapWindow (this);
+				if (dlg.Run (parent) != Xwt.Command.Ok)
 					return;
 
 				repo.AddTag (dlg.TagName, dlg.SelectedRevision, dlg.TagMessage);
