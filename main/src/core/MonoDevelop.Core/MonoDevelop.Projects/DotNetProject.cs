@@ -445,13 +445,20 @@ namespace MonoDevelop.Projects
 
 		protected virtual TargetFrameworkMoniker OnGetDefaultTargetFrameworkForFormat (string toolsVersion)
 		{
-			switch (toolsVersion) {
-			case "2.0":
-				return TargetFrameworkMoniker.NET_2_0;
-			case "4.0":
-				return TargetFrameworkMoniker.NET_4_0;
+			// If GetDefaultTargetFrameworkId has been overriden to return something different than the
+			// default framework, but OnGetDefaultTargetFrameworkForFormat has not been overriden, then
+			// the framework most likely to be correct is the one returned by GetDefaultTargetFrameworkId.
+
+			var fxid = GetDefaultTargetFrameworkId ();
+			if (fxid == Services.ProjectService.DefaultTargetFramework.Id) {
+				switch (toolsVersion) {
+				case "2.0":
+					return TargetFrameworkMoniker.NET_2_0;
+				case "4.0":
+					return TargetFrameworkMoniker.NET_4_0;
+				}
 			}
-			return GetDefaultTargetFrameworkId ();
+			return fxid;
 		}
 
 		public IAssemblyContext AssemblyContext {
