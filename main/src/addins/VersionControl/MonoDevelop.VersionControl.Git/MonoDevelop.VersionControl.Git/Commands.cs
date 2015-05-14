@@ -69,6 +69,12 @@ namespace MonoDevelop.VersionControl.Git
 
 	class PushCommandHandler: GitCommandHandler
 	{
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			info.Enabled |= Repository.GetCurrentRemote () != null;
+		}
+
 		protected override void Run ()
 		{
 			GitService.Push (Repository);
