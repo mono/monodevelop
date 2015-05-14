@@ -137,12 +137,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Test]
 		public void TestGitStash ()
 		{
+			LibGit2Sharp.Stash stash;
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file2", "nothing", true, true);
 			AddFile ("file1", "text", true, false);
 			AddFile ("file3", "unstaged", false, false);
 			AddFile ("file4", "noconflict", true, false);
-			repo2.CreateStash (new NullProgressMonitor (), "meh");
+			repo2.TryCreateStash (new NullProgressMonitor (), "meh", out stash);
 			Assert.IsTrue (!File.Exists (LocalPath + "file1"), "Stash creation failure");
 			AddFile ("file4", "conflict", true, true);
 			repo2.PopStash (new NullProgressMonitor (), 0);
@@ -163,17 +164,18 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Test]
 		public void TestStashNoExtraCommit ()
 		{
+			LibGit2Sharp.Stash stash;
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file1", null, true, true);
 			AddFile ("file2", null, true, false);
 			AddFile ("file3", null, false, false);
 
 			int commitCount = repo2.GetHistory (repo2.RootPath, null).Length;
-			repo2.CreateStash (new NullProgressMonitor (), "stash1");
+			repo2.TryCreateStash (new NullProgressMonitor (), "stash1", out stash);
 			repo2.PopStash (new NullProgressMonitor (), 0);
 			Assert.AreEqual (commitCount, repo2.GetHistory (repo2.RootPath, null).Length, "stash1 added extra commit.");
 
-			repo2.CreateStash (new NullProgressMonitor (), "stash2");
+			repo2.TryCreateStash (new NullProgressMonitor (), "stash2", out stash);
 
 			AddFile ("file4", null, true, true);
 			commitCount = repo2.GetHistory (repo2.RootPath, null).Length;
