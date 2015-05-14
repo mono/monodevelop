@@ -422,12 +422,12 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (keepLocal, File.Exists (added));
 		}
 
-		[Test]
+		[TestCase(false)]
+		[TestCase(true)]
 		// Tests Repository.DeleteFile.
-		public virtual void DeletesFile ()
+		public virtual void DeletesFile (bool keepLocal)
 		{
-			DeleteFileTestHelper (false);
-			DeleteFileTestHelper (true);
+			DeleteFileTestHelper (keepLocal);
 		}
 
 		void DeleteTestDirectoryHelper (bool keepLocal)
