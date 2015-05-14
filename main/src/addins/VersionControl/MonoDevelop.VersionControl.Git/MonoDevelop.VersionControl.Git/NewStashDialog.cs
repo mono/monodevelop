@@ -31,6 +31,8 @@ namespace MonoDevelop.VersionControl.Git
 		public NewStashDialog ()
 		{
 			this.Build ();
+
+			entryComment.Activated += (o, e) => Respond (Gtk.ResponseType.Ok);
 		}
 
 		public string Comment {
