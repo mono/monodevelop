@@ -44,17 +44,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
-					return this;
-				}
+			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
+				return this;
+			}
 
-				if (resultWidget.GetType ().FullName == mark) {
-					return this;
-				}
+			if (resultWidget.GetType ().FullName == mark) {
+				return this;
+			}
 
-				return null;
-			});
+			return null;
 		}
 
 		public override AppResult CheckType (Type desiredType)
@@ -80,45 +78,43 @@ namespace MonoDevelop.Components.AutoTest.Results
 			// Entries and Labels have Text, Buttons have Label.
 			// FIXME: Are there other property names?
 
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				// Check for the combobox first and try to use the active text.
-				// If the active text fails then
-				ComboBox cb = resultWidget as ComboBox;
-				if (cb != null) {
-					string activeText = cb.ActiveText;
-					if (activeText == null) {
-						return null;
-					}
-
-					return CheckForText (activeText, text, exact) ? this : null;
+			// Check for the combobox first and try to use the active text.
+			// If the active text fails then
+			ComboBox cb = resultWidget as ComboBox;
+			if (cb != null) {
+				string activeText = cb.ActiveText;
+				if (activeText == null) {
+					return null;
 				}
 
-				// Look for a Text property on the widget.
-				PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
-				if (pinfo != null) {
-					string propText = (string)pinfo.GetValue (resultWidget);
-					if (CheckForText (propText, text, exact)) {
-						return this;
-					}
-				}
+				return CheckForText (activeText, text, exact) ? this : null;
+			}
 
-				pinfo = resultWidget.GetType ().GetProperty ("Label");
-				if (pinfo != null) {
-					string propText = (string)pinfo.GetValue (resultWidget);
-					if (CheckForText (propText, text, exact)) {
-						return this;
-					}
+			// Look for a Text property on the widget.
+			PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
+			if (pinfo != null) {
+				string propText = (string)pinfo.GetValue (resultWidget);
+				if (CheckForText (propText, text, exact)) {
+					return this;
 				}
+			}
 
-				return null;
-			});
+			pinfo = resultWidget.GetType ().GetProperty ("Label");
+			if (pinfo != null) {
+				string propText = (string)pinfo.GetValue (resultWidget);
+				if (CheckForText (propText, text, exact)) {
+					return this;
+				}
+			}
+
+			return null;
 		}
 
 		TreeModel ModelFromWidget (Widget widget)
 		{
 			TreeView tv = widget as TreeView;
 			if (tv != null) {
-				return (TreeModel)AutoTestService.CurrentSession.UnsafeSync (() => tv.Model);
+				return tv.Model;
 			}
 
 			ComboBox cb = widget as ComboBox;
@@ -126,7 +122,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return null;
 			}
 
-			return (TreeModel)AutoTestService.CurrentSession.UnsafeSync (() => cb.Model);
+			return cb.Model;
 		}
 
 		public override AppResult Model (string column)
@@ -154,13 +150,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 			}
 
-			//AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("{0} has {1} column names: {2}", resultWidget, attr.ColumnNames.Length, string.Join (", ", attr.ColumnNames));
 			int columnNumber = Array.IndexOf (attr.ColumnNames, column);
 			if (columnNumber == -1) {
 				return null;
 			}
 
-			//AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("{0} has {1} at column {2}", resultWidget, column, columnNumber);
 			return new GtkTreeModelResult (resultWidget, model, columnNumber);
 		}
 
@@ -186,32 +180,30 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override List<AppResult> NextSiblings ()
 		{
-			return (List<AppResult>) AutoTestService.CurrentSession.UnsafeSync (() => {
-				Widget parent = resultWidget.Parent;
-				Gtk.Container container = parent as Gtk.Container;
+			Widget parent = resultWidget.Parent;
+			Gtk.Container container = parent as Gtk.Container;
 
-				// This really shouldn't happen
-				if (container == null) {
-					return null;
+			// This really shouldn't happen
+			if (container == null) {
+				return null;
+			}
+
+			bool foundSelf = false;
+			List<AppResult> siblingResults = new List<AppResult> ();
+			foreach (Widget child in container.Children) {
+				if (child == resultWidget) {
+					foundSelf = true;
+					continue;
 				}
 
-				bool foundSelf = false;
-				List<AppResult> siblingResults = new List<AppResult> ();
-				foreach (Widget child in container.Children) {
-					if (child == resultWidget) {
-						foundSelf = true;
-						continue;
-					}
-
-					if (!foundSelf) {
-						continue;
-					}
-
-					siblingResults.Add (new GtkWidgetResult (child));
+				if (!foundSelf) {
+					continue;
 				}
 
-				return siblingResults;
-			});
+				siblingResults.Add (new GtkWidgetResult (child));
+			}
+
+			return siblingResults;
 		}
 
 		public override bool Select ()
@@ -220,10 +212,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				resultWidget.GrabFocus ();
-				return true;
-			});
+			resultWidget.GrabFocus ();
+			return true;
 		}
 
 		public override bool Click ()
@@ -233,10 +223,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				button.Click ();
-				return true;
-			});
+			button.Click ();
+			return true;
 		}
 
 		void SendKeyEvent (Gtk.Widget target, uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, string subWindow)
@@ -278,16 +266,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		void RealTypeKey (Gdk.Key key, Gdk.ModifierType state)
 		{
-			AutoTestService.CurrentSession.UnsafeSync (delegate {
-				SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyPress, null);
-				return null;
-			});
-			Thread.Sleep (15);
-			AutoTestService.CurrentSession.UnsafeSync (delegate {
-				SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
-				return null;
-			});
-			Thread.Sleep (10);
+			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyPress, null);
+			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
 		}
 
 		public override bool TypeKey (char key, string state)
@@ -305,6 +285,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		public override bool EnterText (string text)
+		{
+			foreach (var c in text) {
+				TypeKey (c, null);
+			}
+
+			return true;
+		}
+
 		public override bool Toggle (bool active)
 		{
 			ToggleButton toggleButton = resultWidget as ToggleButton;
@@ -312,10 +301,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				toggleButton.Active = active;
-				return true;
-			});
+			toggleButton.Active = active;
+			return true;
 		}
 	}
 }
