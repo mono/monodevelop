@@ -1059,7 +1059,8 @@ namespace MonoDevelop.VersionControl.Git
 					OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
 						LoggingService.LogWarning ("Failed to Push to {0}. Message was \"{1}\".", pushStatusErrors.Reference, pushStatusErrors.Message);
 						string message;
-						if (pushStatusErrors.Message == "Early EOF")
+						// TODO: Remove me when libgit2 merges https://github.com/libgit2/libgit2/pull/3129 and we update binaries.
+						if (string.Equals (pushStatusErrors.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
 							message = "Server connection has been reset. Please retry pushing.";
 						else
 							message = pushStatusErrors.Message;
