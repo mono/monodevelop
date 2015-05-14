@@ -1053,7 +1053,14 @@ namespace MonoDevelop.VersionControl.Git
 			RetryUntilSuccess (monitor, () =>
 				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 					OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
-						monitor.ReportError (pushStatusErrors.Message, null);
+						LoggingService.LogWarning ("Failed to Push to {0}. Message was \"{1}\".", pushStatusErrors.Reference, pushStatusErrors.Message);
+						string message;
+						if (pushStatusErrors.Message == "Early EOF")
+							message = "Server connection has been reset. Please retry pushing.";
+						else
+							message = pushStatusErrors.Message;
+						
+						monitor.ReportError (message, null);
 						success = false;
 					},
 					CredentialsProvider = GitCredentials.TryGet
