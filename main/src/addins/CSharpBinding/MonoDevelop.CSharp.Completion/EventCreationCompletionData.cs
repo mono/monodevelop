@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class EventCreationCompletionData : AnonymousMethodCompletionData
 	{
-		readonly CSharpCompletionTextEditorExtension ext;
+		readonly RoslynCodeCompletionFactory factory;
 		readonly ITypeSymbol delegateType;
 		readonly INamedTypeSymbol curType;
 		readonly string varName;
@@ -59,20 +59,20 @@ namespace MonoDevelop.CSharp.Completion
 			return tooltipInfo;
 		}
 
-		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
 		{
 			this.curType = curType;
 			this.varName = varName;
 			this.DisplayText = varName;
 			this.delegateType = delegateType;
-			this.ext = ext;
+			this.factory = factory;
 			this.Icon = "md-newmethod";
 		}
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			// insert add/remove event handler code after +=/-=
-			var editor = ext.Editor;
+			var editor = factory.Ext.Editor;
 
 
 			bool AddSemicolon = true;

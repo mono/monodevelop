@@ -211,7 +211,7 @@ namespace MonoDevelop.CodeGeneration
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
 				foreach (ISymbol member in includedMembers) {
-					yield return CSharpCodeGenerator.CreateProtocolMemberImplementation (Options.DocumentContext, Options.Editor, Options.EnclosingType, Options.EnclosingPart.GetLocation (), member, false).Code;
+					yield return CSharpCodeGenerator.CreateProtocolMemberImplementation (Options.DocumentContext, Options.Editor, Options.EnclosingType, Options.EnclosingPart.GetLocation (), member, false, null).Code;
 				}
 			}
 		}

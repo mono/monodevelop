@@ -36,16 +36,16 @@ namespace MonoDevelop.CSharp.Completion
 {	
 	interface IExtensionContextHandler
 	{
-		void Init (CSharpCompletionTextEditorExtension extension);
+		void Init (RoslynCodeCompletionFactory factory);
 	}
 
 	class ProtocolMemberContextHandler : OverrideContextHandler, IExtensionContextHandler
 	{
-		CSharpCompletionTextEditorExtension extension;
+		RoslynCodeCompletionFactory factory;
 
-		void IExtensionContextHandler.Init (CSharpCompletionTextEditorExtension extension)
+		void IExtensionContextHandler.Init (RoslynCodeCompletionFactory factory)
 		{
-			this.extension = extension;
+			this.factory = factory;
 		}
 
 		protected override IEnumerable<ICompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (startToken.SpanStart, cancellationToken);
 			var declarationBegin = afterKeyword ? startToken.SpanStart : position;
 			foreach (var m in overridableMembers) {
-				var data = new ProtocolCompletionData (this, extension, declarationBegin, curType, m, afterKeyword);
+				var data = new ProtocolCompletionData (this, factory, declarationBegin, curType, m, afterKeyword);
 				result.Add (data);
 			}
 			return result;

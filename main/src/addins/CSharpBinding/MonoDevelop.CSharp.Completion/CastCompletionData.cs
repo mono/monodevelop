@@ -37,19 +37,19 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class CastCompletionData : RoslynCompletionData
 	{
-		readonly CSharpCompletionTextEditorExtension ext;
+		readonly RoslynCodeCompletionFactory factory;
 		readonly SemanticModel semanticModel;
 		readonly ISymbol member;
 		readonly SyntaxNode nodeToCast;
 		readonly ITypeSymbol targetType;
 
-		public CastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler)
+		public CastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler)
 		{
 			this.targetType = targetType;
 			this.nodeToCast = nodeToCast;
 			this.member = member;
 			this.semanticModel = semanticModel;
-			this.ext = ext;
+			this.factory = factory;
 			this.DisplayText = member.Name;
 		}
 
@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			var editor = ext.Editor;
+			var editor = factory.Ext.Editor;
 			var offset = window.CodeCompletionContext.TriggerOffset;
 			using (var undo = editor.OpenUndoGroup ()) {
 				editor.ReplaceText (offset, editor.CaretOffset - offset, member.Name);

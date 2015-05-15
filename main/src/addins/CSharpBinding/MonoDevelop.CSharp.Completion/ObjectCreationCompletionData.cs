@@ -104,14 +104,14 @@ namespace MonoDevelop.CSharp.Completion
 				if (overloads == null) {
 					overloads = new List<CompletionData> ();
 					foreach (var constructor in type.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
-						overloads.Add (new ObjectCreationCompletionData (keyHandler, ext, semanticModel, type, constructor, declarationBegin, afterKeyword) { insertSymbol = this.insertSymbol }); 
+						overloads.Add (new ObjectCreationCompletionData (keyHandler, factory, semanticModel, type, constructor, declarationBegin, afterKeyword) { insertSymbol = this.insertSymbol }); 
 					}
 				}
 				return overloads;
 			}
 		}
 
-		public ObjectCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, SemanticModel semanticModel, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword) : base(keyHandler, ext, symbol)
+		public ObjectCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword) : base(keyHandler, factory, symbol)
 		{
 			this.type = type;
 			this.semanticModel = semanticModel;

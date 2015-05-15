@@ -156,10 +156,6 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
 				var handler = (CompletionContextHandler)node.CreateInstance ();
-				var extHandler = handler as IExtensionContextHandler;
-				if (extHandler != null) {
-					extHandler.Init (this);
-				}
 				additionalContextHandlers.Add (handler);
 			}
 		}
@@ -392,7 +388,10 @@ namespace MonoDevelop.CSharp.Completion
 				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
 				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
 
-				var engine = new CompletionEngine (TypeSystemService.Workspace, new RoslynCodeCompletionFactory (this, semanticModel));
+				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
+				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
+					extHandler.Init (roslynCodeCompletionFactory);
+				var engine = new CompletionEngine(TypeSystemService.Workspace, roslynCodeCompletionFactory);
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);

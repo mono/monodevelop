@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		public ProtocolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, ext, member, member.ToDisplayString ())
+		public ProtocolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
 		{
 			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;
@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp.Completion
 			//			if (ext.Project != null)
 			//				generator.PolicyParent = ext.Project.Policies;
 
-			var result = CSharpCodeGenerator.CreateProtocolMemberImplementation (ext.DocumentContext, ext.Editor, currentType, currentType.Locations.First (), Symbol, isExplicit);
+			var result = CSharpCodeGenerator.CreateProtocolMemberImplementation (ext.DocumentContext, ext.Editor, currentType, currentType.Locations.First (), Symbol, isExplicit, factory.SemanticModel);
 			string sb = result.Code.TrimStart ();
 			int trimStart = result.Code.Length - sb.Length;
 			sb = sb.TrimEnd ();

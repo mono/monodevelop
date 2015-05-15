@@ -39,37 +39,37 @@ namespace MonoDevelop.CSharp.Refactoring
 {
 	class CSharpCodeGenerator // : CodeGenerator
 	{
-//		static CSharpAmbience ambience = new CSharpAmbience ();
-//		
-//		CSharpFormattingPolicy policy;
-//		
-//		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
-//			get {
-//				if (policy == null) {
-//					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-//					if (PolicyParent != null)
-//						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
-//					if (policy == null) {
-//						
-//						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
-//					}
-//				}
-//				return this.policy;
-//			}
-//		}
-//		
-//		public override PolicyContainer PolicyParent {
-//			get {
-//				return base.PolicyParent;
-//			}
-//			set {
-//				base.PolicyParent = value;
-//				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-//				policy = value.Get<CSharpFormattingPolicy> (types);
-//			}
-//		}
-//		
-//		
+		//		static CSharpAmbience ambience = new CSharpAmbience ();
+		//		
+		//		CSharpFormattingPolicy policy;
+		//		
+		//		public MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy Policy {
+		//			get {
+		//				if (policy == null) {
+		//					var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//					if (PolicyParent != null)
+		//						policy = PolicyParent.Get<CSharpFormattingPolicy> (types);
+		//					if (policy == null) {
+		//						
+		//						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
+		//					}
+		//				}
+		//				return this.policy;
+		//			}
+		//		}
+		//		
+		//		public override PolicyContainer PolicyParent {
+		//			get {
+		//				return base.PolicyParent;
+		//			}
+		//			set {
+		//				base.PolicyParent = value;
+		//				var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
+		//				policy = value.Get<CSharpFormattingPolicy> (types);
+		//			}
+		//		}
+		//		
+		//		
 		class CodeGenerationOptions
 		{
 			public bool ExplicitDeclaration { get; set; }
@@ -81,117 +81,126 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			public bool CreateProtocolMember { get; set; }
 
+			SemanticModel semanticModel;
 			public SemanticModel SemanticModel {
 				get {
-					var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
-					return model;
+					if (semanticModel == null) {
+						var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+						return model;
+					}
+					return semanticModel;
+				}
+
+				set {
+					semanticModel = value;
 				}
 			}
 
-			public string GetShortType (string ns, string name, int typeArguments = 0)
+			public string GetShortType(string ns, string name, int typeArguments = 0)
 			{
 				if (DocumentContext == null || Editor == null || SemanticModel == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
-				
-				var model = DocumentContext.ParsedDocument.GetAst<SemanticModel> ();
+
+				var model = DocumentContext.ParsedDocument.GetAst<SemanticModel>();
 
 				if (model == null)
 					return ns + "." + name;
 
-				var type = model.Compilation.GetTypeByMetadataName (ns + "." + name);
+				var type = model.Compilation.GetTypeByMetadataName(ns + "." + name);
 				if (type == null)
 					return ns + "." + name;
 
 
-				return type.ToMinimalDisplayString (model, Editor.CaretOffset); 
+				return type.ToMinimalDisplayString(model, Editor.CaretOffset, Ambience.LabelFormat);
 			}
 		}
 
-		static void AppendLine (StringBuilder sb)
+		static void AppendLine(StringBuilder sb)
 		{
-			sb.AppendLine ();
+			sb.AppendLine();
 		}
 
-//		public override string WrapInRegions (string regionName, string text)
-//		{
-//			StringBuilder result = new StringBuilder ();
-//			AppendIndent (result);
-//			result.Append ("#region ");
-//			result.Append (regionName);
-//			AppendLine (result);
-//			result.Append (text);
-//			AppendLine (result);
-//			AppendIndent (result);
-//			result.Append ("#endregion");
-//			return result.ToString ();
-//		}
+		//		public override string WrapInRegions (string regionName, string text)
+		//		{
+		//			StringBuilder result = new StringBuilder ();
+		//			AppendIndent (result);
+		//			result.Append ("#region ");
+		//			result.Append (regionName);
+		//			AppendLine (result);
+		//			result.Append (text);
+		//			AppendLine (result);
+		//			AppendIndent (result);
+		//			result.Append ("#endregion");
+		//			return result.ToString ();
+		//		}
 
-		static void AppendObsoleteAttribute (StringBuilder result, CodeGenerationOptions options, ISymbol entity)
+		static void AppendObsoleteAttribute(StringBuilder result, CodeGenerationOptions options, ISymbol entity)
 		{
 			// TODO: Roslyn port
-//			string reason;
-//			if (!entity.IsObsolete (out reason))
-//				return;
-//
-//			var implementingType = options.Part;
-//			var loc = implementingType.Region.End;
-//			
-//			var pf = implementingType.UnresolvedFile;
-//			var file = pf as CSharpUnresolvedFile;
-//
-//			result.Append ("[");
-//			var obsoleteRef = ReflectionHelper.ParseReflectionName ("System.ObsoleteAttribute");
-//			var resolvedType = obsoleteRef.Resolve (options.ImplementingType.Compilation);
-//			var shortType = resolvedType.Kind != TypeKind.Unknown ? CreateShortType (options.ImplementingType.Compilation, file, loc, resolvedType) : null;
-//			var text = shortType != null ? shortType.ToString () : "System.Obsolete";
-//			if (text.EndsWith ("Attribute", StringComparison.Ordinal))
-//				text = text.Substring (0, text.Length - "Attribute".Length);
-//			result.Append (text);
-//			if (!string.IsNullOrEmpty (reason)) {
-//				result.Append (" (\"");
-//				result.Append (reason);
-//				result.Append ("\")");
-//			}
-//			result.Append ("]");
-//			result.AppendLine ();
+			//			string reason;
+			//			if (!entity.IsObsolete (out reason))
+			//				return;
+			//
+			//			var implementingType = options.Part;
+			//			var loc = implementingType.Region.End;
+			//			
+			//			var pf = implementingType.UnresolvedFile;
+			//			var file = pf as CSharpUnresolvedFile;
+			//
+			//			result.Append ("[");
+			//			var obsoleteRef = ReflectionHelper.ParseReflectionName ("System.ObsoleteAttribute");
+			//			var resolvedType = obsoleteRef.Resolve (options.ImplementingType.Compilation);
+			//			var shortType = resolvedType.Kind != TypeKind.Unknown ? CreateShortType (options.ImplementingType.Compilation, file, loc, resolvedType) : null;
+			//			var text = shortType != null ? shortType.ToString () : "System.Obsolete";
+			//			if (text.EndsWith ("Attribute", StringComparison.Ordinal))
+			//				text = text.Substring (0, text.Length - "Attribute".Length);
+			//			result.Append (text);
+			//			if (!string.IsNullOrEmpty (reason)) {
+			//				result.Append (" (\"");
+			//				result.Append (reason);
+			//				result.Append ("\")");
+			//			}
+			//			result.Append ("]");
+			//			result.AppendLine ();
 		}
-//		
-//		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
-//		                                                                      IUnresolvedTypeDefinition part,
-//		                                                                      IUnresolvedMember member,
-//		                                                                      bool explicitDeclaration)
-//		{
-//			SetIndentTo (part);
-//			var options = new CodeGenerationOptions () {
-//				ExplicitDeclaration = explicitDeclaration,
-//				ImplementingType = implementingType,
-//				Part = part
-//			};
-//			ITypeResolveContext ctx;
-//
-//			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
-//			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-//			options.Document = doc;
-//
-//			if (member is IUnresolvedMethod)
-//				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
-//			if (member is IUnresolvedProperty)
-//				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
-//			if (member is IUnresolvedField)
-//				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
-//			if (member is IUnresolvedEvent)
-//				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
-//			throw new NotSupportedException ("member " +  member + " is not supported.");
-//		}
-		
-		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		//		
+		//		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+		//		                                                                      IUnresolvedTypeDefinition part,
+		//		                                                                      IUnresolvedMember member,
+		//		                                                                      bool explicitDeclaration)
+		//		{
+		//			SetIndentTo (part);
+		//			var options = new CodeGenerationOptions () {
+		//				ExplicitDeclaration = explicitDeclaration,
+		//				ImplementingType = implementingType,
+		//				Part = part
+		//			};
+		//			ITypeResolveContext ctx;
+		//
+		//			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
+		//			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
+		//			options.Document = doc;
+		//
+		//			if (member is IUnresolvedMethod)
+		//				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
+		//			if (member is IUnresolvedProperty)
+		//				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
+		//			if (member is IUnresolvedField)
+		//				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
+		//			if (member is IUnresolvedEvent)
+		//				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
+		//			throw new NotSupportedException ("member " +  member + " is not supported.");
+		//		}
+
+		public static CodeGeneratorMemberResult CreateOverridenMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = document,
-				Editor = editor
+				Editor = editor,
+				SemanticModel = model
 			};
 
 			if (member is IMethodSymbol)
@@ -202,10 +211,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				return GenerateCode ((IFieldSymbol)member, options);
 			if (member is IEventSymbol)
 				return GenerateCode ((IEventSymbol)member, options);
-			throw new NotSupportedException ("member " +  member + " is not supported.");
+			throw new NotSupportedException("member " + member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		public static CodeGeneratorMemberResult CreateProtocolMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			//			SetIndentTo (part);
 			var options = new CodeGenerationOptions {
@@ -214,7 +223,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				Part = part,
 				DocumentContext = document,
 				Editor = editor,
-				CreateProtocolMember = true
+				CreateProtocolMember = true,
+				SemanticModel = model
 			};
 
 			if (member is IMethodSymbol)
@@ -225,143 +235,144 @@ namespace MonoDevelop.CSharp.Refactoring
 				return GenerateCode ((IFieldSymbol)member, options);
 			if (member is IEventSymbol)
 				return GenerateCode ((IEventSymbol)member, options);
-			throw new NotSupportedException ("member " +  member + " is not supported.");
+			throw new NotSupportedException("member " + member + " is not supported.");
 		}
 
-		public static CodeGeneratorMemberResult CreatePartialMemberImplementation (DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration)
+		public static CodeGeneratorMemberResult CreatePartialMemberImplementation(DocumentContext document, TextEditor editor, ITypeSymbol implementingType, Location part, ISymbol member, bool explicitDeclaration, SemanticModel model)
 		{
 			var options = new CodeGenerationOptions {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
 				DocumentContext = document,
-				Editor = editor
+				Editor = editor,
+				SemanticModel = model
 			};
 
 			if (member is IMethodSymbol)
 				return GeneratePartialCode ((IMethodSymbol)member, options);
-			throw new NotSupportedException ("member " +  member + " is not supported.");
+			throw new NotSupportedException("member " + member + " is not supported.");
 		}
-//
-//		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
-//		{
-//			switch (braceStyle) {
-//			case BraceStyle.BannerStyle:
-//			case BraceStyle.EndOfLine:
-//				result.Append (" {");
-//				AppendLine (result);
-//				break;
-//			case BraceStyle.EndOfLineWithoutSpace:
-//				result.Append ("{");
-//				AppendLine (result);
-//				break;
-//			case BraceStyle.NextLine:
-//				AppendLine (result);
-//				AppendIndent (result);
-//				result.Append ("{");
-//				AppendLine (result);
-//				break;
-//			case BraceStyle.NextLineShifted:
-//				AppendLine (result);
-//				result.Append (GetIndent (IndentLevel + 1));
-//				result.Append ("{");
-//				AppendLine (result);
-//				break;
-//			case BraceStyle.NextLineShifted2:
-//				AppendLine (result);
-//				result.Append (GetIndent (IndentLevel + 1));
-//				result.Append ("{");
-//				AppendLine (result);
-//				IndentLevel++;
-//				break;
-//			default:
-//				goto case BraceStyle.NextLine;
-//			}
-//			IndentLevel++;
-//		}
-//		
-//		void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
-//		{
-//			switch (braceStyle) {
-//			case BraceStyle.EndOfLineWithoutSpace:
-//			case BraceStyle.NextLine:
-//			case BraceStyle.EndOfLine:
-//				IndentLevel --;
-//				AppendIndent (result);
-//				result.Append ("}");
-//				break;
-//			case BraceStyle.BannerStyle:
-//			case BraceStyle.NextLineShifted:
-//				AppendIndent (result);
-//				result.Append ("}");
-//				IndentLevel--;
-//				break;
-//			case BraceStyle.NextLineShifted2:
-//				IndentLevel--;
-//				AppendIndent (result);
-//				result.Append ("}");
-//				IndentLevel--;
-//				break;
-//			default:
-//				goto case BraceStyle.NextLine;
-//			}
-//		}
-//		
-//		void AppendIndent (StringBuilder result)
-//		{
-//			result.Append (GetIndent (IndentLevel));
-//		}
-//		
-		static void AppendReturnType (StringBuilder result, CodeGenerationOptions options, ITypeSymbol type)
+		//
+		//		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
+		//		{
+		//			switch (braceStyle) {
+		//			case BraceStyle.BannerStyle:
+		//			case BraceStyle.EndOfLine:
+		//				result.Append (" {");
+		//				AppendLine (result);
+		//				break;
+		//			case BraceStyle.EndOfLineWithoutSpace:
+		//				result.Append ("{");
+		//				AppendLine (result);
+		//				break;
+		//			case BraceStyle.NextLine:
+		//				AppendLine (result);
+		//				AppendIndent (result);
+		//				result.Append ("{");
+		//				AppendLine (result);
+		//				break;
+		//			case BraceStyle.NextLineShifted:
+		//				AppendLine (result);
+		//				result.Append (GetIndent (IndentLevel + 1));
+		//				result.Append ("{");
+		//				AppendLine (result);
+		//				break;
+		//			case BraceStyle.NextLineShifted2:
+		//				AppendLine (result);
+		//				result.Append (GetIndent (IndentLevel + 1));
+		//				result.Append ("{");
+		//				AppendLine (result);
+		//				IndentLevel++;
+		//				break;
+		//			default:
+		//				goto case BraceStyle.NextLine;
+		//			}
+		//			IndentLevel++;
+		//		}
+		//		
+		//		void AppendBraceEnd (StringBuilder result, BraceStyle braceStyle)
+		//		{
+		//			switch (braceStyle) {
+		//			case BraceStyle.EndOfLineWithoutSpace:
+		//			case BraceStyle.NextLine:
+		//			case BraceStyle.EndOfLine:
+		//				IndentLevel --;
+		//				AppendIndent (result);
+		//				result.Append ("}");
+		//				break;
+		//			case BraceStyle.BannerStyle:
+		//			case BraceStyle.NextLineShifted:
+		//				AppendIndent (result);
+		//				result.Append ("}");
+		//				IndentLevel--;
+		//				break;
+		//			case BraceStyle.NextLineShifted2:
+		//				IndentLevel--;
+		//				AppendIndent (result);
+		//				result.Append ("}");
+		//				IndentLevel--;
+		//				break;
+		//			default:
+		//				goto case BraceStyle.NextLine;
+		//			}
+		//		}
+		//		
+		//		void AppendIndent (StringBuilder result)
+		//		{
+		//			result.Append (GetIndent (IndentLevel));
+		//		}
+		//		
+		static void AppendReturnType(StringBuilder result, CodeGenerationOptions options, ITypeSymbol type)
 		{
 			if (type == null)
-				throw new ArgumentNullException ("type");
-			result.Append (type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start));
+				throw new ArgumentNullException("type");
+			result.Append(type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start, Ambience.LabelFormat));
 
-//			var implementingType = options.Part;
-//			var loc = implementingType.Region.End;
-//			
-//			var pf = implementingType.UnresolvedFile;
-//			var file = pf as CSharpUnresolvedFile;
-//			var resolved = type;
-//			if (resolved.Kind == TypeKind.Unknown) {
-//				result.Append (type.FullName);
-//				return;
-//			}
-//			var def = type.GetDefinition ();
-//			if (def != null) {
-//				using (var stringWriter = new System.IO.StringWriter ()) {
-//					var formatter = new TextWriterTokenWriter (stringWriter);
-//					stringWriter.NewLine = EolMarker; 
-//					var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
-//					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
-//					shortType.AcceptVisitor (visitor);
-//					
-//					var typeString = stringWriter.ToString ();
-//					if (typeString.StartsWith ("global::"))
-//						typeString = typeString.Substring ("global::".Length);
-//					result.Append (typeString);
-//				}
-//			} else {
-//				result.Append (new ICSharpCode.NRefactory.CSharp.CSharpAmbience ().ConvertType (type));
-//			}
+			//			var implementingType = options.Part;
+			//			var loc = implementingType.Region.End;
+			//			
+			//			var pf = implementingType.UnresolvedFile;
+			//			var file = pf as CSharpUnresolvedFile;
+			//			var resolved = type;
+			//			if (resolved.Kind == TypeKind.Unknown) {
+			//				result.Append (type.FullName);
+			//				return;
+			//			}
+			//			var def = type.GetDefinition ();
+			//			if (def != null) {
+			//				using (var stringWriter = new System.IO.StringWriter ()) {
+			//					var formatter = new TextWriterTokenWriter (stringWriter);
+			//					stringWriter.NewLine = EolMarker; 
+			//					var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
+			//					var shortType = CreateShortType (def.Compilation, file, loc, resolved);
+			//					shortType.AcceptVisitor (visitor);
+			//					
+			//					var typeString = stringWriter.ToString ();
+			//					if (typeString.StartsWith ("global::"))
+			//						typeString = typeString.Substring ("global::".Length);
+			//					result.Append (typeString);
+			//				}
+			//			} else {
+			//				result.Append (new ICSharpCode.NRefactory.CSharp.CSharpAmbience ().ConvertType (type));
+			//			}
 		}
-//		
-//		/*
-//		void ResolveReturnTypes ()
-//		{
-//			returnType = member.ReturnType;
-//			foreach (IUsing u in unit.Usings) {
-//				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
-//					if (alias.Key == member.ReturnType.FullName) {
-//						returnType = alias.Value;
-//						return;
-//					}
-//				}
-//			}
-//		}*/
-//
-//		
+		//		
+		//		/*
+		//		void ResolveReturnTypes ()
+		//		{
+		//			returnType = member.ReturnType;
+		//			foreach (IUsing u in unit.Usings) {
+		//				foreach (KeyValuePair<string, IReturnType> alias in u.Aliases) {
+		//					if (alias.Key == member.ReturnType.FullName) {
+		//						returnType = alias.Value;
+		//						return;
+		//					}
+		//				}
+		//			}
+		//		}*/
+		//
+		//		
 		static CodeGeneratorMemberResult GenerateCode (IFieldSymbol field, CodeGenerationOptions options)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -377,15 +388,15 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		static void AppendIndent (StringBuilder result)
 		{
-			
+
 		}
-		
+
 		static CodeGeneratorMemberResult GenerateCode (IEventSymbol evt, CodeGenerationOptions options)
 		{
 			StringBuilder result = new StringBuilder ();
 			AppendObsoleteAttribute (result, options, evt);
 			AppendModifiers (result, options, evt);
-			
+
 			result.Append ("event ");
 			AppendReturnType (result, options, evt.Type);
 			result.Append (" ");
@@ -415,7 +426,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			return new CodeGeneratorMemberResult (result.ToString ());
 		}
-		
+
 		static void AppendNotImplementedException (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
 		{
 			AppendIndent (result);
@@ -432,26 +443,26 @@ namespace MonoDevelop.CSharp.Refactoring
 			" see http://docs.xamarin.com/guides/ios/application_fundamentals/delegates,_protocols,_and_events"
 		};
 
-		static void AppendMonoTouchTodo (StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
+		static void AppendMonoTouchTodo(StringBuilder result, CodeGenerationOptions options, out int bodyStartOffset, out int bodyEndOffset)
 		{
 			AppendIndent (result);
 			bodyStartOffset = result.Length;
 			foreach (var cmt in MonoTouchComments) {
-				result.AppendLine ("//" + cmt);
+				result.AppendLine("//" + cmt);
 				AppendIndent (result);
 			}
-			result.Append ("throw new ");
-			result.Append (options.GetShortType ("System", "NotImplementedException"));
-			result.Append ("();");
+			result.Append("throw new ");
+			result.Append(options.GetShortType("System", "NotImplementedException"));
+			result.Append("();");
 
 			bodyEndOffset = result.Length;
 			AppendLine (result);
 		}
-		
-		static CodeGeneratorMemberResult GenerateCode (IMethodSymbol method, CodeGenerationOptions options)
+
+		static CodeGeneratorMemberResult GenerateCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
-			var result = new StringBuilder ();
+			var result = new StringBuilder();
 			AppendObsoleteAttribute (result, options, method);
 			AppendModifiers (result, options, method);
 			//			if (method.IsPartial)
@@ -460,23 +471,23 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append (" ");
 			if (options.ExplicitDeclaration) {
 				AppendReturnType (result, options, method.ContainingType);
-				result.Append (".");
+				result.Append(".");
 			}
 
-			result.Append (CSharpAmbience.FilterName (method.Name));
+			result.Append(CSharpAmbience.FilterName(method.Name));
 			if (method.TypeParameters.Length > 0) {
-				result.Append ("<");
+				result.Append("<");
 				for (int i = 0; i < method.TypeParameters.Length; i++) {
 					if (i > 0)
-						result.Append (", ");
-					var p = method.TypeParameters [i];
-					result.Append (CSharpAmbience.FilterName (p.Name));
+						result.Append(", ");
+					var p = method.TypeParameters[i];
+					result.Append(CSharpAmbience.FilterName(p.Name));
 				}
-				result.Append (">");
+				result.Append(">");
 			}
-			result.Append ("(");
+			result.Append("(");
 			AppendParameterList (result, options, method.Parameters, true);
-			result.Append (")");
+			result.Append(")");
 
 			var typeParameters = method.TypeParameters;
 
@@ -537,7 +548,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("return string.Format");
 					result.Append ("(\"[");
 					result.Append (options.ImplementingType.Name);
-					if (options.ImplementingType.GetMembers ().OfType<IPropertySymbol> ().Any ()) 
+					if (options.ImplementingType.GetMembers ().OfType<IPropertySymbol> ().Any ())
 						result.Append (": ");
 					int i = 0;
 					var properties = new List<IPropertySymbol> ();
@@ -545,7 +556,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					foreach (var property in options.ImplementingType.GetMembers ().OfType<IPropertySymbol> ()) {
 						if (properties.Any (p => p.Name == property.Name))
 							continue;
-						properties.Add (property); 
+						properties.Add (property);
 					}
 
 					foreach (var property in properties) {
@@ -633,65 +644,65 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append ("}");
 			}
-			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
+			return new CodeGeneratorMemberResult(result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
 
 
-		static CodeGeneratorMemberResult GeneratePartialCode (IMethodSymbol method, CodeGenerationOptions options)
+		static CodeGeneratorMemberResult GeneratePartialCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
 			int bodyStartOffset = -1, bodyEndOffset = -1;
-			var result = new StringBuilder ();
+			var result = new StringBuilder();
 			AppendObsoleteAttribute (result, options, method);
-			result.Append ("partial ");
+			result.Append("partial ");
 			AppendReturnType (result, options, method.ReturnType);
-			result.Append (" ");
+			result.Append(" ");
 			if (options.ExplicitDeclaration) {
 				AppendReturnType (result, options, method.ContainingType);
-				result.Append (".");
+				result.Append(".");
 			}
 
-			result.Append (CSharpAmbience.FilterName (method.Name));
+			result.Append(CSharpAmbience.FilterName(method.Name));
 			if (method.TypeParameters.Length > 0) {
-				result.Append ("<");
+				result.Append("<");
 				for (int i = 0; i < method.TypeParameters.Length; i++) {
 					if (i > 0)
-						result.Append (", ");
-					var p = method.TypeParameters [i];
-					result.Append (CSharpAmbience.FilterName (p.Name));
+						result.Append(", ");
+					var p = method.TypeParameters[i];
+					result.Append(CSharpAmbience.FilterName(p.Name));
 				}
-				result.Append (">");
+				result.Append(">");
 			}
-			result.Append ("(");
+			result.Append("(");
 			AppendParameterList (result, options, method.Parameters, true);
-			result.Append (")");
+			result.Append(")");
 
 			var typeParameters = method.TypeParameters;
-			result.AppendLine ("{");
+			result.AppendLine("{");
 			bodyStartOffset = result.Length;
 			AppendLine (result);
 			bodyEndOffset = result.Length;
-			result.AppendLine ("}");
-			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
+			result.AppendLine("}");
+			return new CodeGeneratorMemberResult(result.ToString(), bodyStartOffset, bodyEndOffset);
 		}
 
-//		class ThrowsExceptionVisitor : DepthFirstAstVisitor
-//		{
-//			public bool Throws = false;
-//			
-//			public override void VisitBlockStatement (BlockStatement blockStatement)
-//			{
-//				if (blockStatement.Statements.Count == 1 && blockStatement.Statements.First () is ThrowStatement)
-//					Throws = true;
-//			}
-//		}
+		//		class ThrowsExceptionVisitor : DepthFirstAstVisitor
+		//		{
+		//			public bool Throws = false;
+		//			
+		//			public override void VisitBlockStatement (BlockStatement blockStatement)
+		//			{
+		//				if (blockStatement.Statements.Count == 1 && blockStatement.Statements.First () is ThrowStatement)
+		//					Throws = true;
+		//			}
+		//		}
 
 		static void AppendParameterList (StringBuilder result, CodeGenerationOptions options, IList<IParameterSymbol> parameters, bool asParameterList)
 		{
 			for (int i = 0; i < parameters.Count; i++) {
 				if (i > 0)
 					result.Append (", ");
-				
-				var p = parameters[i];
+
+				var p = parameters [i];
 				if (asParameterList) {
 					if (p.RefKind == RefKind.Out)
 						result.Append ("out ");
@@ -699,41 +710,40 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("ref ");
 					if (p.IsParams)
 						result.Append ("params ");
-						AppendReturnType (result, options, p.Type);
-						result.Append (" ");
+					AppendReturnType (result, options, p.Type);
+					result.Append (" ");
 				}
 				result.Append (CSharpAmbience.FilterName (p.Name));
 				if (p.HasExplicitDefaultValue) {
 					result.Append (" = ");
 					if (p.ExplicitDefaultValue is Enum) {
 						var name = Enum.GetName (p.ExplicitDefaultValue.GetType (), p.ExplicitDefaultValue);
-						if (name != null)
-						{
+						if (name != null) {
 							AppendReturnType (result, options, p.Type);
-							result.Append ("."+ name);
+							result.Append ("." + name);
 						} else {
 							result.Append ("(");
 							AppendReturnType (result, options, p.Type);
-							result.Append (")" + p.ExplicitDefaultValue); 
+							result.Append (")" + p.ExplicitDefaultValue);
 						}
 					} else if (p.ExplicitDefaultValue is char) {
 						result.Append ("'" + p.ExplicitDefaultValue + "'");
-					} else if (p.ExplicitDefaultValue is string)  {
+					} else if (p.ExplicitDefaultValue is string) {
 						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue) + "\"");
-					} else if (p.ExplicitDefaultValue is bool)  {
+					} else if (p.ExplicitDefaultValue is bool) {
 						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
 					} else {
 						result.Append (p.ExplicitDefaultValue);
 					}
-				} 
+				}
 			}
 		}
 
-		public static IEnumerable<string> GetEnumLiterals(Type type)
+		public static IEnumerable<string> GetEnumLiterals (Type type)
 		{
 			return Enum.GetNames (type);
 		}
-		
+
 		static string GetModifiers (ITypeSymbol implementingType, Location implementingPart, ISymbol member)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -752,12 +762,12 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.Append ("internal ");
 			}
 
-			if (member.IsStatic) 
+			if (member.IsStatic)
 				result.Append ("static ");
 
 			return result.ToString ();
 		}
-		
+
 		static void AppendModifiers (StringBuilder result, CodeGenerationOptions options, ISymbol member)
 		{
 			//AppendIndent (result);
@@ -767,17 +777,17 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool isFromInterface = false;
 			if (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface) {
 				isFromInterface = true;
-// TODO: Type system conversion.
-//				if (options.ImplementingType != null) {
-//					foreach (var type in options.ImplementingType.BaseTypes) {
-//						if (type.Kind == TypeKind.Interface)
-//							continue;
-//						if (type.Members.Any (m => m.Name == member.Name && member.SymbolKind == m.SymbolKind /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
-//							isFromInterface = false;
-//							break;
-//						}
-//					}
-//				}
+				// TODO: Type system conversion.
+				//				if (options.ImplementingType != null) {
+				//					foreach (var type in options.ImplementingType.BaseTypes) {
+				//						if (type.Kind == TypeKind.Interface)
+				//							continue;
+				//						if (type.Members.Any (m => m.Name == member.Name && member.SymbolKind == m.SymbolKind /* && DomMethod.ParameterListEquals (member.Parameters, m.Parameters)*/ )) {
+				//							isFromInterface = false;
+				//							break;
+				//						}
+				//					}
+				//				}
 			}
 			if (member is IMethodSymbol) {
 				var method = (IMethodSymbol)member;
@@ -790,7 +800,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append ("override ");
 			}
 		}
-		
+
 		static CodeGeneratorMemberResult GenerateCode (IPropertySymbol property, CodeGenerationOptions options)
 		{
 			var regions = new List<CodeGeneratorBodyRegion> ();
@@ -804,10 +814,10 @@ namespace MonoDevelop.CSharp.Refactoring
 				AppendParameterList (result, options, property.Parameters, true);
 				result.Append ("]");
 			} else {
-//				if (options.ExplicitDeclaration) {
-//					result.Append (ambience.GetString (property.DeclaringType, OutputFlags.IncludeGenerics));
-//					result.Append (".");
-//				}
+				//				if (options.ExplicitDeclaration) {
+				//					result.Append (ambience.GetString (property.DeclaringType, OutputFlags.IncludeGenerics));
+				//					result.Append (".");
+				//				}
 				result.Append (CSharpAmbience.FilterName (property.Name));
 			}
 			result.AppendLine (" {");
@@ -844,7 +854,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 			}
-			
+
 			if (property.SetMethod != null) {
 				int bodyStartOffset, bodyEndOffset;
 				AppendIndent (result);
@@ -865,7 +875,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							if (property.Parameters.Length > 0)
 								result.Append (CSharpAmbience.FilterName (property.Parameters.First ().Name));
 							result.Append ("] = value;");
-						} else { 
+						} else {
 							result.Append ("base.");
 							result.Append (CSharpAmbience.FilterName (property.Name));
 							result.Append (" = value;");
@@ -886,113 +896,113 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			if (member == null || member.ContainingType == null)
 				return false;
-			return member.ContainingType.GetAttributes().Any (attr => attr.AttributeClass.MetadataName == "MonoTouch.Foundation.ModelAttribute");
+			return member.ContainingType.GetAttributes ().Any (attr => attr.AttributeClass.MetadataName == "MonoTouch.Foundation.ModelAttribute");
 		}
-		
-////		public override string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly)
-////		{
-////			SetIndentTo (implementingType);
-////			StringBuilder result = new StringBuilder ();
-////			AppendIndent (result);
-////			
-//////			if (modifiers != MonoDevelop.Projects.Dom.Modifiers.None) {
-//////				switch (modifiers) {
-//////				}
-//////				result.Append (ambience.GetString (modifiers));
-//////				result.Append (" ");
-//////			}
-////			var options = new CodeGenerationOptions () {
-////				ImplementingType = field.DeclaringTypeDefinition,
-////				Part = implementingType
-////			};
-////			result.Append ("public ");
-////			AppendReturnType (result, options, field.ReturnType);
-////			result.Append (" ");
-////			result.Append (propertyName);
-////			AppendBraceStart (result, Policy.PropertyBraceStyle);
-////			AppendIndent (result);
-////			
-////			result.Append ("get");
-////			AppendBraceStart (result, Policy.PropertyGetBraceStyle);
-////			AppendIndent (result);
-////			result.Append ("return this.");
-////			result.Append (CSharpAmbience.FilterName (field.Name));
-////			result.Append (";");
-////			AppendLine (result);
-////			AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
-////			AppendLine (result);
-////
-////			if (!readOnly) {
-////				AppendIndent (result);
-////				result.Append ("set");
-////				AppendBraceStart (result, Policy.PropertyGetBraceStyle);
-////				AppendIndent (result);
-////				result.Append (CSharpAmbience.FilterName (field.Name));
-////				result.Append (" = value;");
-////				AppendLine (result);
-////				AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
-////				AppendLine (result);
-////			}
-////			
-////			AppendBraceEnd (result, Policy.PropertyBraceStyle);
-////			return result.ToString ();
-////		}
-//		
-//		int CountBlankLines (IReadonlyTextDocument doc, int startLine)
-//		{
-//			int result = 0;
-//			IDocumentLine line;
-//			while ((line = doc.GetLine (startLine + result)) != null && doc.GetLineIndent (line).Length == line.Length) {
-//				result++;
-//			}
-//		
-//			return result;
-//		}
-//		
-//		static bool InsertUsingAfter (AstNode node)
-//		{
-//			return node is NewLineNode && IsCommentOrUsing (node.GetNextSibling (s => !(s is NewLineNode))) ||
-//				IsCommentOrUsing (node) || (node is PreProcessorDirective);
-//		}
-//
-//		static bool IsCommentOrUsing (AstNode node)
-//		{
-//			return node is ICSharpCode.NRefactory.CSharp.Comment ||
-//				node is UsingDeclaration ||
-//				node is UsingAliasDeclaration;
-//		}
-//		
 
-//		
-//		static string OutputNode (TextEditor editor, DocumentContext context, AstNode node)
-//		{
-//			using (var stringWriter = new System.IO.StringWriter ()) {
-////				formatter.Indentation = indentLevel;
-//				var formatter = new TextWriterTokenWriter (stringWriter);
-//				stringWriter.NewLine = editor.EolMarker;
-//
-//				var visitor = new CSharpOutputVisitor (formatter, null /* TODO: BROKEN DUE ROSLYN PORT (note: that code should be unused) */ );
-//				node.AcceptVisitor (visitor);
-//				return stringWriter.ToString ();
-//			}
-//		}
-//		
-//		
-//		public AstType CreateShortType (ICompilation compilation, CSharpUnresolvedFile parsedFile, TextLocation loc, IType fullType)
-//		{
-//			var csResolver = parsedFile.GetResolver (compilation, loc);
-//			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-//			return builder.ConvertType (fullType);			
-//		}
-//		
-//		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
-//		{
-//			//  TODO: BROKEN DUE ROSLYN PORT - needs to be ported to NR6
-////			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
-////			int newOffset;
-////			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
-////				doc.Editor.CaretOffset = newOffset;
-////			}
-//		}
+		////		public override string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly)
+		////		{
+		////			SetIndentTo (implementingType);
+		////			StringBuilder result = new StringBuilder ();
+		////			AppendIndent (result);
+		////			
+		//////			if (modifiers != MonoDevelop.Projects.Dom.Modifiers.None) {
+		//////				switch (modifiers) {
+		//////				}
+		//////				result.Append (ambience.GetString (modifiers));
+		//////				result.Append (" ");
+		//////			}
+		////			var options = new CodeGenerationOptions () {
+		////				ImplementingType = field.DeclaringTypeDefinition,
+		////				Part = implementingType
+		////			};
+		////			result.Append ("public ");
+		////			AppendReturnType (result, options, field.ReturnType);
+		////			result.Append (" ");
+		////			result.Append (propertyName);
+		////			AppendBraceStart (result, Policy.PropertyBraceStyle);
+		////			AppendIndent (result);
+		////			
+		////			result.Append ("get");
+		////			AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+		////			AppendIndent (result);
+		////			result.Append ("return this.");
+		////			result.Append (CSharpAmbience.FilterName (field.Name));
+		////			result.Append (";");
+		////			AppendLine (result);
+		////			AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+		////			AppendLine (result);
+		////
+		////			if (!readOnly) {
+		////				AppendIndent (result);
+		////				result.Append ("set");
+		////				AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+		////				AppendIndent (result);
+		////				result.Append (CSharpAmbience.FilterName (field.Name));
+		////				result.Append (" = value;");
+		////				AppendLine (result);
+		////				AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+		////				AppendLine (result);
+		////			}
+		////			
+		////			AppendBraceEnd (result, Policy.PropertyBraceStyle);
+		////			return result.ToString ();
+		////		}
+		//		
+		//		int CountBlankLines (IReadonlyTextDocument doc, int startLine)
+		//		{
+		//			int result = 0;
+		//			IDocumentLine line;
+		//			while ((line = doc.GetLine (startLine + result)) != null && doc.GetLineIndent (line).Length == line.Length) {
+		//				result++;
+		//			}
+		//		
+		//			return result;
+		//		}
+		//		
+		//		static bool InsertUsingAfter (AstNode node)
+		//		{
+		//			return node is NewLineNode && IsCommentOrUsing (node.GetNextSibling (s => !(s is NewLineNode))) ||
+		//				IsCommentOrUsing (node) || (node is PreProcessorDirective);
+		//		}
+		//
+		//		static bool IsCommentOrUsing (AstNode node)
+		//		{
+		//			return node is ICSharpCode.NRefactory.CSharp.Comment ||
+		//				node is UsingDeclaration ||
+		//				node is UsingAliasDeclaration;
+		//		}
+		//		
+
+		//		
+		//		static string OutputNode (TextEditor editor, DocumentContext context, AstNode node)
+		//		{
+		//			using (var stringWriter = new System.IO.StringWriter ()) {
+		////				formatter.Indentation = indentLevel;
+		//				var formatter = new TextWriterTokenWriter (stringWriter);
+		//				stringWriter.NewLine = editor.EolMarker;
+		//
+		//				var visitor = new CSharpOutputVisitor (formatter, null /* TODO: BROKEN DUE ROSLYN PORT (note: that code should be unused) */ );
+		//				node.AcceptVisitor (visitor);
+		//				return stringWriter.ToString ();
+		//			}
+		//		}
+		//		
+		//		
+		//		public AstType CreateShortType (ICompilation compilation, CSharpUnresolvedFile parsedFile, TextLocation loc, IType fullType)
+		//		{
+		//			var csResolver = parsedFile.GetResolver (compilation, loc);
+		//			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
+		//			return builder.ConvertType (fullType);			
+		//		}
+		//		
+		//		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
+		//		{
+		//			//  TODO: BROKEN DUE ROSLYN PORT - needs to be ported to NR6
+		////			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
+		////			int newOffset;
+		////			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
+		////				doc.Editor.CaretOffset = newOffset;
+		////			}
+		//		}
 	}
 }

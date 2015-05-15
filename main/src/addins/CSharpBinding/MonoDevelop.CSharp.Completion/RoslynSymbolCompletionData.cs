@@ -79,12 +79,13 @@ namespace MonoDevelop.CSharp.Completion
 
 
 		string text;
-		protected readonly CSharpCompletionTextEditorExtension ext;
+		protected readonly RoslynCodeCompletionFactory factory;
 
+		protected CSharpCompletionTextEditorExtension ext { get { return factory.Ext; } }
 
-		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, CSharpCompletionTextEditorExtension ext, ISymbol symbol, string text = null) : base (keyHandler)
+		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
 		{
-			this.ext = ext;
+			this.factory = factory;
 			this.text = text;
 			this.symbol = symbol;
 		}
@@ -111,10 +112,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			return CreateTooltipInformation (ext.Editor, ext.DocumentContext, Symbol, smartWrap);
+			return CreateTooltipInformation (ext.Editor, ext.DocumentContext, Symbol, smartWrap, model: factory.SemanticModel);
 		}
 		
-		public static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false)
+		public static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
 			if (ctx != null) {
 				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null)
@@ -125,6 +126,7 @@ namespace MonoDevelop.CSharp.Completion
 //			if (resolver == null)
 //				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
+			sig.SemanticModel = model;
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {
 				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);

@@ -56,7 +56,8 @@ namespace MonoDevelop.CSharp
 		readonly ColorScheme colorStyle;
 		readonly int offset;
 
-		public bool BreakLineAfterReturnType {
+		public bool BreakLineAfterReturnType
+		{
 			get;
 			set;
 		}
@@ -100,42 +101,42 @@ namespace MonoDevelop.CSharp
 			if (type.TypeKind == TypeKind.Pointer)
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
 			string displayString;
-
 			if (ctx != null) {
-				SemanticModel model = null;
-				var parsedDocument = ctx.ParsedDocument;
-				if (parsedDocument != null) {
-					model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
+				SemanticModel model = SemanticModel;
+				if (model == null) {
+					var parsedDocument = ctx.ParsedDocument;
+					if (parsedDocument != null) {
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
+					}
 				}
 				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
 				//this is tradeoff between performance and consistency between editor text(offset) and model, since
 				//ToMinimalDisplayString can use little outdated model this is fine
 				//but in case of Sketches where user usually is at end of document when typing text this can throw exception
 				//because offset can be >= Length
-				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length, offset)) : type.Name;
+				displayString = model != null ? type.ToMinimalDisplayString (model, Math.Min (model.SyntaxTree.Length - 1, offset), Ambience.LabelFormat) : type.Name;
 			} else {
-				displayString = type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
+				displayString = type.ToDisplayString (Ambience.LabelFormat);
 			}
-
 			var text = Ambience.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
-//		static ICompilation GetCompilation (IType type)
-//		{
-//			var def = type.GetDefinition ();
-//			if (def == null) {	
-//				var t = type;
-//				while (t is TypeWithElementType) {
-//					t = ((TypeWithElementType)t).ElementType;
-//				}
-//				if (t != null)
-//					def = t.GetDefinition ();
-//			}
-//			if (def != null)
-//				return def.Compilation;
-//			return null;
-//		}
+		//		static ICompilation GetCompilation (IType type)
+		//		{
+		//			var def = type.GetDefinition ();
+		//			if (def == null) {	
+		//				var t = type;
+		//				while (t is TypeWithElementType) {
+		//					t = ((TypeWithElementType)t).ElementType;
+		//				}
+		//				if (t != null)
+		//					def = t.GetDefinition ();
+		//			}
+		//			if (def != null)
+		//				return def.Compilation;
+		//			return null;
+		//		}
 
 		public string GetMarkup (ITypeSymbol type)
 		{
@@ -191,10 +192,10 @@ namespace MonoDevelop.CSharp
 				return null;
 			}
 			// TODO
-//			if (entity.IsObsolete (out reason)) {
-//				var attr = reason == null ? "[Obsolete]" : "[Obsolete(\"" + reason + "\")]";
-//				result = "<span size=\"smaller\">" + attr + "</span>" + Environment.NewLine + result;
-//			}
+			//			if (entity.IsObsolete (out reason)) {
+			//				var attr = reason == null ? "[Obsolete]" : "[Obsolete(\"" + reason + "\")]";
+			//				result = "<span size=\"smaller\">" + attr + "</span>" + Environment.NewLine + result;
+			//			}
 			return result;
 		}
 
@@ -226,15 +227,15 @@ namespace MonoDevelop.CSharp
 				result.Append (Highlight ("protected ", colorStyle.KeywordModifiers));
 				break;
 			case Accessibility.Private:
-// private is the default modifier - no need to show that
-//				result.Append (Highlight (" private", colorStyle.KeywordModifiers));
+				// private is the default modifier - no need to show that
+				//				result.Append (Highlight (" private", colorStyle.KeywordModifiers));
 				break;
 			case Accessibility.Public:
 				result.Append (Highlight ("public ", colorStyle.KeywordModifiers));
 				break;
 			}
 			var field = entity as IFieldSymbol;
-			
+
 			if (field != null) {
 				//  TODO!!!!
 				/*if (field.IsFixed) {
@@ -253,9 +254,9 @@ namespace MonoDevelop.CSharp
 					result.Append (Highlight ("abstract ", colorStyle.KeywordModifiers));
 			}
 
-//  TODO!!!!
-//			if (entity.IsShadowing)
-//				result.Append (Highlight ("new ", colorStyle.KeywordModifiers));
+			//  TODO!!!!
+			//			if (entity.IsShadowing)
+			//				result.Append (Highlight ("new ", colorStyle.KeywordModifiers));
 
 			var method = entity as IMethodSymbol;
 			if (method != null) {
@@ -398,16 +399,16 @@ namespace MonoDevelop.CSharp
 		void AppendTypeParameterList (StringBuilder result, INamedTypeSymbol def)
 		{
 			var parameters = def.TypeParameters;
-//			if (def.ContainingType != null)
-//				parameters = parameters.Skip (def.DeclaringTypeDefinition.TypeParameterCount);
+			//			if (def.ContainingType != null)
+			//				parameters = parameters.Skip (def.DeclaringTypeDefinition.TypeParameterCount);
 			AppendTypeParameters (result, parameters);
 		}
 
 		void AppendTypeArgumentList (StringBuilder result, INamedTypeSymbol def)
 		{
 			var parameters = def.TypeArguments;
-//			if (def.DeclaringType != null)
-//				parameters = parameters.Skip (def.DeclaringType.TypeParameterCount);
+			//			if (def.DeclaringType != null)
+			//				parameters = parameters.Skip (def.DeclaringType.TypeParameterCount);
 			AppendTypeParameters (result, parameters);
 		}
 
@@ -425,7 +426,7 @@ namespace MonoDevelop.CSharp
 			}
 			return result.ToString ();
 		}
-		
+
 		public static bool IsNullableType (ITypeSymbol type)
 		{
 			var original = type.OriginalDefinition;
@@ -486,12 +487,12 @@ namespace MonoDevelop.CSharp
 			int maxLength = GetMarkupLength (result.ToString ());
 			int length = maxLength;
 			var sortedTypes = new List<INamedTypeSymbol> (t.Interfaces);
-		
+
 			sortedTypes.Sort ((x, y) => GetTypeReferenceString (y).Length.CompareTo (GetTypeReferenceString (x).Length));
-			
+
 			if (t.BaseType != null && t.BaseType.SpecialType != SpecialType.System_Object)
 				sortedTypes.Insert (0, t.BaseType);
-			
+
 			if (t.TypeKind != TypeKind.Enum) {
 				foreach (var directBaseType in sortedTypes) {
 					if (first) {
@@ -514,7 +515,7 @@ namespace MonoDevelop.CSharp
 					length += GetMarkupLength (typeRef);
 					first = false;
 				}
-			} else { 
+			} else {
 				var enumBase = t.BaseType;
 				if (enumBase.SpecialType != SpecialType.System_Int32) {
 					result.AppendLine (" :");
@@ -583,7 +584,7 @@ namespace MonoDevelop.CSharp
 			var t = type;
 
 			var result = new StringBuilder ();
-			
+
 			var method = t.GetDelegateInvokeMethod ();
 			result.Append (GetTypeReferenceString (method.ReturnType));
 			if (BreakLineAfterReturnType) {
@@ -591,22 +592,22 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-			
-			
+
+
 			result.Append (FilterEntityName (t.Name));
-			
+
 			AppendTypeParameters (result, method.TypeParameters);
 
 			// TODO:
-//			if (document.GetOptionSet ().GetOption (CSharpFormattingOptions.SpaceBeforeDelegateDeclarationParentheses))
-//				result.Append (" ");
-			
+			//			if (document.GetOptionSet ().GetOption (CSharpFormattingOptions.SpaceBeforeDelegateDeclarationParentheses))
+			//				result.Append (" ");
+
 			result.Append ('(');
 			AppendParameterList (
-				result, 
-				method.Parameters, 
-				false /* formattingOptions.SpaceBeforeDelegateDeclarationParameterComma */, 
-				true /* formattingOptions.SpaceAfterDelegateDeclarationParameterComma*/, 
+				result,
+				method.Parameters,
+				false /* formattingOptions.SpaceBeforeDelegateDeclarationParameterComma */,
+				true /* formattingOptions.SpaceAfterDelegateDeclarationParameterComma*/,
 				false
 			);
 			result.Append (')');
@@ -628,24 +629,24 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-			
-			
+
+
 			result.Append (FilterEntityName (type.Name));
-			
+
 			if (type.TypeArguments.Length > 0) {
 				AppendTypeArgumentList (result, type);
 			} else {
 				AppendTypeParameterList (result, type);
 			}
-//  TODO
-//			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
-//				result.Append (" ");
-			
+			//  TODO
+			//			if (formattingOptions.SpaceBeforeMethodDeclarationParameterComma)
+			//				result.Append (" ");
+
 			result.Append ('(');
 			AppendParameterList (
-				result, 
-				method.Parameters, 
-				false /* formattingOptions.SpaceBeforeDelegateDeclarationParameterComma */, 
+				result,
+				method.Parameters,
+				false /* formattingOptions.SpaceBeforeDelegateDeclarationParameterComma */,
 				false /* formattingOptions.SpaceAfterDelegateDeclarationParameterComma */);
 			result.Append (')');
 			return result.ToString ();
@@ -655,7 +656,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (local == null)
 				throw new ArgumentNullException ("local");
-			
+
 			var result = new StringBuilder ();
 
 			if (local.IsConst)
@@ -667,9 +668,9 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-	
+
 			result.Append (FilterEntityName (local.Name));
-			
+
 			if (local.IsConst) {
 				if (options.GetOption (CSharpFormattingOptions.SpacingAroundBinaryOperator) == BinaryOperatorSpacingOptions.Single) {
 					result.Append (" = ");
@@ -678,18 +679,18 @@ namespace MonoDevelop.CSharp
 				}
 				AppendConstant (result, local.Type, local.ConstantValue);
 			}
-			
+
 			return result.ToString ();
 		}
-		
+
 		string GetParameterVariableMarkup (IParameterSymbol parameter)
 		{
 			if (parameter == null)
 				throw new ArgumentNullException ("parameter");
-			
+
 			var result = new StringBuilder ();
 			AppendParameter (result, parameter);
-			
+
 			if (parameter.HasExplicitDefaultValue) {
 				if (options.GetOption (CSharpFormattingOptions.SpacingAroundBinaryOperator) == BinaryOperatorSpacingOptions.Single) {
 					result.Append (" = ");
@@ -698,7 +699,7 @@ namespace MonoDevelop.CSharp
 				}
 				AppendConstant (result, parameter.Type, parameter.ExplicitDefaultValue);
 			}
-			
+
 			return result.ToString ();
 		}
 
@@ -724,20 +725,20 @@ namespace MonoDevelop.CSharp
 
 			result.Append (HighlightSemantically (FilterEntityName (field.Name), colorStyle.UserFieldDeclaration));
 
-//			if (field.IsFixed) {
-//				if (formattingOptions.SpaceBeforeArrayDeclarationBrackets) {
-//					result.Append (" [");
-//				} else {
-//					result.Append ("[");
-//				}
-//				if (formattingOptions.SpacesWithinBrackets)
-//					result.Append (" ");
-//				AppendConstant (result, field.Type, field.ConstantValue);
-//				if (formattingOptions.SpacesWithinBrackets)
-//					result.Append (" ");
-//				result.Append ("]");
-//			} else 
-			
+			//			if (field.IsFixed) {
+			//				if (formattingOptions.SpaceBeforeArrayDeclarationBrackets) {
+			//					result.Append (" [");
+			//				} else {
+			//					result.Append ("[");
+			//				}
+			//				if (formattingOptions.SpacesWithinBrackets)
+			//					result.Append (" ");
+			//				AppendConstant (result, field.Type, field.ConstantValue);
+			//				if (formattingOptions.SpacesWithinBrackets)
+			//					result.Append (" ");
+			//				result.Append ("]");
+			//			} else 
+
 			if (field.IsConst) {
 				if (isEnum && !(field.ContainingType.GetAttributes ().Any ((AttributeData attr) => attr.AttributeClass.Name == "FlagsAttribute" && attr.AttributeClass.ContainingNamespace.Name == "System"))) {
 					return result.ToString ();
@@ -786,14 +787,14 @@ namespace MonoDevelop.CSharp
 			} else {
 				AppendTypeParameters (result, method.TypeParameters);
 			}
-// TODO!
-//			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
-//				result.Append (" ");
+			// TODO!
+			//			if (formattingOptions.SpaceBeforeMethodDeclarationParentheses)
+			//				result.Append (" ");
 
 			result.Append ('(');
 			var parameters = method.Parameters;
-			AppendParameterList (result, parameters, 
-				false /* formattingOptions.SpaceBeforeMethodDeclarationParameterComma*/, 
+			AppendParameterList (result, parameters,
+				false /* formattingOptions.SpaceBeforeMethodDeclarationParameterComma*/,
 				false /* formattingOptions.SpaceAfterMethodDeclarationParameterComma*/);
 			result.Append (')');
 			return result.ToString ();
@@ -809,19 +810,19 @@ namespace MonoDevelop.CSharp
 			AppendModifiers (result, method);
 
 			result.Append (FilterEntityName (method.ContainingType.Name));
-//
-//			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
-//				result.Append (" ");
+			//
+			//			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
+			//				result.Append (" ");
 
 			result.Append ('(');
 			if (method.ContainingType.TypeKind == TypeKind.Delegate) {
 				result.Append (Highlight ("delegate", colorStyle.KeywordDeclaration) + " (");
-				AppendParameterList (result, method.ContainingType.GetDelegateInvokeMethod ().Parameters, 
+				AppendParameterList (result, method.ContainingType.GetDelegateInvokeMethod ().Parameters,
 					false /* formattingOptions.SpaceBeforeConstructorDeclarationParameterComma */,
 					false /* formattingOptions.SpaceAfterConstructorDeclarationParameterComma */);
 				result.Append (")");
 			} else {
-				AppendParameterList (result, method.Parameters, 
+				AppendParameterList (result, method.Parameters,
 					false /* formattingOptions.SpaceBeforeConstructorDeclarationParameterComma */,
 					false /* formattingOptions.SpaceAfterConstructorDeclarationParameterComma */);
 			}
@@ -833,7 +834,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (method == null)
 				throw new ArgumentNullException ("method");
-			
+
 			var result = new StringBuilder ();
 			AppendModifiers (result, method);
 			if (BreakLineAfterReturnType) {
@@ -841,16 +842,16 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-			
+
 			result.Append ("~");
 			result.Append (FilterEntityName (method.ContainingType.Name));
-			
-//			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
-//				result.Append (" ");
-			
+
+			//			if (formattingOptions.SpaceBeforeConstructorDeclarationParentheses)
+			//				result.Append (" ");
+
 			result.Append ('(');
-			AppendParameterList (result, method.Parameters, 
-				false /* formattingOptions.SpaceBeforeConstructorDeclarationParameterComma */, 
+			AppendParameterList (result, method.Parameters,
+				false /* formattingOptions.SpaceBeforeConstructorDeclarationParameterComma */,
 				false /* formattingOptions.SpaceAfterConstructorDeclarationParameterComma */);
 			result.Append (')');
 			return result.ToString ();
@@ -859,12 +860,12 @@ namespace MonoDevelop.CSharp
 		bool IsAccessibleOrHasSourceCode (ISymbol entity)
 		{
 			if (entity.DeclaredAccessibility == Accessibility.Public)
-				return true;	
+				return true;
 			return entity.IsDefinedInSource ();
-//			if (!entity.Region.Begin.IsEmpty)
-//				return true;
-//			var lookup = new MemberLookup (resolver.CurrentTypeDefinition, resolver.Compilation.MainAssembly);
-//			return lookup.IsAccessible (entity, false);
+			//			if (!entity.Region.Begin.IsEmpty)
+			//				return true;
+			//			var lookup = new MemberLookup (resolver.CurrentTypeDefinition, resolver.Compilation.MainAssembly);
+			//			return lookup.IsAccessible (entity, false);
 		}
 
 		string GetPropertyMarkup (IPropertySymbol property)
@@ -881,25 +882,25 @@ namespace MonoDevelop.CSharp
 			}
 
 			AppendExplicitInterfaces (result, property.ExplicitInterfaceImplementations.Cast<ISymbol> ());
-			
+
 			if (property.IsIndexer) {
 				result.Append (Highlight ("this", colorStyle.KeywordAccessors));
 			} else {
 				result.Append (HighlightSemantically (FilterEntityName (property.Name), colorStyle.UserPropertyDeclaration));
 			}
-			
+
 			if (property.Parameters.Length > 0) {
-//				if (formattingOptions.SpaceBeforeIndexerDeclarationBracket)
-//					result.Append (" ");
+				//				if (formattingOptions.SpaceBeforeIndexerDeclarationBracket)
+				//					result.Append (" ");
 				result.Append ("[");
-				AppendParameterList (result, property.Parameters, 
+				AppendParameterList (result, property.Parameters,
 					false /*formattingOptions.SpaceBeforeIndexerDeclarationParameterComma*/,
 					false /*formattingOptions.SpaceAfterIndexerDeclarationParameterComma*/);
 				result.Append ("]");
 			}
-			
+
 			result.Append (" {");
-			if (property.GetMethod != null&& IsAccessibleOrHasSourceCode (property.GetMethod)) {
+			if (property.GetMethod != null && IsAccessibleOrHasSourceCode (property.GetMethod)) {
 				if (property.GetMethod.DeclaredAccessibility != property.DeclaredAccessibility) {
 
 					result.Append (" ");
@@ -920,7 +921,7 @@ namespace MonoDevelop.CSharp
 			return result.ToString ();
 		}
 
-		
+
 		public TooltipInformation GetExternAliasTooltip (ExternAliasDirectiveSyntax externAliasDeclaration, DotNetProject project)
 		{
 			var result = new TooltipInformation ();
@@ -945,7 +946,7 @@ namespace MonoDevelop.CSharp
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
-			
+
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
 			switch (node.Kind ()) {
@@ -1279,7 +1280,7 @@ namespace MonoDevelop.CSharp
 					}
 				}
 
-				result.AddCategory ("Form", 
+				result.AddCategory ("Form",
 					Highlight ("out", colorStyle.KeywordParameter) + " parameter-name" + Environment.NewLine + Environment.NewLine +
 					"or" + Environment.NewLine + Environment.NewLine +
 					Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}"
@@ -1478,7 +1479,7 @@ namespace MonoDevelop.CSharp
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
-			
+
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
 			result.SignatureMarkup = Highlight (keyword.ToFullString (), colorStyle.KeywordTypes) + keywordSign;
@@ -1509,21 +1510,21 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-//		public TooltipInformation GetAliasedNamespaceTooltip (AliasNamespaceResolveResult resolveResult)
-//		{
-//			var result = new TooltipInformation ();
-//			result.SignatureMarkup = GetMarkup (resolveResult.Namespace);
-//			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
-//			return result;
-//		}
-//
-//		public TooltipInformation GetAliasedTypeTooltip (AliasTypeResolveResult resolveResult)
-//		{
-//			var result = new TooltipInformation ();
-//			result.SignatureMarkup = GetTypeMarkup (resolveResult.Type, true);
-//			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
-//			return result;
-//		}
+		//		public TooltipInformation GetAliasedNamespaceTooltip (AliasNamespaceResolveResult resolveResult)
+		//		{
+		//			var result = new TooltipInformation ();
+		//			result.SignatureMarkup = GetMarkup (resolveResult.Namespace);
+		//			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+		//			return result;
+		//		}
+		//
+		//		public TooltipInformation GetAliasedTypeTooltip (AliasTypeResolveResult resolveResult)
+		//		{
+		//			var result = new TooltipInformation ();
+		//			result.SignatureMarkup = GetTypeMarkup (resolveResult.Type, true);
+		//			result.AddCategory (GettextCatalog.GetString ("Alias information"), GettextCatalog.GetString ("Resolved using alias '{0}'", resolveResult.Alias));
+		//			return result;
+		//		}
 
 		string GetEventMarkup (IEventSymbol evt)
 		{
@@ -1538,22 +1539,27 @@ namespace MonoDevelop.CSharp
 			} else {
 				result.Append (" ");
 			}
-			
-			AppendExplicitInterfaces (result, evt.ExplicitInterfaceImplementations.Cast<ISymbol>());
+
+			AppendExplicitInterfaces (result, evt.ExplicitInterfaceImplementations.Cast<ISymbol> ());
 			result.Append (HighlightSemantically (FilterEntityName (evt.Name), colorStyle.UserEventDeclaration));
 			return result.ToString ();
 		}
 
 		bool grayOut;
 
-		bool GrayOut {
-			get {
+		bool GrayOut
+		{
+			get
+			{
 				return grayOut;
 			}
-			set {
+			set
+			{
 				grayOut = value;
 			}
 		}
+
+		public SemanticModel SemanticModel { get; internal set; }
 
 		void AppendParameterList (StringBuilder result, ImmutableArray<IParameterSymbol> parameterList, bool spaceBefore, bool spaceAfter, bool newLine = true)
 		{
@@ -1582,8 +1588,8 @@ namespace MonoDevelop.CSharp
 						result.Append ("=");
 					}
 					AppendConstant (result, parameter.Type, parameter.ExplicitDefaultValue);
-//					GrayOut = false;
-//					result.Append ("</span>");
+					//					GrayOut = false;
+					//					result.Append ("</span>");
 				}
 				if (doHighightParameter)
 					result.Append ("</u>");
@@ -1629,12 +1635,12 @@ namespace MonoDevelop.CSharp
 
 		static ulong GetUlong (string str)
 		{
-			try {	
+			try {
 				if (str [0] == '-')
 					return (ulong)long.Parse (str);
 				return ulong.Parse (str);
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while converting " + str + " to a number.", e); 
+				LoggingService.LogError ("Error while converting " + str + " to a number.", e);
 				return 0;
 			}
 		}
@@ -1663,9 +1669,9 @@ namespace MonoDevelop.CSharp
 				}
 				return;
 			}
-//			TODOδ
-//			while (IsNullableType (constantType))
-//				constantType = NullableType.GetUnderlyingType (constantType);
+			//			TODOδ
+			//			while (IsNullableType (constantType))
+			//				constantType = NullableType.GetUnderlyingType (constantType);
 			if (constantType.TypeKind == TypeKind.Enum) {
 				foreach (var field in constantType.GetMembers ().OfType<IFieldSymbol> ()) {
 					if (field.ConstantValue == constantValue) {
@@ -1722,8 +1728,8 @@ namespace MonoDevelop.CSharp
 		Gdk.Color AlphaBlend (Gdk.Color color, Gdk.Color color2, double alpha)
 		{
 			return new Gdk.Color (
-				(byte)((alpha * color.Red + (1 - alpha) * color2.Red) / 256), 
-				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256), 
+				(byte)((alpha * color.Red + (1 - alpha) * color2.Red) / 256),
+				(byte)((alpha * color.Green + (1 - alpha) * color2.Green) / 256),
 				(byte)((alpha * color.Blue + (1 - alpha) * color2.Blue) / 256)
 			);
 		}
@@ -1735,7 +1741,7 @@ namespace MonoDevelop.CSharp
 
 		HslColor AlphaBlend (HslColor color, HslColor color2, double alpha)
 		{
-			return (HslColor)AlphaBlend ((Gdk.Color )color, (Gdk.Color)color2, alpha);
+			return (HslColor)AlphaBlend ((Gdk.Color)color, (Gdk.Color)color2, alpha);
 		}
 
 		public string GetArrayIndexerMarkup (IArrayTypeSymbol arrayType)
@@ -1769,7 +1775,7 @@ namespace MonoDevelop.CSharp
 			result.Append (Highlight (" get", colorStyle.KeywordProperty) + ";");
 			result.Append (Highlight (" set", colorStyle.KeywordProperty) + ";");
 			result.Append (" }");
-			
+
 			return result.ToString ();
 		}
 
@@ -1799,33 +1805,33 @@ namespace MonoDevelop.CSharp
 			if (type != null) {
 				var loc = type.Locations.First ();
 				if (loc.IsInSource) {// TODO:
-//					MonoDevelop.Projects.Project project;
-//					
-//					if (type.TryGetSourceProject (out project)) {
-//						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
-//						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
-//						
-//						return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
-//							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (type.ContainingAssembly.Name)) + "</small>" + Environment.NewLine +
-//							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
-//					}
+									 //					MonoDevelop.Projects.Project project;
+									 //					
+									 //					if (type.TryGetSourceProject (out project)) {
+									 //						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
+									 //						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
+									 //						
+									 //						return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", AmbienceService.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
+									 //							"<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (type.ContainingAssembly.Name)) + "</small>" + Environment.NewLine +
+									 //							"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
+									 //					}
 				}
 				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", Ambience.EscapeText (type.ContainingNamespace.Name)) + "</small>" + Environment.NewLine) +
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
-			} 
+			}
 
 			if (entity.ContainingType != null) {
-						var loc = entity.Locations.First ();
+				var loc = entity.Locations.First ();
 				if (!loc.IsInSource) {
 					// TODO:
-//					MonoDevelop.Projects.Project project;
-//					if (entity.ContainingType.TryGetSourceProject (out project)) {
-//						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
-//						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
-//						return "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
-//								"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
-//								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
-//					}
+					//					MonoDevelop.Projects.Project project;
+					//					if (entity.ContainingType.TryGetSourceProject (out project)) {
+					//						var relPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, loc.SourceTree.FilePath);
+					//						var line = loc.SourceTree.GetLineSpan (loc.SourceSpan, true).StartLinePosition.Line;
+					//						return "<small>" + GettextCatalog.GetString ("Project:\t{0}", AmbienceService.EscapeText (project.Name)) + "</small>" + Environment.NewLine +
+					//								"<small>" + GettextCatalog.GetString ("From type:\t{0}", AmbienceService.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
+					//								"<small>" + GettextCatalog.GetString ("File:\t\t{0} (line {1})", AmbienceService.EscapeText (relPath), line) + "</small>";
+					//					}
 				}
 				return "<small>" + GettextCatalog.GetString ("From type:\t{0}", Ambience.EscapeText (entity.ContainingType.Name)) + "</small>" + Environment.NewLine +
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", Ambience.EscapeText (entity.ContainingAssembly.Name)) + "</small>";

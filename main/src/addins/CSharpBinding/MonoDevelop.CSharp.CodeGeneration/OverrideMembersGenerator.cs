@@ -141,7 +141,7 @@ namespace MonoDevelop.CodeGeneration
 				var currentType = Options.EnclosingType as INamedTypeSymbol;
 
 				foreach (ISymbol member in includedMembers) {
-					yield return CSharpCodeGenerator.CreateOverridenMemberImplementation (Options.DocumentContext, Options.Editor, currentType, currentType.Locations.First (), member, false).Code;
+					yield return CSharpCodeGenerator.CreateOverridenMemberImplementation (Options.DocumentContext, Options.Editor, currentType, currentType.Locations.First (), member, false, null).Code;
 				}
 			}
 		}
