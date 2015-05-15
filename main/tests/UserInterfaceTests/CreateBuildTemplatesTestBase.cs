@@ -44,8 +44,10 @@ namespace UserInterfaceTests
 		public readonly static Action EmptyAction = () => { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
-			Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.",
-				pollStep: 1000, timeout: 120000);
+			Ide.WaitUntil (() => {
+				var statusMsg = Ide.GetStatusMessage ();
+				return statusMsg == "Package updates are available." || statusMsg == "Packages are up to date.";
+			}, pollStep: 1000, timeout: 120000);
 		};
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
