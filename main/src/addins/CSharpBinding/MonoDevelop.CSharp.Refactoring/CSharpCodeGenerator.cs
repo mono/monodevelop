@@ -783,8 +783,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				var method = (IMethodSymbol)member;
 				if (!options.CreateProtocolMember)
 					result.Append ("override ");
-				if (method.IsAsync)
-					result.Append ("async ");
 			}
 
 			if (member is IPropertySymbol) {
