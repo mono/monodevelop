@@ -50,10 +50,10 @@
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
     <Compile Include="NewProjectController.cs" />
     <Compile Include="UITestDebug.cs" />
-    <Compile Include="MonoDevelopTests\DotNetTemplatesTest.cs" />
-    <Compile Include="MonoDevelopTests\ASPNETTemplateTests.cs" />
-    <Compile Include="MonoDevelopTests\MiscTemplatesTest.cs" />
     <Compile Include="TemplateTestOptions.cs" />
+    <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
+    <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
+    <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -67,8 +67,5 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelopTests\" />
   </ItemGroup>
 </Project>
