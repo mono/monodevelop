@@ -211,7 +211,8 @@ namespace MonoDevelop.CSharpBinding
 
 			var t = sm.Compilation.GetTypeByMetadataName (type); 
 			var foundMember = t.GetMembers().First (m => m.Name == member);
-			var data = new RoslynSymbolCompletionData (null, ext, foundMember);
+			var factory = new RoslynCodeCompletionFactory (ext, sm);
+			var data = new RoslynSymbolCompletionData (null, factory, foundMember);
 			data.DisplayFlags |= DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
 			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 

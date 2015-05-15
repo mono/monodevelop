@@ -213,7 +213,8 @@ namespace MonoDevelop.CSharpBinding
 
 			var t = model.Compilation.GetTypeByMetadataName (type); 
 			var method = member != null ? t.GetMembers().First (m => m.Name == member) : t.GetMembers ().OfType<IMethodSymbol> ().First (m => m.MethodKind == MethodKind.Constructor);
-			var data = new RoslynSymbolCompletionData (null, ext, method);
+			var factory = new RoslynCodeCompletionFactory (ext, model);
+			var data = new RoslynSymbolCompletionData (null, factory, method);
 			data.IsDelegateExpected = isDelegateExpected;
 			KeyActions ka = KeyActions.Process;
 			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
