@@ -304,7 +304,7 @@ namespace MonoDevelop.Ide.Templates
 			public ProjectReference Create ()
 			{
 				var refType = elem.GetAttribute ("type");
-				var projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
+				var projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"), null, GetMSBuildReferenceHintPath ());
 				string specificVersion = elem.GetAttribute ("SpecificVersion");
 				if (!string.IsNullOrEmpty (specificVersion))
 					projectReference.SpecificVersion = bool.Parse (specificVersion);
@@ -314,10 +314,15 @@ namespace MonoDevelop.Ide.Templates
 				string referenceOutputAssembly = elem.GetAttribute ("ReferenceOutputAssembly");
 				if (!string.IsNullOrEmpty (referenceOutputAssembly))
 					projectReference.ReferenceOutputAssembly = bool.Parse (referenceOutputAssembly);
+				return projectReference;
+			}
+
+			string GetMSBuildReferenceHintPath ()
+			{
 				string hintPath = elem.GetAttribute ("HintPath");
 				if (!string.IsNullOrEmpty (hintPath))
-					projectReference.ExtendedProperties ["_OriginalMSBuildReferenceHintPath"] = hintPath;
-				return projectReference;
+					return hintPath;
+				return null;
 			}
 
 			public string CreateCondition { get; private set; }

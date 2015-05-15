@@ -121,8 +121,13 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public ProjectReference (ReferenceType referenceType, string reference, string hintPath)
+		public ProjectReference (ReferenceType referenceType, string reference, string hintPath) : this (referenceType, reference, hintPath, null)
 		{
+		}
+
+		public ProjectReference (ReferenceType referenceType, string reference, string hintPath, string originalMSBuildReferenceHintPath)
+		{
+			this.originalMSBuildReferenceHintPath = originalMSBuildReferenceHintPath;
 			Init (referenceType, reference, hintPath);
 		}
 		
