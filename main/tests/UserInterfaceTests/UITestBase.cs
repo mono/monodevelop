@@ -27,23 +27,29 @@
 using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
+using System;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
 	public abstract class UITestBase
 	{
+		string projectScreenshotFolder;
+
+		public string ScreenshotsPath { get; private set; }
+
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
 		}
 
 		public string MonoDevelopBinPath { get; set; }
 
-		public UITestBase () {}
+		protected UITestBase () {}
 
-		public UITestBase (string mdBinPath)
+		protected UITestBase (string mdBinPath, string screenshotsFolder)
 		{
 			MonoDevelopBinPath = mdBinPath;
+			InitializeScreenShotPath (screenshotsFolder);
 		}
 
 		[SetUp]
@@ -59,6 +65,33 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			TestService.EndSession ();
+		}
+
+		void InitializeScreenShotPath (string folderName)
+		{
+			var pictureFolderName = Environment.GetFolderPath (Environment.SpecialFolder.MyPictures);
+			folderName = folderName ?? DateTime.Now.ToLongDateString ().Replace (",", "").Replace (' ', '-');
+			ScreenshotsPath = Path.Combine (pictureFolderName, "XamarinStudioUITests", folderName, GetType ().Name);
+			if (Directory.Exists (ScreenshotsPath))
+				Directory.Delete (ScreenshotsPath, true);
+			Directory.CreateDirectory (ScreenshotsPath);
+		}
+
+		protected void ScreenshotForTestSetup (string testName)
+		{
+			projectScreenshotFolder = Path.Combine (ScreenshotsPath, testName);
+			if (Directory.Exists (projectScreenshotFolder))
+				Directory.Delete (projectScreenshotFolder, true);
+			Directory.CreateDirectory (projectScreenshotFolder);
+		}
+
+		protected void TakeScreenShot (string stepName)
+		{
+			if (string.IsNullOrEmpty (projectScreenshotFolder))
+				throw new InvalidOperationException ("You need to initialize Screenshot functionality by calling 'ScreenshotForTestSetup (string testName)' first");
+			
+			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
+			Session.TakeScreenshot (screenshotPath);
 		}
 	}
 }

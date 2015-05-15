@@ -33,9 +33,8 @@ namespace UserInterfaceTests
 	public static class Util
 	{
 		static FilePath rootDir;
-		static int projectId = 1;
 
-		static string testRunIdentifier = DateTime.Now.ToString ("dddd-MMMM-dd-yyyy-HH-mm-ss");
+		static string testRunIdentifier = DateTime.Now.ToString ("dddd-dd-MM-yyyy-HH-mm-ss");
 
 		public static string TestRunId {
 			get {
@@ -61,7 +60,6 @@ namespace UserInterfaceTests
 		{
 			if (Directory.Exists (TmpDir))
 				Directory.Delete (TmpDir, true);
-			projectId = 1;
 		}
 
 		public static string ToValidPath (string path)

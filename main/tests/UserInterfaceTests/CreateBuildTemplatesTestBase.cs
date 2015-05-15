@@ -41,8 +41,6 @@ namespace UserInterfaceTests
 
 		public string OtherCategoryRoot { get { return "Other"; } }
 
-		public string ScreenshotsPath { get; private set; }
-
 		public readonly static Action EmptyAction = () => { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
@@ -52,26 +50,8 @@ namespace UserInterfaceTests
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
 
-		string projectScreenshotFolder;
-
-		protected CreateBuildTemplatesTestBase (string folderName)
+		protected CreateBuildTemplatesTestBase (string mdBinPath = null, string screenshotsFolder = null) : base (mdBinPath, screenshotsFolder)
 		{
-			Init (folderName);
-		}
-
-		protected CreateBuildTemplatesTestBase (string mdBinPath, string folderName) : base (mdBinPath)
-		{
-			Init (folderName);
-		}
-
-		void Init (string folderName)
-		{
-			var pictureFolderName = Environment.GetFolderPath (Environment.SpecialFolder.MyPictures);
-			folderName = folderName ?? DateTime.Now.ToLongDateString ().Replace (",", "").Replace (' ', '-');
-			ScreenshotsPath = Path.Combine (pictureFolderName, "XamarinStudioUITests", folderName, GetType ().Name);
-			if (Directory.Exists (ScreenshotsPath))
-				Directory.Delete (ScreenshotsPath, true);
-			Directory.CreateDirectory (ScreenshotsPath);
 		}
 
 		public string GenerateProjectName (string templateName)
@@ -95,7 +75,7 @@ namespace UserInterfaceTests
 			var templateName = templateOptions.TemplateKind;
 			var projectName = !string.IsNullOrEmpty (templateOptions.ProjectName) ? templateOptions.ProjectName: GenerateProjectName (templateName);
 
-			SetUpTemplateScreenshot (projectName);
+			ScreenshotForTestSetup (projectName);
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
 			try {
 				var newProject = new NewProjectController ();
@@ -178,20 +158,6 @@ namespace UserInterfaceTests
 		protected string GetSolutionDirectory ()
 		{
 			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
-		}
-
-		void SetUpTemplateScreenshot (string projectName)
-		{
-			projectScreenshotFolder = Path.Combine (ScreenshotsPath, projectName);
-			if (Directory.Exists (projectScreenshotFolder))
-				Directory.Delete (projectScreenshotFolder, true);
-			Directory.CreateDirectory (projectScreenshotFolder);
-		}
-
-		protected void TakeScreenShot (string stepName)
-		{
-			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
-			Session.TakeScreenshot (screenshotPath);
 		}
 	}
 }
