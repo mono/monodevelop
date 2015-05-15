@@ -667,9 +667,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to run the target
 		/// </param>
-		public async Task<BuildResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration);
+			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context);
 		}
 
 		public bool SupportsTarget (string target)
@@ -702,53 +702,64 @@ namespace MonoDevelop.Projects
 		/// build or clean. The default implementation delegates the execution to the more specific OnBuild
 		/// and OnClean methods, or to the item handler for other targets.
 		/// </remarks>
-		internal async protected virtual Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		internal protected virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (target == ProjectService.BuildTarget)
-				return await RunBuildTarget (monitor, configuration);
+				return RunBuildTarget (monitor, configuration, context);
 			else if (target == ProjectService.CleanTarget)
-				return await RunCleanTarget (monitor, configuration);
-			return await RunMSBuildTarget (monitor, target, configuration) ?? new BuildResult ();
+				return RunCleanTarget (monitor, configuration, context);
+			return RunMSBuildTarget (monitor, target, configuration, context);
 		}
 
 
-		async Task<BuildResult> DoRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		async Task<TargetEvaluationResult> DoRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (target == ProjectService.BuildTarget) {
 				SolutionItemConfiguration conf = GetConfiguration (configuration);
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return BuildResult.Cancelled;
+						return new TargetEvaluationResult (BuildResult.Cancelled);
 					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
-						return r;
+						return new TargetEvaluationResult (r);
 					}
-					return BuildResult.Success;
+					return new TargetEvaluationResult (BuildResult.Success);
 				}
 			} else if (target == ProjectService.CleanTarget) {
 				SetFastBuildCheckDirty ();
 				SolutionItemConfiguration config = GetConfiguration (configuration);
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return BuildResult.Cancelled;
+						return new TargetEvaluationResult (BuildResult.Cancelled);
 					if (!await config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
-						return r;
+						return new TargetEvaluationResult (r);
 					}
-					return BuildResult.Success;
+					return new TargetEvaluationResult (BuildResult.Success);
 				}
 			}
-			return await OnRunTarget (monitor, target, configuration);
+			return await OnRunTarget (monitor, target, configuration, context);
 		}
 
-		async Task<BuildResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		async Task<TargetEvaluationResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (CheckUseMSBuildEngine (configuration)) {
 				LogWriter logWriter = new LogWriter (monitor.Log);
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (configuration);
+
+				string[] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string[0];
+				string[] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string[0];
+
+				var globalProperties = new Dictionary<string, string> ();
+				if (context != null) {
+					var md = (ProjectItemMetadata) context.GlobalProperties;
+					md.SetProject (sourceProject);
+					foreach (var p in md.GetProperties ())
+						globalProperties [p.Name] = p.Value;
+				}
 
 				MSBuildResult result = null;
 				await Task.Run (async delegate {
@@ -763,7 +774,7 @@ namespace MonoDevelop.Projects
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
 					try {
-						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null, monitor.CancellationToken);
+						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						t1.End ();
 						if (t2 != null)
@@ -786,13 +797,38 @@ namespace MonoDevelop.Projects
 								IsWarning = err.IsWarning
 								});
 				}
-				return br;
+
+				// Get the evaluated properties
+
+				var properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
+				foreach (var p in result.Properties)
+					properties [p.Key] = new MSBuildPropertyEvaluated (sourceProject, p.Key, p.Value, p.Value);
+				
+				var props = new MSBuildPropertyGroupEvaluated (sourceProject);
+				props.SetProperties (properties);
+
+				// Get the evaluated items
+
+				var evItems = new List<IMSBuildItemEvaluated> ();
+				foreach (var it in result.Items.SelectMany (d => d.Value)) {
+					var eit = new MSBuildItemEvaluated (sourceProject, it.Name, it.ItemSpec, it.ItemSpec);
+					if (it.Metadata.Count > 0) {
+						var imd = (MSBuildPropertyGroupEvaluated) eit.Metadata;
+						properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
+						foreach (var m in it.Metadata)
+							properties [m.Key] = new MSBuildPropertyEvaluated (sourceProject, m.Key, m.Value, m.Value);
+						imd.SetProperties (properties);
+					}
+					evItems.Add (eit);
+				}
+
+				return new TargetEvaluationResult (br, evItems, props);
 			}
 			else {
 				CleanupProjectBuilder ();
 				if (this is DotNetProject) {
 					var handler = new MonoDevelop.Projects.Formats.MD1.MD1DotNetProjectHandler ((DotNetProject)this);
-					return await handler.RunTarget (monitor, target, configuration);
+					return new TargetEvaluationResult (await handler.RunTarget (monitor, target, configuration));
 				}
 			}
 			return null;
@@ -1031,26 +1067,26 @@ namespace MonoDevelop.Projects
 			return CheckUseMSBuildEngine (sel);
 		}
 
-		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return RunTarget (monitor, "Build", configuration);
+			return (await RunTarget (monitor, "Build", configuration)).BuildResult;
 		}
 
-		async Task<BuildResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration)
+		async Task<TargetEvaluationResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			// create output directory, if not exists
 			ProjectConfiguration conf = GetConfiguration (configuration) as ProjectConfiguration;
 			if (conf == null) {
 				BuildResult cres = new BuildResult ();
 				cres.AddError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration.ToString (), Name));
-				return cres;
+				return new TargetEvaluationResult (cres);
 			}
 			
 			StringParserService.Properties["Project"] = Name;
 			
 			if (UsingMSBuildEngine (configuration)) {
-				var result = await DoBuild (monitor, configuration);
-				if (!result.Failed)
+				var result = await RunMSBuildTarget (monitor, "Build", configuration, context);
+				if (!result.BuildResult.Failed)
 					SetFastBuildCheckClean (configuration);
 				return result;			
 			}
@@ -1079,7 +1115,7 @@ namespace MonoDevelop.Projects
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Build complete -- ") + errorString + ", " + warningString);
 			}
 
-			return res;
+			return new TargetEvaluationResult (res);
 		}
 
 		bool disableFastUpToDateCheck;
@@ -1301,27 +1337,29 @@ namespace MonoDevelop.Projects
 		/// This method is invoked to build the project. Support files such as files with the Copy to Output flag will
 		/// be copied before calling this method.
 		/// </remarks>
-		protected async virtual Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			BuildResult res = await RunMSBuildTarget (monitor, "Build", configuration);
-			return res ?? new BuildResult ();
+			return Task.FromResult (BuildResult.Success);
 		}
 
-		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return RunTarget (monitor, "Clean", configuration);
+			return (await RunTarget (monitor, "Clean", configuration)).BuildResult;
 		}
 
-		async Task<BuildResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration)
+		async Task<TargetEvaluationResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
-				return BuildResult.Success;
+				return new TargetEvaluationResult (BuildResult.Success);
 			}
 			
 			if (UsingMSBuildEngine (configuration)) {
-				return await DoClean (monitor, config.Selector);
+				var result = await RunMSBuildTarget (monitor, "Clean", configuration, context);
+				if (!result.BuildResult.Failed)
+					SetFastBuildCheckClean (configuration);
+				return result;			
 			}
 			
 			monitor.Log.WriteLine ("Removing output files...");
@@ -1343,12 +1381,12 @@ namespace MonoDevelop.Projects
 			
 			var res = await DoClean (monitor, config.Selector);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Clean complete"));
-			return res;
+			return new TargetEvaluationResult (res);
 		}
 
 		protected virtual Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return RunMSBuildTarget (monitor, "Clean", configuration);
+			return Task.FromResult (BuildResult.Success);
 		}
 
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
@@ -2530,9 +2568,9 @@ namespace MonoDevelop.Projects
 				Project.OnGetTypeTags (types);
 			}
 
-			internal protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+			internal protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 			{
-				return Project.DoRunTarget (monitor, target, configuration);
+				return Project.DoRunTarget (monitor, target, configuration, context);
 			}
 
 			internal protected override bool OnGetSupportsTarget (string target)

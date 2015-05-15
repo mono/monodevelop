@@ -866,6 +866,18 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var handler = new MD1DotNetProjectHandler (this);
+			return handler.RunTarget (monitor, "Build", configuration);
+		}
+
+		protected override Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var handler = new MD1DotNetProjectHandler (this);
+			return handler.RunTarget (monitor, "Clean", configuration);
+		}
+
 		protected internal override Task OnSave (ProgressMonitor monitor)
 		{
 			// Make sure the fx version is sorted out before saving

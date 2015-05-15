@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.CustomTools
 		public async Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			var buildResult = await file.Project.RunTarget (monitor, targetName, IdeApp.Workspace.ActiveConfiguration);
-			foreach (var err in buildResult.Errors) {
+			foreach (var err in buildResult.BuildResult.Errors) {
 				result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
 					IsWarning = err.IsWarning
 				});

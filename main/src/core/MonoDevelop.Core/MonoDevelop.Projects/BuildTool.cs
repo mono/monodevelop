@@ -152,7 +152,7 @@ namespace MonoDevelop.Projects
 					else {
 						var p = item as Project;
 						if (p != null) {
-							res = await p.RunTarget (monitor, command, configuration);
+							res = (await p.RunTarget (monitor, command, configuration)).BuildResult;
 						} else {
 							Console.WriteLine ("Target '" + command + " not supported");
 							return 1;

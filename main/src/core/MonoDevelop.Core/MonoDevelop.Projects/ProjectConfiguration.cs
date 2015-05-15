@@ -125,10 +125,19 @@ namespace MonoDevelop.Projects
 			pset.WriteObjectProperties (this, GetType (), true);
 		}
 
+		/// <summary>
+		/// Properties obtained while evaluating this configuration
+		/// </summary>
+		/// <remarks>This property set contains all properties resulting from evaluating
+		/// the project with the Configuration and Platform properties set for this
+		/// configuration.</remarks>
 		public IReadOnlyPropertySet EvaluatedProperties {
 			get { return evaluatedProperties ?? MSBuildEvaluatedPropertyCollection.Empty; }
 		}
 
+		/// <summary>
+		/// Property set where the properties for this configuration are defined.
+		/// </summary>
 		public IPropertySet Properties {
 			get {
 				if (properties == null) {

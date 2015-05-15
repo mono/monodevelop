@@ -60,9 +60,9 @@ namespace MonoDevelop.Projects
 			return next.SupportsFlavor (guid);
 		}
 
-		internal protected virtual Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		internal protected virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
-			return next.OnRunTarget (monitor, target, configuration);
+			return next.OnRunTarget (monitor, target, configuration, context);
 		}
 
 		internal protected virtual bool OnGetSupportsTarget (string target)

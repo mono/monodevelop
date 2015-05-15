@@ -46,8 +46,10 @@ namespace MonoDevelop.Projects
 
 		internal void SetProject (MSBuildProject project)
 		{
-			foreach (var p in propertyList)
+			foreach (var p in propertyList) {
 				p.Project = project;
+				p.ResolvePath ();
+			}
 		}
 
 		internal void LoadProperties (XmlElement element)

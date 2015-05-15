@@ -195,6 +195,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string[] runTargets,
 			string[] evaluateItems,
 			string[] evaluateProperties,
+			Dictionary<string, string> globalProperties,
 			CancellationToken cancellationToken
 		)
 		{
@@ -204,7 +205,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var t = Task.Run (() => {
 				try {
-					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, taskId);
+					Dictionary<string,string> props = new Dictionary<string, string> ();
+					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId);
 					if (res == null && cancellationToken.IsCancellationRequested) {
 						MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
 						return new MSBuildResult (new [] { err });
@@ -255,7 +257,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					try {
 						result = builder.Run (
 						            configurations, null, MSBuildVerbosity.Normal,
-						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, taskId
+						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
 					            );
 					} catch (Exception ex) {
 						CheckDisconnected ();

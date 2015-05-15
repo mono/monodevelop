@@ -160,7 +160,7 @@ namespace MonoDeveloper
 		static Regex regexError = new Regex (@"^(\s*(?<file>.*)\((?<line>\d*)(,(?<column>\d*[\+]*))?\)(:|)\s+)*(?<level>\w+)\s*(?<number>.*):\s(?<message>.*)",
 			RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-		protected override Task<BuildResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		protected override Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (target == ProjectService.BuildTarget)
 				target = "all";
@@ -169,7 +169,7 @@ namespace MonoDeveloper
 
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) Project.GetConfiguration (configuration);
 
-			return Task<BuildResult>.Factory.StartNew (delegate {
+			return Task<TargetEvaluationResult>.Factory.StartNew (delegate {
 				using (var output = new StringWriter ()) {
 					using (var tw = new LogTextWriter ()) {
 						tw.ChainWriter (output);
@@ -189,7 +189,7 @@ namespace MonoDeveloper
 								cr.Errors.Add (err);
 						}
 
-						return new BuildResult (cr, output.ToString ());
+						return new TargetEvaluationResult (new BuildResult (cr, output.ToString ()));
 					}
 				}
 			});
