@@ -155,13 +155,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public MonoDevelop.Projects.ProjectReference GetProjectReference ()
 		{
 			if (string.IsNullOrEmpty (assemblyLocation)) {
-				return new MonoDevelop.Projects.ProjectReference (
-				    MonoDevelop.Projects.ReferenceType.Package,
-				    assemblyName);
+				return MonoDevelop.Projects.ProjectReference.CreateAssemblyReference (assemblyName);
 			} else {
-				return new MonoDevelop.Projects.ProjectReference (
-				    MonoDevelop.Projects.ReferenceType.Assembly,
-				    assemblyLocation);
+				return MonoDevelop.Projects.ProjectReference.CreateAssemblyFileReference (assemblyLocation);
 			}
 		}
 	}

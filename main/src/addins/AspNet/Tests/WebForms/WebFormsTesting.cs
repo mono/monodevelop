@@ -76,8 +76,8 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			}
 
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Web"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System.Web"));
 			project.FileName = UnitTests.TestBase.GetTempFile (".csproj");
 			string file = UnitTests.TestBase.GetTempFile (extension);
 			project.AddFile (file);

@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Templates
 						string res = netProject.AssemblyContext.GetAssemblyFullName (aref, netProject.TargetFramework);
 						res = netProject.AssemblyContext.GetAssemblyNameForVersion (res, netProject.TargetFramework);
 						if (!ContainsReference (netProject, res))
-							netProject.References.Add (new ProjectReference (ReferenceType.Package, aref));
+							netProject.References.Add (ProjectReference.CreateAssemblyReference (aref));
 					}
 				}
 				

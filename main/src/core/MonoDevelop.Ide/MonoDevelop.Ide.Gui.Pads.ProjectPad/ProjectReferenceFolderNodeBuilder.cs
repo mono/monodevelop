@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			DotNetProject project = dataObject as DotNetProject;
 			if (project != null) {
-				ProjectReference pr = new ProjectReference (project);
+				ProjectReference pr = ProjectReference.CreateProjectReference (project);
 				DotNetProject p = CurrentNode.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
 				// Circular dependencies are not allowed.
 				if (HasCircularReference (project, p.Name))

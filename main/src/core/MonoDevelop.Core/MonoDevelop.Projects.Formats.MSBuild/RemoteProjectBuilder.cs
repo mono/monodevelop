@@ -205,7 +205,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var t = Task.Run (() => {
 				try {
-					Dictionary<string,string> props = new Dictionary<string, string> ();
 					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId);
 					if (res == null && cancellationToken.IsCancellationRequested) {
 						MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");

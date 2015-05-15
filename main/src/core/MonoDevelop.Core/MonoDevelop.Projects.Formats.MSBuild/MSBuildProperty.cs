@@ -289,12 +289,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	class ItemMetadataProperty: MSBuildProperty
 	{
 		string value;
+		string unevaluatedValue;
 		string name;
 
 		public ItemMetadataProperty (MSBuildProject project, string name): base (project, null)
 		{
 			NotifyChanges = false;
 			this.name = name;
+		}
+
+		public ItemMetadataProperty (MSBuildProject project, string name, string value, string unevaluatedValue): base (project, null)
+		{
+			NotifyChanges = false;
+			this.name = name;
+			this.value = value;
+			this.unevaluatedValue = unevaluatedValue;
 		}
 
 		internal override string GetName ()
@@ -304,7 +313,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal override void SetPropertyValue (string value)
 		{
-			this.value = value;
+			if (value != this.value)
+				this.value = unevaluatedValue = value;
 		}
 
 		internal override string GetPropertyValue ()
@@ -314,7 +324,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override string UnevaluatedValue {
 			get {
-				return value;
+				return unevaluatedValue;
 			}
 		}
 	}

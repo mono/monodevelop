@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Projects {
 			
 			if ((bool)store.GetValue (iter, ColSelected) == false) {
 				store.SetValue (iter, ColSelected, true);
-				selectDialog.AddReference (new ProjectReference (project));
+				selectDialog.AddReference (ProjectReference.CreateProjectReference (project));
 				
 			} else {
 				store.SetValue (iter, ColSelected, false);

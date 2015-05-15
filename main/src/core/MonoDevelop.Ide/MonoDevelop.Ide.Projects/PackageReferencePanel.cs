@@ -278,11 +278,14 @@ namespace MonoDevelop.Ide.Projects
 								found = true;
 							break;
 						case ReferenceType.Project:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var path = (FilePath)(string) store.GetValue (iter, ColFullName);
+							var project = refInfo.ResolveProject (configureProject.ParentSolution);
+							if (project != null && path.CanonicalPath == project.FileName.CanonicalPath)
 								found = true;
 							break;
 						case ReferenceType.Assembly:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var file = (FilePath)(string) store.GetValue (iter, ColFullName);
+							if (file.CanonicalPath == refInfo.HintPath.CanonicalPath)
 								found = true;
 							break;
 						}
@@ -333,10 +336,17 @@ namespace MonoDevelop.Ide.Projects
 			string fullName = (string)store.GetValue (iter, ColFullName);
             if ((bool)store.GetValue (iter, ColSelected) == false) {
                 store.SetValue (iter, ColSelected, true);
-				if (rt == ReferenceType.Package)
-					selectDialog.AddReference (new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
-				else
-					selectDialog.AddReference (new ProjectReference (rt, fullName));
+				switch (rt) {
+				case ReferenceType.Package:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
+					break;
+				case ReferenceType.Assembly:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyFileReference (fullName));
+					break;
+				case ReferenceType.Project:
+					selectDialog.AddReference (ProjectReference.CreateProjectReference (fullName));
+					break;
+				}
             }
             else {
                 store.SetValue (iter, ColSelected, false);

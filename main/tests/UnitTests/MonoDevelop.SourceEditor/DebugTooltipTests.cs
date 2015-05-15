@@ -61,9 +61,9 @@ namespace MonoDevelop.SourceEditor
 
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
 			project.Name = "test";
-			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "mscorlib"));
-			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, "System.Core"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("mscorlib"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (MonoDevelop.Projects.ProjectReference.CreateAssemblyReference ("System.Core"));
 
 			project.FileName = "test.csproj";
 			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 

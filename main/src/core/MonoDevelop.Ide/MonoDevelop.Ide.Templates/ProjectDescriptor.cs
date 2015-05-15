@@ -304,7 +304,11 @@ namespace MonoDevelop.Ide.Templates
 			public ProjectReference Create ()
 			{
 				var refType = elem.GetAttribute ("type");
-				var projectReference = new ProjectReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"), null, GetMSBuildReferenceHintPath ());
+				var projectReference = ProjectReference.CreateCustomReference ((ReferenceType)Enum.Parse (typeof(ReferenceType), refType), elem.GetAttribute ("refto"));
+				var hintPath = GetMSBuildReferenceHintPath ();
+				if (hintPath != null)
+					projectReference.Metadata.SetValue ("HintPath", hintPath);
+				
 				string specificVersion = elem.GetAttribute ("SpecificVersion");
 				if (!string.IsNullOrEmpty (specificVersion))
 					projectReference.SpecificVersion = bool.Parse (specificVersion);

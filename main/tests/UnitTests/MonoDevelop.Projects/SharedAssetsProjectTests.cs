@@ -126,7 +126,7 @@ namespace MonoDevelop.Projects
 			var r = pc3.References.FirstOrDefault (re => re.Reference == "Shared");
 			Assert.IsNull (r);
 
-			pc3.References.Add (new ProjectReference (pcs));
+			pc3.References.Add (ProjectReference.CreateProjectReference (pcs));
 
 			r = pc3.References.FirstOrDefault (re => re.Reference == "Shared");
 			Assert.IsNotNull (r);
@@ -199,7 +199,7 @@ namespace MonoDevelop.Projects
 
 			// Add a reference
 
-			var r = new ProjectReference (sp);
+			var r = ProjectReference.CreateProjectReference (sp);
 			pc.References.Add (r);
 			await sol.SaveAsync (Util.GetMonitor ());
 
@@ -300,7 +300,7 @@ namespace MonoDevelop.Projects
 
 			// Reference to shared is added before adding project to solution
 			var main = Services.ProjectService.CreateDotNetProject ("C#");
-			main.References.Add (new ProjectReference (shared));
+			main.References.Add (ProjectReference.CreateProjectReference (shared));
 			sol.RootFolder.AddItem (main);
 
 			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
@@ -315,7 +315,7 @@ namespace MonoDevelop.Projects
 
 			// Reference to shared is added before adding project to solution
 			var main = Services.ProjectService.CreateDotNetProject ("C#");
-			main.References.Add (new ProjectReference (shared));
+			main.References.Add (ProjectReference.CreateProjectReference (shared));
 			sol.RootFolder.AddItem (main);
 
 			sol.RootFolder.AddItem (shared);
@@ -332,7 +332,7 @@ namespace MonoDevelop.Projects
 			shared.AddFile ("Foo.cs");
 
 			var main = Services.ProjectService.CreateDotNetProject ("C#");
-			var pref = new ProjectReference (shared);
+			var pref = ProjectReference.CreateProjectReference (shared);
 			main.References.Add (pref);
 
 			sol.RootFolder.AddItem (main);
@@ -374,7 +374,7 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (pc2.Files.GetFile (sharedFile) == null);
 			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
 
-			pc2.References.Add (new ProjectReference (pcs));
+			pc2.References.Add (ProjectReference.CreateProjectReference (pcs));
 			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
 
 			await pc2.SaveAsync (Util.GetMonitor ());

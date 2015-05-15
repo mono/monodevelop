@@ -509,14 +509,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (asm == null)
 					return;
 				if (gproject.Project.AssemblyContext.GetPackagesFromFullName (asm).Length > 0) {
-					pref = new MonoDevelop.Projects.ProjectReference (ReferenceType.Package, asm);
+					pref = MonoDevelop.Projects.ProjectReference.CreateAssemblyReference (asm);
 				} else {
 					asm = gproject.Project.AssemblyContext.GetAssemblyLocation (asm, gproject.Project.TargetFramework);
-					pref = new MonoDevelop.Projects.ProjectReference (ReferenceType.Assembly, asm);
+					pref = MonoDevelop.Projects.ProjectReference.CreateAssemblyFileReference (asm);
 				}
 			}
 			else
-				pref = new MonoDevelop.Projects.ProjectReference (node.ReferenceType, node.Reference);
+				pref = MonoDevelop.Projects.ProjectReference.CreateCustomReference (node.ReferenceType, node.Reference);
 			
 			foreach (var pr in gproject.Project.References) {
 				if (pr.Reference == pref.Reference)

@@ -153,9 +153,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (0, project.Configurations.Count);
 			
 			InitializeProject (dir, project, "TestProject");
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Program.cs")));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Resource.xml"), BuildAction.EmbeddedResource));
 			project.Files.Add (new ProjectFile (Path.Combine (dir, "Excluded.xml"), BuildAction.Content));

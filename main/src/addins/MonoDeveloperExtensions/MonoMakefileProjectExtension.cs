@@ -152,7 +152,7 @@ namespace MonoDeveloper
 			if (args.Solution == Project.ParentSolution) {
 				foreach (string pref in refNames) {
 					Project p = Project.ParentSolution.FindProjectByName (pref);
-					if (p != null) Project.References.Add (new ProjectReference (p));
+					if (p != null) Project.References.Add (ProjectReference.CreateProjectReference (p));
 				}
 			}
 		}

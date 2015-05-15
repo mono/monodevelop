@@ -109,33 +109,92 @@ namespace MonoDevelop.Projects
 			var p = CreateProject ();
 			try {
 				ProjectItem item = new ProjectFile ("t1");
-				item.Metadata.SetValue ("a1", "v1");
-				item.Metadata.SetValue ("a2", "V2");
-				item.Metadata.SetValue ("a3", "v3");
-				item.Metadata.SetValue ("a4", "V4");
+				item.Metadata.SetValue ("a1", "e1");
+				item.Metadata.SetValue ("a2", "E2");
+				item.Metadata.SetValue ("a3", "e3");
+				item.Metadata.SetValue ("a4", "E4");
 				p.Items.Add (item);
 				await p.SaveAsync (new ProgressMonitor ());
+
+				var e = LoadElement (p.FileName, "t1");
+				AssertHasMetadata (e, "a1", "e1");
+				AssertHasMetadata (e, "a2", "E2");
+				AssertHasMetadata (e, "a3", "e3");
+				AssertHasMetadata (e, "a4", "E4");
 
 				var p2 = (DotNetProject) await Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), p.FileName);
 				p.Dispose ();
 
 				item = p2.Files [0];
 
-				item.Metadata.SetValue ("a1", "V1", preserveExistingCase: true);
-				item.Metadata.SetValue ("a2", "v2", preserveExistingCase: true);
-				item.Metadata.SetValue ("a3", "V3", preserveExistingCase: false);
-				item.Metadata.SetValue ("a4", "v4", preserveExistingCase: false);
+				Assert.IsNotNull (item.Metadata.GetProperty ("a1"));
+				Assert.IsNotNull (item.Metadata.GetProperty ("a2"));
+				Assert.IsNotNull (item.Metadata.GetProperty ("a3"));
+				Assert.IsNotNull (item.Metadata.GetProperty ("a4"));
+
+				Assert.AreEqual ("e1", item.Metadata.GetValue ("a1"));
+				Assert.AreEqual ("E2", item.Metadata.GetValue ("a2"));
+				Assert.AreEqual ("e3", item.Metadata.GetValue ("a3"));
+				Assert.AreEqual ("E4", item.Metadata.GetValue ("a4"));
+
+				item.Metadata.SetValue ("a1", "E1", preserveExistingCase: true);
+				item.Metadata.SetValue ("a2", "e2", preserveExistingCase: true);
+				item.Metadata.SetValue ("a3", "E3", preserveExistingCase: false);
+				item.Metadata.SetValue ("a4", "e4", preserveExistingCase: false);
 
 				await p2.SaveAsync (new ProgressMonitor ());
 
-				var e = LoadElement (p2.FileName, "t1");
+				e = LoadElement (p2.FileName, "t1");
 
 				Assert.NotNull (e);
 				Assert.AreEqual (4, e.ChildNodes.Count);
-				AssertHasMetadata (e, "a1", "v1");
-				AssertHasMetadata (e, "a2", "V2");
-				AssertHasMetadata (e, "a3", "V3");
-				AssertHasMetadata (e, "a4", "v4");
+				AssertHasMetadata (e, "a1", "e1");
+				AssertHasMetadata (e, "a2", "E2");
+				AssertHasMetadata (e, "a3", "E3");
+				AssertHasMetadata (e, "a4", "e4");
+			} finally {
+				if (File.Exists (p.FileName))
+					File.Delete (p.FileName);
+			}
+		}
+
+		[Test]
+		public async Task KeepUnevaluatedMetadata ()
+		{
+			var p = CreateProject ();
+			try {
+				var file = p.FileName;
+
+				ProjectItem item = new ProjectFile ("t1");
+				item.Metadata.SetValue ("Test", "$(MSBuildProjectDirectory)\\Test.txt");
+
+				p.Items.Add (item);
+
+				await p.SaveAsync (new ProgressMonitor ());
+				p.Dispose ();
+
+				p = (DotNetProject) await Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), file);
+				item = p.Files [0];
+
+				var testFile = p.BaseDirectory.Combine ("Test.txt");
+				var prop = item.Metadata.GetProperty ("Test");
+				Assert.AreEqual (testFile.ToString (), prop.GetPathValue ().ToString ());
+				Assert.AreEqual ("$(MSBuildProjectDirectory)\\Test.txt", prop.UnevaluatedValue);
+
+				prop.SetValue (testFile);
+
+				await p.SaveAsync (new ProgressMonitor ());
+				p.Dispose ();
+
+				// Nothing should change since the value is the same as the evaluated value
+
+				p = (DotNetProject) await Services.ProjectService.ReadSolutionItem (new ProgressMonitor (), file);
+				item = p.Files [0];
+
+				prop = item.Metadata.GetProperty ("Test");
+				Assert.AreEqual (testFile.ToString (), prop.GetPathValue ().ToString ());
+				Assert.AreEqual ("$(MSBuildProjectDirectory)\\Test.txt", prop.UnevaluatedValue);
+
 			} finally {
 				if (File.Exists (p.FileName))
 					File.Delete (p.FileName);

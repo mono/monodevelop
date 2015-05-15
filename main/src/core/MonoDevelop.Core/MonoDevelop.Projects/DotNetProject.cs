@@ -778,7 +778,7 @@ namespace MonoDevelop.Projects
 					return rInfo;
 				}
 			}
-			ProjectReference newReferenceInformation = new ProjectReference (ReferenceType.Assembly, filename);
+			ProjectReference newReferenceInformation = ProjectReference.CreateAssemblyFileReference (filename);
 			References.Add (newReferenceInformation);
 			return newReferenceInformation;
 		}

@@ -96,7 +96,9 @@ namespace MonoDevelop.Projects
 					if (!knownProps.Contains (prop.Name)) {
 						if (metadata == null)
 							metadata = new ProjectItemMetadata (project.MSBuildProject);
-						metadata.SetValue (prop.Name, buildItem.Metadata.GetValue (prop.Name));
+						// Get the evaluated value for the original metadata property
+						var p = new ItemMetadataProperty (project.MSBuildProject, prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue);
+						metadata.AddProperty (p);
 					}
 				}
 				if (knownProps.Count > 0) {
@@ -113,8 +115,11 @@ namespace MonoDevelop.Projects
 
 			if (metadata != null) {
 				metadata.SetProject (buildItem.Project);
-				foreach (var prop in metadata.GetProperties ())
-					buildItem.Metadata.SetValue (prop.Name, prop.Value);
+				foreach (var prop in metadata.GetProperties ()) {
+					// Use the UnevaluatedValue because if the property has changed, UnevaluatedValue will contain
+					// the new value, and if not, it will contain the old unevaluated value
+					buildItem.Metadata.SetValue (prop.Name, prop.UnevaluatedValue);
+				}
 				metadata.WriteObjectProperties (this, GetType(), true);
 			}
 		}

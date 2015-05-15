@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddReference (FilePath path)
 		{
-			selectDialog.AddReference (new ProjectReference (ReferenceType.Assembly, path));
+			selectDialog.AddReference (ProjectReference.CreateAssemblyFileReference (path));
 		}
 
 		void RemoveReference (FilePath path)

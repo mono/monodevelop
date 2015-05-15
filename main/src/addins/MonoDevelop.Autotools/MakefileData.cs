@@ -1191,7 +1191,7 @@ namespace MonoDevelop.Autotools
 
 		ProjectReference AddNewPackageReference (DotNetProject project, SystemAssembly sa)
 		{
-			ProjectReference pref = new ProjectReference (sa);
+			ProjectReference pref = ProjectReference.CreateAssemblyReference (sa);
 			project.References.Add (pref);
 			newPackageRefs [sa.Location] = pref;
 
@@ -1237,7 +1237,7 @@ namespace MonoDevelop.Autotools
 						} else {
 							// Try as a project ref
 							if (projects.ContainsKey (refstr)) {
-								sproj.References.Add (new ProjectReference (projects [refstr]));
+								sproj.References.Add (ProjectReference.CreateProjectReference (projects [refstr]));
 								toRemove.Add (refstr);
 							}
 						}
@@ -1248,7 +1248,7 @@ namespace MonoDevelop.Autotools
 
 					// Add all remaining unresolved refs as Assembly refs
 					foreach (string s in mdata.UnresolvedReferences.Keys)
-						sproj.References.Add (new ProjectReference (ReferenceType.Assembly, s));
+						sproj.References.Add (ProjectReference.CreateAssemblyFileReference (s));
 						
 					// Remove asm/project refs not found in UnresolvedReferences
 					foreach (ProjectReference pr in asmProjectRefs.Values)

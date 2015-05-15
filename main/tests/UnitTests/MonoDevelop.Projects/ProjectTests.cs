@@ -444,11 +444,11 @@ namespace MonoDevelop.Projects
 			var file = (FilePath) GetType ().Assembly.Location;
 			var asmName = Path.GetFileNameWithoutExtension (file);
 
-			var r = new ProjectReference (ReferenceType.Assembly, file);
+			var r = ProjectReference.CreateAssemblyFileReference (file);
 			Assert.AreEqual (asmName, r.Reference);
 			Assert.AreEqual (file, r.HintPath);
 
-			r = new ProjectReference (ReferenceType.Assembly, "Foo", file);
+			r = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "Foo", file);
 			Assert.AreEqual ("Foo", r.Reference);
 			Assert.AreEqual (file, r.HintPath);
 
@@ -515,7 +515,7 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (DotNetProject) sol.Items [0];
-			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
 
 			var refs = p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
 
@@ -535,7 +535,7 @@ namespace MonoDevelop.Projects
 			// This will force the loading of the builder
 			p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
 
-			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
 
 			var refs = p.GetReferencedAssemblies (ConfigurationSelector.Default).ToArray ();
 
@@ -635,10 +635,10 @@ namespace MonoDevelop.Projects
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var p = (DotNetProject) sol.Items [0];
-			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Xml.Linq"));
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Xml.Linq"));
 
 			var asm = p.AssemblyContext.GetAssemblies ().FirstOrDefault (a => a.Name == "System.Net");
-			p.References.Add (new ProjectReference (asm));
+			p.References.Add (ProjectReference.CreateAssemblyReference (asm));
 
 			await p.SaveAsync (Util.GetMonitor ());
 

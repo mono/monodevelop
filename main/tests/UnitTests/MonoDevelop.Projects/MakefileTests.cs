@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects
 			// Test saving
 			
 			p.References.Remove (xmlRef);
-			p.References.Add (new ProjectReference (ReferenceType.Package, "System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"));
+			p.References.Add (ProjectReference.CreateAssemblyReference ("System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"));
 			
 			p.Files.Remove (f);
 			p.Files.Add (new ProjectFile (Path.Combine (p.BaseDirectory, "Class1.cs"), BuildAction.Compile));

@@ -116,7 +116,7 @@ namespace ICSharpCode.PackageManagement
 		ProjectReference CreateReference(string referencePath)
 		{
 			string fullPath = GetFullPath(referencePath);
-			return new ProjectReference(ReferenceType.Assembly, fullPath);
+			return ProjectReference.CreateAssemblyFileReference (fullPath);
 		}
 		
 		void AddReferenceToProject(ProjectReference assemblyReference)
@@ -384,7 +384,7 @@ namespace ICSharpCode.PackageManagement
 		
 		ProjectReference CreateGacReference(string name)
 		{
-			return new ProjectReference(ReferenceType.Package, name);
+			return ProjectReference.CreateAssemblyReference (name);
 		}
 		
 		public string ResolvePath(string path)

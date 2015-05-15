@@ -323,7 +323,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			var referencesToFix = p.References.Where (r => r.GetItemsProjectPath () == ProjItemsPath && r.Reference != Name).ToList ();
 			foreach (var r in referencesToFix) {
 				p.References.Remove (r);
-				p.References.Add (new ProjectReference (this));
+				p.References.Add (ProjectReference.CreateProjectReference (this));
 			}
 
 			foreach (var pref in p.References.Where (r => r.ReferenceType == ReferenceType.Project && r.Reference == Name))

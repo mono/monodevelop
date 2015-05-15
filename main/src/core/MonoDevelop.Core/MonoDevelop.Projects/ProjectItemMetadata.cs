@@ -177,6 +177,17 @@ namespace MonoDevelop.Projects
 			return prop;
 		}
 
+		internal void AddProperty (ItemMetadataProperty prop)
+		{
+			if (properties == null) {
+				properties = new Dictionary<string, MSBuildProperty> ();
+				propertyList = new List<MSBuildProperty> ();
+			}
+			prop.Project = project;
+			properties [prop.Name] = prop;
+			propertyList.Add (prop);
+		}
+
 		MSBuildProperty FindExistingProperty (int index, int inc)
 		{
 			while (index >= 0 && index < propertyOrder.Count) {

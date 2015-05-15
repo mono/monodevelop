@@ -781,9 +781,9 @@ namespace MonoDevelop.Ide.Gui
 						this.adhocProject = newProject;
 
 						newProject.Name = "InvisibleProject";
-						newProject.References.Add (new ProjectReference (ReferenceType.Package, "mscorlib"));
-						newProject.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
-						newProject.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("mscorlib"));
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+						newProject.References.Add (ProjectReference.CreateAssemblyReference ("System.Core"));
 
 						newProject.FileName = "test.csproj";
 						adHocFile = Platform.IsWindows ? "C:\\a.cs" : "/a.cs";

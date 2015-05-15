@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 						using (MSBuildProject p = new MSBuildProject (msproject.EngineManager)) {
 							p.Load (projitemsFile);
 							Project.LoadProjectItems (p, ProjectItemFlags.Hidden | ProjectItemFlags.DontPersist, null);
-							var r = new ProjectReference (ReferenceType.Project, Path.GetFileNameWithoutExtension (projitemsFile));
+							var r = ProjectReference.CreateProjectReference (projitemsFile);
 							r.Flags = ProjectItemFlags.DontPersist;
 							r.SetItemsProjectPath (projitemsFile);
 							Project.References.Add (r);

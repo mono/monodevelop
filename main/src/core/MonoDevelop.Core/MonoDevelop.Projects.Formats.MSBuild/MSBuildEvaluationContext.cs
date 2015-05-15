@@ -68,17 +68,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			properties.Add ("MSBuildThisFile", Path.GetFileName (project.FileName));
 			properties.Add ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
 			properties.Add ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
-			properties.Add ("MSBuildThisFileFullPath", Path.GetFullPath (project.FileName));
+			properties.Add ("MSBuildThisFileFullPath", MSBuildProjectService.ToMSBuildPath (null, Path.GetFullPath (project.FileName)));
 			properties.Add ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
 
 			string dir = Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar;
-			properties.Add ("MSBuildThisFileDirectory", dir);
-			properties.Add ("MSBuildThisFileDirectoryNoRoot", dir.Substring (Path.GetPathRoot (dir).Length));
+			properties.Add ("MSBuildThisFileDirectory", MSBuildProjectService.ToMSBuildPath (null, dir));
+			properties.Add ("MSBuildThisFileDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
 			if (project.BaseDirectory.IsNullOrEmpty)
-				properties.Add ("MSBuildProjectDirectory", Environment.CurrentDirectory);
+				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, Environment.CurrentDirectory));
 			else
-				properties.Add ("MSBuildProjectDirectory", project.BaseDirectory);
+				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, project.BaseDirectory));
 
 			properties.Add ("MSBuildProjectDefaultTargets", project.DefaultTargets);
 
@@ -93,21 +93,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				var frameworkToolsPath = ToolLocationHelper.GetPathToDotNetFramework (TargetDotNetFrameworkVersion.VersionLatest);
 
-				properties.Add ("MSBuildBinPath", toolsPath);
-				properties.Add ("MSBuildToolsPath", toolsPath);
-				properties.Add ("MSBuildToolsRoot", Path.GetDirectoryName (toolsPath));
+				properties.Add ("MSBuildBinPath", MSBuildProjectService.ToMSBuildPath (null, toolsPath));
+				properties.Add ("MSBuildToolsPath", MSBuildProjectService.ToMSBuildPath (null, toolsPath));
+				properties.Add ("MSBuildToolsRoot", MSBuildProjectService.ToMSBuildPath (null, Path.GetDirectoryName (toolsPath)));
 				properties.Add ("MSBuildToolsVersion", toolsVersion);
 				properties.Add ("OS", "");
 
-				properties.Add ("MSBuildBinPath32", toolsPath);
+				properties.Add ("MSBuildBinPath32", MSBuildProjectService.ToMSBuildPath (null, toolsPath));
 
-				properties.Add ("MSBuildFrameworkToolsPath", frameworkToolsPath);
-				properties.Add ("MSBuildFrameworkToolsPath32", frameworkToolsPath);
+				properties.Add ("MSBuildFrameworkToolsPath", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
+				properties.Add ("MSBuildFrameworkToolsPath32", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 
 				if (!String.IsNullOrEmpty (extensionsPath)) {
-					properties.Add ("MSBuildExtensionsPath", extensionsPath);
-					properties.Add ("MSBuildExtensionsPath32", extensionsPath);
-					properties.Add ("MSBuildExtensionsPath64", extensionsPath);
+					var ep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+					properties.Add ("MSBuildExtensionsPath", ep);
+					properties.Add ("MSBuildExtensionsPath32", ep);
+					properties.Add ("MSBuildExtensionsPath64", ep);
 				}
 			}
 		}
