@@ -106,12 +106,12 @@ namespace MonoDevelop.Projects
 
 		public sealed override string Include {
 			get {
-				if (referenceType == ReferenceType.Project && base.Include == null) {
+				if (referenceType == ReferenceType.Project && OwnerProject != null) {
 					Project refProj = OwnerProject != null && OwnerProject.ParentSolution != null ? OwnerProject.ParentSolution.FindProjectByName (Reference) : null;
 					if (refProj != null)
-						base.Include = MSBuildProjectService.ToMSBuildPath (OwnerProject.ItemDirectory, refProj.FileName);
+						return MSBuildProjectService.ToMSBuildPath (OwnerProject.ItemDirectory, refProj.FileName);
 					else
-						base.Include = Reference;
+						return Reference;
 				}
 				return base.Include;
 			}

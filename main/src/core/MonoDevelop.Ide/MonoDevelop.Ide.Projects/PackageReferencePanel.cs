@@ -205,7 +205,7 @@ namespace MonoDevelop.Ide.Projects
 					    if (!configureProject.CanReferenceProject (netProject, out reason))
 							continue;
 					}
-					store.AppendValues (name, "", null, selected, projectEntry.Name, "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
+					store.AppendValues (name, "", null, selected, projectEntry.FileName.ToString(), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
 				}
 				
 				foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
