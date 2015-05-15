@@ -605,6 +605,9 @@ namespace MonoDevelop.VersionControl.Git
 					if (monitor != null)
 						monitor.ReportError (e.Message, null);
 					retry = false;
+				} catch (UserCancelledException) {
+					GitCredentials.StoreCredentials ();
+					retry = false;
 				} catch (LibGit2SharpException e) {
 					GitCredentials.InvalidateCredentials ();
 					if (monitor != null)
