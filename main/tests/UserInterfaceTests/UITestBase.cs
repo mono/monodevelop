@@ -35,6 +35,7 @@ namespace UserInterfaceTests
 	public abstract class UITestBase
 	{
 		string projectScreenshotFolder;
+		int testScreenshotIndex;
 
 		public string ScreenshotsPath { get; private set; }
 
@@ -80,6 +81,7 @@ namespace UserInterfaceTests
 
 		protected void ScreenshotForTestSetup (string testName)
 		{
+			testScreenshotIndex = 1;
 			projectScreenshotFolder = Path.Combine (ScreenshotsPath, testName);
 			if (Directory.Exists (projectScreenshotFolder))
 				Directory.Delete (projectScreenshotFolder, true);
@@ -90,7 +92,8 @@ namespace UserInterfaceTests
 		{
 			if (string.IsNullOrEmpty (projectScreenshotFolder))
 				throw new InvalidOperationException ("You need to initialize Screenshot functionality by calling 'ScreenshotForTestSetup (string testName)' first");
-			
+
+			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
 			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
 		}
