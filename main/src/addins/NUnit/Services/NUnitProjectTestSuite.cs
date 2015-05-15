@@ -151,16 +151,16 @@ namespace MonoDevelop.NUnit
 
 		public override void GetCustomTestRunner (out string assembly, out string type)
 		{
-			type = project.GlobalProperties.GetValue ("TestRunnerType");
-			var asm = project.GlobalProperties.GetValue ("TestRunnerAssembly");
+			type = project.ProjectProperties.GetValue ("TestRunnerType");
+			var asm = project.ProjectProperties.GetValue ("TestRunnerAssembly");
 			assembly = asm != null ? project.BaseDirectory.Combine (asm.ToString ()).ToString () : null;
 		}
 
 		public override void GetCustomConsoleRunner (out string command, out string args)
 		{
-			var r = project.GlobalProperties.GetValue ("TestRunnerCommand");
+			var r = project.ProjectProperties.GetValue ("TestRunnerCommand");
 			command = !string.IsNullOrEmpty (r) ? project.BaseDirectory.Combine (r).ToString () : null;
-			args = project.GlobalProperties.GetValue ("TestRunnerArgs");
+			args = project.ProjectProperties.GetValue ("TestRunnerArgs");
 			if (command == null && args == null) {
 				var guiUnit = project.References.FirstOrDefault (pref => pref.ReferenceType == ReferenceType.Assembly && StringComparer.OrdinalIgnoreCase.Equals (Path.GetFileName (pref.Reference), "GuiUnit.exe"));
 				if (guiUnit != null) {

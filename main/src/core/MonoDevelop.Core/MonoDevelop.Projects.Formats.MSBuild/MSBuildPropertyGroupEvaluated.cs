@@ -142,6 +142,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 	class MSBuildEvaluatedPropertyCollection: MSBuildPropertyGroupEvaluated, IMSBuildEvaluatedPropertyCollection
 	{
+		public readonly static MSBuildEvaluatedPropertyCollection Empty = new MSBuildEvaluatedPropertyCollection (null);
+
 		public MSBuildEvaluatedPropertyCollection (MSBuildProject parent): base (parent)
 		{
 		}

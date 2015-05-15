@@ -1,5 +1,5 @@
-﻿//
-// MSBuildValueType.cs
+//
+// IMetadataProperty.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,40 +23,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Xml;
+using Microsoft.Build.BuildEngine;
+using System.Xml.Linq;
+using MonoDevelop.Core;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	class MSBuildValueType
-	{
-		public static readonly MSBuildValueType Default = new MSBuildValueType ();
-		public static readonly MSBuildValueType DefaultPreserveCase = new PreserveCaseValueType ();
-		public static readonly MSBuildValueType Path = new PathValueType ();
-		public static readonly MSBuildValueType Boolean = new PreserveCaseValueType ();
-		public static readonly MSBuildValueType UnresolvedPath = new PathValueType ();
 
-		public virtual bool Equals (string ob1, string ob2)
-		{
-			return object.Equals (ob1, ob2);
-		}
-	}
-
-	class PathValueType: MSBuildValueType
+	public interface IMetadataProperty
 	{
-		public override bool Equals (string ob1, string ob2)
-		{
-			if (base.Equals (ob1, ob2))
-				return true;
-			return ob1.TrimEnd ('\\') == ob2.TrimEnd ('\\');
-		}
-	}
+		string Name { get; }
 
-	class PreserveCaseValueType: MSBuildValueType
-	{
-		public override bool Equals (string ob1, string ob2)
-		{
-			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
-		}
+		string Value { get; }
+
+		string UnevaluatedValue { get; }
+
+		T GetValue<T> ();
+
+		object GetValue (Type t);
+
+		FilePath GetPathValue (bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+
+		bool TryGetPathValue (out FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath));
+
+		void SetValue (string value, bool preserveCase = false, bool mergeToMainGroup = false);
+
+		void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false);
+
+		void SetValue (object value, bool mergeToMainGroup = false);
 	}
+	
 }
-

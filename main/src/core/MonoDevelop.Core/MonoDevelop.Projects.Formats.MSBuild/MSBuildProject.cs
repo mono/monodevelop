@@ -503,10 +503,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return null;
 		}
 
+		public MSBuildPropertyGroup CreatePropertyGroup ()
+		{
+			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
+			return new MSBuildPropertyGroup (this, elem);
+		}
+
+		public void AddPropertyGroup (MSBuildPropertyGroup group, bool insertAtEnd)
+		{
+			if (group.Project == null)
+				group.SetProject (this);
+			AddPropertyGroupElement (group.Element, insertAtEnd);
+			AddToItemCache (group);
+		}
+
 		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd)
 		{
 			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
-			
+			AddPropertyGroupElement (elem, insertAtEnd);
+			return GetGroup (elem);
+		}
+
+		void AddPropertyGroupElement (XmlElement elem, bool insertAtEnd)
+		{
+			if (elem.ParentNode != null)
+				throw new InvalidOperationException ("Group already belongs to a project");
+
 			if (insertAtEnd) {
 				XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:PropertyGroup[last()]", XmlNamespaceManager) as XmlElement;
 				if (last != null)
@@ -516,7 +538,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (first != null)
 					doc.DocumentElement.InsertBefore (elem, first);
 			}
-			
+
 			if (elem.ParentNode == null) {
 				XmlElement first = doc.DocumentElement.SelectSingleNode ("tns:ItemGroup", XmlNamespaceManager) as XmlElement;
 				if (first != null)
@@ -524,10 +546,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else
 					doc.DocumentElement.AppendChild (elem);
 			}
-			
+
 			XmlUtil.Indent (format, elem, true);
 			NotifyChanged ();
-			return GetGroup (elem);
 		}
 
 		void OnNodeAddedRemoved (object sender, XmlNodeChangedEventArgs e)

@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public XmlElement Element {
 			get { return elem; }
+			internal set { elem = value; }
 		}
 
 		protected XmlElement AddChildElement (string name)

@@ -39,32 +39,57 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		Dictionary<string,MSBuildProperty> properties;
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		MSBuildProject parent;
+		MSBuildProject project;
 		
-		public MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
+		internal MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
 		{
-			this.parent = parent;
+			this.project = parent;
+		}
+
+		internal static MSBuildPropertyGroup CreateEmpty ()
+		{
+			XmlDocument doc = new XmlDocument ();
+			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
+			return new MSBuildPropertyGroup (null, elem);
 		}
 
 		void InitProperties ()
 		{
-			lock (parent.ReadLock) {
-				if (properties != null)
-					return;
+			if (project != null) {
+				lock (project.ReadLock) {
+					if (properties != null)
+						return;
 
+					properties = new Dictionary<string,MSBuildProperty> ();
+					propertyList = new List<MSBuildProperty> ();
+
+					foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
+						MSBuildProperty prevSameName;
+						if (properties.TryGetValue (pelem.Name, out prevSameName))
+							prevSameName.Overwritten = true;
+
+						var prop = new MSBuildProperty (project, pelem);
+						prop.Owner = this;
+						propertyList.Add (prop);
+						properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+					}
+				}
+			} else if (properties == null) {
 				properties = new Dictionary<string,MSBuildProperty> ();
 				propertyList = new List<MSBuildProperty> ();
+			}
+		}
 
-				foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
-					MSBuildProperty prevSameName;
-					if (properties.TryGetValue (pelem.Name, out prevSameName))
-						prevSameName.Overwritten = true;
-
-					var prop = new MSBuildProperty (parent, pelem);
-					prop.Owner = this;
-					propertyList.Add (prop);
-					properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
-				}
+		internal void SetProject (MSBuildProject project)
+		{
+			this.project = project;
+			Element = (XmlElement) project.Document.ImportNode (Element, true);
+			var children = Element.ChildNodes.OfType<XmlElement> ().ToArray ();
+			for (int n=0; n<propertyList.Count; n++) {
+				var p = propertyList [n];
+				p.Element = children [n];
+				p.Project = project;
+				p.ResolvePath ();
 			}
 		}
 
@@ -75,7 +100,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public MSBuildProject Project {
 			get {
-				return this.parent;
+				return this.project;
 			}
 		}
 
@@ -200,8 +225,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else
 				Element.AppendChild (pelem);
 
-			XmlUtil.Indent (Project.TextFormat, pelem, false);
-			var prop = new MSBuildProperty (parent, pelem);
+			if (Project != null)
+				XmlUtil.Indent (Project.TextFormat, pelem, false);
+			
+			var prop = new MSBuildProperty (project, pelem);
 			prop.Owner = this;
 			properties [name] = prop;
 
@@ -212,7 +239,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (condition != null)
 				prop.Condition = condition;
-			parent.NotifyChanged ();
+			if (project != null)
+				project.NotifyChanged ();
 			return prop;
 		}
 
@@ -321,7 +349,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			properties.Remove (prop.Name);
 			propertyList.Remove (prop);
 			XmlUtil.RemoveElementAndIndenting (prop.Element);
-			parent.NotifyChanged ();
+			if (project != null)
+				project.NotifyChanged ();
 		}
 
 		public void RemoveAllProperties ()
@@ -336,7 +365,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				XmlUtil.RemoveElementAndIndenting (node);
 			properties.Clear ();
 			propertyList.Clear ();
-			parent.NotifyChanged ();
+			if (project != null)
+				project.NotifyChanged ();
 		}
 
 		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)

@@ -1,5 +1,5 @@
-﻿//
-// MSBuildValueType.cs
+//
+// MSBuildPropertyEvaluated.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,40 +23,45 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Xml;
+using Microsoft.Build.BuildEngine;
+using System.Xml.Linq;
+using MonoDevelop.Core;
+using System.Globalization;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	class MSBuildValueType
-	{
-		public static readonly MSBuildValueType Default = new MSBuildValueType ();
-		public static readonly MSBuildValueType DefaultPreserveCase = new PreserveCaseValueType ();
-		public static readonly MSBuildValueType Path = new PathValueType ();
-		public static readonly MSBuildValueType Boolean = new PreserveCaseValueType ();
-		public static readonly MSBuildValueType UnresolvedPath = new PathValueType ();
 
-		public virtual bool Equals (string ob1, string ob2)
+	class MSBuildPropertyEvaluated: MSBuildPropertyCore, IMSBuildPropertyEvaluated
+	{
+		string value;
+		string evaluatedValue;
+		string name;
+
+		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue): base (project, null)
 		{
-			return object.Equals (ob1, ob2);
+			this.evaluatedValue = evaluatedValue;
+			this.value = value;
+			this.name = name;
+		}
+
+		internal override string GetName ()
+		{
+			return name;
+		}
+
+		public bool IsImported { get; set; }
+
+		public override string UnevaluatedValue {
+			get { return value; }
+		}
+
+		internal override string GetPropertyValue ()
+		{
+			return evaluatedValue;
 		}
 	}
-
-	class PathValueType: MSBuildValueType
-	{
-		public override bool Equals (string ob1, string ob2)
-		{
-			if (base.Equals (ob1, ob2))
-				return true;
-			return ob1.TrimEnd ('\\') == ob2.TrimEnd ('\\');
-		}
-	}
-
-	class PreserveCaseValueType: MSBuildValueType
-	{
-		public override bool Equals (string ob1, string ob2)
-		{
-			return ob1.Equals (ob2, StringComparison.OrdinalIgnoreCase);
-		}
-	}
+	
 }
-

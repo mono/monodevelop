@@ -199,7 +199,7 @@ namespace MonoDevelop.Projects
 			get { return flavorGuids; }
 		}
 
-		public IPropertySet GlobalProperties {
+		public IPropertySet ProjectProperties {
 			get { return MSBuildProject.GetGlobalPropertyGroup (); }
 		}
 
@@ -220,6 +220,11 @@ namespace MonoDevelop.Projects
 				}
 				return defaultImports; 
 			}
+		}
+
+		new public ProjectConfiguration CreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return (ProjectConfiguration) base.CreateConfiguration (name, kind);
 		}
 
 		protected virtual void OnGetDefaultImports (List<string> imports)
@@ -1762,7 +1767,7 @@ namespace MonoDevelop.Projects
 				if (handledConfigurations.Contains (key))
 					continue;
 
-				LoadConfiguration (monitor, configData, conf, platform);
+				LoadConfiguration (monitor, cgrp, conf, platform);
 
 				handledConfigurations.Add (key);
 			}
@@ -1782,7 +1787,7 @@ namespace MonoDevelop.Projects
 							if (handledConfigurations.Contains (key))
 								continue;
 
-							LoadConfiguration (monitor, configData, conf, platform);
+							LoadConfiguration (monitor, cgrp, conf, platform);
 
 							handledConfigurations.Add (key);
 						}
@@ -1795,7 +1800,7 @@ namespace MonoDevelop.Projects
 							if (handledConfigurations.Contains (key))
 								continue;
 
-							LoadConfiguration (monitor, configData, conf, platform);
+							LoadConfiguration (monitor, cgrp, conf, platform);
 
 							handledConfigurations.Add (key);
 						}
@@ -1874,9 +1879,14 @@ namespace MonoDevelop.Projects
 			return config.IndexOf ('\'') == -1;
 		}
 
-		void LoadConfiguration (ProgressMonitor monitor, List<ConfigData> configData, string conf, string platform)
+		void LoadConfiguration (ProgressMonitor monitor, ConfigData cgrp, string conf, string platform)
 		{
 			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf);
+
+			// If the group is not fully specified it is not assigned to the configuration.
+			// In that case, a new group will be created
+			if (cgrp.FullySpecified)
+				config.Properties = cgrp.Group;
 
 			var pi = sourceProject.CreateInstance ();
 			pi.SetGlobalProperty ("Configuration", conf);
@@ -2103,14 +2113,22 @@ namespace MonoDevelop.Projects
 				// Write configuration data, creating new property groups if necessary
 
 				foreach (ProjectConfiguration conf in Configurations) {
-					ConfigData cdata = FindPropertyGroup (configData, conf);
+					MSBuildPropertyGroup pg = (MSBuildPropertyGroup) conf.Properties;
+					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 					if (cdata == null) {
-						MSBuildPropertyGroup pg = msproject.AddNewPropertyGroup (true);
+						msproject.AddPropertyGroup (pg, true);
 						pg.IgnoreDefaultValues = true;
 						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 						cdata = new ConfigData (conf.Name, conf.Platform, pg);
 						cdata.IsNew = true;
 						configData.Add (cdata);
+					} else {
+						// The configuration name may have changed
+						if (cdata.Config != conf.Name || cdata.Platform != conf.Platform) {
+							((MSBuildPropertyGroup)cdata.Group).Condition = BuildConfigCondition (conf.Name, conf.Platform);
+							cdata.Config = conf.Name;
+							cdata.Platform = conf.Platform;
+						}
 					}
 					((MSBuildPropertyGroup)cdata.Group).IgnoreDefaultValues = true;
 					cdata.Exists = true;
