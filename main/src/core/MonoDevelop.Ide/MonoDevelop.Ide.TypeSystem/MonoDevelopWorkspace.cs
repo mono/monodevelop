@@ -787,8 +787,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (monoProject != null) {
 					var pf = monoProject.GetProjectFile (fileName);
 					if (pf != null) {
-						TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource (text), BuildAction = pf.BuildAction },
-														   DesktopService.GetMimeTypeForUri (fileName));
+						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
+						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
+							TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType);
 					}
 				}
 

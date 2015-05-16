@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("fileName");
 
 			var parser = GetParser (mimeType, options.BuildAction);
-			if (parser == null)
+			if (parser == null || !parser.CanGenerateProjection (mimeType, options.BuildAction, options.Project?.SupportedLanguages))
 				return Task.FromResult ((ParsedDocumentProjection)null);
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
