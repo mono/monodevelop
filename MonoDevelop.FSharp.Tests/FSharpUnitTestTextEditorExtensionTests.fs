@@ -56,7 +56,7 @@ module Test =
 """
 
     let nunitRef =
-        ProjectReference (ReferenceType.Assembly, __SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.4/lib/nunit.framework.dll" )
+        ProjectReference.CreateAssemblyFileReference (FilePath (__SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.4/lib/nunit.framework.dll" ) )
 
     let createDoc (text:string) references =
         let doc,viewContent = TestHelpers.createDoc(text) references ""
