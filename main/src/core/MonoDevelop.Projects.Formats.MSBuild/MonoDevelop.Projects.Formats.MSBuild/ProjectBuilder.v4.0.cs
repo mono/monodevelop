@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, int taskId)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties, int taskId)
 		{
 			if (runTargets == null || runTargets.Length == 0)
 				throw new ArgumentException ("runTargets is empty");
