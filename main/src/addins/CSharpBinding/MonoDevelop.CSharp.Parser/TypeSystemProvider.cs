@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.CSharp.Parser
 {

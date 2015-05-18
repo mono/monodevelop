@@ -48,7 +48,6 @@ using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
 using MonoDevelop.Projects.SharedAssetsProjects;
-using Mono.CSharp.Nullable;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.TypeSystem
