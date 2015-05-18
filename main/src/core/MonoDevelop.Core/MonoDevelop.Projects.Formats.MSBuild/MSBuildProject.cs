@@ -235,7 +235,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			ProjectWriter sw = new ProjectWriter (format.ByteOrderMark);
 			sw.NewLine = format.NewLine;
 			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
-				OmitXmlDeclaration = !doc.ChildNodes.OfType<XmlDeclaration> ().Any ()
+				OmitXmlDeclaration = !doc.ChildNodes.OfType<XmlDeclaration> ().Any (),
+				NewLineChars = format.NewLine
 			});
 			doc.Save (xw);
 
