@@ -392,9 +392,11 @@ namespace MonoDevelop.Ide.Templates
 				tags ["FullName"] = ns.Length > 0 ? ns + "." + identifier : identifier;
 				
 				//some .NET languages may be able to use keywords as identifiers if they're escaped
-				System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
-				if (provider != null) {
-					tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
+				if (binding != null) {
+					System.CodeDom.Compiler.CodeDomProvider provider = binding.GetCodeDomProvider ();
+					if (provider != null) {
+						tags ["EscapedIdentifier"] = provider.CreateEscapedIdentifier (identifier);
+					}
 				}
 			}
 			
