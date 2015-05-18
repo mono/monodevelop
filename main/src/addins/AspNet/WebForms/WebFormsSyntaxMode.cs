@@ -28,8 +28,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;

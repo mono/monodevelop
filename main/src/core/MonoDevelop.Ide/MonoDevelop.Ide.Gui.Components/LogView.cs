@@ -772,6 +772,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				Completed (this, EventArgs.Empty);
 		}
 
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			console.Dispose ();
+		}
+
 		internal event EventHandler Completed;
 
 		class LogViewProgressConsole: OperationConsole
@@ -808,6 +814,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			public override void Debug (int level, string category, string message)
 			{
 				monitor.outputPad.WriteDebug (level, category, message);
+			}
+
+			public override void Dispose ()
+			{
+				if (monitor != null) {
+					var m = monitor; // Avoid recursive dispose, since the monitor also disposes this console
+					monitor = null;
+					m.Dispose ();
+				}
+				base.Dispose ();
 			}
 		}
 	}

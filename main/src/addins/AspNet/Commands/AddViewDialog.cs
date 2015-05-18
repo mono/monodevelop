@@ -37,7 +37,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms;
-using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 

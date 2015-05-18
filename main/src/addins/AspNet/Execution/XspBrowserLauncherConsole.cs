@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Execution
 			cancelReg = real.CancellationToken.Register (CancellationSource.Cancel);
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
 			cancelReg.Dispose ();
 			real.Dispose ();
