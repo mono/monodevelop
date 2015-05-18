@@ -181,6 +181,25 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("two", p.EvaluatedProperties.GetValue ("PropFromTest2"));
 			Assert.AreEqual ("three", p.EvaluatedProperties.GetValue ("PropFromFoo"));
 		}
+
+		[Test]
+		public void ChooseElement ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-choose-element", "project.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual ("One", p.EvaluatedProperties.GetValue ("Foo"));
+
+			var pi = p.CreateInstance ();
+			pi.SetGlobalProperty ("Configuration", "Release");
+			pi.Evaluate ();
+			Assert.AreEqual ("Two", pi.EvaluatedProperties.GetValue ("Foo"));
+
+			pi.SetGlobalProperty ("Configuration", "Alt");
+			pi.Evaluate ();
+			Assert.AreEqual ("Three", pi.EvaluatedProperties.GetValue ("Foo"));
+		}
 	}
 }
 

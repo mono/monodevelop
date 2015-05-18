@@ -159,18 +159,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			lock (pi.Project) {
 				// XmlDocument is not thread safe, so we need to lock while evaluating
 				context.InitEvaluation (pi.Project);
-				foreach (var ob in pi.Project.GetAllObjects ()) {
-					if (ob is MSBuildPropertyGroup)
-						Evaluate (pi, context, (MSBuildPropertyGroup)ob);
-					if (ob is MSBuildItemGroup)
-						Evaluate (pi, context, (MSBuildItemGroup)ob);
-					if (ob is MSBuildImportGroup)
-						Evaluate (pi, context, (MSBuildImportGroup)ob);
-					if (ob is MSBuildImport)
-						Evaluate (pi, context, (MSBuildImport)ob);
-					if (ob is MSBuildTarget)
-						Evaluate (pi, context, (MSBuildTarget)ob);
-				}
+				EvaluateObjects (pi, context, pi.Project.GetAllObjects ());
+			}
+		}
+
+		void EvaluateObjects (ProjectInfo pi, MSBuildEvaluationContext context, IEnumerable<MSBuildObject> objects)
+		{
+			foreach (var ob in objects) {
+				if (ob is MSBuildPropertyGroup)
+					Evaluate (pi, context, (MSBuildPropertyGroup)ob);
+				else if (ob is MSBuildItemGroup)
+					Evaluate (pi, context, (MSBuildItemGroup)ob);
+				else if (ob is MSBuildImportGroup)
+					Evaluate (pi, context, (MSBuildImportGroup)ob);
+				else if (ob is MSBuildImport)
+					Evaluate (pi, context, (MSBuildImport)ob);
+				else if (ob is MSBuildTarget)
+					Evaluate (pi, context, (MSBuildTarget)ob);
+				else if (ob is MSBuildChoose)
+					Evaluate (pi, context, (MSBuildChoose)ob);
 			}
 		}
 
@@ -340,14 +347,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import)
 		{
+			var pr = context.EvaluateString (import.Project);
+			project.Imports [import] = pr;
+
 			if (!string.IsNullOrEmpty (import.Condition)) {
 				string cond;
 				if (!context.Evaluate (import.Condition, out cond) || !SafeParseAndEvaluate (cond, context))
 					return;
 			}
-
-			var pr = context.EvaluateString (import.Project);
-			project.Imports [import] = pr;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
@@ -363,6 +370,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, string file)
 		{
+			if (!File.Exists (file))
+				return;
+			
 			var pref = LoadProject (file);
 			project.ReferencedProjects.Add (pref);
 
@@ -390,6 +400,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			} finally {
 				DisposeProjectInstance (prefProject);
+			}
+		}
+
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose)
+		{
+			foreach (var op in choose.GetOptions ()) {
+				string cond;
+				if (op.IsOtherwise || (context.Evaluate (op.Condition, out cond) && SafeParseAndEvaluate (cond, context))) {
+					EvaluateObjects (project, context, op.GetAllObjects ());
+					break;
+				}
 			}
 		}
 

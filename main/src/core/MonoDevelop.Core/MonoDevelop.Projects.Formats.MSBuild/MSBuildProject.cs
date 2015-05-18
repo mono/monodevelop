@@ -604,6 +604,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						case "ImportGroup": list.Add (GetImportGroup (elem)); break;
 						case "Import": list.Add (GetImport (elem)); break;
 						case "Target": list.Add (GetTarget (elem)); break;
+						case "Choose": list.Add (GetChoose (elem)); break;
 						}
 					}
 					allObjects = list.ToArray ();
@@ -878,7 +879,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			elemCache [it.Element] = it;
 		}
 
-		MSBuildPropertyGroup GetGroup (XmlElement elem)
+		internal MSBuildPropertyGroup GetGroup (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
@@ -888,7 +889,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return it;
 		}
 		
-		MSBuildItemGroup GetItemGroup (XmlElement elem)
+		internal MSBuildItemGroup GetItemGroup (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
@@ -898,7 +899,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return it;
 		}
 		
-		MSBuildImportGroup GetImportGroup (XmlElement elem)
+		internal MSBuildImportGroup GetImportGroup (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
@@ -915,12 +916,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanged ();
 		}
 
-		MSBuildTarget GetTarget (XmlElement elem)
+		internal MSBuildTarget GetTarget (XmlElement elem)
 		{
 			MSBuildObject ob;
 			if (elemCache.TryGetValue (elem, out ob))
 				return (MSBuildTarget) ob;
 			MSBuildTarget it = new MSBuildTarget (elem);
+			elemCache [elem] = it;
+			return it;
+		}
+
+		internal MSBuildChoose GetChoose (XmlElement elem)
+		{
+			MSBuildObject ob;
+			if (elemCache.TryGetValue (elem, out ob))
+				return (MSBuildChoose) ob;
+			MSBuildChoose it = new MSBuildChoose (this, elem);
 			elemCache [elem] = it;
 			return it;
 		}
