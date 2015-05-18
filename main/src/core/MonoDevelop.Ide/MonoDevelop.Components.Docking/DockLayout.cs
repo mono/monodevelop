@@ -84,9 +84,12 @@ namespace MonoDevelop.Components.Docking
 			return layout;
 		}
 
-		public void StoreAllocation ()
+		internal override void StoreAllocation ()
 		{
-			throw new NotImplementedException ();
+			base.StoreAllocation ();
+			var frame = Frame.GetAllocation ();
+			layoutWidth = (int)frame.Width;
+			layoutHeight = (int)frame.Height;
 		}
 	}
 }
