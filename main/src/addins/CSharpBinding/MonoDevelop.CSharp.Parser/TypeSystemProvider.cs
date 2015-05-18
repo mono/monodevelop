@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.Ide.Tasks;
-using Mono.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Refactoring.CodeActions;

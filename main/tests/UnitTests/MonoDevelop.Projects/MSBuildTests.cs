@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using System.Linq;
-using Mono.CSharp;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects.Formats.MSBuild;
 

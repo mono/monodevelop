@@ -21,13 +21,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Disassembler;
-using ICSharpCode.NRefactory.Utils;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.CSharp;
 using Cecil = Mono.Cecil;
 
 namespace ICSharpCode.Decompiler.ILAst
