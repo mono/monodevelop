@@ -131,7 +131,7 @@ namespace MonoDevelop.SourceEditor
 
 		TooltipInformation CreateTooltip (ToolTipData data, TextEditor editor, DocumentContext doc, int offset, Gdk.ModifierType modifierState)
 		{
-			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
+			bool createFooter = true; //(modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
 				TooltipInformation result;
 				var sig = new SignatureMarkupCreator (doc, offset);
