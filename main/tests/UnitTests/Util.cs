@@ -113,6 +113,14 @@ namespace UnitTests
 			return s.Replace ("\r\n", "\n").Replace ("\n", "\r\n");
 		}
 
+		public static string ToSystemEndings (string s)
+		{
+			if (!Platform.IsWindows)
+				return s.Replace ("\r\n", "\n");
+			else
+				return s;
+		}
+
 		public static string ReadAllWithWindowsEndings (string fileName)
 		{
 			return File.ReadAllText (fileName).Replace ("\r\n", "\n").Replace ("\n", "\r\n");

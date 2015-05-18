@@ -642,7 +642,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			var refXml = File.ReadAllText (p.FileName + ".reference-added");
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".reference-added"));
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
@@ -662,7 +662,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			var refXml = File.ReadAllText (p.FileName + ".build-action-change1");
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".build-action-change1"));
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
@@ -671,7 +671,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			refXml = File.ReadAllText (p.FileName + ".build-action-change2");
+			refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".build-action-change2"));
 			savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);

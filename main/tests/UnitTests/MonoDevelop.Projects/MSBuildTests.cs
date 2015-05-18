@@ -242,7 +242,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -268,7 +268,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -289,7 +289,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -311,7 +311,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -333,7 +333,7 @@ namespace MonoDevelop.Projects
 			
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 		
 		[Test]
@@ -911,7 +911,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved1"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved1")), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -931,7 +931,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			Assert.AreEqual (File.ReadAllText (p.FileName + ".saved2"), File.ReadAllText (p.FileName));
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved2")), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -1105,7 +1105,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			refXml = File.ReadAllText (projFile + ".saved2");
+			refXml = Util.ToSystemEndings (File.ReadAllText (projFile + ".saved2"));
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 
@@ -1114,7 +1114,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			refXml = File.ReadAllText (projFile + ".saved3");
+			refXml = Util.ToSystemEndings (File.ReadAllText (projFile + ".saved3"));
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 
@@ -1123,7 +1123,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			refXml = File.ReadAllText (projFile + ".saved4");
+			refXml = Util.ToSystemEndings (File.ReadAllText (projFile + ".saved4"));
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 		}
@@ -1161,7 +1161,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			var refXml = File.ReadAllText (p.FileName + ".config-props-added");
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-props-added"));
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 			sol.Dispose ();
@@ -1191,7 +1191,7 @@ namespace MonoDevelop.Projects
 
 			await p.SaveAsync (Util.GetMonitor ());
 
-			var refXml = File.ReadAllText (p.FileName + ".config-renamed");
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-renamed"));
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 		}
@@ -1216,7 +1216,7 @@ namespace MonoDevelop.Projects
 
 				await p.SaveAsync (Util.GetMonitor ());
 
-				var refXml = File.ReadAllText (p.FileName + ".custom-item");
+				var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".custom-item"));
 				var savedXml = File.ReadAllText (p.FileName);
 				Assert.AreEqual (refXml, savedXml);
 
