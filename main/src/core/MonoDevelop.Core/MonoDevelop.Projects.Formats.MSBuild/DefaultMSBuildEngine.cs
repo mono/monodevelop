@@ -164,6 +164,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						Evaluate (pi, context, (MSBuildPropertyGroup)ob);
 					if (ob is MSBuildItemGroup)
 						Evaluate (pi, context, (MSBuildItemGroup)ob);
+					if (ob is MSBuildImportGroup)
+						Evaluate (pi, context, (MSBuildImportGroup)ob);
 					if (ob is MSBuildImport)
 						Evaluate (pi, context, (MSBuildImport)ob);
 					if (ob is MSBuildTarget)
@@ -221,6 +223,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						project.EvaluatedItems.Add (it);
 				}
 			}
+		}
+
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports)
+		{
+			if (!string.IsNullOrEmpty (imports.Condition)) {
+				string cond;
+				if (!context.Evaluate (imports.Condition, out cond) || !SafeParseAndEvaluate (cond, context))
+					return;
+			}
+
+			foreach (var item in imports.Imports)
+				Evaluate (project, context, item);
 		}
 
 		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
@@ -326,38 +340,56 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import)
 		{
+			if (!string.IsNullOrEmpty (import.Condition)) {
+				string cond;
+				if (!context.Evaluate (import.Condition, out cond) || !SafeParseAndEvaluate (cond, context))
+					return;
+			}
+
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
-			var file = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
-			if (File.Exists (file)) {
-				var pref = LoadProject (file);
-				project.ReferencedProjects.Add (pref);
 
-				var prefProject = new ProjectInfo { Project = pref };
-				try {
-					var refCtx = new MSBuildEvaluationContext (context);
+			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
+			var fileName = Path.GetFileName (path);
+			if (fileName.IndexOfAny (new [] {'*','?'}) == -1)
+				ImportFile (project, context, path);
+			else {
+				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName).ToList ();
+				files.Sort ();
+				foreach (var file in files)
+					ImportFile (project, context, file);
+			}
+		}
 
-					EvaluateProject (prefProject, refCtx);
+		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, string file)
+		{
+			var pref = LoadProject (file);
+			project.ReferencedProjects.Add (pref);
 
-					foreach (var it in prefProject.EvaluatedItems) {
-						it.IsImported = true;
-						project.EvaluatedItems.Add (it);
-					}
-					foreach (var it in prefProject.EvaluatedItemsIgnoringCondition) {
-						it.IsImported = true;
-						project.EvaluatedItemsIgnoringCondition.Add (it);
-					}
-					foreach (var p in prefProject.Properties) {
-						p.Value.IsImported = true;
-						project.Properties [p.Key] = p.Value;
-					}
-					foreach (var t in prefProject.Targets) {
-						t.IsImported = true;
-						project.Targets.Add (t);
-					}
-				} finally {
-					DisposeProjectInstance (prefProject);
+			var prefProject = new ProjectInfo { Project = pref };
+			try {
+				var refCtx = new MSBuildEvaluationContext (context);
+
+				EvaluateProject (prefProject, refCtx);
+
+				foreach (var it in prefProject.EvaluatedItems) {
+					it.IsImported = true;
+					project.EvaluatedItems.Add (it);
 				}
+				foreach (var it in prefProject.EvaluatedItemsIgnoringCondition) {
+					it.IsImported = true;
+					project.EvaluatedItemsIgnoringCondition.Add (it);
+				}
+				foreach (var p in prefProject.Properties) {
+					p.Value.IsImported = true;
+					project.Properties [p.Key] = p.Value;
+				}
+				foreach (var t in prefProject.Targets) {
+					t.IsImported = true;
+					project.Targets.Add (t);
+				}
+			} finally {
+				DisposeProjectInstance (prefProject);
 			}
 		}
 

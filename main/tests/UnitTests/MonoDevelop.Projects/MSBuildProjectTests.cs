@@ -167,6 +167,20 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (tn.Contains ("ResolveReferences"));
 			Assert.IsTrue (tn.Contains ("GetReferenceAssemblyPaths"));
 		}
+
+		[Test]
+		public void ImportGroups ()
+		{
+			string projectFile = Util.GetSampleProject ("project-with-import-groups", "import-group-test.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			Assert.AreEqual ("v2", p.EvaluatedProperties.GetValue ("TestProp"));
+			Assert.AreEqual ("one", p.EvaluatedProperties.GetValue ("PropFromTest1"));
+			Assert.AreEqual ("two", p.EvaluatedProperties.GetValue ("PropFromTest2"));
+			Assert.AreEqual ("three", p.EvaluatedProperties.GetValue ("PropFromFoo"));
+		}
 	}
 }
 

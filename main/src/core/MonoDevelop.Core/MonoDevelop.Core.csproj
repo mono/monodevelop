@@ -532,6 +532,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildPropertyCore.cs" />
     <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
     <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
