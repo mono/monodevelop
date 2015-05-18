@@ -131,13 +131,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void EnableChangeTracking ()
 		{
-			doc.NodeRemoved += OnNodeAddedRemoved;
+			doc.NodeRemoving += OnNodeAddedRemoved;
 			doc.NodeInserted += OnNodeAddedRemoved;
 		}
 
 		void DisableChangeTracking ()
 		{
-			doc.NodeRemoved -= OnNodeAddedRemoved;
+			doc.NodeRemoving -= OnNodeAddedRemoved;
 			doc.NodeInserted -= OnNodeAddedRemoved;
 		}
 
