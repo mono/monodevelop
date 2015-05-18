@@ -265,7 +265,7 @@ type LanguageService(dirtyNotify) =
                     ParseAndCheckResults.Empty
                     
               reply.Reply results
-            with exn -> Debug.WriteLine( sprintf "LanguageService agent: Exception: %s" (exn.ToString()) )
+            with exn -> Debug.WriteLine("LanguageService agent: Exception: {0}", exn.ToString())
         })
 
   static member IsAScript fileName =
@@ -273,11 +273,11 @@ type LanguageService(dirtyNotify) =
     [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
 
 
-  member x.RemoveFromProjectInfoCache(projFilename, ?properties) =
+  member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
     //Debug.WriteLine(sprintf "LanguageService: Clearing ProjectInfoCache : %A" projectInfoCache.Keys)
     let properties = defaultArg properties ["Configuration", "Debug"]
     let key = (projFilename, properties)
-    Debug.WriteLine(sprintf "LanguageService: Removing %A from projectInfoCache" key)
+    Debug.WriteLine("LanguageService: Removing {0} from projectInfoCache", projFilename)
     match (!projectInfoCache).TryExtract(key) with
     | Some _extractee, cache -> projectInfoCache := cache
     | None, _unchangedCache -> ()
@@ -305,7 +305,7 @@ type LanguageService(dirtyNotify) =
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         try 
           let fileName = fixFileName(fileName)
-          Debug.WriteLine (sprintf "LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: '%s'" fileName )
+          Debug.WriteLine ("LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: {0}", fileName)
           let opts =
               Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
                                       timeout = ServiceSettings.maximumTimeout)
@@ -336,14 +336,15 @@ type LanguageService(dirtyNotify) =
     let key = (projFilename, properties)
     match (!projectInfoCache).TryFind (key) with
            | Some entry, cache ->
-               Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for %s" projFilename )
+               Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for {0}", projFilename)
                projectInfoCache := cache
                entry
            | None, cache ->
-               Debug.WriteLine (sprintf "LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for %s" <| Path.GetFileName(projFilename) )
+               lock projectInfoCache (fun () ->
+               Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for {0}", Path.GetFileName(projFilename))
                let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
                projectInfoCache := cache.Add (key, opts)
-               opts 
+               opts)
 
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
@@ -359,14 +360,14 @@ type LanguageService(dirtyNotify) =
   member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src) =
     async {
       let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-      Debug.WriteLine(sprintf "LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName=%s)" fileName)
+      Debug.WriteLine("LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName={0})", fileName)
       let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
       return results
     }
 
   member x.ParseFileInProject(projectFilename, fileName:string, src) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-    Debug.WriteLine(sprintf "LanguageService: ParseFileInProject: Get untyped parse result (fileName=%s)" fileName)
+    Debug.WriteLine("LanguageService: ParseFileInProject: Get untyped parse result (fileName={0})", fileName)
     checker.ParseFileInProject(fixFileName fileName, src, opts)
 
   member internal x.TryGetStaleTypedParseResult(fileName:string, options, src, stale)  = 
@@ -384,7 +385,7 @@ type LanguageService(dirtyNotify) =
     async {
       let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
       let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-      Debug.WriteLine(sprintf "LanguageService: GetTypedParseResultWithTimeout, fileName=%s" fileName)
+      Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout, fileName={0}", fileName)
       // Try to get recent results from the F# service
       match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
       | Some _ as results ->
@@ -401,7 +402,7 @@ type LanguageService(dirtyNotify) =
   /// Returns a TypeParsedResults if available, otherwise None
   member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, stale) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-    Debug.WriteLine(sprintf "LanguageService: GetTypedParseResultIfAvailable: fileName=%s" fileName)
+    Debug.WriteLine("LanguageService: GetTypedParseResultIfAvailable: fileName={0}", fileName)
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
     | Some results -> results
     | None -> ParseAndCheckResults.Empty
@@ -422,7 +423,7 @@ type LanguageService(dirtyNotify) =
   /// Get all the uses of the specified symbol in the current project and optionally all dependent projects
   member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
    async { 
-    Debug.WriteLine(sprintf "LanguageService: GetUsesOfSymbolInProject: project=%s, currentFile = %s, symbol = %s" projectFilename file symbol.DisplayName )
+    Debug.WriteLine("LanguageService: GetUsesOfSymbolInProject: project={0}, currentFile = {1}, symbol = {2}", projectFilename, file, symbol.DisplayName )
     let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
     let dependentProjects = defaultArg dependentProjects []
 
@@ -440,7 +441,7 @@ type LanguageService(dirtyNotify) =
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed
   member x.InvalidateConfiguration(options) =
-    Debug.WriteLine(sprintf "LanguageService: Invalidating configuration for: %s" <| Path.GetFileName(options.ProjectFileName) )
+    Debug.WriteLine("LanguageService: Invalidating configuration for: {0}", Path.GetFileName(options.ProjectFileName))
     checker.InvalidateConfiguration(options)
 
   //flush all caches and garbage collect
