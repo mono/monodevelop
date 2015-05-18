@@ -214,6 +214,12 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
+		public AppQuery Children ()
+		{
+			operations.Add (new ChildrenOperation ());
+			return this;
+		}
+
 		public override string ToString ()
 		{
 			StringBuilder builder = new StringBuilder ();
