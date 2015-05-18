@@ -42,6 +42,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			resultWidget = widget;
 		}
 
+		public override string ToString ()
+		{
+			return String.Format ("{0} - {1} - {2} - {3}, - {4}", resultWidget, resultWidget.Allocation, resultWidget.Name, resultWidget.GetType ().FullName, resultWidget.Toplevel.Name);
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {

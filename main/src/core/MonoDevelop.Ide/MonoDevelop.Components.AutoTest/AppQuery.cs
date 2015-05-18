@@ -70,6 +70,34 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
+#if MAC
+		AppResult GenerateChildrenForNSView (NSView view, List<AppResult> resultSet)
+		{
+			AppResult firstChild = null, lastChild = null;
+
+			foreach (var child in view.Subviews) {
+				AppResult node = new NSObjectResult (child);
+				resultSet.Add (node);
+
+				if (firstChild == null) {
+					firstChild = node;
+					lastChild = node;
+				} else {
+					lastChild.NextSibling = node;
+					node.PreviousSibling = lastChild;
+					lastChild = node;
+				}
+
+				if (child.Subviews != null) {
+					AppResult children = GenerateChildrenForNSView (child, resultSet);
+					node.FirstChild = children;
+				}
+			}
+
+			return firstChild;
+		}
+#endif
+
 		List<AppResult> ResultSetFromWindows ()
 		{
 			Gtk.Window[] windows = Gtk.Window.ListToplevels ();
@@ -104,11 +132,61 @@ namespace MonoDevelop.Components.AutoTest
 			if (nswindows != null) {
 				foreach (var window in nswindows) {
 					AppResult node = new NSObjectResult (window);
+					AppResult nsWindowLastNode = null;
 					fullResultSet.Add (node);
+
+					if (rootNode.FirstChild == null) {
+						rootNode.FirstChild = node;
+						lastChild = node;
+					} else {
+						lastChild.NextSibling = node;
+						node.PreviousSibling = lastChild;
+						lastChild = node;
+					}
 
 					foreach (var child in window.ContentView.Subviews) {
 						AppResult childNode = new NSObjectResult (child);
 						fullResultSet.Add (childNode);
+
+						if (node.FirstChild == null) {
+							node.FirstChild = childNode;
+							nsWindowLastNode = childNode;
+						} else {
+							nsWindowLastNode.NextSibling = childNode;
+							childNode.PreviousSibling = nsWindowLastNode;
+							nsWindowLastNode = childNode;
+						}
+
+						if (child.Subviews != null) {
+							AppResult children = GenerateChildrenForNSView (child, fullResultSet);
+							childNode.FirstChild = children;
+						}
+					}
+
+					NSToolbar toolbar = window.Toolbar;
+					AppResult toolbarNode = new NSObjectResult (toolbar);
+
+					if (node.FirstChild == null) {
+						node.FirstChild = toolbarNode;
+						nsWindowLastNode = toolbarNode;
+					} else {
+						nsWindowLastNode.NextSibling = toolbarNode;
+						toolbarNode.PreviousSibling = nsWindowLastNode;
+						nsWindowLastNode = toolbarNode;
+					}
+
+					if (toolbar != null) {
+						foreach (var item in toolbar.Items) {
+							if (item.View != null) {
+								AppResult itemNode = new NSObjectResult (item.View);
+								fullResultSet.Add (itemNode);
+
+								if (item.View.Subviews != null) {
+									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
+									toolbarNode.FirstChild = children;
+								}
+							}
+						}
 					}
 				}
 			}
