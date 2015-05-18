@@ -543,12 +543,14 @@ namespace MonoDevelop.Projects
 				if (!string.IsNullOrEmpty (hintPath) && File.Exists (hintPath)) {
 					var res = (ProjectReference) MemberwiseClone ();
 					res.referenceType = ReferenceType.Assembly;
+					res.Project = null;
 					return res;
 				}
 			} else if (ReferenceType == ReferenceType.Assembly) {
 				if (!string.IsNullOrEmpty (hintPath) && !File.Exists (hintPath)) {
 					var res = (ProjectReference) MemberwiseClone ();
 					res.referenceType = ReferenceType.Package;
+					res.Project = null;
 					return res;
 				}
 			}

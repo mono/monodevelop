@@ -34,6 +34,7 @@ namespace MonoDevelop.Projects
 {
 	public class ProjectItem: IExtendedDataItem
 	{
+		Project project;
 		Hashtable extendedProperties;
 		ProjectItemMetadata metadata;
 		static Dictionary<Type,HashSet<string>> knownMetadataCache = new Dictionary<Type, HashSet<string>> ();
@@ -41,6 +42,16 @@ namespace MonoDevelop.Projects
 		public ProjectItem ()
 		{
 			ItemName = MSBuildProjectService.GetNameForProjectItem (GetType());
+		}
+
+		public Project Project {
+			get {
+				return project;
+			}
+			internal set {
+				project = value;
+				OnProjectSet ();
+			}
 		}
 
 		public IDictionary ExtendedProperties {
@@ -142,6 +153,13 @@ namespace MonoDevelop.Projects
 					knownMetadataCache [GetType()] = mset = new HashSet<string> (GetKnownMetadataProperties ());
 			}
 			return mset;
+		}
+
+		/// <summary>
+		/// Invoked when the project to which the item belongs changes.
+		/// </summary>
+		protected virtual void OnProjectSet ()
+		{
 		}
 	}
 	

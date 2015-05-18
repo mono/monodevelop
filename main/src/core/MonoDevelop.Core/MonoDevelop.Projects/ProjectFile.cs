@@ -70,8 +70,8 @@ namespace MonoDevelop.Projects
 
 		public override string Include {
 			get {
-				if (project != null) {
-					string path = MSBuildProjectService.ToMSBuildPath (project.ItemDirectory, FilePath);
+				if (Project != null) {
+					string path = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, FilePath);
 					if (path.Length > 0) {
 						//directory paths must end with '/'
 						if ((Subtype == Subtype.Directory) && path [path.Length - 1] != '\\')
@@ -182,8 +182,8 @@ namespace MonoDevelop.Projects
 
 				OnPathChanged (oldPath, filename, oldVirtualPath, ProjectVirtualPath);
 
-				if (project != null)
-					project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (project, this, oldPath));
+				if (Project != null)
+					Project.NotifyFileRenamedInProject (new ProjectFileRenamedEventArgs (Project, this, oldPath));
 			}
 		}
 
@@ -224,8 +224,8 @@ namespace MonoDevelop.Projects
 			get {
 				if (!Link.IsNullOrEmpty)
 					return Link;
-				if (project != null) {
-					var rel = project.GetRelativeChildPath (FilePath);
+				if (Project != null) {
+					var rel = Project.GetRelativeChildPath (FilePath);
 					if (!rel.ToString ().StartsWith ("..", StringComparison.Ordinal))
 						return rel;
 				}
@@ -233,11 +233,6 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-
-		Project project;
-		public Project Project {
-			get { return project; }
-		}
 
 		string contentType;
 		public string ContentType {
@@ -336,7 +331,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool IsLink {
 			get {
-				return !Link.IsNullOrEmpty || (project != null && !FilePath.IsChildPathOf (project.BaseDirectory));
+				return !Link.IsNullOrEmpty || (Project != null && !FilePath.IsChildPathOf (Project.BaseDirectory));
 			}
 		}
 		
@@ -345,7 +340,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public bool IsExternalToProject {
 			get {
-				return !FilePath.IsChildPathOf (project.BaseDirectory);
+				return !FilePath.IsChildPathOf (Project.BaseDirectory);
 			}
 		}
 
@@ -377,8 +372,8 @@ namespace MonoDevelop.Projects
 						dependsOnFile = null;
 					}
 	
-					if (project != null && value != null)
-						project.UpdateDependency (this, oldPath);
+					if (Project != null && value != null)
+						Project.UpdateDependency (this, oldPath);
 	
 					OnChanged ("DependsOn");
 				}
@@ -420,7 +415,7 @@ namespace MonoDevelop.Projects
 
 		internal bool ResolveParent ()
 		{
-			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && project != null)) {
+			if (dependsOnFile == null && (!string.IsNullOrEmpty (dependsOn) && Project != null)) {
 				//NOTE also that the dependent files are always assumed to be in the same directory
 				//This matches VS behaviour
 				var parentPath = DependencyPath;
@@ -429,12 +424,12 @@ namespace MonoDevelop.Projects
 				if (parentPath == FilePath) {
 					LoggingService.LogWarning (
 						"Cyclic dependency in project '{0}': file '{1}' depends on '{2}'",
-						project == null ? "(none)" : project.Name, FilePath, parentPath
+						Project == null ? "(none)" : Project.Name, FilePath, parentPath
 					);
 					return true;
 				}
 
-				dependsOnFile = project.Files.GetFile (parentPath);
+				dependsOnFile = Project.Files.GetFile (parentPath);
 				if (dependsOnFile != null) {
 					if (dependsOnFile.dependentChildren == null)
 						dependsOnFile.dependentChildren = new List<ProjectFile> ();
@@ -453,8 +448,8 @@ namespace MonoDevelop.Projects
 		public string ResourceId {
 			get {
 				// If the resource id is not set, return the project's default
-				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && project is DotNetProject)
-					return ((DotNetProject)project).GetDefaultResourceId (this);
+				if (BuildAction == MonoDevelop.Projects.BuildAction.EmbeddedResource && string.IsNullOrEmpty (resourceId) && Project is DotNetProject)
+					return ((DotNetProject)Project).GetDefaultResourceId (this);
 
 				return resourceId;
 			}
@@ -468,10 +463,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void SetProject (Project project)
+		protected override void OnProjectSet ()
 		{
-			this.project = project;
-			if (project != null)
+			base.OnProjectSet ();
+			if (Project != null)
 				OnVirtualPathChanged (FilePath.Null, ProjectVirtualPath);
 		}
 
@@ -485,7 +480,7 @@ namespace MonoDevelop.Projects
 			ProjectFile pf = (ProjectFile)MemberwiseClone ();
 			pf.dependsOnFile = null;
 			pf.dependentChildren = null;
-			pf.project = null;
+			pf.Project = null;
 			pf.VirtualPathChanged = null;
 			pf.PathChanged = null;
 			return pf;
@@ -517,8 +512,8 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnChanged (string property)
 		{
-			if (project != null)
-				project.NotifyFilePropertyChangedInProject (this, property);
+			if (Project != null)
+				Project.NotifyFilePropertyChangedInProject (this, property);
 		}
 	}
 

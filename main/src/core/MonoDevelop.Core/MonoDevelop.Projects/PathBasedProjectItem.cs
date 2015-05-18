@@ -36,6 +36,15 @@ namespace MonoDevelop.Projects
 	{
 		public FilePath Path { get; protected set; }
 
+		public override string Include {
+			get {
+				return MSBuildProjectService.ToMSBuildPath (Project != null ? Project.ItemDirectory : null, Path);
+			}
+			protected set {
+				Path = MSBuildProjectService.FromMSBuildPath (Project != null ? Project.ItemDirectory : null, value);
+			}
+		}
+
 		internal protected override void Read (Project project, IMSBuildItemEvaluated buildItem)
 		{
 			base.Read (project, buildItem);

@@ -1536,12 +1536,19 @@ namespace MonoDevelop.Projects
 		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsAdded (objs);
+			foreach (var it in objs) {
+				if (it.Project != null)
+					throw new InvalidOperationException (it.GetType ().Name + " already belongs to a project");
+				it.Project = this;
+			}
 			NotifyFileAddedToProject (objs.OfType<ProjectFile> ());
 		}
 
 		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsRemoved (objs);
+			foreach (var it in objs)
+				it.Project = null;
 			NotifyFileRemovedFromProject (objs.OfType<ProjectFile> ());
 		}
 
@@ -1568,7 +1575,6 @@ namespace MonoDevelop.Projects
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
-				file.SetProject (null);
 				args.Add (new ProjectFileEventInfo (this, file));
 				if (DependencyResolutionEnabled) {
 					unresolvedDeps.Remove (file);
@@ -1592,9 +1598,6 @@ namespace MonoDevelop.Projects
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
-				if (file.Project != null)
-					throw new InvalidOperationException ("ProjectFile already belongs to a project");
-				file.SetProject (this);
 				args.Add (new ProjectFileEventInfo (this, file));
 				ResolveDependencies (file);
 			}
