@@ -152,7 +152,9 @@ namespace MonoDevelop.CSharp
 				throw new ArgumentNullException ("entity");
 			string result;
 			switch (entity.Kind) {
-			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
+				case Microsoft.CodeAnalysis.SymbolKind.ArrayType:
+				case Microsoft.CodeAnalysis.SymbolKind.PointerType:
+				case Microsoft.CodeAnalysis.SymbolKind.NamedType:
 				result = GetTypeMarkup ((ITypeSymbol)entity);
 				break;
 			case Microsoft.CodeAnalysis.SymbolKind.Field:
