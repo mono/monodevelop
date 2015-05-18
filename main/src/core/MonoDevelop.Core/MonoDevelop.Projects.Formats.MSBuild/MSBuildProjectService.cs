@@ -141,6 +141,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			projecItemTypeNodes = AddinManager.GetExtensionNodes<TypeExtensionNode> (MSBuildProjectItemTypesPath).ToDictionary (e => e.TypeName);
 		}
 
+		static Dictionary<string,Type> customProjectItemTypes = new Dictionary<string,Type> ();
+
+		internal static void RegisterCustomProjectItemType (string name, Type type)
+		{
+			customProjectItemTypes [name] = type;
+		}
+
+		internal static void UnregisterCustomProjectItemType (string name)
+		{
+			customProjectItemTypes.Remove (name);
+		}
+
 		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
 		{
 			lock (builders) {
@@ -1014,6 +1026,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					throw new InvalidOperationException ("Project item type '" + node.TypeName + "' is not a subclass of ProjectItem");
 				return t;
 			}
+			Type tt;
+			if (customProjectItemTypes.TryGetValue (itemName, out tt))
+				return tt;
 			else
 				return null;
 		}
@@ -1023,8 +1038,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			TypeExtensionNode node;
 			if (projecItemTypeNodes.TryGetValue (type.FullName, out node))
 				return node.Id;
-			else
-				return null;
+
+			var r = customProjectItemTypes.FirstOrDefault (k => k.Value == type);
+			if (r.Key != null)
+				return r.Key;
+			return null;
 		}
 	}
 	

@@ -1195,6 +1195,52 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test]
+		public async Task CustomProjectItemWithMetadata ()
+		{
+			// Save a custom item with metadata
+
+			try {
+				MSBuildProjectService.RegisterCustomProjectItemType ("CustomItem", typeof(CustomItem));
+
+				string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+				Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				var p = (Project) sol.Items [0];
+
+				CustomItem it = new CustomItem {
+					SomeMetadata = "FooTest"
+				};
+				p.Items.Add (it);
+
+				await p.SaveAsync (Util.GetMonitor ());
+
+				var refXml = File.ReadAllText (p.FileName + ".custom-item");
+				var savedXml = File.ReadAllText (p.FileName);
+				Assert.AreEqual (refXml, savedXml);
+
+				sol.Dispose ();
+
+				sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				p = (Project) sol.Items [0];
+
+				it = p.Items.OfType<CustomItem> ().FirstOrDefault ();
+				Assert.IsNotNull (it);
+				Assert.AreEqual ("TestInclude", it.Include);
+				Assert.AreEqual ("FooTest", it.SomeMetadata);
+			}
+			finally {
+				MSBuildProjectService.UnregisterCustomProjectItemType ("CustomItem");
+			}
+		}
+
+/*		[Test]
+		public async Task RunTargetInMemory ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+
+		}*/
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
@@ -1256,5 +1302,19 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty (IsExternal = true)]
 		public MyProjectData Data;
+	}
+
+	class CustomItem: ProjectItem
+	{
+		public override string Include {
+			get {
+				return "TestInclude";
+			}
+			protected set {
+			}
+		}
+
+		[ItemProperty]
+		public string SomeMetadata { get; set; }
 	}
 }

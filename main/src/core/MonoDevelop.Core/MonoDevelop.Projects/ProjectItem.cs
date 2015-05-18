@@ -101,17 +101,14 @@ namespace MonoDevelop.Projects
 						metadata.AddProperty (p);
 					}
 				}
-				if (knownProps.Count > 0) {
-					if (metadata == null)
-						metadata = new ProjectItemMetadata (project.MSBuildProject);
-					metadata.ReadObjectProperties (this, GetType (), true);
-				}
 			}
+			buildItem.Metadata.ReadObjectProperties (this, GetType (), true);
 		}
 
 		internal protected virtual void Write (Project project, MSBuildItem buildItem)
 		{
 			buildItem.Condition = Condition;
+			buildItem.Metadata.WriteObjectProperties (this, GetType(), true);
 
 			if (metadata != null) {
 				metadata.SetProject (buildItem.Project);
@@ -120,7 +117,6 @@ namespace MonoDevelop.Projects
 					// the new value, and if not, it will contain the old unevaluated value
 					buildItem.Metadata.SetValue (prop.Name, prop.UnevaluatedValue);
 				}
-				metadata.WriteObjectProperties (this, GetType(), true);
 			}
 		}
 
