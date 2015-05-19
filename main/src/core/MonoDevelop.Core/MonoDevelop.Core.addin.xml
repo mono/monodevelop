@@ -312,6 +312,7 @@
 		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" extension="vcxproj"/>
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
 		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
+		<ProjectType guid = "{14182A97-F7F0-4C62-8B27-98AA8AE2109A}" name = "VB.NET Portable Library" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildImportRedirects">
