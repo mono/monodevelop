@@ -1719,17 +1719,12 @@ namespace MonoDevelop.Projects
 			if (string.IsNullOrEmpty (ToolsVersion))
 				ToolsVersion = "2.0";
 
-			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
-			// Avoid crash if there is not global group
-			if (globalGroup == null)
-				globalGroup = msproject.AddNewPropertyGroup (false);
-
-			productVersion = globalGroup.GetValue ("ProductVersion");
-			schemaVersion = globalGroup.GetValue ("SchemaVersion");
+			productVersion = msproject.EvaluatedProperties.GetValue ("ProductVersion");
+			schemaVersion = msproject.EvaluatedProperties.GetValue ("SchemaVersion");
 
 			// Get the project ID
 
-			string itemGuid = globalGroup.GetValue ("ProjectGuid");
+			string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
 			if (itemGuid == null)
 				throw new UserException ("Project file doesn't have a valid ProjectGuid");
 
@@ -1742,7 +1737,7 @@ namespace MonoDevelop.Projects
 
 			// Get the project GUIDs
 
-			string projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
+			string projectTypeGuids = msproject.EvaluatedProperties.GetValue ("ProjectTypeGuids");
 
 			var subtypeGuids = new List<string> ();
 			if (projectTypeGuids != null) {
@@ -1768,7 +1763,7 @@ namespace MonoDevelop.Projects
 			baseIntermediateOutputPath = msproject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", defaultValue:BaseDirectory.Combine ("obj"), relativeToProject:true);
 			disableFastUpToDateCheck = msproject.EvaluatedProperties.GetValue ("DisableFastUpToDateCheck", false);
 
-			globalGroup.ReadObjectProperties (this, GetType (), true);
+			msproject.EvaluatedProperties.ReadObjectProperties (this, GetType (), true);
 
 			RemoveDuplicateItems (msproject);
 		}
