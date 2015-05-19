@@ -899,8 +899,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 1);
 
+				var repoFiles = repository.ToGitPath (files).ToArray ();
 				int progress = 0;
-				repository.CheckoutPaths ("HEAD", repository.ToGitPath (files), new CheckoutOptions {
+				repository.CheckoutPaths ("HEAD", repoFiles, new CheckoutOptions {
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
 					CheckoutModifiers = CheckoutModifiers.Force,
 					CheckoutNotifyFlags = refreshFlags,
@@ -912,6 +913,7 @@ namespace MonoDevelop.VersionControl.Git
 						return true;
 					}
 				});
+				repository.Stage (repoFiles);
 				monitor.EndTask ();
 			}
 		}
