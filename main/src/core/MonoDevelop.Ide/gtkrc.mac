@@ -12,7 +12,7 @@ text_color:        #000
 selected_bg_color: #649dd6
 selected_fg_color: #fff
 tooltip_bg_color:  #f2f2f2
-tooltip_fg_color:  #242424"
+tooltip_fg_color:  #222222"
 
 gtk-button-images     = 0
 gtk-menu-images       = 0
