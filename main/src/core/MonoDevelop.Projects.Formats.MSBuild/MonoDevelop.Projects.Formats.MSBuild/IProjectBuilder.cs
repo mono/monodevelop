@@ -48,5 +48,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public string ProjectGuid;
 		public string Configuration;
 		public string Platform;
+		public bool Enabled;
 	}
 }

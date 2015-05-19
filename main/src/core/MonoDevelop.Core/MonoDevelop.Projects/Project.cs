@@ -843,8 +843,10 @@ namespace MonoDevelop.Projects
 				ProjectFile = FileName,
 				Configuration = c != null ? c.Name : "",
 				Platform = c != null ? GetExplicitPlatform (c) : "",
-				ProjectGuid = ItemId
+				ProjectGuid = ItemId,
+				Enabled = true
 			});
+			var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
 			foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
 				var refConfig = refProject.GetConfiguration (configuration);
 				if (refConfig != null) {
@@ -852,7 +854,8 @@ namespace MonoDevelop.Projects
 						ProjectFile = refProject.FileName,
 						Configuration = refConfig.Name,
 						Platform = GetExplicitPlatform (refConfig),
-						ProjectGuid = refProject.ItemId
+						ProjectGuid = refProject.ItemId,
+						Enabled = sc == null || sc.BuildEnabledForItem (refProject)
 					});
 				}
 			}
