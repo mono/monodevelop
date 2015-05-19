@@ -77,9 +77,6 @@ namespace MonoDevelop.MacIntegration
 		public override nint SegmentCount {
 			get { return base.SegmentCount; }
 			set {
-				if (base.SegmentCount == value)
-					return;
-
 				base.SegmentCount = value;
 				if (updating)
 					return;
