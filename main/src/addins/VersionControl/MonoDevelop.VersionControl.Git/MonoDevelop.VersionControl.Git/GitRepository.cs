@@ -1063,6 +1063,7 @@ namespace MonoDevelop.VersionControl.Git
 						LoggingService.LogWarning ("Failed to Push to {0}. Message was \"{1}\".", pushStatusErrors.Reference, pushStatusErrors.Message);
 						string message;
 						// TODO: Remove me when libgit2 merges https://github.com/libgit2/libgit2/pull/3129 and we update binaries.
+						// TODO: Better reporting mechanism once https://github.com/libgit2/libgit2/pull/3137 goes in.
 						if (string.Equals (pushStatusErrors.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
 							message = "Server connection has been reset. Please retry pushing.";
 						else
