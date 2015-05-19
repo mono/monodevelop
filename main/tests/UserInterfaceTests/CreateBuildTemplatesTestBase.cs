@@ -102,12 +102,7 @@ namespace UserInterfaceTests
 			} catch (Exception e) {
 				Assert.Fail (e.StackTrace);
 			} finally {
-				var actualSolutionDirectory = GetSolutionDirectory ();
-				Ide.CloseAll ();
-				try {
-					if (Directory.Exists (actualSolutionDirectory))
-						Directory.Delete (actualSolutionDirectory, true);
-				} catch (IOException) { }
+				OnCleanUp ();
 			}
 		}
 
@@ -155,6 +150,16 @@ namespace UserInterfaceTests
 				TakeScreenShot ("AfterBuildFailed");
 				Assert.Fail (e.ToString ());
 			}
+		}
+
+		protected virtual void OnCleanUp ()
+		{
+			var actualSolutionDirectory = GetSolutionDirectory ();
+			Ide.CloseAll ();
+			try {
+				if (Directory.Exists (actualSolutionDirectory))
+					Directory.Delete (actualSolutionDirectory, true);
+			} catch (IOException) { }
 		}
 
 		protected string GetSolutionDirectory ()
