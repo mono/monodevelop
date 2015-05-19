@@ -873,7 +873,12 @@ namespace MonoDevelop.Projects
 			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 			Assert.IsInstanceOf<Project> (p);
 			var mp = (Project) p;
-			Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "ItemOne", "ItemTwo"}, mp.GetBuildActions ());
+
+			if (Platform.IsWindows)
+				// .NET targets are different and has more default available items
+				Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "EntityDeploy", "ItemOne", "ItemTwo", "XamlAppDef"}, mp.GetBuildActions ());
+			else
+				Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "ItemOne", "ItemTwo"}, mp.GetBuildActions ());
 		}
 
 		[Test]
