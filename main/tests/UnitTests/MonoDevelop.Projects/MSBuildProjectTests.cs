@@ -210,6 +210,16 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 			Assert.AreEqual (new [] {"aa","vv","test"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
 		}
+
+		[Test]
+		public void EvalItemsAfterProperties ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "property-eval-order.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual (new [] {"Two"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+		}
 	}
 }
 

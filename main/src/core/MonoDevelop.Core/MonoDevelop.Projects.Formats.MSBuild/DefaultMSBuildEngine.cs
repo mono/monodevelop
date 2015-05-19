@@ -56,7 +56,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> ();
 			public List<MSBuildTarget> Targets = new List<MSBuildTarget> ();
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
-		}
+			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
+        }
 
 		class PropertyInfo
 		{
@@ -143,15 +144,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var oldRefProjects = pi.ReferencedProjects;
 			pi.ReferencedProjects = new List<MSBuildProject> ();
 
-			var context = new MSBuildEvaluationContext ();
-			foreach (var p in pi.GlobalProperties) {
-				context.SetPropertyValue (p.Key, p.Value);
-				pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
+			try {
+				var context = new MSBuildEvaluationContext ();
+				foreach (var p in pi.GlobalProperties) {
+					context.SetPropertyValue (p.Key, p.Value);
+					pi.Properties [p.Key] = new PropertyInfo { Name = p.Key, Value = p.Value, FinalValue = p.Value };
+				}
+				EvaluateProject (pi, context);
 			}
-			EvaluateProject (pi, context);
-
-			foreach (var p in oldRefProjects)
-				UnloadProject (p);
+			finally {
+				foreach (var p in oldRefProjects)
+					UnloadProject (p);
+				DisposeImportedProjects (pi);
+				pi.ImportedProjects.Clear ();
+			}
 		}
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
@@ -159,25 +165,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			lock (pi.Project) {
 				// XmlDocument is not thread safe, so we need to lock while evaluating
 				context.InitEvaluation (pi.Project);
-				EvaluateObjects (pi, context, pi.Project.GetAllObjects ());
+				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), false);
+				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), true);
 			}
 		}
 
-		void EvaluateObjects (ProjectInfo pi, MSBuildEvaluationContext context, IEnumerable<MSBuildObject> objects)
+		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context, bool evalItems)
+		{
+			lock (pi.Project) {
+				// XmlDocument is not thread safe, so we need to lock while evaluating
+				context.InitEvaluation (pi.Project);
+				EvaluateObjects (pi, context, pi.Project.GetAllObjects (), evalItems);
+			}
+		}
+
+		void EvaluateObjects (ProjectInfo pi, MSBuildEvaluationContext context, IEnumerable<MSBuildObject> objects, bool evalItems)
 		{
 			foreach (var ob in objects) {
-				if (ob is MSBuildPropertyGroup)
-					Evaluate (pi, context, (MSBuildPropertyGroup)ob);
-				else if (ob is MSBuildItemGroup)
-					Evaluate (pi, context, (MSBuildItemGroup)ob);
-				else if (ob is MSBuildImportGroup)
-					Evaluate (pi, context, (MSBuildImportGroup)ob);
+				if (evalItems) {
+					if (ob is MSBuildItemGroup)
+						Evaluate (pi, context, (MSBuildItemGroup)ob);
+					else if (ob is MSBuildTarget)
+						Evaluate (pi, context, (MSBuildTarget)ob);
+				} else {
+					if (ob is MSBuildPropertyGroup)
+						Evaluate (pi, context, (MSBuildPropertyGroup)ob);
+				}
+				if (ob is MSBuildImportGroup)
+					Evaluate (pi, context, (MSBuildImportGroup)ob, evalItems);
 				else if (ob is MSBuildImport)
-					Evaluate (pi, context, (MSBuildImport)ob);
-				else if (ob is MSBuildTarget)
-					Evaluate (pi, context, (MSBuildTarget)ob);
+					Evaluate (pi, context, (MSBuildImport)ob, evalItems);
 				else if (ob is MSBuildChoose)
-					Evaluate (pi, context, (MSBuildChoose)ob);
+					Evaluate (pi, context, (MSBuildChoose)ob, evalItems);
 			}
 		}
 
@@ -237,13 +256,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports)
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports, bool evalItems)
 		{
 			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (imports.Condition, context))
 				return;
 
 			foreach (var item in imports.Imports)
-				Evaluate (project, context, item);
+				Evaluate (project, context, item, evalItems);
 		}
 
 		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
@@ -347,8 +366,55 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return CreateEvaluatedItem (project.Project, item, e, e.GetAttribute ("Include"));
 		}
 
-		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import)
+		IEnumerable<ProjectInfo> GetImportedProjects (ProjectInfo project, MSBuildImport import)
 		{
+			List<ProjectInfo> prefProjects;
+			if (project.ImportedProjects.TryGetValue (import, out prefProjects))
+				return prefProjects;
+			return Enumerable.Empty<ProjectInfo> ();
+		}
+
+		void AddImportedProject (ProjectInfo project, MSBuildImport import, ProjectInfo imported)
+		{
+			List<ProjectInfo> prefProjects;
+			if (!project.ImportedProjects.TryGetValue (import, out prefProjects))
+				project.ImportedProjects [import] = prefProjects = new List<ProjectInfo> ();
+			prefProjects.Add (imported);
+        }
+
+		void DisposeImportedProjects (ProjectInfo pi)
+		{
+			foreach (var imported in pi.ImportedProjects.Values.SelectMany (i => i)) {
+				DisposeImportedProjects (imported);
+				DisposeProjectInstance (imported);
+			}
+		}
+
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, bool evalItems)
+		{
+			if (evalItems) {
+				// Properties have already been evaluated
+				// Don't evaluate properties, only items and other elements
+				foreach (var p in GetImportedProjects (project, import)) {
+					
+					EvaluateProject (p, new MSBuildEvaluationContext (context), true);
+
+					foreach (var it in p.EvaluatedItems) {
+						it.IsImported = true;
+						project.EvaluatedItems.Add (it);
+					}
+					foreach (var it in p.EvaluatedItemsIgnoringCondition) {
+						it.IsImported = true;
+						project.EvaluatedItemsIgnoringCondition.Add (it);
+					}
+					foreach (var t in p.Targets) {
+						t.IsImported = true;
+						project.Targets.Add (t);
+					}
+				}
+				return;
+            }
+
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
@@ -358,16 +424,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
 			if (fileName.IndexOfAny (new [] {'*','?'}) == -1)
-				ImportFile (project, context, path);
+				ImportFile (project, context, import, path);
 			else {
 				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName).ToList ();
 				files.Sort ();
 				foreach (var file in files)
-					ImportFile (project, context, file);
+					ImportFile (project, context, import, file);
 			}
 		}
 
-		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, string file)
+		void ImportFile (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string file)
 		{
 			if (!File.Exists (file))
 				return;
@@ -376,37 +442,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			project.ReferencedProjects.Add (pref);
 
 			var prefProject = new ProjectInfo { Project = pref };
-			try {
-				var refCtx = new MSBuildEvaluationContext (context);
+			AddImportedProject (project, import, prefProject);
 
-				EvaluateProject (prefProject, refCtx);
+			var refCtx = new MSBuildEvaluationContext (context);
 
-				foreach (var it in prefProject.EvaluatedItems) {
-					it.IsImported = true;
-					project.EvaluatedItems.Add (it);
-				}
-				foreach (var it in prefProject.EvaluatedItemsIgnoringCondition) {
-					it.IsImported = true;
-					project.EvaluatedItemsIgnoringCondition.Add (it);
-				}
-				foreach (var p in prefProject.Properties) {
-					p.Value.IsImported = true;
-					project.Properties [p.Key] = p.Value;
-				}
-				foreach (var t in prefProject.Targets) {
-					t.IsImported = true;
-					project.Targets.Add (t);
-				}
-			} finally {
-				DisposeProjectInstance (prefProject);
+			EvaluateProject (prefProject, refCtx, false);
+
+			foreach (var p in prefProject.Properties) {
+				p.Value.IsImported = true;
+				project.Properties [p.Key] = p.Value;
 			}
 		}
 
-		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose)
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose, bool evalItems)
 		{
 			foreach (var op in choose.GetOptions ()) {
 				if (op.IsOtherwise || SafeParseAndEvaluate (op.Condition, context)) {
-					EvaluateObjects (project, context, op.GetAllObjects ());
+					EvaluateObjects (project, context, op.GetAllObjects (), evalItems);
 					break;
 				}
 			}
