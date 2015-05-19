@@ -1188,6 +1188,7 @@ namespace MonoDevelop.Projects
 
 			var conf = p.Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Name == "Debug");
 			conf.Name = "Test";
+			conf.IntermediateOutputDirectory = p.BaseDirectory.Combine ("obj","Test");
 
 			await p.SaveAsync (Util.GetMonitor ());
 

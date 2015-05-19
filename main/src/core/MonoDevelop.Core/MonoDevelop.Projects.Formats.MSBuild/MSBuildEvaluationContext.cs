@@ -275,7 +275,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		readonly static char[] tagStart = new [] {'$','%'};
 
-		string Evaluate (string str)
+		public string Evaluate (string str)
 		{
 			int i = FindNextTag (str, 0);
 			if (i == -1)

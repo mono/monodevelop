@@ -183,19 +183,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildPropertyGroup group)
 		{
-			if (!string.IsNullOrEmpty (group.Condition)) {
-				string cond;
-				if (!context.Evaluate (group.Condition, out cond)) {
-					// The condition could not be evaluated. Clear all properties that this group defines
-					// since we don't know if they will have a value or not
-
-					foreach (var prop in group.GetProperties ().ToArray ())
-						context.ClearPropertyValue (prop.Name);
-					return;
-				}
-				if (!SafeParseAndEvaluate (cond, context))
-					return;
-			}
+			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (group.Condition, context))
+				return;
 
 			foreach (var prop in group.Element.ChildNodes.OfType<XmlElement> ())
 				Evaluate (project, context, prop);
@@ -205,40 +194,53 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			bool conditionIsTrue = true;
 
-			if (!string.IsNullOrEmpty (items.Condition)) {
-				string cond;
-				if (context.Evaluate (items.Condition, out cond))
-					conditionIsTrue = SafeParseAndEvaluate (cond, context);
-			}
+			if (!string.IsNullOrEmpty (items.Condition))
+				conditionIsTrue = SafeParseAndEvaluate (items.Condition, context);
 
 			foreach (var item in items.Items) {
 				var it = Evaluate (project, context, item);
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (it.Condition, context));
-				if (it.Include.IndexOf ('*') != -1) {
-					var path = it.Include;
-					if (path == "**" || path.EndsWith ("\\**"))
-						path = path + "/*";
-					var subpath = path.Split ('\\');
-					foreach (var eit in ExpandWildcardFilePath (project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
-						project.EvaluatedItemsIgnoringCondition.Add (eit);
-						if (trueCond)
-							project.EvaluatedItems.Add (eit);
-					}
-				} else {
-					project.EvaluatedItemsIgnoringCondition.Add (it);
-					if (trueCond)
-						project.EvaluatedItems.Add (it);
+				if (it.Include.IndexOf (';') == -1)
+					AddItem (project, context, item, it, it.Include, trueCond);
+				else {
+					foreach (var inc in it.Include.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries))
+						AddItem (project, context, item, it, inc, trueCond);
 				}
+			}
+		}
+
+		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, bool trueCond)
+		{
+			if (include.IndexOf ('*') != -1) {
+				var path = include;
+				if (path == "**" || path.EndsWith ("\\**"))
+					path = path + "/*";
+				var subpath = path.Split ('\\');
+				foreach (var eit in ExpandWildcardFilePath (project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
+					project.EvaluatedItemsIgnoringCondition.Add (eit);
+					if (trueCond)
+						project.EvaluatedItems.Add (eit);
+				}
+			}
+			else if (include != it.Include) {
+				XmlElement e;
+				context.Evaluate (item.Element, out e);
+				it = CreateEvaluatedItem (project.Project, item, e, include);
+				project.EvaluatedItemsIgnoringCondition.Add (it);
+				if (trueCond)
+					project.EvaluatedItems.Add (it);
+			}
+			else {
+				project.EvaluatedItemsIgnoringCondition.Add (it);
+				if (trueCond)
+					project.EvaluatedItems.Add (it);
 			}
 		}
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImportGroup imports)
 		{
-			if (!string.IsNullOrEmpty (imports.Condition)) {
-				string cond;
-				if (!context.Evaluate (imports.Condition, out cond) || !SafeParseAndEvaluate (cond, context))
-					return;
-			}
+			if (!string.IsNullOrEmpty (imports.Condition) && !SafeParseAndEvaluate (imports.Condition, context))
+				return;
 
 			foreach (var item in imports.Imports)
 				Evaluate (project, context, item);
@@ -350,11 +352,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition)) {
-				string cond;
-				if (!context.Evaluate (import.Condition, out cond) || !SafeParseAndEvaluate (cond, context))
-					return;
-			}
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (import.Condition, context))
+				return;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
 			var fileName = Path.GetFileName (path);
@@ -406,8 +405,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildChoose choose)
 		{
 			foreach (var op in choose.GetOptions ()) {
-				string cond;
-				if (op.IsOtherwise || (context.Evaluate (op.Condition, out cond) && SafeParseAndEvaluate (cond, context))) {
+				if (op.IsOtherwise || SafeParseAndEvaluate (op.Condition, context)) {
 					EvaluateObjects (project, context, op.GetAllObjects ());
 					break;
 				}

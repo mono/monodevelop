@@ -86,7 +86,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal int EvaluatedItemCount { get; set; }
 
 		internal bool IsWildcardItem {
-			get { return EvaluatedItemCount > 1 && Include.Contains ("*"); }
+			get { return EvaluatedItemCount > 1 && (Include.Contains ("*") || Include.Contains (";")); }
 		}
 	}
 

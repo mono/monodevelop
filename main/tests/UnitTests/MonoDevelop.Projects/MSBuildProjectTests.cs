@@ -200,6 +200,16 @@ namespace MonoDevelop.Projects
 			pi.Evaluate ();
 			Assert.AreEqual ("Three", pi.EvaluatedProperties.GetValue ("Foo"));
 		}
+
+		[Test]
+		public void ParseConditionWithoutQuotes ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "condition-parse.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual (new [] {"aa","vv","test"}, p.EvaluatedItems.Select (i => i.Include).ToArray ());
+		}
 	}
 }
 
