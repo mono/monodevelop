@@ -29,6 +29,7 @@ using Foundation;
 using Gtk;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Ide;
+using Xwt.Mac;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -70,47 +71,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}));
 		}
 
-		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)
+		bool SendKeyPressed (Xwt.KeyEventArgs kargs)
 		{
-			Xwt.ModifierKeys xwtMask = Xwt.ModifierKeys.None;
-			if (mask.HasFlag (NSEventModifierMask.CommandKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Command;
-			if (mask.HasFlag (NSEventModifierMask.ControlKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Control;
-			if (mask.HasFlag (NSEventModifierMask.ShiftKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Shift;
-			if (mask.HasFlag (NSEventModifierMask.AlternateKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Alt;
-			return xwtMask;
-		}
-
-		static Xwt.Key TranslateKey (NSFunctionKey key)
-		{
-			switch (key)
-			{
-			case NSFunctionKey.UpArrow:
-				return Xwt.Key.Up;
-			case NSFunctionKey.DownArrow:
-				return Xwt.Key.Down;
-			case NSFunctionKey.LeftArrow:
-				return Xwt.Key.Left;
-			case NSFunctionKey.RightArrow:
-				return Xwt.Key.Right;
-			case NSFunctionKey.Home:
-				return Xwt.Key.Home;
-			case NSFunctionKey.End:
-				return Xwt.Key.End;
-			case NSFunctionKey.PageUp:
-				return Xwt.Key.PageUp;
-			case NSFunctionKey.PageDown:
-				return Xwt.Key.PageDown;
-			}
-			return 0;
-		}
-
-		bool SendKeyPressed (Xwt.Key key, Xwt.ModifierKeys mask)
-		{
-			var kargs = new Xwt.KeyEventArgs (key, mask, false, 0);
 			if (KeyPressed != null)
 				KeyPressed (this, kargs);
 
@@ -119,15 +81,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			NSFunctionKey charKey = (NSFunctionKey)theEvent.CharactersIgnoringModifiers[0];
-			if (charKey == (NSFunctionKey)27) {
-				SendKeyPressed (Xwt.Key.Escape, Xwt.ModifierKeys.None);
-				base.PerformKeyEquivalent (theEvent);
-				return true;
-			}
-
-			// Use CharactersIgnoringModifiers instead of KeyCode. They don't match Xwt anyway.
-			if (SendKeyPressed (TranslateKey ((NSFunctionKey)theEvent.CharactersIgnoringModifiers[0]), TranslateMask (theEvent.ModifierFlags)))
+			Xwt.KeyEventArgs kargs = theEvent.ToXwtKeyEventArgs ();
+			if (SendKeyPressed (kargs))
 				return true;
 
 			return base.PerformKeyEquivalent (theEvent);
