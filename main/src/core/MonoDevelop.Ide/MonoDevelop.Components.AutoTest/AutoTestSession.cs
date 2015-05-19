@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -60,10 +61,10 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		public void ExecuteCommand (object cmd, object dataItem = null)
+		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null);
+				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null, source);
 			});
 		}
 		
