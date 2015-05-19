@@ -874,11 +874,20 @@ namespace MonoDevelop.Projects
 			Assert.IsInstanceOf<Project> (p);
 			var mp = (Project) p;
 
-			if (Platform.IsWindows)
-				// .NET targets are different and has more default available items
-				Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "EntityDeploy", "ItemOne", "ItemTwo", "XamlAppDef"}, mp.GetBuildActions ());
-			else
-				Assert.AreEqual(new string[] {"None", "Compile", "EmbeddedResource", "--", "Content", "ItemOne", "ItemTwo"}, mp.GetBuildActions ());
+			var actions = mp.GetBuildActions ();
+
+			// The main actions should always be the same and in the same position
+
+			Assert.AreEqual (0, Array.IndexOf (actions, "None"), "'None' not found or in wrong position");
+			Assert.AreEqual (1, Array.IndexOf (actions, "Compile"), "'Compile' not found or in wrong position");
+			Assert.AreEqual (2, Array.IndexOf (actions, "EmbeddedResource"), "'EmbeddedResource' not found or in wrong position");
+			Assert.AreEqual (3, Array.IndexOf (actions, "--"), "'--' not found or in wrong position");
+
+			// The remaining actions may vary depending on the platform, but some of them must be there
+
+			Assert.IsTrue (actions.Contains ("Content"), "'Content' not found");
+			Assert.IsTrue (actions.Contains ("ItemOne"), "'ItemOne' not found");
+			Assert.IsTrue (actions.Contains ("ItemTwo"), "'ItemTwo' not found");
 		}
 
 		[Test]
