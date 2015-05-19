@@ -110,9 +110,6 @@ namespace MonoDevelop.Components
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
 				menuItem.Submenu = FromMenu (item.SubMenu);
 			}
-			else {
-				menuItem.Activated += (sender, e) => item.Click ();
-			}
 
 			return menuItem;
 		}
