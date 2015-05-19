@@ -158,7 +158,7 @@ namespace MonoDevelop.NUnit
 
 		public override void GetCustomConsoleRunner (out string command, out string args)
 		{
-			var r = project.ProjectProperties.GetValue ("TestRunnerCommand");
+			var r = project.ProjectProperties.GetPathValue ("TestRunnerCommand");
 			command = !string.IsNullOrEmpty (r) ? project.BaseDirectory.Combine (r).ToString () : null;
 			args = project.ProjectProperties.GetValue ("TestRunnerArgs");
 			if (command == null && args == null) {
