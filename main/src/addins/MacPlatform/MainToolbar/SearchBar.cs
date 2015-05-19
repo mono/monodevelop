@@ -81,11 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			Xwt.KeyEventArgs kargs = theEvent.ToXwtKeyEventArgs ();
-			if (SendKeyPressed (kargs))
-				return true;
-
-			return base.PerformKeyEquivalent (theEvent);
+			return SendKeyPressed (theEvent.ToXwtKeyEventArgs ()) || base.PerformKeyEquivalent (theEvent);
 		}
 
 		public override void DidEndEditing (NSNotification notification)
