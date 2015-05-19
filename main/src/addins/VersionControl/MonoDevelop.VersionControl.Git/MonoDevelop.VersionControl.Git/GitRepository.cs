@@ -610,8 +610,16 @@ namespace MonoDevelop.VersionControl.Git
 					retry = false;
 				} catch (LibGit2SharpException e) {
 					GitCredentials.InvalidateCredentials ();
+
+					string message;
+					// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
+					if (string.Equals (e.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
+						message = "Unable to authorize credentials for the repository.";
+					else
+						message = e.Message;
+
 					if (monitor != null)
-						monitor.ReportError (e.Message, null);
+						monitor.ReportError (message, null);
 					retry = false;
 				}
 			} while (retry);
@@ -1060,16 +1068,6 @@ namespace MonoDevelop.VersionControl.Git
 			RetryUntilSuccess (monitor, () =>
 				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
 					OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
-						LoggingService.LogWarning ("Failed to Push to {0}. Message was \"{1}\".", pushStatusErrors.Reference, pushStatusErrors.Message);
-						string message;
-						// TODO: Remove me when libgit2 merges https://github.com/libgit2/libgit2/pull/3129 and we update binaries.
-						// TODO: Better reporting mechanism once https://github.com/libgit2/libgit2/pull/3137 goes in.
-						if (string.Equals (pushStatusErrors.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
-							message = "Server connection has been reset. Please retry pushing.";
-						else
-							message = pushStatusErrors.Message;
-						
-						monitor.ReportError (message, null);
 						success = false;
 					},
 					CredentialsProvider = GitCredentials.TryGet
