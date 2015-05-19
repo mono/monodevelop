@@ -3484,6 +3484,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractBraceMatcher.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatcherTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\BraceMatchingResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Operations\ChildrenOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

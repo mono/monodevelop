@@ -61,6 +61,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
+\ No newline at end of file
 ";
 			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
@@ -117,6 +118,13 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			Assert.Ignore ("File scheme is broken on Windows");
 			var repo2 = (SubversionRepository)Repo;
 			Assert.IsTrue (repo2.IsUrlValid ("file:///c:/dir/repo"));
+		}
+
+		[Test]
+		[Ignore ("Url gets broken. ")]
+		public override void CorrectTextAtRevision ()
+		{
+			base.CorrectTextAtRevision ();
 		}
 
 		protected override Repository GetRepo (string path, string url)

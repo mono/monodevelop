@@ -1,7 +1,7 @@
 <ExtensionModel>
  
 	<Runtime>
-		<Import assembly="NGit.dll"/>
+		<Import assembly="LibGit2Sharp.dll"/>
 		<Import file="GitIgnore.txt" />
 	</Runtime>
 

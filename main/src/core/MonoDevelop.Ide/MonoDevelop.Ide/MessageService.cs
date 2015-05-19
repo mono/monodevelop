@@ -368,12 +368,14 @@ namespace MonoDevelop.Ide
 				dialog.Title = BrandingService.ApplicationName;
 
 			#if MAC
-			// If there is a native NSWindow model window running, we need
-			// to show the new dialog over that window.
-			if (NSApplication.SharedApplication.ModalWindow != null)
-				dialog.Shown += HandleShown;
-			else
-				PlaceDialog (dialog, parent);
+			DispatchService.GuiSyncDispatch (() => {
+				// If there is a native NSWindow model window running, we need
+				// to show the new dialog over that window.
+				if (NSApplication.SharedApplication.ModalWindow != null)
+					dialog.Shown += HandleShown;
+				else
+					PlaceDialog (dialog, parent);
+			});
 			#endif
 			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}

@@ -1,21 +1,21 @@
-// 
+//
 // GitNodeBuilderExtension.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,56 +36,56 @@ namespace MonoDevelop.VersionControl.Git
 	sealed class GitNodeBuilderExtension: NodeBuilderExtension
 	{
 		readonly Dictionary<FilePath,WorkspaceObject> repos = new Dictionary<FilePath, WorkspaceObject> ();
-		
+
 		protected override void Initialize ()
 		{
 			base.Initialize ();
 			IdeApp.FocusIn += HandleApplicationFocusIn;
 			GitRepository.BranchSelectionChanged += HandleBranchSelectionChanged;
 		}
-		
+
 		public override void Dispose ()
 		{
 			IdeApp.FocusIn -= HandleApplicationFocusIn;
 			GitRepository.BranchSelectionChanged -= HandleBranchSelectionChanged;
 			base.Dispose ();
 		}
-		
+
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof(WorkspaceObject).IsAssignableFrom (dataType);
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			WorkspaceObject ob = (WorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
+			var ob = (WorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null) {
 				WorkspaceObject rob;
-				if (repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
+				if (repos.TryGetValue (rep.RootPath, out rob)) {
 					if (ob == rob)
 						nodeInfo.Label += " (" + rep.GetCurrentBranch () + ")";
 				}
 			}
 		}
-		
+
 		public override void OnNodeAdded (object dataObject)
 		{
-			WorkspaceObject ob = (WorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
-			if (rep != null && !repos.ContainsKey (rep.RootPath.CanonicalPath)) {
+			var ob = (WorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
+			if (rep != null && !repos.ContainsKey (rep.RootPath)) {
 				repos [rep.RootPath] = ob;
 			}
 		}
-		
+
 		public override void OnNodeRemoved (object dataObject)
 		{
-			WorkspaceObject ob = (WorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
+			var ob = (WorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
 			WorkspaceObject rob;
-			if (rep != null && repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
+			if (rep != null && repos.TryGetValue (rep.RootPath, out rob)) {
 				if (ob == rob)
-					repos.Remove (rep.RootPath.CanonicalPath);
+					repos.Remove (rep.RootPath);
 			}
 		}
 
@@ -104,4 +104,3 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 }
-

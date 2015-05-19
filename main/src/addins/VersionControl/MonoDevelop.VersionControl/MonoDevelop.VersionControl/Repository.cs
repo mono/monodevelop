@@ -134,6 +134,10 @@ namespace MonoDevelop.VersionControl
 		public virtual bool SupportsRevertRevision {
 			get { return false; }
 		}
+
+		public virtual bool SupportsRevertToRevision {
+			get { return false; }
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{

@@ -232,6 +232,16 @@ fi
 
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
+if test x$enable_gnomeplatform = xyes && test x$enable_git = xyes; then
+	AC_PATH_PROG(CMAKE, cmake, no)
+	if test "x$CMAKE" = "xno"; then
+	        AC_MSG_ERROR([You need to install cmake for Git support to be built])
+	fi
+
+	PKG_CHECK_MODULES(LIBSSH2, libssh2)
+	AC_SUBST(LIBSSH2_LIBS)
+fi
+
 dnl Intl
 ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb ko uk"
 AC_SUBST(ALL_LINGUAS)

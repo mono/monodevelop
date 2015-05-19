@@ -1,21 +1,21 @@
-// 
+//
 // GitService.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,9 +28,9 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
-using NGit.Api;
 using System.Threading;
 using System.Threading.Tasks;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -41,29 +41,29 @@ namespace MonoDevelop.VersionControl.Git
 			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true); }
 			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", value); }
 		}
-		
+
 		public static bool StashUnstashWhenUpdating
 		{
 			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true); }
 			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", value); }
 		}
-		
+
 		public static bool StashUnstashWhenSwitchingBranches
 		{
 			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true); }
 			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", value); }
 		}
-		
+
 		public static void Push (GitRepository repo)
 		{
 			var dlg = new PushDialog (repo);
 			try {
 				if (MessageService.RunCustomDialog (dlg) != (int) Gtk.ResponseType.Ok)
 					return;
-				
+
 				string remote = dlg.SelectedRemote;
 				string branch = dlg.SelectedRemoteBranch ?? repo.GetCurrentBranch ();
-				
+
 				ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Pushing changes..."), VersionControlOperationType.Push);
 				ThreadPool.QueueUserWorkItem (delegate {
 					try {
@@ -78,29 +78,29 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Destroy ();
 			}
 		}
-	
+
 		public static void ShowConfigurationDialog (GitRepository repo)
 		{
 			var dlg = new GitConfigurationDialog (repo);
 			MessageService.ShowCustomDialog (dlg);
 		}
-	
+
 		public static void ShowMergeDialog (GitRepository repo, bool rebasing)
 		{
-			MergeDialog dlg = new MergeDialog (repo, rebasing);
+			var dlg = new MergeDialog (repo, rebasing);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
 					if (rebasing) {
 						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
-								repo.Fetch (monitor);
+								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					} else {
 						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
-								repo.Fetch (monitor);
+								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					}
@@ -109,16 +109,16 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Destroy ();
 			}
 		}
-	
+
 		public static void ShowStashManager (GitRepository repo)
 		{
-			StashManagerDialog dlg = new StashManagerDialog (repo);
+			var dlg = new StashManagerDialog (repo);
 			MessageService.ShowCustomDialog (dlg);
 		}
-		
+
 		public async static void SwitchToBranch (GitRepository repo, string branch)
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
@@ -136,20 +136,20 @@ namespace MonoDevelop.VersionControl.Git
 				IdeApp.Workbench.UnlockGui ();
 			}
 		}
-		
-		public static Task ApplyStash (Stash s)
+
+		public static Task<bool> ApplyStash (GitRepository repo, int s)
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			var t = Task.Run (delegate {
 				try {
-					MergeCommandResult result;
-					using (var gm = new GitMonitor (monitor))
-						result = s.Apply (gm);
-					ReportStashResult (monitor, result);
+					var res = repo.ApplyStash (monitor, s);
+					ReportStashResult (res);
+					return true;
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
 					monitor.ReportError (msg, ex);
+					return false;
 				}
 				finally {
 					monitor.Dispose ();
@@ -158,25 +158,10 @@ namespace MonoDevelop.VersionControl.Git
 			});
 			return t;
 		}
-		
-		public static void ReportStashResult (ProgressMonitor monitor, MergeCommandResult result)
+
+		public static void ReportStashResult (StashApplyStatus status)
 		{
-			if (result.GetMergeStatus () == MergeStatus.FAILED) {
-				string msg = GettextCatalog.GetString ("Stash operation failed.");
-				DispatchService.GuiDispatch (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
-				string txt = msg + "\n\n" + GetMergeResultErrorDetail (result);
-				monitor.ReportError (txt, null);
-			}
-			else if (result.GetMergeStatus () == MergeStatus.NOT_SUPPORTED) {
-				string msg = GettextCatalog.GetString ("Operation not supported");
-				monitor.ReportError (msg, null);
-				DispatchService.GuiDispatch (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
-			}
-			else if (result.GetMergeStatus () == MergeStatus.CONFLICTING) {
+			if (status == StashApplyStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
@@ -189,23 +174,5 @@ namespace MonoDevelop.VersionControl.Git
 				});
 			}
 		}
-		
-		internal static string GetMergeResultErrorDetail (MergeCommandResult result)
-		{
-			string msg = "";
-			if (result.GetFailingPaths () != null) {
-				foreach (var f in result.GetFailingPaths ()) {
-					if (msg.Length > 0)
-						msg += "\n";
-					switch (f.Value) {
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_WORKTREE: msg += GettextCatalog.GetString ("The file '{0}' has unstaged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_INDEX: msg += GettextCatalog.GetString ("The file '{0}' has staged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.COULD_NOT_DELETE: msg += GettextCatalog.GetString ("The file '{0}' could not be deleted", f.Key); break;
-					}
-				}
-			}
-			return msg;
-		}
 	}
 }
-

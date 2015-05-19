@@ -28,15 +28,10 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.CSharp.Project;
-using Mono.CSharp;
-using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Parser

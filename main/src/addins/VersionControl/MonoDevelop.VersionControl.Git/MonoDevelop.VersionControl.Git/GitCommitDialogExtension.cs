@@ -1,23 +1,23 @@
-// 
+//
 // CommitDialogExtensionWidget.cs
-//  
+//
 // Authors:
 //       Lluis Sanchez Gual <lluis@novell.com>
 //       Andrés G. Aragoneses <knocte@gmail.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // Copyright (c) 2013 Andrés G. Aragoneses
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,14 +54,14 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			return false;
 		}
-		
+
 		public override bool OnBeginCommit (ChangeSet changeSet)
 		{
 			// In this callback we check if the user information configured in Git
 			// matches the user information configured in MonoDevelop. If the configurations
 			// don't match, it shows a dialog asking the user what to do.
 
-			GitRepository repo = (GitRepository) changeSet.Repository;
+			var repo = (GitRepository) changeSet.Repository;
 			Solution sol = null;
 
 			// Locate the solution to which the changes belong
@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Git
 			string user;
 			string email;
 			repo.GetUserInfo (out user, out email);
-			
+
 			string val = sol.UserProperties.GetValue<string> ("GitUserInfo");
 			if (val == "UsingMD") {
 				// If the solution is configured to use the MD configuration, make sure the Git config is up to date.
@@ -111,8 +111,8 @@ namespace MonoDevelop.VersionControl.Git
 					// There is a conflict. Ask the user what to do
 					string gitInfo = GetDesc (user, email);
 					string mdInfo = GetDesc (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
-					
-					UserInfoConflictDialog dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
+
+					var dlg = new UserInfoConflictDialog (mdInfo, gitInfo);
 					try {
 						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 							if (dlg.UseMonoDevelopConfig) {
@@ -131,7 +131,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			return true;
 		}
-		
+
 		static string GetDesc (string name, string email)
 		{
 			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (email))
@@ -142,7 +142,7 @@ namespace MonoDevelop.VersionControl.Git
 				email = GettextCatalog.GetString ("e-mail not configured");
 			return name + ", " + email;
 		}
-		
+
 		public override void OnEndCommit (ChangeSet changeSet, bool success)
 		{
 			if (success && widget.PushAfterCommit)
@@ -176,7 +176,7 @@ namespace MonoDevelop.VersionControl.Git
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
 				textView.TooltipText = String.Format (GettextCatalog.GetString (
-					"When using GIT, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+					"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
 					maxLengthConventionForFirstLineOfCommitMessage);
 				textView.HasTooltip = true;
 
@@ -192,4 +192,3 @@ namespace MonoDevelop.VersionControl.Git
 		}
 	}
 }
-

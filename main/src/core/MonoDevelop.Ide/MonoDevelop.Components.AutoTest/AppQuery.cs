@@ -172,7 +172,7 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery Model (string column)
+		public AppQuery Model (string column = null)
 		{
 			operations.Add (new ModelOperation (column));
 			return this;
@@ -211,6 +211,12 @@ namespace MonoDevelop.Components.AutoTest
 		public AppQuery Index (int index)
 		{
 			operations.Add (new IndexOperation (index));
+			return this;
+		}
+
+		public AppQuery Children ()
+		{
+			operations.Add (new ChildrenOperation ());
 			return this;
 		}
 

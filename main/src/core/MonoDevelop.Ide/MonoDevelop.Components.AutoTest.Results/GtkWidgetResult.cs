@@ -81,6 +81,18 @@ namespace MonoDevelop.Components.AutoTest.Results
 			// FIXME: Are there other property names?
 
 			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
+				// Check for the combobox first and try to use the active text.
+				// If the active text fails then
+				ComboBox cb = resultWidget as ComboBox;
+				if (cb != null) {
+					string activeText = cb.ActiveText;
+					if (activeText == null) {
+						return null;
+					}
+
+					return CheckForText (activeText, text, exact) ? this : null;
+				}
+
 				// Look for a Text property on the widget.
 				PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
 				if (pinfo != null) {
@@ -102,16 +114,30 @@ namespace MonoDevelop.Components.AutoTest.Results
 			});
 		}
 
-		public override AppResult Model (string column)
+		TreeModel ModelFromWidget (Widget widget)
 		{
-			TreeView tv = resultWidget as TreeView;
-			if (tv == null) {
+			TreeView tv = widget as TreeView;
+			if (tv != null) {
+				return (TreeModel)AutoTestService.CurrentSession.UnsafeSync (() => tv.Model);
+			}
+
+			ComboBox cb = widget as ComboBox;
+			if (cb == null) {
 				return null;
 			}
 
-			TreeModel model = (TreeModel) AutoTestService.CurrentSession.UnsafeSync (() => tv.Model);
+			return (TreeModel)AutoTestService.CurrentSession.UnsafeSync (() => cb.Model);
+		}
+
+		public override AppResult Model (string column)
+		{
+			TreeModel model = ModelFromWidget (resultWidget);
 			if (model == null) {
 				return null;
+			}
+
+			if (column == null) {
+				return new GtkTreeModelResult (resultWidget, model, 0);
 			}
 
 			// Check if the class has the SemanticModelAttribute
@@ -135,7 +161,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			//AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("{0} has {1} at column {2}", resultWidget, column, columnNumber);
-			return new GtkTreeModelResult (tv, model, columnNumber);
+			return new GtkTreeModelResult (resultWidget, model, columnNumber);
 		}
 
 		object GetPropertyValue (string propertyName)

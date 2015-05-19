@@ -29,6 +29,8 @@ using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
+	[TestFixture]
+	[Category("ASP")]
 	public class ASPNetTemplatesTest : CreateBuildTemplatesTestBase
 	{
 		readonly string aspCategory = "ASP.NET";

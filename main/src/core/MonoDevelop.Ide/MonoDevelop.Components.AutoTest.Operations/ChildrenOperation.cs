@@ -1,10 +1,10 @@
-//
-// GitOptionsPanel.cs
+﻿//
+// ChildrenOperation.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       iain holmes <iain@xamarin.com>
 //
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using MonoDevelop.Ide.Gui.Dialogs;
+using System;
+using System.Collections.Generic;
 
-namespace MonoDevelop.VersionControl.Git
+namespace MonoDevelop.Components.AutoTest.Operations
 {
-	sealed class GitOptionsPanel : OptionsPanel
+	public class ChildrenOperation : Operation
 	{
-		GitOptionsPanelWidget widget;
-
-		public override Gtk.Widget CreatePanelWidget ()
+		public override List<AppResult> Execute (List<AppResult> resultSet)
 		{
-			return widget = new GitOptionsPanelWidget ();
-		}
+			List<AppResult> newResultSet = new List<AppResult> ();
 
-		public override void ApplyChanges ()
-		{
-			widget.ApplyChanges ();
+			foreach (var result in resultSet) {
+				List<AppResult> flattenedChildren = result.FlattenChildren ();
+				if (flattenedChildren != null) {
+					newResultSet.AddRange (flattenedChildren);
+				}
+
+				AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("Got {0} results from Children", flattenedChildren.Count);
+			}
+
+			return newResultSet;
 		}
 	}
 }
+
