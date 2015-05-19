@@ -560,7 +560,7 @@ namespace MonoDevelop.VersionControl.Git
 						RootRepository = null;
 						if (RootPath.Combine (".git").IsDirectory)
 							Directory.Delete (RootPath.Combine (".git"), true);
-						throw new UserException (e.Message);
+						throw new VersionControlException (e.Message);
 					},
 					CredentialsProvider = GitCredentials.TryGet
 				});
