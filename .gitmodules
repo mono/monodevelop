@@ -47,6 +47,7 @@
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
 	url = git://github.com/libgit2/libgit2sharp.git
+	branch = therzok/mdNext
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
 	url = git://github.com/mono/libgit-binary.git
