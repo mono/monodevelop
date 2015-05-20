@@ -80,6 +80,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					//building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
 
+					if (globalProperties != null)
+						foreach (var p in globalProperties)
+							pi.SetProperty (p.Key, p.Value);
+					
 					pi.Build (runTargets, loggers);
 
 					result = new MSBuildResult (logger.BuildResult.ToArray ());

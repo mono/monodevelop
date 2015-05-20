@@ -79,9 +79,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 
 					if (runTargets != null && runTargets.Length > 0) {
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.GlobalProperties.SetProperty (p.Key, p.Value);
+                        }
+
 						// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 						// an xbuild bug which causes references to not be resolved after the project has been built once.
 						buildEngine.Engine.BuildProject (project, runTargets, new Hashtable (), BuildSettings.None);
+
+						if (globalProperties != null) {
+							foreach (var p in globalProperties.Keys)
+								project.GlobalProperties.RemoveProperty (p);
+						}
 					}
 
 					result = new MSBuildResult (logger.BuildResult.ToArray ());

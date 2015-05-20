@@ -1250,12 +1250,34 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-/*		[Test]
-		public async Task RunTargetInMemory ()
+		[Test]
+		public async Task RunTarget ()
 		{
-			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-target.csproj");
+			var p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-		}*/
+			var ctx = new TargetEvaluationContext ();
+			ctx.GlobalProperties.SetValue ("TestProp", "has");
+			ctx.PropertiesToEvaluate.Add ("GenProp");
+			ctx.PropertiesToEvaluate.Add ("AssemblyName");
+			ctx.ItemsToEvaluate.Add ("GenItem");
+			var res = await p.RunTarget (Util.GetMonitor (), "Test", p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.BuildResult.Errors.Count);
+			Assert.AreEqual ("Something failed: has foo bar", res.BuildResult.Errors [0].ErrorText);
+
+			// Verify that properties are returned
+
+			Assert.AreEqual ("ConsoleProject", res.Properties.GetValue ("AssemblyName"));
+			Assert.AreEqual ("foo", res.Properties.GetValue ("GenProp"));
+
+			// Verify that items are returned
+
+			var items = res.Items.ToArray ();
+			Assert.AreEqual (1, items.Length);
+			Assert.AreEqual ("bar", items [0].Include);
+			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
+        }
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
