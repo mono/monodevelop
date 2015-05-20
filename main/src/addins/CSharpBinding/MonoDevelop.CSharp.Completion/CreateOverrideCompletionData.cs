@@ -34,6 +34,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Formatting;
+using System;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -51,7 +52,11 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, declarationBegin, Ambience.LabelFormat) + " {...}";
+					try {
+						displayText = base.Symbol.ToMinimalDisplayString (model, declarationBegin, Ambience.LabelFormat) + " {...}";
+					} catch (ArgumentOutOfRangeException) {
+						displayText = base.Symbol.ToMinimalDisplayString (model, 0, Ambience.LabelFormat) + " {...}";
+					}
 					if (!afterKeyword)
 						displayText = "override " + displayText;
 				}

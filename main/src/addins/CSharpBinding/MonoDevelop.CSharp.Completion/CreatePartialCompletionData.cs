@@ -31,6 +31,7 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
+using System;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -48,7 +49,12 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (displayText == null) {
 					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
+					try {
+						displayText = base.Symbol.ToMinimalDisplayString (model, ext.Editor.CaretOffset, Ambience.LabelFormat) + " {...}";
+					} catch (ArgumentOutOfRangeException) {
+						displayText = base.Symbol.ToMinimalDisplayString (model, 0, Ambience.LabelFormat) + " {...}";
+					}
+
 					if (!afterKeyword)
 						displayText = "partial " + displayText;
 				}
