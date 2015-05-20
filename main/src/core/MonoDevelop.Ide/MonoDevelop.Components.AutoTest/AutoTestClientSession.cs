@@ -258,6 +258,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool SelectElement (Func<AppQuery, AppQuery> query)
 		{
 			AppResult[] results = Query (query);
+
 			if (results.Length > 0) {
 				return session.Select (results [0]);
 			}

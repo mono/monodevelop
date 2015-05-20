@@ -50,6 +50,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool Select ();
 		public abstract bool Click ();
 		public abstract bool TypeKey (char key, string state);
+		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 
 		void AddChildrenToList (List<AppResult> children, AppResult child)

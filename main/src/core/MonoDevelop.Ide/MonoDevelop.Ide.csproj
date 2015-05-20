@@ -3365,6 +3365,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkTreeModelResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkWidgetResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\ChildrenOperation.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\NSObjectResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
