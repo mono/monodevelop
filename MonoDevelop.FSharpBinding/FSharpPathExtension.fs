@@ -42,12 +42,14 @@ type FSharpPathExtension() =
         
     member private x.PathUpdated() =
         let loc = x.Editor.CaretLocation
+        if IdeApp.Workbench.ActiveDocument <> null && IdeApp.Workbench.ActiveDocument.Name <> x.DocumentContext.Name then () else
+        let ast = 
+          maybe {let! context = x.DocumentContext |> Option.ofNull
+                 let! parsedDocument = context.ParsedDocument |> Option.ofNull
+                 let! ast = parsedDocument.Ast |> tryCast<ParseAndCheckResults>
+                 return ast}
         
-        if x.DocumentContext.ParsedDocument = null ||
-           IdeApp.Workbench.ActiveDocument.Name <> x.DocumentContext.Name then () else
-        match x.DocumentContext.ParsedDocument.Ast with
-        | :? ParseAndCheckResults as ast ->
-
+        ast |> Option.iter (fun ast ->
             let posGt (p1Column, p1Line) (p2Column, p2Line) = 
                 (p1Line > p2Line || (p1Line = p2Line && p1Column > p2Column))
 
@@ -102,8 +104,7 @@ type FSharpPathExtension() =
                 else currentPath <- newPath.ToArray()
 
                 //invoke pathChanged
-                pathChanged.Trigger(x, DocumentPathChangedEventArgs(previousPath))
-        | _ -> ()
+                pathChanged.Trigger(x, DocumentPathChangedEventArgs(previousPath)))
 
     override x.Dispose() =
         subscriptions |> List.iter (fun s -> s.Dispose())
