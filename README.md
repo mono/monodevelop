@@ -1,6 +1,6 @@
 # F# Language Support for MonoDevelop / Xamarin Studio
 
-[![Join the chat at https://gitter.im/fsharp/FSharpMDXS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsharp/FSharpMDXS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsharp/xamarin-monodevelop-fsharp-addin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This project contains advanced editing support for the F# addin in MonoDevelop and Xamarin Studio](monodevelop/README.md)
 
@@ -80,7 +80,7 @@ If you subsequently make changes to the add-in, you will need to `build-and-inst
 
 ### Can't get it to work?  
 
-Don't give up! Add an issue to [the issue tracker](https://github.com/FSharp/fsharpMDXS/issues). Your issue will be seen by the developers.
+Don't give up! Add an issue to [the issue tracker](https://github.com/FSharp/xamarin-monodevelop-fsharp-addin/issues). Your issue will be seen by the developers.
 
 ### Notes for Developers
 
@@ -99,7 +99,7 @@ To check things are working try a few different things somewhat at random:
   - Load an existing .fsproj (e.g. see MonoDevelop.FSharpBinding/tests/projects/...) and check if completion works etc.
   - Run xbuild on a few .fsproj (this is nothing to do with the binding, it is just fsharp/fsharp)
 
-There are a couple of known issues, see https://github.com/fsharp/FSharpMDXS/issues.
+There are a couple of known issues, see https://github.com/fsharp/xamarin-monodevelop-fsharp-addin/issues.
 
 On Windows, the configuration creates the file `MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj`. 
 Be aware that this is not the original file, which is `MonoDevelop.FSharp.fsproj.orig`. The windows file is 
