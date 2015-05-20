@@ -145,7 +145,6 @@ module TooltipXmlDoc =
                | None, cache ->
                    let res = f x
                    lru := cache.Add (x, res)
-                   LoggingService.LogDebug <| sprintf "cache contains %i entries\n%A" (!lru).Count ( (!lru).ToArray () |> Array.map (fst >> Path.GetFileName))
                    res
 
   /// Memoize the objects that manage access to XML files, keeping only 20 most used

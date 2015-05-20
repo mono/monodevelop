@@ -291,8 +291,7 @@ module Parsing =
          current::prev |> List.rev
       | [] -> []
 
-    Debug.WriteLine(sprintf "Result: Crack symbol text at column %d\nIdentifier: %A\nLine string: %s"
-                          col identIsland lineStr)
+    Debug.WriteLine("Result: Crack symbol text at column {0}\nIdentifier: {1}\nLine string: {2}", col, identIsland, lineStr)
     
     match identIsland with
     | [] | [ "" ] -> None

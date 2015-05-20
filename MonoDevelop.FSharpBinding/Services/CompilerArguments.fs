@@ -77,7 +77,7 @@ module CompilerArguments =
         |> Option.bind (fun assemblyNameRef -> let resolved = Mono.Cecil.DefaultAssemblyResolver().Resolve(assemblyNameRef)
                                                Some (resolved.MainModule.FullyQualifiedName))
 
-  let resolutionFailedMessage = sprintf "Resolution: Assembly resolution failed when trying to find default reference for: %s"
+  let resolutionFailedMessage (n:string) = String.Format ("Resolution: Assembly resolution failed when trying to find default reference for: {0}", n)
        
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]

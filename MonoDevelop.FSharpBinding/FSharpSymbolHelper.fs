@@ -269,7 +269,7 @@ module internal Highlight =
     let hl str (style: Highlighting.ChunkStyle) =
         let color = getColourScheme().GetForeground (style) |> GtkUtil.ToGdkColor
         let colorString = HelperMethods.GetColorString (color)
-        sprintf """<span foreground="%s">%s</span>""" colorString str
+        String.Format ("""<span foreground="{0}">{1}</span>""", colorString, str)
 
     let asType t s =
         let cs = getColourScheme ()

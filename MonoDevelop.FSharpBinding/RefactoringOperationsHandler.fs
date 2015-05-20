@@ -42,7 +42,7 @@ module Refactoring =
                                            Offset = location.Start,
                                            RemovedChars = location.Length,
                                            InsertedText = renameProperties.NewName,
-                                           Description = sprintf "Replace '%s' with '%s'" symbol.Symbol.DisplayName renameProperties.NewName)
+                                           Description = String.Format ("Replace '{0}' with '{1}'", symbol.Symbol.DisplayName, renameProperties.NewName))
                         :> Change) |]
   
         results :> IList<Change> )

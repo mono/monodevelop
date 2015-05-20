@@ -84,7 +84,7 @@ type FSharpInteractivePad() as this =
           colourSchemChanged.Dispose()
           if killIntent = NoIntent then
             DispatchService.GuiDispatch(fun () ->
-              LoggingService.LogInfo (sprintf "Interactive: process stopped")
+              LoggingService.LogInfo ("Interactive: process stopped")
               view.WriteOutput("\nSession termination detected. Press Enter to restart.")) |> ignore
             isPrompting <- true
           elif killIntent = Restart then 
@@ -138,7 +138,7 @@ type FSharpInteractivePad() as this =
              
   member x.Shutdown()  = 
 
-    do LoggingService.LogInfo (sprintf "Interactive: x.Shutdown()!")
+    do LoggingService.LogInfo ("Interactive: Shutdown()!")
     resetFsi Kill
  
   override x.Dispose() =
@@ -212,7 +212,7 @@ type FSharpInteractivePad() as this =
   member x.UpdateFont() = 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
-    LoggingService.LogInfo (sprintf "Interactive: Loading font '%s'" fontName)
+    LoggingService.LogInfo ("Interactive: Loading font '{0}'", fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
 
