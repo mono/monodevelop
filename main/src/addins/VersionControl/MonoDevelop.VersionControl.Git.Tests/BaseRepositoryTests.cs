@@ -592,6 +592,17 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (dirFile, VersionInfoQueryFlags.IgnoreCache).Status);
 			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
+
+		[Test]
+		public void RevertingADeleteMakesTheFileVersioned ()
+		{
+			var added = LocalPath.Combine ("testfile");
+			AddFile ("testfile", "test", true, true);
+			Repo.DeleteFile (added, true, new NullProgressMonitor (), false);
+			Repo.Revert (added, false, new NullProgressMonitor ());
+
+			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
+		}
 		#region Util
 
 		protected void Checkout (string path, string url)

@@ -1,10 +1,10 @@
-//
-// ReinstallPackageAction.cs
+﻿//
+// TestableInstallPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,51 +25,34 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.NodeBuilders;
-using MonoDevelop.Projects;
 using ICSharpCode.PackageManagement;
-using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class ReinstallPackageAction : ProcessPackageAction
+	public class TestableInstallPackageAction : InstallPackageAction
 	{
-		public ReinstallPackageAction (
+		public TestableInstallPackageAction (
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
 			: base (project, packageManagementEvents)
 		{
+			CreateOpenPackageReadMeMonitorAction = packageId => {
+				IOpenPackageReadMeMonitor monitor = base.CreateOpenPackageReadMeMonitor (packageId);
+				OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
+				NullOpenPackageReadMeMonitorIsCreated = monitor is NullOpenPackageReadMeMonitor;
+				return monitor;
+			};
 		}
 
-		protected override string StartingMessageFormat {
-			get { return "Retargeting {0}..." + Environment.NewLine; }
-		}
+		public OpenPackageReadMeMonitor OpenPackageReadMeMonitor;
+		public Func<string, IOpenPackageReadMeMonitor> CreateOpenPackageReadMeMonitorAction;
 
-		protected override void ExecuteCore ()
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
 		{
-			UninstallPackage ();
-			InstallPackage ();
+			return CreateOpenPackageReadMeMonitorAction (packageId);
 		}
 
-		void UninstallPackage ()
-		{
-			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
-			action.Package = Package;
-			action.ForceRemove = true;
-			action.Execute ();
-		}
-
-		void InstallPackage ()
-		{
-			InstallPackageAction action = Project.CreateInstallPackageAction ();
-			action.Package = Package;
-			action.OpenReadMeText = false;
-			action.Execute ();
-		}
+		public bool NullOpenPackageReadMeMonitorIsCreated;
 	}
 }
 

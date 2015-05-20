@@ -39,8 +39,6 @@ namespace MonoDevelop.Components.AutoTest.Operations
 				if (flattenedChildren != null) {
 					newResultSet.AddRange (flattenedChildren);
 				}
-
-				AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("Got {0} results from Children", flattenedChildren.Count);
 			}
 
 			return newResultSet;

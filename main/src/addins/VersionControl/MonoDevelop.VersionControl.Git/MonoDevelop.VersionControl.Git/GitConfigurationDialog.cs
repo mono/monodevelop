@@ -79,7 +79,14 @@ namespace MonoDevelop.VersionControl.Git
 
 			treeRemotes.Selection.Changed += delegate {
 				TreeIter it;
-				buttonTrackRemote.Sensitive = buttonFetch.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = treeRemotes.Selection.GetSelected (out it);
+				bool anythingSelected = treeRemotes.Selection.GetSelected (out it);
+				buttonTrackRemote.Sensitive = false;
+				buttonFetch.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = anythingSelected;
+				if (!anythingSelected)
+					return;
+				string branchName = (string) storeRemotes.GetValue (it, 3);
+				if (branchName != null)
+					buttonTrackRemote.Sensitive = true;
 			};
 			buttonTrackRemote.Sensitive = buttonFetch.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = false;
 

@@ -51,6 +51,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				return FakePackages.FirstOrDefault (package => package.Id == packageId);
 			};
 
+			InstallPackageAction = (package, installAction) => {
+				PackagePassedToInstallPackage = package;
+				PackageOperationsPassedToInstallPackage = installAction.Operations;
+				IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
+				AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			};
+
 			UpdatePackageAction = (package, updateAction) => {
 				PackagePassedToUpdatePackage = package;
 				PackageOperationsPassedToUpdatePackage = updateAction.Operations;
@@ -117,12 +124,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IgnoreDependenciesPassedToInstallPackage;
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 
+		public Action<IPackage, InstallPackageAction> InstallPackageAction;
+
 		public void InstallPackage (IPackage package, InstallPackageAction installAction)
 		{
-			PackagePassedToInstallPackage = package;
-			PackageOperationsPassedToInstallPackage = installAction.Operations;
-			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
-			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
+			InstallPackageAction (package, installAction);
 		}
 
 		public FakePackageOperation AddFakeInstallOperation ()

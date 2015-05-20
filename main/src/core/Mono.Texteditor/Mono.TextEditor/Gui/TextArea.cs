@@ -3168,7 +3168,9 @@ namespace Mono.TextEditor
 			MonoTextEditor.EditorContainerChild info = new MonoTextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
-			containerChildren.Add (info);
+			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			newContainerChildren.Add (info);
+			containerChildren = newContainerChildren;
 			ResizeChild (Allocation, info);
 			SetAdjustments ();
 		}
@@ -3222,14 +3224,16 @@ namespace Mono.TextEditor
 		
 		protected override void OnRemoved (Widget widget)
 		{
-			foreach (var info in containerChildren.ToArray ()) {
+			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			foreach (var info in newContainerChildren.ToArray ()) {
 				if (info.Child == widget) {
 					widget.Unparent ();
-					containerChildren.Remove (info);
+					newContainerChildren.Remove (info);
 					SetAdjustments ();
 					break;
 				}
 			}
+			containerChildren = newContainerChildren;
 		}
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)

@@ -576,6 +576,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public void FocusSearchBar ()
 		{
+			IdeApp.Workbench.Present ();
 			ToolbarView.FocusSearchBar ();
 		}
 

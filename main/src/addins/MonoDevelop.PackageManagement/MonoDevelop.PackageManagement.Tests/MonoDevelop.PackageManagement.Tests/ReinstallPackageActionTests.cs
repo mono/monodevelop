@@ -90,6 +90,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (project.FakeUninstallPackageAction.ForceRemove);
 		}
+
+		[Test]
+		public void Execute_PackageExistsInSourceRepository_PackageIsInstalledWithoutOpeningReadmeTxt ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			FakePackage package = AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+
+			action.Execute ();
+
+			Assert.IsTrue (project.LastInstallPackageCreated.IsExecuteCalled);
+			Assert.IsFalse (project.LastInstallPackageCreated.OpenReadMeText);
+		}
 	}
 }
 

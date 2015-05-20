@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.CustomTools
 			var outputfile = file.FilePath.ChangeExtension (".Designer." + provider.FileExtension);
 			var codeNamespace = CustomToolService.GetFileNamespace (file, outputfile);
 			var name = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
-			var resourcesNamespace = dnp.DefaultNamespace;
+			var resourcesNamespace = dnp.GetDefaultNamespace (outputfile);
 
 			var rd = new Dictionary<object, object> ();
 			var filePath = file.FilePath;
