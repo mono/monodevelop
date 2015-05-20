@@ -274,7 +274,6 @@ type LanguageService(dirtyNotify) =
 
 
   member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
-    //Debug.WriteLine(sprintf "LanguageService: Clearing ProjectInfoCache : %A" projectInfoCache.Keys)
     let properties = defaultArg properties ["Configuration", "Debug"]
     let key = (projFilename, properties)
     Debug.WriteLine("LanguageService: Removing {0} from projectInfoCache", projFilename)
@@ -318,10 +317,10 @@ type LanguageService(dirtyNotify) =
             let dirs = FSharpEnvironment.getDefaultDirectories (None, FSharpTargetFramework.NET_4_5 )
             {opts with OtherOptions = [| yield! opts.OtherOptions
                                          match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
-                                         | Some fn -> yield sprintf "-r:%s" fn
+                                         | Some fn -> yield String.Format ("-r:{0}", fn)
                                          | None -> Debug.WriteLine("LanguageService: Resolution: FSharp.Core assembly resolution failed!")
                                          match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
-                                         | Some fn -> yield sprintf "-r:%s" fn
+                                         | Some fn -> yield String.Format ("-r:{0}", fn)
                                          | None -> Debug.WriteLine("LanguageService: Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
 
@@ -334,17 +333,17 @@ type LanguageService(dirtyNotify) =
   member x.GetProjectCheckerOptions(projFilename, ?properties) =
     let properties = defaultArg properties ["Configuration", "Debug"]
     let key = (projFilename, properties)
-    match (!projectInfoCache).TryFind (key) with
-           | Some entry, cache ->
-               Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for {0}", projFilename)
-               projectInfoCache := cache
-               entry
-           | None, cache ->
-               lock projectInfoCache (fun () ->
-               Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for {0}", Path.GetFileName(projFilename))
-               let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-               projectInfoCache := cache.Add (key, opts)
-               opts)
+    lock projectInfoCache (fun () ->
+       match (!projectInfoCache).TryFind (key) with
+       | Some entry, cache ->
+           Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for {0}", Path.GetFileName(projFilename))
+           projectInfoCache := cache
+           entry
+       | None, cache ->
+           Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for {0}", Path.GetFileName(projFilename))
+           let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+           projectInfoCache := cache.Add (key, opts)
+           opts)
 
     // Print contents of check option for debugging purposes
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
@@ -411,7 +410,7 @@ type LanguageService(dirtyNotify) =
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
    asyncMaybe {
-     Debug.WriteLine(sprintf "LanguageService: GetUsesOfSymbolAtLocationInFile: fileName=%s, line = %i, col = %i" fileName line col )
+     Debug.WriteLine("LanguageService: GetUsesOfSymbolAtLocationInFile: fileName={0}, line = {1}, col = {2}", fileName, line, col)
      let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
      let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
