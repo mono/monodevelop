@@ -30,6 +30,7 @@ using System.Linq;
 using System.Xml;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Build.BuildEngine;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Formats.MSBuild.Conditions;
@@ -217,18 +218,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				conditionIsTrue = SafeParseAndEvaluate (items.Condition, context);
 
 			foreach (var item in items.Items) {
-				var it = Evaluate (project, context, item);
+
+				XmlElement e;
+				context.Evaluate (item.Element, out e);
+				var it = CreateEvaluatedItem (project.Project, item, e, e.GetAttribute ("Include"));
+
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (it.Condition, context));
+
+				var exclude = e.GetAttribute ("Exclude");
+				var excludeRegex = !string.IsNullOrEmpty (exclude) ? new Regex (ExcludeToRegex (exclude)) : null;
+
 				if (it.Include.IndexOf (';') == -1)
-					AddItem (project, context, item, it, it.Include, trueCond);
+					AddItem (project, context, item, it, it.Include, excludeRegex, trueCond);
 				else {
 					foreach (var inc in it.Include.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries))
-						AddItem (project, context, item, it, inc, trueCond);
+						AddItem (project, context, item, it, inc, excludeRegex, trueCond);
 				}
 			}
 		}
 
-		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, bool trueCond)
+		static void AddItem (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item, MSBuildItemEvaluated it, string include, Regex excludeRegex, bool trueCond)
 		{
 			if (include.IndexOf ('*') != -1) {
 				var path = include;
@@ -236,12 +245,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					path = path + "/*";
 				var subpath = path.Split ('\\');
 				foreach (var eit in ExpandWildcardFilePath (project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
+					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
+						continue;
 					project.EvaluatedItemsIgnoringCondition.Add (eit);
 					if (trueCond)
 						project.EvaluatedItems.Add (eit);
 				}
 			}
 			else if (include != it.Include) {
+				if (excludeRegex != null && excludeRegex.IsMatch (include))
+					return;
 				XmlElement e;
 				context.Evaluate (item.Element, out e);
 				it = CreateEvaluatedItem (project.Project, item, e, include);
@@ -250,6 +263,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					project.EvaluatedItems.Add (it);
 			}
 			else {
+				if (excludeRegex != null && excludeRegex.IsMatch (include))
+					return;
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
@@ -331,6 +346,41 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			return res;
 		}
+
+		static string ExcludeToRegex (string exclude)
+		{
+			var sb = new StringBuilder ();
+			foreach (var ep in exclude.Split (new char [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+				var ex = ep.Trim ();
+                if (sb.Length > 0)
+					sb.Append ('|');
+				sb.Append ('^');
+                for (int n = 0; n < ex.Length; n++) {
+					var c = ex [n];
+					if (c == '*') {
+						if (n < ex.Length - 1 && ex [n + 1] == '*') {
+							if (n < ex.Length - 2 && ex [n + 2] == '\\') {
+								// zero or more subdirectories
+								sb.Append ("(.*\\\\)?");
+								n += 2;
+							} else {
+								sb.Append (".*");
+								n++;
+							}
+						}
+						else
+							sb.Append ("[^\\\\.]*");
+					} else if (regexEscapeChars.Contains (c)) {
+						sb.Append ('\\').Append (c);
+					} else
+						sb.Append (c);
+				}
+				sb.Append ('$');
+			}
+            return sb.ToString ();
+        }
+
+		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };
 
 		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildProject project, MSBuildItem sourceItem, XmlElement e, string include)
 		{

@@ -56,6 +56,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 		
+		public string Exclude {
+			get { return Element.GetAttribute ("Exclude"); }
+			set {
+				Element.SetAttribute ("Exclude", value); 
+				if (parent != null)
+					parent.NotifyChanged ();
+			}
+		}
+
 		public bool IsImported {
 			get;
 			set;
