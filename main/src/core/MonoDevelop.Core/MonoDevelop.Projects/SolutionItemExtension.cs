@@ -90,7 +90,7 @@ namespace MonoDevelop.Projects
 		{
 			OnEndLoad ();
 			if (next != null)
-				next.OnEndLoad ();
+				next.EndLoad ();
 		}
 
 		#region Project properties
