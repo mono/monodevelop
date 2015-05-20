@@ -101,8 +101,6 @@ namespace UserInterfaceTests
 				OnBuildTemplate ();
 			} catch (Exception e) {
 				Assert.Fail (e.StackTrace);
-			} finally {
-				OnCleanUp ();
 			}
 		}
 
@@ -150,21 +148,6 @@ namespace UserInterfaceTests
 				TakeScreenShot ("AfterBuildFailed");
 				Assert.Fail (e.ToString ());
 			}
-		}
-
-		protected virtual void OnCleanUp ()
-		{
-			var actualSolutionDirectory = GetSolutionDirectory ();
-			Ide.CloseAll ();
-			try {
-				if (Directory.Exists (actualSolutionDirectory))
-					Directory.Delete (actualSolutionDirectory, true);
-			} catch (IOException) { }
-		}
-
-		protected string GetSolutionDirectory ()
-		{
-			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
 		}
 	}
 }

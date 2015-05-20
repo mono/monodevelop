@@ -64,6 +64,7 @@ namespace UserInterfaceTests
 		[TearDown]
 		public virtual void Teardown ()
 		{
+			OnCleanUp ();
 			TestService.EndSession ();
 		}
 
@@ -92,6 +93,21 @@ namespace UserInterfaceTests
 			
 			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
+		}
+
+		protected virtual void OnCleanUp ()
+		{
+			var actualSolutionDirectory = GetSolutionDirectory ();
+			Ide.CloseAll ();
+			try {
+				if (Directory.Exists (actualSolutionDirectory))
+					Directory.Delete (actualSolutionDirectory, true);
+			} catch (IOException) { }
+		}
+
+		protected string GetSolutionDirectory ()
+		{
+			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
 		}
 	}
 }
