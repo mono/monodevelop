@@ -3168,7 +3168,7 @@ namespace Mono.TextEditor
 			MonoTextEditor.EditorContainerChild info = new MonoTextEditor.EditorContainerChild (this, widget);
 			info.X = x;
 			info.Y = y;
-			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			var newContainerChildren = new List<MonoTextEditor.EditorContainerChild> (containerChildren);
 			newContainerChildren.Add (info);
 			containerChildren = newContainerChildren;
 			ResizeChild (Allocation, info);
@@ -3224,7 +3224,7 @@ namespace Mono.TextEditor
 		
 		protected override void OnRemoved (Widget widget)
 		{
-			var newContainerChildren = new List<TextEditor.EditorContainerChild> (containerChildren);
+			var newContainerChildren = new List<MonoTextEditor.EditorContainerChild> (containerChildren);
 			foreach (var info in newContainerChildren.ToArray ()) {
 				if (info.Child == widget) {
 					widget.Unparent ();

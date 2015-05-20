@@ -598,8 +598,8 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			var added = LocalPath.Combine ("testfile");
 			AddFile ("testfile", "test", true, true);
-			Repo.DeleteFile (added, true, new NullProgressMonitor (), false);
-			Repo.Revert (added, false, new NullProgressMonitor ());
+			Repo.DeleteFile (added, true, new ProgressMonitor (), false);
+			Repo.Revert (added, false, new ProgressMonitor ());
 
 			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
