@@ -74,17 +74,17 @@ type FSharpParser() =
         if IO.Path.IsPathRooted(fileName) then Some(fileName)
         else 
             let workBench = IdeApp.Workbench
-            if (workBench <> null) then
-                
-                let doc = workBench.ActiveDocument
-                if doc <> null then 
-                    let file = doc.FileName.FullPath.ToString()
-                    if file = "" then None else Some file
-                else None
-            else 
+            match workBench with
+            | null -> 
                 let filePaths = project.GetItemFiles(true)
                 let res = filePaths |> Seq.find(fun t -> t.FileName = fileName)
                 Some(res.FullPath.ToString())
+            | wb ->    
+                match wb.ActiveDocument with
+                | null -> None
+                | doc -> let file = doc.FileName.FullPath.ToString()
+                         if file = "" then None else Some file
+            
 
     override x.Parse(parseOptions, cancellationToken) =
         let fileName = parseOptions.FileName
