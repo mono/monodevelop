@@ -615,6 +615,8 @@ namespace MonoDevelop.VersionControl.Git
 					// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
 					if (string.Equals (e.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
 						message = "Unable to authorize credentials for the repository.";
+					else if (string.Equals (e.Message, "Received unexpected content-type", StringComparison.OrdinalIgnoreCase))
+						message = "Not a valid git repository.";
 					else
 						message = e.Message;
 
@@ -876,7 +878,7 @@ namespace MonoDevelop.VersionControl.Git
 				});
 			});
 
-			if (monitor.IsCancelRequested)
+			if (monitor.IsCancelRequested || RootPath.IsNull)
 				return;
 			
 			RootPath = RootPath.ParentDirectory;
