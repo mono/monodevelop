@@ -1,10 +1,10 @@
-//
-// ReinstallPackageAction.cs
+﻿//
+// NullOpenPackageReadMeMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,51 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.NodeBuilders;
-using MonoDevelop.Projects;
-using ICSharpCode.PackageManagement;
-using NuGet;
-
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallPackageAction : ProcessPackageAction
+	public class NullOpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
-		public ReinstallPackageAction (
-			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		public static readonly IOpenPackageReadMeMonitor Null = new NullOpenPackageReadMeMonitor ();
+
+		public void Dispose ()
 		{
 		}
 
-		protected override string StartingMessageFormat {
-			get { return "Retargeting {0}..." + Environment.NewLine; }
-		}
-
-		protected override void ExecuteCore ()
+		public void OpenReadMeFile ()
 		{
-			UninstallPackage ();
-			InstallPackage ();
-		}
-
-		void UninstallPackage ()
-		{
-			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
-			action.Package = Package;
-			action.ForceRemove = true;
-			action.Execute ();
-		}
-
-		void InstallPackage ()
-		{
-			InstallPackageAction action = Project.CreateInstallPackageAction ();
-			action.Package = Package;
-			action.OpenReadMeText = false;
-			action.Execute ();
 		}
 	}
 }

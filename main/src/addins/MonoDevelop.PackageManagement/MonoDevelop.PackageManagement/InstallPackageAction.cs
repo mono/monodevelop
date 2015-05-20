@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -40,9 +40,11 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			OpenReadMeText = true;
 		}
 		
 		public bool IgnoreDependencies { get; set; }
+		public bool OpenReadMeText { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -51,12 +53,23 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, this);
-			OnParentPackageInstalled ();
+			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
+				Project.InstallPackage (Package, this);
+				monitor.OpenReadMeFile ();
+				OnParentPackageInstalled ();
+			}
 		}
 
 		protected override string StartingMessageFormat {
 			get { return "Adding {0}..."; }
+		}
+
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
+		{
+			if (OpenReadMeText) {
+				return base.CreateOpenPackageReadMeMonitor (packageId);
+			}
+			return NullOpenPackageReadMeMonitor.Null;
 		}
 	}
 }
