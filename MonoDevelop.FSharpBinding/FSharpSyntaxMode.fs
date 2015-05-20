@@ -294,45 +294,58 @@ module Keywords =
         | None -> scheme.KeywordTypes
 
 module Tokens =
-    let (|InactiveCode|_|) = function
-        | token when token.ColorClass = FSharpTokenColorKind.InactiveCode -> Some token
+    let (|CollapsableToken|_|) (token:FSharpTokenInfo) =
+        match token.ColorClass with
+        | FSharpTokenColorKind.String
+        | FSharpTokenColorKind.Comment
+        | FSharpTokenColorKind.InactiveCode -> Some token
         | _ -> None
 
-    let (|InactiveCodeSection|_|) = function
-       | InactiveCode x :: xs -> 
-           let rec loop ts acc = 
-               match ts with 
-               | InactiveCode head :: rest ->
-                   loop rest (head :: acc) 
-               | _ -> List.rev acc, ts
-           Some (loop xs [x])
-       | _ -> None
+    let isSameType (token1:FSharpTokenInfo) (token2:FSharpTokenInfo) =
+      if token1.ColorClass = token2.ColorClass then true
+      else false
 
-    let CollapseInactiveTokens tokens =
-        let rec loop tokens =
-            [   match tokens with
-                | InactiveCodeSection (inactiveSegs, rest) ->
-                    //collapse inactivesegs
-                    let startSeg = inactiveSegs |> List.head
-                    let endSeg = inactiveSegs |> List.last
-                    let combinedToken =
-                        {startSeg with RightColumn = endSeg.RightColumn
-                                       FullMatchedLength = endSeg.RightColumn - startSeg.LeftColumn}
-                    yield combinedToken
-                    yield! loop rest
-                | head::tail -> yield head
-                                yield! loop tail
-                | [] -> () ]
-        loop tokens
+    let mergeTokens newest oldest =
+      {oldest with RightColumn = newest.RightColumn;FullMatchedLength = oldest.FullMatchedLength + newest.RightColumn - newest.LeftColumn}
 
+    let getTokens lineDetails filename defines = 
+      [|let state = ref 0L
+        let sourceTok = SourceTokenizer(defines, filename)
+        for lineNumber, lineOffset, lineText in lineDetails do
+          let tokenizer = sourceTok.CreateLineTokenizer(lineText)
+          let rec parseLine lastToken =
+              [ match tokenizer.ScanToken(!state) with
+                | Some(tok), nstate ->
+                    state := nstate
+                    match tok, lastToken with
+                    | CollapsableToken _, None ->
+                       yield! parseLine (Some tok)
+                    | _ , None ->
+                       yield tok
+                       yield! parseLine None
+                    | CollapsableToken newToken, Some lastToken ->
+                      if isSameType newToken lastToken then
+                         yield! parseLine (Some(mergeTokens tok lastToken))
+                      else yield lastToken
+                           yield! parseLine(Some newToken)
+                    | _, Some lastToken ->
+                       yield lastToken
+                       yield tok
+                       yield! parseLine None
+
+                | None, nstate ->
+                   state := nstate
+                   match lastToken with
+                   | Some other -> yield other
+                   | _ -> ()]
+          yield lineNumber, lineOffset, parseLine None |]
 
 type FSharpSyntaxMode(editor, context) =
     inherit MonoDevelop.Ide.Editor.Highlighting.SemanticHighlighting(editor, context)
 
     let mutable segments = [||]
 
-    let makeChunk symbolsInFile colourisations (line: IDocumentLine) (style: ColorScheme) (token: FSharpTokenInfo) =
-        let lineNumber = line.LineNumber
+    let makeChunk symbolsInFile colourisations lineNumber lineOffset (style: ColorScheme) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
@@ -373,7 +386,7 @@ type FSharpSyntaxMode(editor, context) =
             | PreprocessorKeyword -> style.Preprocessor
             | _ -> style.PlainText
  
-        let seg = ColoredSegment(line.Offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
+        let seg = ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
         //Uncomment to visualise tokens segments
         //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
         seg
@@ -388,35 +401,13 @@ type FSharpSyntaxMode(editor, context) =
                     try Async.RunSynchronously (pd.GetAllUsesOfAllSymbolsInFile(), ServiceSettings.maximumTimeout)
                     with _ -> None 
                 let colourisations = pd.GetExtraColorizations ()
-                let alllines = editor.GetLines()
-
-                // Create source tokenizer
+                let lineDetails = editor.GetLines() |> Seq.map (fun line -> line.LineNumber, line.Offset, editor.GetLineText line)
                 let defines = CompilerArguments.getDefineSymbols context.Name (Some(context.Project))
-                let sourceTok = SourceTokenizer(defines, context.Name)
-
-                // Parse lines using the tokenizer
-                let tokens = 
-                    [| let state = ref 0L
-                      for line in alllines do
-                        let lineTxt = editor.GetLineText(line)
-                        let tokenizer = sourceTok.CreateLineTokenizer(lineTxt)
-                        let rec parseLine() =
-                            [ match tokenizer.ScanToken(!state) with
-                              | Some(tok), nstate ->
-                                  yield tok
-                                  state := nstate
-                                  yield! parseLine()
-                              | None, nstate -> state := nstate ]
-                        yield line, parseLine() |]
-                                        
+                                    
                 let processedTokens =
                     let style = getColourScheme ()
-                    tokens
-                    |> Array.map
-                        (fun (line, chunks) ->
-                            chunks
-                            |> Tokens.CollapseInactiveTokens
-                            |> List.map (makeChunk symbolsInFile colourisations line style))
+                    let ttt = Tokens.getTokens lineDetails context.Name defines
+                    ttt |> Array.map (fun (lineNumber, lineOffset, chunks) -> chunks |> List.map (makeChunk symbolsInFile colourisations lineNumber lineOffset style))
                 segments <- processedTokens
                 Gtk.Application.Invoke (fun _ _ -> x.NotifySemanticHighlightingUpdate())
             | None -> ()
