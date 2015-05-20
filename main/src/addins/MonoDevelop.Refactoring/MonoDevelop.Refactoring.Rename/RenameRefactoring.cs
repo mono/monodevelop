@@ -96,7 +96,7 @@ namespace MonoDevelop.Refactoring.Rename
 
 			var projectChange = projectChanges [0];
 			var changes = projectChange.GetChangedDocuments ().ToList ();
-			if (changes.Count != 1) {
+			if (changes.Count != 1 || symbol.Kind == SymbolKind.NamedType) {
 				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, this));
 				return;
 			}
