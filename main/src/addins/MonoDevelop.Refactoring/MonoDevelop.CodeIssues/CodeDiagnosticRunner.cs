@@ -64,8 +64,11 @@ namespace MonoDevelop.CodeIssues
 						continue;
 					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
 					var provider = diagnostic.GetProvider ();
+					if (provider == null)
+						continue;
 					providers.Add (provider);
 				}
+
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
 				var localCompilation = CSharpCompilation.Create (

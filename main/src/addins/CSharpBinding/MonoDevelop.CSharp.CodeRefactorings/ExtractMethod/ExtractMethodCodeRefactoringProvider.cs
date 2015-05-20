@@ -35,7 +35,8 @@ namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 			{
 				return;
 			}
-
+			if (IdeApp.Workbench.ActiveDocument == null || IdeApp.Workbench.ActiveDocument.Editor == null)
+				return;
 			var activeInlineRenameSession = IdeApp.Workbench.ActiveDocument.Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit;
 			if (activeInlineRenameSession)
 			{
