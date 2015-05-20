@@ -41,8 +41,11 @@ module MonoDevelop =
 
     let internal getConfig () =
         match MonoDevelop.Ide.IdeApp.Workspace with
-        | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
-        | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
+        | null -> MonoDevelop.Projects.ConfigurationSelector.Default
+        | ws ->
+           match ws.ActiveConfiguration with
+           | null -> MonoDevelop.Projects.ConfigurationSelector.Default
+           | config -> config
 
 /// Provides functionality for working with the F# interactive checker running in background
 type MDLanguageService() =
