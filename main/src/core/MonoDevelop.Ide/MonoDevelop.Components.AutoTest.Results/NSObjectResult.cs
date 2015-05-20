@@ -43,16 +43,46 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
+			if (ResultObject is NSView) {
+				if (((NSView)ResultObject).Identifier == mark) {
+					return this;
+				}
+
+				if (ResultObject.GetType ().FullName == mark) {
+					return this;
+				}
+			}
 			return null;
 		}
 
 		public override AppResult CheckType (Type desiredType)
 		{
+			if (ResultObject.GetType () == desiredType || ResultObject.GetType ().IsSubclassOf (desiredType)) {
+				return this;
+			}
+
 			return null;
+		}
+
+		bool CheckForText (string haystack, string needle, bool exact)
+		{
+			if (exact) {
+				return haystack == needle;
+			} else {
+				return (haystack.IndexOf (needle) > -1);
+			}
 		}
 
 		public override AppResult Text (string text, bool exact)
 		{
+			if (ResultObject is NSControl) {
+				NSControl control = (NSControl)ResultObject;
+				string value = control.StringValue;
+				if (CheckForText (value, text, exact)) {
+					return this;
+				}
+			}
+
 			return null;
 		}
 
@@ -93,22 +123,66 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Click ()
 		{
-			return false;
+			NSControl control = ResultObject as NSControl;
+			if (control == null) {
+				return false;
+			}
+
+			control.PerformClick (null);
+			return true;
+		}
+
+		NSEvent MakeEvent (string c, NSEventType type, double epochTime, nint winID)
+		{
+			return NSEvent.KeyEvent (type, CoreGraphics.CGPoint.Empty, 
+									 (NSEventModifierMask) 0, epochTime, winID, 
+									 NSGraphicsContext.CurrentContext, 
+									 c, c, false, 0);
+		}
+
+		void RealTypeKey (char c)
+		{
+			// FIXME: Do we need to pass a real keyCode?
+			double epochTime = (DateTime.UtcNow - new DateTime (1970, 1, 1)).TotalSeconds;
+			nint winID = NSApplication.SharedApplication.MainWindow.WindowNumber;
+			string s = c.ToString ();
+			NSEvent ev = MakeEvent (s, NSEventType.KeyDown, epochTime, winID);
+			NSApplication.SharedApplication.SendEvent (ev);
+
+			ev = MakeEvent (s, NSEventType.KeyUp, epochTime, winID);
+			NSApplication.SharedApplication.SendEvent (ev);
 		}
 
 		public override bool EnterText (string text)
 		{
-			return false;
+			NSControl control = ResultObject as NSControl;
+			if (control == null) {
+				return false;
+			}
+
+			control.Window.MakeFirstResponder (control);
+			foreach (var c in text) {
+				RealTypeKey (c);
+			}
+
+			return true;
 		}
 
 		public override bool TypeKey (char key, string state)
 		{
-			return false;
+			RealTypeKey (key);
+			return true;
 		}
 
 		public override bool Toggle (bool active)
 		{
-			return false;
+			NSButton button = ResultObject as NSButton;
+			if (button == null) {
+				return false;
+			}
+
+			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
+			return true;
 		}
 	}
 }
