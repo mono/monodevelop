@@ -397,6 +397,9 @@ namespace MonoDevelop.Projects
 			extensionChain = ExtensionChain.Create (extensions.ToArray ());
 			foreach (var e in extensions)
 				e.Init (this);
+			
+			itemExtension = ExtensionChain.GetExtension<WorkspaceObjectExtension> ();
+
 			foreach (var e in extensions)
 				e.OnExtensionChainCreated ();
 		}
@@ -464,7 +467,6 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		protected virtual void OnExtensionChainInitialized ()
 		{
-			itemExtension = ExtensionChain.GetExtension<WorkspaceObjectExtension> ();
 		}
 
 		internal virtual IDictionary OnGetExtendedProperties ()
