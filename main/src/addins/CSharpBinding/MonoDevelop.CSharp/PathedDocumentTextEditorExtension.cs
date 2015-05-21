@@ -53,6 +53,7 @@ namespace MonoDevelop.CSharp
 		{
 			CancelUpdatePath ();
 			Editor.TextChanging -= Editor_TextChanging;
+			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
 			Editor.CaretPositionChanged -= UpdatePath;
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
@@ -93,10 +94,8 @@ namespace MonoDevelop.CSharp
 				UpdatePath (null, null);
 			});
 
-			Editor.TextChanging += Editor_TextChanging;;
-			DocumentContext.DocumentParsed += delegate {
-				Editor.CaretPositionChanged += UpdatePath;
-			};
+			Editor.TextChanging += Editor_TextChanging;
+			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed; 
 			ext = DocumentContext.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
 
@@ -107,8 +106,20 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
 		}
 
+
+		void DocumentContext_DocumentParsed (object sender, EventArgs e)
+		{
+			if (caretPositionChangedSubscribed)
+				return;
+			caretPositionChangedSubscribed = true;
+			Editor.CaretPositionChanged += UpdatePath;
+		}
+
 		void Editor_TextChanging (object sender, EventArgs e)
 		{
+			if (!caretPositionChangedSubscribed)
+				return;
+			caretPositionChangedSubscribed = false;
 			Editor.CaretPositionChanged -= UpdatePath;
 		}
 
@@ -516,6 +527,7 @@ namespace MonoDevelop.CSharp
 		MonoDevelop.Projects.Project lastProject;
 		AstAmbience amb;
 		CancellationTokenSource src = new CancellationTokenSource ();
+		bool caretPositionChangedSubscribed;
 
 		string GetEntityMarkup (SyntaxNode node)
 		{
