@@ -423,18 +423,26 @@ namespace MonoDevelop.Ide.Editor
 			SetSelection (LocationToOffset (anchor), LocationToOffset (lead));
 		}
 
-		public void SetCaretLocation (DocumentLocation location, bool usePulseAnimation = false)
+		public void SetCaretLocation (DocumentLocation location, bool usePulseAnimation = false, bool centerCaret = true)
 		{
 			CaretLocation = location;
-			ScrollTo (CaretLocation);
+			if (centerCaret) {
+				CenterTo (CaretLocation);
+			} else {
+				ScrollTo (CaretLocation);
+			}
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
 		}
 
-		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false)
+		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false, bool centerCaret = true)
 		{
 			CaretLocation = new DocumentLocation (line, col);
-			CenterTo (CaretLocation);
+			if (centerCaret) {
+				CenterTo (CaretLocation);
+			} else {
+				ScrollTo (CaretLocation);
+			}
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
 		}

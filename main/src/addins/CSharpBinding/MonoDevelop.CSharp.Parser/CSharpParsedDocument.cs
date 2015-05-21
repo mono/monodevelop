@@ -301,7 +301,7 @@ namespace MonoDevelop.CSharp.Parser
 			public readonly List<FoldingRegion> Foldings = new List<FoldingRegion> ();
 			CancellationToken cancellationToken;
 
-			public FoldingVisitor (CancellationToken cancellationToken)
+			public FoldingVisitor (CancellationToken cancellationToken) : base(SyntaxWalkerDepth.Trivia)
 			{
 				this.cancellationToken = cancellationToken;
 			}
@@ -346,6 +346,25 @@ namespace MonoDevelop.CSharp.Parser
 					if (first.EndLinePosition.Line != last.EndLinePosition.Line)
 						Foldings.Add (new FoldingRegion (new DocumentRegion (first.EndLinePosition, last.EndLinePosition), FoldType.Undefined));
 				} catch (ArgumentOutOfRangeException) {}
+			}
+
+			Stack<SyntaxTrivia> regionStack = new Stack<SyntaxTrivia> ();
+			public override void VisitTrivia (SyntaxTrivia trivia)
+			{
+				base.VisitTrivia (trivia);
+				if (trivia.IsKind (SyntaxKind.RegionDirectiveTrivia)) {
+					regionStack.Push (trivia);
+				} else if (trivia.IsKind (SyntaxKind.EndRegionDirectiveTrivia)) {
+					if (regionStack.Count == 0)
+						return;
+					var regionStart = regionStack.Pop ();
+					try {
+						var first = regionStart.GetLocation ().GetLineSpan ();
+						var last = trivia.GetLocation ().GetLineSpan ();
+						var v = regionStart.ToString ();
+						Foldings.Add (new FoldingRegion(v, new DocumentRegion(first.StartLinePosition, last.EndLinePosition), FoldType.UserRegion, true));
+					} catch (ArgumentOutOfRangeException) { }
+				}
 			}
 
 			public override void VisitNamespaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax node)

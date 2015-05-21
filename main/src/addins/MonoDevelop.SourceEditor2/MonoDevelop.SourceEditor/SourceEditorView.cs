@@ -500,7 +500,7 @@ namespace MonoDevelop.SourceEditor
 			if (TextEditor != null && TextEditor.IsComposited) {
 				/*if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();*/
-			/*	messageBubbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
+			/*	messageBherbbleHighlightPopupWindow = new MessageBubbleHighlightPopupWindow (this, marker);
 				messageBubbleHighlightPopupWindow.Destroyed += delegate {
 					messageBubbleHighlightPopupWindow = null;
 				};
@@ -804,7 +804,6 @@ namespace MonoDevelop.SourceEditor
 			UpdateTasks (null, null);
 			widget.TextEditor.TextArea.SizeAllocated += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly) {
-				InformLoadComplete ();
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			

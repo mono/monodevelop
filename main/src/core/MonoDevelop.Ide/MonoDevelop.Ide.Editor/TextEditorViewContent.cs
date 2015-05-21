@@ -361,6 +361,7 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor.TextChanged -= HandleTextChanged;
 			textEditorImpl.Load (fileOpenInformation);
 			RunFirstTimeFoldUpdate (textEditor.Text);
+			textEditorImpl.InformLoadComplete ();
 			this.textEditor.TextChanged += HandleTextChanged;
 			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
 		}
@@ -371,6 +372,7 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor.TextChanged -= HandleTextChanged;
 			textEditorImpl.Load (new FileOpenInformation (fileName));
 			RunFirstTimeFoldUpdate (textEditor.Text);
+			textEditorImpl.InformLoadComplete ();
 			this.textEditor.TextChanged += HandleTextChanged;
 			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
 		}

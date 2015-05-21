@@ -454,9 +454,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 					if (loc.IsEmpty)
 						return;
-					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
-					if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
-						ipos.CenterToCaret ();
+					ipos.SetCaretLocation (loc, info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine), info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine));
 				});
 			}
 		}
