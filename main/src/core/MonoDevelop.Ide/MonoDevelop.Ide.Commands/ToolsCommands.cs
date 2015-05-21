@@ -29,7 +29,7 @@ using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using MonoDevelop.Ide.Updater;
 
@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Commands
 		ToolList,
 		InstrumentationViewer,
 		ToggleSessionRecorder,
+		ReplaySession,
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -147,14 +148,45 @@ namespace MonoDevelop.Ide.Commands
 			if (AutoTestService.CurrentRecordSession == null) {
 				AutoTestService.StartRecordingSession ();
 			} else {
-				// FIXME: Throw up a dialog for filename
-				AutoTestService.StopRecordingSession ("/Users/iain/XS-session.xml");
+				var selector = new FileSelectorDialog ("Save session as...", Gtk.FileChooserAction.Save);
+				try {
+					var result = MessageService.RunCustomDialog (selector, MessageService.RootWindow);
+
+					if (result == (int)Gtk.ResponseType.Cancel) {
+						return;
+					}
+
+					AutoTestService.StopRecordingSession (selector.Filename);
+				} finally {
+					selector.Destroy ();
+				}
 			}
 		}
 
 		protected override void Update (CommandInfo info)
 		{
 			info.Text = AutoTestService.CurrentRecordSession == null ? "Start Session Recorder" : "Stop Session Recorder";
+		}
+	}
+
+	internal class ReplaySessionHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var selector = new FileSelectorDialog ("Open session");
+			string filename = null;
+			try {
+				var result = MessageService.RunCustomDialog (selector, MessageService.RootWindow);
+
+				if (result == (int)Gtk.ResponseType.Cancel) {
+					return;
+				}
+
+				filename = selector.Filename;
+			} finally {
+				selector.Destroy ();
+			}
+			AutoTestService.ReplaySessionFromFile (filename);
 		}
 	}
 }
