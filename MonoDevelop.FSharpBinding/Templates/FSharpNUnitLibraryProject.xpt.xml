@@ -32,9 +32,12 @@
 				<Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-				<Reference type="Package" refto="nunit.framework" SpecificVersion = "false" LocalCopy = "false" />
 			</References>
-		
+
+			<Packages>
+				<Package id="NUnit" version="2.6.4" />
+			</Packages>
+
 			<Files>
 				<UnformattedFile name="Test.fs">
 <![CDATA[namespace ${Namespace}
