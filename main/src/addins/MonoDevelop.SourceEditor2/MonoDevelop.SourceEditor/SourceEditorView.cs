@@ -1825,10 +1825,6 @@ namespace MonoDevelop.SourceEditor
 				return;
 			using (var undo = data.OpenUndoGroup ()) {
 				SetCompletionText (data, ctx, partialWord, completeWord, wordOffset);
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (formatter != null && completeWord.IndexOfAny (new [] {' ', '\t', '{', '}'}) > 0 && formatter.SupportsOnTheFlyFormatting) {
-					formatter.OnTheFlyFormat (WorkbenchWindow.Document, ctx.TriggerOffset, ctx.TriggerOffset + completeWord.Length);
-				}
 			}
 		}
 		
