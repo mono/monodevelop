@@ -34,6 +34,8 @@ using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -110,12 +112,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		int lastParam = -2;
 		TooltipInformation currentTooltipInformation;
+		CancellationTokenSource cancellationTokenSource;
 
-		public void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
+		public async void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
-			int numParams = System.Math.Max (0, provider[overload].ParameterCount);
+			int numParams = System.Math.Max (0, provider [overload].ParameterCount);
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
@@ -124,16 +127,40 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			lastParam = currentParam;
-			ClearDescriptions ();
 			var parameterHintingData = (ParameterHintingData)provider [overload];
-			currentTooltipInformation = parameterHintingData.CreateTooltipInformation (ext.Editor, ext.DocumentContext, currentParam, false);
+
+			ResetTooltipInformation ();
+			ClearDescriptions ();
+
+			var ct = new CancellationTokenSource ();
+			try {
+				cancellationTokenSource = ct;
+				currentTooltipInformation = await parameterHintingData.CreateTooltipInformation (ext.Editor, ext.DocumentContext, currentParam, false, ct.Token);
+			} catch (Exception ex) {
+				if (!(ex is TaskCanceledException))
+					LoggingService.LogError ("Error while getting tooltip information", ex);
+				return;
+			}
+
+			if (ct.IsCancellationRequested)
+				return;
+
+			cancellationTokenSource = null;
+
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
+
 			if (provider.Count > 1) {
 				Theme.DrawPager = true;
 				Theme.PagerVertical = true;
 			}
 
+			ShowTooltipInfo ();
+		}
+
+		void ShowTooltipInfo ()
+		{
+			ClearDescriptions ();
 			headlabel.Markup = currentTooltipInformation.SignatureMarkup;
 			headlabel.Visible = true;
 			if (Theme.DrawPager)
@@ -148,6 +175,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			descriptionBox.ShowAll ();
 			QueueResize ();
+			Show ();
+		}
+
+		void CurrentTooltipInformation_Changed (object sender, EventArgs e)
+		{
+			ShowTooltipInfo ();
 		}
 
 		void ClearDescriptions ()
@@ -159,6 +192,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void ResetTooltipInformation ()
+		{
+			if (cancellationTokenSource != null) {
+				cancellationTokenSource.Cancel ();
+				cancellationTokenSource = null;
+			}
+			currentTooltipInformation = null;
+		}
+
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
 			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor);
@@ -167,7 +209,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void ChangeOverload ()
 		{
 			lastParam = -2;
-			currentTooltipInformation = null;
+			ResetTooltipInformation ();
 		}
 		
 		public void HideParameterInfo ()

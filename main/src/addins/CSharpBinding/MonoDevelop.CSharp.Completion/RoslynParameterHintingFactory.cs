@@ -33,6 +33,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -86,57 +88,65 @@ namespace MonoDevelop.CSharp.Completion
 			public ParameterHintingData (IPropertySymbol symbol) : base (symbol)
 			{
 			}
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
+			public override Task<TooltipInformation> CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
 			{
-				return CreateTooltipInformation (editor, ctx, Symbol, currentParameter, smartWrap);
+				return CreateTooltipInformation (editor, ctx, Symbol, currentParameter, smartWrap, cancelToken);
 			}
 			
-			internal static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol sym, int currentParameter, bool smartWrap)
+			internal static Task<TooltipInformation> CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol sym, int currentParameter, bool smartWrap, CancellationToken cancelToken)
 			{
 				var tooltipInfo = new TooltipInformation ();
 				var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
 				sig.HighlightParameter = currentParameter;
 				sig.BreakLineAfterReturnType = smartWrap;
-				try {
-					tooltipInfo.SignatureMarkup = sig.GetMarkup (sym);
-				} catch (Exception e) {
-					LoggingService.LogError ("Got exception while creating markup for :" + sym, e);
-					return new TooltipInformation ();
-				}
-				tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (sym) ?? "";
 
-				if (sym is IMethodSymbol) {
-					var method = (IMethodSymbol)sym;
-					if (method.IsExtensionMethod && method.ReducedFrom != null && method.ReducedFrom.ContainingType != null) {
-						tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ReducedFrom.ContainingType.Name);
+				return Task.Run (() => {
+					if (cancelToken.IsCancellationRequested)
+						return null;
+					try {
+						tooltipInfo.SignatureMarkup = sig.GetMarkup (sym);
+					} catch (Exception e) {
+						LoggingService.LogError ("Got exception while creating markup for :" + sym, e);
+						return new TooltipInformation ();
 					}
-				}
-				int paramIndex = currentParameter;
+					tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (sym) ?? "";
 
-//				if (Symbol is IMethodSymbol && ((IMethodSymbol)Symbol).IsExtensionMethod)
-//					paramIndex++;
-				var list = GetParameterList (sym);
-				paramIndex = Math.Min (list.Length - 1, paramIndex);
-				
-				var curParameter = paramIndex >= 0  && paramIndex < list.Length ? list [paramIndex] : null;
-				if (curParameter != null) {
-
-					string docText = Ambience.GetDocumentation (sym);
-					if (!string.IsNullOrEmpty (docText)) {
-						string text = docText;
-						Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-						Match match = paramRegex.Match (docText);
-						
-						if (match.Success) {
-							text = Ambience.GetDocumentationMarkup (sym, match.Groups [1].Value);
-							if (!string.IsNullOrWhiteSpace (text))
-								tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
+					if (cancelToken.IsCancellationRequested)
+						return null;
+					
+					if (sym is IMethodSymbol) {
+						var method = (IMethodSymbol)sym;
+						if (method.IsExtensionMethod && method.ReducedFrom != null && method.ReducedFrom.ContainingType != null) {
+							tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ReducedFrom.ContainingType.Name);
 						}
 					}
-					if (curParameter.Type.TypeKind == TypeKind.Delegate)
-						tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (curParameter.Type));
-				}
-				return tooltipInfo;
+					int paramIndex = currentParameter;
+
+					//				if (Symbol is IMethodSymbol && ((IMethodSymbol)Symbol).IsExtensionMethod)
+					//					paramIndex++;
+					var list = GetParameterList (sym);
+					paramIndex = Math.Min (list.Length - 1, paramIndex);
+
+					var curParameter = paramIndex >= 0 && paramIndex < list.Length ? list [paramIndex] : null;
+					if (curParameter != null) {
+
+						string docText = Ambience.GetDocumentation (sym);
+						if (!string.IsNullOrEmpty (docText)) {
+							string text = docText;
+							Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+							Match match = paramRegex.Match (docText);
+
+							if (match.Success) {
+								text = Ambience.GetDocumentationMarkup (sym, match.Groups [1].Value);
+								if (!string.IsNullOrWhiteSpace (text))
+									tooltipInfo.AddCategory (GettextCatalog.GetString ("Parameter"), text);
+							}
+						}
+						if (curParameter.Type.TypeKind == TypeKind.Delegate)
+							tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (curParameter.Type));
+					}
+					return tooltipInfo;
+				});
 			}
 
 			static ImmutableArray<IParameterSymbol> GetParameterList (ISymbol data)
@@ -203,11 +213,11 @@ namespace MonoDevelop.CSharp.Completion
 					return param != null && param.IsParams;
 				}
 			}
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
-			{
-				return ParameterHintingData.CreateTooltipInformation (editor, ctx, invocationMethod, currentParameter, smartWrap);
-			}
 
+			public override Task<TooltipInformation> CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
+			{
+				return ParameterHintingData.CreateTooltipInformation (editor, ctx, invocationMethod, currentParameter, smartWrap, cancelToken);
+			}
 		}
 
 		class ArrayParameterHintingData : MonoDevelop.Ide.CodeCompletion.ParameterHintingData, IParameterHintingData
@@ -236,14 +246,14 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
+			public override Task<TooltipInformation> CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
 			{
 				var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0) {
 					HighlightParameter = currentParameter
 				};
-				return new TooltipInformation {
+				return Task.FromResult (new TooltipInformation {
 					SignatureMarkup = sig.GetArrayIndexerMarkup (arrayType)
-				};
+				});
 			}
 			
 		}

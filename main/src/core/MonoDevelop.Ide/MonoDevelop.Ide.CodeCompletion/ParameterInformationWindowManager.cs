@@ -221,7 +221,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var geometry2 = DesktopService.GetUsableMonitorGeometry (window.Screen, window.Screen.GetMonitorAtPoint (X, Y));
 				window.ShowParameterInfo (lastMethod.MethodProvider, lastMethod.CurrentOverload, curParam - 1, geometry2.Width);
 				PositionParameterInfoWindow (window.Allocation);
-				window.Show ();
 			}
 			
 			if (methods.Count == 0) {

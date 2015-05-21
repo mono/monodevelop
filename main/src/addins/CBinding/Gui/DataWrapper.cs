@@ -33,13 +33,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
- 
+
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 
 using CBinding.Parser;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace CBinding
 {
@@ -75,9 +77,9 @@ namespace CBinding
 			return f.GetParameterName (parameter);
 		}
 
-		public override TooltipInformation CreateTooltipInformation (TextEditor editor, DocumentContext ctx, int currentParameter, bool smartWrap)
+		public override Task<TooltipInformation> CreateTooltipInformation (TextEditor editor, DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken ctoken)
 		{
-			return null;
+			return Task.FromResult<TooltipInformation> (null);
 		}
 	}
 }

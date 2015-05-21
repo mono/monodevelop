@@ -34,6 +34,7 @@ using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -59,9 +60,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public abstract string GetParameterName (int parameter);
 
-		public virtual TooltipInformation CreateTooltipInformation (TextEditor editor, DocumentContext ctx, int currentParameter, bool smartWrap)
+		public virtual Task<TooltipInformation> CreateTooltipInformation (TextEditor editor, DocumentContext ctx, int currentParameter, bool smartWrap, CancellationToken cancelToken)
 		{
-			return new TooltipInformation ();
+			return Task.FromResult (new TooltipInformation ());
 		}
 	}
 }
