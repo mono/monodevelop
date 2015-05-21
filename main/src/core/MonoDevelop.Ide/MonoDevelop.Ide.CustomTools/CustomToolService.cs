@@ -397,14 +397,14 @@ namespace MonoDevelop.Ide.CustomTools
 			}
 		}
 
-		public static string GetFileNamespace (ProjectFile file, string outputFile)
+		public static string GetFileNamespace (ProjectFile file, string outputFile, bool useVisualStudioNamingPolicy = false)
 		{
 			string ns = file.CustomToolNamespace;
 			if (!string.IsNullOrEmpty (ns) || string.IsNullOrEmpty (outputFile))
 				return ns;
 			var dnfc = file.Project as IDotNetFileContainer;
 			if (dnfc != null)
-				return dnfc.GetDefaultNamespace (outputFile);
+				return dnfc.GetDefaultNamespace (outputFile, useVisualStudioNamingPolicy);
 			return ns;
 		}
 

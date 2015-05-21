@@ -1069,27 +1069,29 @@ namespace MonoDevelop.Projects
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
-		public string GetDefaultNamespace (string fileName)
+		public string GetDefaultNamespace (string fileName, bool useVisualStudioNamingPolicy = false)
 		{
-			return OnGetDefaultNamespace (fileName);
+			return OnGetDefaultNamespace (fileName, useVisualStudioNamingPolicy);
 		}
 
 		/// <summary>
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
-		protected virtual string OnGetDefaultNamespace (string fileName)
+		protected virtual string OnGetDefaultNamespace (string fileName, bool useVisualStudioNamingPolicy = false)
 		{
-			return GetDefaultNamespace (this, DefaultNamespace, fileName);
+			return GetDefaultNamespace (this, DefaultNamespace, fileName, useVisualStudioNamingPolicy);
 		}
 
 		/// <summary>
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
-		internal static string GetDefaultNamespace (Project project, string defaultNamespace, string fileName)
+		internal static string GetDefaultNamespace (Project project, string defaultNamespace, string fileName, bool useVisualStudioNamingPolicy = false)
 		{
-			DotNetNamingPolicy pol = project.Policies.Get<DotNetNamingPolicy> ();
+			DirectoryNamespaceAssociation association = useVisualStudioNamingPolicy
+				? DirectoryNamespaceAssociation.PrefixedHierarchical
+				: project.Policies.Get<DotNetNamingPolicy> ().DirectoryNamespaceAssociation;
 
 			string root = null;
 			string dirNamespc = null;
@@ -1105,13 +1107,13 @@ namespace MonoDevelop.Projects
 			string relativeDirname = null;
 			if (!String.IsNullOrEmpty (dirname)) {
 				relativeDirname = project.GetRelativeChildPath (dirname);
-				if (string.IsNullOrEmpty (relativeDirname) || relativeDirname.StartsWith (".."))
+				if (string.IsNullOrEmpty (relativeDirname) || relativeDirname.StartsWith("..", StringComparison.Ordinal))
 					relativeDirname = null;
 			}
 
 			if (relativeDirname != null) {
 				try {
-					switch (pol.DirectoryNamespaceAssociation) {
+					switch (association) {
 					case DirectoryNamespaceAssociation.PrefixedFlat:
 						root = defaultNmspc;
 						goto case DirectoryNamespaceAssociation.Flat;
