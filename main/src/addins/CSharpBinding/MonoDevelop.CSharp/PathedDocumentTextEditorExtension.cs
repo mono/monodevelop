@@ -51,10 +51,11 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			CancelUpdatePathTimeout ();
 			CancelUpdatePath ();
 			Editor.TextChanging -= Editor_TextChanging;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
-			Editor.CaretPositionChanged -= UpdatePath;
+			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
@@ -91,7 +92,7 @@ namespace MonoDevelop.CSharp
 			// which shouldn't be called while the extension chain is being initialized.
 			Gtk.Application.Invoke (delegate {
 				UpdateOwnerProjects ();
-				UpdatePath (null, null);
+				Editor_CaretPositionChanged (null, null);
 			});
 
 			Editor.TextChanging += Editor_TextChanging;
@@ -104,15 +105,28 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
+			SubscribeCaretPositionChange ();
 		}
 
+		void CancelUpdatePathTimeout ()
+		{
+			if (updatePathTimeoutId == 0)
+				return;
+			GLib.Source.Remove (updatePathTimeoutId);
+			updatePathTimeoutId = 0;
+		}
 
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)
+		{
+			SubscribeCaretPositionChange ();
+		}
+
+		void SubscribeCaretPositionChange ()
 		{
 			if (caretPositionChangedSubscribed)
 				return;
 			caretPositionChangedSubscribed = true;
-			Editor.CaretPositionChanged += UpdatePath;
+			Editor.CaretPositionChanged += Editor_CaretPositionChanged;
 		}
 
 		void Editor_TextChanging (object sender, EventArgs e)
@@ -120,7 +134,7 @@ namespace MonoDevelop.CSharp
 			if (!caretPositionChangedSubscribed)
 				return;
 			caretPositionChangedSubscribed = false;
-			Editor.CaretPositionChanged -= UpdatePath;
+			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 		}
 
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
@@ -146,14 +160,17 @@ namespace MonoDevelop.CSharp
 		void HandleProjectChanged (object sender, EventArgs e)
 		{
 			UpdateOwnerProjects ();
-			UpdatePath (null, null);
+			Editor_CaretPositionChanged (null, null);
 		}
 
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
 		{
-			UpdatePath (null, null);
-			Editor.CaretPositionChanged += UpdatePath;
-
+			CancelUpdatePathTimeout ();
+			updatePathTimeoutId = GLib.Timeout.Add (updatePathTimeout, delegate {
+				Update ();
+				updatePathTimeoutId = 0;
+				return false;
+			});
 		}
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
@@ -528,6 +545,8 @@ namespace MonoDevelop.CSharp
 		AstAmbience amb;
 		CancellationTokenSource src = new CancellationTokenSource ();
 		bool caretPositionChangedSubscribed;
+		uint updatePathTimeoutId;
+		uint updatePathTimeout = 147;
 
 		string GetEntityMarkup (SyntaxNode node)
 		{
@@ -537,7 +556,13 @@ namespace MonoDevelop.CSharp
 		}
 
 
-		void UpdatePath (object sender, EventArgs e)
+		void Editor_CaretPositionChanged (object sender, EventArgs e)
+		{
+			CancelUpdatePathTimeout ();
+			Update ();
+		}
+
+		void Update()
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
