@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				properties.Add ("MSBuildFrameworkToolsPath", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 				properties.Add ("MSBuildFrameworkToolsPath32", MSBuildProjectService.ToMSBuildPath (null, frameworkToolsPath));
 
-				if (!String.IsNullOrEmpty (extensionsPath)) {
+				if (!String.IsNullOrEmpty (DefaultExtensionsPath)) {
 					var ep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
 					properties.Add ("MSBuildExtensionsPath", ep);
 					properties.Add ("MSBuildExtensionsPath32", ep);
