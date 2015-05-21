@@ -15,12 +15,11 @@ open ExtCore.Control
 open MonoDevelop.FSharp.Symbols
 [<AutoOpen>]
 module Patterns =
+
     type TokenSymbol = 
-        {
-            TokenInfo : FSharpTokenInfo;
-            SymbolUse: FSharpSymbolUse option
-            ExtraColorInfo: (Range.range * FSharpTokenColorKind) option
-        }
+      { TokenInfo : FSharpTokenInfo
+        SymbolUse: FSharpSymbolUse option
+        ExtraColorInfo: (Range.range * FSharpTokenColorKind) option }
 
     let (|Keyword|_|) ts =
         match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
