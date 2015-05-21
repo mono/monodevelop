@@ -90,67 +90,67 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
 
     /// Returns the markup to use to represent the specified method overload
     /// in the parameter information window.
-    override x.CreateTooltipInformation (_editor, _context, currentParameter:int, _smartWrap:bool) = 
-        // Get the lower part of the text for the display of an overload
-        let signature, comment =
-            match TooltipFormatting.formatTip meth.Description with
-            | [signature,comment] -> signature,comment
-            //With multiple tips just take the head.  
-            //This shouldnt happen anyway as we split them in the resolver provider
-            | multiple ->
-                multiple 
-                |> List.head
-                |> (fun (signature,comment) -> signature,comment)
+    override x.CreateTooltipInformation (_editor, _context, currentParameter:int, _smartWrap:bool, cancel) =
+      Async.StartAsTask(
+        async {
+          // Get the lower part of the text for the display of an overload
+          let signature, comment =
+              match TooltipFormatting.formatTip meth.Description with
+              | [signature,comment] -> signature,comment
+              //With multiple tips just take the head.  
+              //This shouldnt happen anyway as we split them in the resolver provider
+              | multiple ->
+                  multiple 
+                  |> List.head
+                  |> (fun (signature,comment) -> signature,comment)
 
-        let description =
-            let param = 
-                meth.Parameters |> Array.mapi (fun i param -> 
-                    let paramDesc = 
-                        // Sometimes the parameter decription is hidden in the XML docs
-                        match TooltipFormatting.extractParamTip param.ParameterName meth.Description with 
-                        | Some(tip) -> tip
-                        | None -> param.Description
-                    let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
-                    let text = name + ": " + GLib.Markup.EscapeText paramDesc
-                    text )
-            if String.IsNullOrEmpty comment then String.Join("\n", param)
-            else comment + "\n" + String.Join("\n", param)
-            
-        
-        // Returns the text to use to represent the specified parameter
-        let paramDescription = 
-            if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
-            let param = meth.Parameters.[currentParameter]
-            param.ParameterName 
+          let description =
+              let param = 
+                  meth.Parameters |> Array.mapi (fun i param -> 
+                      let paramDesc = 
+                          // Sometimes the parameter decription is hidden in the XML docs
+                          match TooltipFormatting.extractParamTip param.ParameterName meth.Description with 
+                          | Some(tip) -> tip
+                          | None -> param.Description
+                      let name = if i = currentParameter then  "<b>" + param.ParameterName + "</b>" else param.ParameterName
+                      let text = name + ": " + GLib.Markup.EscapeText paramDesc
+                      text )
+              if String.IsNullOrEmpty comment then String.Join("\n", param)
+              else comment + "\n" + String.Join("\n", param)
+              
+          
+          // Returns the text to use to represent the specified parameter
+          let paramDescription = 
+              if currentParameter < 0 || currentParameter >= meth.Parameters.Length  then "" else 
+              let param = meth.Parameters.[currentParameter]
+              param.ParameterName 
 
-        let heading = 
+          let heading = 
 
-            let lines = signature.Split [| '\n';'\r' |]
+              let lines = signature.Split [| '\n';'\r' |]
 
-            // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
-            // put it back together again.
-            //
-            // @todo This will not be perfect when the text contains generic types with more than one type parameter
-            // since they will have extra commas. 
+              // Try to highlight the current parameter in bold. Hack apart the text based on (, comma, and ), then
+              // put it back together again.
+              //
+              // @todo This will not be perfect when the text contains generic types with more than one type parameter
+              // since they will have extra commas. 
 
-            let text = if lines.Length = 0 then name else  lines.[0]
-            let textL = text.Split '('
-            if textL.Length <> 2 then text else
-            //TODO: what was text0 used for?
-            let _text0 = textL.[0]
-            let text1 = textL.[1]
-            let text1L = text1.Split ')'
-            if text1L.Length <> 2 then text else
-            let text10 = text1L.[0]
-            let text11 = text1L.[1]
-            let text10L =  text10.Split ','
-            let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
-            textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
+              let text = if lines.Length = 0 then name else  lines.[0]
+              let textL = text.Split '('
+              if textL.Length <> 2 then text else
+              //TODO: what was text0 used for?
+              let _text0 = textL.[0]
+              let text1 = textL.[1]
+              let text1L = text1.Split ')'
+              if text1L.Length <> 2 then text else
+              let text10 = text1L.[0]
+              let text11 = text1L.[1]
+              let text10L =  text10.Split ','
+              let text10L = text10L |> Array.mapi (fun i x -> if i = currentParameter then "<b>" + x + "</b>" else x)
+              textL.[0] + "(" + String.Join(",", text10L) + ")" + text11
 
-        let tooltipInfo = TooltipInformation(SummaryMarkup   = description,
-                                             SignatureMarkup = heading,
-                                             FooterMarkup    = paramDescription)
-        tooltipInfo
+          let tooltipInfo = TooltipInformation(SummaryMarkup = description, SignatureMarkup = heading, FooterMarkup = paramDescription)
+          return tooltipInfo }, cancellationToken = cancel)
 
 
 /// Implements text editor extension for MonoDevelop that shows F# completion    
@@ -181,7 +181,7 @@ type FSharpTextEditorCompletion() =
 
   // Until we build some functionality around a reversing tokenizer that detect this and other contexts
   // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
-  let isAnAutoProperty (editor: Editor.TextEditor) offset =
+  let isAnAutoProperty (_editor: Editor.TextEditor) _offset =
       false
   //TODO
   //  let lastStart = editor.FindPrevWordOffset(offset)
