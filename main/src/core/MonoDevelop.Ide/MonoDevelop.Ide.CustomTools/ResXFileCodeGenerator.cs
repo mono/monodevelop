@@ -80,11 +80,21 @@ namespace MonoDevelop.Ide.CustomTools
 			//no need to escape/cleanup, StronglyTypedResourceBuilder does that
 			var name = file.FilePath.FileNameWithoutExtension;
 
+			//NOTE: we fix it up later with the real resource ID, this is just a fallback in case that fails
 			var resourcesNamespace = dnp.GetDefaultNamespace (outputfile, true);
 
 			var rd = new Dictionary<object, object> ();
 			var filePath = file.FilePath;
 			var targetsPcl2Framework = TargetsPcl2Framework (dnp);
+
+			//Compute the *real* ID of the embedded resource. It can be affected by LogicalName so might not match the
+			//class name, but StronglyTypedResourceBuilder only accepts a single name for both.
+			//Fix this by patching it into the CodeDOM later.
+			var id = file.ResourceId;
+			const string suffix = ".resources";
+			if (id.Length > suffix.Length && id.EndsWith (suffix, StringComparison.OrdinalIgnoreCase)) {
+				id = id.Substring (0, id.Length - suffix.Length);
+			}
 
 			await Task.Run (() => {
 				using (var r = new ResXResourceReader (filePath)) {
@@ -100,6 +110,8 @@ namespace MonoDevelop.Ide.CustomTools
 				if (targetsPcl2Framework) {
 					FixupPclTypeInfo (ccu);
 				}
+
+				FixupEmbeddedResourceID (ccu, id);
 
 				foreach (var p in unmatchable) {
 					var msg = string.Format ("Could not generate property for resource ID '{0}'", p);
@@ -121,20 +133,36 @@ namespace MonoDevelop.Ide.CustomTools
 			return asms.Any (a => a.Package != null && a.Package.IsFrameworkPackage && a.Name == "System.Runtime");
 		}
 
+		static CodeObjectCreateExpression GetInitExpr (CodeCompileUnit ccu)
+		{
+			ccu.Namespaces [0].Imports.Add (new CodeNamespaceImport ("System.Reflection"));
+			var assignment = ccu.Namespaces [0].Types [0]
+			                    .Members.OfType<CodeMemberProperty> ().Single (t => t.Name == "ResourceManager")
+			                    .GetStatements.OfType<CodeConditionStatement> ().Single ()
+			                    .TrueStatements.OfType<CodeVariableDeclarationStatement> ().Single ();
+			var initExpr = (CodeObjectCreateExpression)assignment.InitExpression;
+			return initExpr;
+		}
+
 		//works with .NET 4.5.1 and Mono 3.4.0
 		static void FixupPclTypeInfo (CodeCompileUnit ccu)
 		{
 			try {
-				ccu.Namespaces [0].Imports.Add (new CodeNamespaceImport ("System.Reflection"));
-				var assignment = ccu.Namespaces [0].Types [0]
-					.Members.OfType<CodeMemberProperty> ().Single (t => t.Name == "ResourceManager")
-					.GetStatements.OfType<CodeConditionStatement> ().Single ()
-					.TrueStatements.OfType<CodeVariableDeclarationStatement> ().Single ();
-				var initExpr = (CodeObjectCreateExpression) assignment.InitExpression;
-				var typeofExpr = (CodePropertyReferenceExpression) initExpr.Parameters [1];
+				CodeObjectCreateExpression initExpr = GetInitExpr (ccu);
+				var typeofExpr = (CodePropertyReferenceExpression)initExpr.Parameters [1];
 				typeofExpr.TargetObject = new CodeMethodInvokeExpression (typeofExpr.TargetObject, "GetTypeInfo");
 			} catch (Exception ex) {
-				LoggingService.LogWarning ("Failed to fixup resgen output for PCL", ex);
+				LoggingService.LogWarning ("Failed to fixup StronglyTypedResourceBuilder output for PCL", ex);
+			}
+		}
+
+		static void FixupEmbeddedResourceID (CodeCompileUnit ccu, string id)
+		{
+			try {
+				CodeObjectCreateExpression initExpr = GetInitExpr (ccu);
+				initExpr.Parameters [0] = new CodePrimitiveExpression (id);
+			} catch (Exception ex) {
+				LoggingService.LogWarning ("Failed to fixup StronglyTypedResourceBuilder resource ID", ex);
 			}
 		}
 	}
