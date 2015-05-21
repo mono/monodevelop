@@ -29,6 +29,7 @@ using System.IO;
 using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.Core
 {
@@ -43,6 +44,16 @@ namespace MonoDevelop.Core
 		LogTextWriter errorLogWriter;
 		TextWriter customLogWriter;
 		TextWriter customErrorLogWriter;
+
+		LogChunk firstCachedLogChunk;
+		LogChunk lastCachedLogChunk;
+
+		class LogChunk
+		{
+			public bool IsError;
+			public StringBuilder Log = new StringBuilder ();
+			public LogChunk Next;
+		}
 
 		int openStepWork = -1;
 		ProgressMonitor parentMonitor;
@@ -73,10 +84,10 @@ namespace MonoDevelop.Core
 			this.cancellationTokenSource = cancellationTokenSource;
 			this.context = context;
 			logWriter = new LogTextWriter ();
-			logWriter.TextWritten += OnWriteLog;
+			logWriter.TextWritten += DoWriteLog;
 
 			errorLogWriter = new LogTextWriter ();
-			errorLogWriter.TextWritten += OnWriteErrorLog;
+			errorLogWriter.TextWritten += DoWriteErrorLog;
 		}
 
 		public ProgressMonitor WithCancellationSource (CancellationTokenSource cancellationTokenSource)
@@ -113,6 +124,12 @@ namespace MonoDevelop.Core
 			if (disposed)
 				return;
 			disposed = true;
+
+			if (parentMonitor != null && firstCachedLogChunk != null) {
+				parentMonitor.DumpLog (firstCachedLogChunk);
+				firstCachedLogChunk = null;
+			}
+
 			var t = parentRootTask;
 			parentRootTask = null;
 			while (currentTask != t && currentTask != null)
@@ -460,8 +477,6 @@ namespace MonoDevelop.Core
 
 		public TextWriter Log {
 			get {
-				if (parentMonitor != null)
-					return parentMonitor.Log;
 				return logWriter;
 			}
 			protected set {
@@ -555,6 +570,55 @@ namespace MonoDevelop.Core
 		protected virtual void OnErrorReported (string message, Exception exception)
 		{
 		}
+
+		void DumpLog (LogChunk logChain)
+		{
+			if (context != null)
+				context.Post (o => {
+					while (logChain != null) {
+						if (logChain.IsError)
+							DoWriteErrorLog (logChain.Log.ToString ());
+						else
+							DoWriteLog (logChain.Log.ToString ());
+						logChain = logChain.Next;
+					}
+				}, null);
+			else {
+				while (logChain != null) {
+					if (logChain.IsError)
+						DoWriteErrorLog (logChain.Log.ToString ());
+					else
+						DoWriteLog (logChain.Log.ToString ());
+					logChain = logChain.Next;
+				}
+            }
+        }
+
+		void DoWriteLog (string message)
+		{
+			if (parentMonitor != null)
+				AppendLog (message, false);
+			OnWriteLog (message);
+        }
+
+		void DoWriteErrorLog (string message)
+		{
+			if (parentMonitor != null)
+				AppendLog (message, true);
+			OnWriteErrorLog (message);
+        }
+
+		void AppendLog (string message, bool error)
+		{
+			if (firstCachedLogChunk == null)
+				firstCachedLogChunk = lastCachedLogChunk = new LogChunk { IsError = error };
+			else if (lastCachedLogChunk.IsError != error) {
+				var newChunk = new LogChunk { IsError = error };
+				lastCachedLogChunk.Next = newChunk;
+				lastCachedLogChunk = newChunk;
+			}
+			lastCachedLogChunk.Log.Append (message);
+        }
 
 		protected virtual void OnWriteLog (string message)
 		{
