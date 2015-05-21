@@ -41,6 +41,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
@@ -48,6 +51,8 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			CancelUpdatePath ();
+			Editor.TextChanging -= Editor_TextChanging;
 			Editor.CaretPositionChanged -= UpdatePath;
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
@@ -87,7 +92,11 @@ namespace MonoDevelop.CSharp
 				UpdateOwnerProjects ();
 				UpdatePath (null, null);
 			});
-			Editor.CaretPositionChanged += UpdatePath;
+
+			Editor.TextChanging += Editor_TextChanging;;
+			DocumentContext.DocumentParsed += delegate {
+				Editor.CaretPositionChanged += UpdatePath;
+			};
 			ext = DocumentContext.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
 
@@ -96,6 +105,11 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
+		}
+
+		void Editor_TextChanging (object sender, EventArgs e)
+		{
+			Editor.CaretPositionChanged -= UpdatePath;
 		}
 
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
@@ -127,6 +141,8 @@ namespace MonoDevelop.CSharp
 		void HandleTypeSegmentTreeUpdated (object sender, EventArgs e)
 		{
 			UpdatePath (null, null);
+			Editor.CaretPositionChanged += UpdatePath;
+
 		}
 
 		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
@@ -155,7 +171,6 @@ namespace MonoDevelop.CSharp
 		#region IPathedDocument implementation
 
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
-
 		protected virtual void OnPathChanged (DocumentPathChangedEventArgs e)
 		{
 			EventHandler<DocumentPathChangedEventArgs> handler = this.PathChanged;
@@ -500,6 +515,7 @@ namespace MonoDevelop.CSharp
 		string lastMemberMarkup;
 		MonoDevelop.Projects.Project lastProject;
 		AstAmbience amb;
+		CancellationTokenSource src = new CancellationTokenSource ();
 
 		string GetEntityMarkup (SyntaxNode node)
 		{
@@ -515,121 +531,141 @@ namespace MonoDevelop.CSharp
 			if (parsedDocument == null)
 				return;
 			var caretOffset = Editor.CaretOffset;
-			var model = parsedDocument.GetAst<SemanticModel> ();
+			var model = parsedDocument.GetAst<SemanticModel>();
 			if (model == null)
 				return;
-			var unit = model.SyntaxTree;
-			amb = new AstAmbience (TypeSystemService.Workspace.Options);
-			
-			var loc = Editor.CaretLocation;
-//			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();
-
-			var root = unit.GetRoot ();
-			SyntaxNode token;
-			try {
-				token = root.FindNode (TextSpan.FromBounds (caretOffset, caretOffset));
-			} catch (Exception) {
-				return;
-			}
-			var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
-			var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
-
-			var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
-
-			if (curType == curMember || curType is DelegateDeclarationSyntax)
-				curMember = null;
-			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
-				return;
-
-			var curTypeMakeup = GetEntityMarkup (curType);
-			var curMemberMarkup = GetEntityMarkup (curMember);
-			if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
-				curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject)
-				return;
-
-			lastType = curType;
-			lastTypeMarkup = curTypeMakeup;
-
-			lastMember = curMember;
-			lastMemberMarkup = curMemberMarkup;
-
-			lastProject = curProject;
-
-			var result = new List<PathEntry> ();
-
-			if (ownerProjects != null && ownerProjects.Count > 1) {
-				// Current project if there is more than one
-				result.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
-			}
-
-			if (curType == null) {
-				if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is CSharpSyntaxTree)
+			CancelUpdatePath ();
+			var cancellationToken = src.Token;
+			amb = new AstAmbience(TypeSystemService.Workspace.Options);
+			Task.Run(async delegate {
+				var unit = model.SyntaxTree;
+				var loc = Editor.CaretLocation;
+				SyntaxNode root;
+				SyntaxNode token;
+				try {
+					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
+					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
+				} catch (Exception ex ) {
+					Console.WriteLine (ex);
 					return;
-				if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1].Tag is CSharpSyntaxTree)
+				}
+				var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
+				var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
+
+				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
+
+				if (curType == curMember || curType is DelegateDeclarationSyntax)
+					curMember = null;
+				if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
 					return;
-				var prevPath = CurrentPath;
-				result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
-				CurrentPath = result.ToArray ();
-				OnPathChanged (new DocumentPathChangedEventArgs (prevPath));	
-				return;
-			}
+				var curTypeMakeup = GetEntityMarkup(curType);
+				var curMemberMarkup = GetEntityMarkup(curMember);
+				if (isPathSet && curType != null && lastType != null && curTypeMakeup == lastTypeMarkup &&
+					curMember != null && lastMember != null && curMemberMarkup == lastMemberMarkup && curProject == lastProject)
+					return;
 
-			if (curType != null) {
-				var type = curType;
-				var pos = result.Count;
-				while (type != null) {
-					if (!(type is TypeDeclarationSyntax))
-						break;
-					result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type ?? unit });
-					type = type.Parent;
+
+				var result = new List<PathEntry>();
+
+				if (ownerProjects != null && ownerProjects.Count > 1) {
+					// Current project if there is more than one
+					result.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
 				}
-			}
-				
-			if (curMember != null) {
-				result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
-				if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
-					curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
-					curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
-					curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
-					var parent = curMember.Parent;
-					if (parent != null)
-						result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+				if (curType == null) {
+					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is CSharpSyntaxTree)
+						return;
+					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1].Tag is CSharpSyntaxTree)
+						return;
+					var prevPath = CurrentPath;
+					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });
+					Gtk.Application.Invoke (delegate {
+						if (cancellationToken.IsCancellationRequested)
+							return;
+
+						CurrentPath = result.ToArray ();
+						lastType = curType;
+						lastTypeMarkup = curTypeMakeup;
+
+						lastMember = curMember;
+						lastMemberMarkup = curMemberMarkup;
+
+						lastProject = curProject;
+						OnPathChanged (new DocumentPathChangedEventArgs (prevPath));
+					});
+					return;
 				}
-			}
-				
-			var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
-			if (entry != null)
-				result.Add (entry);
-				
-			PathEntry noSelection = null;
-			if (curType == null) {
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-			} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) { 
-				noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
-			}
 
-			if (noSelection != null)
-				result.Add (noSelection);
-
-			var prev = CurrentPath;
-			if (prev != null && prev.Length == result.Count) {
-				bool equals = true;
-				for (int i = 0; i < prev.Length; i++) {
-					if (prev [i].Markup != result [i].Markup) {
-						equals = false;
-						break;
+				if (curType != null) {
+					var type = curType;
+					var pos = result.Count;
+					while (type != null) {
+						if (!(type is TypeDeclarationSyntax))
+							break;
+						result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type ?? unit });
+						type = type.Parent;
 					}
 				}
-				if (equals)
+				if (curMember != null) {
+					result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+					if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
+						curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
+						curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
+						curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
+						var parent = curMember.Parent;
+						if (parent != null)
+							result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+					}
+				}
+
+				var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
+				if (entry != null)
+					result.Add(entry);
+
+				PathEntry noSelection = null;
+				if (curType == null) {
+					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
+				} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
+					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
+				}
+
+				if (noSelection != null)
+					result.Add(noSelection);
+				var prev = CurrentPath;
+				if (prev != null && prev.Length == result.Count) {
+					bool equals = true;
+					for (int i = 0; i < prev.Length; i++) {
+						if (prev [i].Markup != result [i].Markup) {
+							equals = false;
+							break;
+						}
+					}
+					if (equals)
+						return;
+				}
+				if (cancellationToken.IsCancellationRequested)
 					return;
-			}
-			//		Gtk.Application.Invoke (delegate {
-			CurrentPath = result.ToArray ();
-			OnPathChanged (new DocumentPathChangedEventArgs (prev));	
-			//		});
-			//	});
+				Gtk.Application.Invoke(delegate {
+					if (cancellationToken.IsCancellationRequested)
+						return;
+					CurrentPath = result.ToArray();
+					lastType = curType;
+					lastTypeMarkup = curTypeMakeup;
+
+					lastMember = curMember;
+					lastMemberMarkup = curMemberMarkup;
+
+					lastProject = curProject;
+
+					OnPathChanged (new DocumentPathChangedEventArgs(prev));
+				});
+			});
 		}
 
+		void CancelUpdatePath ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+		}
 		#endregion
 
 	}
