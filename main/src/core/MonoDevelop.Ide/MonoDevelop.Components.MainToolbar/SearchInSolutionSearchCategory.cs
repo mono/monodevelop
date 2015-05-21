@@ -79,9 +79,9 @@ namespace MonoDevelop.Components.MainToolbar
 				return null;
 			}
 
-			MonoDevelop.Ide.CodeCompletion.TooltipInformation ISearchDataSource.GetTooltip (int item)
+			Task<MonoDevelop.Ide.CodeCompletion.TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 			{
-				return null;
+				return Task.FromResult<MonoDevelop.Ide.CodeCompletion.TooltipInformation> (null);
 			}
 
 			double ISearchDataSource.GetWeight (int item)

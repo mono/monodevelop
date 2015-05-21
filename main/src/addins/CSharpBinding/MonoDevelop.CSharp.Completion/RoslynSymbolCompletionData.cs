@@ -35,6 +35,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 using Xwt;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -110,12 +112,12 @@ namespace MonoDevelop.CSharp.Completion
 			return symbol.ToDisplayString (nameOnlyFormat);
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken ctoken)
 		{
-			return CreateTooltipInformation (ext.Editor, ext.DocumentContext, Symbol, smartWrap, model: factory.SemanticModel);
+			return CreateTooltipInformation (ctoken, ext.Editor, ext.DocumentContext, Symbol, smartWrap, model: factory.SemanticModel);
 		}
 		
-		public static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
+		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
 			if (ctx != null) {
 				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null)
@@ -128,30 +130,39 @@ namespace MonoDevelop.CSharp.Completion
 			var sig = new SignatureMarkupCreator (ctx, editor != null ? editor.CaretOffset : 0);
 			sig.SemanticModel = model;
 			sig.BreakLineAfterReturnType = smartWrap;
-			try {
-				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
-			} catch (Exception e) {
-				LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
-				return new TooltipInformation ();
-			}
-			tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (entity) ?? "";
-			
-//			if (entity is IMember) {
-//				var evt = (IMember)entity;
-//				if (evt.ReturnType.Kind == TypeKind.Delegate) {
-//					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (evt.ReturnType));
-//				}
-//			}
-			if (entity is IMethodSymbol) {
-				var method = (IMethodSymbol)entity;
-				if (method.IsExtensionMethod) {
-					tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ContainingType.Name);
+
+			return Task.Run (() => {
+				if (ctoken.IsCancellationRequested)
+					return null;
+				try {
+					tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
+				} catch (Exception e) {
+					LoggingService.LogError ("Got exception while creating markup for :" + entity, e);
+					return new TooltipInformation ();
 				}
-			}
-			if (createFooter) {
-				tooltipInfo.FooterMarkup = sig.CreateFooter (entity);
-			}
-			return tooltipInfo;
+
+				if (ctoken.IsCancellationRequested)
+					return null;
+				
+				tooltipInfo.SummaryMarkup = Ambience.GetSummaryMarkup (entity) ?? "";
+
+				//			if (entity is IMember) {
+				//				var evt = (IMember)entity;
+				//				if (evt.ReturnType.Kind == TypeKind.Delegate) {
+				//					tooltipInfo.AddCategory (GettextCatalog.GetString ("Delegate Info"), sig.GetDelegateInfo (evt.ReturnType));
+				//				}
+				//			}
+				if (entity is IMethodSymbol) {
+					var method = (IMethodSymbol)entity;
+					if (method.IsExtensionMethod) {
+						tooltipInfo.AddCategory (GettextCatalog.GetString ("Extension Method from"), method.ContainingType.Name);
+					}
+				}
+				if (createFooter) {
+					tooltipInfo.FooterMarkup = sig.CreateFooter (entity);
+				}
+				return tooltipInfo;
+			});
 		}
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)

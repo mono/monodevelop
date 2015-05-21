@@ -40,6 +40,7 @@ using Mono.Cecil.Cil;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using Gtk;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -178,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 					return result;
 				
 				if (data.Symbol != null) {
-					result = RoslynSymbolCompletionData.CreateTooltipInformation (editor, doc, data.Symbol, false, createFooter);
+					result = RoslynSymbolCompletionData.CreateTooltipInformation (CancellationToken.None, editor, doc, data.Symbol, false, createFooter).Result;
 				}
 				
 //				if (result == null && parentKind == SyntaxKind.IdentifierName) {

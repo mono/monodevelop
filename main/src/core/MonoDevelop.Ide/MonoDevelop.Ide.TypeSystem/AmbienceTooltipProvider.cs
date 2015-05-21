@@ -26,6 +26,8 @@
 
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -35,6 +37,6 @@ namespace MonoDevelop.Ide.TypeSystem
 	/// </summary>
 	abstract class AmbienceTooltipProvider
 	{
-		public abstract TooltipInformation GetTooltip (ISymbol symbol);
+		public abstract Task<TooltipInformation> GetTooltip (CancellationToken token, ISymbol symbol);
 	}
 }

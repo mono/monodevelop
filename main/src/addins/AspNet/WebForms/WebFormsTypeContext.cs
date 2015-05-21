@@ -46,6 +46,8 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -654,11 +656,11 @@ namespace MonoDevelop.AspNet.WebForms
 			this.cls = cls;
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
-			var tt = base.CreateTooltipInformation (smartWrap);
+			var tt = await base.CreateTooltipInformation (smartWrap, token);
 			tt.SignatureMarkup = cls.GetFullName ();
-			tt.SummaryMarkup = Ambience.GetSummaryMarkup (cls);
+			tt.SummaryMarkup = await Task.Run (() => Ambience.GetSummaryMarkup (cls));
 			return tt;
 		}
 	}
@@ -673,11 +675,11 @@ namespace MonoDevelop.AspNet.WebForms
 			this.member = member;
 		}
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override async Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
-			var tt = base.CreateTooltipInformation (smartWrap);
+			var tt = await base.CreateTooltipInformation (smartWrap, token);
 			tt.SignatureMarkup = member.Name;
-			tt.SummaryMarkup = Ambience.GetSummaryMarkup (member);
+			tt.SummaryMarkup = await Task.Run (() => Ambience.GetSummaryMarkup (member));
 			return tt;
 		}
 	}

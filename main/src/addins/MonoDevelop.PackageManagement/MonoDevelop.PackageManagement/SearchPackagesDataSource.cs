@@ -33,6 +33,8 @@ using Xwt.Drawing;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.NRefactory.Utils;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -60,7 +62,7 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		TooltipInformation ISearchDataSource.GetTooltip (int item)
+		Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 		{
 			return null;
 		}

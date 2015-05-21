@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public abstract string Description { get; }
 		public string MatchedString { get; private set;}
 
-		public abstract TooltipInformation TooltipInformation { get; }
+		public abstract Task<TooltipInformation> GetTooltipInformation (CancellationToken token);
 
 		public SearchResult (string match, string matchedString, int rank)
 		{
@@ -153,17 +154,14 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public override TooltipInformation TooltipInformation {
-			get {
-				var docId = TypeSystemService.GetDocuments (type.Node.SyntaxTree.FilePath).FirstOrDefault ();
-				if (docId == null) {
-					return new  TooltipInformation ();
-				}
-				var cancellationToken = default(CancellationToken);
-				var task = type.GetSymbolAsync (TypeSystemService.GetCodeAnalysisDocument (docId, cancellationToken), cancellationToken);
-				var tooltipInformation = Ambience.GetTooltip (task.Result);
-				return tooltipInformation;
-			}
+		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		{
+			var docId = TypeSystemService.GetDocuments (type.Node.SyntaxTree.FilePath).FirstOrDefault ();
+			if (docId == null)
+				return new TooltipInformation ();
+			
+			var symbol = await type.GetSymbolAsync (TypeSystemService.GetCodeAnalysisDocument (docId, token), token);
+			return await Ambience.GetTooltip (token, symbol);
 		}
 
 		public override string Description {
@@ -242,10 +240,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
-			get {
-				return null;
-			}
+		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		{
+			return Task.FromResult<TooltipInformation> (null);
 		}
 
 		public override string Description {
@@ -311,10 +308,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation TooltipInformation {
-			get {
-				return null;
-			}
+		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		{
+			return Task.FromResult<TooltipInformation> (null);
 		}
 
 		public override string Description {

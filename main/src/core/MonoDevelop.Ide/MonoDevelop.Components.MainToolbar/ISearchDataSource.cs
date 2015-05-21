@@ -39,7 +39,7 @@ namespace MonoDevelop.Components.MainToolbar
 		Xwt.Drawing.Image GetIcon (int item);
 		string GetMarkup (int item, bool isSelected);
 		string GetDescriptionMarkup (int item, bool isSelected);
-		TooltipInformation GetTooltip (int item);
+		Task<TooltipInformation> GetTooltip (CancellationToken token, int item);
 		double GetWeight (int item);
 
 		ISegment GetRegion (int item);

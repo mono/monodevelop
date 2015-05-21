@@ -29,6 +29,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -63,12 +65,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual CompletionCategory CompletionCategory { get; set; }
 		public virtual DisplayFlags DisplayFlags { get; set; }
 
-		public virtual TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public virtual Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken cancelToken)
 		{
 			var tt = new TooltipInformation ();
 			if (!string.IsNullOrEmpty (Description))
 				tt.AddCategory (null, Description);
-			return tt;
+			return Task.FromResult (tt);
 		}
 
 		public virtual bool HasOverloads { 

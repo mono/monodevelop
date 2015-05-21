@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -169,9 +170,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		TooltipInformation ISearchDataSource.GetTooltip (int item)
+		Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 		{
-			return this [item].TooltipInformation;
+			return this [item].GetTooltipInformation (token);
 		}
 		#endregion
 

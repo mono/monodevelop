@@ -43,6 +43,7 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -53,10 +54,9 @@ namespace MonoDevelop.CSharp.Completion
 		readonly INamedTypeSymbol curType;
 		readonly string varName;
 		
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
-			var tooltipInfo = new TooltipInformation ();
-			return tooltipInfo;
+			return Task.FromResult (new TooltipInformation ());
 		}
 
 		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)

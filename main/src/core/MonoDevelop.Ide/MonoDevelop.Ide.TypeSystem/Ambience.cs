@@ -38,6 +38,7 @@ using System.Threading;
 using System.Xml;
 using Mono.Addins;
 using MonoDevelop.Ide.Extensions;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -584,10 +585,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region Tooltips
 		static List<AmbienceTooltipProvider> tooltipProviders = new List<AmbienceTooltipProvider>();
 
-		public static TooltipInformation GetTooltip(ISymbol symbol)
+		public static async Task<TooltipInformation> GetTooltip (CancellationToken token, ISymbol symbol)
 		{
 			foreach (var tp in tooltipProviders) {
-				var result = tp.GetTooltip (symbol);
+				var result = await tp.GetTooltip (token, symbol);
 				if (result != null)
 					return result;
 			}

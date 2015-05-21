@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Fonts;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -78,10 +80,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ShowOverload ();
 		}
 
-		public void AddOverload (CompletionData data)
+		public async Task AddOverload (CompletionData data, CancellationToken cancelToken)
 		{
-			var tooltipInformation = data.CreateTooltipInformation (false);
-			if (tooltipInformation.IsEmpty)
+			var tooltipInformation = await data.CreateTooltipInformation (false, cancelToken);
+			if (tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
 				return;
 
 			using (var layout = new Pango.Layout (PangoContext)) {
@@ -90,9 +92,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 				if (w >= Allocation.Width - 10) {
-					tooltipInformation = data.CreateTooltipInformation (true);
+					tooltipInformation = await data.CreateTooltipInformation (true, cancelToken);
 				}
 			}
+			if (cancelToken.IsCancellationRequested)
+				return;
 			AddOverload (tooltipInformation);
 		}
 

@@ -33,6 +33,8 @@ using MonoDevelop.Ide;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide.TypeSystem;
 using System.IO;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
@@ -194,11 +196,11 @@ namespace MonoDevelop.CSharp
 //		
 //		static Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
 //
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (Microsoft.CodeAnalysis.ISymbol entity)
+		public override Task<MonoDevelop.Ide.CodeCompletion.TooltipInformation> GetTooltip (CancellationToken token, Microsoft.CodeAnalysis.ISymbol entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, null, entity, false, true);
+			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (token, null, null, entity, false, true);
 		}
 
 //		static string GetString (TypeKind classType)
