@@ -25,7 +25,7 @@
 //
 //
 
-
+using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -39,7 +39,8 @@ namespace MonoDevelop.Ide.Commands
 	{
 		AddinManager,
 		ToolList,
-		InstrumentationViewer
+		InstrumentationViewer,
+		ToggleSessionRecorder,
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -136,6 +137,24 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled;
+		}
+	}
+
+	internal class ToggleSessionRecorderHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (AutoTestService.CurrentRecordSession == null) {
+				AutoTestService.StartRecordingSession ();
+			} else {
+				// FIXME: Throw up a dialog for filename
+				AutoTestService.StopRecordingSession ("/Users/iain/XS-session.xml");
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Text = AutoTestService.CurrentRecordSession == null ? "Start Session Recorder" : "Stop Session Recorder";
 		}
 	}
 }
