@@ -27,23 +27,30 @@
 using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
+using System;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
 	public abstract class UITestBase
 	{
+		string projectScreenshotFolder;
+		int testScreenshotIndex;
+
+		public string ScreenshotsPath { get; private set; }
+
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
 		}
 
 		public string MonoDevelopBinPath { get; set; }
 
-		public UITestBase () {}
+		protected UITestBase () {}
 
-		public UITestBase (string mdBinPath)
+		protected UITestBase (string mdBinPath)
 		{
 			MonoDevelopBinPath = mdBinPath;
+			InitializeScreenShotPath ();
 		}
 
 		[SetUp]
@@ -58,7 +65,55 @@ namespace UserInterfaceTests
 		[TearDown]
 		public virtual void Teardown ()
 		{
+			OnCleanUp ();
 			TestService.EndSession ();
+		}
+
+		void InitializeScreenShotPath ()
+		{
+			var pictureFolderName = Directory.GetCurrentDirectory ();
+			ScreenshotsPath = Path.Combine (pictureFolderName, "Screenshots", GetType ().Name);
+			if (Directory.Exists (ScreenshotsPath)) {
+				var lastAccess = Directory.GetLastAccessTime (ScreenshotsPath).ToString ("u").Replace (' ', '-').Replace (':', '-');
+				var newLocation = string.Format ("{0}-{1}", ScreenshotsPath, lastAccess);
+				Directory.Move (ScreenshotsPath, newLocation);
+			}
+
+			Directory.CreateDirectory (ScreenshotsPath);
+		}
+
+		protected void ScreenshotForTestSetup (string testName)
+		{
+			testScreenshotIndex = 1;
+			projectScreenshotFolder = Path.Combine (ScreenshotsPath, testName);
+			if (Directory.Exists (projectScreenshotFolder))
+				Directory.Delete (projectScreenshotFolder, true);
+			Directory.CreateDirectory (projectScreenshotFolder);
+		}
+
+		protected void TakeScreenShot (string stepName)
+		{
+			if (string.IsNullOrEmpty (projectScreenshotFolder))
+				throw new InvalidOperationException ("You need to initialize Screenshot functionality by calling 'ScreenshotForTestSetup (string testName)' first");
+
+			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
+			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
+			Session.TakeScreenshot (screenshotPath);
+		}
+
+		protected virtual void OnCleanUp ()
+		{
+			var actualSolutionDirectory = GetSolutionDirectory ();
+			Ide.CloseAll ();
+			try {
+				if (Directory.Exists (actualSolutionDirectory))
+					Directory.Delete (actualSolutionDirectory, true);
+			} catch (IOException) { }
+		}
+
+		protected string GetSolutionDirectory ()
+		{
+			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
 		}
 	}
 }

@@ -40,6 +40,9 @@
       <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -50,10 +53,10 @@
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
     <Compile Include="NewProjectController.cs" />
     <Compile Include="UITestDebug.cs" />
-    <Compile Include="MonoDevelopTests\DotNetTemplatesTest.cs" />
-    <Compile Include="MonoDevelopTests\ASPNETTemplateTests.cs" />
-    <Compile Include="MonoDevelopTests\MiscTemplatesTest.cs" />
     <Compile Include="TemplateTestOptions.cs" />
+    <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
+    <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
+    <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -67,8 +70,5 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MonoDevelopTests\" />
   </ItemGroup>
 </Project>

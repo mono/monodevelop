@@ -1,5 +1,5 @@
 ﻿//
-// MiscTemplatesTest.cs
+// MonoDevelopTemplatesTest.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -23,80 +23,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide.Commands;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
-	[Category("Misc")]
-	public class MiscTemplatesTest : CreateBuildTemplatesTestBase
+	[Category("DotNet")]
+	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		readonly string miscCategory = "Miscellaneous";
-
-		readonly string genericKindRoot = "Generic";
-		readonly string cCPlusKindRoot = "C/C++";
-
-		public MiscTemplatesTest () : base (Util.TestRunId) {}
-
-		#region Generic
+		readonly string dotNetCategory = ".NET";
 
 		[Test]
-		public void TestMiscGenericProject ()
+		public void TestCreateBuildConsoleProject ()
 		{
-			RunMiscGenericTests ("Generic Project");
+			RunDotNetTests ("Console Project", EmptyAction);
 		}
 
 		[Test]
-		public void TestMiscPackagingProject ()
+		public void TestCreateBuildGtkSharp20Project ()
 		{
-			RunMiscGenericTests ("Packaging project");
+			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
 		}
 
-		void RunMiscGenericTests (string templateName)
+		[Test]
+		public void TestCreateBuildLibrary ()
+		{
+			RunDotNetTests ("Library", EmptyAction);
+		}
+
+		[Test]
+		public void TestCreateBuildNUnitLibraryProject ()
+		{
+			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
+		}
+
+		void RunDotNetTests (string templateName, Action beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
-				Category = miscCategory,
-				TemplateKindRoot = genericKindRoot,
+				Category = dotNetCategory,
+				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, EmptyAction);
+			CreateBuildProject (templateOptions, beforeBuild);
 		}
-
-		#endregion
-
-		#region C/C++
-
-		[Test]
-		public void TestMiscCCPlusSharedLibrary ()
-		{
-			RunCCPlusTests ("Shared Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusStaticLibrary ()
-		{
-			RunCCPlusTests ("Static Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusConsoleProject ()
-		{
-			RunCCPlusTests ("Console Project");
-		}
-
-		void RunCCPlusTests (string templateName)
-		{
-			var templateOptions = new TemplateSelectionOptions {
-				CategoryRoot = OtherCategoryRoot,
-				Category = miscCategory,
-				TemplateKindRoot = cCPlusKindRoot,
-				TemplateKind = templateName
-			};
-			CreateBuildProject (templateOptions, EmptyAction);
-		}
-
-		#endregion
 	}
 }

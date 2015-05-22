@@ -1,5 +1,5 @@
 ﻿//
-// ASPNetTemplatesTest.cs
+// MiscTemplatesTest.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -23,71 +23,78 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
-	[Category("ASP")]
-	public class ASPNetTemplatesTest : CreateBuildTemplatesTestBase
+	[Category("Misc")]
+	public class MiscTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		readonly string aspCategory = "ASP.NET";
+		readonly string miscCategory = "Miscellaneous";
 
-		public ASPNetTemplatesTest () : base (Util.TestRunId) {}
+		readonly string genericKindRoot = "Generic";
+		readonly string cCPlusKindRoot = "C/C++";
+
+		#region Generic
 
 		[Test]
-		public void TestEmptyASPMVCProject ()
+		public void TestMiscGenericProject ()
 		{
-			RunASPTest ("Empty ASP.NET MVC Project", WaitForPackageUpdate);
+			RunMiscGenericTests ("Generic Project");
 		}
 
 		[Test]
-		public void TestEmptyASPProject ()
+		public void TestMiscPackagingProject ()
 		{
-			RunASPTest ("Empty ASP.NET Project", EmptyAction);
+			RunMiscGenericTests ("Packaging project");
 		}
 
-		[Test]
-		public void TestASPMVCProject ()
-		{
-			RunASPTest ("ASP.NET MVC Project", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCProjectWithUnitTests ()
-		{
-			RunASPTest ("ASP.NET MVC Project with Unit Tests", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCMazorProject ()
-		{
-			RunASPTest ("ASP.NET MVC Razor Project", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCMazorProjectWithUnitTests ()
-		{
-			RunASPTest ("ASP.NET MVC Razor Project with Unit Tests", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPProject ()
-		{
-			RunASPTest ("ASP.NET Project", EmptyAction);
-		}
-
-		void RunASPTest (string templateName, Action beforeBuild)
+		void RunMiscGenericTests (string templateName)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
-				Category = aspCategory,
-				TemplateKindRoot = GeneralKindRoot,
+				Category = miscCategory,
+				TemplateKindRoot = genericKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, beforeBuild);
+			CreateBuildProject (templateOptions, EmptyAction);
 		}
+
+		#endregion
+
+		#region C/C++
+
+		[Test]
+		public void TestMiscCCPlusSharedLibrary ()
+		{
+			RunCCPlusTests ("Shared Library");
+		}
+
+		[Test]
+		public void TestMiscCCPlusStaticLibrary ()
+		{
+			RunCCPlusTests ("Static Library");
+		}
+
+		[Test]
+		public void TestMiscCCPlusConsoleProject ()
+		{
+			RunCCPlusTests ("Console Project");
+		}
+
+		void RunCCPlusTests (string templateName)
+		{
+			var templateOptions = new TemplateSelectionOptions {
+				CategoryRoot = OtherCategoryRoot,
+				Category = miscCategory,
+				TemplateKindRoot = cCPlusKindRoot,
+				TemplateKind = templateName
+			};
+			CreateBuildProject (templateOptions, EmptyAction);
+		}
+
+		#endregion
 	}
 }

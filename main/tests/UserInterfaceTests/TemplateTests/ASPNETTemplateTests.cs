@@ -1,5 +1,5 @@
 ﻿//
-// MonoDevelopTemplatesTest.cs
+// ASPNetTemplatesTest.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -25,49 +25,63 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.AutoTest;
-using MonoDevelop.Ide.Commands;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	[TestFixture]
-	[Category("DotNet")]
-	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
+	[Category("ASP")]
+	public class ASPNetTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		public MonoDevelopTemplatesTest () : base (Util.TestRunId) {}
-
-		readonly string dotNetCategory = ".NET";
+		readonly string aspCategory = "ASP.NET";
 
 		[Test]
-		public void TestCreateBuildConsoleProject ()
+		public void TestEmptyASPMVCProject ()
 		{
-			RunDotNetTests ("Console Project", EmptyAction);
+			RunASPTest ("Empty ASP.NET MVC Project", WaitForPackageUpdate);
 		}
 
 		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
+		public void TestEmptyASPProject ()
 		{
-			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
+			RunASPTest ("Empty ASP.NET Project", EmptyAction);
 		}
 
 		[Test]
-		public void TestCreateBuildLibrary ()
+		public void TestASPMVCProject ()
 		{
-			RunDotNetTests ("Library", EmptyAction);
+			RunASPTest ("ASP.NET MVC Project", WaitForPackageUpdate);
 		}
 
 		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
+		public void TestASPMVCProjectWithUnitTests ()
 		{
-			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
+			RunASPTest ("ASP.NET MVC Project with Unit Tests", WaitForPackageUpdate);
 		}
 
-		void RunDotNetTests (string templateName, Action beforeBuild)
+		[Test]
+		public void TestASPMVCMazorProject ()
+		{
+			RunASPTest ("ASP.NET MVC Razor Project", WaitForPackageUpdate);
+		}
+
+		[Test]
+		public void TestASPMVCMazorProjectWithUnitTests ()
+		{
+			RunASPTest ("ASP.NET MVC Razor Project with Unit Tests", WaitForPackageUpdate);
+		}
+
+		[Test]
+		public void TestASPProject ()
+		{
+			RunASPTest ("ASP.NET Project", EmptyAction);
+		}
+
+		void RunASPTest (string templateName, Action beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
-				Category = dotNetCategory,
+				Category = aspCategory,
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
