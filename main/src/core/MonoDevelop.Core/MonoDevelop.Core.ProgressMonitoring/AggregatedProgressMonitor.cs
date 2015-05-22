@@ -128,8 +128,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			var am = (AggregatedProgressMonitor) stepMonitor;
 			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Tasks) != 0)
-					am.AddSlaveMonitor (info.Monitor.BeginAsyncStep (message, work));
+				if ((info.ActionMask & MonitorAction.Tasks) != 0) {
+					var sm = info.Monitor.BeginAsyncStep (message, work);
+					sm.ReportGlobalDataToParent = false;
+					am.AddSlaveMonitor (sm);
+				}
 		}
 
 		protected override void OnWriteLog (string message)

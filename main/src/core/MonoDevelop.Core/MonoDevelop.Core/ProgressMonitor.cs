@@ -59,6 +59,8 @@ namespace MonoDevelop.Core
 		ProgressMonitor parentMonitor;
 		SynchronizationContext context;
 
+		internal bool ReportGlobalDataToParent { get; set; }
+
 		List<ProgressError> errors = new List<ProgressError> ();
 		List<string> warnings = new List<string> ();
 		List<string> messages = new List<string> ();
@@ -117,6 +119,7 @@ namespace MonoDevelop.Core
 			parentMonitor = parent;
 			currentTask = parentRootTask = task;
 			openStepWork = work;
+			ReportGlobalDataToParent = true;
 		}
 
 		public virtual void Dispose ()
@@ -381,7 +384,7 @@ namespace MonoDevelop.Core
 
 		public void ReportWarning (string message)
 		{
-			if (parentMonitor != null)
+			if (ReportGlobalDataToParent && parentMonitor != null)
 				parentMonitor.ReportWarning (message);
 			lock (warnings)
 				warnings.Add (message);
@@ -399,7 +402,7 @@ namespace MonoDevelop.Core
 
 		public void ReportSuccess (string message)
 		{
-			if (parentMonitor != null)
+			if (ReportGlobalDataToParent && parentMonitor != null)
 				parentMonitor.ReportSuccess (message);
 			lock (messages)
 				messages.Add (message);
@@ -417,7 +420,7 @@ namespace MonoDevelop.Core
 
 		public void ReportError (string message, Exception exception = null)
 		{
-			if (parentMonitor != null)
+			if (ReportGlobalDataToParent && parentMonitor != null)
 				parentMonitor.ReportError (message, exception);
 			else if (exception != null)
 				LoggingService.LogError (message, exception);
@@ -491,8 +494,6 @@ namespace MonoDevelop.Core
 
 		public TextWriter ErrorLog {
 			get {
-				if (parentMonitor != null)
-					return parentMonitor.ErrorLog;
 				return errorLogWriter ?? Log;
 			}
 			protected set {
@@ -596,14 +597,14 @@ namespace MonoDevelop.Core
 
 		void DoWriteLog (string message)
 		{
-			if (parentMonitor != null)
+			if (ReportGlobalDataToParent && parentMonitor != null)
 				AppendLog (message, false);
 			OnWriteLog (message);
         }
 
 		void DoWriteErrorLog (string message)
 		{
-			if (parentMonitor != null)
+			if (ReportGlobalDataToParent && parentMonitor != null)
 				AppendLog (message, true);
 			OnWriteErrorLog (message);
         }
