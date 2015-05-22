@@ -46,10 +46,57 @@ using System.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
+	struct WorkspaceId
+	{
+		static uint n = 0;
+
+		public static readonly uint     Number;
+		public static readonly DateTime DateTime;
+
+		public static WorkspaceId Empty = new WorkspaceId (0, default(DateTime));
+
+		WorkspaceId (uint number, DateTime dateTime) : this()
+		{
+			this.Number = number;
+			this.DateTime = dateTime;
+		}
+
+		WorkspaceId () : this()
+		{
+			this.Number = n++;
+			this.DateTime = DateTime.UtcNow;
+		}
+
+		public static WorkspaceId Next()
+		{
+			return WorkspaceId ();
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (obj == null)
+				return false;
+			if (ReferenceEquals (this, obj))
+				return true;
+			if (obj.GetType () != typeof(WorkspaceId))
+				return false;
+			WorkspaceId other = (WorkspaceId)obj;
+			return Number == other.Number && DateTime == other.DateTime;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return Number.GetHashCode () ^ DateTime.GetHashCode ();
+			}
+		}
+	}
 
 	class MonoDevelopWorkspace : Workspace
 	{
 		readonly static HostServices services;
+		public readonly WorkspaceId Id;
+
 		CancellationTokenSource src = new CancellationTokenSource ();
 		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
 		object addLock = new object();
@@ -73,6 +120,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public MonoDevelopWorkspace () : base (services, ServiceLayer.Desktop)
 		{
+			this.Id = WorkspaceId.Next ();
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			}

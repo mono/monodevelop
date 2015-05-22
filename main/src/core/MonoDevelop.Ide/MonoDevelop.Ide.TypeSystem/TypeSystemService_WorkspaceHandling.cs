@@ -105,6 +105,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return emptyWorkspace;
 		}
 
+		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
+		{
+			foreach (var ws in Workspaces) {
+				if (ws.Id == id)
+					return ws;
+			}
+			return emptyWorkspace;
+		}
+
 		public static Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
 				var solution = IdeApp.ProjectOperations?.CurrentSelectedSolution;
