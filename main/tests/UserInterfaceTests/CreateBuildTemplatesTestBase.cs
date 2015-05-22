@@ -52,7 +52,7 @@ namespace UserInterfaceTests
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
 
-		protected CreateBuildTemplatesTestBase (string mdBinPath = null, string screenshotsFolder = null) : base (mdBinPath, screenshotsFolder)
+		protected CreateBuildTemplatesTestBase (string mdBinPath = null) : base (mdBinPath)
 		{
 		}
 

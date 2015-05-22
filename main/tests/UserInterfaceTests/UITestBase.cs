@@ -47,10 +47,10 @@ namespace UserInterfaceTests
 
 		protected UITestBase () {}
 
-		protected UITestBase (string mdBinPath, string screenshotsFolder)
+		protected UITestBase (string mdBinPath)
 		{
 			MonoDevelopBinPath = mdBinPath;
-			InitializeScreenShotPath (screenshotsFolder);
+			InitializeScreenShotPath ();
 		}
 
 		[SetUp]
@@ -69,13 +69,16 @@ namespace UserInterfaceTests
 			TestService.EndSession ();
 		}
 
-		void InitializeScreenShotPath (string folderName)
+		void InitializeScreenShotPath ()
 		{
-			var pictureFolderName = Environment.GetFolderPath (Environment.SpecialFolder.MyPictures);
-			folderName = folderName ?? DateTime.Now.ToLongDateString ().Replace (",", "").Replace (' ', '-');
-			ScreenshotsPath = Path.Combine (pictureFolderName, "XamarinStudioUITests", folderName, GetType ().Name);
-			if (Directory.Exists (ScreenshotsPath))
-				Directory.Delete (ScreenshotsPath, true);
+			var pictureFolderName = Directory.GetCurrentDirectory ();
+			ScreenshotsPath = Path.Combine (pictureFolderName, "Screenshots", GetType ().Name);
+			if (Directory.Exists (ScreenshotsPath)) {
+				var lastAccess = Directory.GetLastAccessTime (ScreenshotsPath).ToString ("u").Replace (' ', '-').Replace (':', '-');
+				var newLocation = string.Format ("{0}-{1}", ScreenshotsPath, lastAccess);
+				Directory.Move (ScreenshotsPath, newLocation);
+			}
+
 			Directory.CreateDirectory (ScreenshotsPath);
 		}
 

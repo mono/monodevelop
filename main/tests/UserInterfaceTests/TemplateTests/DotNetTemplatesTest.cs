@@ -35,8 +35,6 @@ namespace UserInterfaceTests
 	[Category("DotNet")]
 	public class MonoDevelopTemplatesTest : CreateBuildTemplatesTestBase
 	{
-		public MonoDevelopTemplatesTest () : base (screenshotsFolder: Util.TestRunId) {}
-
 		readonly string dotNetCategory = ".NET";
 
 		[Test]
