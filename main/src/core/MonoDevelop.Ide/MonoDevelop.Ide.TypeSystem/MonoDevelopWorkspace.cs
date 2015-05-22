@@ -66,12 +66,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			List<Assembly> assemblies = new List<Assembly> ();
 			assemblies.AddRange(Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultAssemblies);
-			var assembly = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
-			if (assembly != null) {
-				assemblies.Add (assembly);
-			} else {
-				LoggingService.LogWarning ("Warning couldn't load Microsoft.CodeAnalysis.Workspaces.Desktop host service assembly.");
-			}
+
+			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
 
