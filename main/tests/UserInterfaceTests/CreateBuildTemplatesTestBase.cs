@@ -41,7 +41,7 @@ namespace UserInterfaceTests
 
 		public string OtherCategoryRoot { get { return "Other"; } }
 
-		public readonly static Action EmptyAction = () => { };
+		public readonly static Action EmptyAction = delegate { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
 			Ide.WaitUntil (() => {
