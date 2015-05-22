@@ -3487,6 +3487,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Operations\ChildrenOperation.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\NSObjectResult.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTemporaryStorageServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
 		{
 			foreach (var ws in Workspaces) {
-				if (ws.Id == id)
+				if (ws.Id.Equals (id))
 					return ws;
 			}
 			return emptyWorkspace;
