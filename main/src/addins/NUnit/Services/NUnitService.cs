@@ -371,11 +371,13 @@ namespace MonoDevelop.NUnit
 			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
 			resultsPad.InitializeTestRun (test);
+			Task = new Task (RunTests);
 		}
 		
 		public Task Start ()
 		{
-			return Task = Task.Run ((Action)RunTests);
+			Task.Start ();
+			return Task;
 		}
 		
 		void RunTests ()
