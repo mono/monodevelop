@@ -1070,9 +1070,9 @@ namespace MonoDevelop.Projects
 			return CheckUseMSBuildEngine (sel);
 		}
 
-		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return (await RunTarget (monitor, "Build", configuration)).BuildResult;
+			return (await RunTarget (monitor, "Build", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
 		}
 
 		async Task<TargetEvaluationResult> RunBuildTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)
@@ -1322,7 +1322,30 @@ namespace MonoDevelop.Projects
 			string file = GetOutputFileName (configuration);
 			if (file != null)
 				list.Add (file);
-		}		
+		}
+
+		/// <summary>
+		/// Builds the project
+		/// </summary>
+		/// <param name="monitor">A progress monitor</param>
+		/// <param name="solutionConfiguration">Configuration to use to build the project</param>
+		/// <param name="operationContext">Context information.</param>
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, ProjectOperationContext operationContext)
+		{
+			return base.Build (monitor, solutionConfiguration, false, operationContext);
+		}
+
+		/// <summary>
+		/// Builds the project
+		/// </summary>
+		/// <param name="monitor">A progress monitor</param>
+		/// <param name="solutionConfiguration">Configuration to use to build the project</param>
+		/// <param name="buildReferences">When set to <c>true</c>, the referenced items will be built before building this item.</param>
+		/// <param name="operationContext">Context information.</param>
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext operationContext)
+		{
+			return base.Build (monitor, solutionConfiguration, buildReferences, operationContext);
+		}
 
 		/// <summary>
 		/// Builds the project.
@@ -1345,9 +1368,9 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (BuildResult.Success);
 		}
 
-		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return (await RunTarget (monitor, "Clean", configuration)).BuildResult;
+			return (await RunTarget (monitor, "Clean", configuration, new TargetEvaluationContext (operationContext))).BuildResult;
 		}
 
 		async Task<TargetEvaluationResult> RunCleanTarget (ProgressMonitor monitor, ConfigurationSelector configuration, TargetEvaluationContext context)

@@ -1,5 +1,5 @@
 ﻿//
-// TargetEvaluationContext.cs
+// BuildContext.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,35 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class TargetEvaluationContext: ProjectOperationContext
+	public class ProjectOperationContext: OperationContext
 	{
-		public TargetEvaluationContext ()
+		public ProjectOperationContext ()
 		{
-			PropertiesToEvaluate = new HashSet<string> ();
-			ItemsToEvaluate = new HashSet<string> ();
+			GlobalProperties = new ProjectItemMetadata ();
 		}
 
-		public TargetEvaluationContext (OperationContext other): base (other)
+		public ProjectOperationContext (OperationContext other): base (other)
 		{
 		}
 
-		public HashSet<string> PropertiesToEvaluate { get; private set; }
-
-		public HashSet<string> ItemsToEvaluate { get; private set; }
+		public IPropertySet GlobalProperties { get; private set; }
 
 		public override void CopyFrom (OperationContext other)
 		{
 			base.CopyFrom (other);
-			var o = other as TargetEvaluationContext;
-			if (o != null) {
-				PropertiesToEvaluate = new HashSet<string> (o.PropertiesToEvaluate);
-				o.ItemsToEvaluate = new HashSet<string> (o.ItemsToEvaluate);
-			}
+			var o = other as ProjectOperationContext;
+			if (o != null)
+				GlobalProperties = new ProjectItemMetadata ((ProjectItemMetadata) o.GlobalProperties);
 		}
 	}
 }

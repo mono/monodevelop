@@ -39,9 +39,26 @@ namespace MonoDevelop.Projects
 		int initialMetadataCount;
 		MSBuildProject project;
 
+		internal ProjectItemMetadata ()
+		{
+		}
+
 		internal ProjectItemMetadata (MSBuildProject project)
 		{
 			this.project = project;
+		}
+
+		internal ProjectItemMetadata (ProjectItemMetadata other)
+		{
+			this.project = other.project;
+			if (other.properties != null) {
+				properties = new Dictionary<string, MSBuildProperty> (other.properties.Count);
+				foreach (var p in propertyList) {
+					var pc = p.Clone ();
+					propertyList.Add (pc);
+					properties [p.Name] = pc;
+				}
+			}
 		}
 
 		internal void SetProject (MSBuildProject project)

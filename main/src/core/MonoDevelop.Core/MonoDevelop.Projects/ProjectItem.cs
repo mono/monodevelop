@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects
 		public ProjectItemMetadata Metadata {
 			get {
 				if (metadata == null)
-					metadata = new ProjectItemMetadata (null);
+					metadata = new ProjectItemMetadata ();
 				return metadata;
 			}
 		}

@@ -144,10 +144,10 @@ namespace MonoDevelop.Autotools
 
 
 		//FIXME: Check whether autogen.sh is required or not
-		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.BuildTargetName))
-				return await base.OnBuild (monitor, configuration);
+				return await base.OnBuild (monitor, configuration, operationContext);
 
 			//FIXME: Gen autofoo ? autoreconf?
 
@@ -327,10 +327,10 @@ namespace MonoDevelop.Autotools
 				return null;
 		}
 
-		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.CleanTargetName)) {
-				return await base.OnClean (monitor, configuration); 
+				return await base.OnClean (monitor, configuration, operationContext); 
 			}
 
 			monitor.BeginTask ( GettextCatalog.GetString( "Cleaning project"), 1);

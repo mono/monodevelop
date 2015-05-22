@@ -44,6 +44,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanges = true;
 		}
 
+		internal MSBuildProperty Clone ()
+		{
+			var prop = new MSBuildProperty (Project, (XmlElement)Element.CloneNode (true));
+			prop.preserverCase = preserverCase;
+			prop.valueType = valueType;
+			return prop;
+		}
+
 		internal override string GetName ()
 		{
 			return Element.Name;

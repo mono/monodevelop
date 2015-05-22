@@ -87,12 +87,12 @@ namespace MonoDevelop.Projects
 				return GettextCatalog.GetString ("Unknown entry");
 		}
 
-		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			return Task.FromResult (BuildResult.Success);
 		}
 		
-		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			var r = new BuildResult ();
 			r.AddError ("Project unavailable");
