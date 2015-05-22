@@ -130,7 +130,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }
 
 		public override string File {
-			get { return type.Node.GetLocation ().SourceTree.FilePath; }
+			get { return type.FilePath; }
 		}
 		
 		public override Xwt.Drawing.Image Icon {
@@ -156,7 +156,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 		{
-			var docId = TypeSystemService.GetDocuments (type.Node.SyntaxTree.FilePath).FirstOrDefault ();
+			var docId = TypeSystemService.GetDocuments (type.FilePath).FirstOrDefault ();
 			if (docId == null)
 				return new TooltipInformation ();
 			
