@@ -1032,7 +1032,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		public AsyncOperation Clean (IBuildTarget entry)
+		public AsyncOperation Clean (IBuildTarget entry, OperationContext operationContext = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
@@ -1043,7 +1043,7 @@ namespace MonoDevelop.Ide
 
 				OnStartClean (monitor, tt);
 
-				var t = CleanAsync (entry, monitor, tt, false);
+				var t = CleanAsync (entry, monitor, tt, false, operationContext);
 
 				t = t.ContinueWith (ta => {
 					currentBuildOperationOwner = null;
@@ -1062,12 +1062,12 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		async Task<BuildResult> CleanAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool isRebuilding)
+		async Task<BuildResult> CleanAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool isRebuilding, OperationContext operationContext)
 		{
 			BuildResult res = null;
 			try {
 				tt.Trace ("Cleaning item");
-				res = await entry.Clean (monitor, IdeApp.Workspace.ActiveConfiguration);
+				res = await entry.Clean (monitor, IdeApp.Workspace.ActiveConfiguration, operationContext);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Clean failed."), ex);
 			} finally {
@@ -1098,15 +1098,20 @@ namespace MonoDevelop.Ide
 				tt.End ();
 			}
 		}
-		
-		public AsyncOperation<BuildResult> Rebuild (IBuildTarget entry)
+
+		public AsyncOperation<BuildResult> Rebuild (Project project, ProjectOperationContext operationContext = null)
+		{
+			return Rebuild ((IBuildTarget)project, operationContext);
+		}
+
+		public AsyncOperation<BuildResult> Rebuild (IBuildTarget entry, OperationContext operationContext = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
 			var cs = new CancellationTokenSource ();
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRebuildProgressMonitor ().WithCancellationSource (cs);
 
-			var t = RebuildAsync (entry, monitor);
+			var t = RebuildAsync (entry, monitor, operationContext);
 			t = t.ContinueWith (ta => {
 				currentBuildOperationOwner = null;
 				return ta.Result;
@@ -1117,13 +1122,13 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation = op;
 		}
 		
-		async Task<BuildResult> RebuildAsync (IBuildTarget entry, ProgressMonitor monitor)
+		async Task<BuildResult> RebuildAsync (IBuildTarget entry, ProgressMonitor monitor, OperationContext operationContext)
 		{
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Rebuilding " + entry.Name);
 			try {
 				OnStartClean (monitor, tt);
 
-				var res = await CleanAsync (entry, monitor, tt, true);
+				var res = await CleanAsync (entry, monitor, tt, true, operationContext);
 				if (res.HasErrors) {
 					tt.End ();
 					monitor.Dispose ();
@@ -1132,7 +1137,7 @@ namespace MonoDevelop.Ide
 				if (StartBuild != null) {
 					BeginBuild (monitor, tt, true);
 				}
-				return await BuildSolutionItemAsync (entry, monitor, tt);
+				return await BuildSolutionItemAsync (entry, monitor, tt, operationContext:operationContext);
 			} finally {
 				tt.End ();
 			}
@@ -1264,12 +1269,17 @@ namespace MonoDevelop.Ide
 		
 //		bool errorPadInitialized = false;
 
-		public AsyncOperation<BuildResult> Build (IBuildTarget entry, CancellationToken? cancellationToken = null)
+		public AsyncOperation<BuildResult> Build (Project project, CancellationToken? cancellationToken = null, ProjectOperationContext operationContext = null)
 		{
-			return Build (entry, false, cancellationToken);
+			return Build (project, false, cancellationToken, operationContext);
 		}
 
-		AsyncOperation<BuildResult> Build (IBuildTarget entry, bool skipPrebuildCheck, CancellationToken? cancellationToken = null)
+		public AsyncOperation<BuildResult> Build (IBuildTarget entry, CancellationToken? cancellationToken = null, OperationContext operationContext = null)
+		{
+			return Build (entry, false, cancellationToken, operationContext);
+		}
+
+		AsyncOperation<BuildResult> Build (IBuildTarget entry, bool skipPrebuildCheck, CancellationToken? cancellationToken = null, OperationContext operationContext = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 
@@ -1280,7 +1290,7 @@ namespace MonoDevelop.Ide
 					cs = CancellationTokenSource.CreateLinkedTokenSource (cs.Token, cancellationToken.Value);
 				ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ().WithCancellationSource (cs);
 				BeginBuild (monitor, tt, false);
-				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck);
+				var t = BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, operationContext);
 				currentBuildOperation = new AsyncOperation<BuildResult> (t, cs);
 				currentBuildOperationOwner = entry;
 				t.ContinueWith ((ta) => currentBuildOperationOwner = null);
@@ -1291,7 +1301,7 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false)
+		async Task<BuildResult> BuildSolutionItemAsync (IBuildTarget entry, ProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, OperationContext operationContext = null)
 		{
 			BuildResult result = null;
 			try {
@@ -1305,7 +1315,7 @@ namespace MonoDevelop.Ide
 
 				if (skipPrebuildCheck || result.ErrorCount == 0) {
 					tt.Trace ("Building item");
-					result = await entry.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+					result = await entry.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, operationContext);
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
