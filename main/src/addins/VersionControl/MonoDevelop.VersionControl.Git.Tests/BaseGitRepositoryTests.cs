@@ -453,7 +453,7 @@ index 0000000..009b64b
 		{
 			var repo2 = (GitRepository)Repo;
 			AddFile ("init", "init", true, true);
-			repo2.Push (new NullProgressMonitor (), "origin", "master");
+			repo2.Push (new ProgressMonitor (), "origin", "master");
 			repo2.CreateBranch ("testBranch", "refs/remotes/origin/master");
 
 			if (exceptionType != null)
