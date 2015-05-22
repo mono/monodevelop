@@ -36,7 +36,7 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public OperationContext (OperationContext other)
+		public OperationContext (OperationContext other): this ()
 		{
 			CopyFrom (other);
 		}

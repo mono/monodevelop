@@ -35,8 +35,9 @@ namespace MonoDevelop.Projects
 			GlobalProperties = new ProjectItemMetadata ();
 		}
 
-		public ProjectOperationContext (OperationContext other): base (other)
+		public ProjectOperationContext (OperationContext other): this ()
 		{
+			CopyFrom (other);
 		}
 
 		public IPropertySet GlobalProperties { get; private set; }

@@ -36,8 +36,9 @@ namespace MonoDevelop.Projects
 			ItemsToEvaluate = new HashSet<string> ();
 		}
 
-		public TargetEvaluationContext (OperationContext other): base (other)
+		public TargetEvaluationContext (OperationContext other): this ()
 		{
+			CopyFrom (other);
 		}
 
 		public HashSet<string> PropertiesToEvaluate { get; private set; }
