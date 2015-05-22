@@ -74,9 +74,6 @@ namespace MonoDevelop.Projects
 
 		IEnumerable<string> loadedAvailableItemNames = ImmutableList<string>.Empty;
 
-		static int builderIdCounter;
-		int builderId;
-
 		protected Project ()
 		{
 			items = new ProjectItemCollection (this);
@@ -85,8 +82,6 @@ namespace MonoDevelop.Projects
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
-
-			builderId = System.Threading.Interlocked.Increment (ref builderIdCounter) % 16;
         }
 
 		public ProjectItemCollection Items {
@@ -753,7 +748,7 @@ namespace MonoDevelop.Projects
 			if (CheckUseMSBuildEngine (configuration)) {
 				LogWriter logWriter = new LogWriter (monitor.Log);
 				try {
-					var configs = GetConfigurations (configuration);
+					var configs = GetConfigurations (configuration);	
 
 					string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
 					string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
@@ -852,6 +847,8 @@ namespace MonoDevelop.Projects
 
 		internal ProjectConfigurationInfo[] GetConfigurations (ConfigurationSelector configuration)
 		{
+			var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
+
 			// Returns a list of project/configuration information for the provided item and all its references
 			List<ProjectConfigurationInfo> configs = new List<ProjectConfigurationInfo> ();
 			var c = GetConfiguration (configuration);
@@ -860,19 +857,14 @@ namespace MonoDevelop.Projects
 				Configuration = c != null ? c.Name : "",
 				Platform = c != null ? GetExplicitPlatform (c) : "",
 				ProjectGuid = ItemId,
-				Enabled = true
+				Enabled = sc == null || sc.BuildEnabledForItem (this)
 			});
-			var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
 			foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
-				var refConfig = refProject.GetConfiguration (configuration);
-				if (refConfig != null) {
-					configs.Add (new ProjectConfigurationInfo () {
-						ProjectFile = refProject.FileName,
-						Configuration = refConfig.Name,
-						Platform = GetExplicitPlatform (refConfig),
-						ProjectGuid = refProject.ItemId,
-						Enabled = sc == null || sc.BuildEnabledForItem (refProject)
-					});
+				// Recursively get all referenced projects. This is necessary if one of the referenced
+				// projects is using the local copy flag.
+				foreach (var rp in refProject.GetConfigurations (configuration)) {
+					if (!configs.Any (pc => pc.ProjectFile == rp.ProjectFile))
+						configs.Add (rp);
 				}
 			}
 			return configs.ToArray ();
