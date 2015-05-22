@@ -64,11 +64,11 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			symbolInfoTokenSrc.Cancel ();
 			symbolInfoTokenSrc = new CancellationTokenSource();
-			CancellationToken token = symbolInfoTokenSrc.Token;
-			lastResult = new WorkerResult (widget);
-			SymbolInfoTask = Task.Run (delegate {
-				return GetSymbolInfos (token);
-			}, token);
+//			CancellationToken token = symbolInfoTokenSrc.Token;
+//			lastResult = new WorkerResult (widget);
+//			SymbolInfoTask = Task.Run (delegate {
+//				return GetSymbolInfos (token);
+//			}, token);
 		}
 
 		static ImmutableList<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
@@ -76,12 +76,9 @@ namespace MonoDevelop.Components.MainToolbar
 			getTypesTimer.BeginTiming ();
 			try {
 				var result = ImmutableList<DeclaredSymbolInfo>.Empty;
-				Stopwatch sw = new Stopwatch();
-				sw.Start ();
 				foreach (var workspace in TypeSystemService.AllWorkspaces) {
 					result = result.AddRange (workspace.CurrentSolution.Projects.Select (p => SearchAsync (p, token)).SelectMany (i => i));
 				}
-				sw.Stop ();
 				return result;
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (ex => ex is TaskCanceledException);

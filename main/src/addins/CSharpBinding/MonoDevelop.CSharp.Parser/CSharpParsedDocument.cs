@@ -39,9 +39,24 @@ namespace MonoDevelop.CSharp.Parser
 {
 	class CSharpParsedDocument : ParsedDocument
 	{
+		static string[] tagComments;
+
 		internal SyntaxTree Unit {
 			get;
 			set;
+		}
+
+		static CSharpParsedDocument ()
+		{
+			UpdateTags ();
+			MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTagsChanged += delegate {
+				UpdateTags ();
+			};
+		}
+
+		static void UpdateTags ()
+		{
+			tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
 		}
 
 		public CSharpParsedDocument (string fileName) : base (fileName)
@@ -206,14 +221,11 @@ namespace MonoDevelop.CSharp.Parser
 
 		sealed class SemanticTagVisitor : CSharpSyntaxWalker
 		{
-			string[] tagComments;
 			public List<Tag> Tags =  new List<Tag> ();
 			CancellationToken cancellationToken;
 
 			public SemanticTagVisitor () : base (SyntaxWalkerDepth.Trivia)
 			{
-				tagComments = MonoDevelop.Ide.Tasks.CommentTag.SpecialCommentTags.Select (t => t.Tag).ToArray ();
-
 			}
 
 			public SemanticTagVisitor (CancellationToken cancellationToken)
