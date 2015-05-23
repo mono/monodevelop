@@ -105,13 +105,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			base.UnlocksEntities ();
 		}
 
-		[Test]
-		[Ignore ("NGit sees added directories as unversioned.")]
-		public override void MovesDirectory ()
-		{
-			base.MovesDirectory ();
-		}
-
 		protected override Revision GetHeadRevision ()
 		{
 			var repo2 = (GitRepository)Repo;
