@@ -33,14 +33,31 @@ using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
+using System.Reflection;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	[ExportWorkspaceServiceFactory(typeof(ITemporaryStorageService), ServiceLayer.Host), Shared]
 	sealed class MonoDevelopTemporaryStorageServiceFactory : IWorkspaceServiceFactory
 	{
+		static IWorkspaceServiceFactory microsoftFactory;
+
+		static MonoDevelopTemporaryStorageServiceFactory ()
+		{
+			if (Core.Platform.IsWindows) {
+				var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
+				if (asm != null) {
+					var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
+					if (type != null)
+						microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
+				}
+			}
+		}
+
 		public IWorkspaceService CreateService(HostWorkspaceServices workspaceServices)
 		{
+			if (microsoftFactory != null)
+				return microsoftFactory.CreateService (workspaceServices);
 			return new TemporaryStorageService();
 		}
 
@@ -48,12 +65,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			public ITemporaryStreamStorage CreateTemporaryStreamStorage (CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return new StreamStorage(Path.GetTempFileName ());
+				return new StreamStorage();
 			}
 
 			public ITemporaryTextStorage CreateTemporaryTextStorage (CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return new TemporaryTextStorage(Path.GetTempFileName ());
+				return new TemporaryTextStorage();
 			}
 		}
 
@@ -61,13 +78,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			string fileName;
 
-			public TemporaryTextStorage (string fileName)
-			{
-				this.fileName = fileName;
-			}
-
 			public void Dispose()
 			{
+				if (fileName == null)
+					return;
 				try {
 					File.Delete (fileName);
 				} catch (Exception) {}
@@ -86,6 +100,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void WriteText(SourceText text, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (fileName == null)
+					this.fileName = Path.GetTempFileName ();
 				using (var writer = new StreamWriter(fileName, false, text.Encoding))
 					text.Write (writer, cancellationToken);
 			}
@@ -101,20 +117,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		class StreamStorage : ITemporaryStreamStorage
 		{
 			string fileName;
-			Stream stream;
-
-			public StreamStorage (string fileName)
-			{
-				this.fileName = fileName;
-			}
 
 			public void Dispose()
 			{
-				stream.Close ();
+				if (fileName == null)
+					return;
 				try {
 					File.Delete (fileName);
 				} catch (Exception) {}
-
 			}
 
 			public Stream ReadStream(CancellationToken cancellationToken = default(CancellationToken))
@@ -129,6 +139,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void WriteStream(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (fileName == null)
+					this.fileName = Path.GetTempFileName ();
 				using (var newStream = File.Open (fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write)) {
 					stream.CopyTo(newStream);
 				}
@@ -136,6 +148,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public async Task WriteStreamAsync(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
+				if (fileName == null)
+					this.fileName = Path.GetTempFileName ();
 				using (var newStream = File.Open (fileName, FileMode.CreateNew, FileAccess.Write, FileShare.Write)) {
 					await stream.CopyToAsync(newStream).ConfigureAwait(false);
 				}
