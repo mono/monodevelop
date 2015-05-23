@@ -160,6 +160,19 @@ namespace Mono.MHex
 			Options = HexEditorOptions.DefaultOptions;
 			Options.Changed += OptionsChanged;
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				Options.Changed -= OptionsChanged;
+				if (caretTimer != null) { 
+					caretTimer.Elapsed -= UpdateCaret;
+					caretTimer.Dispose ();
+					caretTimer = null;
+				}
+			}
+			base.Dispose (disposing);
+		}
 		
 		public void PurgeLayoutCaches ()
 		{

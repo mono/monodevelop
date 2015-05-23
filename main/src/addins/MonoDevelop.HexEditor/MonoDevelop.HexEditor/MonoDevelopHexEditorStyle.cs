@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.HexEditor
 {
-	class MonoDevelopHexEditorStyle : HexEditorStyle
+	class MonoDevelopHexEditorStyle : HexEditorStyle, IDisposable
 	{
 		ColorScheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;
@@ -44,12 +44,15 @@ namespace MonoDevelop.HexEditor
 		{
 			this.hexEditor = hexEditor;
 			SetStyle ();
-			IdeApp.Preferences.ColorScheme.Changed += delegate {
-				SetStyle ();
-				this.hexEditor.Options.RaiseChanged ();
-				this.hexEditor.PurgeLayoutCaches ();
-				this.hexEditor.Repaint ();
-			};
+			IdeApp.Preferences.ColorScheme.Changed += ColorSchemeChanged;
+		}
+
+		void ColorSchemeChanged (object sender, EventArgs e)
+		{
+			SetStyle ();
+			this.hexEditor.Options.RaiseChanged ();
+			this.hexEditor.PurgeLayoutCaches ();
+			this.hexEditor.Repaint ();
 		}
 		
 		void SetStyle ()
@@ -60,6 +63,11 @@ namespace MonoDevelop.HexEditor
 		Color ConvertColor (Cairo.Color foreground)
 		{
 			return new Color (foreground.R, foreground.G, foreground.B, foreground.A);
+		}
+
+		public void Dispose ()
+		{
+			IdeApp.Preferences.ColorScheme.Changed -= ColorSchemeChanged;
 		}
 
 		public override Color HexOffset {
