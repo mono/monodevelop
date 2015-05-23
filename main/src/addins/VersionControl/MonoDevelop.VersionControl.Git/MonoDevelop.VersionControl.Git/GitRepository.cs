@@ -1086,22 +1086,27 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void CreateBranchFromCommit (string name, Commit id)
 		{
-			RootRepository.Branches.Add (name, id);
+			RootRepository.CreateBranch (name, id);
 		}
 
-		public void CreateBranch (string name, string trackSource)
+		public void CreateBranch (string name, string trackSource, string targetRef)
 		{
-			RootRepository.Branches.Update (RootRepository.Branches.Add (name, RootRepository.Head.Tip),
-				bu => bu.TrackedBranch = trackSource);
+			Commit c = null;
+			if (!string.IsNullOrEmpty (trackSource))
+				c = RootRepository.Lookup<Commit> (trackSource);
+			
+			RootRepository.Branches.Update (
+				RootRepository.CreateBranch (name, c ?? RootRepository.Head.Tip),
+				bu => bu.TrackedBranch = targetRef);
 		}
 
-		public void SetBranchTrackSource (string name, string trackSource)
+		public void SetBranchTrackRef (string name, string trackSource, string trackRef)
 		{
 			var branch = RootRepository.Branches [name];
 			if (branch != null) {
-				RootRepository.Branches.Update (branch,	bu => bu.TrackedBranch = trackSource);
+				RootRepository.Branches.Update (branch,	bu => bu.TrackedBranch = trackRef);
 			} else
-				RootRepository.Branches.Add (name, trackSource);
+				CreateBranch (name, trackSource, trackRef);
 		}
 
 		public void RemoveBranch (string name)
