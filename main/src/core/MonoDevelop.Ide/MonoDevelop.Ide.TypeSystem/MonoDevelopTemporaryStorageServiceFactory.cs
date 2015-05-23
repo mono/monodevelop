@@ -69,7 +69,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void Dispose()
 			{
 				try {
-					Console.WriteLine ("remove : "+ fileName);
 					File.Delete (fileName);
 				} catch (Exception) {}
 			}
@@ -77,7 +76,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			public SourceText ReadText(CancellationToken cancellationToken = default(CancellationToken))
 			{
 				var src = StringTextSource.ReadFrom (fileName);
-				Console.WriteLine (fileName +" read text : "+ src.Length);
 				return SourceText.From(src.Text, src.Encoding);
 			}
 
@@ -88,7 +86,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void WriteText(SourceText text, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				Console.WriteLine ("write text :" + text.Length);
 				using (var writer = new StreamWriter(fileName, false, text.Encoding))
 					text.Write (writer, cancellationToken);
 			}
@@ -127,7 +124,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public Task<Stream> ReadStreamAsync(CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return Task.FromResult((Stream)File.Open (fileName, FileMode.Open, FileAccess.Read, FileShare.Read));
+				return Task.FromResult(ReadStream(cancellationToken));
 			}
 
 			public void WriteStream(Stream stream, CancellationToken cancellationToken = default(CancellationToken))
