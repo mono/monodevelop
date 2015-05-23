@@ -163,13 +163,11 @@ namespace Mono.MHex
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing) {
-				Options.Changed -= OptionsChanged;
-				if (caretTimer != null) { 
-					caretTimer.Elapsed -= UpdateCaret;
-					caretTimer.Dispose ();
-					caretTimer = null;
-				}
+			Options.Changed -= OptionsChanged;
+			if (caretTimer != null) { 
+				caretTimer.Elapsed -= UpdateCaret;
+				caretTimer.Dispose ();
+				caretTimer = null;
 			}
 			base.Dispose (disposing);
 		}
