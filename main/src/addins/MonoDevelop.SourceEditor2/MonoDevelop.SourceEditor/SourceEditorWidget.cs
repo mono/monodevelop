@@ -318,7 +318,6 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
-
 				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
@@ -386,7 +385,7 @@ namespace MonoDevelop.SourceEditor
 					OnLostFocus ();
 			};
 			if (IdeApp.CommandService != null)
-				IdeApp.FocusOut += (sender, e) => textEditor.TextArea.HideTooltip (false);
+				IdeApp.FocusOut += IdeApp_FocusOut;
 			mainsw = new DecoratedScrolledWindow (this);
 			mainsw.SetTextEditor (textEditor);
 			
@@ -425,6 +424,11 @@ namespace MonoDevelop.SourceEditor
 
 		}
 
+		void IdeApp_FocusOut (object sender, EventArgs e)
+		{
+			textEditor.TextArea.HideTooltip (false);
+		}
+
 		void OnLostFocus ()
 		{
 		}
@@ -449,6 +453,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
+			if (IdeApp.CommandService != null)
+				IdeApp.FocusOut -= IdeApp_FocusOut;
 		}
 		
 		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
