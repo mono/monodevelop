@@ -573,6 +573,7 @@ namespace MonoDevelop.Ide.Editor
 		void IDisposable.Dispose ()
 		{
 			isDisposed = true;
+			currentContext.DocumentParsed -= HandleDocumentParsed;
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
