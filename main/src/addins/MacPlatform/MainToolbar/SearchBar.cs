@@ -83,25 +83,25 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return xwtMask;
 		}
 
-		static Xwt.Key TranslateKey (NSFunctionKey key)
+		static Xwt.Key TranslateKey (int key)
 		{
 			switch (key)
 			{
-			case NSFunctionKey.UpArrow:
+			case 63232: //case NSFunctionKey.UpArrow:
 				return Xwt.Key.Up;
-			case NSFunctionKey.DownArrow:
+			case 63233: //case NSFunctionKey.DownArrow:
 				return Xwt.Key.Down;
-			case NSFunctionKey.LeftArrow:
+			case 63234: //case NSFunctionKey.LeftArrow:
 				return Xwt.Key.Left;
-			case NSFunctionKey.RightArrow:
+			case 63235: //case NSFunctionKey.RightArrow:
 				return Xwt.Key.Right;
-			case NSFunctionKey.Home:
+			case 63273: //case NSFunctionKey.Home:
 				return Xwt.Key.Home;
-			case NSFunctionKey.End:
+			case 63275: //case NSFunctionKey.End:
 				return Xwt.Key.End;
-			case NSFunctionKey.PageUp:
+			case 63276: //case NSFunctionKey.PageUp:
 				return Xwt.Key.PageUp;
-			case NSFunctionKey.PageDown:
+			case 63277: //NSFunctionKey.PageDown:
 				return Xwt.Key.PageDown;
 			}
 			return 0;
@@ -118,15 +118,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			NSFunctionKey charKey = (NSFunctionKey)theEvent.CharactersIgnoringModifiers[0];
-			if (charKey == (NSFunctionKey)27) {
+			int charKey = (int)theEvent.CharactersIgnoringModifiers[0];
+			if (charKey == 27) {
 				SendKeyPressed (Xwt.Key.Escape, Xwt.ModifierKeys.None);
 				base.PerformKeyEquivalent (theEvent);
 				return true;
 			}
 
 			// Use CharactersIgnoringModifiers instead of KeyCode. They don't match Xwt anyway.
-			if (SendKeyPressed (TranslateKey ((NSFunctionKey)theEvent.CharactersIgnoringModifiers[0]), TranslateMask (theEvent.ModifierFlags)))
+			if (SendKeyPressed (TranslateKey ((int)theEvent.CharactersIgnoringModifiers[0]), TranslateMask (theEvent.ModifierFlags)))
 				return true;
 
 			return base.PerformKeyEquivalent (theEvent);
