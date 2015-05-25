@@ -889,33 +889,55 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
-				HashSet<FilePath> files = new HashSet<FilePath> ();
+				var toCheckout = new HashSet<FilePath> ();
+				var toUnstage = new HashSet<FilePath> ();
+				var files = new Dictionary<FilePath, VersionStatus> ();
 
 				foreach (var item in group)
 					if (item.IsDirectory) {
 						foreach (var vi in GetDirectoryVersionInfo (item, false, recurse))
-							if (!vi.IsDirectory)
-								files.Add (vi.LocalPath);
-					} else
-						files.Add (item);
+							if (!vi.IsDirectory) {
+								if (vi.Status == VersionStatus.Unversioned)
+									continue;
+								
+								if ((vi.Status & VersionStatus.ScheduledAdd) == VersionStatus.ScheduledAdd)
+									toUnstage.Add (vi.LocalPath);
+								else
+									toCheckout.Add (vi.LocalPath);
+							}
+					} else {
+						var vi = GetVersionInfo (item);
+						if (vi.Status == VersionStatus.Unversioned)
+							continue;
+
+						if ((vi.Status & VersionStatus.ScheduledAdd) == VersionStatus.ScheduledAdd)
+							toUnstage.Add (vi.LocalPath);
+						else
+							toCheckout.Add (vi.LocalPath);
+					}
 
 				monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 1);
 
-				var repoFiles = repository.ToGitPath (files).ToArray ();
+				var repoFiles = repository.ToGitPath (toCheckout);
 				int progress = 0;
-				repository.CheckoutPaths ("HEAD", repoFiles, new CheckoutOptions {
-					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-					CheckoutModifiers = CheckoutModifiers.Force,
-					CheckoutNotifyFlags = refreshFlags,
-					OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
-						if ((notifyFlags & CheckoutNotifyFlags.Untracked) != 0)
-							FileService.NotifyFileRemoved (repository.FromGitPath (path));
-						else
-							RefreshFile (path, notifyFlags);
-						return true;
-					}
-				});
-				repository.Stage (repoFiles);
+				if (toCheckout.Any ()) {
+					repository.CheckoutPaths ("HEAD", repoFiles, new CheckoutOptions {
+						OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+						CheckoutModifiers = CheckoutModifiers.Force,
+						CheckoutNotifyFlags = refreshFlags,
+						OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
+							if ((notifyFlags & CheckoutNotifyFlags.Untracked) != 0)
+								FileService.NotifyFileRemoved (repository.FromGitPath (path));
+							else
+								RefreshFile (path, notifyFlags);
+							return true;
+						}
+					});
+					repository.Stage (repoFiles);
+				}
+
+				if (toUnstage.Any())
+					repository.Unstage (repository.ToGitPath (toUnstage).ToArray ());
 				monitor.EndTask ();
 			}
 		}

@@ -305,6 +305,23 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (Repo.GetBaseText (added), File.ReadAllText (added));
 		}
 
+		[TestCase (true)]
+		[TestCase (false)]
+		// Tests Repository.Revert
+		public void Reverts2 (bool stage)
+		{
+			AddFile ("init", null, true, true);
+
+			string added = LocalPath + "testfile";
+			AddFile ("testfile", "test", stage, false);
+
+			// Force cache evaluation.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
+			Repo.Revert (added, false, new NullProgressMonitor ());
+			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
+		}
+
 		[Test]
 		// Tests Repository.GetRevisionChanges.
 		public void CorrectRevisionChanges ()
