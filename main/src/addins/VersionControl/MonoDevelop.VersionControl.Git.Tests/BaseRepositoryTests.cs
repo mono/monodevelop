@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Tests
 {

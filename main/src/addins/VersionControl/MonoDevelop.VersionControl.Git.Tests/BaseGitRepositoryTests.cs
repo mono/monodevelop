@@ -475,5 +475,20 @@ index 0000000..009b64b
 				b.TrackedBranch == null)
 			);
 		}
+
+		// teests bug #30415
+		[TestCase(false, false)]
+		[TestCase(true, false)]
+		public void BlameDiffWithNotCommitedItem (bool toVcs, bool commit)
+		{
+			string added = LocalPath.Combine ("init");
+
+			AddFile ("init", "init", toVcs, commit);
+
+			Assert.AreEqual (string.Empty, Repo.GetBaseText (added));
+			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
+			foreach (var rev in revisions)
+				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
+		}
 	}
 }

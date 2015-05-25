@@ -1033,22 +1033,15 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
-		byte[] GetCommitContent (Commit c, FilePath file)
-		{
-			var repository = GetRepository (file);
-			var blob = (Blob)c [repository.ToGitPath (file)].Target;
-			using (var stream = blob.GetContentStream ())
-			using (var ms = new MemoryStream ()) {
-				stream.CopyTo (ms);
-				return ms.ToArray ();
-			}
-		}
-
 		string GetCommitTextContent (Commit c, FilePath file)
 		{
 			var repository = GetRepository (file);
-			var blob = (Blob)c [repository.ToGitPath (file)].Target;
-			return blob.IsBinary ? String.Empty : blob.GetContentText ();
+			TreeEntry treeEntry = c [repository.ToGitPath (file)];
+			if (treeEntry != null) {
+				var blob = (Blob)treeEntry.Target;
+				return blob.IsBinary ? String.Empty : blob.GetContentText ();
+			}
+			return string.Empty;
 		}
 
 		public string GetCurrentRemote ()
@@ -1396,12 +1389,16 @@ namespace MonoDevelop.VersionControl.Git
 			for (int i = 0; i < lines; ++i)
 				list.Add (working);
 
-			foreach (var hunk in repository.Blame (repository.ToGitPath (repositoryPath))) {
-				var commit = hunk.FinalCommit;
-				var author = hunk.FinalSignature;
-				working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
-				for (int i = 0; i < hunk.LineCount; ++i)
-					list [hunk.FinalStartLineNumber + i] = working;
+			repositoryPath = repository.ToGitPath (repositoryPath);
+			var status = repository.RetrieveStatus (repositoryPath);
+			if (status != FileStatus.Added && status != FileStatus.Untracked) {
+				foreach (var hunk in repository.Blame (repository.ToGitPath (repositoryPath))) {
+					var commit = hunk.FinalCommit;
+					var author = hunk.FinalSignature;
+					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+					for (int i = 0; i < hunk.LineCount; ++i)
+						list [hunk.FinalStartLineNumber + i] = working;
+				}
 			}
 
 			return list.ToArray ();
