@@ -1,5 +1,5 @@
 ﻿//
-// BuildSession.cs
+// AsyncCriticalSection.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,38 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-
 namespace MonoDevelop.Projects
 {
-	public class OperationContext
+	public class AsyncCriticalSection
 	{
-		Dictionary<object, object> customData;
-
-		public OperationContext ()
+		public AsyncCriticalSection ()
 		{
-		}
-
-		public OperationContext (OperationContext other): this ()
-		{
-			if (other != null)
-				CopyFrom (other);
-		}
-
-		public Dictionary<object, object> SessionData {
-			get {
-				if (customData == null)
-					customData = new Dictionary<object, object> ();
-				return customData;
-			}
-		}
-
-		public virtual void CopyFrom (OperationContext other)
-		{
-			if (other.customData != null)
-				customData = new Dictionary<object, object> (other.customData);
-			else
-				customData = null;
 		}
 	}
 }

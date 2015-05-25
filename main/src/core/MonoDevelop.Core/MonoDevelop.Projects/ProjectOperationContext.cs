@@ -37,7 +37,8 @@ namespace MonoDevelop.Projects
 
 		public ProjectOperationContext (OperationContext other): this ()
 		{
-			CopyFrom (other);
+			if (other != null)
+				CopyFrom (other);
 		}
 
 		public IPropertySet GlobalProperties { get; private set; }

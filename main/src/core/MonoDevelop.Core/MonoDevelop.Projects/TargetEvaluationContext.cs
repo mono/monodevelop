@@ -38,7 +38,8 @@ namespace MonoDevelop.Projects
 
 		public TargetEvaluationContext (OperationContext other): this ()
 		{
-			CopyFrom (other);
+			if (other != null)
+				CopyFrom (other);
 		}
 
 		public HashSet<string> PropertiesToEvaluate { get; private set; }
