@@ -418,7 +418,6 @@ type FSharpTextEditorCompletion() =
     let completionChar = x.Editor.GetCharAt(context.TriggerOffset - 1)
     let completionIsDot = completionChar = '.'
     x.CodeCompletionCommandImpl(context, true, Async.DefaultCancellationToken, completionIsDot, true, completionChar)
-     .Result
 
   member x.CodeCompletionCommandImpl(context, allowAnyStale, token, dottedInto, ctrlSpace, completionChar) =
     Async.StartAsTask (cancellationToken = token, computation = async {

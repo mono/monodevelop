@@ -259,6 +259,8 @@ type FSharpInteractivePad() as this =
     let references =
         let getAbsProjRefs (proj:DotNetProject) = 
             proj.GetReferencedAssemblies(ConfigurationSelector.Default, true)
+            |> Async.AwaitTask
+            |> Async.RunSynchronously
             |> Seq.map (makeAbsolute (proj.BaseDirectory.ToString()))
 
         let projRefAssemblies =

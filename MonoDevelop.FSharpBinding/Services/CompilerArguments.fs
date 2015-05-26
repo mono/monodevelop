@@ -55,7 +55,9 @@ module CompilerArguments =
                | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
                | None -> Seq.empty
 
-        project.GetReferencedAssemblies(configSelector) 
+        project.GetReferencedAssemblies(configSelector)
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
         |> Seq.append portableReferences
         |> set 
         |> Set.map ((+) "-r:")
@@ -88,7 +90,11 @@ module CompilerArguments =
        let wrapf = if shouldWrap then wrapFile else id
        
        [
-        let refs =  project.GetReferencedAssemblies(configSelector) 
+        let refs =
+          project.GetReferencedAssemblies(configSelector)
+          |> Async.AwaitTask
+          |> Async.RunSynchronously
+
         let projectReferences =
             refs
             // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
