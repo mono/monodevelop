@@ -777,6 +777,7 @@ namespace Mono.TextEditor
 		{
 			if (popupWindow != null)
 				popupWindow.Destroy ();
+			this.Options = null;
 			Gtk.Key.SnooperRemove (snooperID);
 			HideTooltip ();
 			Document.EndUndo -= HandleDocumenthandleEndUndo;
@@ -824,7 +825,6 @@ namespace Mono.TextEditor
 			textEditorData.Dispose ();
 			textEditorData = null;
 			longestLine = null;
-
 			base.OnDestroyed ();
 		}
 

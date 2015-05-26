@@ -85,7 +85,7 @@ namespace MonoDevelop.SourceEditor
 		
 		ParsedDocument parsedDocument;
 		
-		readonly ExtensibleTextEditor textEditor;
+		ExtensibleTextEditor textEditor;
 		ExtensibleTextEditor splittedTextEditor;
 		ExtensibleTextEditor lastActiveEditor;
 		
@@ -321,6 +321,7 @@ namespace MonoDevelop.SourceEditor
 				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
+
 				base.OnDestroyed ();
 			}
 			
@@ -392,9 +393,7 @@ namespace MonoDevelop.SourceEditor
 			vbox.PackStart (mainsw, true, true, 0);
 			
 			textEditorData = textEditor.GetTextEditorData ();
-			textEditorData.EditModeChanged += delegate {
-				KillWidgets ();
-			};
+			textEditorData.EditModeChanged += TextEditorData_EditModeChanged;
 
 			ResetFocusChain ();
 			
@@ -415,6 +414,9 @@ namespace MonoDevelop.SourceEditor
 
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
+				this.textEditor = null;
+				textEditorData.EditModeChanged -= TextEditorData_EditModeChanged;
+				textEditorData = null;
 				view = null;
 				parsedDocument = null;
 
@@ -422,6 +424,11 @@ namespace MonoDevelop.SourceEditor
 			};
 			vbox.ShowAll ();
 
+		}
+
+		void TextEditorData_EditModeChanged (object sender, EditModeChangedEventArgs e)
+		{
+			KillWidgets ();
 		}
 
 		void IdeApp_FocusOut (object sender, EventArgs e)
