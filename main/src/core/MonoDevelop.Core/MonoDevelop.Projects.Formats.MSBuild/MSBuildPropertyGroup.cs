@@ -93,6 +93,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		internal void CopyFrom (MSBuildPropertyGroup other)
+		{
+			InitProperties ();
+			foreach (var prop in other.propertyList) {
+				var cp = prop.Clone (Element.OwnerDocument);
+				var currentPropIndex = propertyList.FindIndex (p => p.Name == prop.Name);
+				if (currentPropIndex != -1) {
+					var currentProp = propertyList [currentPropIndex];
+					Element.ReplaceChild (currentProp.Element, cp.Element);
+					propertyList [currentPropIndex] = cp;
+				} else {
+					Element.AppendChild (cp.Element);
+					propertyList.Add (cp);
+				}
+				properties [cp.Name] = cp;
+				if (Project != null)
+					XmlUtil.Indent (Project.TextFormat, cp.Element, false);
+			}
+			foreach (var prop in propertyList.ToArray ()) {
+				if (!other.HasProperty (prop.Name))
+					RemoveProperty (prop);
+			}
+
+			if (Project != null)
+				Project.NotifyChanged ();
+		}
+
 		public bool IsImported {
 			get;
 			set;

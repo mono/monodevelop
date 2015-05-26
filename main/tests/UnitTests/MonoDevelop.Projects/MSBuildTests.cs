@@ -1310,6 +1310,28 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
 		}
+
+		[Test]
+		public async Task CopyConfiguration ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Project p = (Project) sol.Items [0];
+
+			var conf = p.Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Name == "Debug");
+			conf.Properties.SetValue ("Foo", "Bar");
+
+			var newConf = p.CreateConfiguration ("Test");
+			newConf.CopyFrom (conf);
+			p.Configurations.Add (newConf);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-copied"));
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

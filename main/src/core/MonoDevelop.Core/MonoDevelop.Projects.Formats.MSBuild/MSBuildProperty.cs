@@ -44,11 +44,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanges = true;
 		}
 
-		internal virtual MSBuildProperty Clone ()
+		internal virtual MSBuildProperty Clone (XmlDocument newOwner = null)
 		{
 			var prop = (MSBuildProperty)MemberwiseClone ();
-			if (Element != null)
-				prop.Element = (XmlElement)Element.CloneNode (true);
+			if (Element != null) {
+				if (newOwner == null || newOwner == Element.OwnerDocument)
+					prop.Element = (XmlElement) Element.CloneNode (true);
+				else
+					prop.Element = (XmlElement) newOwner.ImportNode (Element, true);
+			}
+			prop.Owner = null;
 			return prop;
 		}
 
@@ -312,11 +317,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.name = name;
 			this.value = value;
 			this.unevaluatedValue = unevaluatedValue;
-		}
-
-		internal override MSBuildProperty Clone ()
-		{
-			return base.Clone ();
 		}
 
 		internal override string GetName ()
