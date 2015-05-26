@@ -53,7 +53,7 @@ namespace MonoDevelop.Projects
 			this.project = other.project;
 			if (other.properties != null) {
 				properties = new Dictionary<string, MSBuildProperty> (other.properties.Count);
-				foreach (var p in propertyList) {
+				foreach (var p in other.propertyList) {
 					var pc = p.Clone ();
 					propertyList.Add (pc);
 					properties [p.Name] = pc;

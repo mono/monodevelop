@@ -1296,6 +1296,20 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("bar", items [0].Include);
 			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
         }
+
+		[Test]
+		public async Task BuildWithCustomProps ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target.csproj");
+			var p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.SetValue ("TestProp", "foo");
+			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
