@@ -109,7 +109,7 @@ namespace MonoDevelop.NUnit
 			
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
-				if (bt != null && bt.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration)) {
+				if (bt != null) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
 						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
