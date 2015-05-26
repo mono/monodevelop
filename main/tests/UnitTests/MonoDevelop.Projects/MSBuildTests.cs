@@ -456,7 +456,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Program7_test1.cs", p.Files[6].FilePath.FileName, "Item conditions are ignored");
 
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
-			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
+			var asms = (await p.GetReferencedAssemblies (sol.Configurations [0].Selector)).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 

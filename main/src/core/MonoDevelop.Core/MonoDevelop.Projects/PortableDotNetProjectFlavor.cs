@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Assemblies;
 using System.Linq;
 using MonoDevelop.Projects.Formats.MSBuild;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -75,11 +76,12 @@ namespace MonoDevelop.Projects
 			return new TargetFrameworkMoniker (".NETPortable", "4.5", "Profile78");
 		}
 
-		internal protected override IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
+		internal protected override async Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
-			var res = base.OnGetReferencedAssemblies (configuration, includeProjectReferences);
+			var res = await base.OnGetReferencedAssemblies (configuration);
 			var asms = Project.TargetRuntime.AssemblyContext.GetAssemblies (Project.TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => a.Location);
-			return res.Concat (asms).Distinct ();
+			res.AddRange (asms);
+			return res;
 		}
 	}
 }
