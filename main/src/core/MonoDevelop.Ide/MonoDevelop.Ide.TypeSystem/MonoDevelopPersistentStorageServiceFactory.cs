@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Composition;
 using System.IO;
@@ -32,6 +33,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Core;
+using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -88,6 +91,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		class PersistentStorageService : IPersistentStorageService
 		{
+			Dictionary<SolutionId, IPersistentStorage> storages = new Dictionary<SolutionId, IPersistentStorage> ();
 			/// <summary>
 			/// threshold to start to use esent (50MB)
 			/// </summary>
@@ -110,17 +114,27 @@ namespace MonoDevelop.Ide.TypeSystem
 				return GetStorage(solution, workingFolderPath);
 			}
 
+			object storageLock = new object ();
+
 			IPersistentStorage GetStorage (Solution solution, string workingFolderPath)
 			{
-				if (!SolutionSizeAboveThreshold(solution))
-					return NoOpPersistentStorageInstance;
-				return new PersistentStorage (workingFolderPath);
+				lock (storageLock) {
+					IPersistentStorage storage;
+					if (storages.TryGetValue (solution.Id, out storage))
+						return storage;
+					if (!SolutionSizeAboveThreshold (solution)) {
+						storage = NoOpPersistentStorageInstance;
+					} else {
+						storage = new PersistentStorage (workingFolderPath);
+					}
+					storages.Add (solution.Id, storage);
+					return storage;
+				}
 			}
 
 			bool SolutionSizeAboveThreshold(Solution solution)
 			{
 				var size = SolutionSizeTracker.GetSolutionSizeAsync(solution.Workspace, solution.Id, CancellationToken.None).Result;
-				Console.WriteLine ("solution size : "+ size +"/" +(size > SolutionSizeThreshold));
 				return size > SolutionSizeThreshold;
 			}
 		}
@@ -140,9 +154,33 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 			}
 
+			static string GetDatabasePath(string path)
+			{
+				var result = new StringBuilder ();
+				foreach (char ch in path) {
+					if (char.IsLetterOrDigit (ch)) {
+						result.Append (ch);
+					} else {
+						result.Append ('_');
+					}
+				}
+				return result.ToString ();
+			}
+
+			static string GetDocumentDataFileName (Document document, string name)
+			{
+				return GetDatabasePath (document.FilePath) + "_" + name;
+			}
+
+
+			static string GetProjectDataFileName (Project project, string name)
+			{
+				return GetDatabasePath (project.FilePath) + "_" + name;
+			}
+
 			public Task<Stream> ReadStreamAsync(Document document, string name, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, document.Id.Id.ToString () + name);
+				string fileName = Path.Combine (workingFolderPath, GetDocumentDataFileName (document, name));
 				if (!File.Exists (fileName))
 					return defaultStreamTask;
 				return Task.FromResult ((Stream)File.OpenRead (fileName));
@@ -150,12 +188,11 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public Task<Stream> ReadStreamAsync(Project project, string name, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, project.Id.Id.ToString () + name);
+				string fileName = Path.Combine (workingFolderPath, GetProjectDataFileName (project, name));
 				if (!File.Exists (fileName))
 					return defaultStreamTask;
 				return Task.FromResult ((Stream)File.OpenRead (fileName));
 			}
-
 			public Task<Stream> ReadStreamAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				string fileName = Path.Combine (workingFolderPath, name);
@@ -166,7 +203,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public async Task<bool> WriteStreamAsync(Document document, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, document.Id.Id.ToString () + name);
+				string fileName = Path.Combine (workingFolderPath, GetDocumentDataFileName (document, name));
 				using (var newStream = File.OpenWrite (fileName)) {
 					await stream.CopyToAsync (newStream);
 				}
@@ -175,7 +212,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public async Task<bool> WriteStreamAsync(Project project, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, project.Id.Id.ToString () + name);
+				string fileName = Path.Combine (workingFolderPath, GetProjectDataFileName (project, name));
 				using (var newStream = File.OpenWrite (fileName)) {
 					await stream.CopyToAsync (newStream);
 				}
