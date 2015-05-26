@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Editor
 {
 	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
-		ITextEditorImpl textEditorImpl;
+		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
 
@@ -840,7 +840,6 @@ namespace MonoDevelop.Ide.Editor
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
 			textEditorImpl.Dispose ();
-			textEditorImpl = null;
 			base.Dispose (disposing);
 		}
 
