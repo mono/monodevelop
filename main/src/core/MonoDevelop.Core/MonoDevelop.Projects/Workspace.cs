@@ -50,6 +50,11 @@ namespace MonoDevelop.Projects
 			items = new WorkspaceItemCollection (this);
 		}
 
+		public override void SetLocation (FilePath baseDirectory, string name)
+		{
+			FileName = baseDirectory.Combine (name + ".mdw");
+		}
+
 		internal protected override Task OnSave (ProgressMonitor monitor)
 		{
 			return MD1FileFormat.Instance.WriteFile (FileName, this, monitor);
@@ -258,7 +263,7 @@ namespace MonoDevelop.Projects
 			return data;
 		}
 
-		async void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
+		void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
 		{
 			DataItem items = (DataItem) data.Extract ("Items");
 			handler.Deserialize (this, data);
@@ -271,7 +276,7 @@ namespace MonoDevelop.Projects
 				try {
 					foreach (DataValue item in items.ItemData) {
 						string file = Path.Combine (baseDir, item.Value);
-						WorkspaceItem it = await Services.ProjectService.ReadWorkspaceItem (monitor, file);
+						WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, file).Result;
 						if (it != null)
 							Items.Add (it);
 						monitor.Step (1);

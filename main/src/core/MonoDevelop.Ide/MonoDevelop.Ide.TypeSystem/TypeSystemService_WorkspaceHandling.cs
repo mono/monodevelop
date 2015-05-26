@@ -351,10 +351,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-				var project = pr as DotNetProject;
-				if (project != null)
-					CheckProjectOutput (project, true);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+				foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+					var project = pr as DotNetProject;
+					if (project != null)
+						CheckProjectOutput (project, true);
+				}
 			}
 		}
 

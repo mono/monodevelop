@@ -119,7 +119,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public void SetLocation (FilePath baseDirectory, string name)
+		public virtual void SetLocation (FilePath baseDirectory, string name)
 		{
 			// Add a dummy extension to the file name.
 			// It will be replaced by the correct one, depending on the format
