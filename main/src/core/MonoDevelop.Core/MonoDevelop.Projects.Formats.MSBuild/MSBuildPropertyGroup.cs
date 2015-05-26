@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var currentPropIndex = propertyList.FindIndex (p => p.Name == prop.Name);
 				if (currentPropIndex != -1) {
 					var currentProp = propertyList [currentPropIndex];
-					Element.ReplaceChild (currentProp.Element, cp.Element);
+					Element.ReplaceChild (cp.Element, currentProp.Element);
 					propertyList [currentPropIndex] = cp;
 				} else {
 					Element.AppendChild (cp.Element);
