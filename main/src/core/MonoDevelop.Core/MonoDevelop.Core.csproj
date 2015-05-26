@@ -536,6 +536,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildChoose.cs" />
     <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
