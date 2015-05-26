@@ -72,9 +72,9 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultTargetPlatform (projectCreateInfo);
 		}
 
-		internal protected virtual IEnumerable<string> OnGetReferencedAssemblies (ConfigurationSelector configuration, bool includeProjectReferences)
+		internal protected virtual Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
-			return next.OnGetReferencedAssemblies (configuration, includeProjectReferences);
+			return next.OnGetReferencedAssemblies (configuration);
 		}
 
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
@@ -90,6 +90,11 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
 		{
 			next.OnReferenceAddedToProject (e);
+		}
+
+		internal protected virtual void OnReferencedAssembliesChanged ()
+		{
+			next.OnReferencedAssembliesChanged ();
 		}
 
 		internal protected virtual string OnGetDefaultResourceId (ProjectFile projectFile)

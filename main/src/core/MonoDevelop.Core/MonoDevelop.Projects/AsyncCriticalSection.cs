@@ -24,12 +24,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace MonoDevelop.Projects
 {
+	/// <summary>
+	/// A critical section object which can be awaited
+	/// </summary>
+	/// <remarks>This critical section is not reentrant.</remarks>
 	public class AsyncCriticalSection
 	{
+		class CriticalSectionDisposer: IDisposable
+		{
+			public AsyncCriticalSection AsyncCriticalSection;
+
+			public void Dispose ()
+			{
+				AsyncCriticalSection.Exit ();
+			}
+		}
+
+		IDisposable criticalSectionDisposer;
+		Queue<TaskCompletionSource<IDisposable>> queue = new Queue<TaskCompletionSource<IDisposable>> ();
+		bool locked;
+
 		public AsyncCriticalSection ()
 		{
+			criticalSectionDisposer = new CriticalSectionDisposer { AsyncCriticalSection = this };
+		}
+
+		public IDisposable Enter ()
+		{
+			return EnterAsync ().Result;
+		}
+
+		public Task<IDisposable> EnterAsync ()
+		{
+			lock (queue) {
+				if (!locked) {
+					locked = true;
+					return Task.FromResult (criticalSectionDisposer);
+				}
+				var s = new TaskCompletionSource<IDisposable> ();
+				queue.Enqueue (s);
+				return s.Task;
+			}
+		}
+
+		void Exit ()
+		{
+			lock (queue) {
+				if (queue.Count > 0) {
+					var cs = queue.Dequeue ();
+					cs.SetResult (criticalSectionDisposer);
+				} else
+					locked = false;
+			}
 		}
 	}
 }
