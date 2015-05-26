@@ -167,15 +167,19 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result.ToString ();
 			}
 
-			static string GetDocumentDataFileName (Document document, string name)
+			static string GetFileName (string name)
 			{
-				return GetDatabasePath (document.FilePath) + "_" + name;
+				return GetDatabasePath (name);
 			}
 
+			static string GetDocumentDataFileName (Document document, string name)
+			{
+				return GetDatabasePath (document.FilePath) + "_" + GetFileName (name);
+			}
 
 			static string GetProjectDataFileName (Project project, string name)
 			{
-				return GetDatabasePath (project.FilePath) + "_" + name;
+				return GetDatabasePath (project.FilePath) + "_" + GetFileName (name);
 			}
 
 			public Task<Stream> ReadStreamAsync(Document document, string name, CancellationToken cancellationToken = default(CancellationToken))
@@ -195,7 +199,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			public Task<Stream> ReadStreamAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, name);
+				string fileName = Path.Combine (workingFolderPath, GetFileName (name));
 				if (!File.Exists (fileName))
 					return defaultStreamTask;
 				return Task.FromResult ((Stream)File.OpenRead (fileName));
@@ -221,7 +225,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public async Task<bool> WriteStreamAsync(string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
-				string fileName = Path.Combine (workingFolderPath, name);
+				string fileName = Path.Combine (workingFolderPath, GetFileName (name));
 				using (var newStream = File.OpenWrite (fileName)) {
 					await stream.CopyToAsync (newStream);
 				}
