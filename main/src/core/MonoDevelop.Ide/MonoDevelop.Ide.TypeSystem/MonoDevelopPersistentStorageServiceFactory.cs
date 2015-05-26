@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Core;
 using System.Text;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -139,9 +140,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		class PersistentStorage: IPersistentStorage
+		class PersistentStorage : IPersistentStorage
 		{
 			static Task<Stream> defaultStreamTask = Task.FromResult (default(Stream));
+			static MD5 md5 = MD5.Create (); 
 
 			string workingFolderPath;
 
@@ -154,32 +156,31 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 			}
 
-			static string GetDatabasePath(string path)
+			public static string GetMD5 (string data)
 			{
-				var result = new StringBuilder ();
-				foreach (char ch in path) {
-					if (char.IsLetterOrDigit (ch)) {
-						result.Append (ch);
-					} else {
-						result.Append ('_');
-					}
+				var result = new StringBuilder();
+				foreach (var b in md5.ComputeHash (Encoding.ASCII.GetBytes (data))) {
+					result.Append(b.ToString("X2"));
+
 				}
-				return result.ToString ();
+				return result.ToString();
 			}
+
+			const string dataFileExtension = ".dat";
 
 			static string GetFileName (string name)
 			{
-				return GetDatabasePath (name);
+				return GetMD5 (name) + dataFileExtension;
 			}
 
 			static string GetDocumentDataFileName (Document document, string name)
 			{
-				return GetDatabasePath (document.FilePath) + "_" + GetFileName (name);
+				return GetMD5 (document.FilePath + "_" + name) + dataFileExtension;
 			}
 
 			static string GetProjectDataFileName (Project project, string name)
 			{
-				return GetDatabasePath (project.FilePath) + "_" + GetFileName (name);
+				return GetMD5 (project.FilePath + "_" + name) + dataFileExtension;
 			}
 
 			public Task<Stream> ReadStreamAsync(Document document, string name, CancellationToken cancellationToken = default(CancellationToken))
