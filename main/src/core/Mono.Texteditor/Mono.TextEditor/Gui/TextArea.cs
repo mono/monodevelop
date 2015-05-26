@@ -46,6 +46,7 @@ namespace Mono.TextEditor
 {
 	public class TextArea : Container, ITextEditorDataProvider
 	{
+
 		TextEditorData textEditorData;
 		
 		protected IconMargin       iconMargin;
@@ -323,10 +324,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("doc");
 			this.editor = editor;
 			textEditorData = new TextEditorData (doc);
-			textEditorData.RecenterEditor += delegate {
-				CenterToCaret ();
-				StartCaretPulseAnimation ();
-			};
+			textEditorData.RecenterEditor += TextEditorData_RecenterEditor; 
 			textEditorData.Document.TextReplaced += OnDocumentStateChanged;
 			textEditorData.Document.TextSet += OnTextSet;
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
@@ -389,13 +387,10 @@ namespace Mono.TextEditor
 			
 			InitAnimations ();
 			this.Document.EndUndo += HandleDocumenthandleEndUndo;
-			this.textEditorData.HeightTree.LineUpdateFrom += delegate(object sender, HeightTree.HeightChangedEventArgs e) {
-				//Console.WriteLine ("redraw from :" + e.Line);
-				RedrawFromLine (e.Line);
-			};
-#if ATK
-			TextEditorAccessible.Factory.Init (this);
-#endif
+			this.textEditorData.HeightTree.LineUpdateFrom += HeightTree_LineUpdateFrom;
+//#if ATK
+//			TextEditorAccessible.Factory.Init (this);
+//#endif
 
 			if (GtkGestures.IsSupported) {
 				this.AddGestureMagnifyHandler ((sender, args) => {
@@ -405,6 +400,11 @@ namespace Mono.TextEditor
 			OptionsChanged (this, EventArgs.Empty);
 		}
 
+		void TextEditorData_RecenterEditor (object sender, EventArgs e)
+		{
+			CenterToCaret ();
+			StartCaretPulseAnimation ();
+		}
 
 		public void RunAction (Action<TextEditorData> action)
 		{
@@ -810,13 +810,29 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
+			this.margins = null;
 			textEditorData.ClearTooltipProviders ();
-			
-			this.textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
-			this.textEditorData.Dispose (); 
+
+			textEditorData.RecenterEditor -= TextEditorData_RecenterEditor;
+			textEditorData.Options = null;
+			textEditorData.Parent = null;
+			textEditorData.SelectionChanged -= TextEditorDataSelectionChanged;
+			textEditorData.UpdateAdjustmentsRequested -= TextEditorDatahandleUpdateAdjustmentsRequested;
+			textEditorData.HeightTree.LineUpdateFrom -= HeightTree_LineUpdateFrom;
+			Gtk.Drag.DestUnset (this);
+
+			textEditorData.Dispose ();
+			textEditorData = null;
 			longestLine = null;
 
 			base.OnDestroyed ();
+		}
+
+		void HeightTree_LineUpdateFrom (object sender, TextEditor.HeightTree.HeightChangedEventArgs e)
+		{
+			//Console.WriteLine ("redraw from :" + e.Line);
+			RedrawFromLine (e.Line);
+
 		}
 
 		public void RedrawMargin (Margin margin)
