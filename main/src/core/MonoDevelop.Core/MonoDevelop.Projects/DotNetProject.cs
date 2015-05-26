@@ -854,6 +854,17 @@ namespace MonoDevelop.Projects
 							result.Add (asm);
 					}
 				}
+				var mscorlib = AssemblyContext.GetAssemblyFullName ("mscorlib", TargetFramework);
+				var mscorlibPath = AssemblyContext.GetAssemblyLocation (mscorlib, TargetFramework);
+				if (!result.Contains (mscorlibPath))
+					result.Add (mscorlibPath);
+
+				var core = AssemblyContext.GetAssemblyFullName ("System.Core", TargetFramework);
+				var corePath = AssemblyContext.GetAssemblyLocation (core, TargetFramework);
+				if (!string.IsNullOrEmpty (corePath)) {
+					if (!result.Contains (corePath))
+						result.Add (corePath);
+				}
 			}
 
 			var config = (DotNetProjectConfiguration)GetConfiguration (configuration);
