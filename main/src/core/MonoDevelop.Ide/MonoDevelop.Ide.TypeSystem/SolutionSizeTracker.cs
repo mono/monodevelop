@@ -24,13 +24,68 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class SolutionSizeTracker
+	sealed class SolutionSizeTracker
 	{
-		public SolutionSizeTracker ()
+		public static async Task<long> GetSolutionSizeAsync (Workspace workspace, SolutionId id, CancellationToken cancellationToken)
 		{
+			long result = 0;
+			foreach (var project in workspace.CurrentSolution.Projects) {
+				result += await GetProjectSizeAsync (project, cancellationToken);
+			}
+			return result;
+		}
+
+		static async Task<long> GetProjectSizeAsync (Project project, CancellationToken cancellationToken)
+		{
+			if (project == null)
+				return 0;
+
+			var sum = 0L;
+			foreach (var document in project.Documents)
+				sum += await GetDocumentSizeAsync (document, cancellationToken).ConfigureAwait (false);
+
+			return sum;
+		}
+
+		static async Task<long> GetDocumentSizeAsync (Document document, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested ();
+
+			if (document == null)
+				return 0;
+
+			var result = GetFileSize (document.FilePath);
+			if (result >= 0) {
+				return result;
+			}
+
+			// not a physical file, in that case, use text as a fallback.
+			var text = await document.GetTextAsync (CancellationToken.None).ConfigureAwait (false);
+			return text.Length;
+		}
+
+		static long GetFileSize (string filepath)
+		{
+			if (filepath == null)
+				return -1;
+
+			try {
+				// just to reduce exception thrown
+				if (!File.Exists (filepath)) {
+					return -1;
+				}
+
+				return new FileInfo (filepath).Length;
+			} catch {
+				return -1;
+			}
 		}
 	}
 }
-

@@ -24,12 +24,172 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Composition;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Host;
+using Microsoft.CodeAnalysis.Host.Mef;
+using MonoDevelop.Core;
+
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopPersistentStorageServiceFactory
+	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), ServiceLayer.Host), Shared]
+	class PersistenceServiceFactory : IWorkspaceServiceFactory
 	{
-		public MonoDevelopPersistentStorageServiceFactory ()
+		static readonly IPersistentStorage NoOpPersistentStorageInstance = new NoOpPersistentStorage();
+		static readonly IPersistentStorageService singleton = new PersistentStorageService ();
+
+		public IWorkspaceService CreateService(HostWorkspaceServices workspaceServices)
 		{
+			return singleton;
+		}
+
+		class NoOpPersistentStorage : IPersistentStorage
+		{
+			static Task<Stream> defaultStreamTask = Task.FromResult (default(Stream));
+			static Task<bool> defaultBoolTask = Task.FromResult (false);
+
+			public void Dispose()
+			{
+			}
+
+			public Task<Stream> ReadStreamAsync(Document document, string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultStreamTask;
+			}
+
+			public Task<Stream> ReadStreamAsync(Project project, string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultStreamTask;
+			}
+
+			public Task<Stream> ReadStreamAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultStreamTask;
+			}
+
+			public Task<bool> WriteStreamAsync(Document document, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultBoolTask;
+			}
+
+			public Task<bool> WriteStreamAsync(Project project, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultBoolTask;
+			}
+
+			public Task<bool> WriteStreamAsync(string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				return defaultBoolTask;
+			}
+		}
+
+		class PersistentStorageService : IPersistentStorageService
+		{
+			/// <summary>
+			/// threshold to start to use esent (50MB)
+			/// </summary>
+			const int SolutionSizeThreshold = 50 * 1024 * 1024;
+
+			public IPersistentStorage GetStorage(Solution solution)
+			{
+				// check whether the solution actually exist on disk
+				if (!File.Exists(solution.FilePath))
+					return NoOpPersistentStorageInstance;
+
+				// get working folder path
+				var workingFolderPath = TypeSystemService.GetCacheDirectory (solution.FilePath, true);
+				if (workingFolderPath == null)
+				{
+					// we don't have place to save. don't use caching
+					return NoOpPersistentStorageInstance;
+				}
+
+				return GetStorage(solution, workingFolderPath);
+			}
+
+			IPersistentStorage GetStorage (Solution solution, string workingFolderPath)
+			{
+				if (!SolutionSizeAboveThreshold(solution))
+					return NoOpPersistentStorageInstance;
+				return new PersistentStorage (workingFolderPath);
+			}
+
+			bool SolutionSizeAboveThreshold(Solution solution)
+			{
+				var size = SolutionSizeTracker.GetSolutionSizeAsync(solution.Workspace, solution.Id, CancellationToken.None).Result;
+				Console.WriteLine ("solution size : "+ size +"/" +(size > SolutionSizeThreshold));
+				return size > SolutionSizeThreshold;
+			}
+		}
+
+		class PersistentStorage: IPersistentStorage
+		{
+			static Task<Stream> defaultStreamTask = Task.FromResult (default(Stream));
+
+			string workingFolderPath;
+
+			public PersistentStorage (string workingFolderPath)
+			{
+				this.workingFolderPath = workingFolderPath;
+			}
+
+			public void Dispose()
+			{
+			}
+
+			public Task<Stream> ReadStreamAsync(Document document, string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, document.Id.Id.ToString () + name);
+				if (!File.Exists (fileName))
+					return defaultStreamTask;
+				return Task.FromResult ((Stream)File.OpenRead (fileName));
+			}
+
+			public Task<Stream> ReadStreamAsync(Project project, string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, project.Id.Id.ToString () + name);
+				if (!File.Exists (fileName))
+					return defaultStreamTask;
+				return Task.FromResult ((Stream)File.OpenRead (fileName));
+			}
+
+			public Task<Stream> ReadStreamAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, name);
+				if (!File.Exists (fileName))
+					return defaultStreamTask;
+				return Task.FromResult ((Stream)File.OpenRead (fileName));
+			}
+
+			public async Task<bool> WriteStreamAsync(Document document, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, document.Id.Id.ToString () + name);
+				using (var newStream = File.OpenWrite (fileName)) {
+					await stream.CopyToAsync (newStream);
+				}
+				return true;
+			}
+
+			public async Task<bool> WriteStreamAsync(Project project, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, project.Id.Id.ToString () + name);
+				using (var newStream = File.OpenWrite (fileName)) {
+					await stream.CopyToAsync (newStream);
+				}
+				return true;
+			}
+
+			public async Task<bool> WriteStreamAsync(string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
+			{
+				string fileName = Path.Combine (workingFolderPath, name);
+				using (var newStream = File.OpenWrite (fileName)) {
+					await stream.CopyToAsync (newStream);
+				}
+				return true;
+			}
 		}
 	}
 }
