@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 			return new RazorCompletionWidget (editor, context, docInfo);
 		}
 
-		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo)
+		public Task<ICompletionDataList> HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo)
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
