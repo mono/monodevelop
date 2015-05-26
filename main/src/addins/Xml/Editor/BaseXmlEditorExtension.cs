@@ -143,8 +143,8 @@ namespace MonoDevelop.Xml.Editor
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
 
 			if (tracker != null) {
+				tracker.Dispose ();
 				tracker = null;
-				base.Dispose ();
 			}
 
 			DocumentContext.DocumentParsed -= UpdateParsedDocument;
@@ -153,6 +153,8 @@ namespace MonoDevelop.Xml.Editor
 				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 				IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			}
+
+			base.Dispose ();
 		}
 
 		protected virtual void OnParsedDocumentUpdated ()
