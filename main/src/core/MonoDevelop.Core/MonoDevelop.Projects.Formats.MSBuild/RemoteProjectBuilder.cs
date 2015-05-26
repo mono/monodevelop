@@ -155,6 +155,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		RemoteBuildEngine engine;
 		IProjectBuilder builder;
 		Dictionary<string,string[]> referenceCache;
+		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
 		string file;
 		static int lastTaskId;
 
@@ -228,23 +229,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return t;
 		}
 
-		public Task<string[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<string[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
 		{
 			string[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
 
-			lock (referenceCache) {
+			using (await referenceCacheLock.EnterAsync ()) {
 				// Check the cache before starting the task
 				if (referenceCache.TryGetValue (id, out refs))
-					return Task.FromResult (refs);
+					return refs;
 			}
 
 			// Get an id for the task, it will be used later on to cancel the task if necessary
 			var taskId = Interlocked.Increment (ref lastTaskId);
 			IDisposable cr = null;
 
-			var t = Task.Run (() => {
-				lock (referenceCache) {
+			refs = await Task.Run (() => {
+				using (referenceCacheLock.Enter ()) {
 					// Check again the cache, maybe the value was set while the task was starting
 					if (referenceCache.TryGetValue (id, out refs))
 						return refs;
@@ -276,35 +277,40 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			});
 
 			// Dispose the cancel registration
-			t.ContinueWith (r => {
-				if (cr != null)
-					cr.Dispose ();
-			});
-			return t;
+			if (cr != null)
+				cr.Dispose ();
+			
+			return refs;
 		}
 
-		public void Refresh ()
+		public async Task Refresh ()
 		{
-			lock (referenceCache)
+			using (await referenceCacheLock.EnterAsync ())
 				referenceCache.Clear ();
-			try {
-				builder.Refresh ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("MSBuild refresh failed", ex);
-				CheckDisconnected ();
-			}
+
+			await Task.Run (() => {
+				try {
+					builder.Refresh ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("MSBuild refresh failed", ex);
+					CheckDisconnected ();
+				}
+			});
 		}
 		
-		public void RefreshWithContent (string projectContent)
+		public async Task RefreshWithContent (string projectContent)
 		{
-			lock (referenceCache)
+			using (await referenceCacheLock.EnterAsync ())
 				referenceCache.Clear ();
-			try {
-				builder.RefreshWithContent (projectContent);
-			} catch (Exception ex) {
-				LoggingService.LogError ("MSBuild refresh failed", ex);
-				CheckDisconnected ();
-			}
+
+			await Task.Run (() => {
+				try {
+					builder.RefreshWithContent (projectContent);
+				} catch (Exception ex) {
+					LoggingService.LogError ("MSBuild refresh failed", ex);
+					CheckDisconnected ();
+				}
+			});
 		}
 
 		public void Dispose ()

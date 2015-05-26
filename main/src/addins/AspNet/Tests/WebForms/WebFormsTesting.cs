@@ -52,7 +52,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			var ctx = textEditorCompletion.GetCodeCompletionContext (sev);
 
 			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
+				return textEditorCompletion.CodeCompletionCommand (ctx).Result as CompletionDataList;
 			else {
 				var task = textEditorCompletion.HandleCodeCompletionAsync (ctx, editorText [cursorPosition - 1]);
 				if (task != null) {

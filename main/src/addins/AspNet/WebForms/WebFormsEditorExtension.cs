@@ -240,7 +240,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 /*			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!

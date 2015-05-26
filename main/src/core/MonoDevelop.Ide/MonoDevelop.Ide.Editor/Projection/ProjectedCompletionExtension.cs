@@ -28,7 +28,7 @@ using System;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor.Projection
 {
@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.CanRunCompletionCommand ();
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.ICompletionDataList CodeCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public override Task<MonoDevelop.Ide.CodeCompletion.ICompletionDataList> CodeCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
 			var projectedExtension = GetExtensionAt (completionContext.TriggerOffset);
 			if (projectedExtension == null)
@@ -316,11 +316,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.HandleCodeCompletionAsync (ConvertContext (completionContext), completionChar, token);
 		}
 
-		public override System.Threading.Tasks.Task<ParameterHintingResult> HandleParameterCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
+		public override Task<ParameterHintingResult> HandleParameterCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)
 		{
 			var projectedExtension = GetExtensionAt (completionContext.TriggerOffset);
 			if (projectedExtension == null)
-				return null;
+				return Task.FromResult<ParameterHintingResult> (null);
 			return projectedExtension.HandleParameterCompletionAsync (ConvertContext (completionContext), completionChar, token);
 		}
 
@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return base.KeyPress (descriptor);
 		}
 
-		public override ParameterHintingResult ParameterCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public override Task<ParameterHintingResult> ParameterCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
 			var projectedExtension = GetExtensionAt (completionContext.TriggerOffset);
 			if (projectedExtension == null)

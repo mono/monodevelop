@@ -255,7 +255,7 @@ namespace MonoDevelop.Ide
 			return new MonoDevelop.Ide.FindInFiles.SearchResult (provider, position, part.Name.Length);
 		}
 
-		public void JumpTo (Microsoft.CodeAnalysis.ISymbol symbol, Microsoft.CodeAnalysis.Location location, Project project = null)
+		public async void JumpTo (Microsoft.CodeAnalysis.ISymbol symbol, Microsoft.CodeAnalysis.Location location, Project project = null)
 		{
 			if (location == null)
 				return;
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide
 				var metadataDllName = location.MetadataModule.Name;
 				if (metadataDllName == "CommonLanguageRuntimeLibrary")
 					metadataDllName = "corlib.dll";
-				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
 					if (assembly.IndexOf (metadataDllName) > 0) {
 						fileName = dn.GetAbsoluteChildPath (assembly);
 						break;
@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide
 			JumpTo (symbol, locations.FirstOrDefault (), project);
 		}
 
-		public void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null)
+		public async void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null)
 		{
 			if (metadataDllName == null)
 				throw new ArgumentNullException ("metadataDllName");
@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide
 				metadataDllName = "corlib.dll";
 			var dn = project as DotNetProject;
 			if (dn != null) {
-				foreach (var assembly in dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
+				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
 					if (assembly.IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
 						fileName = dn.GetAbsoluteChildPath (assembly);
 						break;

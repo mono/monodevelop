@@ -307,8 +307,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal bool ShowListWindow (char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
-			if (list == null)
-				throw new ArgumentNullException ("list");
+			InitializeListWindow (completionWidget, completionContext);
+			return ShowListWindow (list, completionContext);
+		}
+
+		internal void InitializeListWindow (ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		{
 			if (completionWidget == null)
 				throw new ArgumentNullException ("completionWidget");
 			if (completionContext == null)
@@ -320,9 +324,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			ResetState ();
 			CompletionWidget = completionWidget;
-			CompletionDataList = list;
-
 			CodeCompletionContext = completionContext;
+
+			string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
+			initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
+			StartOffset = CompletionWidget.CaretOffset - initialWordLength;
+		}
+
+		internal bool ShowListWindow (ICompletionDataList list, CodeCompletionContext completionContext)
+		{
+			if (list == null)
+				throw new ArgumentNullException ("list");
+			
+			CodeCompletionContext = completionContext;
+			CompletionDataList = list;
+			ResetState ();
+
 			mutableList = completionDataList as IMutableCompletionDataList;
 			PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
 
@@ -333,19 +350,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (mutableList.IsChanging)
 					OnCompletionDataChanging (null, null);
 			}
+
 			if (FillList ()) {
 				AutoSelect = list.AutoSelect;
 				AutoCompleteEmptyMatch = list.AutoCompleteEmptyMatch;
 				AutoCompleteEmptyMatchOnCurlyBrace = list.AutoCompleteEmptyMatchOnCurlyBrace;
 				CloseOnSquareBrackets = list.CloseOnSquareBrackets;
 				// makes control-space in midle of words to work
-				string text = completionWidget.GetCompletionText (completionContext);
+				string text = CompletionWidget.GetCompletionText (CodeCompletionContext);
 				DefaultCompletionString = completionDataList.DefaultCompletionString ?? "";
 				if (text.Length == 0) {
 					UpdateWordSelection ();
 					initialWordLength = 0;
 					//completionWidget.SelectedLength;
-					StartOffset = completionWidget.CaretOffset;
+					StartOffset = CompletionWidget.CaretOffset;
 					ResetSizes ();
 					ShowAll ();
 					UpdateWordSelection ();
@@ -359,8 +377,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return true;
 				}
 
-				initialWordLength = completionWidget.SelectedLength > 0 ? 0 : text.Length;
-				StartOffset = completionWidget.CaretOffset - initialWordLength;
+				initialWordLength = CompletionWidget.SelectedLength > 0 ? 0 : text.Length;
+				StartOffset = CompletionWidget.CaretOffset - initialWordLength;
 				HideWhenWordDeleted = initialWordLength != 0;
 				ResetSizes ();
 				UpdateWordSelection ();
@@ -700,7 +718,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		int IListDataProvider.ItemCount 
 		{ 
-			get { return completionDataList.Count; } 
+			get { return completionDataList != null ? completionDataList.Count : 0; } 
 		}
 		
 		CompletionCategory IListDataProvider.GetCompletionCategory (int n)
