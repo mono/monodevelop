@@ -83,8 +83,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, CurrentCompletionContext);
 		}
+
 		CancellationTokenSource completionTokenSrc = new CancellationTokenSource ();
 		CancellationTokenSource parameterHintingSrc = new CancellationTokenSource ();
+
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (KeyDescriptor descriptor)
@@ -140,7 +142,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 				try {
 					var task = HandleCodeCompletionAsync (CurrentCompletionContext, descriptor.KeyChar, token);
 					if (task != null) {
+						// Show the completion window in two steps. The call to PrepareShowWindow creates the window but
+						// it doesn't show it. It is used only to process the keys while the completion data is being retrieved.
 						CompletionWindowManager.PrepareShowWindow (this, descriptor.KeyChar, CompletionWidget, CurrentCompletionContext);
+
 						task.ContinueWith (t => {
 							if (token.IsCancellationRequested)
 								return;
@@ -153,6 +158,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
+								// Now show the window for real.
 								if (!CompletionWindowManager.ShowWindow (result, CurrentCompletionContext))
 									CurrentCompletionContext = null;
 							} else {
@@ -535,6 +541,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			if (!disposed)
             {
+				completionTokenSrc.Cancel ();
+				parameterHintingSrc.Cancel ();
+
                 CompletionWindowManager.HideWindow();
                 ParameterInformationWindowManager.HideWindow(this, CompletionWidget);
 

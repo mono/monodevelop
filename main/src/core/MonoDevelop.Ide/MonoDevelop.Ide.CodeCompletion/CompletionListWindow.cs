@@ -338,6 +338,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			CodeCompletionContext = completionContext;
 			CompletionDataList = list;
+			ResetState ();
 
 			mutableList = completionDataList as IMutableCompletionDataList;
 			PreviewCompletionString = completionDataList.CompletionSelectionMode == CompletionSelectionMode.OwnTextField;
