@@ -83,7 +83,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
-		
+		TextViewMargin textViewMargin;
 		int caretLine = -1;
 		
 		public Mono.TextEditor.MonoTextEditor TextEditor {
@@ -117,8 +117,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			caret = TextEditor.Caret;
 //			caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
-			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
-			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
+			textViewMargin = TextEditor.TextViewMargin;
+			textViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
+			textViewMargin.MainSearchResultChanged += RedrawOnUpdate;
 			heightTree = TextEditor.GetTextEditorData ().HeightTree;
 			heightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
@@ -173,9 +174,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				heightTree = null;
 			}
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
-			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
-			TextEditor.TextViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
-			
+			textViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
+			textViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
+			textViewMargin = null;
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
 			
 			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;

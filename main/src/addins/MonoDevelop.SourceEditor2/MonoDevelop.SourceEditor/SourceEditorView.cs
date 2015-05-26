@@ -967,6 +967,10 @@ namespace MonoDevelop.SourceEditor
 
 			RemoveMarkerQueue ();
 			widget.Dispose ();
+			if (wrapper != null) {
+				wrapper.Dispose ();
+				wrapper = null;
+			}
 		}
 
 		bool CheckReadOnly (int line)

@@ -54,7 +54,7 @@ namespace Mono.TextEditor
 		protected GutterMargin     gutterMargin;
 		protected FoldMarkerMargin foldMarkerMargin;
 		protected TextViewMargin   textViewMargin;
-		
+
 		DocumentLine longestLine      = null;
 		double      longestLineWidth = -1;
 		
@@ -811,7 +811,13 @@ namespace Mono.TextEditor
 				if (margin is IDisposable)
 					((IDisposable)margin).Dispose ();
 			}
-			this.margins = null;
+			iconMargin = null;
+			actionMargin = null;
+			foldMarkerMargin = null;
+			gutterMargin = null;
+			textViewMargin = null;
+			margins = null;
+			oldMargin = null;
 			textEditorData.ClearTooltipProviders ();
 
 			textEditorData.RecenterEditor -= TextEditorData_RecenterEditor;
