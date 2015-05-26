@@ -246,14 +246,13 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Code completion
 
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
 			tracker.UpdateEngine ();
-			var task = HandleCodeCompletion (completionContext, true, default(CancellationToken));
-			return task != null ? task.Result : null;
+			return HandleCodeCompletion (completionContext, true, default(CancellationToken));
 		}
 
 		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))

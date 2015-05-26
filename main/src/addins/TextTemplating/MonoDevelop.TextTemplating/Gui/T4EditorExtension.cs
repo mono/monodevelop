@@ -98,7 +98,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		#region Code completion
 
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
@@ -110,16 +110,16 @@ namespace MonoDevelop.TextTemplating.Gui
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
-				return Task.FromResult (HandleCodeCompletion ((CodeCompletionContext) completionContext, false));
+				return HandleCodeCompletion (completionContext, false);
 			}
 			return null;
 		}
 
-		protected virtual ICompletionDataList HandleCodeCompletion (
+		protected virtual Task<ICompletionDataList> HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced)
 		{
 			//IEditableTextBuffer buf = this.EditableBuffer;
-			return null;
+			return Task.FromResult<ICompletionDataList> (null);
 		}
 		
 		#endregion

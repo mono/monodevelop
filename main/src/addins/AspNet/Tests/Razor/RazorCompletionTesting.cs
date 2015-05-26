@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			var ctx = GetCodeCompletionContext (isInCSharpContext, sev, textEditorCompletion.hiddenInfo.UnderlyingDocument);
 
 			if (isCtrlSpace) {
-				var result = textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
+				var result = textEditorCompletion.CodeCompletionCommand (ctx).Result as CompletionDataList;
 				TypeSystemServiceTestExtensions.UnloadSolution (solution);
 				return result;
 			} else {

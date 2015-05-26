@@ -34,10 +34,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionWindowManager
 	{
 		static CompletionListWindow wnd;
+		static bool isShowing;
 		
 		public static bool IsVisible {
 			get {
-				return wnd != null && wnd.Visible;
+				return isShowing || wnd != null && wnd.Visible;
 			}
 		}
 		
@@ -73,27 +74,49 @@ namespace MonoDevelop.Ide.CodeCompletion
 					wnd.AutoCompleteEmptyMatch = wnd.AutoSelect = !IdeApp.Preferences.ForceSuggestionMode;
 			};
 		}
-		
+
 		// ext may be null, but then parameter completion don't work
 		internal static bool ShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionDataList list, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
 		{
+			PrepareShowWindow (ext, firstChar, completionWidget, completionContext);
+			return ShowWindow (list, completionContext);
+		}
+
+		// ext may be null, but then parameter completion don't work
+		internal static void PrepareShowWindow (CompletionTextEditorExtension ext, char firstChar, ICompletionWidget completionWidget, CodeCompletionContext completionContext)
+		{
+			isShowing = true;
+
+			if (ext != null) {
+				int inserted = ext.Editor.EnsureCaretIsNotVirtual ();
+				if (inserted > 0)
+					completionContext.TriggerOffset = ext.Editor.CaretOffset;
+			}
+			if (wnd == null) {
+				wnd = new CompletionListWindow ();
+				wnd.WordCompleted += HandleWndWordCompleted;
+			}
+			if (ext != null) {
+				var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
+				wnd.TransientFor = widget?.Parent?.Toplevel as Gtk.Window;
+			}
+			wnd.Extension = ext;
+
+			wnd.InitializeListWindow (completionWidget, completionContext);
+		}
+
+		internal static bool ShowWindow (ICompletionDataList list, CodeCompletionContext completionContext)
+		{
+			if (wnd == null || !isShowing)
+				throw new InvalidOperationException ("PrepareShowWindow not called");
+			
+			var completionWidget = wnd.CompletionWidget;
+			var ext = wnd.Extension;
+
 			try {
-				if (ext != null) {
-					int inserted = ext.Editor.EnsureCaretIsNotVirtual ();
-					if (inserted > 0)
-						completionContext.TriggerOffset = ext.Editor.CaretOffset;
-				}
-				if (wnd == null) {
-					wnd = new CompletionListWindow ();
-					wnd.WordCompleted += HandleWndWordCompleted;
-				}
-				if (ext != null) {
-					var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
-					wnd.TransientFor = widget?.Parent?.Toplevel as Gtk.Window;
-				}
-				wnd.Extension = ext;
 				try {
-					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {
+					isShowing = false;
+					if (!wnd.ShowListWindow (list, completionContext)) {
 						if (list is IDisposable)
 							((IDisposable)list).Dispose ();
 						HideWindow ();
@@ -180,6 +203,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if (!IsVisible)
 				return;
+			isShowing = false;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
 			if (wnd.Extension != null)
 				wnd.Extension.Editor.FixVirtualIndentation ();
