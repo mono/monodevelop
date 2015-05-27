@@ -46,7 +46,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildProject Project {
 			get { return parent; }
 		}
-		
+
+		public MSBuildItemGroup ParentGroup {
+			get {
+				if (parent != null)
+					return parent.GetItemGroup ((XmlElement)Element.ParentNode);
+				return null; 
+			}
+		}
+
 		public string Include {
 			get { return Element.GetAttribute ("Include"); }
 			set {

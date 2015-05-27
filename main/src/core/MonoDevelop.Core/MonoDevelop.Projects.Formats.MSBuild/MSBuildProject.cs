@@ -58,7 +58,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
 
-		internal static XmlNamespaceManager XmlNamespaceManager {
+		public static XmlNamespaceManager XmlNamespaceManager {
 			get {
 				if (manager == null) {
 					manager = new XmlNamespaceManager (new NameTable ());
