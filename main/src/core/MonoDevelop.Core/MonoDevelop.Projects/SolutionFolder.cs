@@ -42,7 +42,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(SolutionConfiguration))]
-	public sealed class SolutionFolder : SolutionFolderItem
+	public sealed class SolutionFolder : SolutionFolderItem, IBuildTarget
 	{
 		SolutionFolderItemCollection items;
 		SolutionFolderFileCollection files;
@@ -383,13 +383,24 @@ namespace MonoDevelop.Projects
 			entry.Modified -= NotifyItemModified;
 		}
 		
-		public void Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
+			return Task.FromResult (false);
 		}
 
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
+		}
+
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (false);
+		}
+
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			yield break;
 		}
 
 		/// <remarks>
