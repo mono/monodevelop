@@ -93,16 +93,6 @@ namespace UserInterfaceTests
 			}
 		}
 
-		[TestFixtureTearDown]
-		public virtual void FixtureTearDown ()
-		{
-			if (!Directory.EnumerateFileSystemEntries (ScreenshotsPath).Any ())
-				Directory.Delete (ScreenshotsPath, true);
-
-			if (!Directory.EnumerateFileSystemEntries (ideLogPath).Any ())
-				Directory.Delete (ideLogPath, true);
-		}
-
 		void InitializeScreenShotPath ()
 		{
 			ScreenshotsPath = Path.Combine (currentWorkingDirectory, "Screenshots", GetType ().Name);
