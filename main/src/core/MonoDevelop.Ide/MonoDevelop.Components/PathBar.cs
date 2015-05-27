@@ -682,10 +682,10 @@ namespace MonoDevelop.Components
 			
 			widths = null;
 		}
-		
-		public override void Destroy ()
+
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
+			base.OnDestroyed ();
 			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();
