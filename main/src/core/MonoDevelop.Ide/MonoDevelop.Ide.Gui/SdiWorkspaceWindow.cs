@@ -262,8 +262,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
-				window.Present ();
-
 				#if MAC
 				AppKit.NSWindow nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
 				if (nswindow != null)
