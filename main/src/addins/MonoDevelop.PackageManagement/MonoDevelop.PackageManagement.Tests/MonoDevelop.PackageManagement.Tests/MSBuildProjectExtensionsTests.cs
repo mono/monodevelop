@@ -31,44 +31,38 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertLastMSBuildImportElementHasProjectAttributeValue (string expectedAttributeValue)
 		{
-			XmlElement import = GetLastMSBuildImportElement ();
-			string actualAttributeValue = import.GetAttribute ("Project");
+			MSBuildImport import = GetLastMSBuildImportElement ();
+			string actualAttributeValue = import.Project;
 			Assert.AreEqual (expectedAttributeValue, actualAttributeValue);
 		}
 
 		void AssertLastMSBuildImportElementHasCondition (string expectedCondition)
 		{
-			XmlElement import = GetLastMSBuildImportElement ();
-			string actualCondition = import.GetAttribute ("Condition");
-			Assert.AreEqual (expectedCondition, actualCondition);
+			MSBuildImport import = GetLastMSBuildImportElement ();
+			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
-		XmlElement GetLastMSBuildImportElement ()
+		MSBuildImport GetLastMSBuildImportElement ()
 		{
-			var import = project.Document.DocumentElement.LastChild as XmlElement;
-			Assert.AreEqual (import.LocalName, "Import");
-			return import;
+			return project.Imports.LastOrDefault ();
 		}
 
 		void AssertFirstMSBuildImportElementHasProjectAttributeValue (string expectedAttributeValue)
 		{
-			XmlElement import = GetFirstMSBuildImportElement ();
-			string actualAttributeValue = import.GetAttribute ("Project");
+			MSBuildImport import = GetFirstMSBuildImportElement ();
+			string actualAttributeValue = import.Project;
 			Assert.AreEqual (expectedAttributeValue, actualAttributeValue);
 		}
 
-		XmlElement GetFirstMSBuildImportElement ()
+		MSBuildImport GetFirstMSBuildImportElement ()
 		{
-			var import = project.Document.DocumentElement.FirstChild as XmlElement;
-			Assert.AreEqual (import.LocalName, "Import");
-			return import;
+			return project.Imports.FirstOrDefault ();
 		}
 
 		void AssertFirstMSBuildImportElementHasCondition (string expectedCondition)
 		{
-			XmlElement import = GetFirstMSBuildImportElement ();
-			string actualCondition = import.GetAttribute ("Condition");
-			Assert.AreEqual (expectedCondition, actualCondition);
+			var import = GetFirstMSBuildImportElement ();
+			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
 		[Test]

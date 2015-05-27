@@ -117,7 +117,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		MSBuildProject CreateMSBuildProject (string xml)
 		{
 			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Document.LoadXml (xml);
+			msbuildProject.LoadXml (xml);
 			return msbuildProject;
 		}
 

@@ -62,13 +62,12 @@ namespace MonoDevelop.Deployment.Linux
 		
 		void UpdateEntry ()
 		{
-			var ser = new XmlDataSerializer (new DataContext ());
-			ser.Namespace = MSBuildProject.Schema;
-			var sw = new StringWriter ();
-			var w = new XmlTextWriter (sw);
-			ser.Serialize (w, this);
+			var ser = new DataSerializer (new DataContext ());
+			var data = ser.Serialize (this);
 
-			var elem = (XmlElement) entry.MSBuildProject.Document.ReadNode (new XmlTextReader (new StringReader (sw.ToString ())));
+			XmlDocument doc = new XmlDocument ();
+			var writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
+			var elem = writer.Write (doc, data);
 
 			entry.MSBuildProject.SetMonoDevelopProjectExtension ("Deployment.LinuxDeployData", elem);
 		}
