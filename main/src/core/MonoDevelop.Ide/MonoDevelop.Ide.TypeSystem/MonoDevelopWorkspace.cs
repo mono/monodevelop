@@ -621,7 +621,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			lock (openDocuments) {
 				var openDoc = openDocuments.FirstOrDefault (d => d.Id == documentId);
 				if (openDoc != null) {
-//					openDoc.TextChanged -= HandleTextChanged;
+					openDoc.Dispose ();
 					openDocuments.Remove (openDoc);
 				}
 			}
