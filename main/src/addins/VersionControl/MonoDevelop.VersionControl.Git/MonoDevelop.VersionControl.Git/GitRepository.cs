@@ -1025,7 +1025,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			var gitRev = (GitRevision)revision;
-			return GetCommitTextContent (gitRev, repositoryPath);
+			return GetCommitTextContent (gitRev.Commit, repositoryPath);
 		}
 
 		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
