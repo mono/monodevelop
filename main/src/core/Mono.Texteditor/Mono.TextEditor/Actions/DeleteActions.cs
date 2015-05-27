@@ -149,7 +149,24 @@ namespace Mono.TextEditor
 				data.Caret.Column = DocumentLocation.MinColumn;
 			}
 		}
-		
+
+		public static void CaretLineToStart (TextEditorData data)
+		{
+			if (!data.CanEdit (data.Caret.Line))
+				return;
+			var line = data.Document.GetLine (data.Caret.Line);
+
+			using (var undo = data.OpenUndoGroup ()) {
+				data.EnsureCaretIsNotVirtual ();
+				int physColumn = data.Caret.Column - 1;
+
+				var startLine = GetStartOfLineOffset (data, data.Caret.Location);
+				data.Remove (startLine, (line.Offset + physColumn) - startLine);
+			}
+
+			data.Document.CommitLineUpdate (data.Caret.Line);
+		}
+
 		public static void CaretLineToEnd (TextEditorData data)
 		{
 			if (!data.CanEdit (data.Caret.Line))
