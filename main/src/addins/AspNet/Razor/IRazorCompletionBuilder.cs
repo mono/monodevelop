@@ -41,7 +41,7 @@ namespace MonoDevelop.AspNet.Razor
 	{
 		bool SupportsLanguage (string language);
 		ICompletionWidget CreateCompletionWidget (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
+		Task<ICompletionDataList> HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
 		Task<ICompletionDataList> HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, CancellationToken token);
 		Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,

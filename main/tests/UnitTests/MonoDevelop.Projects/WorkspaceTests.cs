@@ -32,6 +32,7 @@ using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -321,6 +322,22 @@ namespace MonoDevelop.Projects
 			
 			for (int n=0; n<d.Count; n++)
 				Assert.AreEqual (1, d[n].Disposed, "dispose check " + n);
+		}
+
+		[Test]
+		public async Task Load ()
+		{
+			string wsFile = Util.GetSampleProject ("workspace", "workspace.mdw");
+			var wsi = await Services.ProjectService.ReadWorkspaceItem (new ProgressMonitor (), wsFile);
+			Assert.IsInstanceOf<Workspace> (wsi);
+			var ws = (Workspace)wsi;
+
+			Assert.AreEqual (1, ws.Items.Count);
+			Assert.IsInstanceOf<Solution> (ws.Items[0]);
+			var sol = (Solution) ws.Items [0];
+
+			Assert.AreEqual (1, sol.Items.Count);
+			Assert.IsInstanceOf<Project> (sol.Items[0]);
 		}
 	}
 	

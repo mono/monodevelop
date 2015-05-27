@@ -70,6 +70,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
 		static IDictionary<string,TypeExtensionNode> projecItemTypeNodes;
 
+		static AsyncCriticalSection buildersLock = new AsyncCriticalSection ();
+
+
 		internal static bool ShutDown { get; private set; }
 
 		static ExtensionNode[] itemTypeNodes;
@@ -153,10 +156,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			customProjectItemTypes.Remove (name);
 		}
 
-		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
+		static async void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
 		{
-			lock (builders) {
-				var gpp = (IMSBuildGlobalPropertyProvider) sender;
+			using (await buildersLock.EnterAsync ()) {
+				var gpp = (IMSBuildGlobalPropertyProvider)sender;
 				foreach (var builder in builders.Values)
 					builder.SetGlobalProperties (gpp.GetGlobalProperties ());
 			}
@@ -844,9 +847,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static bool runLocal = false;
 		
-		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
-			lock (builders) {
+			using (await buildersLock.EnterAsync ())
+			{
 				//attempt to use 12.0 builder first if available
 				string toolsVersion = "12.0";
 				string binDir = runtime.GetMSBuildBinPath ("12.0");
@@ -876,77 +880,79 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return new RemoteProjectBuilder (file, builder);
 				}
 
-				//always start the remote process explicitly, even if it's using the current runtime and fx
-				//else it won't pick up the assembly redirects from the builder exe
-				var exe = GetExeLocation (runtime, toolsVersion);
+				return await Task.Run (() => {
+					//always start the remote process explicitly, even if it's using the current runtime and fx
+					//else it won't pick up the assembly redirects from the builder exe
+					var exe = GetExeLocation (runtime, toolsVersion);
 
-				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
-				var pinfo = new ProcessStartInfo (exe) {
-					UseShellExecute = false,
-					CreateNoWindow = true,
-					RedirectStandardError = true,
-					RedirectStandardInput = true,
-				};
-				runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
-				
-				Process p = null;
+					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
+					var pinfo = new ProcessStartInfo (exe) {
+						UseShellExecute = false,
+						CreateNoWindow = true,
+						RedirectStandardError = true,
+						RedirectStandardInput = true,
+					};
+					runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 
-				try {
-					IBuildEngine engine;
-					if (!runLocal) {
-						p = runtime.ExecuteAssembly (pinfo);
+					Process p = null;
 
-						// The builder app will write the build engine reference
-						// after reading the process id from the standard input
-						ManualResetEvent ev = new ManualResetEvent (false);
-						string responseKey = "[MonoDevelop]";
-						string sref = null;
-						p.ErrorDataReceived += (sender, e) => {
-							if (e.Data == null)
-								return;
+					try {
+						IBuildEngine engine;
+						if (!runLocal) {
+							p = runtime.ExecuteAssembly (pinfo);
 
-							if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
-								sref = e.Data.Substring (responseKey.Length);
-								ev.Set ();
-							} else
-								Console.WriteLine (e.Data);
-						};
-						p.BeginErrorReadLine ();
-						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-						if (!ev.WaitOne (TimeSpan.FromSeconds (5)))
-							throw new Exception ("MSBuild process could not be started");
-						
-						byte[] data = Convert.FromBase64String (sref);
-						MemoryStream ms = new MemoryStream (data);
-						BinaryFormatter bf = new BinaryFormatter ();
-						engine = (IBuildEngine)bf.Deserialize (ms);
-					} else {
-						var asm = System.Reflection.Assembly.LoadFrom (exe);
-						var t = asm.GetType ("MonoDevelop.Projects.Formats.MSBuild.BuildEngine");
-						engine = (IBuildEngine)Activator.CreateInstance (t);
-					}
-					engine.SetCulture (GettextCatalog.UICulture);
-					engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
-					foreach (var gpp in globalPropertyProviders)
-						engine.SetGlobalProperties (gpp.GetGlobalProperties ());
-					builder = new RemoteBuildEngine (p, engine);
-				} catch {
-					if (p != null) {
-						try {
-							p.Kill ();
-						} catch {
+							// The builder app will write the build engine reference
+							// after reading the process id from the standard input
+							ManualResetEvent ev = new ManualResetEvent (false);
+							string responseKey = "[MonoDevelop]";
+							string sref = null;
+							p.ErrorDataReceived += (sender, e) => {
+								if (e.Data == null)
+									return;
+
+								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
+									sref = e.Data.Substring (responseKey.Length);
+									ev.Set ();
+								} else
+									Console.WriteLine (e.Data);
+							};
+							p.BeginErrorReadLine ();
+							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+							if (!ev.WaitOne (TimeSpan.FromSeconds (5)))
+								throw new Exception ("MSBuild process could not be started");
+
+							byte [] data = Convert.FromBase64String (sref);
+							MemoryStream ms = new MemoryStream (data);
+							BinaryFormatter bf = new BinaryFormatter ();
+							engine = (IBuildEngine)bf.Deserialize (ms);
+						} else {
+							var asm = System.Reflection.Assembly.LoadFrom (exe);
+							var t = asm.GetType ("MonoDevelop.Projects.Formats.MSBuild.BuildEngine");
+							engine = (IBuildEngine)Activator.CreateInstance (t);
 						}
+						engine.SetCulture (GettextCatalog.UICulture);
+						engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
+						foreach (var gpp in globalPropertyProviders)
+							engine.SetGlobalProperties (gpp.GetGlobalProperties ());
+						builder = new RemoteBuildEngine (p, engine);
+					} catch {
+						if (p != null) {
+							try {
+								p.Kill ();
+							} catch {
+							}
+						}
+						throw;
 					}
-					throw;
-				}
 
-				builders [builderKey] = builder;
-				builder.ReferenceCount = 1;
-				builder.Disconnected += delegate {
-					lock (builders)
-						builders.Remove (builderKey);
-				};
-				return new RemoteProjectBuilder (file, builder);
+					builders [builderKey] = builder;
+					builder.ReferenceCount = 1;
+					builder.Disconnected += async delegate {
+						using (await buildersLock.EnterAsync ())
+							builders.Remove (builderKey);
+					};
+					return new RemoteProjectBuilder (file, builder);
+				});
 			}
 		}
 
@@ -987,9 +993,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unsupported MSBuild ToolsVersion '" + toolsVersion + "'");
 		}
 
-		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
+		internal static async void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
-			lock (builders) {
+			using (await buildersLock.EnterAsync ()) {
 				if (--engine.ReferenceCount != 0)
 					return;
 				builders.Remove (builders.First (kvp => kvp.Value == engine).Key);

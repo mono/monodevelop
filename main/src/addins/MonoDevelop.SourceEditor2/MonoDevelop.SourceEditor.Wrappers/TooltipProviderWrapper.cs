@@ -65,7 +65,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {
-				if (lastUnwrappedItem.Offset == item.Offset && lastUnwrappedItem.Length == item.Length) {
+				if (lastUnwrappedItem.Offset == item.Offset &&
+					lastUnwrappedItem.Length == item.Length &&
+					lastUnwrappedItem.Item.Equals (item.Item)) {
 					return lastWrappedItem;
 				}
 			}

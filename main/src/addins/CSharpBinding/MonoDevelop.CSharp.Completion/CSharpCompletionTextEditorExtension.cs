@@ -55,6 +55,8 @@ using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide;
 using Mono.Addins;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -129,8 +131,14 @@ namespace MonoDevelop.CSharp.Completion
 			if (methodInfo == null)
 				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
 			
-			WithFrozenPartialSemanticsAsync = (doc, token) => (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object[] { token });
-
+			WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
+				try {
+					return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
+				} catch (TargetInvocationException ex) {
+					ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+					return null;
+				}
+			};
 
 			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
 				if (snippets != null)
@@ -367,7 +375,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
+		async Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -385,8 +393,8 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 				
-				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
-				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
+				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
+				var semanticModel = await partialDoc.GetSemanticModelAsync ();
 
 				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
 				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
@@ -395,7 +403,7 @@ namespace MonoDevelop.CSharp.Completion
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
-				var completionResult = engine.GetCompletionDataAsync (ctx, triggerInfo, token).Result;
+				var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token);
 				if (completionResult == CompletionResult.Empty)
 					return null;
 
@@ -422,14 +430,14 @@ namespace MonoDevelop.CSharp.Completion
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
-			return Task.FromResult ((ICompletionDataList)list);
+			return (ICompletionDataList)list;
 		}
 		
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int triggerWordLength = 0;
 			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-			return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, default(CancellationToken)).Result;
+			return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, default(CancellationToken));
 		}
 
 		static bool HasAllUsedParameters (MonoDevelop.Ide.CodeCompletion.ParameterHintingData provider, string[] list)
@@ -603,12 +611,12 @@ namespace MonoDevelop.CSharp.Completion
 //		}
 		
 
-		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
+		public override async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			if (completionChar != '(' && completionChar != ',')
 				return null;
-			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+			if (Editor.EditMode != EditMode.Edit)
 				return null;
 			var offset = Editor.CaretOffset;
 
@@ -619,11 +627,11 @@ namespace MonoDevelop.CSharp.Completion
 				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
-				var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, token).Result;
-				var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
-					var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				var result = engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token).Result;
-				return Task.FromResult (new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset));
+				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
+				var semanticModel = await partialDoc.GetSemanticModelAsync ();
+				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
+				return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 
@@ -1227,7 +1235,7 @@ namespace MonoDevelop.CSharp.Completion
 	
 
 		[CommandHandler(RefactoryCommands.ImportSymbol)]
-		void ImportSymbolCommand ()
+		async void ImportSymbolCommand ()
 		{
 			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
@@ -1247,12 +1255,12 @@ namespace MonoDevelop.CSharp.Completion
 
 			var list = new CSharpCompletionDataList ();
 			list.TriggerWordLength = wlen;
-			var partialDoc = WithFrozenPartialSemanticsAsync (analysisDocument, default (CancellationToken)).Result;
-			var semanticModel = partialDoc.GetSemanticModelAsync ().Result;
+			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default (CancellationToken));
+			var semanticModel = await partialDoc.GetSemanticModelAsync ();
 
 			AddImportCompletionData (list, semanticModel, offset);
 				
-			completionList = CodeCompletionCommand (CurrentCompletionContext);
+			completionList = await CodeCompletionCommand (CurrentCompletionContext);
 			if (completionList != null)
 				CompletionWindowManager.ShowWindow (this, (char)0, completionList, CompletionWidget, CurrentCompletionContext);
 			else

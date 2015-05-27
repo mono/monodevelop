@@ -245,6 +245,9 @@ namespace MonoDevelop.Projects
 			pauseConsoleOutput = projectConf.pauseConsoleOutput;
 			externalConsole = projectConf.externalConsole;
 			commandLineParameters = projectConf.commandLineParameters;
+			debugType = projectConf.debugType;
+			debugTypeWasNone = projectConf.debugTypeWasNone;
+			debugTypeReadAsEmpty = projectConf.debugTypeReadAsEmpty;
 
 			environmentVariables.Clear ();
 			foreach (KeyValuePair<string, string> el in projectConf.environmentVariables) {
@@ -252,6 +255,8 @@ namespace MonoDevelop.Projects
 			}
 
 			runWithWarnings = projectConf.runWithWarnings;
+
+			((MSBuildPropertyGroup)Properties).CopyFrom ((MSBuildPropertyGroup)projectConf.Properties);
 		}
 
 		public new Project ParentItem {

@@ -124,7 +124,7 @@ namespace MonoDevelop.AspNet.Projects
 		#region build/prebuild/execute
 
 
-		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			//if no files are set to compile, then some compilers will error out
 			//though this is valid with ASP.NET apps, so we just avoid calling the compiler in this case
@@ -137,7 +137,7 @@ namespace MonoDevelop.AspNet.Projects
 			}
 
 			if (needsCompile)
-				return base.OnBuild (monitor, configuration);
+				return base.OnBuild (monitor, configuration, operationContext);
 			return Task.FromResult (BuildResult.Success);
 		}
 

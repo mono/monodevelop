@@ -267,9 +267,11 @@ namespace MonoDevelop.Components
 
 		public void SetSchemeColors (ColorScheme scheme)
 		{
-			TopColor = scheme.TooltipText.Background.AddLight (0.03);
-			BottomColor = scheme.TooltipText.Background;
-			BorderColor = scheme.TooltipBorder.Color;
+			var style = Rc.GetStyleByPaths (Settings.Default, "gtk-tooltips", "", GLib.GType.None);
+			TopColor = style.Background (StateType.Normal).ToCairoColor ();
+			BottomColor = style.Background (StateType.Normal).ToCairoColor ();
+			BorderColor = style.Background (StateType.Selected).ToCairoColor ();
+
 			PagerTextColor = scheme.TooltipPagerText.Color;
 			PagerBackgroundColorTop = scheme.TooltipPagerTop.Color;
 			PagerBackgroundColorBottom = scheme.TooltipPagerBottom.Color;

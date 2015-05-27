@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
+using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -82,7 +83,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 		readonly QuickTaskStrip parentStrip;
 		protected readonly Adjustment vadjustment;
-		
+		TextViewMargin textViewMargin;
 		int caretLine = -1;
 		
 		public Mono.TextEditor.MonoTextEditor TextEditor {
@@ -113,11 +114,14 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			vadjustment.Changed += RedrawOnVAdjustmentChange;
 			parentStrip.TaskProviderUpdated += RedrawOnUpdate;
 			TextEditor = parent.TextEditor;
-//			TextEditor.Caret.PositionChanged += CaretPositionChanged;
+			caret = TextEditor.Caret;
+//			caret.PositionChanged += CaretPositionChanged;
 			TextEditor.HighlightSearchPatternChanged += RedrawOnUpdate;
-			TextEditor.TextViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
-			TextEditor.TextViewMargin.MainSearchResultChanged += RedrawOnUpdate;
-			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom += HandleLineUpdateFrom;
+			textViewMargin = TextEditor.TextViewMargin;
+			textViewMargin.SearchRegionsUpdated += RedrawOnUpdate;
+			textViewMargin.MainSearchResultChanged += RedrawOnUpdate;
+			heightTree = TextEditor.GetTextEditorData ().HeightTree;
+			heightTree.LineUpdateFrom += HandleLineUpdateFrom;
 			TextEditor.HighlightSearchPatternChanged += HandleHighlightSearchPatternChanged;
 			HasTooltip = true;
 
@@ -148,7 +152,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		void CaretPositionChanged (object sender, EventArgs e)
 		{
-			var line = TextEditor.Caret.Line;
+			var line = caret.Line;
 			if (caretLine != line) {
 				caretLine = line;
 				QueueDraw ();
@@ -157,21 +161,27 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
 			CancelFadeInTimeout ();
 			RemovePreviewPopupTimeout ();
 			DestroyPreviewWindow ();
-			TextEditor.Caret.PositionChanged -= CaretPositionChanged;
+			if (caret != null) {
+				caret.PositionChanged -= CaretPositionChanged;
+				caret = null;
+			}
 			TextEditor.HighlightSearchPatternChanged -= HandleHighlightSearchPatternChanged;
-			TextEditor.GetTextEditorData ().HeightTree.LineUpdateFrom -= HandleLineUpdateFrom;
+			if (heightTree != null) {
+				heightTree.LineUpdateFrom -= HandleLineUpdateFrom;
+				heightTree = null;
+			}
 			TextEditor.HighlightSearchPatternChanged -= RedrawOnUpdate;
-			TextEditor.TextViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
-			TextEditor.TextViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
-			
+			textViewMargin.SearchRegionsUpdated -= RedrawOnUpdate;
+			textViewMargin.MainSearchResultChanged -= RedrawOnUpdate;
+			textViewMargin = null;
 			parentStrip.TaskProviderUpdated -= RedrawOnUpdate;
 			
 			vadjustment.ValueChanged -= RedrawOnVAdjustmentChange;
 			vadjustment.Changed -= RedrawOnVAdjustmentChange;
+			base.OnDestroyed ();
 		}
 		
 		void RedrawOnUpdate (object sender, EventArgs e)
@@ -553,7 +563,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 //				Math.Max (DocumentLocation.MinLine, task.Location.Line),
 //				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
 //			);
-			TextEditor.Caret.Offset = task.Location;
+			caret.Offset = task.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();
@@ -721,7 +731,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		double barColorValue = 0.0;
 		const double barAlphaMax = 0.5;
 		const double barAlphaMin = 0.22;
-
+		Caret caret;
+		HeightTree heightTree;
 
 		protected virtual void DrawBar (Cairo.Context cr)
 		{

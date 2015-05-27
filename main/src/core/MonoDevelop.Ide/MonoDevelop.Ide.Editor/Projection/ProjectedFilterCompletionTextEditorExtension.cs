@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.Projection
@@ -159,13 +160,13 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.ShowCodeTemplatesCommand (completionContext);
 		}
 
-		public override CodeCompletion.ICompletionDataList CodeCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
+		public override Task<CodeCompletion.ICompletionDataList> CodeCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
 			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.CodeCompletionCommand (completionContext);
 		}
 
-		public override CodeCompletion.ParameterHintingResult ParameterCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
+		public override Task<CodeCompletion.ParameterHintingResult> ParameterCompletionCommand (CodeCompletion.CodeCompletionContext completionContext)
 		{
 			if (!IsActiveExtension()) return null;
 			return completionTextEditorExtension.ParameterCompletionCommand (completionContext);

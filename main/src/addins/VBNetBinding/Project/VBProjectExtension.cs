@@ -125,7 +125,7 @@ namespace MonoDevelop.VBNetBinding
 
 		protected override ClrVersion[] OnGetSupportedClrVersions ()
 		{
-			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0 };
+			return new ClrVersion[] { ClrVersion.Net_2_0, ClrVersion.Net_4_0, ClrVersion.Net_4_5 };
 		}
 
 		protected override string OnGetDefaultResourceId (ProjectFile projectFile)

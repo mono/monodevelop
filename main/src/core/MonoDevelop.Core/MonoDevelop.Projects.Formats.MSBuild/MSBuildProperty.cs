@@ -44,6 +44,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanges = true;
 		}
 
+		internal virtual MSBuildProperty Clone (XmlDocument newOwner = null)
+		{
+			var prop = (MSBuildProperty)MemberwiseClone ();
+			if (Element != null) {
+				if (newOwner == null || newOwner == Element.OwnerDocument)
+					prop.Element = (XmlElement) Element.CloneNode (true);
+				else
+					prop.Element = (XmlElement) newOwner.ImportNode (Element, true);
+			}
+			prop.Owner = null;
+			return prop;
+		}
+
 		internal override string GetName ()
 		{
 			return Element.Name;

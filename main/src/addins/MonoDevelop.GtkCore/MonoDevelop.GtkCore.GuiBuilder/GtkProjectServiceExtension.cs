@@ -37,10 +37,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 
-		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			if (Project.References.Count == 0 || !GtkDesignInfo.HasDesignedObjects (Project))
-				return await base.OnBuild (monitor, configuration);
+				return await base.OnBuild (monitor, configuration, operationContext);
 
 			Generator gen = new Generator ();
 			if (!await gen.Run (monitor, Project, configuration)) {
@@ -50,7 +50,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return gr;
 			}
 					
-			BuildResult res = await base.OnBuild (monitor, configuration);
+			BuildResult res = await base.OnBuild (monitor, configuration, operationContext);
 
 			if (gen.Messages != null) {
 				foreach (string s in gen.Messages)

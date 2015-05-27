@@ -51,15 +51,25 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
-			DefaultSourceEditorOptions.Instance.Changed += delegate {
-				SetOptions ();
-			};
+			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
 			hexEditor.HexEditorData.Replaced += delegate {
 				this.IsDirty = true;
 			};
 			window = new ScrollView (hexEditor);
 		}
-		
+
+		public override void Dispose ()
+		{
+			((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
+			DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
+			base.Dispose ();
+		}
+
+		void Instance_Changed (object sender, EventArgs e)
+		{
+			SetOptions ();
+		}
+
 		void SetOptions ()
 		{
 			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));

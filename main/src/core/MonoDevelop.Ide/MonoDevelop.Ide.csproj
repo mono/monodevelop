@@ -3489,6 +3489,8 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopTemporaryStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -64,11 +64,12 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			symbolInfoTokenSrc.Cancel ();
 			symbolInfoTokenSrc = new CancellationTokenSource();
-//			CancellationToken token = symbolInfoTokenSrc.Token;
-//			lastResult = new WorkerResult (widget);
-//			SymbolInfoTask = Task.Run (delegate {
-//				return GetSymbolInfos (token);
-//			}, token);
+			lastResult = new WorkerResult (widget);
+			SymbolInfoTask = null;
+			//CancellationToken token = symbolInfoTokenSrc.Token;
+			//SymbolInfoTask = Task.Run (delegate {
+			//	return GetSymbolInfos (token);
+			//}, token);
 		}
 
 		static ImmutableList<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
@@ -120,7 +121,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
 		{
-			return Task.Run (delegate {
+			return Task.Run (async delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
@@ -131,9 +132,7 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					ImmutableList<DeclaredSymbolInfo> allTypes;
-					if (SymbolInfoTask == null)
-						SymbolInfoTask = Task.FromResult(GetSymbolInfos (token));
-					allTypes = SymbolInfoTask.Result;
+					allTypes = SymbolInfoTask != null ? await SymbolInfoTask.ConfigureAwait (false) : GetSymbolInfos (token);
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;

@@ -966,6 +966,11 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			RemoveMarkerQueue ();
+			widget.Dispose ();
+			if (wrapper != null) {
+				wrapper.Dispose ();
+				wrapper = null;
+			}
 		}
 
 		bool CheckReadOnly (int line)
@@ -2652,6 +2657,8 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
+			if (this.isDisposed)
+				return;
 			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList ());
 		}
 

@@ -444,5 +444,22 @@ index 0000000..009b64b
 			Repo.DeleteFile (added, false, new ProgressMonitor (), false);
 			Assert.AreEqual (VersionStatus.Versioned | VersionStatus.ScheduledDelete, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
+
+		[TestCase(null, "refs/remotes/origin/master")]
+		[TestCase(typeof(LibGit2Sharp.NotFoundException), "refs/remotes/noremote/master")]
+		[TestCase(typeof(ArgumentException), "refs/remote/origin/master")]
+		// Tests bug #30347
+		public void CreateBranchWithRemoteSource (Type exceptionType, string trackSource)
+		{
+			var repo2 = (GitRepository)Repo;
+			AddFile ("init", "init", true, true);
+			repo2.Push (new ProgressMonitor (), "origin", "master");
+			repo2.CreateBranch ("testBranch", "refs/remotes/origin/master");
+
+			if (exceptionType != null)
+				Assert.Throws (exceptionType, () => repo2.CreateBranch ("testBranch2", trackSource));
+			else
+				repo2.CreateBranch ("testBranch2", trackSource);
+		}
 	}
 }

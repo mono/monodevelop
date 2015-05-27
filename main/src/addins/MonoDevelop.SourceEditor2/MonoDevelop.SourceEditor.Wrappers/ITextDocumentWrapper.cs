@@ -33,9 +33,9 @@ using Atk;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	class TextDocumentWrapper : ITextDocument
+	class TextDocumentWrapper : ITextDocument, IDisposable
 	{
-		readonly TextDocument document;
+		TextDocument document;
 
 		public TextDocument Document {
 			get {
@@ -48,23 +48,42 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			this.document = document;
 			this.document.TextReplaced += HandleTextReplaced;
 			this.document.TextReplacing += HandleTextReplacing;
-			this.document.LineChanged += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
-				var handler = LineChanged;
-				if (handler != null)
-					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
-			};
+			this.document.LineChanged += Document_LineChanged; 
+			this.document.LineInserted += Document_LineInserted;
+			this.document.LineRemoved += Document_LineRemoved;
+		}
 
-			this.document.LineInserted += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
-				var handler = LineInserted;
-				if (handler != null)
-					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
-			};
+		public void Dispose ()
+		{
+			if (document == null)
+				return;
+			document.TextReplaced -= HandleTextReplaced;
+			document.TextReplacing -= HandleTextReplacing;
+			document.LineChanged -= Document_LineChanged; 
+			document.LineInserted -= Document_LineInserted;
+			document.LineRemoved -= Document_LineRemoved;
+			document = null;
+		}
 
-			this.document.LineRemoved += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
-				var handler = LineRemoved;
-				if (handler != null)
-					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
-			};
+		void Document_LineRemoved (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			var handler = LineRemoved;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+		}
+
+		void Document_LineInserted (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			var handler = LineInserted;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+		}
+
+		void Document_LineChanged (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			var handler = LineChanged;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
 		}
 
 		void HandleTextReplacing (object sender, DocumentChangeEventArgs e)

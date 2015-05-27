@@ -83,6 +83,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public virtual void Dispose ()
 		{
+			Editor = null;
+			DocumentContext = null;
 		}
 
 		void CheckInitialized ()

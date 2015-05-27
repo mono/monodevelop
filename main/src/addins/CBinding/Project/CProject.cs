@@ -315,11 +315,11 @@ namespace CBinding
 			});
 		}
 
-		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			CProjectConfiguration conf = (CProjectConfiguration) GetConfiguration (configuration);
 
-			var res = await base.OnClean (monitor, configuration);
+			var res = await base.OnClean (monitor, configuration, operationContext);
 			if (res.HasErrors)
 				return res;
 

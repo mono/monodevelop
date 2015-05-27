@@ -156,12 +156,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
 			adj = null;
 			textEditor = null;
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
 			EnableFancyFeatures.Changed -= HandleChanged;
+			base.OnDestroyed ();
 		}
 		
 		void ScrollBarModeChanged (object sender, PropertyChangedEventArgs args)

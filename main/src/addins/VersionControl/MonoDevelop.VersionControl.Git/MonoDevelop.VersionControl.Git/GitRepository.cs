@@ -1093,7 +1093,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void CreateBranch (string name, string trackSource)
 		{
 			RootRepository.Branches.Update (RootRepository.Branches.Add (name, RootRepository.Head.Tip),
-				bu => bu.Remote = trackSource);
+				bu => bu.TrackedBranch = trackSource);
 		}
 
 		public void SetBranchTrackSource (string name, string trackSource)

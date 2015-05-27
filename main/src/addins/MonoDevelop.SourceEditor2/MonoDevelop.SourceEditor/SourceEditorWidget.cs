@@ -85,7 +85,7 @@ namespace MonoDevelop.SourceEditor
 		
 		ParsedDocument parsedDocument;
 		
-		readonly ExtensibleTextEditor textEditor;
+		ExtensibleTextEditor textEditor;
 		ExtensibleTextEditor splittedTextEditor;
 		ExtensibleTextEditor lastActiveEditor;
 		
@@ -318,10 +318,10 @@ namespace MonoDevelop.SourceEditor
 			{
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
-
 				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
+
 				base.OnDestroyed ();
 			}
 			
@@ -386,16 +386,14 @@ namespace MonoDevelop.SourceEditor
 					OnLostFocus ();
 			};
 			if (IdeApp.CommandService != null)
-				IdeApp.FocusOut += (sender, e) => textEditor.TextArea.HideTooltip (false);
+				IdeApp.FocusOut += IdeApp_FocusOut;
 			mainsw = new DecoratedScrolledWindow (this);
 			mainsw.SetTextEditor (textEditor);
 			
 			vbox.PackStart (mainsw, true, true, 0);
 			
 			textEditorData = textEditor.GetTextEditorData ();
-			textEditorData.EditModeChanged += delegate {
-				KillWidgets ();
-			};
+			textEditorData.EditModeChanged += TextEditorData_EditModeChanged;
 
 			ResetFocusChain ();
 			
@@ -416,6 +414,9 @@ namespace MonoDevelop.SourceEditor
 
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
+				this.textEditor = null;
+				textEditorData.EditModeChanged -= TextEditorData_EditModeChanged;
+				textEditorData = null;
 				view = null;
 				parsedDocument = null;
 
@@ -423,6 +424,16 @@ namespace MonoDevelop.SourceEditor
 			};
 			vbox.ShowAll ();
 
+		}
+
+		void TextEditorData_EditModeChanged (object sender, EditModeChangedEventArgs e)
+		{
+			KillWidgets ();
+		}
+
+		void IdeApp_FocusOut (object sender, EventArgs e)
+		{
+			textEditor.TextArea.HideTooltip (false);
 		}
 
 		void OnLostFocus ()
@@ -449,6 +460,8 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
+			if (IdeApp.CommandService != null)
+				IdeApp.FocusOut -= IdeApp_FocusOut;
 		}
 		
 		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
