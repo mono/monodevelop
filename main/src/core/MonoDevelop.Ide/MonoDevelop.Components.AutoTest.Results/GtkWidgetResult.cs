@@ -113,6 +113,22 @@ namespace MonoDevelop.Components.AutoTest.Results
 			pinfo = resultWidget.GetType ().GetProperty ("Label");
 			if (pinfo != null) {
 				string propText = (string)pinfo.GetValue (resultWidget);
+
+				Button button = resultWidget as Button;
+				// If resultWidget is a button then the label may not be the actual label that is displayed
+				// but rather a stock ID. So we may need to translate it
+				if (button != null && button.UseStock && propText != null) {
+					StockItem item = Stock.Lookup (propText);
+					propText = item.Label;
+				}
+
+				if (button != null && button.UseUnderline) {
+					int indexOfUnderline = propText.IndexOf ("_");
+					if (indexOfUnderline > -1) {
+						propText = propText.Remove (indexOfUnderline, 1);
+					}
+				}
+
 				if (CheckForText (propText, text, exact)) {
 					return this;
 				}
