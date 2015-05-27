@@ -25,8 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Components.AutoTest;
-using MonoDevelop.Ide.Commands;
 using NUnit.Framework;
 
 namespace UserInterfaceTests

@@ -76,6 +76,8 @@ namespace UserInterfaceTests
 
 			TestService.StartSession (MonoDevelopBinPath);
 			TestService.Session.DebugObject = new UITestDebug ();
+
+			ScreenshotForTestSetup (TestContext.CurrentContext.Test.Name);
 		}
 
 		[TearDown]
@@ -113,7 +115,7 @@ namespace UserInterfaceTests
 			Directory.CreateDirectory (ScreenshotsPath);
 		}
 
-		protected void ScreenshotForTestSetup (string testName)
+		void ScreenshotForTestSetup (string testName)
 		{
 			testScreenshotIndex = 1;
 			projectScreenshotFolder = Path.Combine (ScreenshotsPath, testName);
@@ -124,9 +126,6 @@ namespace UserInterfaceTests
 
 		protected void TakeScreenShot (string stepName)
 		{
-			if (string.IsNullOrEmpty (projectScreenshotFolder))
-				throw new InvalidOperationException ("You need to initialize Screenshot functionality by calling 'ScreenshotForTestSetup (string testName)' first");
-
 			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
 			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
