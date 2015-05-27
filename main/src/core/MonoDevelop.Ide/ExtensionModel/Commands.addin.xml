@@ -932,6 +932,8 @@
 			_label = "Scroll page down"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine"
 			_label = "Delete entire line" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart"
+		 	_label = "Delete to start of line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
 			_label = "Delete to end of line"
 			_description="Deletes to end of line, or if at end, deletes line ending"
