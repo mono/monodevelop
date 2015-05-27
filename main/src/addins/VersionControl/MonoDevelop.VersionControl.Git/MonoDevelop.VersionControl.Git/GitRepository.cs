@@ -891,7 +891,6 @@ namespace MonoDevelop.VersionControl.Git
 				var repository = group.Key;
 				var toCheckout = new HashSet<FilePath> ();
 				var toUnstage = new HashSet<FilePath> ();
-				var files = new Dictionary<FilePath, VersionStatus> ();
 
 				foreach (var item in group)
 					if (item.IsDirectory) {

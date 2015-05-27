@@ -299,6 +299,9 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, true);
 			string added = LocalPath + "testfile";
 
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			// Revert to head.
 			File.WriteAllText (added, content);
 			Repo.Revert (added, false, new NullProgressMonitor ());
@@ -616,6 +619,10 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			var added = LocalPath.Combine ("testfile");
 			AddFile ("testfile", "test", true, true);
+
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			Repo.DeleteFile (added, true, new NullProgressMonitor (), false);
 			Repo.Revert (added, false, new NullProgressMonitor ());
 
