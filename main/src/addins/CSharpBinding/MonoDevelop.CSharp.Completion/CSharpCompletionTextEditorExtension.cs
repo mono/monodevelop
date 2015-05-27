@@ -55,6 +55,8 @@ using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide;
 using Mono.Addins;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -129,8 +131,14 @@ namespace MonoDevelop.CSharp.Completion
 			if (methodInfo == null)
 				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
 			
-			WithFrozenPartialSemanticsAsync = (doc, token) => (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object[] { token });
-
+			WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
+				try {
+					return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
+				} catch (TargetInvocationException ex) {
+					ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+					return null;
+				}
+			};
 
 			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
 				if (snippets != null)
