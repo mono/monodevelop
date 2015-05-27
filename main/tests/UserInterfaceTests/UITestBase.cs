@@ -56,8 +56,6 @@ namespace UserInterfaceTests
 		[SetUp]
 		public virtual void SetUp ()
 		{
-			Util.ClearTmpDir ();
-
 			TestService.StartSession (MonoDevelopBinPath);
 			TestService.Session.DebugObject = new UITestDebug ();
 		}
