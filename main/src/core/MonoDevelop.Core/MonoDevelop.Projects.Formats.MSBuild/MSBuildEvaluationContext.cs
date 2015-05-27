@@ -66,26 +66,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Project file properties
 
 			properties.Add ("MSBuildThisFile", Path.GetFileName (project.FileName));
-			properties.Add ("MSBuildThisFileName", Path.GetFileNameWithoutExtension (project.FileName));
+			properties.Add ("MSBuildThisFileName", project.FileName.FileNameWithoutExtension);
 			properties.Add ("MSBuildThisFileExtension", Path.GetExtension (project.FileName));
-			properties.Add ("MSBuildThisFileFullPath", MSBuildProjectService.ToMSBuildPath (null, Path.GetFullPath (project.FileName)));
-			properties.Add ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
+			properties.Add ("MSBuildThisFileFullPath", MSBuildProjectService.ToMSBuildPath (null, project.FileName.FullPath));
 
 			string dir = Path.GetDirectoryName (project.FileName) + Path.DirectorySeparatorChar;
 			properties.Add ("MSBuildThisFileDirectory", MSBuildProjectService.ToMSBuildPath (null, dir));
 			properties.Add ("MSBuildThisFileDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
 
-			if (project.BaseDirectory.IsNullOrEmpty)
-				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, Environment.CurrentDirectory));
-			else
-				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, project.BaseDirectory));
-
-			properties.Add ("MSBuildProjectDefaultTargets", project.DefaultTargets);
-
-			// Tools
+			// Properties only set for the root project, not for imported projects
 
 			if (parentContext == null) {
-				
+				properties.Add ("VisualStudioReferenceAssemblyVersion", project.ToolsVersion + ".0.0");
+				properties.Add ("MSBuildProjectDefaultTargets", project.DefaultTargets);
+				properties.Add ("MSBuildProjectExtension", Path.GetExtension (project.FileName));
+				properties.Add ("MSBuildProjectFile", project.FileName.FileName);
+				properties.Add ("MSBuildProjectFullPath", MSBuildProjectService.ToMSBuildPath (null, project.FileName.FullPath.ToString()));
+				properties.Add ("MSBuildProjectName", project.FileName.FileNameWithoutExtension);
+
+				dir = project.BaseDirectory.IsNullOrEmpty ? Environment.CurrentDirectory : project.BaseDirectory.ToString();
+				properties.Add ("MSBuildProjectDirectory", MSBuildProjectService.ToMSBuildPath (null, dir));
+				properties.Add ("MSBuildProjectDirectoryNoRoot", MSBuildProjectService.ToMSBuildPath (null, dir.Substring (Path.GetPathRoot (dir).Length)));
+
 				string toolsVersion = project.ToolsVersion;
 				if (string.IsNullOrEmpty (toolsVersion) || Version.Parse (toolsVersion) < new Version ("12.0"))
 					toolsVersion = "12.0";
@@ -97,7 +99,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				properties.Add ("MSBuildToolsPath", MSBuildProjectService.ToMSBuildPath (null, toolsPath));
 				properties.Add ("MSBuildToolsRoot", MSBuildProjectService.ToMSBuildPath (null, Path.GetDirectoryName (toolsPath)));
 				properties.Add ("MSBuildToolsVersion", toolsVersion);
-				properties.Add ("OS", "");
+				properties.Add ("OS", Platform.IsWindows ? "Windows_NT" : "Unix");
 
 				properties.Add ("MSBuildBinPath32", MSBuildProjectService.ToMSBuildPath (null, toolsPath));
 
@@ -110,6 +112,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					properties.Add ("MSBuildExtensionsPath32", ep);
 					properties.Add ("MSBuildExtensionsPath64", ep);
 				}
+
+				// Environment
+
+				properties.Add ("MSBuildProgramFiles32", MSBuildProjectService.ToMSBuildPath (null, Environment.GetFolderPath (Environment.SpecialFolder.ProgramFilesX86)));
 			}
 		}
 
