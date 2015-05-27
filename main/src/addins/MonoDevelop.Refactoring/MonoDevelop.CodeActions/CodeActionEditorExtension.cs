@@ -201,6 +201,8 @@ namespace MonoDevelop.CodeActions
 									.OfType<Diagnostic> ())
 									.GroupBy (d => d.Location.SourceSpan);
 								foreach (var g in groupedDiagnostics) {
+									if (token.IsCancellationRequested)
+										return CodeActionContainer.Empty;
 									var diagnosticSpan = g.Key;
 
 									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
@@ -224,7 +226,7 @@ namespace MonoDevelop.CodeActions
 							}
 						}
 						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token)) {
 							codeActions.Add (action);
 						}
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
