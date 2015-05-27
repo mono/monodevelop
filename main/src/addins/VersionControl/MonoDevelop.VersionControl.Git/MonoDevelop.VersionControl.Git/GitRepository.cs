@@ -1413,7 +1413,7 @@ namespace MonoDevelop.VersionControl.Git
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.Added && status != FileStatus.Untracked) {
-				foreach (var hunk in repository.Blame (repository.ToGitPath (repositoryPath))) {
+				foreach (var hunk in repository.Blame (repositoryPath)) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
 					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
