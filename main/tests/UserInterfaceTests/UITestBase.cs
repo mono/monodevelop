@@ -41,7 +41,7 @@ namespace UserInterfaceTests
 
 		int testScreenshotIndex;
 
-		protected List<string> FoldersToClean { get; } = new List<string> ();
+		protected readonly List<string> FoldersToClean = new List<string> ();
 
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
