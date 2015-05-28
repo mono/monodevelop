@@ -35,14 +35,11 @@ namespace UserInterfaceTests
 	[TestFixture]
 	public abstract class UITestBase
 	{
-		string projectScreenshotFolder;
 		string currentWorkingDirectory;
-		string ideLogPath;
+		string testResultFolder;
+		string currentTestResultFolder;
+
 		int testScreenshotIndex;
-
-		public string ScreenshotsPath { get; private set; }
-
-		public string CurrentXSIdeLog { get; private set; }
 
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
@@ -61,23 +58,21 @@ namespace UserInterfaceTests
 		[TestFixtureSetUp]
 		public virtual void FixtureSetup ()
 		{
-			InitializeScreenShotPath ();
-			ideLogPath = Path.Combine (currentWorkingDirectory, "Idelogs");
-			if (!Directory.Exists (ideLogPath))
-				Directory.CreateDirectory (ideLogPath);
+			testResultFolder = Path.Combine (currentWorkingDirectory, "TestResults");
+			if (!Directory.Exists (testResultFolder))
+				Directory.CreateDirectory (testResultFolder);
 		}
 
 		[SetUp]
 		public virtual void SetUp ()
 		{
-			CurrentXSIdeLog = Path.Combine (ideLogPath,string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName) );
-			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", CurrentXSIdeLog);
+			SetupTestResultFolder (TestContext.CurrentContext.Test.FullName);
+			var currentXSIdeLog = Path.Combine (currentTestResultFolder,string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName) );
+			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
 			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "All");
 
 			TestService.StartSession (MonoDevelopBinPath);
 			TestService.Session.DebugObject = new UITestDebug ();
-
-			ScreenshotForTestSetup (TestContext.CurrentContext.Test.Name);
 		}
 
 		[TearDown]
@@ -87,37 +82,24 @@ namespace UserInterfaceTests
 			TestService.EndSession ();
 
 			if (TestContext.CurrentContext.Result.Status == TestStatus.Passed) {
-				if (Directory.Exists (projectScreenshotFolder))
-					Directory.Delete (projectScreenshotFolder, true);
-				File.Delete (CurrentXSIdeLog);
+				if (Directory.Exists (currentTestResultFolder))
+					Directory.Delete (currentTestResultFolder, true);
 			}
 		}
 
-		void InitializeScreenShotPath ()
-		{
-			ScreenshotsPath = Path.Combine (currentWorkingDirectory, "Screenshots", GetType ().Name);
-			if (Directory.Exists (ScreenshotsPath)) {
-				var lastAccess = Directory.GetLastAccessTime (ScreenshotsPath).ToString ("u").Replace (' ', '-').Replace (':', '-');
-				var newLocation = string.Format ("{0}-{1}", ScreenshotsPath, lastAccess);
-				Directory.Move (ScreenshotsPath, newLocation);
-			}
-
-			Directory.CreateDirectory (ScreenshotsPath);
-		}
-
-		void ScreenshotForTestSetup (string testName)
+		void SetupTestResultFolder (string testName)
 		{
 			testScreenshotIndex = 1;
-			projectScreenshotFolder = Path.Combine (ScreenshotsPath, testName);
-			if (Directory.Exists (projectScreenshotFolder))
-				Directory.Delete (projectScreenshotFolder, true);
-			Directory.CreateDirectory (projectScreenshotFolder);
+			currentTestResultFolder = Path.Combine (testResultFolder, testName);
+			if (Directory.Exists (currentTestResultFolder))
+				Directory.Delete (currentTestResultFolder, true);
+			Directory.CreateDirectory (currentTestResultFolder);
 		}
 
 		protected void TakeScreenShot (string stepName)
 		{
 			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
-			var screenshotPath = Path.Combine (projectScreenshotFolder, stepName) + ".png";
+			var screenshotPath = Path.Combine (currentTestResultFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
 		}
 
