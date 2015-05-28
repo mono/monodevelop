@@ -122,6 +122,12 @@ namespace MonoDevelop.Components.AutoTest
 				}
 		}
 
+		public AutoTestSession.MemoryStats MemoryStats {
+			get {
+				return session.GetMemoryStats ();
+			}
+		}
+
 		public void ExitApp ()
 		{
 			ClearEventQueue ();
