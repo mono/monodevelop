@@ -119,9 +119,10 @@ type FSharpProject() as self =
           msproject.Imports 
           |> Seq.exists (fun import -> import.Project.EndsWith("FSharp.Targets", StringComparison.OrdinalIgnoreCase))
         if fsimportExists then 
-          msproject.GetGlobalPropertyGroup().GetProperties()
+          globalGroup.GetProperties()
           |> Seq.tryFind (fun p -> p.Name = "ProjectTypeGuids")
-          |> Option.iter (fun guids -> guids.Element.InnerText <- removeGuid guids.Element.InnerText oldFSharpProjectGuid)
+          |> Option.iter (fun currentGuids -> let newProjectTypeGuids = removeGuid currentGuids.Value oldFSharpProjectGuid
+                                              currentGuids.SetValue(newProjectTypeGuids))
       with exn -> LoggingService.LogWarning("Failed to remove old F# guid", exn)
     
     override x.OnCompileSources(items, config, configSel, monitor) = 
