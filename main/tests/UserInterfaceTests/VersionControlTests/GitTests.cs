@@ -33,9 +33,17 @@ namespace UserInterfaceTests
 	public class GitTests : CreateBuildTemplatesTestBase
 	{
 		[Test]
-		public void CloneTest ()
+		public void TestGitSSHClone ()
 		{
 			var checkoutFolder = VCSUtils.CheckoutOrClone ("git@github.com:mono/monkeywrench.git", TakeScreenShot);
+			FoldersToClean.Add (checkoutFolder);
+			WaitForPackageUpdate.Invoke ();
+		}
+
+		[Test]
+		public void TestGitHTTPSClone ()
+		{
+			var checkoutFolder = VCSUtils.CheckoutOrClone ("https://github.com/mono/monkeywrench.git", TakeScreenShot);
 			FoldersToClean.Add (checkoutFolder);
 			WaitForPackageUpdate.Invoke ();
 		}

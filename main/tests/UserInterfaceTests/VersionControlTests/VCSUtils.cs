@@ -42,7 +42,7 @@ namespace UserInterfaceTests
 			Subversion
 		}
 
-		public static string CheckoutOrClone (string repoUrl, Action<string> screenshot, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git)
+		public static string CheckoutOrClone (string repoUrl, Action<string> screenshot, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 60)
 		{
 			cloneToLocation = cloneToLocation ?? Util.CreateTmpDir ("clone");
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Commands.Checkout);
@@ -55,7 +55,7 @@ namespace UserInterfaceTests
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog").Children ().Button ().Marked ("buttonOk")));
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), 15000);
 			screenshot ("CheckoutClone-In-Progress");
-			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), 15000);
+			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), cloneTimeoutSecs * 1000);
 			screenshot ("Checkout-Successful");
 
 			return cloneToLocation;
