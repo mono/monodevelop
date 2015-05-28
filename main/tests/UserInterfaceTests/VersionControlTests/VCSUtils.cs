@@ -26,7 +26,6 @@
 
 using System;
 using NUnit.Framework;
-using System.IO;
 using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests

@@ -28,7 +28,7 @@ using System.IO;
 using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
@@ -40,6 +40,8 @@ namespace UserInterfaceTests
 		string currentTestResultFolder;
 
 		int testScreenshotIndex;
+
+		protected List<string> FoldersToClean { get; } = new List<string> ();
 
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
@@ -78,9 +80,12 @@ namespace UserInterfaceTests
 		[TearDown]
 		public virtual void Teardown ()
 		{
-			OnCleanUp ();
+			FoldersToClean.Add (GetSolutionDirectory ());
+
+			Ide.CloseAll ();
 			TestService.EndSession ();
 
+			OnCleanUp ();
 			if (TestContext.CurrentContext.Result.Status == TestStatus.Passed) {
 				if (Directory.Exists (currentTestResultFolder))
 					Directory.Delete (currentTestResultFolder, true);
@@ -105,17 +110,19 @@ namespace UserInterfaceTests
 
 		protected virtual void OnCleanUp ()
 		{
-			var actualSolutionDirectory = GetSolutionDirectory ();
-			Ide.CloseAll ();
-			try {
-				if (Directory.Exists (actualSolutionDirectory))
-					Directory.Delete (actualSolutionDirectory, true);
-			} catch (IOException) { }
+			foreach (var folder in FoldersToClean) {
+				try {
+					if (folder != null && Directory.Exists (folder))
+						Directory.Delete (folder, true);
+				} catch (IOException e) {
+					Console.WriteLine ("Cleanup failed\n" +e.ToString ());
+				}
+			}
 		}
 
 		protected string GetSolutionDirectory ()
 		{
-			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
+			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory")?.ToString ();
 		}
 	}
 }

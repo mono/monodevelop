@@ -35,7 +35,8 @@ namespace UserInterfaceTests
 		[Test]
 		public void CloneTest ()
 		{
-			VCSUtils.CheckoutOrClone ("git@github.com:mono/monkeywrench.git", TakeScreenShot);
+			var checkoutFolder = VCSUtils.CheckoutOrClone ("git@github.com:mono/monkeywrench.git", TakeScreenShot);
+			FoldersToClean.Add (checkoutFolder);
 			WaitForPackageUpdate.Invoke ();
 		}
 	}
