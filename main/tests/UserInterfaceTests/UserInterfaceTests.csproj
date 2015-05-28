@@ -43,6 +43,9 @@
     <Reference Include="nunit.core.interfaces">
       <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -80,12 +83,11 @@
       <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
       <Name>MonoDevelop.VersionControl.Git</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="New Folder\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

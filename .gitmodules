@@ -8,9 +8,6 @@
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
 	url = git://github.com/mono/mdtestharness.git
-[submodule "main/external/Newtonsoft.Json"]
-	path = main/external/Newtonsoft.Json
-	url = git://github.com/mono/Newtonsoft.Json.git
 [submodule "main/external/nrefactory"]
 	path = main/external/nrefactory
 	url = git://github.com/icsharpcode/NRefactory.git
