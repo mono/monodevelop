@@ -62,10 +62,10 @@ namespace UserInterfaceTests
 			return Session.GetGlobalValue<FilePath> ("MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.FileName");
 		}
 
-		public static bool BuildSolution (bool isPass = true)
+		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 180)
 		{
 			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"Ide.Shell.ProjectBuilt", timeout: 60000);
+				"Ide.Shell.ProjectBuilt", timeout: timeoutInSecs * 1000);
 			var status = IsBuildSuccessful ();
 			return isPass == status;
 		}
