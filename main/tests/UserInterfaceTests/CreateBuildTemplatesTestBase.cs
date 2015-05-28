@@ -99,7 +99,8 @@ namespace UserInterfaceTests
 
 				OnBuildTemplate ();
 			} catch (Exception e) {
-				Assert.Fail (e.StackTrace);
+				TakeScreenShot ("TestFailedWithGenericException");
+				Assert.Fail (e.ToString ());
 			}
 		}
 
