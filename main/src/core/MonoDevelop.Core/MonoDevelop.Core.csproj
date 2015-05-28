@@ -115,6 +115,9 @@
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -597,10 +600,6 @@
     <ProjectReference Include="..\..\..\external\cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
