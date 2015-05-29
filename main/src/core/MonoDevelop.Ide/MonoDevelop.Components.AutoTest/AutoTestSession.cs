@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
@@ -59,6 +60,30 @@ namespace MonoDevelop.Components.AutoTest
 		public override object InitializeLifetimeService ()
 		{
 			return null;
+		}
+
+		[Serializable]
+		public struct MemoryStats {
+			public long PrivateMemory;
+			public long PeakVirtualMemory;
+			public long PagedSystemMemory;
+			public long PagedMemory;
+			public long NonPagedSystemMemory;
+		};
+
+		public MemoryStats GetMemoryStats ()
+		{
+			MemoryStats stats;
+			using (Process proc = Process.GetCurrentProcess ()) {
+				stats = new MemoryStats {
+					PrivateMemory = proc.PrivateMemorySize64,
+					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
+					PagedSystemMemory = proc.PagedSystemMemorySize64,
+					PagedMemory = proc.PagedMemorySize64,
+					NonPagedSystemMemory = proc.NonpagedSystemMemorySize64
+				};
+				return stats;
+			}
 		}
 
 		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
