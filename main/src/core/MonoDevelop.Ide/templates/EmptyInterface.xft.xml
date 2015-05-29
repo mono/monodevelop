@@ -5,7 +5,7 @@
 		<_Name>Empty Interface</_Name>
 		<Icon>md-interface-file</Icon>
 		<_Category>General</_Category>
-		<LanguageName>*</LanguageName>
+		<LanguageName>C#,VBNet</LanguageName>
 		<_Description>Creates an empty interface.</_Description>
 		<DefaultFilename>EmptyInterface</DefaultFilename>
 	</TemplateConfiguration>
