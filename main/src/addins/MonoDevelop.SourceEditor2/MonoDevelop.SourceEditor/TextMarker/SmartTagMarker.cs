@@ -112,10 +112,22 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (args.Button != 0)
 				return;
-			var handler = MouseHover;
-			if (handler != null)
-				handler (this, new TextEventArgsWrapper (args));
+			var line = editor.GetLine (loc.Line);
+			if (line == null)
+				return;
+			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
+			var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
+			const double xAdditionalSpace = tagMarkerWidth;
+			if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
+				args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
+				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom*/) {
+				result.Cursor = null;
+				ShowPopup?.Invoke (null, null);
+			} else {
+				CancelPopup?.Invoke (null, null);
+			}
 		}
+
 
 		#endregion
 
@@ -140,6 +152,8 @@ namespace MonoDevelop.SourceEditor
 
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
+		public event EventHandler ShowPopup;
+		public event EventHandler CancelPopup;
 
 		object ITextSegmentMarker.Tag {
 			get;

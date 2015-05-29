@@ -73,10 +73,10 @@ namespace MonoDevelop.PackageManagement
 			if (msbuildTask == null)
 				return;
 
-			RemoveFromProject (msbuildTask.Element);
+			nugetImportTarget.RemoveTask (msbuildTask);
 
 			if (nugetImportTarget.Tasks.Count () == 0) {
-				RemoveFromProject (nugetImportTarget.Element);
+				project.RemoveTarget (nugetImportTarget);
 			}
 		}
 

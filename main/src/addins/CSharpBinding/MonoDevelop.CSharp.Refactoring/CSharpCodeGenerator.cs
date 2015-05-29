@@ -703,11 +703,11 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (", ");
 
 				var p = parameters [i];
+				if (p.RefKind == RefKind.Out)
+					result.Append ("out ");
+				if (p.RefKind == RefKind.Ref)
+					result.Append ("ref ");
 				if (asParameterList) {
-					if (p.RefKind == RefKind.Out)
-						result.Append ("out ");
-					if (p.RefKind == RefKind.Ref)
-						result.Append ("ref ");
 					if (p.IsParams)
 						result.Append ("params ");
 					AppendReturnType (result, options, p.Type);

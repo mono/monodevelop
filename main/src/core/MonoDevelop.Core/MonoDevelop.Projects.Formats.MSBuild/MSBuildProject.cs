@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool IsNewProject { get; internal set; }
 		
-		public XmlDocument Document {
+		internal XmlDocument Document {
 			get { return doc; }
 		}
 
@@ -99,6 +99,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal object ReadLock {
 			get { return readLock; }
 		}
+
+		static XmlNameTable nt = new NameTable ();
 
 		public MSBuildProject ()
 		{
@@ -162,22 +164,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Load (string file)
 		{
 			try {
-				DisableChangeTracking ();
 				this.file = file;
 				IsNewProject = false;
 				format = FileUtil.GetTextFormatInfo (file);
 
-				// Load the XML document
-				doc = new XmlDocument ();
-				doc.PreserveWhitespace = true;
-				
 				// HACK: XmlStreamReader will fail if the file is encoded in UTF-8 but has <?xml version="1.0" encoding="utf-16"?>
 				// To work around this, we load the XML content into a string and use XmlDocument.LoadXml() instead.
 				string xml = File.ReadAllText (file);
-				
+
+				LoadXml (xml);
+
+			} finally {
+				EnableChangeTracking ();
+			}
+		}
+
+		public void LoadXml (string xml)
+		{
+			try {
+				DisableChangeTracking ();
+
+				// Load the XML document
+				doc = new XmlDocument ();
+				doc.PreserveWhitespace = true;
 				doc.LoadXml (xml);
 				ClearCachedData ();
-
 			} finally {
 				EnableChangeTracking ();
 			}
@@ -438,15 +449,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return false;
 		}
 
-		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildImport beforeImport = null)
+		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildObject beforeObject = null)
 		{
 			XmlElement elem = doc.CreateElement (null, "Import", MSBuildProject.Schema);
 			elem.SetAttribute ("Project", name);
-			if (condition != null)
+			if (!string.IsNullOrEmpty (condition))
 				elem.SetAttribute ("Condition", condition);
 
-			if (beforeImport != null) {
-				doc.DocumentElement.InsertBefore (elem, beforeImport.Element);
+			if (beforeObject != null && beforeObject.Element.ParentNode == doc.DocumentElement) {
+				doc.DocumentElement.InsertBefore (elem, beforeObject.Element);
 			} else {
 				XmlElement last = doc.DocumentElement.SelectSingleNode ("tns:Import[last()]", XmlNamespaceManager) as XmlElement;
 				if (last != null)
@@ -461,14 +472,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildImport GetImport (string name, string condition = null)
 		{
-			return Imports.FirstOrDefault (i => i.Project == name && i.Condition == condition);
+			return Imports.FirstOrDefault (i => string.Equals (i.Project, name, StringComparison.OrdinalIgnoreCase) && (condition == null || i.Condition == condition));
 		}
 		
-		public void RemoveImport (string name)
+		public void RemoveImport (string name, string condition = null)
 		{
-			XmlElement elem = (XmlElement) doc.DocumentElement.SelectSingleNode ("tns:Import[@Project='" + name + "']", XmlNamespaceManager);
-			if (elem != null) {
-				XmlUtil.RemoveElementAndIndenting (elem);
+			var i = GetImport (name, condition);
+			if (i != null) {
+				XmlUtil.RemoveElementAndIndenting (i.Element);
+				elemCache.Remove (i.Element);
 				NotifyChanged ();
 			}
 		}
@@ -592,7 +604,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 
 		MSBuildObject[] allObjects;
-		internal IEnumerable<MSBuildObject> GetAllObjects ()
+		public IEnumerable<MSBuildObject> GetAllObjects ()
 		{
 			lock (readLock) {
 				if (allObjects == null) {
@@ -864,6 +876,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return it;
 		}
 
+
+		public void RemoveTarget (MSBuildTarget nugetImportTarget)
+		{
+			if (nugetImportTarget.Element.ParentNode != Document.DocumentElement)
+				throw new InvalidOperationException ("Target doesn't belong to the project");
+			elemCache.Remove (nugetImportTarget.Element);
+			XmlUtil.RemoveElementAndIndenting (nugetImportTarget.Element);
+			NotifyChanged ();
+		}
+
 		internal MSBuildItem GetItem (XmlElement elem)
 		{
 			MSBuildObject ob;
@@ -939,7 +961,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	
 	public class MSBuildTarget: MSBuildObject
 	{
-		public MSBuildTarget (XmlElement elem): base (elem)
+		internal MSBuildTarget (XmlElement elem): base (elem)
 		{
 		}
 
@@ -958,11 +980,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 		}
+
+		public void RemoveTask (MSBuildTask msbuildTask)
+		{
+			if (msbuildTask.Element.ParentNode != Element)
+				throw new InvalidOperationException ("Task doesn't belong to the target");
+			XmlUtil.RemoveElementAndIndenting (msbuildTask.Element);
+		}
 	}
 
 	public class MSBuildTask: MSBuildObject
 	{
-		public static bool IsTask (XmlElement elem)
+		internal static bool IsTask (XmlElement elem)
 		{
 			if (elem == null)
 				return false;
@@ -970,7 +999,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return elem.LocalName == "Error";
 		}
 
-		public MSBuildTask (XmlElement elem): base (elem)
+		internal MSBuildTask (XmlElement elem): base (elem)
 		{
 		}
 

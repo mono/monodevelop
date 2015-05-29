@@ -456,7 +456,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
-			Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
+			Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 
 			FileService.NotifyFileChanged (filename);
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);

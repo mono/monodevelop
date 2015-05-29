@@ -64,63 +64,18 @@ namespace ICSharpCode.PackageManagement
 			ProjectImportLocation importLocation,
 			string condition)
 		{
-			XmlElement import = project.AddImportElement (importedProjectFile, importLocation);
-			import.SetAttribute ("Condition", condition);
-		}
-		
-		static XmlElement AddImportElement(
-			this MSBuildProject project,
-			string importedProjectFile,
-			ProjectImportLocation importLocation)
-		{
-			if (importLocation == ProjectImportLocation.Top) {
-				return project.AddImportElementAtTop (importedProjectFile);
-			}
-			XmlElement import = project.CreateImportElement (importedProjectFile);
-			project.Document.DocumentElement.AppendChild (import);
-			return import;
-		}
-		
-		static XmlElement CreateImportElement(this MSBuildProject project, string importedProjectFile)
-		{
-			XmlElement import = project.Document.CreateElement ("Import", MSBuildProject.Schema);
-			import.SetAttribute ("Project", importedProjectFile);
-			return import;
-		}
-		
-		static XmlElement AddImportElementAtTop (this MSBuildProject project, string importedProjectFile)
-		{
-			XmlElement import = project.CreateImportElement (importedProjectFile);
-			XmlElement projectRoot = project.Document.DocumentElement;
-			projectRoot.InsertBefore (import, projectRoot.FirstChild);
-			return import;
+			var before = importLocation == ProjectImportLocation.Top ? project.GetAllObjects ().FirstOrDefault () : null;
+			project.AddNewImport (importedProjectFile, condition, before);
 		}
 		
 		public static void RemoveImportIfExists (this MSBuildProject project, string importedProjectFile)
 		{
-			XmlElement import = project.FindImportElement (importedProjectFile);
-			if (import != null) {
-				import.ParentNode.RemoveChild (import);
-			}
+			project.RemoveImport (importedProjectFile);
 		}
 		
 		public static bool ImportExists (this MSBuildProject project, string importedProjectFile)
 		{
-			return project.FindImportElement (importedProjectFile) != null;
-		}
-		
-		static XmlElement FindImportElement (this MSBuildProject project, string importedProjectFile)
-		{
-			return project
-				.Imports ()
-				.FirstOrDefault (import => String.Equals (import.GetAttribute ("Project"), importedProjectFile, StringComparison.OrdinalIgnoreCase));
-		}
-		
-		static IEnumerable <XmlElement> Imports (this MSBuildProject project)
-		{
-			foreach (XmlElement import in project.Document.DocumentElement.SelectNodes ("tns:Import", namespaceManager)) {
-				yield return import;
-			}
+			return project.GetImport (importedProjectFile) != null;
 		}
 	}
 }

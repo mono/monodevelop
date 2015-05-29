@@ -41,7 +41,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateMSBuildProject (string xml)
 		{
 			msbuildProject = new MSBuildProject ();
-			msbuildProject.Document.LoadXml (xml);
+			msbuildProject.LoadXml (xml);
 		}
 
 		void CreateUpdaterWithImportToRemove (string import)

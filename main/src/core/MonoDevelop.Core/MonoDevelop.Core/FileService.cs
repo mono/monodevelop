@@ -14,10 +14,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -45,22 +45,28 @@ namespace MonoDevelop.Core
 {
 	public static class FileService
 	{
+		delegate bool PathCharsAreEqualDelegate (char a, char b);
+
+		static PathCharsAreEqualDelegate PathCharsAreEqual = Platform.IsWindows || Platform.IsMac ?
+			(PathCharsAreEqualDelegate) PathCharsAreEqualCaseInsensitive :
+			(PathCharsAreEqualDelegate) PathCharsAreEqualCaseSensitive;
+
 		const string addinFileSystemExtensionPath = "/MonoDevelop/Core/FileSystemExtensions";
 
 		static FileServiceErrorHandler errorHandler;
-		
+
 		static FileSystemExtension fileSystemChain;
 		static readonly FileSystemExtension defaultExtension = new DefaultFileSystemExtension ();
-		
+
 		static readonly EventQueue eventQueue = new EventQueue ();
-		
+
 		static readonly string applicationRootPath = Path.Combine (PropertyService.EntryAssemblyPath, "..");
 		public static string ApplicationRootPath {
 			get {
 				return applicationRootPath;
 			}
 		}
-		
+
 		static FileService()
 		{
 			AddinManager.ExtensionChanged += delegate (object sender, ExtensionEventArgs args) {
@@ -69,14 +75,14 @@ namespace MonoDevelop.Core
 			};
 			UpdateExtensions ();
 		}
-		
+
 		static void UpdateExtensions ()
 		{
 			if (!Runtime.Initialized) {
 				fileSystemChain = defaultExtension;
 				return;
 			}
-			
+
 			var extensions = AddinManager.GetExtensionObjects (addinFileSystemExtensionPath, typeof(FileSystemExtension)).Cast<FileSystemExtension> ().ToArray ();
 			for (int n=0; n<extensions.Length - 1; n++) {
 				extensions [n].Next = extensions [n + 1];
@@ -89,7 +95,7 @@ namespace MonoDevelop.Core
 				fileSystemChain = defaultExtension;
 			}
 		}
-		
+
 		public static void DeleteFile (string fileName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (fileName));
@@ -102,7 +108,7 @@ namespace MonoDevelop.Core
 			}
 			OnFileRemoved (new FileEventArgs (fileName, false));
 		}
-		
+
 		public static void DeleteDirectory (string path)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
@@ -115,7 +121,7 @@ namespace MonoDevelop.Core
 			}
 			OnFileRemoved (new FileEventArgs (path, true));
 		}
-		
+
 		public static void RenameFile (string oldName, string newName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (oldName));
@@ -126,7 +132,7 @@ namespace MonoDevelop.Core
 				OnFileRenamed (new FileCopyEventArgs (oldName, newPath, false));
 			}
 		}
-		
+
 		public static void RenameDirectory (string oldName, string newName)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (oldName));
@@ -139,7 +145,7 @@ namespace MonoDevelop.Core
 				OnFileRemoved (new FileEventArgs (oldName, false));
 			}
 		}
-		
+
 		public static void CopyFile (string srcFile, string dstFile)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
@@ -158,14 +164,14 @@ namespace MonoDevelop.Core
 			OnFileCreated (new FileEventArgs (dstFile, false));
 			OnFileRemoved (new FileEventArgs (srcFile, false));
 		}
-		
+
 		static void InternalMoveFile (string srcFile, string dstFile)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (srcFile));
 			Debug.Assert (!String.IsNullOrEmpty (dstFile));
 			FileSystemExtension srcExt = GetFileSystemForPath (srcFile, false);
 			FileSystemExtension dstExt = GetFileSystemForPath (dstFile, false);
-			
+
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
 				srcExt.MoveFile (srcFile, dstFile);
@@ -177,16 +183,16 @@ namespace MonoDevelop.Core
 				srcExt.DeleteFile (srcFile);
 			}
 		}
-		
+
 		static void InternalRenameFile (string srcFile, string newName)
 		{
 			Debug.Assert (!string.IsNullOrEmpty (srcFile));
 			Debug.Assert (!string.IsNullOrEmpty (newName));
 			FileSystemExtension srcExt = GetFileSystemForPath (srcFile, false);
-			
+
 			srcExt.RenameFile (srcFile, newName);
 		}
-		
+
 		public static void CreateDirectory (string path)
 		{
 			if (!Directory.Exists (path)) {
@@ -195,14 +201,14 @@ namespace MonoDevelop.Core
 				OnFileCreated (new FileEventArgs (path, true));
 			}
 		}
-		
+
 		public static void CopyDirectory (string srcPath, string dstPath)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
 			Debug.Assert (!String.IsNullOrEmpty (dstPath));
 			GetFileSystemForPath (dstPath, true).CopyDirectory (srcPath, dstPath);
 		}
-		
+
 		public static void MoveDirectory (string srcPath, string dstPath)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
@@ -212,14 +218,14 @@ namespace MonoDevelop.Core
 			OnFileCreated (new FileEventArgs (dstPath, true));
 			OnFileRemoved (new FileEventArgs (srcPath, true));
 		}
-		
+
 		static void InternalMoveDirectory (string srcPath, string dstPath)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (srcPath));
 			Debug.Assert (!String.IsNullOrEmpty (dstPath));
 			FileSystemExtension srcExt = GetFileSystemForPath (srcPath, true);
 			FileSystemExtension dstExt = GetFileSystemForPath (dstPath, true);
-			
+
 			if (srcExt == dstExt) {
 				// Everything can be handled by the same file system
 				srcExt.MoveDirectory (srcPath, dstPath);
@@ -272,7 +278,7 @@ namespace MonoDevelop.Core
 		{
 			NotifyFilesChanged (new FilePath[] { fileName }, autoReload);
 		}
-		
+
 		public static void NotifyFilesChanged (IEnumerable<FilePath> files)
 		{
 			NotifyFilesChanged (files, false);
@@ -288,12 +294,12 @@ namespace MonoDevelop.Core
 				LoggingService.LogError ("File change notification failed", ex);
 			}
 		}
-		
+
 		public static void NotifyFileRemoved (string fileName)
 		{
 			NotifyFilesRemoved (new FilePath[] { fileName });
 		}
-		
+
 		public static void NotifyFilesRemoved (IEnumerable<FilePath> files)
 		{
 			try {
@@ -302,7 +308,7 @@ namespace MonoDevelop.Core
 				LoggingService.LogError ("File remove notification failed", ex);
 			}
 		}
-		
+
 		internal static FileSystemExtension GetFileSystemForPath (string path, bool isDirectory)
 		{
 			Debug.Assert (!String.IsNullOrEmpty (path));
@@ -311,74 +317,92 @@ namespace MonoDevelop.Core
 				nx = nx.Next;
 			return nx;
 		}
-		
+
 /*
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.VolumeSeparatorChar, Path.AltDirectorySeparatorChar };
 		public static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
 			if (!Path.IsPathRooted (absPath))
 				return absPath;
-			
+
 			absPath           = Path.GetFullPath (absPath);
 			baseDirectoryPath = Path.GetFullPath (baseDirectoryPath.TrimEnd (Path.DirectorySeparatorChar));
-			
+
 			string[] bPath = baseDirectoryPath.Split (separators);
 			string[] aPath = absPath.Split (separators);
 			int indx = 0;
-			
+
 			for (; indx < Math.Min (bPath.Length, aPath.Length); indx++) {
 				if (!bPath[indx].Equals(aPath[indx]))
 					break;
 			}
-			
-			if (indx == 0) 
+
+			if (indx == 0)
 				return absPath;
-			
+
 			StringBuilder result = new StringBuilder ();
-			
+
 			for (int i = indx; i < bPath.Length; i++) {
 				result.Append ("..");
 				if (i + 1 < bPath.Length || aPath.Length - indx > 0)
 					result.Append (Path.DirectorySeparatorChar);
 			}
-			
-			
+
+
 			result.Append (String.Join(Path.DirectorySeparatorChar.ToString(), aPath, indx, aPath.Length - indx));
 			if (result.Length == 0)
 				return ".";
 			return result.ToString ();
 		}*/
-		
+
 		static bool IsSeparator (char ch)
 		{
 			return ch == Path.DirectorySeparatorChar || ch == Path.AltDirectorySeparatorChar || ch == Path.VolumeSeparatorChar;
 		}
-		
+
+		static char ToOrdinalIgnoreCase (char c)
+		{
+			return (((uint) c - 'a') <= ((uint) 'z' - 'a')) ? (char) (c - 0x20) : c;
+		}
+
+		static bool PathCharsAreEqualCaseInsensitive (char a, char b)
+		{
+			a = ToOrdinalIgnoreCase (a);
+			b = ToOrdinalIgnoreCase (b);
+
+			return a == b;
+		}
+
+		static bool PathCharsAreEqualCaseSensitive (char a, char b)
+		{
+			return a == b;
+		}
+
 		public unsafe static string AbsoluteToRelativePath (string baseDirectoryPath, string absPath)
 		{
 			if (!Path.IsPathRooted (absPath) || string.IsNullOrEmpty (baseDirectoryPath))
 				return absPath;
-				
+
 			absPath = GetFullPath (absPath);
 			baseDirectoryPath = GetFullPath (baseDirectoryPath).TrimEnd (Path.DirectorySeparatorChar);
-			
+
 			fixed (char* bPtr = baseDirectoryPath, aPtr = absPath) {
 				var bEnd = bPtr + baseDirectoryPath.Length;
 				var aEnd = aPtr + absPath.Length;
 				char* lastStartA = aEnd;
 				char* lastStartB = bEnd;
-				
+
 				int indx = 0;
 				// search common base path
 				var a = aPtr;
 				var b = bPtr;
 				while (a < aEnd) {
-					if (*a != *b)
+					if (!PathCharsAreEqual (*a, *b))
 						break;
 					if (IsSeparator (*a)) {
 						indx++;
 						lastStartA = a + 1;
-						lastStartB = b; 
+						lastStartB = b;
 					}
 					a++;
 					b++;
@@ -391,9 +415,9 @@ namespace MonoDevelop.Core
 						break;
 					}
 				}
-				if (indx == 0) 
+				if (indx == 0)
 					return absPath;
-				
+
 				if (lastStartA >= aEnd)
 					return ".";
 
@@ -404,7 +428,7 @@ namespace MonoDevelop.Core
 						lastStartB = b;
 					}
 				}
-				
+
 				// look how many levels to go up into the base path
 				int goUpCount = 0;
 				while (lastStartB < bEnd) {
@@ -429,15 +453,15 @@ namespace MonoDevelop.Core
 				return new string (result);
 			}
 		}
-		
+
 		public static string RelativeToAbsolutePath (string baseDirectoryPath, string relPath)
 		{
 			return Path.GetFullPath (Path.Combine (baseDirectoryPath, relPath));
 		}
-			
+
 		public static bool IsValidPath (string fileName)
 		{
-			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
+			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty)
 				return false;
 			if (fileName.IndexOfAny (FilePath.GetInvalidPathChars ()) >= 0)
 				return false;
@@ -447,18 +471,18 @@ namespace MonoDevelop.Core
 
 		public static bool IsValidFileName (string fileName)
 		{
-			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty) 
+			if (String.IsNullOrEmpty (fileName) || fileName.Trim() == string.Empty)
 				return false;
 			if (fileName.IndexOfAny (FilePath.GetInvalidFileNameChars ()) >= 0)
 				return false;
 			return true;
 		}
-		
+
 		public static bool IsDirectory (string filename)
 		{
 			return Directory.Exists (filename);
 		}
-		
+
 		public static string GetFullPath (string path)
 		{
 			if (path == null)
@@ -474,7 +498,7 @@ namespace MonoDevelop.Core
 		}
 
 		static readonly string wildcardMarker = "_" + Guid.NewGuid ().ToString () + "_";
-		
+
 		public static string CreateTempDirectory ()
 		{
 			Random rnd = new Random ();
@@ -483,7 +507,7 @@ namespace MonoDevelop.Core
 				result = Path.Combine (Path.GetTempPath (), "mdTmpDir" + rnd.Next ());
 				if (!Directory.Exists (result))
 					break;
-			} 
+			}
 			Directory.CreateDirectory (result);
 			return result;
 		}
@@ -589,7 +613,7 @@ namespace MonoDevelop.Core
 			}
 			Directory.Move (sourceDir, destDir);
 		}
-		
+
 		/// <summary>
 		/// Removes the directory if it's empty.
 		/// </summary>
@@ -600,7 +624,7 @@ namespace MonoDevelop.Core
 			if (Directory.Exists (directory) && !Directory.GetFiles (directory).Any ())
 				Directory.Delete (directory);
 		}
-		
+
 		/// <summary>
 		/// Makes the path separators native.
 		/// </summary>
@@ -608,7 +632,7 @@ namespace MonoDevelop.Core
 		{
 			if (string.IsNullOrEmpty (path))
 				return path;
-			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\'; 
+			char c = Path.DirectorySeparatorChar == '\\'? '/' : '\\';
 			return path.Replace (c, Path.DirectorySeparatorChar);
 		}
 
@@ -616,17 +640,17 @@ namespace MonoDevelop.Core
 		{
 			return errorHandler != null ? errorHandler (message, ex) : false;
 		}
-		
+
 		public static FileServiceErrorHandler ErrorHandler {
 			get { return errorHandler; }
 			set { errorHandler = value; }
 		}
-		
+
 		public static void FreezeEvents ()
 		{
 			eventQueue.Freeze ();
 		}
-		
+
 		public static void ThawEvents ()
 		{
 			eventQueue.Thaw ();
@@ -656,7 +680,7 @@ namespace MonoDevelop.Core
 		{
 			eventQueue.RaiseEvent (() => FileMoved, args);
 		}
-		
+
 		public static event EventHandler<FileCopyEventArgs> FileRenamed;
 		static void OnFileRenamed (FileCopyEventArgs args)
 		{
@@ -666,10 +690,10 @@ namespace MonoDevelop.Core
 				else
 					Counters.FilesRenamed++;
 			}
-			
+
 			eventQueue.RaiseEvent (() => FileRenamed, args);
 		}
-		
+
 		public static event EventHandler<FileEventArgs> FileRemoved;
 		static void OnFileRemoved (FileEventArgs args)
 		{
@@ -679,10 +703,10 @@ namespace MonoDevelop.Core
 				else
 					Counters.FilesRemoved++;
 			}
-			
+
 			eventQueue.RaiseEvent (() => FileRemoved, args);
 		}
-		
+
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
@@ -759,7 +783,7 @@ namespace MonoDevelop.Core
 			}, ct);
 		}
 	}
-	
+
 	class EventQueue
 	{
 		class EventData
@@ -768,28 +792,28 @@ namespace MonoDevelop.Core
 			public object ThisObject;
 			public EventArgs Args;
 		}
-		
+
 		List<EventData> events = new List<EventData> ();
-		
+
 		int frozen;
 		object defaultSourceObject;
-		
+
 		public EventQueue ()
 		{
 		}
-		
+
 		public EventQueue (object defaultSourceObject)
 		{
 			this.defaultSourceObject = defaultSourceObject;
 		}
-		
+
 		public void Freeze ()
 		{
 			lock (events) {
 				frozen++;
 			}
 		}
-		
+
 		public void Thaw ()
 		{
 			List<EventData> pendingEvents = null;
@@ -815,12 +839,12 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
-		
+
 		public void RaiseEvent (Func<Delegate> d, EventArgs args)
 		{
 			RaiseEvent (d, defaultSourceObject, args);
 		}
-		
+
 		public void RaiseEvent (Func<Delegate> d, object thisObj, EventArgs args)
 		{
 			Delegate del = d ();
@@ -841,6 +865,6 @@ namespace MonoDevelop.Core
 			}
 		}
 	}
-	
+
 	public delegate bool FileServiceErrorHandler (string message, Exception ex);
 }

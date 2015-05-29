@@ -34,17 +34,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		XmlElement elem;
 
-		public MSBuildObject (XmlElement elem)
+		internal MSBuildObject (XmlElement elem)
 		{
 			this.elem = elem;
 		}
 		
-		public XmlElement Element {
+		internal XmlElement Element {
 			get { return elem; }
-			internal set { elem = value; }
+			set { elem = value; }
 		}
 
-		protected XmlElement AddChildElement (string name)
+		internal XmlElement AddChildElement (string name)
 		{
 			XmlElement e = elem.OwnerDocument.CreateElement (null, name, MSBuildProject.Schema);
 			elem.AppendChild (e);

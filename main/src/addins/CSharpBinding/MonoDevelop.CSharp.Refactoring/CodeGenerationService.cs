@@ -176,7 +176,7 @@ namespace MonoDevelop.Refactoring
 					doc.Editor,
 					doc.UpdateParseDocument (),
 					type,
-					part
+					part.SourceSpan.Start
 				);
 				var options = new InsertionModeOptions (
 					operation,

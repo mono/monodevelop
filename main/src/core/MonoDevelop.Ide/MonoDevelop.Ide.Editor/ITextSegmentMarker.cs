@@ -81,6 +81,9 @@ namespace MonoDevelop.Ide.Editor
 		bool IsInsideSmartTag (double x, double y);
 
 		bool IsInsideWindow (Gtk.MotionNotifyEventArgs args);
+
+		event EventHandler ShowPopup;
+		event EventHandler CancelPopup;
 	}
 }
 
