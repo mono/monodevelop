@@ -33,12 +33,14 @@ using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory6.CSharp;
+using System.Threading;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Refactoring
 {
 	public static class InsertionPointService
 	{
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, int part)
 		{
 			if (data == null)
 				throw new ArgumentNullException (nameof (data));
@@ -52,27 +54,28 @@ namespace MonoDevelop.Refactoring
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
 			List<InsertionPoint> result = new List<InsertionPoint> ();
-			int offset = part.SourceSpan.Start;
-			if (offset < 0)
-				return result;
-			while (offset < data.Length && data.GetCharAt (offset) != '{') {
-				offset++;
-			}
-			var realStartLocation = data.OffsetToLocation (offset);
+			//var realStartLocation = data.OffsetToLocation (offset);
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			type = model.GetEnclosingNamedType (part, default(CancellationToken)) as ITypeSymbol ?? type;
+			var sourceSpan = new TextSpan (part, 0);
 
-			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
-			result [0].LineBefore = NewLineInsertion.None;
-
-			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == part.SourceTree.FilePath && dsr.Span.Contains (part.SourceSpan));
+			var filePath = data.FileName;
+			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan));
 			if (declaringType == null)
 				return result;
+			var openBraceToken = declaringType.GetSyntax ().ChildTokens ().FirstOrDefault (t => t.IsKind (SyntaxKind.OpenBraceToken));
+			if (!openBraceToken.IsMissing) {
+				var domLocation = data.OffsetToLocation (openBraceToken.SpanStart);
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
+				//			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
+				result [0].LineBefore = NewLineInsertion.None;
+			}
 			foreach (var member in type.GetMembers ()) {
 				if (member.IsImplicitlyDeclared || !member.IsDefinedInSource())
 					continue;
-				
 				//var domLocation = member.BodyRegion.End;
 				foreach (var loc in member.DeclaringSyntaxReferences) {
-					if (loc.SyntaxTree.FilePath != part.SourceTree.FilePath || !declaringType.Span.Contains (part.SourceSpan))
+					if (loc.SyntaxTree.FilePath != filePath || !declaringType.Span.Contains (sourceSpan))
 						continue;
 					var domLocation = data.OffsetToLocation (loc.Span.End);
 
@@ -92,7 +95,7 @@ namespace MonoDevelop.Refactoring
 			if (result.Count > 1) {
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
-				var typeSyntaxReference = type.DeclaringSyntaxReferences.FirstOrDefault (r => r.Span.Contains (part.SourceSpan));
+				var typeSyntaxReference = type.DeclaringSyntaxReferences.FirstOrDefault (r => r.Span.Contains (sourceSpan));
 
 				var lineBefore = data.GetLineByOffset (typeSyntaxReference.Span.End).PreviousLine;
 				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {
@@ -109,7 +112,6 @@ namespace MonoDevelop.Refactoring
 					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
 						col--;
 				}
-				Console.WriteLine ("add 1");
 				result.Add (new InsertionPoint (new DocumentLocation (line.LineNumber, col), insertLine, NewLineInsertion.Eol));
 				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
@@ -120,9 +122,14 @@ namespace MonoDevelop.Refactoring
 //				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 //			}
 			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
-			//			foreach (var res in result)
-			//				Console.WriteLine (res);
+			//foreach (var res in result)
+			//	Console.WriteLine (res);
 			return result;
+		}
+
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location location)
+		{
+			return GetInsertionPoints (data, parsedDocument, type, location.SourceSpan.Start);
 		}
 
 		static void CheckEndPoint (IReadonlyTextDocument doc, InsertionPoint point, bool isStartPoint)

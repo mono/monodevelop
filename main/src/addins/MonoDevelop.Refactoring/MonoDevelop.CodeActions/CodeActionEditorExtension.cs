@@ -604,7 +604,7 @@ namespace MonoDevelop.CodeActions
 							                     document.Editor,
 							                     parsedDocument,
 							                     insertion.Type,
-							                     insertion.Location
+							                     insertion.Location.SourceSpan.Start
 						                     );
 
 						var options = new InsertionModeOptions (
