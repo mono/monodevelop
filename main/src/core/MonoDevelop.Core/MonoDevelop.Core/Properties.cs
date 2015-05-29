@@ -150,7 +150,7 @@ namespace MonoDevelop.Core
 				if (old == null)
 					return;
 				if (properties.ContainsKey (key)) 
-					properties.Remove (key);
+					properties = properties.Remove (key);
 			} else {
 				//avoid emitting the event if not necessary
 				if (val.Equals (old))
@@ -159,7 +159,7 @@ namespace MonoDevelop.Core
 				if (!val.GetType ().IsClass ||(val is string)) {
 					if (defaultValues.ContainsKey (key)) {
 						if (defaultValues[key] == val)
-							properties.Remove (key);
+							properties = properties.Remove (key);
 					}
 				}
 			}
