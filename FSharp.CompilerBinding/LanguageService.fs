@@ -413,13 +413,14 @@ type LanguageService(dirtyNotify) =
     async { 
       Debug.WriteLine("LanguageService: GetUsesOfSymbolInProject: project={0}, currentFile = {1}, symbol = {2}", projectFilename, file, symbol.DisplayName )
       let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
-      let dependentProjects = defaultArg dependentProjects []
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
       
-      let! allSymbolUses =
-        sourceProjectOptions
-        |> List.cons (dependentProjects |> List.map x.GetProjectCheckerOptions)
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
         |> Async.List.map checker.ParseAndCheckProject
-        |> Async.RunSynchronously
+
+      let! allSymbolUses =
+        allProjectResults
         |> List.map (fun checkedProj -> checkedProj.GetUsesOfSymbol(symbol))
         |> Async.Parallel
         |> Async.map Array.concat
