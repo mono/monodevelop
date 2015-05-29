@@ -691,6 +691,7 @@ namespace MonoDevelop.AssemblyBrowser
 	
 		void SearchDoWork (object sender, DoWorkEventArgs e)
 		{
+			var publicOnly = PublicApiOnly;
 			BackgroundWorker worker = sender as BackgroundWorker;
 			try {
 				string pattern = e.Argument.ToString ().ToUpper ();
@@ -706,10 +707,14 @@ namespace MonoDevelop.AssemblyBrowser
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
+							if (!type.IsPublic && publicOnly)
+								continue;
 							curType++;
 							foreach (var member in type.Members) {
 								if (worker.CancellationPending)
 									return;
+								if (!member.IsPublic && publicOnly)
+									continue;
 								if (member.Name.ToUpper ().Contains (pattern)) {
 									members.Add (member);
 								}
@@ -805,6 +810,8 @@ namespace MonoDevelop.AssemblyBrowser
 						foreach (var type in unit.UnresolvedAssembly.TopLevelTypeDefinitions) {
 							if (worker.CancellationPending)
 								return;
+							if (!type.IsPublic && publicOnly)
+								continue;
 							if (type.FullName.ToUpper ().IndexOf (pattern) >= 0)
 								typeList.Add (type);
 						}
