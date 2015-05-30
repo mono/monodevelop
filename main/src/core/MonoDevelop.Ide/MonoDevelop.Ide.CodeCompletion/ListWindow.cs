@@ -608,7 +608,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				bestMruIndex = int.MaxValue;
 				currentData = null;
 			}
-
 			for (int i = 0; i < list.filteredItems.Count; i++) {
 				var mruData = completionDataList [list.filteredItems [i]];
 				int curMruIndex = cache.GetIndex (mruData);
@@ -617,7 +616,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (curMruIndex < bestMruIndex) {
 					int r1 = 0, r2 = 0;
 					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
-						if (r1 >= r2) {
+						if (r1 >= r2 || PartialWord.Length <= 1) {
 							bestMruIndex = curMruIndex;
 							idx = i;
 							currentData = mruData;
@@ -625,7 +624,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-
 			return idx;
 		}
 

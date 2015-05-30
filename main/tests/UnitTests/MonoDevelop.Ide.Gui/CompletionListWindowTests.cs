@@ -940,7 +940,7 @@ namespace MonoDevelop.Ide.Gui
 		[Test]
 		public void TestBug30591 ()
 		{
-			var output = RunSimulation ("", ".", false, false, true, new [] { "foo" } );
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
 			Assert.AreEqual ("foo", output);
 		}
 
