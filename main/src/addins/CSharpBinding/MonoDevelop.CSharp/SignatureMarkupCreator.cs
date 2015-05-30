@@ -1650,7 +1650,7 @@ namespace MonoDevelop.CSharp
 		void AppendConstant (StringBuilder sb, ITypeSymbol constantType, object constantValue, bool useNumericalEnumValue = false)
 		{
 			if (constantValue is string) {
-				sb.Append (Highlight ("\"" + constantValue + "\"", colorStyle.String));
+				sb.Append (Highlight ("\"" + Ambience.EscapeText ((string)constantValue) + "\"", colorStyle.String));
 				return;
 			}
 			if (constantValue is char) {
@@ -1714,8 +1714,7 @@ namespace MonoDevelop.CSharp
 				sb.Append ("(" + GetTypeReferenceString (constantType) + ")" + Highlight (constantValue.ToString (), colorStyle.Number));
 				return;
 			}
-
-			sb.Append (Highlight (constantValue.ToString (), colorStyle.Number));
+			sb.Append (Highlight (Ambience.EscapeText (constantValue.ToString ()), colorStyle.Number));
 		}
 
 		void AppendVariance (StringBuilder sb, VarianceKind variance)
