@@ -836,6 +836,7 @@ namespace MonoDevelop.AssemblyBrowser
 			} finally {
 				Gtk.Application.Invoke (delegate {
 					IdeApp.Workbench.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.ShowReady ();
 				});
 			}
 		}
