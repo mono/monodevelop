@@ -74,13 +74,13 @@ namespace MonoDevelop.CSharp.Completion
 			if (idx >= 0) {
 				result = 
 					result.Substring(0, idx) +
-					"<b>" + Symbol.Name + "</b>"+
-					result.Substring(idx + Symbol.Name.Length);
+					      "<b>" + Symbol.Name + "</b>"+
+					      result.Substring(idx + Symbol.Name.Length);
 			}
 
 			if (!afterKeyword)
 				result = "override " + result;
-			
+
 			return ApplyDiplayFlagsFormatting (result);
 		}
 

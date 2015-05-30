@@ -228,7 +228,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			};
 
 			if (member is IMethodSymbol)
-				return GenerateCode ((IMethodSymbol)member, options);
+				return GenerateProtocolCode ((IMethodSymbol)member, options);
 			if (member is IPropertySymbol)
 				return GenerateCode ((IPropertySymbol)member, options);
 			if (member is IFieldSymbol)
@@ -1004,5 +1004,56 @@ namespace MonoDevelop.CSharp.Refactoring
 		////				doc.Editor.CaretOffset = newOffset;
 		////			}
 		//		}
+
+
+
+
+		static CodeGeneratorMemberResult GenerateProtocolCode(IMethodSymbol method, CodeGenerationOptions options)
+		{
+			int bodyStartOffset = -1, bodyEndOffset = -1;
+			var result = new StringBuilder();
+			var exportAttribute = method.GetAttributes ().FirstOrDefault (attr => attr.AttributeClass.Name == "ExportAttribute");
+			if (exportAttribute != null) {
+				result.Append ("[Export(\"");
+				result.Append (exportAttribute.ConstructorArguments.First ().Value.ToString ());
+				result.Append ("\")]");
+				result.AppendLine ();
+			}
+			AppendModifiers (result, options, method);
+
+			AppendReturnType (result, options, method.ReturnType);
+			result.Append (" ");
+			if (options.ExplicitDeclaration) {
+				AppendReturnType (result, options, method.ContainingType);
+				result.Append(".");
+			}
+
+			result.Append(CSharpAmbience.FilterName(method.Name));
+			if (method.TypeParameters.Length > 0) {
+				result.Append("<");
+				for (int i = 0; i < method.TypeParameters.Length; i++) {
+					if (i > 0)
+						result.Append(", ");
+					var p = method.TypeParameters[i];
+					result.Append(CSharpAmbience.FilterName(p.Name));
+				}
+				result.Append(">");
+			}
+			result.Append("(");
+			AppendParameterList (result, options, method.Parameters, true);
+			result.Append(")");
+
+			var typeParameters = method.TypeParameters;
+
+			result.Append ("{");
+			AppendIndent (result);
+			bodyStartOffset = result.Length;
+			result.Append ("throw new System.NotImplementedException ();");
+			bodyEndOffset = result.Length;
+			AppendLine (result);
+			result.Append ("}");
+			return new CodeGeneratorMemberResult(result.ToString (), bodyStartOffset, bodyEndOffset);
+		}
+
 	}
 }
