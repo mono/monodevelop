@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, subwordModifier), DeleteActions.PreviousSubword);
-			
+
 			action = DeleteActions.NextSubword;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, subwordModifier), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, subwordModifier), action);
@@ -377,7 +377,10 @@ namespace Mono.TextEditor
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.MetaMask), MiscActions.Undo);
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), MiscActions.Redo);
-			
+
+			keyBindings.Add (GetKeyCode (Key.BackSpace, ModifierType.Mod1Mask | ModifierType.ShiftMask), DeleteActions.PreviousSubword);
+			keyBindings.Add (GetKeyCode (Key.Delete, ModifierType.Mod1Mask | ModifierType.ShiftMask), DeleteActions.NextSubword);
+
 			// selection actions
 			
 			action = SelectionActions.MoveDown;
