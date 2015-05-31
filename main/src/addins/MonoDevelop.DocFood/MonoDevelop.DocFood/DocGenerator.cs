@@ -303,7 +303,8 @@ namespace MonoDevelop.DocFood
 					case "startsWithWord":
 						if (member == null)
 							break;
-						result |= GetName (member).StartsWith (val);
+						var name2 = SeparateWords (GetName (member));
+						result |= name2.StartsWith (val + " ");
 						break;
 					case "wordCount":
 						result |= Int32.Parse (val) == wordCount;
