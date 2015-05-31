@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
@@ -166,14 +167,21 @@ namespace MonoDevelop.DocFood
 			var caretOffset = Editor.CaretOffset;
 			var offset = caretOffset;
 			var root = semanticModel.SyntaxTree.GetRoot ();
-
 			while (offset < Editor.Length) {
 				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
-				if (node == null || node.SpanStart < caretOffset) {
+				if (node == null || node.GetLastToken ().SpanStart < caretOffset) {
 					offset++;
 					continue;
 				}
+                var fieldDeclarationSyntax = node as FieldDeclarationSyntax;
+                if (fieldDeclarationSyntax != null) {
+					node = fieldDeclarationSyntax.Declaration.Variables.First ();
+				}
 
+				var eventDeclaration = node as EventFieldDeclarationSyntax;
+				if (eventDeclaration != null) {
+					node = eventDeclaration.Declaration.Variables.First ();
+				}
 				var declaredSymbol = semanticModel.GetDeclaredSymbol (node); 
 				if (declaredSymbol != null)
 					return declaredSymbol;
