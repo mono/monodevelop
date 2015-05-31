@@ -596,7 +596,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (widget.HasMessageBar)
 				return;
-			
+			if (encoding != null)
+				this.encoding = encoding;
 			if (ContentName != fileName) {
 				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
@@ -701,6 +702,7 @@ namespace MonoDevelop.SourceEditor
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
 			} finally {
+				FileService.NotifyFileChanged (fileName);
 				FileRegistry.SuspendFileWatch = false;
 			}
 				
