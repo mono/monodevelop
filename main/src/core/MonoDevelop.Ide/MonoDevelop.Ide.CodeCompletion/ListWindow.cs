@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var keyChar = descriptor.KeyChar;
 
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:";
+			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
