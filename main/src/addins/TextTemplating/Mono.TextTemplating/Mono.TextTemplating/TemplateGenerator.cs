@@ -210,7 +210,7 @@ namespace Mono.TextTemplating
 			if (assemblyName.Version != null)
 				return assemblyReference;
 
-			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.ToLowerInvariant ().EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
+			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
 				return assemblyReference + ".dll";
 			return assemblyReference;
 		}
@@ -234,7 +234,7 @@ namespace Mono.TextTemplating
 			var asmPath = ResolveAssemblyReference (value.Value);
 			if (asmPath == null)
 				throw new Exception (string.Format ("Could not resolve assembly '{0}' for directive processor '{1}'", value.Value, processorName));
-			var asm = System.Reflection.Assembly.LoadFrom (asmPath);
+			var asm = Assembly.LoadFrom (asmPath);
 			return asm.GetType (value.Key, true);
 		}
 		
