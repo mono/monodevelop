@@ -8,6 +8,7 @@
 		<Icon>md-project|res:gettext-overlay-32.png</Icon>
 		<_Description>Creates a translation project.</_Description>
 		<DefaultFilename>TranslationProject</DefaultFilename>
+		<FileExtension>.mdproj</FileExtension>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
