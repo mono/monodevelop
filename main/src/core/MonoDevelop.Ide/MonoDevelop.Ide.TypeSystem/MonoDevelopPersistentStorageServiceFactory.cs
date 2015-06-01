@@ -39,7 +39,7 @@ using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), ServiceLayer.Host), Shared]
+//	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), ServiceLayer.Host), Shared]
 	class PersistenceServiceFactory : IWorkspaceServiceFactory
 	{
 		static readonly IPersistentStorage NoOpPersistentStorageInstance = new NoOpPersistentStorage();
@@ -198,6 +198,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return defaultStreamTask;
 				return Task.FromResult ((Stream)File.OpenRead (fileName));
 			}
+
 			public Task<Stream> ReadStreamAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				string fileName = Path.Combine (workingFolderPath, GetFileName (name));
