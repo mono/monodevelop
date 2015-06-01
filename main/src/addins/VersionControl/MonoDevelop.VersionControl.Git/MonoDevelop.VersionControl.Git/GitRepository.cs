@@ -152,13 +152,15 @@ namespace MonoDevelop.VersionControl.Git
 		bool RefreshFile (string path, CheckoutNotifyFlags flags)
 		{
 			FilePath fp = RootRepository.FromGitPath (path);
-			if (IdeApp.IsInitialized) {
-				MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
-				if (doc != null)
-					doc.Reload ();
-			}
-			FileService.NotifyFileChanged (fp);
-			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, fp, false));
+			Gtk.Application.Invoke (delegate {
+				if (IdeApp.IsInitialized) {
+					MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.GetDocument (fp);
+					if (doc != null)
+						doc.Reload ();
+				}
+				FileService.NotifyFileChanged (fp);
+				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, fp, false));
+			});
 			return true;
 		}
 
@@ -890,33 +892,54 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
-				HashSet<FilePath> files = new HashSet<FilePath> ();
+				var toCheckout = new HashSet<FilePath> ();
+				var toUnstage = new HashSet<FilePath> ();
 
 				foreach (var item in group)
 					if (item.IsDirectory) {
 						foreach (var vi in GetDirectoryVersionInfo (item, false, recurse))
-							if (!vi.IsDirectory)
-								files.Add (vi.LocalPath);
-					} else
-						files.Add (item);
+							if (!vi.IsDirectory) {
+								if (vi.Status == VersionStatus.Unversioned)
+									continue;
+								
+								if ((vi.Status & VersionStatus.ScheduledAdd) == VersionStatus.ScheduledAdd)
+									toUnstage.Add (vi.LocalPath);
+								else
+									toCheckout.Add (vi.LocalPath);
+							}
+					} else {
+						var vi = GetVersionInfo (item);
+						if (vi.Status == VersionStatus.Unversioned)
+							continue;
+
+						if ((vi.Status & VersionStatus.ScheduledAdd) == VersionStatus.ScheduledAdd)
+							toUnstage.Add (vi.LocalPath);
+						else
+							toCheckout.Add (vi.LocalPath);
+					}
 
 				monitor.BeginTask (GettextCatalog.GetString ("Reverting files"), 1);
 
-				var repoFiles = repository.ToGitPath (files).ToArray ();
+				var repoFiles = repository.ToGitPath (toCheckout);
 				int progress = 0;
-				repository.CheckoutPaths ("HEAD", repoFiles, new CheckoutOptions {
-					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-					CheckoutModifiers = CheckoutModifiers.Force,
-					CheckoutNotifyFlags = refreshFlags,
-					OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
-						if ((notifyFlags & CheckoutNotifyFlags.Untracked) != 0)
-							FileService.NotifyFileRemoved (repository.FromGitPath (path));
-						else
-							RefreshFile (path, notifyFlags);
-						return true;
-					}
-				});
-				repository.Stage (repoFiles);
+				if (toCheckout.Any ()) {
+					repository.CheckoutPaths ("HEAD", repoFiles, new CheckoutOptions {
+						OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+						CheckoutModifiers = CheckoutModifiers.Force,
+						CheckoutNotifyFlags = refreshFlags,
+						OnCheckoutNotify = delegate (string path, CheckoutNotifyFlags notifyFlags) {
+							if ((notifyFlags & CheckoutNotifyFlags.Untracked) != 0)
+								FileService.NotifyFileRemoved (repository.FromGitPath (path));
+							else
+								RefreshFile (path, notifyFlags);
+							return true;
+						}
+					});
+					repository.Stage (repoFiles);
+				}
+
+				if (toUnstage.Any())
+					repository.Unstage (repository.ToGitPath (toUnstage).ToArray ());
 				monitor.EndTask ();
 			}
 		}
@@ -1004,8 +1027,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override string OnGetTextAtRevision (FilePath repositoryPath, Revision revision)
 		{
 			var gitRev = (GitRevision)revision;
-			var blob = (Blob)gitRev.Commit [gitRev.GitRepository.ToGitPath (repositoryPath)].Target;
-			return blob.GetContentText ();
+			return GetCommitTextContent (gitRev.Commit, repositoryPath);
 		}
 
 		public override DiffInfo GenerateDiff (FilePath baseLocalPath, VersionInfo versionInfo)
@@ -1034,22 +1056,15 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
-		byte[] GetCommitContent (Commit c, FilePath file)
-		{
-			var repository = GetRepository (file);
-			var blob = (Blob)c [repository.ToGitPath (file)].Target;
-			using (var stream = blob.GetContentStream ())
-			using (var ms = new MemoryStream ()) {
-				stream.CopyTo (ms);
-				return ms.ToArray ();
-			}
-		}
-
 		string GetCommitTextContent (Commit c, FilePath file)
 		{
 			var repository = GetRepository (file);
-			var blob = (Blob)c [repository.ToGitPath (file)].Target;
-			return blob.IsBinary ? String.Empty : blob.GetContentText ();
+			TreeEntry treeEntry = c [repository.ToGitPath (file)];
+			if (treeEntry != null) {
+				var blob = (Blob)treeEntry.Target;
+				return blob.IsBinary ? String.Empty : blob.GetContentText ();
+			}
+			return string.Empty;
 		}
 
 		public string GetCurrentRemote ()
@@ -1087,22 +1102,27 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void CreateBranchFromCommit (string name, Commit id)
 		{
-			RootRepository.Branches.Add (name, id);
+			RootRepository.CreateBranch (name, id);
 		}
 
-		public void CreateBranch (string name, string trackSource)
+		public void CreateBranch (string name, string trackSource, string targetRef)
 		{
-			RootRepository.Branches.Update (RootRepository.Branches.Add (name, RootRepository.Head.Tip),
-				bu => bu.TrackedBranch = trackSource);
+			Commit c = null;
+			if (!string.IsNullOrEmpty (trackSource))
+				c = RootRepository.Lookup<Commit> (trackSource);
+			
+			RootRepository.Branches.Update (
+				RootRepository.CreateBranch (name, c ?? RootRepository.Head.Tip),
+				bu => bu.TrackedBranch = targetRef);
 		}
 
-		public void SetBranchTrackSource (string name, string trackSource)
+		public void SetBranchTrackRef (string name, string trackSource, string trackRef)
 		{
 			var branch = RootRepository.Branches [name];
 			if (branch != null) {
-				RootRepository.Branches.Update (branch,	bu => bu.TrackedBranch = trackSource);
+				RootRepository.Branches.Update (branch,	bu => bu.TrackedBranch = trackRef);
 			} else
-				RootRepository.Branches.Add (name, trackSource);
+				CreateBranch (name, trackSource, trackRef);
 		}
 
 		public void RemoveBranch (string name)
@@ -1392,12 +1412,16 @@ namespace MonoDevelop.VersionControl.Git
 			for (int i = 0; i < lines; ++i)
 				list.Add (working);
 
-			foreach (var hunk in repository.Blame (repository.ToGitPath (repositoryPath))) {
-				var commit = hunk.FinalCommit;
-				var author = hunk.FinalSignature;
-				working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
-				for (int i = 0; i < hunk.LineCount; ++i)
-					list [hunk.FinalStartLineNumber + i] = working;
+			repositoryPath = repository.ToGitPath (repositoryPath);
+			var status = repository.RetrieveStatus (repositoryPath);
+			if (status != FileStatus.Added && status != FileStatus.Untracked) {
+				foreach (var hunk in repository.Blame (repositoryPath)) {
+					var commit = hunk.FinalCommit;
+					var author = hunk.FinalSignature;
+					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
+					for (int i = 0; i < hunk.LineCount; ++i)
+						list [hunk.FinalStartLineNumber + i] = working;
+				}
 			}
 
 			return list.ToArray ();

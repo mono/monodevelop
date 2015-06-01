@@ -87,6 +87,17 @@ namespace MonoDevelop.VersionControl.Git
 				if (checkTrack.Active) {
 					TreeIter it;
 					if (comboSources.GetActiveIter (out it))
+						return (string)comboStore.GetValue (it, 0);
+				}
+				return null;
+			}
+		}
+
+		public string TrackRef {
+			get {
+				if (checkTrack.Active) {
+					TreeIter it;
+					if (comboSources.GetActiveIter (out it))
 						return (string)comboStore.GetValue (it, 3) + (string)comboStore.GetValue (it, 0);
 				}
 				return null;

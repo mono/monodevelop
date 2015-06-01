@@ -85,7 +85,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.checkTrack = new global::Gtk.CheckButton ();
 			this.checkTrack.CanFocus = true;
 			this.checkTrack.Name = "checkTrack";
-			this.checkTrack.Label = global::Mono.Unix.Catalog.GetString ("Track a branch or tag:");
+			this.checkTrack.Label = global::Mono.Unix.Catalog.GetString ("Track a branch:");
 			this.checkTrack.DrawIndicator = true;
 			this.checkTrack.UseUnderline = true;
 			this.vbox5.Add (this.checkTrack);

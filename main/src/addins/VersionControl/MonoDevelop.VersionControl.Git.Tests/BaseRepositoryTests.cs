@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Tests
 {
@@ -298,10 +299,30 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, true);
 			string added = LocalPath + "testfile";
 
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			// Revert to head.
 			File.WriteAllText (added, content);
 			Repo.Revert (added, false, new ProgressMonitor ());
 			Assert.AreEqual (Repo.GetBaseText (added), File.ReadAllText (added));
+		}
+
+		[TestCase (true)]
+		[TestCase (false)]
+		// Tests Repository.Revert
+		public void Reverts2 (bool stage)
+		{
+			AddFile ("init", null, true, true);
+
+			string added = LocalPath + "testfile";
+			AddFile ("testfile", "test", stage, false);
+
+			// Force cache evaluation.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
+			Repo.Revert (added, false, new NullProgressMonitor ());
+			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
 
 		[Test]
@@ -598,6 +619,10 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			var added = LocalPath.Combine ("testfile");
 			AddFile ("testfile", "test", true, true);
+
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			Repo.DeleteFile (added, true, new ProgressMonitor (), false);
 			Repo.Revert (added, false, new ProgressMonitor ());
 

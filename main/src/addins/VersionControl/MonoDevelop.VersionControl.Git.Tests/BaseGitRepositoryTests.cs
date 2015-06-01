@@ -105,13 +105,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			base.UnlocksEntities ();
 		}
 
-		[Test]
-		[Ignore ("NGit sees added directories as unversioned.")]
-		public override void MovesDirectory ()
-		{
-			base.MovesDirectory ();
-		}
-
 		protected override Revision GetHeadRevision ()
 		{
 			var repo2 = (GitRepository)Repo;
@@ -194,7 +187,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			var repo2 = (GitRepository)Repo;
 
 			AddFile ("file1", "text", true, true);
-			repo2.CreateBranch ("branch1", null);
+			repo2.CreateBranch ("branch1", null, null);
 
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch1");
 			// Nothing could be stashed for master. Branch1 should be popped in any case if it exists.
@@ -205,7 +198,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
 			AddFile ("file2", "text", true, false);
-			repo2.CreateBranch ("branch2", null);
+			repo2.CreateBranch ("branch2", null, null);
 
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch2");
 			// Branch1 has a stash created and assert clean workdir. Branch2 should be popped in any case.
@@ -231,21 +224,20 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("this is a new test which doesn't pass on Mac yet")]
 		public void TestGitSyncBranches ()
 		{
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file1", "text", true, true);
 			PostCommit (repo2);
 
-			repo2.CreateBranch ("branch3", null);
+			repo2.CreateBranch ("branch3", null, null);
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch3");
 			AddFile ("file2", "asdf", true, true);
 			repo2.Push (new ProgressMonitor (), "origin", "branch3");
 
 			repo2.SwitchToBranch (new ProgressMonitor (), "master");
 
-			repo2.CreateBranch ("branch4", "origin/branch3");
+			repo2.CreateBranch ("branch4", "origin/branch3", "refs/remotes/origin/branch3");
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch4");
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Tracking remote is not grabbing correct commits");
 		}
@@ -342,7 +334,7 @@ index 0000000..009b64b
 
 			AddFile ("file1", "text", true, true);
 			PostCommit (repo2);
-			repo2.CreateBranch ("branch1", null);
+			repo2.CreateBranch ("branch1", null, null);
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 			PostCommit (repo2);
@@ -364,7 +356,7 @@ index 0000000..009b64b
 
 			Assert.IsTrue (repo2.IsBranchMerged ("master"));
 
-			repo2.CreateBranch ("branch1", null);
+			repo2.CreateBranch ("branch1", null, null);
 			repo2.SwitchToBranch (new ProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 
@@ -445,21 +437,58 @@ index 0000000..009b64b
 			Assert.AreEqual (VersionStatus.Versioned | VersionStatus.ScheduledDelete, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
 
-		[TestCase(null, "refs/remotes/origin/master")]
-		[TestCase(typeof(LibGit2Sharp.NotFoundException), "refs/remotes/noremote/master")]
-		[TestCase(typeof(ArgumentException), "refs/remote/origin/master")]
+		[TestCase(null, "origin/master", "refs/remotes/origin/master")]
+		[TestCase(null, "master", "refs/heads/master")]
+		[TestCase(typeof(LibGit2Sharp.NotFoundException), "noremote/master", "refs/remotes/noremote/master")]
+		[TestCase(typeof(ArgumentException), "origin/master", "refs/remote/origin/master")]
 		// Tests bug #30347
-		public void CreateBranchWithRemoteSource (Type exceptionType, string trackSource)
+		public void CreateBranchWithRemoteSource (Type exceptionType, string trackSource, string trackRef)
 		{
 			var repo2 = (GitRepository)Repo;
 			AddFile ("init", "init", true, true);
 			repo2.Push (new ProgressMonitor (), "origin", "master");
-			repo2.CreateBranch ("testBranch", "refs/remotes/origin/master");
+			repo2.CreateBranch ("testBranch", "origin/master", "refs/remotes/origin/master");
 
 			if (exceptionType != null)
-				Assert.Throws (exceptionType, () => repo2.CreateBranch ("testBranch2", trackSource));
-			else
-				repo2.CreateBranch ("testBranch2", trackSource);
+				Assert.Throws (exceptionType, () => repo2.CreateBranch ("testBranch2", trackSource, trackRef));
+			else {
+				repo2.CreateBranch ("testBranch2", trackSource, trackRef);
+				Assert.True (repo2.GetBranches ().Any (b => b.Name == "testBranch2" && b.TrackedBranch.Name == trackSource));
+			}
+		}
+
+		public void CanSetBranchTrackRef (string trackSource, string trackRef)
+		{
+			var repo2 = (GitRepository)Repo;
+			AddFile ("init", "init", true, true);
+			repo2.Push (new NullProgressMonitor (), "origin", "master");
+
+			repo2.SetBranchTrackRef ("testBranch", "origin/master", "refs/remotes/origin/master");
+			Assert.True (repo2.GetBranches ().Any (
+				b => b.Name == "testBranch" &&
+				b.TrackedBranch == repo2.GetBranches ().Single (rb => rb.Name == "origin/master")
+			));
+
+			repo2.SetBranchTrackRef ("testBranch", null, null);
+			Assert.True (repo2.GetBranches ().Any (
+				b => b.Name == "testBranch" &&
+				b.TrackedBranch == null)
+			);
+		}
+
+		// teests bug #30415
+		[TestCase(false, false)]
+		[TestCase(true, false)]
+		public void BlameDiffWithNotCommitedItem (bool toVcs, bool commit)
+		{
+			string added = LocalPath.Combine ("init");
+
+			AddFile ("init", "init", toVcs, commit);
+
+			Assert.AreEqual (string.Empty, Repo.GetBaseText (added));
+			var revisions = Repo.GetAnnotations (added).Select (a => a.Revision);
+			foreach (var rev in revisions)
+				Assert.AreEqual (GettextCatalog.GetString ("working copy"), rev);
 		}
 	}
 }

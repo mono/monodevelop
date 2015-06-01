@@ -154,7 +154,7 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new EditBranchDialog (repo);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					repo.CreateBranch (dlg.BranchName, dlg.TrackSource);
+					repo.CreateBranch (dlg.BranchName, dlg.TrackSource, dlg.TrackRef);
 					FillBranches ();
 				}
 			} finally {
@@ -178,7 +178,7 @@ namespace MonoDevelop.VersionControl.Git
 							MessageService.ShowError (GettextCatalog.GetString ("The branch could not be renamed"), ex);
 						}
 					}
-					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
+					repo.SetBranchTrackRef (dlg.BranchName, dlg.TrackSource, dlg.TrackRef);
 					FillBranches ();
 				}
 			} finally {
@@ -297,7 +297,7 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new EditBranchDialog (repo, branchName, remote.Name + "/" + branchName);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
+					repo.CreateBranch (dlg.BranchName, dlg.TrackSource, dlg.TrackRef);
 					FillBranches ();
 				}
 			} finally {

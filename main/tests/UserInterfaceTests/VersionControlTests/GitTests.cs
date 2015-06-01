@@ -1,10 +1,10 @@
-//
-// Util.cs
+﻿//
+// GitTests.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.IO;
-using MonoDevelop.Core;
+using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	public static class Util
+	[TestFixture]
+	[Category ("Git")]
+	public class GitTests : CreateBuildTemplatesTestBase
 	{
-		public static FilePath CreateTmpDir (string hint)
+		[Test]
+		public void TestGitSSHClone ()
 		{
-			string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), hint);
+			var checkoutFolder = VCSUtils.CheckoutOrClone ("git@github.com:mono/monkeywrench.git", TakeScreenShot);
+			FoldersToClean.Add (checkoutFolder);
+			WaitForPackageUpdate.Invoke ();
+		}
 
-			if (!Directory.Exists (tempDirectory))
-				Directory.CreateDirectory (tempDirectory);
-			return tempDirectory;
+		[Test]
+		public void TestGitHTTPSClone ()
+		{
+			var checkoutFolder = VCSUtils.CheckoutOrClone ("https://github.com/mono/monkeywrench.git", TakeScreenShot);
+			FoldersToClean.Add (checkoutFolder);
+			WaitForPackageUpdate.Invoke ();
 		}
 	}
 }
+

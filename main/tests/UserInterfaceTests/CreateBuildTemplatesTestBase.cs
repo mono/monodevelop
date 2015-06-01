@@ -77,7 +77,6 @@ namespace UserInterfaceTests
 			var templateName = templateOptions.TemplateKind;
 			var projectName = !string.IsNullOrEmpty (templateOptions.ProjectName) ? templateOptions.ProjectName: GenerateProjectName (templateName);
 
-			ScreenshotForTestSetup (projectName);
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
 			try {
 				var newProject = new NewProjectController ();
@@ -100,7 +99,8 @@ namespace UserInterfaceTests
 
 				OnBuildTemplate ();
 			} catch (Exception e) {
-				Assert.Fail (e.StackTrace);
+				TakeScreenShot ("TestFailedWithGenericException");
+				Assert.Fail (e.ToString ());
 			}
 		}
 
