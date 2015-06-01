@@ -41,13 +41,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return knownAttributes;
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
-		{
-			base.Read (reader, context);
-			reader.MoveToElement ();
-			reader.Skip ();
-		}
-
 		internal override void ReadAttribute (string name, string value)
 		{
 			if (name == "Project")
@@ -63,6 +56,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				return base.WriteAttribute (name);
 		}
+
+		internal override string GetElementName ()
+		{
+			return "Import";
+        }
 
 		public string Target {
 			get { return target; }
@@ -80,8 +78,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal override void Write (XmlWriter writer, WriteContext context)
 		{
-			base.Write (writer, context);
-
 			if (context.Evaluating) {
 				var newTarget = MSBuildProjectService.GetImportRedirect (target);
 				if (newTarget != null) {
@@ -89,10 +85,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return;
 				}
 			}
-			writer.WriteStartElement ("Import", MSBuildProject.Schema);
-			writer.WriteAttributeString ("Project", target);
-			if (Condition != null)
-				writer.WriteAttributeString ("Condition", Condition);
+
+			base.Write (writer, context);
 		}
 
 		void WritePatchedImport (XmlWriter writer, string newTarget)

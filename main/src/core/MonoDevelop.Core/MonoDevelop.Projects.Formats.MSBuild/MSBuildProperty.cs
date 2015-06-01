@@ -46,11 +46,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			NotifyChanges = true;
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal MSBuildProperty (string name): this ()
 		{
-			base.Read (reader, context);
+			this.name = name;
+		}
+
+		internal override void Read (MSBuildXmlReader reader)
+		{
 			name = reader.LocalName;
-			value = ReadValue (reader);
+			base.Read (reader);
+		}
+
+		internal override void ReadContent (MSBuildXmlReader reader)
+		{
+			value = ReadValue (reader.XmlReader);
+		}
+
+		internal override void WriteContent (XmlWriter writer, WriteContext context)
+		{
+			writer.WriteValue (value);
+		}
+
+		internal override string GetElementName ()
+		{
+			return name;
 		}
 
 		static XmlDocument helperDoc = new XmlDocument ();

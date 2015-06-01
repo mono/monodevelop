@@ -42,9 +42,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildItem ()
 		{
+			metadata = new MSBuildPropertyGroup ();
+			metadata.UppercaseBools = true;
+			metadata.ParentObject = this;
 		}
 
-		public MSBuildItem (string name)
+		public MSBuildItem (string name): this ()
 		{
 			this.name = name;
 		}
@@ -76,14 +79,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return base.WriteAttribute (name);
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override void Read (MSBuildXmlReader reader)
 		{
-			base.Read (reader, context);
 			name = reader.LocalName;
-			metadata = new MSBuildPropertyGroup ();
-			metadata.UppercaseBools = true;
-			metadata.ParentObject = this;
-			metadata.Read (reader, context);
+			base.Read (reader);
+		}
+
+		internal override void ReadChildElement (MSBuildXmlReader reader)
+		{
+			metadata.ReadChildElement (reader);
 		}
 
 		internal override void Write (XmlWriter writer, WriteContext context)
@@ -93,6 +97,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				string id = context.ItemMap.Count.ToString ();
 				context.ItemMap [id] = this;
 			}
+		}
+
+		internal override string GetElementName ()
+		{
+			return name;
 		}
 
 		internal override IEnumerable<MSBuildObject> GetChildren ()

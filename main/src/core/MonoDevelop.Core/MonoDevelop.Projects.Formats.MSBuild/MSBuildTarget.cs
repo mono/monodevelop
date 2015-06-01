@@ -67,26 +67,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return base.WriteAttribute (name);
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override string GetElementName ()
 		{
-			base.Read (reader, context);
+			return "Target";
+		}
 
-			if (reader.IsEmptyElement) {
-				reader.Skip ();
-				return;
-			}
-			reader.Read ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					var task = new MSBuildTask ();
-					task.ParentObject = this;
-					task.Read (reader, context);
-					tasks.Add (task);
-				}
-				else
-					reader.Read ();
-			}
-			reader.Read ();
+		internal override void ReadChildElement (MSBuildXmlReader reader)
+		{
+			var task = new MSBuildTask ();
+			task.ParentObject = this;
+			task.Read (reader);
+			tasks.Add (task);
 		}
 
 		internal MSBuildTarget ()

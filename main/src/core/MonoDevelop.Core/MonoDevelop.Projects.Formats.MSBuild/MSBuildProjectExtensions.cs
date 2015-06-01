@@ -38,11 +38,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override void Read (MSBuildXmlReader reader)
 		{
-			base.Read (reader, context);
+			base.Read (reader);
 			doc = new XmlDocument ();
-			elem = (XmlElement) doc.ReadNode (reader);
+			elem = (XmlElement) doc.ReadNode (reader.XmlReader);
+		}
+
+		internal override string GetElementName ()
+		{
+			return "ProjectExtensions";
 		}
 
 		internal bool IsEmpty {

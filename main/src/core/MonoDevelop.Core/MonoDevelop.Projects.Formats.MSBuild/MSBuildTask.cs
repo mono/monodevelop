@@ -57,27 +57,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return knownAttributes;
 		}
 
-		internal override void ReadAttribute (string name, string value)
+		internal override void Read (MSBuildXmlReader reader)
 		{
-			if (name == "Name")
-				Name = value;
-			else
-				base.ReadAttribute (name, value);
+			Name = reader.LocalName;
+			base.Read (reader);
 		}
 
-		internal override string WriteAttribute (string name)
+		internal override string GetElementName ()
 		{
-			if (name == "Name")
-				return Name;
-			else
-				return base.WriteAttribute (name);
-		}
-
-		internal override void Read (XmlReader reader, ReadContext context)
-		{
-			base.Read (reader, context);
-			reader.MoveToElement ();
-			reader.Skip ();
+			return Name;
 		}
 		
 		public string Name { get; private set; }

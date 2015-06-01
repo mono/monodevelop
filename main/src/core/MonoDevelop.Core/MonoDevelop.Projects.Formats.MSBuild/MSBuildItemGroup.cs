@@ -35,35 +35,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		List<MSBuildItem> items = new List<MSBuildItem> ();
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			base.Read (reader, context);
-
-			if (reader.IsEmptyElement) {
-				reader.Skip ();
-				return;
-			}
-			reader.Read ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					var item = new MSBuildItem ();
-					item.ParentObject = this;
-					item.Read (reader, context);
-					items.Add (item);
-				}
-				else
-					reader.Read ();
-			}
-			reader.Read ();
+			var item = new MSBuildItem ();
+			item.ParentObject = this;
+			item.Read (reader);
+			items.Add (item);
 		}
 
-		internal override void Write (XmlWriter writer, WriteContext context)
+		internal override string GetElementName ()
 		{
-			writer.WriteStartElement ("ItemGroup", MSBuildProject.Schema);
-			base.Write (writer, context);
-			foreach (var it in items)
-				it.Write (writer, context);
-			writer.WriteEndElement ();
+			return "ItemGroup";
 		}
 
 		internal override IEnumerable<MSBuildObject> GetChildren ()

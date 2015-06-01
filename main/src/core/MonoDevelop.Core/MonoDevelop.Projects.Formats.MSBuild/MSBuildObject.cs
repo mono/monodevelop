@@ -31,7 +31,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildObject
+	public abstract class MSBuildObject
 	{
 		string condition;
 		MSBuildProject project;
@@ -50,15 +50,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public int Position;
 		}
 
-		internal virtual void Read (XmlReader reader, ReadContext context)
+		internal string PreviousWhitespace { get; set; }
+		internal string TailWhitespace { get; set; }
+
+		internal virtual void Read (MSBuildXmlReader reader)
 		{
-			if (context.ForEvaluation) {
+			if (reader.ForEvaluation) {
 				if (reader.MoveToFirstAttribute ()) {
 					do {
 						ReadAttribute (reader.LocalName, reader.Value);
 					} while (reader.MoveToNextAttribute ());
 				}
 			} else {
+				PreviousWhitespace = reader.CurrentWhitespace.ToString ();
+				reader.CurrentWhitespace.Clear ();
+
 				if (reader.MoveToFirstAttribute ()) {
 					var knownAtts = GetKnownAttributes ();
 					int pos = 0;
@@ -98,10 +104,39 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			reader.MoveToElement ();
+
+			ReadContent (reader);
+
+			TailWhitespace = reader.CurrentWhitespace.ToString ();
+			reader.CurrentWhitespace.Clear ();
+		}
+
+		internal virtual void ReadContent (MSBuildXmlReader reader)
+		{
+			if (reader.IsEmptyElement) {
+				reader.Skip ();
+				return;
+			}
+			reader.Read ();
+			while (reader.NodeType != XmlNodeType.EndElement) {
+				if (reader.NodeType == XmlNodeType.Element)
+					ReadChildElement (reader);
+				else if (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace || reader.NodeType == XmlNodeType.Comment) {
+					reader.CurrentWhitespace.Append (reader.Value);
+					reader.Read ();
+				}
+				else
+					reader.Read ();
+			}
+			reader.Read ();
 		}
 
 		internal virtual void Write (XmlWriter writer, WriteContext context)
 		{
+			if (PreviousWhitespace != null && PreviousWhitespace.Length > 0)
+				writer.WriteString (PreviousWhitespace);
+			
+			writer.WriteStartElement (GetElementName (), MSBuildProject.Schema);
 			if (unknownAttributes != null) {
 				int pos = 0;
 				int unknownIndex = 0;
@@ -113,7 +148,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						writer.WriteAttributeString (att.Prefix, att.LocalName, att.Namespace, att.Value);
 					} else if (knownIndex < knownAtts.Length) {
 						var aname = knownAtts [knownIndex++];
-						writer.WriteAttributeString (aname, WriteAttribute (aname));
+						var val = WriteAttribute (aname);
+						if (val != null)
+							writer.WriteAttributeString (aname, val);
 					}
 					pos++;
 				} while (unknownIndex < unknownAttributes.Length || knownIndex < knownAtts.Length);
@@ -121,9 +158,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var knownAtts = attributeOrder ?? GetKnownAttributes ();
 				for (int i = 0; i < knownAtts.Length; i++) {
 					var aname = knownAtts [i];
-					writer.WriteAttributeString (aname, WriteAttribute (aname));
+					var val = WriteAttribute (aname);
+					if (val != null)
+						writer.WriteAttributeString (aname, val);
 				}
 			}
+
+			WriteContent (writer, context);
+
+			if (TailWhitespace != null && TailWhitespace.Length > 0)
+				writer.WriteString (TailWhitespace);
+			writer.WriteEndElement ();
+		}
+
+		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
+		{
+			foreach (var c in GetChildren ())
+				c.Write (writer, context);
 		}
 
 		internal virtual void ReadAttribute (string name, string value)
@@ -137,10 +188,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal virtual string WriteAttribute (string name)
 		{
 			switch (name) {
-				case "Label": return Label;
-				case "Condition": return Condition;
+				case "Label": return Label != null && Label.Length > 0 ? Label : null;
+				case "Condition": return Condition.Length > 0 ? Condition : null;
 			}
 			return null;
+		}
+
+		internal virtual void ReadChildElement (MSBuildXmlReader reader)
+		{
+			reader.Skip ();
 		}
 
 		internal virtual string [] GetKnownAttributes ()
@@ -148,9 +204,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return knownAttributes;
 		}
 
+		internal abstract string GetElementName ();
+
 		internal virtual IEnumerable<MSBuildObject> GetChildren ()
 		{
 			yield break;
+		}
+
+		internal virtual MSBuildObject GetPreviousSibling ()
+		{
+			var p = ParentObject;
+			if (p != null) {
+				MSBuildObject last = null;
+				foreach (var c in p.GetChildren ()) {
+					if (c == this)
+						return last;
+					last = c;
+				}
+			}
+			return null;
 		}
 
 		public string Label { get; set; }

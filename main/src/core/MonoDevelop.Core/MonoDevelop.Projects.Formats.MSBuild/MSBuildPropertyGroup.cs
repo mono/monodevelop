@@ -44,32 +44,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			base.Read (reader, context);
+			MSBuildProperty prevSameName;
+			if (properties.TryGetValue (reader.LocalName, out prevSameName))
+				prevSameName.Overwritten = true;
 
-			if (reader.IsEmptyElement) {
-				reader.Skip ();
-				return;
-			}
-			reader.Read ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					
-					MSBuildProperty prevSameName;
-					if (properties.TryGetValue (reader.LocalName, out prevSameName))
-						prevSameName.Overwritten = true;
-					
-					var prop = new MSBuildProperty ();
-					prop.ParentObject = this;
-					prop.Read (reader, context);
-					propertyList.Add (prop);
-					properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
-				}
-				else
-					reader.Read ();
-			}
-			reader.Read ();
+			var prop = new MSBuildProperty ();
+			prop.ParentObject = this;
+			prop.Read (reader);
+			propertyList.Add (prop);
+			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+		}
+
+		internal override string GetElementName ()
+		{
+			return "PropertyGroup";
 		}
 
 		internal override IEnumerable<MSBuildObject> GetChildren ()
@@ -222,7 +212,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 
-			var prop = new MSBuildProperty ();
+			var prop = new MSBuildProperty (name);
 			prop.ParentObject = this;
 			properties [name] = prop;
 

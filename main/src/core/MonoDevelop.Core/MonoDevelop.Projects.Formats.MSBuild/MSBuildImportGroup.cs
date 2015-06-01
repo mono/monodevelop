@@ -34,29 +34,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		List<MSBuildImport> imports = new List<MSBuildImport> ();
 
-		internal override void Read (XmlReader reader, ReadContext context)
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			base.Read (reader, context);
+			if (reader.LocalName == "Import") {
+				var item = new MSBuildImport ();
+				item.ParentObject = this;
+				item.Read (reader);
+				imports.Add (item);
+			} else
+				base.ReadChildElement (reader);
+		}
 
-			if (reader.IsEmptyElement) {
-				reader.Skip ();
-				return;
-			}
-			reader.Read ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					if (reader.LocalName == "Import") {
-						var item = new MSBuildImport ();
-						item.ParentObject = this;
-						item.Read (reader, context);
-						imports.Add (item);
-					} else
-						reader.Skip ();
-				}
-				else
-					reader.Read ();
-			}
-			reader.Read ();
+		internal override string GetElementName ()
+		{
+			return "ImportGroup";
 		}
 
 		internal override IEnumerable<MSBuildObject> GetChildren ()

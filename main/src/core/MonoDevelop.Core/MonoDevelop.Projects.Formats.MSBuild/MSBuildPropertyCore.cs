@@ -36,6 +36,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 	public abstract class MSBuildPropertyCore: MSBuildObject
 	{
+		internal override string GetElementName ()
+		{
+			return GetName ();
+		}
+
 		public string Name {
 			get { return GetName (); }
 		}

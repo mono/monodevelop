@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return pi.Project;
 				}
 				MSBuildProject p = new MSBuildProject (EngineManager);
-				p.Load (fileName, new ReadContext { ForEvaluation = true });
+				p.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
 				loadedProjects [fileName] = new LoadedProjectInfo { Project = p };
 				//Console.WriteLine ("Loaded: " + fileName);
 				return p;
