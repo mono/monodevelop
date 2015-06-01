@@ -87,7 +87,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			}
-
+			if (currentMonoDevelopSolution != null) {
+				foreach (var prj in currentMonoDevelopSolution.GetAllProjects ()) {
+					UnloadMonoProject (prj);
+				}
+				currentMonoDevelopSolution = null;
+			}
 		}
 
 		internal void InformDocumentTextChange (DocumentId id, SourceText text)
@@ -334,6 +339,16 @@ namespace MonoDevelop.Ide.TypeSystem
 		public override bool CanApplyChange (ApplyChangesKind feature)
 		{
 			return true;
+		}
+
+		void UnloadMonoProject (MonoDevelop.Projects.Project project)
+		{
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+			project.FileAddedToProject -= OnFileAdded;
+			project.FileRemovedFromProject -= OnFileRemoved;
+			project.FileRenamedInProject -= OnFileRenamed;
+			project.Modified -= OnProjectModified;
 		}
 
 		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
@@ -843,10 +858,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				projectDataMap.TryRemove (id, out val2);
 				MetadataReferenceCache.RemoveReferences (id);
 
-				project.FileAddedToProject -= OnFileAdded;
-				project.FileRemovedFromProject -= OnFileRemoved;
-				project.FileRenamedInProject -= OnFileRenamed;
-				project.Modified -= OnProjectModified;
+				UnloadMonoProject (project);
 			}
 		}
 
@@ -923,8 +935,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				return;
 			var project = (MonoDevelop.Projects.Project)sender;
 			var projectId = GetProjectId (project);
-			if (CurrentSolution.ContainsProject (projectId))
-				OnProjectReloaded (await LoadProject (project, default(CancellationToken))); 
+			if (CurrentSolution.ContainsProject (projectId)) {
+				OnProjectReloaded (await LoadProject (project, default(CancellationToken)));
+			}
 		}
 
 		#endregion
