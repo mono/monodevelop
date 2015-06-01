@@ -2035,7 +2035,7 @@ namespace MonoDevelop.Projects
 					else if (merged is MSBuildPropertyGroupMerged)
 						((MSBuildPropertyGroupMerged)merged).Add (grp.Group);
 					else {
-						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged (merged.Project);
+						MSBuildPropertyGroupMerged m = new MSBuildPropertyGroupMerged (merged.ParentProject);
 						m.Add (merged);
 						m.Add (grp.Group);
 						merged = m;

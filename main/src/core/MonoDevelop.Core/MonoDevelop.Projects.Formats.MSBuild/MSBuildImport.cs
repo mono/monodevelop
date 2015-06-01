@@ -62,7 +62,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return "Import";
         }
 
-		public string Target {
+		public string Project {
 			get { return target; }
 			set { target = value; NotifyChanged (); }
 		}

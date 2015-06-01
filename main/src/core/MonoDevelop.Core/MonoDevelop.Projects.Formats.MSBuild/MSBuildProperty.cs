@@ -173,8 +173,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			SetPropertyValue (value);
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 		public void SetValue (FilePath value, bool relativeToProject = true, FilePath relativeToPath = default(FilePath), bool mergeToMainGroup = false)
@@ -187,7 +187,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (relativeToPath != null) {
 				baseDir = relativeToPath;
 			} else if (relativeToProject) {
-				if (Project == null) {
+				if (ParentProject == null) {
 					// The project has not been set, so we can't calculate the relative path.
 					// Store the full path for now, and set the property type to UnresolvedPath.
 					// When the property gets a value, the relative path will be calculated
@@ -195,7 +195,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SetPropertyValue (value.ToString ());
 					return;
 				}
-				baseDir = Project.BaseDirectory;
+				baseDir = ParentProject.BaseDirectory;
 			}
 
 			// If the path is normalized in the property, keep the value
@@ -203,15 +203,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 
 			SetPropertyValue (MSBuildProjectService.ToMSBuildPath (baseDir, value, false));
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 		internal void ResolvePath ()
 		{
 			if (valueType == MSBuildValueType.UnresolvedPath) {
 				var val = Value;
-				SetPropertyValue (MSBuildProjectService.ToMSBuildPath (Project.BaseDirectory, val, false));
+				SetPropertyValue (MSBuildProjectService.ToMSBuildPath (ParentProject.BaseDirectory, val, false));
 			}
 		}
 
@@ -231,8 +231,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal virtual void SetPropertyValue (string value)
 		{
 			this.value = value;
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
+			if (ParentProject != null && NotifyChanges)
+				ParentProject.NotifyChanged ();
 		}
 
 /*		internal virtual void SetPropertyValue (string value)

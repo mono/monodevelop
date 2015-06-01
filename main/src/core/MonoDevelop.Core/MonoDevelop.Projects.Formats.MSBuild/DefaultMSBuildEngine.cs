@@ -456,7 +456,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
             }
 
-			var pr = context.EvaluateString (import.Target);
+			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
 			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (import.Condition, context))

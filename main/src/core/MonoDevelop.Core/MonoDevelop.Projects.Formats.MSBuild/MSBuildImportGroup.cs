@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildImport beforeImport = null)
 		{
 			var import = new MSBuildImport ();
-			import.Target = name;
+			import.Project = name;
 			import.Condition = condition;
 
 			int insertIndex = -1;

@@ -32,7 +32,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AssertLastMSBuildImportElementHasProjectAttributeValue (string expectedAttributeValue)
 		{
 			MSBuildImport import = GetLastMSBuildImportElement ();
-			string actualAttributeValue = import.Target;
+			string actualAttributeValue = import.Project;
 			Assert.AreEqual (expectedAttributeValue, actualAttributeValue);
 		}
 
@@ -50,7 +50,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void AssertFirstMSBuildImportElementHasProjectAttributeValue (string expectedAttributeValue)
 		{
 			MSBuildImport import = GetFirstMSBuildImportElement ();
-			string actualAttributeValue = import.Target;
+			string actualAttributeValue = import.Project;
 			Assert.AreEqual (expectedAttributeValue, actualAttributeValue);
 		}
 

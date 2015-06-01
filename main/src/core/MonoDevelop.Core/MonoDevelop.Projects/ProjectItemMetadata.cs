@@ -65,7 +65,7 @@ namespace MonoDevelop.Projects
 		internal void SetProject (MSBuildProject project)
 		{
 			foreach (var p in propertyList) {
-				p.Project = project;
+				p.ParentProject = project;
 				p.ResolvePath ();
 			}
 		}
@@ -185,7 +185,7 @@ namespace MonoDevelop.Projects
 			}
 
 			var prop = new ItemMetadataProperty (name);
-			prop.Project = project;
+			prop.ParentProject = project;
 			properties [name] = prop;
 
 			if (insertIndex != -1)
@@ -201,7 +201,7 @@ namespace MonoDevelop.Projects
 				properties = new Dictionary<string, MSBuildProperty> ();
 				propertyList = new List<MSBuildProperty> ();
 			}
-			prop.Project = project;
+			prop.ParentProject = project;
 			properties [prop.Name] = prop;
 			propertyList.Add (prop);
 		}

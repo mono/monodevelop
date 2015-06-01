@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					case "Choose": ob = new MSBuildChoose (); break;
 				}
 				if (ob != null) {
-					ob.Project = project;
+					ob.ParentProject = project;
 					ob.Read (reader);
 					project.objects.Add (ob);
 				} else

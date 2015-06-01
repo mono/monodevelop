@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		new MSBuildProperty GetProperty (string name);
 		new IEnumerable<MSBuildProperty> GetProperties ();
 
-		MSBuildProject Project { get; }
+		MSBuildProject ParentProject { get; }
 	}
 
 	public static class IMSBuildPropertySetExtensions

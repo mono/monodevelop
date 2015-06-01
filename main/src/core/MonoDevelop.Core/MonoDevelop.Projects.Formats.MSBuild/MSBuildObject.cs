@@ -242,14 +242,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			internal set {
 				parentObject = value;
-				if (parentObject != null && parentObject.Project != null)
+				if (parentObject != null && parentObject.ParentProject != null)
 					OnProjectSet ();
 			}
 		}
 
-		public MSBuildProject Project {
+		public MSBuildProject ParentProject {
 			get {
-				return project ?? (ParentObject != null ? ParentObject.Project : null);
+				return project ?? (ParentObject != null ? ParentObject.ParentProject : null);
 			}
 			internal set {
 				project = value;
@@ -259,8 +259,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void NotifyChanged ()
 		{
-			if (Project != null)
-				Project.NotifyChanged ();
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
 		}
 
 		internal virtual void OnProjectSet ()

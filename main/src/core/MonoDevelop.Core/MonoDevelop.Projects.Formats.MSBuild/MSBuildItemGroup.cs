@@ -64,16 +64,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			it.ParentObject = this;
 			it.Include = include;
 			items.Add (it);
-			if (Project != null)
-				Project.NotifyChanged ();
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
 			return it;
 		}
 
 		public void AddItem (MSBuildItem item)
 		{
 			items.Add (item);
-			if (Project != null)
-				Project.NotifyChanged ();
+			if (ParentProject != null)
+				ParentProject.NotifyChanged ();
 		}
 
 		public IEnumerable<MSBuildItem> Items {

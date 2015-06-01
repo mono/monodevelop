@@ -41,8 +41,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			// Convert .projitems imports into project references
 
-			foreach (var sp in msproject.Imports.Where (im => im.Label == "Shared" && im.Target.EndsWith (".projitems"))) {
-				var projitemsFile = sp.Target;
+			foreach (var sp in msproject.Imports.Where (im => im.Label == "Shared" && im.Project.EndsWith (".projitems"))) {
+				var projitemsFile = sp.Project;
 				if (!string.IsNullOrEmpty (projitemsFile)) {
 					projitemsFile = MSBuildProjectService.FromMSBuildPath (Project.ItemDirectory, projitemsFile);
 					projitemsFile = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				if (!string.IsNullOrEmpty (ip)) {
 					ip = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, ip);
 					validProjitems.Add (ip);
-					if (!project.Imports.Any (im => im.Target == ip)) {
+					if (!project.Imports.Any (im => im.Project == ip)) {
 						var im = project.AddNewImport (ip, beforeObject:project.Imports.FirstOrDefault (i => i.Label != "Shared"));
 						im.Label = "Shared";
 						im.Condition = "Exists('" + ip + "')";
@@ -78,8 +78,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				}
 			}
 			foreach (var im in project.Imports) {
-				if (im.Label == "Shared" && im.Target.EndsWith (".projitems") && !(validProjitems.Contains (im.Target)))
-					project.RemoveImport (im.Target);
+				if (im.Label == "Shared" && im.Project.EndsWith (".projitems") && !(validProjitems.Contains (im.Project)))
+					project.RemoveImport (im.Project);
 			}
 		}
 	}

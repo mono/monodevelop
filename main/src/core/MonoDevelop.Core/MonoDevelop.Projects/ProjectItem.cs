@@ -109,7 +109,7 @@ namespace MonoDevelop.Projects
 							metadata = new ProjectItemMetadata (project.MSBuildProject);
 						// Get the evaluated value for the original metadata property
 						var p = new ItemMetadataProperty (prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue);
-						p.Project = project.MSBuildProject;
+						p.ParentProject = project.MSBuildProject;
 						metadata.AddProperty (p);
 					}
 				}
@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects
 			buildItem.Metadata.WriteObjectProperties (this, GetType(), true);
 
 			if (metadata != null) {
-				metadata.SetProject (buildItem.Project);
+				metadata.SetProject (buildItem.ParentProject);
 				foreach (var prop in metadata.GetProperties ()) {
 					// Use the UnevaluatedValue because if the property has changed, UnevaluatedValue will contain
 					// the new value, and if not, it will contain the old unevaluated value

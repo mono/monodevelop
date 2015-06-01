@@ -449,7 +449,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildObject beforeObject = null)
 		{
 			var import = new MSBuildImport {
-				Target = name,
+				Project = name,
 				Condition = condition
 			};
 
@@ -473,7 +473,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildImport GetImport (string name, string condition = null)
 		{
-			return Imports.FirstOrDefault (i => string.Equals (i.Target, name, StringComparison.OrdinalIgnoreCase) && (condition == null || i.Condition == condition));
+			return Imports.FirstOrDefault (i => string.Equals (i.Project, name, StringComparison.OrdinalIgnoreCase) && (condition == null || i.Condition == condition));
 		}
 
 		public void RemoveImport (string name, string condition = null)
@@ -539,10 +539,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void AddPropertyGroup (MSBuildPropertyGroup group, bool insertAtEnd)
 		{
-			if (group.Project != null)
+			if (group.ParentProject != null)
 				throw new InvalidOperationException ("Group already belongs to a project");
 
-			group.Project = this;
+			group.ParentProject = this;
 
 			if (insertAtEnd) {
 				var last = objects.FindLastIndex (g => g is MSBuildPropertyGroup);
@@ -767,7 +767,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Remove (MSBuildObject ob)
 		{
-			if (ob.ParentObject == null && ob.Project == this) {
+			if (ob.ParentObject == null && ob.ParentProject == this) {
 				ob.RemoveIndent ();
 				objects.Remove (ob);
 			}

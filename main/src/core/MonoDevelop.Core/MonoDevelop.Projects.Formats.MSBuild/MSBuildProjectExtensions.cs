@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				elem.InsertAfter (value, sec);
 				XmlUtil.RemoveElementAndIndenting (sec);
 			}
-			XmlUtil.Indent (Project.TextFormat, value, true);
+			XmlUtil.Indent (ParentProject.TextFormat, value, true);
 			NotifyChanged ();
 		}
 

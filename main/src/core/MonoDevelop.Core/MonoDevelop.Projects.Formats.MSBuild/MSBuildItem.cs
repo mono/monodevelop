@@ -149,7 +149,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public IMSBuildPropertyGroupEvaluated EvaluatedMetadata {
 			get {
 				if (evaluatedMetadata == null)
-					evaluatedMetadata = new MSBuildPropertyGroupEvaluated (Project);
+					evaluatedMetadata = new MSBuildPropertyGroupEvaluated (ParentProject);
 				return evaluatedMetadata; 
 			}
 		}

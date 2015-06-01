@@ -85,13 +85,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (relativeToPath != null) {
 				baseDir = relativeToPath;
 			} else if (relativeToProject) {
-				if (Project == null) {
+				if (ParentProject == null) {
 					// The path can't yet be resolved, return the raw value
 					value = val;
 					return true;
 				}
 
-				baseDir = Project.BaseDirectory;
+				baseDir = ParentProject.BaseDirectory;
 			}
 			string path;
 			var res = MSBuildProjectService.FromMSBuildPath (baseDir, val, out path);
