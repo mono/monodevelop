@@ -2902,7 +2902,7 @@ namespace MonoDevelop.SourceEditor
 
 		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false);
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)

@@ -570,7 +570,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						lineText = doc.GetTextAt (line.Offset, line.Length);
 
 					var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
-					searchResult.Markup = AdjustColors(markup.Replace ("\t", new string (' ', doc.Options.TabSize)));
+					searchResult.Markup = AdjustColors(markup);
 
 					if (col >= 0) {
 						uint start;
@@ -612,6 +612,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					LoggingService.LogError ("Error whil setting the text renderer markup to: " + searchResult.Markup, e);
 				}
 			end:
+				textMarkup = textMarkup.Replace ("\t", new string (' ', doc.Options.TabSize));
 				searchResult.TextMarkup = textMarkup;
 			}
 			textRenderer.Markup = textMarkup;
