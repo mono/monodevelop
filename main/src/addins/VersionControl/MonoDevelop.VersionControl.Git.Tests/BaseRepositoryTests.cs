@@ -321,7 +321,7 @@ namespace MonoDevelop.VersionControl.Tests
 			// Force cache evaluation.
 			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
 
-			Repo.Revert (added, false, new NullProgressMonitor ());
+			Repo.Revert (added, false, new ProgressMonitor ());
 			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
 
