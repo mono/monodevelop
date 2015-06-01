@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects
 			get {
 				if (properties == null) {
 					if (ParentItem == null)
-						properties = MSBuildPropertyGroup.CreateEmpty ();
+						properties = new MSBuildPropertyGroup ();
 					else
 						properties = ParentItem.MSBuildProject.CreatePropertyGroup ();
 				}

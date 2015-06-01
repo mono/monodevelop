@@ -59,6 +59,7 @@ namespace MonoDevelop.Projects
 					properties [p.Name] = pc;
 				}
 			}
+			initialMetadataCount = other.initialMetadataCount;
 		}
 
 		internal void SetProject (MSBuildProject project)
@@ -69,7 +70,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void LoadProperties (XmlElement element)
+/*		internal void LoadProperties (XmlElement element)
 		{
 			foreach (var pelem in element.ChildNodes.OfType<XmlElement> ()) {
 				MSBuildProperty prevSameName;
@@ -86,7 +87,7 @@ namespace MonoDevelop.Projects
 				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 			}
 			initialMetadataCount = properties.Count;
-		}
+		}*/
 
 		internal bool PropertyCountHasChanged {
 			get { return initialMetadataCount != (properties != null ? properties.Count : 0); }
@@ -183,7 +184,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var prop = new ItemMetadataProperty (project, name);
+			var prop = new ItemMetadataProperty (name);
 			prop.Project = project;
 			properties [name] = prop;
 

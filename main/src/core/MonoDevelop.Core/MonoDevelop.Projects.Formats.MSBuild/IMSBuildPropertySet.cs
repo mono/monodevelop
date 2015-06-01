@@ -342,7 +342,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						data.Name = prop.Name;
 						if (writer == null)
 							writer = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
-						var elem = writer.Write (project.Document, data);
+
+						XmlDocument doc = new XmlDocument ();
+						var elem = writer.Write (doc, data);
+						// TODO NPM
 						project.SetMonoDevelopProjectExtension (prop.Name, elem);
 						continue;
 					}

@@ -32,47 +32,99 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildChoose: MSBuildObject
 	{
-		MSBuildProject project;
+		List<MSBuildChooseOption> options = new List<MSBuildChooseOption> ();
 
-		internal MSBuildChoose (MSBuildProject project, XmlElement elem): base (elem)
+		internal override void Read (XmlReader reader, ReadContext context)
 		{
-			this.project = project;
+			base.Read (reader, context);
+
+			if (reader.IsEmptyElement) {
+				reader.Skip ();
+				return;
+			}
+			reader.Read ();
+			while (reader.NodeType != XmlNodeType.EndElement) {
+				if (reader.NodeType == XmlNodeType.Element) {
+					MSBuildChooseOption op = null;
+					switch (reader.LocalName) {
+						case "When": op = new MSBuildChooseOption (); break;
+						case "Otherwise": op = new MSBuildChooseOption (true); break;
+					}
+					if (op != null) {
+						op.ParentObject = this;
+						op.Read (reader, context);
+						options.Add (op);
+					} else
+						reader.Skip ();
+				} else
+					reader.Read ();
+			}
+			reader.Read ();
 		}
 
 		internal IEnumerable<MSBuildChooseOption> GetOptions ()
 		{
-			foreach (XmlElement elem in Element.ChildNodes.OfType<XmlElement> ()) {
-				switch (elem.LocalName) {
-				case "When": yield return new MSBuildChooseOption (project, elem); break;
-				case "Otherwise": yield return new MSBuildChooseOption (project, elem); break;
-				}
-			}
+			return options;
 		}
 	}
 
 	public class MSBuildChooseOption: MSBuildObject
 	{
-		MSBuildProject project;
+		List<MSBuildObject> objects = new List<MSBuildObject> ();
 
-		internal MSBuildChooseOption (MSBuildProject project, XmlElement elem): base (elem)
+		public MSBuildChooseOption ()
 		{
-			this.project = project;
+		}
+
+		public MSBuildChooseOption (bool isOtherwise)
+		{
+			IsOtherwise = isOtherwise;
 		}
 
 		public bool IsOtherwise {
-			get { return Element.LocalName == "Otherwise"; }
+			get; private set;
 		}
 
-		internal IEnumerable<MSBuildObject> GetAllObjects ()
+		internal override void Read (XmlReader reader, ReadContext context)
 		{
-			foreach (XmlElement elem in Element.ChildNodes.OfType<XmlElement> ()) {
-				switch (elem.LocalName) {
-				case "ItemGroup": yield return project.GetItemGroup (elem); break;
-				case "PropertyGroup": yield return project.GetGroup (elem); break;
-				case "ImportGroup": yield return project.GetImportGroup (elem); break;
-				case "Choose": yield return project.GetChoose (elem); break;
-				}
+			base.Read (reader, context);
+
+			if (reader.IsEmptyElement) {
+				reader.Skip ();
+				return;
 			}
+
+			reader.Read ();
+
+			while (reader.NodeType != XmlNodeType.EndElement) {
+				if (reader.NodeType == XmlNodeType.Element) {
+					MSBuildObject ob = null;
+					switch (reader.LocalName) {
+						case "ItemGroup": ob = new MSBuildItemGroup (); break;
+						case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
+						case "ImportGroup": ob = new MSBuildImportGroup (); break;
+						case "Choose": ob = new MSBuildChoose (); break;
+					}
+					if (ob != null) {
+						ob.ParentObject = this;
+						ob.Read (reader, context);
+						objects.Add (ob);
+					} else
+						reader.Read ();
+				} else
+					reader.Read ();
+			}
+			reader.Read ();
+		}
+
+		internal override IEnumerable<MSBuildObject> GetChildren ()
+		{
+			return objects;
+		}
+
+		public IEnumerable<MSBuildObject> GetAllObjects ()
+		{
+			return objects;
 		}
 	}
 }

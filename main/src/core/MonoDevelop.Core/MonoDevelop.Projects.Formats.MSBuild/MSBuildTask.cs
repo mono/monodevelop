@@ -1,5 +1,5 @@
 //
-// MSBuildPropertyEvaluated.cs
+// MSBuildTask.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -25,44 +25,62 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Collections.Generic;
 using System.Xml;
-using Microsoft.Build.BuildEngine;
-using System.Xml.Linq;
+using System.Text;
+
 using MonoDevelop.Core;
-using System.Globalization;
+using MonoDevelop.Projects.Utility;
+using System.Linq;
+using MonoDevelop.Projects.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 
-	class MSBuildPropertyEvaluated: MSBuildPropertyCore, IMSBuildPropertyEvaluated
+	public class MSBuildTask: MSBuildObject
 	{
-		string value;
-		string evaluatedValue;
-		string name;
-
-		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue)
+		public MSBuildTask ()
 		{
-			Project = project;
-			this.evaluatedValue = evaluatedValue;
-			this.value = value;
-			this.name = name;
 		}
 
-		internal override string GetName ()
+		public MSBuildTask (string name)
 		{
-			return name;
+			this.Name = name;
 		}
 
-		public bool IsImported { get; set; }
+		static readonly string [] knownAttributes = { "Name", "Condition", "Label" };
 
-		public override string UnevaluatedValue {
-			get { return value; }
-		}
-
-		internal override string GetPropertyValue ()
+		internal override string [] GetKnownAttributes ()
 		{
-			return evaluatedValue;
+			return knownAttributes;
 		}
+
+		internal override void ReadAttribute (string name, string value)
+		{
+			if (name == "Name")
+				Name = value;
+			else
+				base.ReadAttribute (name, value);
+		}
+
+		internal override string WriteAttribute (string name)
+		{
+			if (name == "Name")
+				return Name;
+			else
+				return base.WriteAttribute (name);
+		}
+
+		internal override void Read (XmlReader reader, ReadContext context)
+		{
+			base.Read (reader, context);
+			reader.MoveToElement ();
+			reader.Skip ();
+		}
+		
+		public string Name { get; private set; }
 	}
 	
 }

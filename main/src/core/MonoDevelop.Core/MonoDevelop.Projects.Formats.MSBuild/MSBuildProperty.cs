@@ -30,7 +30,7 @@ using Microsoft.Build.BuildEngine;
 using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Globalization;
-
+using System.Text;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -38,28 +38,79 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		bool preserverCase;
 		MSBuildValueType valueType = MSBuildValueType.Default;
+		string value;
+		string name;
 
-		internal MSBuildProperty (MSBuildProject project, XmlElement elem): base (project, elem)
+		internal MSBuildProperty ()
 		{
 			NotifyChanges = true;
+		}
+
+		internal override void Read (XmlReader reader, ReadContext context)
+		{
+			base.Read (reader, context);
+			name = reader.LocalName;
+			value = ReadValue (reader);
+		}
+
+		static XmlDocument helperDoc = new XmlDocument ();
+
+		string ReadValue (XmlReader reader)
+		{
+			// This code is from Microsoft.Build.Internal.Utilities
+
+			XmlElement elem;
+			lock (helperDoc)
+				elem = (XmlElement) helperDoc.ReadNode (reader);
+
+			if (!elem.HasChildNodes)
+				return string.Empty;
+
+			if (elem.ChildNodes.Count == 1 && (elem.FirstChild.NodeType == XmlNodeType.Text || elem.FirstChild.NodeType == XmlNodeType.CDATA))
+				return elem.InnerText.Trim ();
+
+			string innerXml = elem.InnerXml;
+
+			// If there is no markup under the XML node (detected by the presence
+			// of a '<' sign
+			int firstLessThan = innerXml.IndexOf('<');
+			if (firstLessThan == -1) {
+				// return the inner text so it gets properly unescaped
+				return elem.InnerText.Trim ();
+			}
+
+			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
+
+			// ... or if the only XML is comments,
+			if (containsNoTagsOtherThanComments) {
+				// return the inner text so the comments are stripped
+				// (this is how one might comment out part of a list in a property value)
+				return elem.InnerText.Trim ();
+			}
+
+			// ...or it looks like the whole thing is a big CDATA tag ...
+			bool startsWithCData = (innerXml.IndexOf("<![CDATA[", StringComparison.Ordinal) == 0);
+
+			if (startsWithCData) {
+				// return the inner text so it gets properly extracted from the CDATA
+				return elem.InnerText.Trim ();
+			}
+
+			// otherwise, it looks like genuine XML; return the inner XML so that
+			// tags and comments are preserved and any XML escaping is preserved
+			return innerXml;
 		}
 
 		internal virtual MSBuildProperty Clone (XmlDocument newOwner = null)
 		{
 			var prop = (MSBuildProperty)MemberwiseClone ();
-			if (Element != null) {
-				if (newOwner == null || newOwner == Element.OwnerDocument)
-					prop.Element = (XmlElement) Element.CloneNode (true);
-				else
-					prop.Element = (XmlElement) newOwner.ImportNode (Element, true);
-			}
-			prop.Owner = null;
+			prop.ParentObject = null;
 			return prop;
 		}
 
 		internal override string GetName ()
 		{
-			return Element.Name;
+			return name;
 		}
 
 		public bool IsImported {
@@ -156,9 +207,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else
 				SetValue (Convert.ToString (value, CultureInfo.InvariantCulture), false, mergeToMainGroup);
-		}		
+		}
 
 		internal virtual void SetPropertyValue (string value)
+		{
+			this.value = value;
+			if (Project != null && NotifyChanges)
+				Project.NotifyChanged ();
+		}
+
+/*		internal virtual void SetPropertyValue (string value)
 		{
 			if (Element.IsEmpty && string.IsNullOrEmpty (value))
 				return;
@@ -188,48 +246,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			Element.InnerText = value;
 			if (Project != null && NotifyChanges)
 				Project.NotifyChanged ();
-		}
+		}*/
 
 		internal override string GetPropertyValue ()
 		{
-			// This code is from Microsoft.Build.Internal.Utilities
-
-			if (!Element.HasChildNodes)
-				return string.Empty;
-
-			if (Element.ChildNodes.Count == 1 && (Element.FirstChild.NodeType == XmlNodeType.Text || Element.FirstChild.NodeType == XmlNodeType.CDATA))
-				return Element.InnerText.Trim ();
-
-			string innerXml = Element.InnerXml;
-
-			// If there is no markup under the XML node (detected by the presence
-			// of a '<' sign
-			int firstLessThan = innerXml.IndexOf('<');
-			if (firstLessThan == -1) {
-				// return the inner text so it gets properly unescaped
-				return Element.InnerText.Trim ();
-			}
-
-			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
-
-			// ... or if the only XML is comments,
-			if (containsNoTagsOtherThanComments) {
-				// return the inner text so the comments are stripped
-				// (this is how one might comment out part of a list in a property value)
-				return Element.InnerText.Trim ();
-			}
-
-			// ...or it looks like the whole thing is a big CDATA tag ...
-			bool startsWithCData = (innerXml.IndexOf("<![CDATA[", StringComparison.Ordinal) == 0);
-
-			if (startsWithCData) {
-				// return the inner text so it gets properly extracted from the CDATA
-				return Element.InnerText.Trim ();
-			}
-
-			// otherwise, it looks like genuine XML; return the inner XML so that
-			// tags and comments are preserved and any XML escaping is preserved
-			return innerXml;
+			return value;
 		}
 
 		// This code is from Microsoft.Build.Internal.Utilities
@@ -305,13 +326,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		string unevaluatedValue;
 		string name;
 
-		public ItemMetadataProperty (MSBuildProject project, string name): base (project, null)
+		public ItemMetadataProperty (string name)
 		{
 			NotifyChanges = false;
 			this.name = name;
 		}
 
-		public ItemMetadataProperty (MSBuildProject project, string name, string value, string unevaluatedValue): base (project, null)
+		public ItemMetadataProperty (string name, string value, string unevaluatedValue)
 		{
 			NotifyChanges = false;
 			this.name = name;

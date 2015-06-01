@@ -36,18 +36,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 	public abstract class MSBuildPropertyCore: MSBuildObject
 	{
-		MSBuildProject project;
-
-		internal MSBuildPropertyCore (MSBuildProject project, XmlElement elem): base (elem)
-		{
-			this.project = project;
-		}
-
-		public MSBuildProject Project {
-			get { return project; }
-			internal set { project = value; }
-		}
-
 		public string Name {
 			get { return GetName (); }
 		}
@@ -92,13 +80,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (relativeToPath != null) {
 				baseDir = relativeToPath;
 			} else if (relativeToProject) {
-				if (project == null) {
+				if (Project == null) {
 					// The path can't yet be resolved, return the raw value
 					value = val;
 					return true;
 				}
 
-				baseDir = project.BaseDirectory;
+				baseDir = Project.BaseDirectory;
 			}
 			string path;
 			var res = MSBuildProjectService.FromMSBuildPath (baseDir, val, out path);

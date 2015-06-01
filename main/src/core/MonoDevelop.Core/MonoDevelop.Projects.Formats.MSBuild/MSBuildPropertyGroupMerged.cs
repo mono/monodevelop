@@ -184,7 +184,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (g != groups [0] && !g.GetProperties ().Any()) {
 				// Remove this group since it's now empty
-				g.Project.RemoveGroup (g);
+				g.Project.Remove (g);
 			}
 		}
 

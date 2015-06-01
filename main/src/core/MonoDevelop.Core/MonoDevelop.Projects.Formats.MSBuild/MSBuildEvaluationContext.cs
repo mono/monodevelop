@@ -283,6 +283,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public string Evaluate (string str)
 		{
+			if (str == null)
+				return null;
+			
 			int i = FindNextTag (str, 0);
 			if (i == -1)
 				return str;

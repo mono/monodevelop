@@ -1,5 +1,5 @@
 ﻿//
-// MSBuildImportGroup.cs
+// MSBuildProjectExtensions.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,82 +24,72 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Xml;
-using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildImportGroup: MSBuildObject
+	public class MSBuildProjectExtensions: MSBuildObject
 	{
-		List<MSBuildImport> imports = new List<MSBuildImport> ();
+		XmlElement elem;
+		XmlDocument doc;
+
+		public MSBuildProjectExtensions ()
+		{
+		}
 
 		internal override void Read (XmlReader reader, ReadContext context)
 		{
 			base.Read (reader, context);
+			doc = new XmlDocument ();
+			elem = (XmlElement) doc.ReadNode (reader);
+		}
 
-			if (reader.IsEmptyElement) {
-				reader.Skip ();
-				return;
+		internal bool IsEmpty {
+			get {
+				return elem == null || elem.ChildNodes.OfType<XmlNode> ().All (n => n is XmlWhitespace);
 			}
-			reader.Read ();
-			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element) {
-					if (reader.LocalName == "Import") {
-						var item = new MSBuildImport ();
-						item.ParentObject = this;
-						item.Read (reader, context);
-						imports.Add (item);
-					} else
-						reader.Skip ();
-				}
-				else
-					reader.Read ();
+		}
+
+		public XmlElement GetProjectExtension (string section)
+		{
+			if (elem == null)
+				return null;
+			return elem.SelectSingleNode ("tns:" + section, MSBuildProject.XmlNamespaceManager) as XmlElement;
+		}
+
+		public void SetProjectExtension (XmlElement value)
+		{
+			if (doc == null) {
+				doc = new XmlDocument ();
+				elem = doc.CreateElement (null, "ProjectExtensions", MSBuildProject.Schema);
+				doc.DocumentElement.AppendChild (elem);
 			}
-			reader.Read ();
-		}
+			
+			if (value.OwnerDocument != doc)
+				value = (XmlElement)doc.ImportNode (value, true);
 
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return imports;
-		}
-
-		public bool IsImported {
-			get;
-			set;
-		}
-
-		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildImport beforeImport = null)
-		{
-			var import = new MSBuildImport ();
-			import.Target = name;
-			import.Condition = condition;
-
-			int insertIndex = -1;
-			if (beforeImport != null)
-				insertIndex = imports.IndexOf (beforeImport);
-
-			if (insertIndex != -1)
-				imports.Insert (insertIndex, import);
-			else
-				imports.Add (import);
-
-			import.ResetIndent (false);
+			XmlElement sec = elem [value.LocalName];
+			if (sec == null)
+				elem.AppendChild (value);
+			else {
+				elem.InsertAfter (value, sec);
+				XmlUtil.RemoveElementAndIndenting (sec);
+			}
+			XmlUtil.Indent (Project.TextFormat, value, true);
 			NotifyChanged ();
-			return import;
 		}
 
-		public void RemoveImport (MSBuildImport import)
+		public void RemoveProjectExtension (string section)
 		{
-			if (import.ParentObject == this) {
-				import.RemoveIndent ();
-				imports.Remove (import);
+			if (doc == null)
+				return;
+			
+			XmlElement es = elem.SelectSingleNode ("tns:" + section, MSBuildProject.XmlNamespaceManager) as XmlElement;
+			if (es != null) {
+				XmlUtil.RemoveElementAndIndenting (es);
 				NotifyChanged ();
 			}
-		}
-
-		public IEnumerable<MSBuildImport> Imports {
-			get { return imports; }
 		}
 	}
 }

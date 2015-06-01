@@ -2244,7 +2244,7 @@ namespace MonoDevelop.Projects
 				// or groups which don't have any property and did not already exist
 				foreach (ConfigData cd in configData) {
 					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
-						msproject.RemoveGroup ((MSBuildPropertyGroup)cd.Group);
+						msproject.Remove ((MSBuildPropertyGroup)cd.Group);
 				}
 			}
 			SaveProjectItems (monitor, msproject, usedMSBuildItems);
@@ -2354,7 +2354,7 @@ namespace MonoDevelop.Projects
 			// Remove unused items
 
 			foreach (var it in unusedItems) {
-				if (it.Element.ParentNode != null) // It may already have been deleted
+				if (it.ParentGroup != null) // It may already have been deleted
 					msproject.RemoveItem (it);
 				loadedItems.Remove (it);
 			}

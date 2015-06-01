@@ -540,6 +540,9 @@
     <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTarget.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTask.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

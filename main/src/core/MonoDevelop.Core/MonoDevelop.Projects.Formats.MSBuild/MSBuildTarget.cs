@@ -1,10 +1,10 @@
 //
-// MSBuildItemGroup.cs
+// MSBuildTarget.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
+
+using MonoDevelop.Core;
+using MonoDevelop.Projects.Utility;
 using System.Linq;
-using System;
+using MonoDevelop.Projects.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildItemGroup: MSBuildObject
+	
+	public class MSBuildTarget: MSBuildObject
 	{
-		List<MSBuildItem> items = new List<MSBuildItem> ();
+		string name;
+		List<MSBuildTask> tasks = new List<MSBuildTask> ();
+
+		static readonly string [] knownAttributes = { "Name", "Condition", "Label" };
+
+		internal override string [] GetKnownAttributes ()
+		{
+			return knownAttributes;
+		}
+
+		internal override void ReadAttribute (string name, string value)
+		{
+			if (name == "Name")
+				this.name = value;
+			else
+				base.ReadAttribute (name, value);
+		}
+
+		internal override string WriteAttribute (string name)
+		{
+			if (name == "Name")
+				return this.name;
+			else
+				return base.WriteAttribute (name);
+		}
 
 		internal override void Read (XmlReader reader, ReadContext context)
 		{
@@ -46,10 +78,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			reader.Read ();
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
-					var item = new MSBuildItem ();
-					item.ParentObject = this;
-					item.Read (reader, context);
-					items.Add (item);
+					var task = new MSBuildTask ();
+					task.ParentObject = this;
+					task.Read (reader, context);
+					tasks.Add (task);
 				}
 				else
 					reader.Read ();
@@ -57,56 +89,37 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			reader.Read ();
 		}
 
-		internal override void Write (XmlWriter writer, WriteContext context)
+		internal MSBuildTarget ()
 		{
-			writer.WriteStartElement ("ItemGroup", MSBuildProject.Schema);
-			base.Write (writer, context);
-			foreach (var it in items)
-				it.Write (writer, context);
-			writer.WriteEndElement ();
+		}
+
+		public MSBuildTarget (string name, IEnumerable<MSBuildTask> tasks)
+		{
+			this.name = name;
+			this.tasks = new List<MSBuildTask> (tasks);
 		}
 
 		internal override IEnumerable<MSBuildObject> GetChildren ()
 		{
-			return items;
+			return tasks;
 		}
 
-		public bool IsImported {
-			get;
-			set;
+		public string Name {
+			get { return name; }
 		}
-		
-		public MSBuildItem AddNewItem (string name, string include)
+
+		public bool IsImported { get; internal set; }
+
+		public IEnumerable<MSBuildTask> Tasks {
+			get { return tasks; }
+		}
+
+		public void RemoveTask (MSBuildTask task)
 		{
-			var it = new MSBuildItem (name);
-			it.ParentObject = this;
-			it.Include = include;
-			items.Add (it);
-			if (Project != null)
-				Project.NotifyChanged ();
-			return it;
-		}
-
-		public void AddItem (MSBuildItem item)
-		{
-			items.Add (item);
-			if (Project != null)
-				Project.NotifyChanged ();
-		}
-
-		public IEnumerable<MSBuildItem> Items {
-			get {
-				return items;
-			}
-		}
-
-		internal void RemoveItem (MSBuildItem item)
-		{
-			if (items.Contains (item)) {
-				item.RemoveIndent ();
-				items.Remove (item);
-				NotifyChanged ();
-			}
+			if (task.ParentObject != this)
+				throw new InvalidOperationException ("Task doesn't belong to the target");
+			task.RemoveIndent ();
+			tasks.Remove (task);
 		}
 	}
 	

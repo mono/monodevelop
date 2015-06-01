@@ -108,7 +108,8 @@ namespace MonoDevelop.Projects
 						if (metadata == null)
 							metadata = new ProjectItemMetadata (project.MSBuildProject);
 						// Get the evaluated value for the original metadata property
-						var p = new ItemMetadataProperty (project.MSBuildProject, prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue);
+						var p = new ItemMetadataProperty (prop.Name, buildItem.Metadata.GetValue (prop.Name), prop.UnevaluatedValue);
+						p.Project = project.MSBuildProject;
 						metadata.AddProperty (p);
 					}
 				}

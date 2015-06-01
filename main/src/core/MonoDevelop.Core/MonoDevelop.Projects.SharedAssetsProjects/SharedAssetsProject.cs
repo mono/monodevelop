@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			// Remove code sharing imports. Mono doesn't have them and we don't really need them to load the project in the IDE
 			foreach (var im in project.Imports.ToArray ()) {
-				if (im.Project.Contains (".CodeSharing."))
+				if (im.Target.Contains (".CodeSharing."))
 					project.RemoveImport (im);
 			}
 		}
@@ -78,22 +78,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 			base.OnReadProject (monitor, msproject);
 
-			var doc = msproject.Document;
-			string projitemsFile = null;
-			foreach (var no in doc.DocumentElement.ChildNodes) {
-				var im = no as XmlElement;
-				if (im != null && im.LocalName == "Import" && im.GetAttribute ("Label") == "Shared") {
-					projitemsFile = im.GetAttribute ("Project");
-					break;
-				}
-			}
-			if (projitemsFile == null)
+			var import = msproject.Imports.FirstOrDefault (im => im.Label == "Shared");
+			if (import == null)
 				return;
 
 			// TODO: load the type from msbuild
 			LanguageName = "C#";
 
-			projItemsPath = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
+			projItemsPath = MSBuildProjectService.FromMSBuildPath (msproject.BaseDirectory, import.Target);
 
 			MSBuildProject p = new MSBuildProject (msproject.EngineManager);
 			p.Load (projItemsPath);
