@@ -31,7 +31,7 @@ namespace MonoDevelop.Projects
 {
 	public class TargetEvaluationResult
 	{
-		readonly BuildResult buildResult;
+		BuildResult buildResult;
 		readonly Dictionary<string,string> properties;
 		readonly IEnumerable<MSBuildEvaluatedItem> items;
 
@@ -49,6 +49,7 @@ namespace MonoDevelop.Projects
 
 		public BuildResult BuildResult {
 			get { return buildResult; }
+			internal set { buildResult = value; }
 		}
 
 		public IEnumerable<MSBuildEvaluatedItem> Items {

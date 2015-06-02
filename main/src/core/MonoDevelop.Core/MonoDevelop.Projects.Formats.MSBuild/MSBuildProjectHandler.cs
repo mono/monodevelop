@@ -302,21 +302,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
-			var r = RunTarget (monitor, target, configuration, null);
-			if (r == null)
-				return null;
-			return r.BuildResult;
+			var currentContext = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext") as ProjectOperationContext;
+			ProjectOperationContext newContext = currentContext;
+
+			try {
+				if (newContext == null)
+					newContext = new TargetEvaluationContext ();
+				else if (!(newContext is TargetEvaluationContext))
+					newContext = new TargetEvaluationContext (newContext);
+				var res = RunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
+				return res.BuildResult;
+			} finally {
+				if (newContext != currentContext)
+					CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
+			}
 		}
 
-		public override TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
-			if (context == null) {
-				context = new TargetEvaluationContext ();
-				var bc = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext") as ProjectOperationContext;
-				if (bc != null)
-					context.CopyFrom (bc);
-			}
-			
 			if (UseMSBuildEngineForItem (Item, configuration)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
 				if (item != null) {

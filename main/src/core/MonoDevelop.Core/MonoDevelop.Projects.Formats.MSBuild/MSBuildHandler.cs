@@ -105,11 +105,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			SolutionFormat = format;
 		}
 
-		public virtual TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
-		{
-			throw new NotSupportedException ();
-		}
-
 		public virtual BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
 		{
 			throw new NotSupportedException ();
