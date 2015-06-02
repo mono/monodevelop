@@ -66,6 +66,13 @@
 				<Panel id = "EntryConfigurations" _label = "Configuration Mappings" fill = "true" grouping="Tab" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineConfigurationPanel"/>
 			</Section>
 		</Condition>
+		<Condition id="ItemType" value="Project">
+			<Condition id="SupportsTarget" value="RunCodeAnalysis">
+				<Section id = "CodeAnalysis" _label="Code Analysis">
+					<Panel id = "CodeAnalysisPanel" _label="Code Analysis" class = "MonoDevelop.Ide.Projects.OptionPanels.CodeAnalysisPanel" />
+				</Section>
+			</Condition>
+		</Condition>
 	</Section>
 	<Section id="Run" _label="Run">
 		<Section id="General" _label="General" icon="md-prefs-play">
