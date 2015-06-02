@@ -1,23 +1,21 @@
-// 
-// IProjectBuilder.cs
-//  
-// Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+﻿//
+// BuildContext.cs
 //
-// Copyright (c) 2009-2011 Novell, Inc (http://www.novell.com)
-// Copyright (c) 2011-2015 Xamarin Inc. (http://www.xamarin.com)
-// 
+// Author:
+//       Lluis Sanchez Gual <lluis@xamarin.com>
+//
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,26 +27,30 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects
 {
-	public interface IProjectBuilder : IDisposable
+	public class ProjectOperationContext: OperationContext
 	{
-		void Refresh ();
-		void RefreshWithContent (string projectContent);
-		MSBuildResult Run (
-			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties
-		);
+		public ProjectOperationContext ()
+		{
+			GlobalProperties = new Dictionary<string,string> ();
+		}
 
-		string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations);
-	}
+		public ProjectOperationContext (OperationContext other): this ()
+		{
+			if (other != null)
+				CopyFrom (other);
+		}
 
-	[Serializable]
-	public class ProjectConfigurationInfo
-	{
-		public string ProjectFile;
-		public string ProjectGuid;
-		public string Configuration;
-		public string Platform;
+		public Dictionary<string,string> GlobalProperties { get; private set; }
+
+		public override void CopyFrom (OperationContext other)
+		{
+			base.CopyFrom (other);
+			var o = other as ProjectOperationContext;
+			if (o != null)
+				GlobalProperties = new Dictionary<string,string> (o.GlobalProperties);
+		}
 	}
 }
+

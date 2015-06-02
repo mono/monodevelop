@@ -38,6 +38,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Runtime.Remoting.Messaging;
 
 
 namespace MonoDevelop.Projects
@@ -63,6 +65,37 @@ namespace MonoDevelop.Projects
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
+		}
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
+		{
+			CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+			return base.Build (monitor, solutionConfiguration, buildReferences);
+		}
+
+		public TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			var h = ItemHandler as MSBuildProjectHandler;
+			if (h != null)
+				return h.RunTarget (monitor, target, configuration, context);
+			else
+				throw new InvalidOperationException ("Operation only supported for MSBuild based projects");
+		}
+
+		string[] supportedMSBuildTargets;
+
+		internal protected override bool OnGetSupportsTarget (string target)
+		{
+			if (target == ProjectService.BuildTarget || target == ProjectService.CleanTarget)
+				return true;
+			if (supportedMSBuildTargets == null) {
+				var h = ItemHandler as MSBuildProjectHandler;
+				if (h != null)
+					supportedMSBuildTargets = h.GetSupportedTargets ();
+				else
+					supportedMSBuildTargets = new string[0];
+			}
+			return supportedMSBuildTargets.Contains (target);
 		}
 
 		protected override void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
