@@ -11719,7 +11719,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <child>
                           <widget class="Gtk.Label" id="versionControlSpacerLabel">
                             <property name="MemberName" />
-                            <property name="WidthRequest">7</property>
+                            <property name="WidthRequest">24</property>
                             <property name="Justify">Right</property>
                           </widget>
                           <packing>
