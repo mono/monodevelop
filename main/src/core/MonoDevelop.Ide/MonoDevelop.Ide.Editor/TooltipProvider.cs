@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Editor
 	}
 
 	// TODO: Improve tooltip API - that really looks messy
-	public abstract class TooltipProvider
+	public abstract class TooltipProvider : IDisposable
 	{
 		public abstract TooltipItem GetItem (TextEditor editor, DocumentContext ctx, int offset);
 
@@ -171,6 +171,16 @@ namespace MonoDevelop.Ide.Editor
 			gtkWindow.Move (x, y);
 			
 			gtkWindow.ShowAll ();
+		}
+
+		protected bool IsDisposed {
+			get;
+			private set;
+		}
+
+		public virtual void Dispose ()
+		{
+			IsDisposed = true;
 		}
 	}
 }

@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.AddTooltipProvider (provider);
 			} else {
 				textEditorImpl.RemoveTooltipProvider (provider);
+				provider.Dispose ();
 			}
 		}
 
@@ -839,7 +840,10 @@ namespace MonoDevelop.Ide.Editor
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
+			foreach (var provider in textEditorImpl.TooltipProvider)
+				provider.Dispose ();
 			textEditorImpl.Dispose ();
+
 			base.Dispose (disposing);
 		}
 
@@ -1232,7 +1236,11 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			if ((disabledFeatures & DisabledProjectionFeatures.Tooltips) != DisabledProjectionFeatures.Tooltips) {
-				projectedProviders.ForEach (textEditorImpl.RemoveTooltipProvider);
+				projectedProviders.ForEach ((obj) => {
+					textEditorImpl.RemoveTooltipProvider (obj);
+					obj.Dispose ();
+                });
+
 				projectedProviders = new List<ProjectedTooltipProvider> ();
 				foreach (var projection in projections) {
 					foreach (var tp in projection.ProjectedEditor.allProviders) {
