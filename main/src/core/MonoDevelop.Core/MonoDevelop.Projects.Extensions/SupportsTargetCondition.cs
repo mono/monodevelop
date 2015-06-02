@@ -1,9 +1,10 @@
-// ItemOptionsDialog.cs
+﻿//
+// SupportsTargetCondition.cs
 //
 // Author:
-//   Lluis Sanchez Gual <lluis@novell.com>
+//       David Karlaš <david.karlas@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using Mono.Addins;
-using MonoDevelop.Projects.Extensions;
-using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Projects;
-
-namespace MonoDevelop.Ide.Gui.Dialogs
+namespace MonoDevelop.Projects.Extensions
 {
-	public class ItemOptionsDialog: OptionsDialog
+	public class SupportsTargetCondition : ItemTypeCondition
 	{
-		public ItemOptionsDialog (): base ("/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
+		Project project;
+
+		public SupportsTargetCondition (Project project)
 		{
+			this.project = project;
 		}
-		
-		public ItemOptionsDialog (Gtk.Window parentWindow, object dataObject)
-			: base (parentWindow, dataObject, "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
+
+		public override bool Evaluate (Mono.Addins.NodeElement conditionNode)
 		{
-		}
-		
-		protected override void InitializeContext (ExtensionContext extensionContext)
-		{
-			base.InitializeContext (extensionContext);
-			extensionContext.RegisterCondition ("ItemType", new ItemTypeCondition (DataObject.GetType ()));
-			extensionContext.RegisterCondition ("ActiveLanguage", new ProjectLanguageCondition (DataObject));
-			if (DataObject is Project) {
-				extensionContext.RegisterCondition ("SupportsTarget", new SupportsTargetCondition ((Project)DataObject));
-			}
+			return project.SupportsTarget (conditionNode.GetAttribute ("value"));
 		}
 	}
 }
+

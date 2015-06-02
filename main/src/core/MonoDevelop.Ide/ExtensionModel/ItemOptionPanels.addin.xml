@@ -9,6 +9,9 @@
 	<ConditionType id="ActiveLanguage" type="MonoDevelop.Projects.Extensions.ProjectLanguageCondition">
 		<Description>Language of the project. It will evaluate to false if the project is not a .NET project.</Description>
 	</ConditionType>
+	<ConditionType id="SupportsTarget" type="MonoDevelop.Projects.Extensions.SupportsTargetCondition">
+		<Description>MSBuild Target that a project must have.</Description>
+	</ConditionType>
 </ExtensionPoint>
 	
 <Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
