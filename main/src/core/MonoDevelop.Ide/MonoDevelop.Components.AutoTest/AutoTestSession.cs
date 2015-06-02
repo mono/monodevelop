@@ -326,11 +326,8 @@ namespace MonoDevelop.Components.AutoTest
 				ExecuteOnIdleAndWait (() => {
 					resultSet = ExecuteQueryNoWait (query);
 				});
-			} catch (Exception e) {
-				LoggingService.LogError ("AutoTest failed at ExecuteQuery for Query:\n\t");
-				LoggingService.LogError (query.ToString ());
-				LoggingService.LogError (e.ToString ());
-				throw;
+			} catch (TimeoutException e) {
+				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
 
 			return resultSet;
