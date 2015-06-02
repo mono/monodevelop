@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 		public override string ToString ()
 		{
-			return string.Format ("Mark ({0})", Mark);
+			return string.Format ("Marked (\"{0}\")", Mark);
 		}
 	}
 }

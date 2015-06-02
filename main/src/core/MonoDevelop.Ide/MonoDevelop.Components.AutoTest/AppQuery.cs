@@ -29,6 +29,7 @@ using System.Text;
 using Gtk;
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
+using System.Linq;
 
 #if MAC
 using AppKit;
@@ -321,12 +322,8 @@ namespace MonoDevelop.Components.AutoTest
 
 		public override string ToString ()
 		{
-			StringBuilder builder = new StringBuilder ();
-			foreach (var subquery in operations) {
-				builder.Append (subquery.ToString ());
-			}
-
-			return builder.ToString ();
+			var operationChain = string.Join (".", operations.Select (x => x.ToString ()));
+			return string.Format ("c => c.{0};", operationChain);
 		}		
 	}
 }

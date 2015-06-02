@@ -52,7 +52,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 		public override string ToString ()
 		{
-			return string.Format ("Model ({0})", ColumnName);
+			return string.Format ("Model (\"{0}\")", ColumnName);
 		}
 	}
 }
