@@ -114,7 +114,7 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			});
 			if (!syncEvent.WaitOne (20000))
-				throw new Exception ("Timeout while executing synchronized call");
+				throw new TimeoutException ("Timeout while executing synchronized call");
 			if (error != null)
 				throw error;
 			return safe ? SafeObject (res) : res;
@@ -300,7 +300,7 @@ namespace MonoDevelop.Components.AutoTest
 			});
 
 			if (!syncEvent.WaitOne (timeout)) {
-				throw new Exception ("Timeout while executing ExecuteOnIdleAndWait");
+				throw new TimeoutException ("Timeout while executing ExecuteOnIdleAndWait");
 			}
 		}
 
@@ -347,7 +347,7 @@ namespace MonoDevelop.Components.AutoTest
 			});
 
 			if (!syncEvent.WaitOne (timeout)) {
-				throw new Exception (String.Format ("Timeout while executing WaitForElement: {0}", query));
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForElement: {0}", query));
 			}
 
 			return resultSet;
@@ -371,7 +371,7 @@ namespace MonoDevelop.Components.AutoTest
 			});
 
 			if (!syncEvent.WaitOne (timeout)) {
-				throw new Exception (String.Format ("Timeout while executing WaitForNoElement: {0}", query));
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForNoElement: {0}", query));
 			}
 		}
 
@@ -418,7 +418,7 @@ namespace MonoDevelop.Components.AutoTest
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new Exception ("Timed out waiting for event");
+			throw new TimeoutException ("Timed out waiting for event");
 		}
 
 		public bool Select (AppResult result)

@@ -337,11 +337,15 @@ namespace MonoDevelop.Debugger
 				var val = (ObjectValue) model.GetValue (iter, ObjectColumn);
 				Xwt.Drawing.Color? color;
 
-				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
-					color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
-				else
+				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
+					try {
+						color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
+					} catch (Exception) {
+						color = null;
+					}
+				} else {
 					color = null;
-
+				}
 				if (color != null) {
 					((CellRendererColorPreview) cell).Color = (Xwt.Drawing.Color) color;
 					cell.Visible = true;
@@ -1098,7 +1102,11 @@ namespace MonoDevelop.Debugger
 				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				if (!val.IsNull && DebuggingService.HasInlineVisualizer (val)) {
-					strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+					try {
+						strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+					} catch (Exception) {
+						strval = val.DisplayValue ?? "(null)";
+					}
 				} else {
 					strval = val.DisplayValue ?? "(null)";
 				}

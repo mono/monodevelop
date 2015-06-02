@@ -29,6 +29,7 @@ using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace UserInterfaceTests
 {
@@ -37,6 +38,7 @@ namespace UserInterfaceTests
 	{
 		string currentWorkingDirectory;
 		string testResultFolder;
+		string memoryUsageFolder;
 		string currentTestResultFolder;
 
 		int testScreenshotIndex;
@@ -61,8 +63,9 @@ namespace UserInterfaceTests
 		public virtual void FixtureSetup ()
 		{
 			testResultFolder = Path.Combine (currentWorkingDirectory, "TestResults");
-			if (!Directory.Exists (testResultFolder))
-				Directory.CreateDirectory (testResultFolder);
+			memoryUsageFolder = Path.Combine (testResultFolder, "MemoryUsage");
+			if (!Directory.Exists (memoryUsageFolder))
+				Directory.CreateDirectory (memoryUsageFolder);
 		}
 
 		[SetUp]
@@ -81,6 +84,8 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			FoldersToClean.Add (GetSolutionDirectory ());
+			File.WriteAllText (Path.Combine (memoryUsageFolder, TestContext.CurrentContext.Test.FullName),
+			                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
 			Ide.CloseAll ();
 			TestService.EndSession ();

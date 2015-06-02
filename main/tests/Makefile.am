@@ -73,6 +73,7 @@ test:
 	fi
 
 uitest:
+	rm -rf $(TEST_DIR)/TestResults
 	@if test -n "$(assembly)"; then \
 		for asm in $(UITEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \

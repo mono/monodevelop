@@ -197,7 +197,7 @@ namespace Mono.TextTemplating
 			bool relativeLinePragmas = host.GetHostOption ("UseRelativeLinePragmas") as bool? ?? false;
 			
 			foreach (Directive dt in pt.Directives) {
-				switch (dt.Name) {
+				switch (dt.Name.ToLowerInvariant ()) {
 				case "template":
 					string val = dt.Extract ("language");
 					if (val != null)
