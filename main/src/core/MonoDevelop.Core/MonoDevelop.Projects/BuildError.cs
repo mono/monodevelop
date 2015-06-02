@@ -86,6 +86,7 @@ namespace MonoDevelop.Projects
 
 		public string ErrorNumber { get; set; }
 		public string ErrorText { get; set; }
+		public string HelpKeyword { get; set; }
 
 		public int Line { get; set; }
 		public int Column { get; set; }
@@ -110,6 +111,7 @@ namespace MonoDevelop.Projects
 				EndLine     = result.EndLine,
 				Column      = result.Column,
 				EndColumn   = result.EndColumn,
+				HelpKeyword = result.HelpKeyword,
 			};
 		}
 	}

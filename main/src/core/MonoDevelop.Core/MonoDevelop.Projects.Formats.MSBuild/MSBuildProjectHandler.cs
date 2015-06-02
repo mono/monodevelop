@@ -359,7 +359,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							Subcategory = err.Subcategory,
 							EndLine = err.EndLineNumber,
 							EndColumn = err.EndColumnNumber,
-							IsWarning = err.IsWarning
+							IsWarning = err.IsWarning,
+							HelpKeyword = err.HelpKeyword,
 						});
 					}
 
