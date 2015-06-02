@@ -224,40 +224,40 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery CheckType (Type desiredType)
+		public AppQuery CheckType (Type desiredType, string name = null)
 		{
-			operations.Add (new TypeOperation (desiredType));
+			operations.Add (new TypeOperation (desiredType, name));
 			return this;
 		}
 
 		public AppQuery Button ()
 		{
-			return CheckType (typeof(Button));
+			return CheckType (typeof(Button), "Button");
 		}
 
 		public AppQuery Textfield ()
 		{
-			return CheckType (typeof(Entry));
+			return CheckType (typeof(Entry), "Textfield");
 		}
 
 		public AppQuery CheckButton ()
 		{
-			return CheckType (typeof(CheckButton));
+			return CheckType (typeof(CheckButton), "CheckButton");
 		}
 
 		public AppQuery RadioButton ()
 		{
-			return CheckType (typeof(RadioButton));
+			return CheckType (typeof(RadioButton), "RadioButton");
 		}
 
 		public AppQuery TreeView ()
 		{
-			return CheckType (typeof(TreeView));
+			return CheckType (typeof(TreeView), "TreeView");
 		}
 
 		public AppQuery Window ()
 		{
-			return CheckType (typeof(Window));
+			return CheckType (typeof(Window), "Window");
 		}
 
 		public AppQuery Text (string text)

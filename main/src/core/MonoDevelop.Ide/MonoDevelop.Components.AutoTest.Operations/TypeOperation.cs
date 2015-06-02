@@ -31,10 +31,12 @@ namespace MonoDevelop.Components.AutoTest.Operations
 	public class TypeOperation : Operation
 	{
 		Type DesiredType;
+		string Name;
 
-		public TypeOperation (Type desiredType)
+		public TypeOperation (Type desiredType, string name)
 		{
 			DesiredType = desiredType;
+			Name = name;
 		}
 
 		public override List<AppResult> Execute (List<AppResult> resultSet)
@@ -53,7 +55,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 		public override string ToString ()
 		{
-			return string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
+			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
 		}
 	}
 }
