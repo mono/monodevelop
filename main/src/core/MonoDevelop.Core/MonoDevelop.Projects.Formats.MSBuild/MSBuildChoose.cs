@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildChoose: MSBuildObject
+	public class MSBuildChoose: MSBuildElement
 	{
 		List<MSBuildChooseOption> options = new List<MSBuildChooseOption> ();
 
@@ -65,7 +65,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 
-	public class MSBuildChooseOption: MSBuildObject
+	public class MSBuildChooseOption: MSBuildElement
 	{
 		List<MSBuildObject> objects = new List<MSBuildObject> ();
 

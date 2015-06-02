@@ -30,7 +30,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildImportGroup: MSBuildObject
+	public class MSBuildImportGroup: MSBuildElement
 	{
 		List<MSBuildImport> imports = new List<MSBuildImport> ();
 

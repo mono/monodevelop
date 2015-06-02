@@ -32,7 +32,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildItem: MSBuildObject
+	public class MSBuildItem: MSBuildElement
 	{
 		MSBuildPropertyGroup metadata;
 		MSBuildPropertyGroupEvaluated evaluatedMetadata;
@@ -45,6 +45,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			metadata = new MSBuildPropertyGroup ();
 			metadata.UppercaseBools = true;
 			metadata.ParentObject = this;
+			metadata.PropertiesParent = this;
 		}
 
 		public MSBuildItem (string name): this ()

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 
@@ -33,13 +34,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public abstract class MSBuildObject
 	{
-		string condition;
 		MSBuildProject project;
 		MSBuildObject parentObject;
 		UnknownAttribute[] unknownAttributes;
 		string [] attributeOrder;
-
-		static readonly string [] knownAttributes = { "Condition", "Label" };
 
 		class UnknownAttribute
 		{
@@ -50,8 +48,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public int Position;
 		}
 
-		internal string PreviousWhitespace { get; set; }
-		internal string TailWhitespace { get; set; }
+		internal object StartWhitespace { get; set; }
+		internal object StartInnerWhitespace { get; set; }
+		internal object EndInnerWhitespace { get; set; }
+		internal object EndWhitespace { get; set; }
 
 		internal virtual void Read (MSBuildXmlReader reader)
 		{
@@ -62,8 +62,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					} while (reader.MoveToNextAttribute ());
 				}
 			} else {
-				PreviousWhitespace = reader.CurrentWhitespace.ToString ();
-				reader.CurrentWhitespace.Clear ();
+				StartWhitespace = reader.ConsumeWhitespace ();
 
 				if (reader.MoveToFirstAttribute ()) {
 					var knownAtts = GetKnownAttributes ();
@@ -107,8 +106,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			ReadContent (reader);
 
-			TailWhitespace = reader.CurrentWhitespace.ToString ();
-			reader.CurrentWhitespace.Clear ();
+			while (reader.IsWhitespace)
+				reader.ReadAndStoreWhitespace ();
+
+			EndWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
 		}
 
 		internal virtual void ReadContent (MSBuildXmlReader reader)
@@ -118,25 +119,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return;
 			}
 			reader.Read ();
+			bool childFound = false;
+
 			while (reader.NodeType != XmlNodeType.EndElement) {
-				if (reader.NodeType == XmlNodeType.Element)
+				if (reader.NodeType == XmlNodeType.Element) {
+					if (!childFound) {
+						childFound = true;
+						StartInnerWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
+					}
 					ReadChildElement (reader);
-				else if (reader.NodeType == XmlNodeType.Whitespace || reader.NodeType == XmlNodeType.SignificantWhitespace || reader.NodeType == XmlNodeType.Comment) {
-					reader.CurrentWhitespace.Append (reader.Value);
-					reader.Read ();
+				}
+				else if (reader.IsWhitespace) {
+					reader.ReadAndStoreWhitespace ();
 				}
 				else
 					reader.Read ();
 			}
 			reader.Read ();
+
+			EndInnerWhitespace = reader.ConsumeWhitespace ();
 		}
 
 		internal virtual void Write (XmlWriter writer, WriteContext context)
 		{
-			if (PreviousWhitespace != null && PreviousWhitespace.Length > 0)
-				writer.WriteString (PreviousWhitespace);
+			MSBuildWhitespace.Write (StartWhitespace, writer);
 			
 			writer.WriteStartElement (GetElementName (), MSBuildProject.Schema);
+
 			if (unknownAttributes != null) {
 				int pos = 0;
 				int unknownIndex = 0;
@@ -166,31 +175,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			WriteContent (writer, context);
 
-			if (TailWhitespace != null && TailWhitespace.Length > 0)
-				writer.WriteString (TailWhitespace);
 			writer.WriteEndElement ();
+
+			MSBuildWhitespace.Write (EndWhitespace, writer);
 		}
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			foreach (var c in GetChildren ())
+			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
+
+			foreach (var c in GetChildren ()) {
 				c.Write (writer, context);
+			}
+
+			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
 		}
 
 		internal virtual void ReadAttribute (string name, string value)
 		{
-			switch (name) {
-			case "Label": Label = value; break;
-			case "Condition": Condition = value; break;
-			}
 		}
 
 		internal virtual string WriteAttribute (string name)
 		{
-			switch (name) {
-				case "Label": return Label != null && Label.Length > 0 ? Label : null;
-				case "Condition": return Condition.Length > 0 ? Condition : null;
-			}
 			return null;
 		}
 
@@ -199,10 +205,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			reader.Skip ();
 		}
 
-		internal virtual string [] GetKnownAttributes ()
-		{
-			return knownAttributes;
-		}
+		internal abstract string [] GetKnownAttributes ();
 
 		internal abstract string GetElementName ();
 
@@ -223,17 +226,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 			return null;
-		}
-
-		public string Label { get; set; }
-
-		public string Condition {
-			get {
-				return condition ?? "";
-			}
-			set {
-				condition = value;
-			}
 		}
 
 		public MSBuildObject ParentObject {
@@ -269,19 +261,34 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal void ResetIndent (bool closeInNewLine)
 		{
-//			if (Project != null)
-//				XmlUtil.Indent (Project.TextFormat, this, closeInNewLine);
+			if (ParentProject == null)
+				return;
+			
+			var ps = GetPreviousSibling () as MSBuildObject;
+			if (ps != null) {
+				StartWhitespace = ps.StartWhitespace;
+				if (closeInNewLine)
+					EndInnerWhitespace = StartWhitespace;
+			} else if (ParentObject != null) {
+				if (ParentObject.StartInnerWhitespace == null) {
+					ParentObject.StartInnerWhitespace = ParentProject.TextFormat.NewLine;
+					ParentObject.EndInnerWhitespace = ParentObject.StartWhitespace;
+				}
+				StartWhitespace = ParentObject.StartWhitespace + "  ";
+				if (closeInNewLine)
+					EndInnerWhitespace = StartWhitespace;
+			}
+			EndWhitespace = ParentProject.TextFormat.NewLine;
+			if (closeInNewLine)
+				StartInnerWhitespace = ParentProject.TextFormat.NewLine;
+
+
+			foreach (var c in GetChildren ())
+				c.ResetIndent (false);
 		}
 
 		internal void RemoveIndent ()
 		{
-//			XmlUtil.RemoveElementAndIndenting (prop.Element);
-		}
-
-		internal virtual void Evaluate ()
-		{
-			
 		}
 	}
-
 }

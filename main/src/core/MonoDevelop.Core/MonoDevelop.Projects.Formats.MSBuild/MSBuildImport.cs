@@ -29,7 +29,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildImport: MSBuildObject
+	public class MSBuildImport: MSBuildElement
 	{
 		string evaluatedProjectPath;
 		string target;

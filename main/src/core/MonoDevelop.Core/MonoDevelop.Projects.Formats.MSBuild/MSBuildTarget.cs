@@ -39,7 +39,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	
-	public class MSBuildTarget: MSBuildObject
+	public class MSBuildTarget: MSBuildElement
 	{
 		string name;
 		List<MSBuildTask> tasks = new List<MSBuildTask> ();

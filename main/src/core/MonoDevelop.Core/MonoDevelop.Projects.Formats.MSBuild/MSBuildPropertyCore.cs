@@ -34,7 +34,7 @@ using System.Globalization;
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 
-	public abstract class MSBuildPropertyCore: MSBuildObject
+	public abstract class MSBuildPropertyCore: MSBuildElement
 	{
 		internal override string GetElementName ()
 		{

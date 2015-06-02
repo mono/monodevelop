@@ -29,7 +29,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildProjectExtensions: MSBuildObject
+	public class MSBuildProjectExtensions: MSBuildElement
 	{
 		XmlElement elem;
 		XmlDocument doc;

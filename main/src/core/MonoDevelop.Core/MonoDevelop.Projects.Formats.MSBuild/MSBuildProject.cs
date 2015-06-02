@@ -39,10 +39,9 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public sealed partial class MSBuildProject : IDisposable
+	public sealed partial class MSBuildProject : MSBuildObject, IDisposable
 	{
 		FilePath file;
-		MSBuildProjectRoot rootObject;
 		Dictionary<string, MSBuildItemGroup> bestGroups;
 		MSBuildProjectInstance mainProjectInstance;
 		int changeStamp;
@@ -58,6 +57,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static XmlNamespaceManager manager;
 
 		TextFormatInfo format = new TextFormatInfo { NewLine = "\r\n" };
+
+		static readonly string [] knownAttributes = { "DefaultTargets", "ToolsVersion", "xmlns" };
 
 		public static XmlNamespaceManager XmlNamespaceManager
 		{
@@ -107,10 +108,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProject ()
 		{
-			rootObject = new MSBuildProjectRoot (this);
+			ParentProject = this;
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			UseMSBuildEngine = true;
 			IsNewProject = true;
+			StartInnerWhitespace = format.NewLine;
 			AddNewPropertyGroup (false);
 			EnableChangeTracking ();
 		}
@@ -205,8 +207,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		string initialWhitespace;
-		string finalWhitespace;
+		object initialWhitespace;
 
 		void LoadFromXml (MSBuildXmlReader reader)
 		{
@@ -218,24 +219,78 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (reader.NodeType == XmlNodeType.XmlDeclaration) {
 					initialWhitespace = reader.ConsumeWhitespace ();
 					hadXmlDeclaration = true;
+					reader.Read ();
 				}
 				else if (reader.IsWhitespace)
-					reader.CurrentWhitespace.Append (reader.Value);
-				reader.Read ();
+					reader.ReadAndStoreWhitespace ();
+				else
+					reader.Read ();
 			}
 
 			if (reader.EOF)
 				return;
 
-			rootObject = new MSBuildProjectRoot (this);
-			rootObject.Read (reader);
+			Read (reader);
 
 			while (!reader.EOF) {
 				if (reader.IsWhitespace)
-					reader.CurrentWhitespace.Append (reader.Value);
-				reader.Read ();
+					reader.ReadAndStoreWhitespace ();
+				else
+					reader.Read ();
 			}
-			finalWhitespace = reader.ConsumeWhitespace ();
+		}
+
+		internal override string [] GetKnownAttributes ()
+		{
+			return knownAttributes;
+		}
+
+		internal override string GetElementName ()
+		{
+			return "Project";
+		}
+
+		internal override void ReadAttribute (string name, string value)
+		{
+			switch (name) {
+				case "DefaultTargets": defaultTargets = value; return;
+				case "ToolsVersion": toolsVersion = value; return;
+			}
+			base.ReadAttribute (name, value);
+		}
+
+		internal override string WriteAttribute (string name)
+		{
+			switch (name) {
+				case "DefaultTargets": return defaultTargets;
+				case "ToolsVersion": return toolsVersion;
+				case "xmlns": return Schema;
+			}
+			return base.WriteAttribute (name);
+		}
+
+		internal override void ReadChildElement (MSBuildXmlReader reader)
+		{
+			MSBuildObject ob = null;
+			switch (reader.LocalName) {
+				case "ItemGroup": ob = new MSBuildItemGroup (); break;
+				case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
+				case "ImportGroup": ob = new MSBuildImportGroup (); break;
+				case "Import": ob = new MSBuildImport (); break;
+				case "Target": ob = new MSBuildTarget (); break;
+				case "Choose": ob = new MSBuildChoose (); break;
+			}
+			if (ob != null) {
+				ob.ParentObject = this;
+				ob.Read (reader);
+				objects.Add (ob);
+			} else
+				base.ReadChildElement (reader);
+		}
+
+		internal override IEnumerable<MSBuildObject> GetChildren ()
+		{
+			return objects;
 		}
 
 		class ProjectWriter : StringWriter
@@ -290,21 +345,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				NewLineChars = format.NewLine
 			});
 
-			if (initialWhitespace != null && initialWhitespace.Length > 0)
-				xw.WriteWhitespace (initialWhitespace);
-			
-			Save (xw);
+			MSBuildWhitespace.Write (initialWhitespace, xw);
 
-			if (finalWhitespace != null && finalWhitespace.Length > 0)
-				xw.WriteWhitespace (finalWhitespace);
+			Save (xw);
 
 			xw.Dispose ();
 
-			string content = sw.ToString ();
-			if (format.EndsWithEmptyLine && !content.EndsWith (format.NewLine))
-				content += format.NewLine;
-
-			return content;
+			return sw.ToString ();
 		}
 
 		public void Save (XmlWriter writer)
@@ -314,7 +361,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Save (XmlWriter writer, WriteContext ctx)
 		{
-			rootObject.Write (writer, ctx);
+			Write (writer, ctx);
 		}
 
 		internal void NotifyChanged ()
@@ -542,19 +589,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (group.ParentProject != null)
 				throw new InvalidOperationException ("Group already belongs to a project");
 
-			group.ParentProject = this;
-
+			bool added = false;
 			if (insertAtEnd) {
 				var last = objects.FindLastIndex (g => g is MSBuildPropertyGroup);
-				if (last != -1)
+				if (last != -1) {
 					objects.Insert (last + 1, group);
+					added = true;
+				}
 			} else {
 				var first = objects.FindIndex (g => g is MSBuildPropertyGroup);
-				if (first != -1)
+				if (first != -1) {
 					objects.Insert (first, group);
+					added = true;
+				}
 			}
 
-			if (group.ParentObject == null) {
+			if (!added) {
 				var first = objects.FindIndex (g => g is MSBuildItemGroup);
 				if (first != -1)
 					objects.Insert (first, group);
@@ -562,6 +612,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					objects.Add (group);
 			}
 
+			group.ParentObject = this;
 			group.ResetIndent (true);
 			NotifyChanged ();
 		}
@@ -634,6 +685,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else
 				objects.Add (group);
 
+			group.ParentObject = this;
 			group.ResetIndent (true);
 			NotifyChanged ();
 			return group;
@@ -952,104 +1004,5 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		public bool Evaluating;
 		public Dictionary<string, MSBuildItem> ItemMap;
-	}
-
-	class MSBuildXmlReader
-	{
-		public bool ForEvaluation;
-
-		public MSBuildXmlReader ()
-		{
-			CurrentWhitespace = new StringBuilder ();
-		}
-
-		public StringBuilder CurrentWhitespace { get; set; }
-
-		public string ConsumeWhitespace ()
-		{
-			var ws = CurrentWhitespace.ToString ();
-			CurrentWhitespace.Clear ();
-			return ws;
-		}
-
-		public bool EOF {
-			get {
-				return XmlReader.EOF;
-			}
-		}
-
-		public bool IsEmptyElement {
-			get {
-				return XmlReader.IsEmptyElement;
-			}
-		}
-
-		public bool IsWhitespace {
-			get {
-				return NodeType == XmlNodeType.Whitespace || NodeType == XmlNodeType.SignificantWhitespace || NodeType == XmlNodeType.Comment;
-			}
-		}
-
-		public string LocalName {
-			get {
-				return XmlReader.LocalName;
-			}
-		}
-
-		public string NamespaceURI {
-			get {
-				return XmlReader.NamespaceURI;
-			}
-		}
-
-		public XmlNodeType NodeType {
-			get {
-				return XmlReader.NodeType;
-			}
-		}
-
-		public string Prefix {
-			get {
-				return XmlReader.Prefix;
-			}
-		}
-
-		public string Value {
-			get {
-				return XmlReader.Value;
-			}
-		}
-
-		public XmlReader XmlReader { get; internal set; }
-
-		internal string GetAttribute (string v)
-		{
-			return XmlReader.GetAttribute (v);
-		}
-
-		internal void MoveToElement ()
-		{
-			XmlReader.MoveToElement ();
-		}
-
-		internal bool MoveToFirstAttribute ()
-		{
-			return XmlReader.MoveToFirstAttribute ();
-		}
-
-		internal bool MoveToNextAttribute ()
-		{
-			return XmlReader.MoveToNextAttribute ();
-		}
-
-		internal bool Read ()
-		{
-			return XmlReader.Read ();
-		}
-
-		internal void Skip ()
-		{
-			XmlReader.Skip ();
-		}
 	}
 }

@@ -35,7 +35,7 @@ using Microsoft.Build.BuildEngine;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildPropertyGroup: MSBuildObject, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
+	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> ();
 		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
@@ -44,6 +44,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
+		internal MSBuildObject PropertiesParent { get; set; }
+
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
 			MSBuildProperty prevSameName;
@@ -51,7 +53,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				prevSameName.Overwritten = true;
 
 			var prop = new MSBuildProperty ();
-			prop.ParentObject = this;
+			prop.ParentObject = PropertiesParent ?? this;
 			prop.Read (reader);
 			propertyList.Add (prop);
 			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
@@ -213,7 +215,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			var prop = new MSBuildProperty (name);
-			prop.ParentObject = this;
+			prop.ParentObject = PropertiesParent ?? this;
 			properties [name] = prop;
 
 			if (insertIndex != -1)

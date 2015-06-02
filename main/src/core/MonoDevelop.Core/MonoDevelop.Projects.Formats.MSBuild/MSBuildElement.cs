@@ -1,10 +1,10 @@
-//
-// MSBuildItemGroup.cs
+﻿//
+// MSBuildElement.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,72 +23,47 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System.Collections.Generic;
-using System.Xml;
-using System.Linq;
 using System;
-
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildItemGroup: MSBuildElement
+	public abstract class MSBuildElement: MSBuildObject
 	{
-		List<MSBuildItem> items = new List<MSBuildItem> ();
+		string condition;
 
-		internal override void ReadChildElement (MSBuildXmlReader reader)
+		static readonly string [] knownAttributes = { "Condition", "Label" };
+
+		internal override string [] GetKnownAttributes ()
 		{
-			var item = new MSBuildItem ();
-			item.ParentObject = this;
-			item.Read (reader);
-			items.Add (item);
+			return knownAttributes;
 		}
 
-		internal override string GetElementName ()
+		internal override void ReadAttribute (string name, string value)
 		{
-			return "ItemGroup";
-		}
-
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return items;
-		}
-
-		public bool IsImported {
-			get;
-			set;
-		}
-		
-		public MSBuildItem AddNewItem (string name, string include)
-		{
-			var it = new MSBuildItem (name);
-			it.Include = include;
-			AddItem (it);
-			return it;
-		}
-
-		public void AddItem (MSBuildItem item)
-		{
-			items.Add (item);
-			item.ParentObject = this;
-			item.ResetIndent (false);
-			if (ParentProject != null)
-				ParentProject.NotifyChanged ();
-		}
-
-		public IEnumerable<MSBuildItem> Items {
-			get {
-				return items;
+			switch (name) {
+				case "Label": Label = value; break;
+				case "Condition": Condition = value; break;
 			}
 		}
 
-		internal void RemoveItem (MSBuildItem item)
+		internal override string WriteAttribute (string name)
 		{
-			if (items.Contains (item)) {
-				item.RemoveIndent ();
-				items.Remove (item);
-				NotifyChanged ();
+			switch (name) {
+				case "Label": return Label != null && Label.Length > 0 ? Label : null;
+				case "Condition": return Condition.Length > 0 ? Condition : null;
+			}
+			return null;
+		}
+
+		public string Label { get; set; }
+
+		public string Condition {
+			get {
+				return condition ?? "";
+			}
+			set {
+				condition = value;
 			}
 		}
 	}
-	
 }
+
