@@ -103,12 +103,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		void SemanticHighlighting_SemanticHighlightingUpdated (object sender, EventArgs e)
 		{
 			Application.Invoke (delegate {
-				foreach (var kv in lineSegments) {
-					try {
-						kv.Value.RemoveListener ();
-					} catch (Exception) {
-					}
-				}
+				if (lineSegments == null)
+					return;
+				UnregisterLineSegmentTrees ();
 				lineSegments.Clear ();
 
 				var margin = editor.TextViewMargin;
@@ -117,8 +114,24 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			});
 		}
 
+		void UnregisterLineSegmentTrees ()
+		{
+			if (lineSegments == null)
+				return;
+			foreach (var kv in lineSegments) {
+				try {
+					kv.Value.RemoveListener ();
+				} catch (Exception) {
+				}
+			}
+		}
+
 		public void Dispose()
 		{
+			if (lineSegments == null)
+				return;
+			UnregisterLineSegmentTrees ();
+			lineSegments = null;
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
