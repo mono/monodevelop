@@ -67,12 +67,6 @@ namespace MonoDevelop.Projects
 			DependencyResolutionEnabled = true;
 		}
 
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
-		{
-			CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
-			return base.Build (monitor, solutionConfiguration, buildReferences);
-		}
-
 		public TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			var h = ItemHandler as MSBuildProjectHandler;
