@@ -741,7 +741,6 @@ namespace MonoDevelop.Debugger
 		public void ClearAll ()
 		{
 			values.Clear ();
-			valueNames.Clear ();
 			cachedValues.Clear ();
 			frame = null;
 			Refresh (true);
