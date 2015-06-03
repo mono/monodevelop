@@ -26,7 +26,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
+
 using Gtk;
+
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
 using System.Linq;
@@ -226,6 +229,33 @@ namespace MonoDevelop.Components.AutoTest
 			resultSet.CopyTo (results);
 
 			return results;
+		}
+
+		void AddChildrenToDocument (XmlDocument doc, XmlElement parentElement, AppResult children)
+		{
+			while (children != null) {
+				XmlElement childElement = doc.CreateElement ("result");
+				children.ToXml (childElement);
+				parentElement.AppendChild (childElement);
+
+				if (children.FirstChild != null) {
+					AddChildrenToDocument (doc, childElement, children.FirstChild);
+				}
+
+				children = children.NextSibling;
+			}
+		}
+
+		public XmlDocument ExecuteAndGenerateXml ()
+		{
+			Execute ();
+			XmlDocument doc = new XmlDocument ();
+
+			XmlElement rootElement = doc.CreateElement ("results");
+			doc.AppendChild (rootElement);
+
+			AddChildrenToDocument (doc, rootElement, rootNode.FirstChild);
+			return doc;
 		}
 
 		public AppQuery Marked (string mark)

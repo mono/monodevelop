@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -37,6 +38,8 @@ namespace MonoDevelop.Components.AutoTest
 		public AppResult FirstChild { get; set; }
 		public AppResult PreviousSibling { get; set; }
 		public AppResult NextSibling { get; set; }
+
+		public abstract void ToXml (XmlElement element);
 
 		// Operations
 		public abstract AppResult Marked (string mark);

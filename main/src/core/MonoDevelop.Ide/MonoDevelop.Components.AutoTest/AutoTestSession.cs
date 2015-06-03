@@ -30,6 +30,8 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Xml;
+
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
@@ -331,6 +333,21 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			return resultSet;
+		}
+
+		public XmlDocument ExecuteQueryAndGenerateXml (AppQuery query, int timeout = 20000)
+		{
+			XmlDocument doc = null;
+
+			ExecuteOnIdleAndWait (() => {
+				doc = query.ExecuteAndGenerateXml ();
+				Sync (() => {
+					DispatchService.RunPendingEvents ();
+					return true;
+				});
+			});
+
+			return doc;
 		}
 
 		public AppResult[] WaitForElement (AppQuery query, int timeout)
