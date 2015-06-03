@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
@@ -39,14 +40,15 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		PackageManagementEvents packageManagementEvents;
 		FakePackageManagementProject fakeProject;
-		InstallPackageAction action;
+		TestableInstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
+		FakeFileService fileService;
 
 		void CreateAction ()
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			fakeProject = new FakePackageManagementProject ();
-			action = new InstallPackageAction (fakeProject, packageManagementEvents);
+			action = new TestableInstallPackageAction (fakeProject, packageManagementEvents);
 			installPackageHelper = new InstallPackageHelper (action);
 		}
 
@@ -59,6 +61,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			action.Operations =
 				PackageOperationHelper.CreateListWithOneInstallOperationWithFile (fileName);
+		}
+
+		IOpenPackageReadMeMonitor CreateReadMeMonitor (string packageId)
+		{
+			fileService = new FakeFileService (fakeProject.FakeDotNetProject);
+			return new OpenPackageReadMeMonitor (packageId, fakeProject, fileService);
 		}
 
 		[Test]
@@ -517,6 +525,84 @@ namespace MonoDevelop.PackageManagement.Tests
 			installPackageHelper.InstallTestPackage ();
 
 			CollectionAssert.AreEqual (action.Operations, actualOperations);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfully_OpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.AreEqual ("Test", action.OpenPackageReadMeMonitor.PackageId);
+			Assert.IsTrue (action.OpenPackageReadMeMonitor.IsDisposed);
+		}
+
+		[Test]
+		public void OpenReadMeText_DefaultValue_IsTrue ()
+		{
+			CreateAction ();
+			Assert.IsTrue (action.OpenReadMeText);
+		}
+
+		[Test]
+		public void Execute_OpenReadMeTextSetToFalse_NullOpenPackageReadmeMonitorCreated ()
+		{
+			CreateAction ();
+			action.OpenReadMeText = false;
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.InstallTestPackage();
+
+			Assert.IsTrue (action.NullOpenPackageReadMeMonitorIsCreated);
+		}
+
+		[Test]
+		public void Execute_PackageInstalledSuccessfullyWithReadmeTxt_ReadmeTxtFileIsOpened ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.TestPackage.AddFile ("readme.txt");
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				return CreateReadMeMonitor (packageId);
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.InstallPackageAction = (package, installAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+			};
+			installPackageHelper.InstallTestPackage ();
+
+			Assert.IsTrue (fileService.IsOpenFileCalled);
+			Assert.AreEqual (readmeFileName, fileService.FileNamePassedToOpenFile);
+		}
+
+		[Test]
+		public void Execute_PackageWithReadmeTxtIsInstalledButExceptionThrownWhenAddingPackageToProject_ReadmeFileIsNotOpened ()
+		{
+			CreateAction ();
+			installPackageHelper.TestPackage.Id = "Test";
+			installPackageHelper.TestPackage.AddFile ("readme.txt");
+			OpenPackageReadMeMonitor monitor = null;
+			action.CreateOpenPackageReadMeMonitorAction = packageId => {
+				monitor = CreateReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
+				return monitor;
+			};
+			string installPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
+			string readmeFileName = Path.Combine (installPath, "readme.txt");
+			fakeProject.InstallPackageAction = (package, installAction) => {
+				var eventArgs = new PackageOperationEventArgs (package, null, installPath);
+				fakeProject.FirePackageInstalledEvent (eventArgs);
+				fileService.ExistingFileNames.Add (readmeFileName);
+				throw new ApplicationException ();
+			};
+			Assert.Throws<ApplicationException> (() => {
+				installPackageHelper.InstallTestPackage ();
+			});
+
+			Assert.IsFalse (fileService.IsOpenFileCalled);
+			Assert.IsTrue (monitor.IsDisposed);
 		}
 	}
 }

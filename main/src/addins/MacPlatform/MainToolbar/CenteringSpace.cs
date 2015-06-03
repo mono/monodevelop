@@ -50,6 +50,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				CenteringSpaceToolbarItem.WindowFullscreening = false;
 				DispatchService.GuiDispatch (toolbarItem.UpdateWidth);
 			});
+
 			base.ViewDidMoveToWindow ();
 		}
 	}

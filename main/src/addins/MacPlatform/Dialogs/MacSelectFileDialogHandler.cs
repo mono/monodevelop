@@ -56,6 +56,7 @@ namespace MonoDevelop.MacIntegration
 					panel = new NSOpenPanel {
 						CanChooseDirectories = directoryMode,
 						CanChooseFiles = !directoryMode,
+						ResolvesAliases = false,
 					};
 				}
 				
@@ -109,6 +110,7 @@ namespace MonoDevelop.MacIntegration
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
+				openPanel.ShowsHiddenFiles = data.ShowHidden;
 			}
 		}
 		

@@ -20,3 +20,7 @@ style "menu" {
 style "combo-box-menu" {
     font_name = "Helvetica Neue 12"
 }
+
+style "tooltip" {
+    font_name = "Helvetica Neue 12"
+}

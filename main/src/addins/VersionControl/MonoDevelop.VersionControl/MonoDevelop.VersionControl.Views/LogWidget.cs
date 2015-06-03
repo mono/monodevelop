@@ -256,7 +256,8 @@ namespace MonoDevelop.VersionControl.Views
 			if (info.Repository.SupportsRevertRevision)
 				toolbar.Add (revertButton);
 
-			toolbar.Add (revertToButton);
+			if (info.Repository.SupportsRevertToRevision)
+				toolbar.Add (revertToButton);
 			toolbar.Add (refreshButton);
 
 			Gtk.HBox a = new Gtk.HBox ();

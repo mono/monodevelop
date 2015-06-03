@@ -31,22 +31,22 @@ namespace MonoDevelop.Components.AutoTest.Results
 {
 	public class GtkTreeModelResult : AppResult
 	{
-		TreeView TView;
+		Widget ParentWidget;
 		TreeModel TModel;
 		int Column;
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column)
 		{
-			TView = treeView;
+			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (TreeView treeView, TreeModel treeModel, int column, TreeIter iter)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter)
 		{
-			TView = treeView;
+			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 			resultIter = iter;
@@ -86,21 +86,19 @@ namespace MonoDevelop.Components.AutoTest.Results
 			DesiredText = text;
 
 			if (resultIter.HasValue) {
-				return (AppResult)AutoTestService.CurrentSession.UnsafeSync (() => CheckForText (TModel, (TreeIter) resultIter, exact) ? this : null);
+				return CheckForText (TModel, (TreeIter) resultIter, exact) ? this : null;
 			}
 
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (() => {
-				TModel.Foreach ((m, p, i) => {
-					if (CheckForText (m, i, exact)) {
-						resultIter = i;
-						return true;
-					}
+			TModel.Foreach ((m, p, i) => {
+				if (CheckForText (m, i, exact)) {
+					resultIter = i;
+					return true;
+				}
 
-					return false;
-				});
-
-				return resultIter.HasValue ? this : null;
+				return false;
 			});
+
+			return resultIter.HasValue ? this : null;
 		}
 
 		public override AppResult Property (string propertyName, object value)
@@ -114,16 +112,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return null;
 			}
 
-			return (List<AppResult>)AutoTestService.CurrentSession.UnsafeSync (() => {
-				List<AppResult> newList = new List<AppResult> ();
-				TreeIter currentIter = (TreeIter) resultIter;
+			List<AppResult> newList = new List<AppResult> ();
+			TreeIter currentIter = (TreeIter) resultIter;
 
-				while (TModel.IterNext (ref currentIter)) {
-					newList.Add (new GtkTreeModelResult (TView, TModel, Column, currentIter));
-				}
+			while (TModel.IterNext (ref currentIter)) {
+				newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, currentIter));
+			}
 
-				return newList;
-			});
+			return newList;
 		}
 
 		public override bool Select ()
@@ -132,11 +128,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				TView.Selection.SelectIter ((TreeIter)resultIter);
+			if (ParentWidget is TreeView) {
+				TreeView treeView = (TreeView) ParentWidget;
+				treeView.Selection.SelectIter ((TreeIter) resultIter);
+			} else if (ParentWidget is ComboBox) {
+				ComboBox comboBox = (ComboBox) ParentWidget;
+				comboBox.SetActiveIter ((TreeIter) resultIter);
+			}
 
-				return true;
-			});
+			return true;
 		}
 
 		public override bool Click ()
@@ -146,6 +146,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		}
 
 		public override bool TypeKey (char key, string state)
+		{
+			return false;
+		}
+
+		public override bool EnterText (string text)
 		{
 			return false;
 		}

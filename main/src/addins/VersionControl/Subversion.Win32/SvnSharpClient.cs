@@ -211,6 +211,7 @@ namespace SubversionAddinWindows
 		{
 			var args = new SvnAddArgs {
 				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty,
+				Force = true,
 			};
 			BindMonitor (monitor);
 			lock (client)

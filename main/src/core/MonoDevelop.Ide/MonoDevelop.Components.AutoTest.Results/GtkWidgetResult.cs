@@ -42,19 +42,28 @@ namespace MonoDevelop.Components.AutoTest.Results
 			resultWidget = widget;
 		}
 
+		public override string ToString ()
+		{
+			return String.Format ("{0} - {1} - {2} - {3}, - {4}", resultWidget, resultWidget.Allocation, resultWidget.Name, resultWidget.GetType ().FullName, resultWidget.Toplevel.Name);
+		}
+
 		public override AppResult Marked (string mark)
 		{
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
+			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
+				return this;
+			}
+
+			if (resultWidget.GetType ().FullName == mark) {
+				return this;
+			}
+
+			Window window = resultWidget as Window;
+			if (window != null) {
+				if (window.Title != null && window.Title.IndexOf (mark) > -1) {
 					return this;
 				}
-
-				if (resultWidget.GetType ().FullName == mark) {
-					return this;
-				}
-
-				return null;
-			});
+			}
+			return null;
 		}
 
 		public override AppResult CheckType (Type desiredType)
@@ -80,38 +89,78 @@ namespace MonoDevelop.Components.AutoTest.Results
 			// Entries and Labels have Text, Buttons have Label.
 			// FIXME: Are there other property names?
 
-			return (AppResult) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				// Look for a Text property on the widget.
-				PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
-				if (pinfo != null) {
-					string propText = (string)pinfo.GetValue (resultWidget);
-					if (CheckForText (propText, text, exact)) {
-						return this;
+			// Check for the combobox first and try to use the active text.
+			// If the active text fails then
+			ComboBox cb = resultWidget as ComboBox;
+			if (cb != null) {
+				string activeText = cb.ActiveText;
+				if (activeText == null) {
+					return null;
+				}
+
+				return CheckForText (activeText, text, exact) ? this : null;
+			}
+
+			// Look for a Text property on the widget.
+			PropertyInfo pinfo = resultWidget.GetType ().GetProperty ("Text");
+			if (pinfo != null) {
+				string propText = (string)pinfo.GetValue (resultWidget);
+				if (CheckForText (propText, text, exact)) {
+					return this;
+				}
+			}
+
+			pinfo = resultWidget.GetType ().GetProperty ("Label");
+			if (pinfo != null) {
+				string propText = (string)pinfo.GetValue (resultWidget);
+
+				Button button = resultWidget as Button;
+				// If resultWidget is a button then the label may not be the actual label that is displayed
+				// but rather a stock ID. So we may need to translate it
+				if (button != null && button.UseStock && propText != null) {
+					StockItem item = Stock.Lookup (propText);
+					propText = item.Label;
+				}
+
+				if (button != null && button.UseUnderline) {
+					int indexOfUnderline = propText.IndexOf ("_");
+					if (indexOfUnderline > -1) {
+						propText = propText.Remove (indexOfUnderline, 1);
 					}
 				}
 
-				pinfo = resultWidget.GetType ().GetProperty ("Label");
-				if (pinfo != null) {
-					string propText = (string)pinfo.GetValue (resultWidget);
-					if (CheckForText (propText, text, exact)) {
-						return this;
-					}
+				if (CheckForText (propText, text, exact)) {
+					return this;
 				}
+			}
 
+			return null;
+		}
+
+		TreeModel ModelFromWidget (Widget widget)
+		{
+			TreeView tv = widget as TreeView;
+			if (tv != null) {
+				return tv.Model;
+			}
+
+			ComboBox cb = widget as ComboBox;
+			if (cb == null) {
 				return null;
-			});
+			}
+
+			return cb.Model;
 		}
 
 		public override AppResult Model (string column)
 		{
-			TreeView tv = resultWidget as TreeView;
-			if (tv == null) {
+			TreeModel model = ModelFromWidget (resultWidget);
+			if (model == null) {
 				return null;
 			}
 
-			TreeModel model = (TreeModel) AutoTestService.CurrentSession.UnsafeSync (() => tv.Model);
-			if (model == null) {
-				return null;
+			if (column == null) {
+				return new GtkTreeModelResult (resultWidget, model, 0);
 			}
 
 			// Check if the class has the SemanticModelAttribute
@@ -128,14 +177,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 			}
 
-			//AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("{0} has {1} column names: {2}", resultWidget, attr.ColumnNames.Length, string.Join (", ", attr.ColumnNames));
 			int columnNumber = Array.IndexOf (attr.ColumnNames, column);
 			if (columnNumber == -1) {
 				return null;
 			}
 
-			//AutoTestService.CurrentSession.SessionDebug.SendDebugMessage ("{0} has {1} at column {2}", resultWidget, column, columnNumber);
-			return new GtkTreeModelResult (tv, model, columnNumber);
+			return new GtkTreeModelResult (resultWidget, model, columnNumber);
 		}
 
 		object GetPropertyValue (string propertyName)
@@ -160,32 +207,30 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override List<AppResult> NextSiblings ()
 		{
-			return (List<AppResult>) AutoTestService.CurrentSession.UnsafeSync (() => {
-				Widget parent = resultWidget.Parent;
-				Gtk.Container container = parent as Gtk.Container;
+			Widget parent = resultWidget.Parent;
+			Gtk.Container container = parent as Gtk.Container;
 
-				// This really shouldn't happen
-				if (container == null) {
-					return null;
+			// This really shouldn't happen
+			if (container == null) {
+				return null;
+			}
+
+			bool foundSelf = false;
+			List<AppResult> siblingResults = new List<AppResult> ();
+			foreach (Widget child in container.Children) {
+				if (child == resultWidget) {
+					foundSelf = true;
+					continue;
 				}
 
-				bool foundSelf = false;
-				List<AppResult> siblingResults = new List<AppResult> ();
-				foreach (Widget child in container.Children) {
-					if (child == resultWidget) {
-						foundSelf = true;
-						continue;
-					}
-
-					if (!foundSelf) {
-						continue;
-					}
-
-					siblingResults.Add (new GtkWidgetResult (child));
+				if (!foundSelf) {
+					continue;
 				}
 
-				return siblingResults;
-			});
+				siblingResults.Add (new GtkWidgetResult (child));
+			}
+
+			return siblingResults;
 		}
 
 		public override bool Select ()
@@ -194,10 +239,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				resultWidget.GrabFocus ();
-				return true;
-			});
+			resultWidget.GrabFocus ();
+			return true;
 		}
 
 		public override bool Click ()
@@ -207,10 +250,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				button.Click ();
-				return true;
-			});
+			button.Click ();
+			return true;
 		}
 
 		void SendKeyEvent (Gtk.Widget target, uint keyval, Gdk.ModifierType state, Gdk.EventType eventType, string subWindow)
@@ -252,16 +293,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		void RealTypeKey (Gdk.Key key, Gdk.ModifierType state)
 		{
-			AutoTestService.CurrentSession.UnsafeSync (delegate {
-				SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyPress, null);
-				return null;
-			});
-			Thread.Sleep (15);
-			AutoTestService.CurrentSession.UnsafeSync (delegate {
-				SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
-				return null;
-			});
-			Thread.Sleep (10);
+			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyPress, null);
+			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
 		}
 
 		public override bool TypeKey (char key, string state)
@@ -279,6 +312,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		public override bool EnterText (string text)
+		{
+			foreach (var c in text) {
+				TypeKey (c, null);
+			}
+
+			return true;
+		}
+
 		public override bool Toggle (bool active)
 		{
 			ToggleButton toggleButton = resultWidget as ToggleButton;
@@ -286,10 +328,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			return (bool) AutoTestService.CurrentSession.UnsafeSync (delegate {
-				toggleButton.Active = active;
-				return true;
-			});
+			toggleButton.Active = active;
+			return true;
 		}
 	}
 }

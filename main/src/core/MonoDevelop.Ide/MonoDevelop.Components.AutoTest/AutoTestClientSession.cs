@@ -32,6 +32,7 @@ using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -121,15 +122,21 @@ namespace MonoDevelop.Components.AutoTest
 				}
 		}
 
+		public AutoTestSession.MemoryStats MemoryStats {
+			get {
+				return session.GetMemoryStats ();
+			}
+		}
+
 		public void ExitApp ()
 		{
 			ClearEventQueue ();
 			session.ExitApp ();
 		}
 
-		public void ExecuteCommand (object cmd, object dataItem = null)
+		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
-			session.ExecuteCommand (cmd, dataItem);
+			session.ExecuteCommand (cmd, dataItem, source);
 		}
 
 		/*
@@ -257,6 +264,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool SelectElement (Func<AppQuery, AppQuery> query)
 		{
 			AppResult[] results = Query (query);
+
 			if (results.Length > 0) {
 				return session.Select (results [0]);
 			}

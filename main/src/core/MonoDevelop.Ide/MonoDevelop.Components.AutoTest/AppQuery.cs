@@ -30,6 +30,10 @@ using Gtk;
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
 
+#if MAC
+using AppKit;
+#endif
+
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AppQuery : MarshalByRefObject
@@ -66,8 +70,38 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
-		List<AppResult> ResultSetFromWindowList (Gtk.Window[] windows)
+#if MAC
+		AppResult GenerateChildrenForNSView (NSView view, List<AppResult> resultSet)
 		{
+			AppResult firstChild = null, lastChild = null;
+
+			foreach (var child in view.Subviews) {
+				AppResult node = new NSObjectResult (child);
+				resultSet.Add (node);
+
+				if (firstChild == null) {
+					firstChild = node;
+					lastChild = node;
+				} else {
+					lastChild.NextSibling = node;
+					node.PreviousSibling = lastChild;
+					lastChild = node;
+				}
+
+				if (child.Subviews != null) {
+					AppResult children = GenerateChildrenForNSView (child, resultSet);
+					node.FirstChild = children;
+				}
+			}
+
+			return firstChild;
+		}
+#endif
+
+		List<AppResult> ResultSetFromWindows ()
+		{
+			Gtk.Window[] windows = Gtk.Window.ListToplevels ();
+
 			// null for AppResult signifies root node
 			rootNode = new GtkWidgetResult (null);
 			List<AppResult> fullResultSet = new List<AppResult> ();
@@ -93,6 +127,70 @@ namespace MonoDevelop.Components.AutoTest
 				node.FirstChild = children;
 			}
 
+#if MAC
+			NSWindow[] nswindows = NSApplication.SharedApplication.Windows;
+			if (nswindows != null) {
+				foreach (var window in nswindows) {
+					AppResult node = new NSObjectResult (window);
+					AppResult nsWindowLastNode = null;
+					fullResultSet.Add (node);
+
+					if (rootNode.FirstChild == null) {
+						rootNode.FirstChild = node;
+						lastChild = node;
+					} else {
+						lastChild.NextSibling = node;
+						node.PreviousSibling = lastChild;
+						lastChild = node;
+					}
+
+					foreach (var child in window.ContentView.Subviews) {
+						AppResult childNode = new NSObjectResult (child);
+						fullResultSet.Add (childNode);
+
+						if (node.FirstChild == null) {
+							node.FirstChild = childNode;
+							nsWindowLastNode = childNode;
+						} else {
+							nsWindowLastNode.NextSibling = childNode;
+							childNode.PreviousSibling = nsWindowLastNode;
+							nsWindowLastNode = childNode;
+						}
+
+						if (child.Subviews != null) {
+							AppResult children = GenerateChildrenForNSView (child, fullResultSet);
+							childNode.FirstChild = children;
+						}
+					}
+
+					NSToolbar toolbar = window.Toolbar;
+					AppResult toolbarNode = new NSObjectResult (toolbar);
+
+					if (node.FirstChild == null) {
+						node.FirstChild = toolbarNode;
+						nsWindowLastNode = toolbarNode;
+					} else {
+						nsWindowLastNode.NextSibling = toolbarNode;
+						toolbarNode.PreviousSibling = nsWindowLastNode;
+						nsWindowLastNode = toolbarNode;
+					}
+
+					if (toolbar != null) {
+						foreach (var item in toolbar.Items) {
+							if (item.View != null) {
+								AppResult itemNode = new NSObjectResult (item.View);
+								fullResultSet.Add (itemNode);
+
+								if (item.View.Subviews != null) {
+									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
+									toolbarNode.FirstChild = children;
+								}
+							}
+						}
+					}
+				}
+			}
+#endif
 			return fullResultSet;
 		}
 
@@ -102,7 +200,8 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppResult[] Execute ()
 		{
-			List<AppResult> resultSet = ResultSetFromWindowList (Gtk.Window.ListToplevels ());
+			List<AppResult> resultSet = ResultSetFromWindows ();
+
 			foreach (var subquery in operations) {
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
@@ -172,7 +271,7 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery Model (string column)
+		public AppQuery Model (string column = null)
 		{
 			operations.Add (new ModelOperation (column));
 			return this;
@@ -211,6 +310,12 @@ namespace MonoDevelop.Components.AutoTest
 		public AppQuery Index (int index)
 		{
 			operations.Add (new IndexOperation (index));
+			return this;
+		}
+
+		public AppQuery Children ()
+		{
+			operations.Add (new ChildrenOperation ());
 			return this;
 		}
 

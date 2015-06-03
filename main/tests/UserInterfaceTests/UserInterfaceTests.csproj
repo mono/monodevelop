@@ -40,6 +40,9 @@
       <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -50,10 +53,12 @@
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
     <Compile Include="NewProjectController.cs" />
     <Compile Include="UITestDebug.cs" />
-    <Compile Include="MonoDevelopTests\DotNetTemplatesTest.cs" />
-    <Compile Include="MonoDevelopTests\ASPNETTemplateTests.cs" />
-    <Compile Include="MonoDevelopTests\MiscTemplatesTest.cs" />
     <Compile Include="TemplateTestOptions.cs" />
+    <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
+    <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
+    <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
+    <Compile Include="VersionControlTests\VCSUtils.cs" />
+    <Compile Include="VersionControlTests\GitTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -67,8 +72,20 @@
       <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
+      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
+      <Name>MonoDevelop.VersionControl.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelopTests\" />
+    <Folder Include="New Folder\" />
   </ItemGroup>
 </Project>

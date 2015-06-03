@@ -625,8 +625,9 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
-                            <property name="Label" translatable="yes">_Push All Tags</property>
+                            <property name="Label" translatable="yes">_Push</property>
                             <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnButtonPushTagClicked" />
                           </widget>
                           <packing>
                             <property name="Position">1</property>
@@ -642,6 +643,7 @@
                             <property name="UseStock">True</property>
                             <property name="Type">StockItem</property>
                             <property name="StockId">gtk-delete</property>
+                            <signal name="Clicked" handler="OnButtonRemoveTagClicked" />
                             <property name="label">gtk-delete</property>
                           </widget>
                           <packing>
@@ -782,6 +784,22 @@
                           </widget>
                           <packing>
                             <property name="Position">4</property>
+                            <property name="AutoSize">True</property>
+                            <property name="Expand">False</property>
+                            <property name="Fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="Gtk.Button" id="buttonFetch">
+                            <property name="MemberName" />
+                            <property name="CanFocus">True</property>
+                            <property name="Type">TextOnly</property>
+                            <property name="Label" translatable="yes">Fetch</property>
+                            <property name="UseUnderline">True</property>
+                            <signal name="Clicked" handler="OnButtonFetchClicked" />
+                          </widget>
+                          <packing>
+                            <property name="Position">5</property>
                             <property name="AutoSize">True</property>
                             <property name="Expand">False</property>
                             <property name="Fill">False</property>
@@ -947,7 +965,7 @@
               <widget class="Gtk.CheckButton" id="checkTrack">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Track a branch or tag:</property>
+                <property name="Label" translatable="yes">Track a branch:</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -1052,7 +1070,7 @@
             <child>
               <widget class="Gtk.Table" id="table3">
                 <property name="MemberName" />
-                <property name="NRows">3</property>
+                <property name="NRows">2</property>
                 <property name="NColumns">2</property>
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
@@ -1065,29 +1083,6 @@
                     <signal name="Changed" handler="OnEntryNameChanged" />
                   </widget>
                   <packing>
-                    <property name="LeftAttach">1</property>
-                    <property name="RightAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Entry" id="entryPushUrl">
-                    <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnEntryPushUrlChanged" />
-                  </widget>
-                  <packing>
-                    <property name="TopAttach">2</property>
-                    <property name="BottomAttach">3</property>
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
@@ -1150,25 +1145,6 @@
                   <packing>
                     <property name="TopAttach">1</property>
                     <property name="BottomAttach">2</property>
-                    <property name="AutoSize">True</property>
-                    <property name="XOptions">Fill</property>
-                    <property name="YOptions">Fill</property>
-                    <property name="XExpand">False</property>
-                    <property name="XFill">True</property>
-                    <property name="XShrink">False</property>
-                    <property name="YExpand">False</property>
-                    <property name="YFill">True</property>
-                    <property name="YShrink">False</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="Gtk.Label" id="label9">
-                    <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Push Url:</property>
-                  </widget>
-                  <packing>
-                    <property name="TopAttach">2</property>
-                    <property name="BottomAttach">3</property>
                     <property name="AutoSize">True</property>
                     <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
@@ -1392,7 +1368,7 @@
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Git Credentials</property>
     <property name="WindowPosition">CenterOnParent</property>
-    <property name="Buttons">4</property>
+    <property name="Buttons">2</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
       <widget class="Gtk.VBox" id="dialog1_VBox">
@@ -1432,7 +1408,7 @@
         <property name="MemberName" />
         <property name="Spacing">10</property>
         <property name="BorderWidth">5</property>
-        <property name="Size">4</property>
+        <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
           <widget class="Gtk.Button" id="buttonCancel">
@@ -1463,42 +1439,6 @@
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonNo">
-            <property name="MemberName" />
-            <property name="Visible">False</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-no</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonNoClicked" />
-            <property name="label">gtk-no</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="buttonYes">
-            <property name="MemberName" />
-            <property name="Visible">False</property>
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-yes</property>
-            <property name="ResponseId">-1</property>
-            <signal name="Clicked" handler="OnButtonYesClicked" />
-            <property name="label">gtk-yes</property>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>

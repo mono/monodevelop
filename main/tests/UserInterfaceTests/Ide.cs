@@ -47,20 +47,8 @@ namespace UserInterfaceTests
 
 		public static void OpenFile (FilePath file)
 		{
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (FilePath) file, true);
-			Assert.AreEqual (file, Ide.GetActiveDocumentFilename ());
-		}
-
-		public static FilePath OpenTestSolution (string solution)
-		{
-			FilePath path = Util.GetSampleProject (solution);
-
-			RunAndWaitForTimer (
-				() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (string)path),
-				"MonoDevelop.Ide.Counters.OpenWorkspaceItemTimer"
-			);
-
-			return path;
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (string) file, true);
+			Assert.AreEqual (file, GetActiveDocumentFilename ());
 		}
 
 		public static void CloseAll ()
@@ -74,10 +62,10 @@ namespace UserInterfaceTests
 			return Session.GetGlobalValue<FilePath> ("MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.FileName");
 		}
 
-		public static bool BuildSolution (bool isPass = true)
+		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 180)
 		{
 			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"Ide.Shell.ProjectBuilt", timeout: 60000);
+				"Ide.Shell.ProjectBuilt", timeout: timeoutInSecs * 1000);
 			var status = IsBuildSuccessful ();
 			return isPass == status;
 		}

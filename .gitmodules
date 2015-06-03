@@ -5,9 +5,6 @@
 [submodule "main/external/mono-tools"]
 	path = main/external/mono-tools
 	url = git://github.com/mono/mono-tools.git
-[submodule "main/external/ngit"]
-	path = main/external/ngit
-	url = git://github.com/mono/ngit.git
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
 	url = git://github.com/mono/mdtestharness.git
@@ -47,3 +44,10 @@
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git
+[submodule "main/external/libgit2sharp"]
+	path = main/external/libgit2sharp
+	url = git://github.com/libgit2/libgit2sharp.git
+	branch = therzok/mdNext
+[submodule "main/external/libgit-binary"]
+	path = main/external/libgit-binary
+	url = git://github.com/mono/libgit-binary.git

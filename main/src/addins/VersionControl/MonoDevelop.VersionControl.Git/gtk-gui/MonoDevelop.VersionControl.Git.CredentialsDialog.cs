@@ -5,12 +5,13 @@ namespace MonoDevelop.VersionControl.Git
 	internal partial class CredentialsDialog
 	{
 		private global::Gtk.VBox vbox;
+
 		private global::Gtk.Label labelTop;
+
 		private global::Gtk.Button buttonCancel;
-		private global::Gtk.Button buttonOk;
-		private global::Gtk.Button buttonNo;
-		private global::Gtk.Button buttonYes;
 		
+		private global::Gtk.Button buttonOk;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -71,40 +72,12 @@ namespace MonoDevelop.VersionControl.Git
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
-			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-			this.buttonNo = new global::Gtk.Button ();
-			this.buttonNo.CanFocus = true;
-			this.buttonNo.Name = "buttonNo";
-			this.buttonNo.UseStock = true;
-			this.buttonNo.UseUnderline = true;
-			this.buttonNo.Label = "gtk-no";
-			w4.Add (this.buttonNo);
-			global::Gtk.ButtonBox.ButtonBoxChild w7 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4 [this.buttonNo]));
-			w7.Position = 2;
-			w7.Expand = false;
-			w7.Fill = false;
-			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-			this.buttonYes = new global::Gtk.Button ();
-			this.buttonYes.CanFocus = true;
-			this.buttonYes.Name = "buttonYes";
-			this.buttonYes.UseStock = true;
-			this.buttonYes.UseUnderline = true;
-			this.buttonYes.Label = "gtk-yes";
-			w4.Add (this.buttonYes);
-			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w4 [this.buttonYes]));
-			w8.Position = 3;
-			w8.Expand = false;
-			w8.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 500;
 			this.DefaultHeight = 132;
-			this.buttonNo.Hide ();
-			this.buttonYes.Hide ();
 			this.Show ();
-			this.buttonNo.Clicked += new global::System.EventHandler (this.OnButtonNoClicked);
-			this.buttonYes.Clicked += new global::System.EventHandler (this.OnButtonYesClicked);
 		}
 	}
 }

@@ -29,6 +29,7 @@ using Foundation;
 using Gtk;
 using MonoDevelop.Components.Mac;
 using MonoDevelop.Ide;
+using Xwt.Mac;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -70,47 +71,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}));
 		}
 
-		static Xwt.ModifierKeys TranslateMask (NSEventModifierMask mask)
+		bool SendKeyPressed (Xwt.KeyEventArgs kargs)
 		{
-			Xwt.ModifierKeys xwtMask = Xwt.ModifierKeys.None;
-			if (mask.HasFlag (NSEventModifierMask.CommandKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Command;
-			if (mask.HasFlag (NSEventModifierMask.ControlKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Control;
-			if (mask.HasFlag (NSEventModifierMask.ShiftKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Shift;
-			if (mask.HasFlag (NSEventModifierMask.AlternateKeyMask))
-				xwtMask |= Xwt.ModifierKeys.Alt;
-			return xwtMask;
-		}
-
-		static Xwt.Key TranslateKey (NSKey key)
-		{
-			switch (key)
-			{
-			case NSKey.UpArrow:
-				return Xwt.Key.Up;
-			case NSKey.DownArrow:
-				return Xwt.Key.Down;
-			case NSKey.LeftArrow:
-				return Xwt.Key.Left;
-			case NSKey.RightArrow:
-				return Xwt.Key.Right;
-			case NSKey.Home:
-				return Xwt.Key.Home;
-			case NSKey.End:
-				return Xwt.Key.End;
-			case NSKey.PageUp:
-				return Xwt.Key.PageUp;
-			case NSKey.PageDown:
-				return Xwt.Key.PageDown;
-			}
-			return 0;
-		}
-
-		bool SendKeyPressed (Xwt.Key key, Xwt.ModifierKeys mask)
-		{
-			var kargs = new Xwt.KeyEventArgs (key, mask, false, 0);
 			if (KeyPressed != null)
 				KeyPressed (this, kargs);
 
@@ -119,17 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
-			if (theEvent.KeyCode == (ushort)NSKey.Escape) {
-				SendKeyPressed (Xwt.Key.Escape, Xwt.ModifierKeys.None);
-				base.PerformKeyEquivalent (theEvent);
-				return true;
-			}
-
-			// Use CharactersIgnoringModifiers instead of KeyCode. They don't match Xwt anyway.
-			if (SendKeyPressed (TranslateKey ((NSKey)theEvent.CharactersIgnoringModifiers[0]), TranslateMask (theEvent.ModifierFlags)))
-				return true;
-
-			return base.PerformKeyEquivalent (theEvent);
+			return SendKeyPressed (theEvent.ToXwtKeyEventArgs ()) || base.PerformKeyEquivalent (theEvent);
 		}
 
 		public override void DidEndEditing (NSNotification notification)

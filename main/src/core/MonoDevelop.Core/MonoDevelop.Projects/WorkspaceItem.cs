@@ -288,6 +288,21 @@ namespace MonoDevelop.Projects
 			return InternalBuild (monitor, configuration);
 		}
 		
+		public BuildResult Build (IProgressMonitor monitor, string configuration, ProjectOperationContext context)
+		{
+			return Build (monitor, (SolutionConfigurationSelector) configuration, context);
+		}
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, ProjectOperationContext context)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				return Build (monitor, solutionConfiguration);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			}
+		}
+
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
 			Execute (monitor, context, (SolutionConfigurationSelector) configuration);

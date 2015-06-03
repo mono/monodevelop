@@ -64,6 +64,8 @@ namespace MonoDevelop.Ide.Projects
 		protected override bool RunDefault ()
 		{
 			FileSelector fdiag  = new FileSelector (data.Title);
+
+			fdiag.ShowHidden = data.ShowHidden;
 			
 			//add a combo that can be used to override the default build action
 			ComboBox combo = new ComboBox (data.BuildActions ?? new string[0]);

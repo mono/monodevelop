@@ -1,21 +1,21 @@
-// 
+//
 // GitCredentials.cs
-//  
+//
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,113 +24,199 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NGit.Transport;
+using LibGit2Sharp;
+using System.IO;
+using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	sealed class GitCredentials: CredentialsProvider
+	static class GitCredentials
 	{
-		bool HasReset {
-			get; set;
-		}
-		
-		public override bool IsInteractive ()
+		// Gather keys on initialize.
+		static readonly List<string> Keys = new List<string> ();
+		static readonly Dictionary<string, int> KeyForUrl = new Dictionary<string, int> ();
+		static readonly Dictionary<string, bool> AgentForUrl = new Dictionary<string, bool> ();
+
+		static string urlUsed;
+		static bool agentUsed;
+		static int keyUsed = -1;
+		static bool nativePasswordUsed;
+
+		static GitCredentials ()
 		{
-			return true;
-		}
-		
-		public override bool Supports (params CredentialItem[] items)
-		{
-			return true;
+			string keyStorage = Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".ssh");
+			if (!Directory.Exists (keyStorage))
+				return;
+
+			foreach (var privateKey in Directory.EnumerateFiles (keyStorage)) {
+				string publicKey = privateKey + ".pub";
+				if (File.Exists (publicKey) && !KeyHasPassphrase (privateKey))
+					Keys.Add (privateKey);
+			}
 		}
 
-		public override bool Get (URIish uri, params CredentialItem[] items)
+		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types)
 		{
-			bool result = false;
-			CredentialItem.Password passwordItem = null;
-			CredentialItem.StringType passphraseItem = null;
-			
+			bool result = true;
+			Uri uri = null;
+
+			urlUsed = url;
+
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
-				// If the password store has a password and we already tried using it, it could be incorrect.
-				// If this happens, do not return true and ask the user for a new password.
-				if (!HasReset) {
-					return true;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+				uri = new Uri (url);
+				string username;
+				string password;
+				if (!nativePasswordUsed && TryGetUsernamePassword (uri, out username, out password)) {
+					nativePasswordUsed = true;
+					return new UsernamePasswordCredentials {
+						Username = username,
+						Password = password
+					};
 				}
+			}
+
+			Credentials cred;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0)
+				cred = new UsernamePasswordCredentials ();
+			else {
+				// Try ssh-agent on Linux.
+				if (!Platform.IsWindows && !agentUsed) {
+					bool agentUsable;
+					if (!AgentForUrl.TryGetValue (url, out agentUsable))
+						AgentForUrl [url] = agentUsable = true;
+
+					if (agentUsable) {
+						agentUsed = true;
+						return new SshAgentCredentials {
+							Username = userFromUrl,
+						};
+					}
+				}
+
+				int key;
+				if (!KeyForUrl.TryGetValue (url, out key)) {
+					if (keyUsed + 1 < Keys.Count)
+						keyUsed++;
+					else {
+						SelectFileDialog dlg = null;
+						bool success = false;
+
+						DispatchService.GuiSyncDispatch (() => {
+							dlg = new SelectFileDialog (GettextCatalog.GetString ("Select a private SSH key to use."));
+							dlg.ShowHidden = true;
+							dlg.CurrentFolder = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+							success = dlg.Run ();
+						});
+						if (!success || !File.Exists (dlg.SelectedFile + ".pub"))
+							throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+
+						cred = new SshUserKeyCredentials {
+							Username = userFromUrl,
+							Passphrase = "",
+							PrivateKey = dlg.SelectedFile,
+							PublicKey = dlg.SelectedFile + ".pub",
+						};
+
+						if (KeyHasPassphrase (dlg.SelectedFile)) {
+							DispatchService.GuiSyncDispatch (delegate {
+								result = MessageService.ShowCustomDialog (new CredentialsDialog (url, types, cred)) == (int)Gtk.ResponseType.Ok;
+							});
+						}
+
+						if (result)
+							return cred;
+						throw new VersionControlException (GettextCatalog.GetString ("Invalid credentials were supplied. Aborting operation."));
+					}
+				} else
+					keyUsed = key;
+
+				cred = new SshUserKeyCredentials {
+					Username = userFromUrl,
+					Passphrase = "",
+					PrivateKey = Keys [keyUsed],
+					PublicKey = Keys [keyUsed] + ".pub",
+				};
+				return cred;
 			}
 
 			DispatchService.GuiSyncDispatch (delegate {
-				CredentialsDialog dlg = new CredentialsDialog (uri, items);
-				try {
-					result = MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
-				} finally {
-					dlg.Destroy ();
-				}
+				result = MessageService.ShowCustomDialog (new CredentialsDialog (url, types, cred)) == (int)Gtk.ResponseType.Ok;
 			});
-				
-			HasReset = false;
+
 			if (result) {
-				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
-				if (passwordItem != null) {
-					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
-				} else if (passphraseItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
+				if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+					var upcred = (UsernamePasswordCredentials)cred;
+					if (!string.IsNullOrEmpty (upcred.Password)) {
+						PasswordService.AddWebUserNameAndPassword (uri, upcred.Username, upcred.Password);
+					}
 				}
 			}
-			return result;
-		}
-		
-		public override void Reset (URIish uri)
-		{
-			HasReset = true;
-		}
-		
-		static bool TryGetPassphrase (URIish uri, CredentialItem[] items, out CredentialItem.StringType passphraseItem)
-		{
-			var actualUrl = new Uri (uri.ToString ());
-			var passphrase = (CredentialItem.StringType) items.FirstOrDefault (i => i is CredentialItem.StringType);
-			
-			if (items.Length == 1 && passphrase != null) {
-				passphraseItem = passphrase;
 
-				var passphraseValue = PasswordService.GetWebPassword (actualUrl);
-				if (passphraseValue != null) {
-					passphrase.SetValue (passphraseValue);
-					return true;
-				}
-			} else {
-				passphraseItem = null;
+			return cred;
+		}
+
+		static bool KeyHasPassphrase (string key)
+		{
+			return File.ReadAllText (key).Contains ("Proc-Type: 4,ENCRYPTED");
+		}
+
+		static bool TryGetPassphrase (Uri uri, out string passphrase)
+		{
+			var passphraseValue = PasswordService.GetWebPassword (uri);
+			if (passphraseValue != null) {
+				passphrase = passphraseValue;
+				return true;
 			}
-			
+
+			passphrase = null;
 			return false;
 		}
-		
-		static bool TryGetUsernamePassword (URIish uri, CredentialItem[] items, out CredentialItem.Password passwordItem)
+
+		static bool TryGetUsernamePassword (Uri uri, out string username, out string password)
 		{
-			var actualUrl = new Uri (uri.ToString ());
-			var username = (CredentialItem.Username) items.FirstOrDefault (i => i is CredentialItem.Username);
-			var password = (CredentialItem.Password) items.FirstOrDefault (i => i is CredentialItem.Password);
-
-			if (items.Length == 2 && username != null && password != null) {
-				passwordItem = password;
-
-				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
-				if (cred != null) {
-					username.SetValue (cred.Item1);
-					password.SetValueNoCopy (cred.Item2.ToArray ());
-					return true;
-				}
-			} else {
-				passwordItem = null;
+			var cred = PasswordService.GetWebUserNameAndPassword (uri);
+			if (cred != null) {
+				username = cred.Item1;
+				password = cred.Item2;
+				return true;
 			}
 
+			username = null;
+			password = null;
 			return false;
+		}
+
+		internal static void StoreCredentials ()
+		{
+			nativePasswordUsed = false;
+
+			if (!string.IsNullOrEmpty (urlUsed))
+				if (keyUsed != -1)
+					KeyForUrl [urlUsed] = keyUsed;
+
+			Cleanup ();
+		}
+
+		internal static void InvalidateCredentials ()
+		{
+			if (!string.IsNullOrEmpty (urlUsed))
+				if (AgentForUrl.ContainsKey (urlUsed))
+					AgentForUrl [urlUsed] &= !agentUsed;
+
+			Cleanup ();
+		}
+
+		static void Cleanup ()
+		{
+			urlUsed = null;
+			agentUsed = false;
+			keyUsed = -1;
 		}
 	}
 }
-

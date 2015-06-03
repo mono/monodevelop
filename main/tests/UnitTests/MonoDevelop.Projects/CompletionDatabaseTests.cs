@@ -33,7 +33,6 @@ using MonoDevelop.Projects.Dom;
 using MonoDevelop.Projects.Dom.Parser;
 using NUnit.Framework;
 using UnitTests;
-using Mono.CSharp;
 using System.Linq;
 
 namespace MonoDevelop.Projects

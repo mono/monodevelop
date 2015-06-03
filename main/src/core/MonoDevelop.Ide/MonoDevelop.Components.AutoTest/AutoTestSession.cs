@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
@@ -33,6 +34,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -60,10 +62,34 @@ namespace MonoDevelop.Components.AutoTest
 			return null;
 		}
 
-		public void ExecuteCommand (object cmd, object dataItem = null)
+		[Serializable]
+		public struct MemoryStats {
+			public long PrivateMemory;
+			public long PeakVirtualMemory;
+			public long PagedSystemMemory;
+			public long PagedMemory;
+			public long NonPagedSystemMemory;
+		};
+
+		public MemoryStats GetMemoryStats ()
+		{
+			MemoryStats stats;
+			using (Process proc = Process.GetCurrentProcess ()) {
+				stats = new MemoryStats {
+					PrivateMemory = proc.PrivateMemorySize64,
+					PeakVirtualMemory = proc.PeakVirtualMemorySize64,
+					PagedSystemMemory = proc.PagedSystemMemorySize64,
+					PagedMemory = proc.PagedMemorySize64,
+					NonPagedSystemMemory = proc.NonpagedSystemMemorySize64
+				};
+				return stats;
+			}
+		}
+
+		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
 			Gtk.Application.Invoke (delegate {
-				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null);
+				AutoTestService.CommandManager.DispatchCommand (cmd, dataItem, null, source);
 			});
 		}
 		
@@ -88,7 +114,7 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			});
 			if (!syncEvent.WaitOne (20000))
-				throw new Exception ("Timeout while executing synchronized call");
+				throw new TimeoutException ("Timeout while executing synchronized call");
 			if (error != null)
 				throw error;
 			return safe ? SafeObject (res) : res;
@@ -264,14 +290,42 @@ namespace MonoDevelop.Components.AutoTest
 			return query;
 		}
 
-		public AppResult[] ExecuteQuery (AppQuery query)
+		public void ExecuteOnIdleAndWait (Action idleFunc, int timeout = 20000)
 		{
-			var results = query.Execute ();
+			syncEvent.Reset ();
+			GLib.Idle.Add (() => {
+				idleFunc ();
+				syncEvent.Set ();
+				return false;
+			});
+
+			if (!syncEvent.WaitOne (timeout)) {
+				throw new TimeoutException ("Timeout while executing ExecuteOnIdleAndWait");
+			}
+		}
+
+		// Executes the query outside of a syncEvent wait so it is safe to call from
+		// inside an ExecuteOnIdleAndWait
+		AppResult[] ExecuteQueryNoWait (AppQuery query)
+		{
+			AppResult[] resultSet = query.Execute ();
 			Sync (() => {
 				DispatchService.RunPendingEvents ();
 				return true;
 			});
-			return results;
+
+			return resultSet;
+		}
+
+		public AppResult[] ExecuteQuery (AppQuery query, int timeout = 20000)
+		{
+			AppResult[] resultSet = null;
+
+			ExecuteOnIdleAndWait (() => {
+				resultSet = ExecuteQueryNoWait (query);
+			});
+
+			return resultSet;
 		}
 
 		public AppResult[] WaitForElement (AppQuery query, int timeout)
@@ -281,7 +335,7 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult[] resultSet = null;
 
 			GLib.Timeout.Add ((uint)pollTime, () => {
-				resultSet = ExecuteQuery (query);
+				resultSet = ExecuteQueryNoWait (query);
 
 				if (resultSet.Length > 0) {
 					syncEvent.Set ();
@@ -293,7 +347,7 @@ namespace MonoDevelop.Components.AutoTest
 			});
 
 			if (!syncEvent.WaitOne (timeout)) {
-				throw new Exception ("Timeout while executing synchronized call");
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForElement: {0}", query));
 			}
 
 			return resultSet;
@@ -306,7 +360,7 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult[] resultSet = null;
 
 			GLib.Timeout.Add ((uint)pollTime, () => {
-				resultSet = query.Execute ();
+				resultSet = ExecuteQueryNoWait (query);
 				if (resultSet.Length == 0) {
 					syncEvent.Set ();
 					return false;
@@ -317,7 +371,7 @@ namespace MonoDevelop.Components.AutoTest
 			});
 
 			if (!syncEvent.WaitOne (timeout)) {
-				throw new Exception ("Timeout while executing synchronized call");
+				throw new TimeoutException (String.Format ("Timeout while executing WaitForNoElement: {0}", query));
 			}
 		}
 
@@ -364,30 +418,47 @@ namespace MonoDevelop.Components.AutoTest
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new Exception ("Timed out waiting for event");
+			throw new TimeoutException ("Timed out waiting for event");
 		}
 
 		public bool Select (AppResult result)
 		{
-			return result.Select ();
+			bool success = false;
+
+			ExecuteOnIdleAndWait (() => {
+				success = result.Select ();
+			});
+
+			return success;
 		}
 
 		public bool Click (AppResult result)
 		{
-			return result.Click ();
+			bool success = false;
+
+			ExecuteOnIdleAndWait (() => {
+				success = result.Click ();
+			});
+
+			return success;
 		}
 
 		public bool EnterText (AppResult result, string text)
 		{
-			foreach (char c in text) {
-				result.TypeKey (c, "");
-			}
+			ExecuteOnIdleAndWait (() => result.EnterText (text));
+
 			return true;
 		}
 
 		public bool Toggle (AppResult result, bool active)
 		{
-			return result.Toggle (active);
+			bool success = false;
+
+			ExecuteOnIdleAndWait (() => {
+				success = result.Toggle (active);
+			});
+
+			return success;
 		}
 	}
 

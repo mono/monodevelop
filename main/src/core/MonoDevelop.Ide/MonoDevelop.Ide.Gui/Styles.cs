@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Gui
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
 
-			public static readonly Cairo.Color DefaultBackgroundColor = CairoExtensions.ParseColor ("fff3cf");
+			public static readonly Cairo.Color DefaultBackgroundColor = CairoExtensions.ParseColor ("f2f2f2");
 			public static readonly Cairo.Color ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
 			public static readonly Cairo.Color WarningBackgroundColor = CairoExtensions.ParseColor ("efd46c");
 			public static readonly Cairo.Color InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
