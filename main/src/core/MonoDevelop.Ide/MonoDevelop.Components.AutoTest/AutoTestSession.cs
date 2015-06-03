@@ -430,9 +430,13 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Select ();
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Select ();
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Select", result.SourceQuery, result, e);
+			}
 
 			return success;
 		}
@@ -441,16 +445,24 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Click ();
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Click ();
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Click", result.SourceQuery, result, e);
+			}
 
 			return success;
 		}
 
 		public bool EnterText (AppResult result, string text)
 		{
-			ExecuteOnIdleAndWait (() => result.EnterText (text));
+			try {
+				ExecuteOnIdleAndWait (() => result.EnterText (text));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
+			}
 
 			return true;
 		}
@@ -459,11 +471,20 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Toggle (active);
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Toggle (active);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Toggle", result.SourceQuery, result, e);
+			}
 
 			return success;
+		}
+
+		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
+		{
+			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
 		}
 	}
 

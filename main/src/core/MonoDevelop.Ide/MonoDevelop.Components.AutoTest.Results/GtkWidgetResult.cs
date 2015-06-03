@@ -160,7 +160,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			if (column == null) {
-				return new GtkTreeModelResult (resultWidget, model, 0);
+				return new GtkTreeModelResult (resultWidget, model, 0) { SourceQuery = this.SourceQuery };
 			}
 
 			// Check if the class has the SemanticModelAttribute
@@ -182,7 +182,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return null;
 			}
 
-			return new GtkTreeModelResult (resultWidget, model, columnNumber);
+			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
 		object GetPropertyValue (string propertyName)
@@ -227,7 +227,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 					continue;
 				}
 
-				siblingResults.Add (new GtkWidgetResult (child));
+				siblingResults.Add (new GtkWidgetResult (child) { SourceQuery = this.SourceQuery });
 			}
 
 			return siblingResults;
