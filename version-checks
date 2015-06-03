@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=e5727391ef61e8ccfd5f0fb2e6ac0b2efc0eea0d
+DEP_NEEDED_VERSION[0]=8749efc0ec309cd3020d0454c0130fbd7c12801f
 DEP_BRANCH_AND_REMOTE[0]="test-cloud-new-project-dialog-integration origin/test-cloud-new-project-dialog-integration"
 
 # heap-shot

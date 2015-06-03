@@ -1075,6 +1075,11 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation Rebuild (IBuildTarget entry)
 		{
+			return Rebuild (entry, null);
+		}
+
+		public IAsyncOperation Rebuild (IBuildTarget entry, ProjectOperationContext context)
+		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Rebuilding " + entry.Name);
@@ -1092,7 +1097,7 @@ namespace MonoDevelop.Ide
 					if (StartBuild != null) {
 						DispatchService.GuiSyncDispatch (() => BeginBuild (monitor, tt, true));
 					}
-					BuildSolutionItemAsync (entry, monitor, tt);
+					BuildSolutionItemAsync (entry, monitor, tt, context:context);
 				}, null);
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
@@ -1351,7 +1356,12 @@ namespace MonoDevelop.Ide
 			return Build (entry, false);
 		}
 
-		IAsyncOperation Build (IBuildTarget entry, bool skipPrebuildCheck)
+		public IAsyncOperation Build (IBuildTarget entry, ProjectOperationContext context)
+		{
+			return Build (entry, false, context);
+		}
+
+		IAsyncOperation Build (IBuildTarget entry, bool skipPrebuildCheck, ProjectOperationContext context = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			/*
@@ -1376,7 +1386,7 @@ namespace MonoDevelop.Ide
 			try {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				BeginBuild (monitor, tt, false);
-				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck));
+				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, context));
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
 				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
@@ -1387,7 +1397,7 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false)
+		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, ProjectOperationContext context = null)
 		{
 			BuildResult result = null;
 			try {
@@ -1403,7 +1413,9 @@ namespace MonoDevelop.Ide
 					tt.Trace ("Building item");
 					SolutionItem it = entry as SolutionItem;
 					if (it != null)
-						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, context);
+					else if (entry is WorkspaceItem)
+						result = ((WorkspaceItem)entry).Build (monitor, IdeApp.Workspace.ActiveConfiguration, context);
 					else
 						result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
 				}

@@ -472,6 +472,10 @@
     <Compile Include="MonoDevelop.Projects\ProjectCreateParameters.cs" />
     <Compile Include="MonoDevelop.Projects\BuildError.cs" />
     <Compile Include="MonoDevelop.Projects\MSBuildErrorParser.cs" />
+    <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

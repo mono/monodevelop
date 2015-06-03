@@ -38,6 +38,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Projects.Formats.MSBuild;
+using System.Runtime.Remoting.Messaging;
 
 
 namespace MonoDevelop.Projects
@@ -63,6 +65,72 @@ namespace MonoDevelop.Projects
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
+		}
+
+		public TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			try {
+				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", null);
+
+				var r = RunTarget (monitor, target, configuration);
+
+				var evalRes = CallContext.GetData ("MonoDevelop.Projects.TargetEvaluationResult") as TargetEvaluationResult;
+				if (evalRes != null) {
+					evalRes.BuildResult = r;
+					return evalRes;
+				}
+				return new TargetEvaluationResult (r);
+			} finally {
+				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", null);
+			}
+		}
+
+		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			var currentContext = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext") as ProjectOperationContext;
+			ProjectOperationContext newContext = currentContext;
+
+			try {
+				if (newContext == null)
+					newContext = new TargetEvaluationContext ();
+				else if (!(newContext is TargetEvaluationContext))
+					newContext = new TargetEvaluationContext (newContext);
+				var res = OnRunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
+				return res.BuildResult;
+			} finally {
+				if (newContext != currentContext)
+					CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
+			}
+		}
+
+		internal protected virtual TargetEvaluationResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
+		{
+			var r = base.OnRunTarget (monitor, target, configuration);
+			var evalRes = CallContext.GetData ("MonoDevelop.Projects.TargetEvaluationResult") as TargetEvaluationResult;
+			if (evalRes != null)
+				evalRes.BuildResult = r;
+			else
+				evalRes = new TargetEvaluationResult (r);
+			return evalRes;
+		}
+
+		string[] supportedMSBuildTargets;
+
+		internal protected override bool OnGetSupportsTarget (string target)
+		{
+			if (target == ProjectService.BuildTarget || target == ProjectService.CleanTarget)
+				return true;
+			if (supportedMSBuildTargets == null) {
+				var h = ItemHandler as MSBuildProjectHandler;
+				if (h != null)
+					supportedMSBuildTargets = h.GetSupportedTargets ();
+				else
+					supportedMSBuildTargets = new string[0];
+			}
+			return supportedMSBuildTargets.Contains (target);
 		}
 
 		protected override void OnGetProjectEventMetadata (IDictionary<string, string> metadata)
