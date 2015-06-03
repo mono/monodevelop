@@ -101,6 +101,7 @@ namespace Mono.MHex
 
 		public HexEditor ()
 		{
+			BackgroundColor = Color.FromBytes (0, 0, 0);
 			CanGetFocus = true;
 			HexEditorData = new HexEditorData ();
 			HexEditorData.EditMode = new SimpleEditMode ();

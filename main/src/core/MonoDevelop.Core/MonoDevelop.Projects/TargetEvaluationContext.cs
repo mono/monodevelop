@@ -1,10 +1,10 @@
 ﻿//
-// ButtonOperation.cs
+// TargetEvaluationContext.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,36 +26,34 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Projects
 {
-	public class TypeOperation : Operation
+	public class TargetEvaluationContext: ProjectOperationContext
 	{
-		Type DesiredType;
-		string Name;
-
-		public TypeOperation (Type desiredType, string name)
+		public TargetEvaluationContext ()
 		{
-			DesiredType = desiredType;
-			Name = name;
+			PropertiesToEvaluate = new HashSet<string> ();
+			ItemsToEvaluate = new HashSet<string> ();
 		}
 
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		public TargetEvaluationContext (OperationContext other): this ()
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
+			if (other != null)
+				CopyFrom (other);
+		}
 
-			foreach (var result in resultSet) {
-				AppResult newResult = result.CheckType (DesiredType);
-				if (newResult != null) {
-					newResultSet.Add (newResult);
-				}
+		public HashSet<string> PropertiesToEvaluate { get; private set; }
+
+		public HashSet<string> ItemsToEvaluate { get; private set; }
+
+		public override void CopyFrom (OperationContext other)
+		{
+			base.CopyFrom (other);
+			var o = other as TargetEvaluationContext;
+			if (o != null) {
+				PropertiesToEvaluate = new HashSet<string> (o.PropertiesToEvaluate);
+				o.ItemsToEvaluate = new HashSet<string> (o.ItemsToEvaluate);
 			}
-
-			return newResultSet;
-		}
-
-		public override string ToString ()
-		{
-			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
 		}
 	}
 }

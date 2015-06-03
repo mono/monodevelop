@@ -116,7 +116,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			TreeIter currentIter = (TreeIter) resultIter;
 
 			while (TModel.IterNext (ref currentIter)) {
-				newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, currentIter));
+				newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, currentIter) { SourceQuery = this.SourceQuery });
 			}
 
 			return newList;

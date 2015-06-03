@@ -1,10 +1,10 @@
 ﻿//
-// ButtonOperation.cs
+// BuildSession.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,36 +26,36 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Projects
 {
-	public class TypeOperation : Operation
+	public class OperationContext
 	{
-		Type DesiredType;
-		string Name;
+		Dictionary<object, object> customData;
 
-		public TypeOperation (Type desiredType, string name)
+		public OperationContext ()
 		{
-			DesiredType = desiredType;
-			Name = name;
 		}
 
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		public OperationContext (OperationContext other): this ()
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
+			if (other != null)
+				CopyFrom (other);
+		}
 
-			foreach (var result in resultSet) {
-				AppResult newResult = result.CheckType (DesiredType);
-				if (newResult != null) {
-					newResultSet.Add (newResult);
-				}
+		public Dictionary<object, object> SessionData {
+			get {
+				if (customData == null)
+					customData = new Dictionary<object, object> ();
+				return customData;
 			}
-
-			return newResultSet;
 		}
 
-		public override string ToString ()
+		public virtual void CopyFrom (OperationContext other)
 		{
-			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
+			if (other.customData != null)
+				customData = new Dictionary<object, object> (other.customData);
+			else
+				customData = null;
 		}
 	}
 }

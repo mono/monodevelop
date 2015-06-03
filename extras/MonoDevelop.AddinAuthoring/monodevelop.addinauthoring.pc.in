@@ -1,6 +1,0 @@
-Name: MonoDevelop.AddinAuthoring
-Description: MonoDevelop.AddinAuthoring
-Version: 0.1
-
-Requires: 
-Libs: -r:@prefix@/lib/@PACKAGE@/MonoDevelop.AddinAuthoring.dll

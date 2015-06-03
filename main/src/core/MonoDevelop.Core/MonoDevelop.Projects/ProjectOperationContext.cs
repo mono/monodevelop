@@ -1,10 +1,10 @@
 ﻿//
-// ButtonOperation.cs
+// BuildContext.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Projects
 {
-	public class TypeOperation : Operation
+	public class ProjectOperationContext: OperationContext
 	{
-		Type DesiredType;
-		string Name;
-
-		public TypeOperation (Type desiredType, string name)
+		public ProjectOperationContext ()
 		{
-			DesiredType = desiredType;
-			Name = name;
+			GlobalProperties = new Dictionary<string,string> ();
 		}
 
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		public ProjectOperationContext (OperationContext other): this ()
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
-
-			foreach (var result in resultSet) {
-				AppResult newResult = result.CheckType (DesiredType);
-				if (newResult != null) {
-					newResultSet.Add (newResult);
-				}
-			}
-
-			return newResultSet;
+			if (other != null)
+				CopyFrom (other);
 		}
 
-		public override string ToString ()
+		public Dictionary<string,string> GlobalProperties { get; private set; }
+
+		public override void CopyFrom (OperationContext other)
 		{
-			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
+			base.CopyFrom (other);
+			var o = other as ProjectOperationContext;
+			if (o != null)
+				GlobalProperties = new Dictionary<string,string> (o.GlobalProperties);
 		}
 	}
 }

@@ -630,7 +630,17 @@ namespace MonoDevelop.Projects
 				tt.End ();
 			}
 		}
-		
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				return Build (monitor, solutionConfiguration, buildReferences);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			}
+		}
+
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
 		{
 			foreach (SolutionItem it in GetReferencedItems (conf))

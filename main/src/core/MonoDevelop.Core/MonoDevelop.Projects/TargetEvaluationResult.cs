@@ -1,10 +1,10 @@
 ﻿//
-// ButtonOperation.cs
+// TargetResult.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,37 +25,39 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Formats.MSBuild;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Projects
 {
-	public class TypeOperation : Operation
+	public class TargetEvaluationResult
 	{
-		Type DesiredType;
-		string Name;
+		BuildResult buildResult;
+		readonly Dictionary<string,string> properties;
+		readonly IEnumerable<MSBuildEvaluatedItem> items;
 
-		public TypeOperation (Type desiredType, string name)
+		public TargetEvaluationResult (BuildResult buildResult)
 		{
-			DesiredType = desiredType;
-			Name = name;
+			this.buildResult = buildResult;
 		}
 
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		public TargetEvaluationResult (BuildResult buildResult, IEnumerable<MSBuildEvaluatedItem> items, Dictionary<string,string> properties)
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
-
-			foreach (var result in resultSet) {
-				AppResult newResult = result.CheckType (DesiredType);
-				if (newResult != null) {
-					newResultSet.Add (newResult);
-				}
-			}
-
-			return newResultSet;
+			this.buildResult = buildResult;
+			this.items = items;
+			this.properties = properties;
 		}
 
-		public override string ToString ()
-		{
-			return Name != null ? string.Format ("{0} ()", Name) : string.Format ("CheckType (\"{0}\")", DesiredType.FullName);
+		public BuildResult BuildResult {
+			get { return buildResult; }
+			internal set { buildResult = value; }
+		}
+
+		public IEnumerable<MSBuildEvaluatedItem> Items {
+			get { return items; }
+		}
+
+		public Dictionary<string,string> Properties {
+			get { return properties; }
 		}
 	}
 }

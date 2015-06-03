@@ -182,6 +182,10 @@
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.NUnit</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
+      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
+      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Util.cs" />
