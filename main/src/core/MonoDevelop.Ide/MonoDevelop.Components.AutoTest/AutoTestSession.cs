@@ -35,6 +35,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -321,9 +322,13 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			AppResult[] resultSet = null;
 
-			ExecuteOnIdleAndWait (() => {
-				resultSet = ExecuteQueryNoWait (query);
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					resultSet = ExecuteQueryNoWait (query);
+				});
+			} catch (TimeoutException e) {
+				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
+			}
 
 			return resultSet;
 		}
