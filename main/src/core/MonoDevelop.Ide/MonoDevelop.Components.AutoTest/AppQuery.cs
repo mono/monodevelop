@@ -176,14 +176,24 @@ namespace MonoDevelop.Components.AutoTest
 					}
 
 					if (toolbar != null) {
+						AppResult lastItemNode = null;
 						foreach (var item in toolbar.Items) {
 							if (item.View != null) {
 								AppResult itemNode = new NSObjectResult (item.View);
 								fullResultSet.Add (itemNode);
 
+								if (toolbarNode.FirstChild == null) {
+									toolbarNode.FirstChild = itemNode;
+									lastItemNode = itemNode;
+								} else {
+									lastItemNode.NextSibling = itemNode;
+									itemNode.PreviousSibling = lastItemNode;
+									lastItemNode = itemNode;
+								}
+
 								if (item.View.Subviews != null) {
 									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
-									toolbarNode.FirstChild = children;
+									itemNode.FirstChild = children;
 								}
 							}
 						}
