@@ -25,21 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using Mono.TextEditor;
 using MonoDevelop.Debugger;
-using MonoDevelop.Ide.Tasks;
-using System.Collections.Generic;
 using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class PinnedWatchWidget : Gtk.EventBox
+	public class PinnedWatchWidget : EventBox
 	{
 		readonly ObjectValueTreeView valueTree;
+		ScrolledWindow sw;
 		ObjectValue objectValue;
 
 		TextEditor Editor {
@@ -89,18 +85,37 @@ namespace MonoDevelop.SourceEditor
 			valueTree.ButtonPressEvent += HandleValueTreeButtonPressEvent;
 			valueTree.ButtonReleaseEvent += HandleValueTreeButtonReleaseEvent;
 			valueTree.MotionNotifyEvent += HandleValueTreeMotionNotifyEvent;
-			
-			Gtk.Frame fr = new Gtk.Frame ();
-			fr.ShadowType = Gtk.ShadowType.Out;
-			fr.Add (valueTree);
+			valueTree.SizeAllocated += OnTreeSizeChanged;
+
+			sw = new ScrolledWindow ();
+			sw.HscrollbarPolicy = PolicyType.Never;
+			sw.VscrollbarPolicy = PolicyType.Never;
+			sw.Add (valueTree);
+
+			Frame fr = new Frame ();
+			fr.ShadowType = ShadowType.Out;
+			fr.Add (sw);
 			Add (fr);
-			HandleEditorOptionsChanged (null, null);
+
 			ShowAll ();
-			//unpin.Hide ();
-			Editor.EditorOptionsChanged += HandleEditorOptionsChanged;
 			
 			DebuggingService.PausedEvent += HandleDebuggingServicePausedEvent;
 			DebuggingService.ResumedEvent += HandleDebuggingServiceResumedEvent;
+		}
+
+		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
+		{
+			const int maxHeight = 240;
+			var treeHeight = valueTree.SizeRequest ().Height;
+			if (treeHeight > maxHeight && sw.VscrollbarPolicy == PolicyType.Never) {
+				sw.VscrollbarPolicy = PolicyType.Always;
+				sw.HeightRequest = maxHeight;
+			} else if (maxHeight > treeHeight && sw.VscrollbarPolicy == PolicyType.Always) {
+				sw.VscrollbarPolicy = PolicyType.Never;
+				sw.HeightRequest = -1;
+			}
+
+			QueueDraw ();
 		}
 
 		void HandleDebuggingServiceResumedEvent (object sender, EventArgs e)
@@ -115,73 +130,52 @@ namespace MonoDevelop.SourceEditor
 			valueTree.AllowExpanding = true;
 			valueTree.AllowEditing = true;
 		}
-
-		void HandleEditorOptionsChanged (object sender, EventArgs e)
-		{
-//			HeightRequest = Math.Max (Math.Max (Editor.LineHeight, image.HeightRequest), 18);
-			/*
-			Pango.FontDescription fontDescription = Pango.FontDescription.FromString (Editor.Options.FontName);
-			fontDescription.Family = "Sans";
-			fontDescription.Size = (int)(fontDescription.Size * Editor.Options.Zoom);
-			label.ModifyFont (fontDescription);
-			valueLabel.ModifyFont (fontDescription);*/
-			
-//			label.ModifyFont (Editor.Options.Font);
-//			valueLabel.ModifyFont (Editor.Options.Font);
-		}
 		
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Editor.EditorOptionsChanged -= HandleEditorOptionsChanged;
 			DebuggingService.PausedEvent -= HandleDebuggingServicePausedEvent;
 			DebuggingService.ResumedEvent -= HandleDebuggingServiceResumedEvent;
-		}
-		
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
+
+			valueTree.ButtonPressEvent -= HandleValueTreeButtonPressEvent;
+			valueTree.ButtonReleaseEvent -= HandleValueTreeButtonReleaseEvent;
+			valueTree.MotionNotifyEvent -= HandleValueTreeMotionNotifyEvent;
+			valueTree.SizeAllocated -= OnTreeSizeChanged;
 		}
 
-		const int defaultMaxHeight = 240;
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-			requisition.Height = Math.Min (Math.Max (Allocation.Height, defaultMaxHeight), requisition.Height);
-		}
 
-		[GLib.ConnectBeforeAttribute]
-		void HandleValueTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		#region Moving PinWatchWidget inside TextArea
+		bool mousePressed = false;
+		double originX, originY;
+
+		[GLib.ConnectBefore]
+		void HandleValueTreeButtonPressEvent (object o, ButtonPressEventArgs args)
 		{
 			originX = args.Event.XRoot;
 			originY = args.Event.YRoot;
 			
-			Gtk.TreePath path;
-			Gtk.TreeViewColumn col;
+			TreePath path;
+			TreeViewColumn col;
 			int cx, cy;
 			valueTree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy);
 			Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
-			if (!mousePressed && valueTree.Columns[0] == col && cx >= rect.Left) {
+			if (!mousePressed && valueTree.Columns[0] == col) {
 				mousePressed = true;
-				Editor.MoveToTop (this);
-//				Gdk.Pointer.Grab (this.GdkWindow, true, Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask, null, null, Gtk.Global.CurrentEventTime);
-//				Gtk.Grab.Add (this);
+				Editor.TextArea.MoveToTop (this);
 			}
 		}
 		
-		[GLib.ConnectBeforeAttribute]
-		void HandleValueTreeButtonReleaseEvent (object o, Gtk.ButtonReleaseEventArgs args)
+		[GLib.ConnectBefore]
+		void HandleValueTreeButtonReleaseEvent (object o, ButtonReleaseEventArgs args)
 		{
 			if (mousePressed) {
-//				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-//				Gtk.Grab.Remove (this);
 				mousePressed = false;
 			}
 		}
 		
 
-		[GLib.ConnectBeforeAttribute]
-		void HandleValueTreeMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
+		[GLib.ConnectBefore]
+		void HandleValueTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
 		{
 			if (mousePressed) {
 				Watch.OffsetX += (int)(args.Event.XRoot - originX);
@@ -192,26 +186,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			
 		}
-		
-		bool mousePressed = false;
-		double originX, originY;
-		
-		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
-		{
-			bool result = base.OnEnterNotifyEvent (evnt);
-/*			this.unpin.ShowAll ();
-			QueueResize ();*/
-			return result;
-		}
-		
-		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
-		{
-			bool result = base.OnLeaveNotifyEvent (evnt);
-			/*
-			this.unpin.HideAll ();
-			QueueResize ();*/
-			
-			return result;
-		}
+		#endregion
 	}
 }
