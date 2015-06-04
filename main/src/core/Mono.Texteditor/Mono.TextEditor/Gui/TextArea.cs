@@ -1995,6 +1995,10 @@ namespace Mono.TextEditor
 #if DEBUG_EXPOSE
 		DateTime started = DateTime.Now;
 #endif
+		const string LIBQUARTZ = "libgtk-quartz-2.0.dylib";
+		[DllImport (LIBQUARTZ)]
+		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+
 		protected override bool OnExposeEvent (Gdk.EventExpose e)
 		{
 			if (this.isDisposed)
@@ -2019,16 +2023,13 @@ namespace Mono.TextEditor
 				if (SingleBuffer) buffers--;
 
 				GraphicsMode graphicsMode = new GraphicsMode (colorBufferColorFormat, DepthBPP, StencilBPP, Samples, accumulationColorFormat, buffers, Stereo);
-
 				// IWindowInfo
-				if (Configuration.RunningOnWindows) {
+				if (Platform.IsWindows) {
 					IntPtr windowHandle = gdk_win32_drawable_get_handle (GdkWindow.Handle);
 					windowInfo = OpenTK.Platform.Utilities.CreateWindowsWindowInfo (windowHandle);
-				} else if (Configuration.RunningOnMacOS) {
-					IntPtr windowHandle = gdk_x11_drawable_get_xid (GdkWindow.Handle);
-					bool ownHandle = true;
-					bool isControl = true;
-					windowInfo = OpenTK.Platform.Utilities.CreateMacOSCarbonWindowInfo (windowHandle, ownHandle, isControl);
+				} else if (Platform.IsMac) {
+					IntPtr windowHandle = gdk_quartz_window_get_nswindow (GdkWindow.Handle);
+					windowInfo = OpenTK.Platform.Utilities.CreateMacOSWindowInfo (windowHandle);
 				} else {
 					IntPtr display = gdk_x11_display_get_xdisplay (Display.Handle);
 					int screen = Screen.Number;
@@ -2048,7 +2049,6 @@ namespace Mono.TextEditor
 					windowInfo = OpenTK.Platform.Utilities.CreateX11WindowInfo (display, screen, windowHandle, rootWindow, visualInfo);
 					XFree (visualInfo);
 				}
-
 				// GraphicsContext
 				graphicsContext = new GraphicsContext (graphicsMode, windowInfo, GlVersionMajor, GlVersionMinor, graphicsContextFlags);
 				graphicsContext.MakeCurrent (windowInfo);
@@ -2063,9 +2063,13 @@ namespace Mono.TextEditor
 				} else {
 					((IGraphicsContextInternal)graphicsContext).LoadAll ();
 				}
-
 			} else {
-				graphicsContext.MakeCurrent (windowInfo);
+				try {
+					graphicsContext.MakeCurrent (windowInfo);
+				} catch (Exception ex) {
+					Console.WriteLine (ex);
+					return false;
+				}
 			}
 
 			bool result = base.OnExposeEvent (e);
@@ -2101,21 +2105,21 @@ namespace Mono.TextEditor
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
 
-
-			OpenTK.Graphics.OpenGL.GL.TexImage2D (
-				OpenTK.Graphics.OpenGL.TextureTarget.Texture2D, 
-				0, 
-				OpenTK.Graphics.OpenGL.PixelInternalFormat.Rgb8,
-				imageSurface.Width,
-				imageSurface.Height,
-				0,
-				OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-				OpenTK.Graphics.OpenGL.PixelType.UnsignedByte,
-				imageSurface.DataPtr
-			);
-
+			if (imageSurface != null) {
+				OpenTK.Graphics.OpenGL.GL.TexImage2D (
+					OpenTK.Graphics.OpenGL.TextureTarget.Texture2D,
+					0,
+					OpenTK.Graphics.OpenGL.PixelInternalFormat.Rgb8,
+					imageSurface.Width,
+					imageSurface.Height,
+					0,
+					OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
+					OpenTK.Graphics.OpenGL.PixelType.UnsignedByte,
+					imageSurface.DataPtr
+				);
+			}
 			e.Window.Display.Sync (); // Add Sync call to fix resize rendering problem (Jay L. T. Cornwall) - How does this affect VSync?
-//			graphicsContext.SwapBuffers ();
+			//			graphicsContext.SwapBuffers ();
 			return result;
 
 
