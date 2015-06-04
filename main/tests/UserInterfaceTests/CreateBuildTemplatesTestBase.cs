@@ -47,7 +47,7 @@ namespace UserInterfaceTests
 			Ide.WaitUntil (() => {
 				var statusMsg = Ide.GetStatusMessage ();
 				return statusMsg == "Package updates are available." || statusMsg == "Packages are up to date.";
-			}, pollStep: 1000, timeout: 120000);
+			}, pollStep: 1000, timeout: 240000);
 		};
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
@@ -139,10 +139,10 @@ namespace UserInterfaceTests
 			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
 		}
 
-		protected virtual void OnBuildTemplate ()
+		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
 		{
 			try {
-				Assert.IsTrue (Ide.BuildSolution ());
+				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs));
 				TakeScreenShot ("AfterBuildFinishedSuccessfully");
 			} catch (TimeoutException e) {
 				TakeScreenShot ("AfterBuildFailed");
