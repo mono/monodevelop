@@ -30,7 +30,7 @@ using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests
 {
-	public class VCSUtils
+	public class VCSBase : CreateBuildTemplatesTestBase
 	{
 		static AutoTestClientSession Session {
 			get { return TestService.Session; }
@@ -42,23 +42,34 @@ namespace UserInterfaceTests
 			Subversion
 		}
 
-		public static string CheckoutOrClone (string repoUrl, Action<string> screenshot, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 60)
+		protected string CheckoutOrClone (string repoUrl, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 60)
 		{
 			cloneToLocation = cloneToLocation ?? Util.CreateTmpDir ("clone");
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Commands.Checkout);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog"));
-			screenshot ("Checkout-Window-Ready");
+			TakeScreenShot ("Checkout-Window-Ready");
 			Assert.IsTrue (Session.SelectElement (c => c.Marked ("repCombo").Model ().Text (cvsType.ToString ())));
 			Assert.IsTrue (Session.EnterText (c => c.Textfield ().Marked ("repositoryUrlEntry"), repoUrl));
 			Assert.IsTrue (Session.EnterText (c => c.Textfield ().Marked ("entryFolder"), cloneToLocation));
-			screenshot ("Before-Clicking-OK");
+			TakeScreenShot ("Before-Clicking-OK");
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog").Children ().Button ().Marked ("buttonOk")));
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), 15000);
-			screenshot ("CheckoutClone-In-Progress");
+			TakeScreenShot ("CheckoutClone-In-Progress");
 			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), cloneTimeoutSecs * 1000);
-			screenshot ("Checkout-Successful");
+			TakeScreenShot ("Checkout-Successful");
 
 			return cloneToLocation;
+		}
+
+		protected void TestClone (string url)
+		{
+			Assert.DoesNotThrow (delegate {
+				var checkoutFolder = CheckoutOrClone (url);
+				FoldersToClean.Add (checkoutFolder);
+			});
+			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
+			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
+			TakeScreenShot ("Packages-Updated");
 		}
 	}
 }

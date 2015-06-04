@@ -30,7 +30,7 @@ namespace UserInterfaceTests
 {
 	[TestFixture]
 	[Category ("Git")]
-	public class GitTests : CreateBuildTemplatesTestBase
+	public class GitTests : VCSBase
 	{
 		[Test]
 		public void TestGitSSHClone ()
@@ -42,15 +42,6 @@ namespace UserInterfaceTests
 		public void TestGitHTTPSClone ()
 		{
 			TestClone ("https://github.com/mono/monkeywrench.git");
-		}
-
-		void TestClone (string url)
-		{
-			var checkoutFolder = VCSUtils.CheckoutOrClone (url, TakeScreenShot);
-			FoldersToClean.Add (checkoutFolder);
-			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
-			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
-			TakeScreenShot ("Packages-Updated");
 		}
 	}
 }
