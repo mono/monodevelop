@@ -291,8 +291,16 @@ namespace MonoDevelop.Components.AutoTest
 			return query;
 		}
 
-		public void ExecuteOnIdleAndWait (Action idleFunc, int timeout = 20000)
+		public void ExecuteOnIdle (Action idleFunc, bool wait = true, int timeout = 20000)
 		{
+			if (wait == false) {
+				GLib.Idle.Add (() => {
+					idleFunc ();
+					return false;
+				});
+				return;
+			}
+
 			syncEvent.Reset ();
 			GLib.Idle.Add (() => {
 				idleFunc ();
@@ -323,7 +331,7 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult[] resultSet = null;
 
 			try {
-				ExecuteOnIdleAndWait (() => {
+				ExecuteOnIdle (() => {
 					resultSet = ExecuteQueryNoWait (query);
 				});
 			} catch (TimeoutException e) {
@@ -431,7 +439,7 @@ namespace MonoDevelop.Components.AutoTest
 			bool success = false;
 
 			try {
-				ExecuteOnIdleAndWait (() => {
+				ExecuteOnIdle (() => {
 					success = result.Select ();
 				});
 			} catch (TimeoutException e) {
@@ -441,14 +449,14 @@ namespace MonoDevelop.Components.AutoTest
 			return success;
 		}
 
-		public bool Click (AppResult result)
+		public bool Click (AppResult result, bool wait = true)
 		{
 			bool success = false;
 
 			try {
-				ExecuteOnIdleAndWait (() => {
+				ExecuteOnIdle (() => {
 					success = result.Click ();
-				});
+				}, wait);
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Click", result.SourceQuery, result, e);
 			}
@@ -459,7 +467,7 @@ namespace MonoDevelop.Components.AutoTest
 		public bool EnterText (AppResult result, string text)
 		{
 			try {
-				ExecuteOnIdleAndWait (() => result.EnterText (text));
+				ExecuteOnIdle (() => result.EnterText (text));
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
 			}
@@ -472,7 +480,7 @@ namespace MonoDevelop.Components.AutoTest
 			bool success = false;
 
 			try {
-				ExecuteOnIdleAndWait (() => {
+				ExecuteOnIdle (() => {
 					success = result.Toggle (active);
 				});
 			} catch (TimeoutException e) {

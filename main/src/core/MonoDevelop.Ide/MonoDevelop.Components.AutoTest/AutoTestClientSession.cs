@@ -272,11 +272,11 @@ namespace MonoDevelop.Components.AutoTest
 			return false;
 		}
 
-		public bool ClickElement (Func<AppQuery, AppQuery> query)
+		public bool ClickElement (Func<AppQuery, AppQuery> query, bool wait = true)
 		{
 			AppResult[] results = Query (query);
 			if (results.Length > 0) {
-				return session.Click (results [0]);
+				return session.Click (results [0], wait);
 			}
 
 			return false;
