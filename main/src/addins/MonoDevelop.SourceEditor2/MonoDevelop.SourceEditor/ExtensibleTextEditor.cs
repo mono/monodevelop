@@ -229,8 +229,11 @@ namespace MonoDevelop.SourceEditor
 			cachedVAdjustment = null;
 		}
 
+		internal bool IsDestroyed { get; private set; }
+
 		protected override void OnDestroyed ()
 		{
+			IsDestroyed = true;
 			UnregisterAdjustments ();
 			extensionContext = null;
 			view = null;

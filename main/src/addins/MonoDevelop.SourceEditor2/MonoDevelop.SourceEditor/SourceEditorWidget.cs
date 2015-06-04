@@ -462,6 +462,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (IdeApp.CommandService != null)
 				IdeApp.FocusOut -= IdeApp_FocusOut;
+
+			if (!textEditor.IsDestroyed)
+				textEditor.Destroy ();
+
+			if (splittedTextEditor != null && !splittedTextEditor.IsDestroyed)
+				splittedTextEditor.Destroy ();
 		}
 		
 		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
