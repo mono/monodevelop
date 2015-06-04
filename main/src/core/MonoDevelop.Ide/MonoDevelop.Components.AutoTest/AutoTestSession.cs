@@ -35,6 +35,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -321,9 +322,13 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			AppResult[] resultSet = null;
 
-			ExecuteOnIdleAndWait (() => {
-				resultSet = ExecuteQueryNoWait (query);
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					resultSet = ExecuteQueryNoWait (query);
+				});
+			} catch (TimeoutException e) {
+				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
+			}
 
 			return resultSet;
 		}
@@ -425,9 +430,13 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Select ();
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Select ();
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Select", result.SourceQuery, result, e);
+			}
 
 			return success;
 		}
@@ -436,16 +445,24 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Click ();
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Click ();
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Click", result.SourceQuery, result, e);
+			}
 
 			return success;
 		}
 
 		public bool EnterText (AppResult result, string text)
 		{
-			ExecuteOnIdleAndWait (() => result.EnterText (text));
+			try {
+				ExecuteOnIdleAndWait (() => result.EnterText (text));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
+			}
 
 			return true;
 		}
@@ -454,11 +471,20 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			bool success = false;
 
-			ExecuteOnIdleAndWait (() => {
-				success = result.Toggle (active);
-			});
+			try {
+				ExecuteOnIdleAndWait (() => {
+					success = result.Toggle (active);
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Toggle", result.SourceQuery, result, e);
+			}
 
 			return success;
+		}
+
+		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
+		{
+			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
 		}
 	}
 
