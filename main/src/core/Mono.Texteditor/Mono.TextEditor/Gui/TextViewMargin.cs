@@ -595,13 +595,14 @@ namespace Mono.TextEditor
 			return caretChar;
 		}
 
-		public void DrawCaret (Gdk.Drawable win, Gdk.Rectangle rect)
+		public void DrawCaret (Cairo.Context cr, Gdk.Rectangle rect)
 		{
 			if (!this.textEditor.IsInDrag && !(this.caretX >= 0 && (!this.textEditor.IsSomethingSelected || this.textEditor.SelectionRange.Length == 0))) 
 				return;
-			if (win == null || Settings.Default.CursorBlink && !Caret.IsVisible || !caretBlink)
+			if (Settings.Default.CursorBlink && !Caret.IsVisible || !caretBlink)
 				return;
-			using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) {
+			//using (Cairo.Context cr = Gdk.CairoHelper.Create (win)) 
+			{
 				cr.Rectangle (XOffset, 0, textEditor.Allocation.Width - XOffset, textEditor.Allocation.Height);
 				cr.Clip ();
 				cr.LineWidth = System.Math.Max (1, System.Math.Floor (textEditor.Options.Zoom));

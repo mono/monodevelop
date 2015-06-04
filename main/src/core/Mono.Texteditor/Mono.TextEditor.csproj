@@ -75,6 +75,9 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="OpenTK">
+      <HintPath>..\..\..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mono.TextEditor.Highlighting\Rule.cs" />
@@ -243,6 +246,7 @@
     <None Include="Mono.TextEditor.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SyntaxModes\MakefileSyntaxMode.xml">
