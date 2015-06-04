@@ -405,6 +405,8 @@ namespace MonoDevelop.SourceEditor
 				UpdateLineCol ();
 			};
 			vbox.Destroyed += delegate {
+				if (isDisposed)
+					return;
 				isDisposed = true;
 				StopParseInfoThread ();
 				KillWidgets ();
