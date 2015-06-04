@@ -412,6 +412,12 @@ namespace MonoDevelop.SourceEditor
 				ClearQuickTaskProvider ();
 				ClearUsageTaskProvider ();
 
+				if (textEditor != null && !textEditor.IsDestroyed)
+					textEditor.Destroy ();
+
+				if (splittedTextEditor != null && !splittedTextEditor.IsDestroyed)
+					splittedTextEditor.Destroy ();
+				
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
 				this.textEditor = null;
@@ -465,12 +471,6 @@ namespace MonoDevelop.SourceEditor
 
 			if (!isDisposed) {
 				vbox.Destroy ();
-
-				if (!textEditor.IsDestroyed)
-					textEditor.Destroy ();
-
-				if (splittedTextEditor != null && !splittedTextEditor.IsDestroyed)
-					splittedTextEditor.Destroy ();
 			}
 		}
 		
