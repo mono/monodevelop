@@ -125,7 +125,7 @@ namespace UserInterfaceTests
 			WaitForNoStatusMessage (new [] {"Loading..."});
 		};
 
-		public static void WaitForStatusMessage (string[] statusMessage , int timeoutInSecs = 240, int pollStepInSecs = 1)
+		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
 		{
 			PollStatusMessage (statusMessage, timeoutInSecs, pollStepInSecs);
 		}
@@ -139,7 +139,7 @@ namespace UserInterfaceTests
 		{
 			Ide.WaitUntil (() => {
 				var actualStatusMessage = Ide.GetStatusMessage ();
-				return waitForMessage && (statusMessage.Contains (actualStatusMessage));
+				return waitForMessage == (statusMessage.Contains (actualStatusMessage));
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 	}
