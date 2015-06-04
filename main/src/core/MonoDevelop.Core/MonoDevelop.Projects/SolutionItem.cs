@@ -662,7 +662,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
@@ -724,7 +724,7 @@ namespace MonoDevelop.Projects
 					}
 
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return BuildResult.Success;
+						return BuildResult.CreateSuccess ();
 
 					var res = await ItemExtension.OnClean (monitor, configuration, operationContext);
 
@@ -755,7 +755,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		/// <summary>

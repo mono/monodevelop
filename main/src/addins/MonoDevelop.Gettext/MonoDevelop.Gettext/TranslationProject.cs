@@ -371,7 +371,7 @@ namespace MonoDevelop.Gettext
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (string.IsNullOrEmpty (outputDirectory))
-				return BuildResult.Success;
+				return BuildResult.CreateSuccess ();
 
 			var toClean = Translations.Select (t => t.GetOutFile (configuration)).ToArray ();
 			await Task.Run (delegate {
@@ -380,7 +380,7 @@ namespace MonoDevelop.Gettext
 						File.Delete (moFileName);
 				}
 			});
-			return BuildResult.Success;
+			return BuildResult.CreateSuccess ();
 		}
 
 #region Deployment

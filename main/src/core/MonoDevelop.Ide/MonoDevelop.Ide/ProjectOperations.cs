@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide
 	/// </summary>
 	public class ProjectOperations
 	{
-		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.Success), null);
+		AsyncOperation<BuildResult> currentBuildOperation = new AsyncOperation<BuildResult> (Task.FromResult (BuildResult.CreateSuccess ()), null);
 		AsyncOperation currentRunOperation = AsyncOperation.CompleteOperation;
 		IBuildTarget currentBuildOperationOwner;
 		IBuildTarget currentRunOperationOwner;
