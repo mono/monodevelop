@@ -270,6 +270,11 @@ namespace MonoDevelop.Components.AutoTest
 			return CheckType (typeof(Window), "Window");
 		}
 
+		public AppQuery TextView ()
+		{
+			return CheckType (typeof(TextView), "TextView");
+		}
+
 		public AppQuery Text (string text)
 		{
 			operations.Add (new TextOperation (text));
