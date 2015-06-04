@@ -184,6 +184,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
 			return true;
 		}
+
+		bool flashState;
+
+
+		public override void Flash ()
+		{
+		}
 	}
 }
 
