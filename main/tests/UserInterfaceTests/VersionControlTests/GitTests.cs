@@ -48,9 +48,8 @@ namespace UserInterfaceTests
 		{
 			var checkoutFolder = VCSUtils.CheckoutOrClone (url, TakeScreenShot);
 			FoldersToClean.Add (checkoutFolder);
-			Ide.WaitForSolutionLoaded ();
-			TakeScreenShot ("Solution-Loaded");
-			WaitForPackageUpdate.Invoke ();
+			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
+			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
 			TakeScreenShot ("Packages-Updated");
 		}
 	}

@@ -117,13 +117,16 @@ namespace UserInterfaceTests
 		}
 
 		public readonly static Action WaitForPackageUpdate = delegate {
-			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."});
+			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."}, timeoutInSecs: 360, pollStepInSecs: 5);
 		};
 
-		public readonly static Action WaitForSolutionLoaded = delegate {
+		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
+		{
 			WaitForStatusMessage (new [] {"Loading..."});
+			afterEachStep ("Loading-Solution");
 			WaitForNoStatusMessage (new [] {"Loading..."});
-		};
+			afterEachStep ("Solution Loaded");
+		}
 
 		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
 		{
