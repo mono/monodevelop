@@ -210,6 +210,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
 			return true;
 		}
+
+		public override void Flash (Action completionHandler)
+		{
+			completionHandler ();
+		}
 	}
 }
 

@@ -59,6 +59,8 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 
+		public abstract void Flash (Action completionHandler);
+
 		public string SourceQuery { get; set; }
 
 		void AddChildrenToList (List<AppResult> children, AppResult child)
