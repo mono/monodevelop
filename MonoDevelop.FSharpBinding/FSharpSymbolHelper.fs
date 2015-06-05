@@ -302,6 +302,14 @@ module SymbolTooltips =
         | true, false -> b
         | false, false -> a + " " + b
 
+    let getKeywordTooltip (keyword:string) =
+      let signatureline = asType Keyword keyword ++ "(keyword)"
+      let summary =
+        match KeywordList.keywordDescriptions.TryGetValue keyword with
+        | true, description -> Full description
+        | false, _ -> EmptyDoc
+      ToolTip(signatureline, summary)
+
     let getSummaryFromSymbol (symbol:FSharpSymbol) =
         let xmlDoc, xmlDocSig = 
             match symbol with
