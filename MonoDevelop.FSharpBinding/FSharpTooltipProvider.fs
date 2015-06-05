@@ -15,6 +15,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Extensions
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp.Symbols
 open ExtCore.Control
@@ -45,12 +46,29 @@ type FSharpTooltipProvider() =
 
         let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
+        let tryKeyword =
+           let ident = Parsing.findLongIdents(col, lineStr)
+           match ident with
+           | Some (col, identIsland) ->
+             match identIsland with
+             | [single] when Lexhelp.Keywords.keywordNames |> List.contains single ->
+               let startOffset = editor.LocationToOffset(line, col - single.Length+1)
+               let endOffset = startOffset + single.Length
+               let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
+               let tip = SymbolTooltips.getKeywordTooltip single
+               Some (TooltipItem( tip, segment :> Text.ISegment))
+             | _ -> None
+           | None -> None
+
         let result =
+            match tryKeyword with
+            | Some keyword -> Tooltip keyword
+            | None ->
             //operate on available results no async gettypeparse results is available quick enough
             let parseAndCheckResults = MDLanguageService.Instance.GetTypedParseResultIfAvailable (projectFileName, fileName, docText, AllowStaleResults.MatchingSource)
             Async.RunSynchronously (
                 async {
-                    try
+                    try 
                         LoggingService.LogInfo "TooltipProvider: Getting tool tip"
                         let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr)
 
@@ -60,10 +78,10 @@ type FSharpTooltipProvider() =
                         | Some s -> 
                              let tt = SymbolTooltips.getTooltipFromSymbolUse s
                              match tt with
-                             | ToolTip(signature, summary) ->
+                             | ToolTip _ as tip ->
                                  //get the TextSegment the the symbols range occupies
                                  let textSeg = Symbols.getTextSegment editor symbol.Value col lineStr
-                                 let tooltipItem = TooltipItem((signature, summary), textSeg)
+                                 let tooltipItem = TooltipItem(tip, textSeg)
                                  return Tooltip tooltipItem
                              | EmptyTip -> return ParseAndCheckNotFound //TODO Support non symbol tooltips?
                         | None -> return ParseAndCheckNotFound
@@ -86,33 +104,11 @@ type FSharpTooltipProvider() =
     override x.CreateTooltipWindow (_editor, _context, item, _offset, _modifierState) = 
         let doc = IdeApp.Workbench.ActiveDocument
         if (doc = null) then null else
-        //At the moment as the new tooltips are unfinished we have two types here
-        // ToolTipText for the old tooltips and (string * XmlDoc) for the new tooltips
-        match item.Item with 
-        | :? FSharpToolTipText as titem ->
-            LoggingService.LogError (sprintf "TooltipProvider: Error tooltip not yet implemented for:\n%A" titem)
-            let tooltip = TooltipFormatting.formatTip(titem)
-            let (signature, comment) = 
-                match tooltip with
-                | [signature,comment] -> signature,comment
-                //With multiple tips just take the head.  
-                //This shouldnt happen anyway as we split them in the resolver provider
-                | multiple -> multiple |> List.head
-            //dont show a tooltip if there is no content
-            if String.IsNullOrEmpty(signature) then null 
-            else            
-                let result = new MonoDevelop.Ide.CodeCompletion.TooltipInformationWindow(ShowArrow = true)
-                let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
-                if not (String.IsNullOrEmpty(comment)) then toolTipInfo.SummaryMarkup <- comment
-                result.AddOverload(toolTipInfo)
-                result.RepositionWindow ()                  
-                new Control (result)
-
-        | :? (string * XmlDoc) as tip -> 
-            let signature, xmldoc = tip
+        match unbox item.Item with 
+        | ToolTips.ToolTip(signature, summary) -> 
             let result = new TooltipInformationWindow(ShowArrow = true)
             let toolTipInfo = new TooltipInformation(SignatureMarkup = signature)
-            match xmldoc with
+            match summary with
             | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
             | Lookup(key, potentialFilename) ->
                 let summary = 
@@ -125,7 +121,6 @@ type FSharpTooltipProvider() =
             result.AddOverload(toolTipInfo)
             result.RepositionWindow ()                  
             new Control(result)
-
         | _ -> LoggingService.LogError "TooltipProvider: Type mismatch"
                null
             
