@@ -129,7 +129,7 @@ namespace UserInterfaceTests
 			WaitForStatusMessage (new [] {"Loading..."});
 			afterEachStep ("Loading-Solution");
 			WaitForNoStatusMessage (new [] {"Loading..."});
-			afterEachStep ("Solution Loaded");
+			afterEachStep ("Solution-Loaded");
 		}
 
 		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
