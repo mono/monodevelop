@@ -181,6 +181,13 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Destroy ();
 			}
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			var repo = UpdateVisibility (info);
+			if (repo != null)
+				info.Enabled = !repo.RootRepository.Info.IsHeadUnborn;
+		}
 	}
 
 	class StashPopHandler: GitCommandHandler
