@@ -32,17 +32,13 @@ namespace UserInterfaceTests
 {
 	public class VCSBase : CreateBuildTemplatesTestBase
 	{
-		static AutoTestClientSession Session {
-			get { return TestService.Session; }
-		}
-
 		public enum VersionControlType
 		{
 			Git,
 			Subversion
 		}
 
-		protected string CheckoutOrClone (string repoUrl, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 60)
+		protected string CheckoutOrClone (string repoUrl, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 180)
 		{
 			cloneToLocation = cloneToLocation ?? Util.CreateTmpDir ("clone");
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Commands.Checkout);
@@ -67,9 +63,6 @@ namespace UserInterfaceTests
 				var checkoutFolder = CheckoutOrClone (url);
 				FoldersToClean.Add (checkoutFolder);
 			});
-			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
-			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
-			TakeScreenShot ("Packages-Updated");
 		}
 	}
 }

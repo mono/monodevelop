@@ -35,13 +35,15 @@ namespace UserInterfaceTests
 		[Test]
 		public void TestGitSSHClone ()
 		{
-			TestClone ("git@github.com:mono/monkeywrench.git");
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionLoaded (TakeScreenShot);
 		}
 
 		[Test]
 		public void TestGitHTTPSClone ()
 		{
-			TestClone ("https://github.com/mono/monkeywrench.git");
+			TestClone ("https://github.com/mono/jurassic.git");
+			Ide.WaitForSolutionLoaded (TakeScreenShot);
 		}
 	}
 }
