@@ -127,7 +127,12 @@ namespace UserInterfaceTests
 
 		protected string GetSolutionDirectory ()
 		{
-			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
+			try {
+			var dirObj = Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory");
+			return dirObj != null ? dirObj.ToString () : null;
+			} catch (Exception) {
+				return null;
+			}
 		}
 	}
 }

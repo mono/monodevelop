@@ -1,5 +1,5 @@
 ﻿//
-// GitTests.cs
+// SvnTests.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -29,21 +29,14 @@ using NUnit.Framework;
 namespace UserInterfaceTests
 {
 	[TestFixture]
-	[Category ("Git")]
-	public class GitTests : VCSBase
+	[Category ("Svn")]
+	public class SvnTests : VCSBase
 	{
 		[Test]
-		public void TestGitSSHClone ()
+		public void TestSvnClone ()
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionLoaded (TakeScreenShot);
-		}
-
-		[Test]
-		public void TestGitHTTPSClone ()
-		{
-			TestClone ("https://github.com/mono/jurassic.git");
-			Ide.WaitForSolutionLoaded (TakeScreenShot);
+			TestClone ("https://github.com/mono/heap-shot", cvsType: VersionControlType.Subversion, cloneTimeoutSecs: 360);
+			Ide.WaitForSolutionCheckedOut ();
 		}
 	}
 }
