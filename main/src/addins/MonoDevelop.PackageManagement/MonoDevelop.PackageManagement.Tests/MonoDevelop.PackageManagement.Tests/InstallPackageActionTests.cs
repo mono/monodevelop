@@ -43,12 +43,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableInstallPackageAction action;
 		InstallPackageHelper installPackageHelper;
 		FakeFileService fileService;
+		FakeFileRemover fileRemover;
 
 		void CreateAction ()
 		{
 			packageManagementEvents = new PackageManagementEvents ();
 			fakeProject = new FakePackageManagementProject ();
-			action = new TestableInstallPackageAction (fakeProject, packageManagementEvents);
+			fileRemover = new FakeFileRemover ();
+			action = new TestableInstallPackageAction (fakeProject, packageManagementEvents, fileRemover);
 			installPackageHelper = new InstallPackageHelper (action);
 		}
 
@@ -603,6 +605,38 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsFalse (fileService.IsOpenFileCalled);
 			Assert.IsTrue (monitor.IsDisposed);
+		}
+
+		[Test]
+		public void Execute_PackagesConfigFileDeletedDuringInstall_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string expectedFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.InstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void Execute_ScriptFileDeletedDuringInstallFileDeletionIsNotCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string fileName = @"d:\projects\MyProject\scripts\myscript.js".ToNativePath ();
+			bool? fileRemovedResult = null;
+			fakeProject.InstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (fileName);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (fileRemovedResult.Value);
+			Assert.IsNull (fileRemover.FileRemoved);
 		}
 	}
 }

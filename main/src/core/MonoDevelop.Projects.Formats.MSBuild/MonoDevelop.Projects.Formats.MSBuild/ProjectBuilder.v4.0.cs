@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			BuildEngine.RunSTA (delegate {
 				try {
 					var project = SetupProject (configurations);
-					result = project.Targets.Keys.ToArray ();
+					result = project.Targets.Select (t => t.Key).ToArray ();
 				} catch {
 					result = new string [0];
 				}

@@ -35,6 +35,7 @@ using MonoDevelop.Components.AutoTest;
 using NUnit.Framework;
 
 using Gdk;
+using System.Linq;
 
 
 namespace UserInterfaceTests
@@ -113,6 +114,36 @@ namespace UserInterfaceTests
 			action ();
 
 			WaitUntil (() => c.TotalTime > tt, timeout);
+		}
+
+		public readonly static Action WaitForPackageUpdate = delegate {
+			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."}, timeoutInSecs: 360, pollStepInSecs: 5);
+		};
+
+		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
+		{
+			WaitForStatusMessage (new [] {"Loading..."});
+			afterEachStep ("Loading-Solution");
+			WaitForNoStatusMessage (new [] {"Loading..."});
+			afterEachStep ("Solution Loaded");
+		}
+
+		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
+		{
+			PollStatusMessage (statusMessage, timeoutInSecs, pollStepInSecs);
+		}
+
+		public static void WaitForNoStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
+		{
+			PollStatusMessage (statusMessage, timeoutInSecs, pollStepInSecs, false);
+		}
+
+		static void PollStatusMessage (string[] statusMessage, int timeoutInSecs, int pollStepInSecs, bool waitForMessage = true)
+		{
+			Ide.WaitUntil (() => {
+				var actualStatusMessage = Ide.GetStatusMessage ();
+				return waitForMessage == (statusMessage.Contains (actualStatusMessage));
+			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 	}
 
