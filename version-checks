@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=968444282c831e46495924f6e047bb37a8a6d275
+DEP_NEEDED_VERSION[0]=a3e5922e362cfe959aade1d32ef12faec6771794
 DEP_BRANCH_AND_REMOTE[0]="insights-integration-v1 origin/insights-integration-v1"
 
 # heap-shot
