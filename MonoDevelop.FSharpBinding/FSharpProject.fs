@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
+open System.IO
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Projects.Formats.MSBuild
@@ -30,7 +31,7 @@ type FSharpProject() as self =
     
     let invalidateProjectFile() =
       try 
-        if IO.File.Exists (self.FileName.ToString()) then
+        if File.Exists (self.FileName.ToString()) then
           let options = langServ.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
           langServ.InvalidateConfiguration(options)
           langServ.ClearProjectInfoCache()
@@ -57,13 +58,13 @@ type FSharpProject() as self =
 
     override x.OnReadProject(progress, project) =
       project.Imports
-      |> Seq.tryFind (fun i -> IO.Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
+      |> Seq.tryFind (fun i -> Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
       |> Option.iter (fun _ -> initialisedAsPortable <- true)
       base.OnReadProject(progress, project)
 
     override x.OnReadProjectHeader(progress, project) =
       project.Imports
-      |> Seq.tryFind (fun i -> IO.Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
+      |> Seq.tryFind (fun i -> Path.GetFileName(i.EvaluatedProject) = "Microsoft.Portable.FSharp.Targets" )
       |> Option.iter (fun _ -> initialisedAsPortable <- true)
       base.OnReadProjectHeader(progress, project)
 
