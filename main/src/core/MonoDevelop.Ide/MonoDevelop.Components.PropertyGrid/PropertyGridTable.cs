@@ -698,7 +698,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		void ShowTooltipWindow (int x, int y)
 		{
 			tooltipTimeout = 0;
-			int dx = (int)((double)Allocation.Width * dividerPosition);
+			int dx = (int)((double)Allocation.Width);
 			if (x >= dx)
 				return;
 			var row = GetAllRows (true).FirstOrDefault (r => !r.IsCategory && y >= r.EditorBounds.Y && y <= r.EditorBounds.Bottom);
