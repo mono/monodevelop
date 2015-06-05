@@ -155,7 +155,19 @@ namespace MonoDevelop.VersionControl.Git
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							Stash stash;
-							Repository.TryCreateStash (monitor, comment, out stash);
+							if (Repository.TryCreateStash (monitor, comment, out stash)) {
+								string msg;
+								if (stash != null) {
+									msg = GettextCatalog.GetString ("Changes successfully stashed");
+								} else {
+									msg = GettextCatalog.GetString ("No changes were available to stash");
+								}
+
+								DispatchService.GuiDispatch (delegate {
+									IdeApp.Workbench.StatusBar.ShowMessage (msg);
+								});
+							}
+
 						} catch (Exception ex) {
 							MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 						}
