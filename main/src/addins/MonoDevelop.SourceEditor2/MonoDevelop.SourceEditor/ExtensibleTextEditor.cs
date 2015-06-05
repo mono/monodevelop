@@ -785,7 +785,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			RunAction (DeleteActions.CaretLine);
 		}
-		
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart)]
+		internal void OnDeleteToLineStart ()
+		{
+			RunAction (DeleteActions.CaretLineToStart);
+		}
+
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd)]
 		internal void OnDeleteToLineEnd ()
 		{
