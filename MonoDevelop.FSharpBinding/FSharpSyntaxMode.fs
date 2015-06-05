@@ -340,7 +340,7 @@ module Tokens =
           yield lineNumber, lineOffset, parseLine None |]
 
 type FSharpSyntaxMode(editor, context) =
-    inherit SemanticHighlighting(editor, context)
+    inherit MonoDevelop.Ide.Editor.Highlighting.SemanticHighlighting(editor, context)
 
     let mutable segments = [||]
 
