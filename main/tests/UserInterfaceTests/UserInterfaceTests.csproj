@@ -66,6 +66,7 @@
     <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
     <Compile Include="VersionControlTests\GitTests.cs" />
     <Compile Include="VersionControlTests\VCSBase.cs" />
+    <Compile Include="VersionControlTests\SvnTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

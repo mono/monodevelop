@@ -57,10 +57,10 @@ namespace UserInterfaceTests
 			return cloneToLocation;
 		}
 
-		protected void TestClone (string url)
+		protected void TestClone (string repoUrl, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 180)
 		{
 			Assert.DoesNotThrow (delegate {
-				var checkoutFolder = CheckoutOrClone (url);
+				var checkoutFolder = CheckoutOrClone (repoUrl, cloneToLocation, cvsType, cloneTimeoutSecs);
 				FoldersToClean.Add (checkoutFolder);
 			});
 		}
