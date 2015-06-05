@@ -83,12 +83,5 @@ namespace ICSharpCode.PackageManagement
 		{
 			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
 		}
-
-		protected IDisposable CreateFileMonitor (IFileRemover fileRemover)
-		{
-			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				packageManagementEvents,
-				fileRemover);
-		}
 	}
 }

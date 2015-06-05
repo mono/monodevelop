@@ -38,11 +38,22 @@ namespace MonoDevelop.PackageManagement
 {
 	public class ReinstallPackageAction : ProcessPackageAction
 	{
+		IFileRemover fileRemover;
+
 		public ReinstallPackageAction (
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
+			: this (project, packageManagementEvents, new FileRemover ())
+		{
+		}
+
+		public ReinstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
 			: base (project, packageManagementEvents)
 		{
+			this.fileRemover = fileRemover;
 		}
 
 		protected override string StartingMessageFormat {
@@ -51,7 +62,9 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void ExecuteCore ()
 		{
-			UninstallPackage ();
+			using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
+				UninstallPackage ();
+			}
 			InstallPackage ();
 		}
 
