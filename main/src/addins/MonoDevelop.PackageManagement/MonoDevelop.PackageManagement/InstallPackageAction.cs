@@ -35,14 +35,26 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstallPackageAction : ProcessPackageOperationsAction
 	{
+		IFileRemover fileRemover;
+
 		public InstallPackageAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+			: this (project, packageManagementEvents, new FileRemover ())
 		{
+		}
+
+		public InstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
+			: base (project, packageManagementEvents)
+		{
+			this.fileRemover = fileRemover;
+
 			OpenReadMeText = true;
 		}
-		
+
 		public bool IgnoreDependencies { get; set; }
 		public bool OpenReadMeText { get; set; }
 		
@@ -54,7 +66,9 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
-				Project.InstallPackage (Package, this);
+				using (IDisposable fileMonitor = CreateFileMonitor (fileRemover)) {
+					Project.InstallPackage (Package, this);
+				}
 				monitor.OpenReadMeFile ();
 				OnParentPackageInstalled ();
 			}

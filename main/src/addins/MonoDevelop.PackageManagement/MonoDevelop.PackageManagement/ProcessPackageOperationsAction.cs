@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -81,6 +82,13 @@ namespace ICSharpCode.PackageManagement
 		protected void OnParentPackageInstalled ()
 		{
 			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
+		}
+
+		protected IDisposable CreateFileMonitor (IFileRemover fileRemover)
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				packageManagementEvents,
+				fileRemover);
 		}
 	}
 }
