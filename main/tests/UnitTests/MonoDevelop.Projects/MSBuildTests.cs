@@ -553,5 +553,15 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.SupportsTarget ("GetReferenceAssemblyPaths"));
 			Assert.IsFalse (p.SupportsTarget ("Foo"));
 		}
+
+		[Test]
+		public void DefaultMSBuildSupport ()
+		{
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			bool byDefault, require;
+			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+			Assert.IsTrue (byDefault);
+			Assert.IsFalse (require);
+		}
 	}
 }

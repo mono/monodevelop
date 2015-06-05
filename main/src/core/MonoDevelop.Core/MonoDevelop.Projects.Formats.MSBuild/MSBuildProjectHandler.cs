@@ -496,8 +496,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			);
 		}
 
+		bool? useMSBuildEngineByDefault;
+
 		/// <summary>Whether to use the MSBuild engine by default.</summary>
-		internal bool UseMSBuildEngineByDefault { get; set; }
+		internal bool UseMSBuildEngineByDefault {
+			get {
+				//enable msbuild by default .NET assembly projects
+				return useMSBuildEngineByDefault ?? (Item is DotNetAssemblyProject && !string.IsNullOrEmpty (((DotNetAssemblyProject)Item).LanguageName));
+			}
+			set {
+				useMSBuildEngineByDefault = value;
+			}
+		}
 
 		/// <summary>Forces the MSBuild engine to be used.</summary>
 		internal bool RequireMSBuildEngine { get; set; }
