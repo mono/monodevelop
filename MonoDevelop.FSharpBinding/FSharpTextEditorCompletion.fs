@@ -161,27 +161,28 @@ type FSharpParameterHintingData (name, meth : FSharpMethodGroupItem(*, symbol:FS
 type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
+  let keywordCompletionData =
+      [for keyValuePair in KeywordList.keywordDescriptions do
+         yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
+
   let mutable suppressParameterCompletion = false
   let mutable lastCharDottedInto = false
          
   let compilerIdentifiers =
     let icon = MonoDevelop.Ide.Gui.Stock.Literal
     let compilerIdentifierCategory = Category "Compiler Identifiers"
-    [CompletionData("__LINE__",
-                    icon,
-                    "Evaluates to the current line number, considering <tt>#line</tt> directives.",
-                    CompletionCategory = compilerIdentifierCategory, 
-                    DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-     CompletionData("__SOURCE_DIRECTORY__",
-                    icon,
-                    "Evaluates to the current full path of the source directory, considering <tt>#line</tt> directives.",
-                    CompletionCategory = compilerIdentifierCategory, 
-                    DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-     CompletionData("__SOURCE_FILE__",
-                    icon,
-                    "Evaluates to the current source file name and its path, considering <tt>#line</tt> directives.",
-                    CompletionCategory = compilerIdentifierCategory,
-                    DisplayFlags = DisplayFlags.DescriptionHasMarkup)]
+    [ CompletionData("__LINE__", icon,
+                        "Evaluates to the current line number, considering <tt>#line</tt> directives.",
+                        CompletionCategory = compilerIdentifierCategory, 
+                        DisplayFlags = DisplayFlags.DescriptionHasMarkup)
+      CompletionData("__SOURCE_DIRECTORY__", icon,
+                        "Evaluates to the current full path of the source directory, considering <tt>#line</tt> directives.",
+                        CompletionCategory = compilerIdentifierCategory, 
+                        DisplayFlags = DisplayFlags.DescriptionHasMarkup)
+      CompletionData("__SOURCE_FILE__", icon,
+                        "Evaluates to the current source file name and its path, considering <tt>#line</tt> directives.",
+                        CompletionCategory = compilerIdentifierCategory,
+                        DisplayFlags = DisplayFlags.DescriptionHasMarkup) ]
 
   // Until we build some functionality around a reversing tokenizer that detect this and other contexts
   // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
@@ -448,8 +449,8 @@ type FSharpTextEditorCompletion() =
     else
       // Add the code templates and compiler generated identifiers if the completion char is not '.'
       CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-      result.AddRange (compilerIdentifiers)
-
+      result.AddRange compilerIdentifiers
+      result.AddRange keywordCompletionData
     //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
     if ctrlSpace then
       result.AutoCompleteUniqueMatch <- true
