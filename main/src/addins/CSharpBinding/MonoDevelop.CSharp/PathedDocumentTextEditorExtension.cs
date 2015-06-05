@@ -632,56 +632,54 @@ namespace MonoDevelop.CSharp
 					return;
 				}
 
-				if (curType != null) {
-					var type = curType;
-					var pos = result.Count;
-					while (type != null) {
-						if (!(type is TypeDeclarationSyntax))
-							break;
-						result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type ?? unit });
-						type = type.Parent;
+				Gtk.Application.Invoke(delegate {
+					if (curType != null) {
+						var type = curType;
+						var pos = result.Count;
+						while (type != null) {
+							if (!(type is TypeDeclarationSyntax))
+								break;
+							result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (object)type ?? unit });
+							type = type.Parent;
+						}
 					}
-				}
-				if (curMember != null) {
-					result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
-					if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
+					if (curMember != null) {
+						result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+						if (curMember.Kind () == SyntaxKind.GetAccessorDeclaration ||
 						curMember.Kind () == SyntaxKind.SetAccessorDeclaration ||
 						curMember.Kind () == SyntaxKind.AddAccessorDeclaration ||
 						curMember.Kind () == SyntaxKind.RemoveAccessorDeclaration) {
-						var parent = curMember.Parent;
-						if (parent != null)
-							result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
-					}
-				}
-
-				var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
-				if (entry != null)
-					result.Add(entry);
-
-				PathEntry noSelection = null;
-				if (curType == null) {
-					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
-				} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
-					noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
-				}
-
-				if (noSelection != null)
-					result.Add(noSelection);
-				var prev = CurrentPath;
-				if (prev != null && prev.Length == result.Count) {
-					bool equals = true;
-					for (int i = 0; i < prev.Length; i++) {
-						if (prev [i].Markup != result [i].Markup) {
-							equals = false;
-							break;
+							var parent = curMember.Parent;
+							if (parent != null)
+								result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
 						}
 					}
-					if (equals)
-						return;
-				}
-				if (cancellationToken.IsCancellationRequested)
-					return;
-				Gtk.Application.Invoke(delegate {
+
+					var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
+					if (entry != null)
+						result.Add(entry);
+
+					PathEntry noSelection = null;
+					if (curType == null) {
+						noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit };
+					} else if (curMember == null && !(curType is DelegateDeclarationSyntax)) {
+						noSelection = new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = curType };
+					}
+
+					if (noSelection != null)
+						result.Add(noSelection);
+					var prev = CurrentPath;
+					if (prev != null && prev.Length == result.Count) {
+						bool equals = true;
+						for (int i = 0; i < prev.Length; i++) {
+							if (prev [i].Markup != result [i].Markup) {
+								equals = false;
+								break;
+							}
+						}
+						if (equals)
+							return;
+					}
 					if (cancellationToken.IsCancellationRequested)
 						return;
 					CurrentPath = result.ToArray();
