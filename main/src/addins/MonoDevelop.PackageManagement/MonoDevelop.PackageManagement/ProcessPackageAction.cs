@@ -253,5 +253,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new OpenPackageReadMeMonitor (packageId, Project, packageManagementEvents);
 		}
+
+		protected IDisposable CreateFileMonitor (IFileRemover fileRemover)
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				packageManagementEvents,
+				fileRemover);
+		}
 	}
 }

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
@@ -38,6 +37,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		ReinstallPackageAction action;
 		PackageManagementEvents packageManagementEvents;
 		FakePackageManagementProject project;
+		FakeFileRemover fileRemover;
 
 		void CreateAction (string packageId = "MyPackage", string packageVersion = "1.2.3.4")
 		{
@@ -46,7 +46,9 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			packageManagementEvents = new PackageManagementEvents ();
 
-			action = new ReinstallPackageAction (project, packageManagementEvents);
+			fileRemover = new FakeFileRemover ();
+
+			action = new ReinstallPackageAction (project, packageManagementEvents, fileRemover);
 			action.PackageId = packageId;
 			action.PackageVersion = new SemanticVersion (packageVersion);
 		}
@@ -101,6 +103,44 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (project.LastInstallPackageCreated.IsExecuteCalled);
 			Assert.IsFalse (project.LastInstallPackageCreated.OpenReadMeText);
+		}
+
+		[Test]
+		public void Execute_PackagesConfigFileDeletedDuringUninstall_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string expectedFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			project.UninstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			project.CreateUninstallPackageActionFunc = () => {
+				return new UninstallPackageAction (project, packageManagementEvents);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void Execute_ScriptFileDeletedDuringUninstall_FileDeletionIsNotCancelled ()
+		{
+			CreateAction ();
+			action.Package = new FakePackage ("Test");
+			string fileName = @"d:\projects\MyProject\scripts\myscript.js".ToNativePath ();
+			bool? fileRemovedResult = null;
+			project.UninstallPackageAction = (p, a) => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (fileName);
+			};
+			project.CreateUninstallPackageActionFunc = () => {
+				return new UninstallPackageAction (project, packageManagementEvents);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (fileRemovedResult.Value);
+			Assert.IsNull (fileRemover.FileRemoved);
 		}
 	}
 }
