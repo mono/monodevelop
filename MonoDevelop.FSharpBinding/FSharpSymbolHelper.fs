@@ -444,10 +444,9 @@ module SymbolTooltips =
 
         let uniontip () = 
             asType Symbol " =" + "\n" + 
-            asType Symbol "|" ++
-            (fse.UnionCases 
-            |> Seq.map (getUnioncaseSignature displayContext)
-            |> String.concat ("\n" + asType Symbol "| " ) )
+            asType Symbol "|" ++ (fse.UnionCases 
+                                  |> Seq.map (getUnioncaseSignature displayContext)
+                                  |> String.concat ("\n" + asType Symbol "| " ) )
 
         let delegateTip () =
             let invoker =
@@ -488,6 +487,17 @@ module SymbolTooltips =
                 if field.IsMutable then asType Keyword "val" ++ asType Keyword "mutable"
                 else asType Keyword "val"
             prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
+
+    let getAPCaseSignature displayContext (apc:FSharpActivePatternCase) =
+      let findVal =
+        apc.Group.EnclosingEntity.Value.MembersFunctionsAndValues
+        |> Seq.tryFind (fun thing -> thing.DisplayName.Contains apc.DisplayName)
+        |> Option.map (fun v -> getFuncSignature displayContext v 3 false)
+
+      match findVal with
+      | Some v -> v
+      | None -> apc.Group.OverallType.Format displayContext
+
 
     let getTooltipFromSymbolUse (symbol:FSharpSymbolUse) =
         match symbol with
@@ -541,9 +551,8 @@ module SymbolTooltips =
             ToolTip(signature, getSummaryFromSymbol uc)
 
         | ActivePatternCase apc ->
-            //There is actually enough information, but we need a sane way of presenting FSharpType in
-            //rather than using the Format method.  E.g. Like CurriedParameterGroups
-            ToolTips.EmptyTip
-           
+            let signature = getAPCaseSignature symbol.DisplayContext apc
+            ToolTip(signature, getSummaryFromSymbol apc)
+         
         | _ ->
             ToolTips.EmptyTip
