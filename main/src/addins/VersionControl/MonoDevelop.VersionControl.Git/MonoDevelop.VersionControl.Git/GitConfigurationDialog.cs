@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -51,6 +53,9 @@ namespace MonoDevelop.VersionControl.Git
 			storeBranches = new ListStore (typeof(Branch), typeof(string), typeof(string), typeof(string));
 			listBranches.Model = storeBranches;
 			listBranches.HeadersVisible = true;
+
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("storeBranches__Branch", "storeBranches__DisplayName", "storeBranches__Tracking", "storeBranches__Name");
+			TypeDescriptor.AddAttributes (storeBranches, modelAttr);
 
 			listBranches.AppendColumn (GettextCatalog.GetString ("Branch"), new CellRendererText (), "markup", 1);
 			listBranches.AppendColumn (GettextCatalog.GetString ("Tracking"), new CellRendererText (), "text", 2);

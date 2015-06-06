@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -59,6 +61,9 @@ namespace MonoDevelop.VersionControl.Git
 			var crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
+
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("comboStore__Branch", "comboStore__Icon", "comboStore__Name", "comboStore__Tracking");
+			TypeDescriptor.AddAttributes (comboStore, modelAttr);
 
 			foreach (Branch b in repo.GetBranches ()) {
 				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
