@@ -364,7 +364,7 @@ namespace MonoDevelop.Autotools
 				monitor.EndTask ();
 			}
 			monitor.ReportSuccess ( GettextCatalog.GetString ( "Project successfully cleaned"));
-			return BuildResult.Success;
+			return BuildResult.CreateSuccess ();
 		}
 
 		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)

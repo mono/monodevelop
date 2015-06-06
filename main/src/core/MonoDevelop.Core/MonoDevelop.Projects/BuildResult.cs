@@ -41,9 +41,6 @@ namespace MonoDevelop.Projects
 		List<BuildError> errors = new List<BuildError> ();
 		IBuildTarget sourceTarget;
 
-		static BuildResult success = new BuildResult ();
-		static BuildResult cancelled = new BuildResult ().AddError (GettextCatalog.GetString ("Cancelled"));
-
 		public BuildResult()
 		{
 		}
@@ -74,12 +71,14 @@ namespace MonoDevelop.Projects
 			get { return WarningCount > 0; }
 		}
 
-		public static BuildResult Success {
-			get { return success; }
+		public static BuildResult CreateSuccess ()
+		{
+			return new BuildResult ();
 		}
-		
-		public static BuildResult Cancelled {
-			get { return cancelled; }
+
+		public static BuildResult CreateCancelled ()
+		{
+			return new BuildResult ().AddError (GettextCatalog.GetString ("Cancelled"));
 		}
 
 		public ReadOnlyCollection<BuildError> Errors {
@@ -169,6 +168,12 @@ namespace MonoDevelop.Projects
 				if (FailedBuildCount == 0)
 					FailedBuildCount = 1;
 			}
+			return this;
+		}
+
+		internal BuildResult SetSource (IBuildTarget source)
+		{
+			SourceTarget = source;
 			return this;
 		}
 

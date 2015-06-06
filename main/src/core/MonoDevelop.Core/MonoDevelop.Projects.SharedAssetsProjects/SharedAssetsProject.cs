@@ -217,7 +217,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override Task<BuildResult> OnBuild (MonoDevelop.Core.ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		protected override bool OnGetSupportsTarget (string target)

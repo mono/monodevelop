@@ -330,7 +330,7 @@ namespace MonoDevelop.Projects.Formats.MD1
 
 		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		// true if the resx file or any file referenced

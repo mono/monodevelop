@@ -53,6 +53,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 			return newResultSet;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Text (\"{0}\", {1})", Text, Exact);
+		}
 	}
 }
 

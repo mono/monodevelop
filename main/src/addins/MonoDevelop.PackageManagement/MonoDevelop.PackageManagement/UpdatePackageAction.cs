@@ -35,7 +35,6 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
 	{
-		IPackageManagementEvents packageManagementEvents;
 		IFileRemover fileRemover;
 
 		public UpdatePackageAction (
@@ -54,7 +53,6 @@ namespace ICSharpCode.PackageManagement
 			IFileRemover fileRemover)
 			: base (project, packageManagementEvents)
 		{
-			this.packageManagementEvents = packageManagementEvents;
 			this.fileRemover = fileRemover;
 			UpdateDependencies = true;
 			UpdateIfPackageDoesNotExistInProject = true;
@@ -75,7 +73,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (ShouldUpdatePackage ()) {
 				using (IOpenPackageReadMeMonitor readmeMonitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
-					using (IDisposable monitor = CreateFileMonitor ()) {
+					using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
 						Project.UpdatePackage (Package, this);
 						readmeMonitor.OpenReadMeFile ();
 					}
@@ -109,13 +107,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			string message = String.Format ("No updates available for '{0}' in project '{1}'.", packageId, Project.Name);
 			Logger.Log (MessageLevel.Info, message);
-		}
-
-		IDisposable CreateFileMonitor ()
-		{
-			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				packageManagementEvents,
-				fileRemover);
 		}
 
 		protected override string StartingMessageFormat {

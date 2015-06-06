@@ -47,6 +47,11 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			newResults.Add (resultSet [Index]);
 			return newResults;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Index ({0})", Index);
+		}
 	}
 }
 

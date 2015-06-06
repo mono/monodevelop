@@ -35,17 +35,22 @@ namespace UserInterfaceTests
 		[Test]
 		public void TestGitSSHClone ()
 		{
-			var checkoutFolder = VCSUtils.CheckoutOrClone ("git@github.com:mono/monkeywrench.git", TakeScreenShot);
-			FoldersToClean.Add (checkoutFolder);
-			WaitForPackageUpdate.Invoke ();
+			TestClone ("git@github.com:mono/monkeywrench.git");
 		}
 
 		[Test]
 		public void TestGitHTTPSClone ()
 		{
-			var checkoutFolder = VCSUtils.CheckoutOrClone ("https://github.com/mono/monkeywrench.git", TakeScreenShot);
+			TestClone ("https://github.com/mono/monkeywrench.git");
+		}
+
+		void TestClone (string url)
+		{
+			var checkoutFolder = VCSUtils.CheckoutOrClone (url, TakeScreenShot);
 			FoldersToClean.Add (checkoutFolder);
-			WaitForPackageUpdate.Invoke ();
+			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
+			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
+			TakeScreenShot ("Packages-Updated");
 		}
 	}
 }

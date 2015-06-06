@@ -66,6 +66,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				IsUpdatePackageCalled = true;
 			};
 
+			UninstallPackageAction = (package, uninstallAction) => {
+				PackagePassedToUninstallPackage = package;
+				ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
+				RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
+			};
+
+			CreateUninstallPackageActionFunc = () => FakeUninstallPackageAction;
+
 			this.Name = name;
 
 			ConstraintProvider = NullConstraintProvider.Instance;
@@ -159,10 +167,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void UninstallPackage (IPackage package, UninstallPackageAction uninstallAction)
 		{
-			PackagePassedToUninstallPackage = package;
-			ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
-			RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
+			UninstallPackageAction (package, uninstallAction);
 		}
+
+		public Action<IPackage, UninstallPackageAction> UninstallPackageAction;
 
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
@@ -187,8 +195,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public virtual UninstallPackageAction CreateUninstallPackageAction ()
 		{
-			return FakeUninstallPackageAction;
+			return CreateUninstallPackageActionFunc ();
 		}
+
+		public Func<UninstallPackageAction> CreateUninstallPackageActionFunc;
 
 		public UpdatePackageAction CreateUpdatePackageAction ()
 		{

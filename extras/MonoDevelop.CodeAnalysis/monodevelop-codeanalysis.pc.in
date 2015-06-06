@@ -1,8 +1,0 @@
-Name: monodevelop-codeanalysis
-Description: MonoDevelop.CodeAnalysis Add-in
-Version: 0.1
-
-libdir=@prefix@/lib/monodevelop
-
-Requires: 
-Libs: -r:${libdir}/AddIns/MonoDevelop.CodeAnalysis/MonoDevelop.CodeAnalysis.dll -r:${libdir}/AddIns/MonoDevelop.CodeAnalysis/MonoDevelop.CodeAnalysis.Gendarme.dll

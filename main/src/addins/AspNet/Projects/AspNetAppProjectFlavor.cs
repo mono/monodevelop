@@ -138,7 +138,7 @@ namespace MonoDevelop.AspNet.Projects
 
 			if (needsCompile)
 				return base.OnBuild (monitor, configuration, operationContext);
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		ExecutionCommand CreateExecutionCommand (ConfigurationSelector config, AspNetAppProjectConfiguration configuration)

@@ -43,14 +43,9 @@ namespace UserInterfaceTests
 
 		public readonly static Action EmptyAction = delegate { };
 
-		public readonly static Action WaitForPackageUpdate = delegate {
-			Ide.WaitUntil (() => {
-				var statusMsg = Ide.GetStatusMessage ();
-				return statusMsg == "Package updates are available." || statusMsg == "Packages are up to date.";
-			}, pollStep: 1000, timeout: 120000);
-		};
-
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
+
+		public readonly static Action WaitForPackageUpdate = Ide.WaitForPackageUpdate;
 
 		protected CreateBuildTemplatesTestBase (string mdBinPath = null) : base (mdBinPath)
 		{
@@ -139,10 +134,10 @@ namespace UserInterfaceTests
 			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
 		}
 
-		protected virtual void OnBuildTemplate ()
+		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
 		{
 			try {
-				Assert.IsTrue (Ide.BuildSolution ());
+				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs));
 				TakeScreenShot ("AfterBuildFinishedSuccessfully");
 			} catch (TimeoutException e) {
 				TakeScreenShot ("AfterBuildFailed");

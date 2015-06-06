@@ -1332,6 +1332,16 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test]
+		public void DefaultMSBuildSupport ()
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			bool byDefault, require;
+			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+			Assert.IsTrue (byDefault);
+			Assert.IsFalse (require);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

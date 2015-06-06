@@ -718,29 +718,31 @@ namespace MonoDevelop.Projects
 				SolutionItemConfiguration conf = GetConfiguration (configuration);
 				if (conf != null && conf.CustomCommands.HasCommands (CustomCommandType.Build)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return new TargetEvaluationResult (BuildResult.Cancelled);
+						return new TargetEvaluationResult (BuildResult.CreateCancelled ().SetSource (this));
 					if (!await conf.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Build, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
-						return new TargetEvaluationResult (r);
+						return new TargetEvaluationResult (r.SetSource (this));
 					}
-					return new TargetEvaluationResult (BuildResult.Success);
+					return new TargetEvaluationResult (BuildResult.CreateSuccess ().SetSource (this));
 				}
 			} else if (target == ProjectService.CleanTarget) {
 				SetFastBuildCheckDirty ();
 				SolutionItemConfiguration config = GetConfiguration (configuration);
 				if (config != null && config.CustomCommands.HasCommands (CustomCommandType.Clean)) {
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return new TargetEvaluationResult (BuildResult.Cancelled);
+						return new TargetEvaluationResult (BuildResult.CreateCancelled ().SetSource (this));
 					if (!await config.CustomCommands.ExecuteCommand (monitor, this, CustomCommandType.Clean, configuration)) {
 						var r = new BuildResult ();
 						r.AddError (GettextCatalog.GetString ("Custom command execution failed"));
-						return new TargetEvaluationResult (r);
+						return new TargetEvaluationResult (r.SetSource (this));
 					}
-					return new TargetEvaluationResult (BuildResult.Success);
+					return new TargetEvaluationResult (BuildResult.CreateSuccess ().SetSource (this));
 				}
 			}
-			return await OnRunTarget (monitor, target, configuration, context);
+			var tr = await OnRunTarget (monitor, target, configuration, context);
+			tr.BuildResult.SourceTarget = this;
+			return tr;
 		}
 
 		async Task<TargetEvaluationResult> RunMSBuildTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
@@ -1369,7 +1371,7 @@ namespace MonoDevelop.Projects
 		/// </remarks>
 		protected virtual Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		protected override async Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
@@ -1382,7 +1384,7 @@ namespace MonoDevelop.Projects
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
-				return new TargetEvaluationResult (BuildResult.Success);
+				return new TargetEvaluationResult (BuildResult.CreateSuccess ());
 			}
 			
 			if (UsingMSBuildEngine (configuration)) {
@@ -1416,7 +1418,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual Task<BuildResult> DoClean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

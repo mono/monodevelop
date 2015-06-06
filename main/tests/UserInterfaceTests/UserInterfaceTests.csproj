@@ -33,15 +33,22 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="nunit.core">
-      <HintPath>..\..\external\mdtestharness\lib\nunit.core.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\external\mdtestharness\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="nunit.core.interfaces">
-      <HintPath>..\..\external\mdtestharness\lib\nunit.core.interfaces.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -80,12 +87,15 @@
       <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
       <Name>MonoDevelop.VersionControl.Git</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="New Folder\" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+  </Target>
 </Project>
