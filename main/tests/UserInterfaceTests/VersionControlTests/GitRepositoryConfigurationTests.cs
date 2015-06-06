@@ -56,6 +56,20 @@ namespace UserInterfaceTests
 			SwitchToBranch ("new-branch");
 			CloseRepositoryConfiguration ();
 		}
+
+		[Test]
+		public void GitEditBranchTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ();
+			CreateNewBranch ("new-branch");
+			SelectBranch ("new-branch");
+			EditBranch ("new-branch", "new-new-branch");
+			SwitchToBranch ("new-new-branch");
+			CloseRepositoryConfiguration ();
+		}
 	}
 
 	public abstract class GitRepositoryConfigurationBase : VCSBase
@@ -75,32 +89,44 @@ namespace UserInterfaceTests
 
 		protected void CreateNewBranch (string newBranchName)
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonAddBranch"), false);
+			CreateEditBranch ("buttonAddBranch", newBranchName);
+		}
+
+		protected void EditBranch (string oldBranchName, string newBranchName)
+		{
+			SelectBranch (oldBranchName);
+			CreateEditBranch ("buttonEditBranch", newBranchName);
+		}
+
+		void CreateEditBranch (string buttonName, string newBranchName)
+		{
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName), false);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog"));
 			TakeScreenShot ("Edit-Branch-Dialog-Opened");
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Textfield ().Marked ("entryName"), newBranchName);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Textfield ().Marked ("entryName").Text (newBranchName));
-			TakeScreenShot ("Edit-Branch-Dialog-Opened");
+			TakeScreenShot ("Branch-Name-Entered");
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Button ().Marked ("buttonOk")));
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
-			TakeScreenShot ("New-Branch-Created");
+			TakeScreenShot ("Edit-Branch-Dialog-Opened-Closed");
 		}
 
 		protected void SwitchToBranch (string branchName)
 		{
-			Assert.IsTrue (SelectBranch (branchName));
+			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonSetDefaultBranch")));
-			Assert.IsTrue (IsBranchSelected (branchName));
+			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
 
-		protected bool SelectBranch (string branchName)
+		protected void SelectBranch (string branchName)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Contains (branchName));
+			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Contains (branchName)));
+			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName));
 		}
 
-		protected bool IsBranchSelected (string branchName)
+		protected bool IsBranchSwitched (string branchName)
 		{
 			return Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Text ("<b>" + branchName + "</b>"));
 		}
