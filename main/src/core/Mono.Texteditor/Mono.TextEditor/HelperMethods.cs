@@ -31,6 +31,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using Cairo;
 
 namespace Mono.TextEditor
 {
@@ -118,7 +119,18 @@ namespace Mono.TextEditor
 			IntPtr handle = pango_layout_get_context (layout.Handle);
 			return handle.Equals (IntPtr.Zero) ? null : GLib.Object.GetObject (handle) as Pango.Context;
 		}
-		
+
+
+		[DllImport(PangoUtil.LIBPANGOCAIRO, CallingConvention=CallingConvention.Cdecl)]
+		static extern void pango_cairo_context_set_font_options (IntPtr pango_context, IntPtr options);
+
+		public unsafe static void SetFontOptions (this Pango.Context context, Cairo.FontOptions options)
+		{
+			pango_cairo_context_set_font_options (context == null ? IntPtr.Zero : context.Handle, options.Handle);
+		}
+
+
+
 		public static void DrawLine (this Cairo.Context cr, Cairo.Color color, double x1, double y1, double x2, double y2)
 		{
 			cr.SetSourceColor (color);

@@ -44,6 +44,7 @@ using OpenTK.Platform;
 using Gdk;
 using Gtk;
 using System.Security;
+using OpenTK.Graphics.OpenGL;
 
 namespace Mono.TextEditor
 {
@@ -299,16 +300,16 @@ namespace Mono.TextEditor
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 
-			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
+//			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
 				return;
-			}
+/*			}
 
 			if (GdkWindow != null)
 				GdkWindow.Scroll (0, (int)-delta);
 
-			OnVScroll (EventArgs.Empty);
+			OnVScroll (EventArgs.Empty);*/
 		}
 
 		protected virtual void OnVScroll (EventArgs e)
@@ -1778,12 +1779,20 @@ namespace Mono.TextEditor
 				this.textEditorData.HAdjustment.Value = 0;
 		}
 
+		int[] textures = null;
+
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			if (imageSurface != null) 
-				imageSurface.Destroy ();
-			imageSurface = new Cairo.ImageSurface(Cairo.Format.Argb32, allocation.Width, allocation.Height);
+			if (imageSurface != null) {
+				imageSurface.Dispose ();
+				if (textures != null) {
+					GL.DeleteTextures (1, textures);
+					textures = null;
+				}
+			}
+
+			imageSurface = new Cairo.ImageSurface(Cairo.Format.Rgb24, allocation.Width, allocation.Height);
 
 			SetAdjustments (Allocation);
 			sizeHasBeenAllocated = true;
@@ -2063,6 +2072,7 @@ namespace Mono.TextEditor
 				} else {
 					((IGraphicsContextInternal)graphicsContext).LoadAll ();
 				}
+
 			} else {
 				try {
 					graphicsContext.MakeCurrent (windowInfo);
@@ -2076,16 +2086,21 @@ namespace Mono.TextEditor
 
 			var area = e.Region.Clipbox;
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
-			using (Cairo.Context cr = new Cairo.Context (imageSurface))
-			using (Cairo.Context textViewCr = Gdk.CairoHelper.Create (e.Window)) {
+			using (Cairo.Context cr = new Cairo.Context (imageSurface)) {
 				UpdateMarginXOffsets ();
 
 				cr.LineWidth = Options.Zoom;
-				textViewCr.LineWidth = Options.Zoom;
-				textViewCr.Rectangle (textViewMargin.XOffset, 0, Allocation.Width - textViewMargin.XOffset, Allocation.Height);
-				textViewCr.Clip ();
+				cr.Antialias = Cairo.Antialias.None;
 
-				RenderMargins (cr, textViewCr, cairoArea);
+				var o = new Cairo.FontOptions ();
+				o.Antialias = Cairo.Antialias.Default;
+				o.SubpixelOrder = Cairo.SubpixelOrder.Default;
+				o.HintStyle = Cairo.HintStyle.Default;
+				o.HintMetrics = Cairo.HintMetrics.Default;
+
+				this.editor.PangoContext.SetFontOptions (o);
+				cr.FontOptions = o;
+				RenderMargins (cr, cr, cairoArea);
 
 #if DEBUG_EXPOSE
 				Console.WriteLine ("{0} expose {1},{2} {3}x{4}", (long)(DateTime.Now - started).TotalMilliseconds,
@@ -2101,28 +2116,58 @@ namespace Mono.TextEditor
 
 				if (Caret.IsVisible)
 					textViewMargin.DrawCaret (cr, Allocation);
-
+				o.Dispose ();
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
-
+		
 			if (imageSurface != null) {
-				OpenTK.Graphics.OpenGL.GL.TexImage2D (
-					OpenTK.Graphics.OpenGL.TextureTarget.Texture2D,
-					0,
-					OpenTK.Graphics.OpenGL.PixelInternalFormat.Rgb8,
-					imageSurface.Width,
-					imageSurface.Height,
-					0,
-					OpenTK.Graphics.OpenGL.PixelFormat.Bgra,
-					OpenTK.Graphics.OpenGL.PixelType.UnsignedByte,
-					imageSurface.DataPtr
-				);
+				if (textures == null) {
+					var w = imageSurface.Width;
+					var h = imageSurface.Height;
+					GL.Viewport (0, 0, w,h);
+					GL.MatrixMode (MatrixMode.Projection);
+					GL.LoadIdentity ();
+					GL.Ortho (0, w, 0, h, -1.0, 1.0);
+					GL.MatrixMode (MatrixMode.Modelview);
+
+					textures = new int[1];
+					GL.Enable (EnableCap.Texture2D);
+					GL.GenTextures (1, textures);
+					GL.BindTexture (TextureTarget.Texture2D, textures[0]);
+					GL.TexImage2D (
+						TextureTarget.Texture2D,
+						0,
+						PixelInternalFormat.Rgba,
+						imageSurface.Width,
+						imageSurface.Height,
+						0,
+						PixelFormat.Rgba,
+						PixelType.UnsignedByte,
+						imageSurface.DataPtr
+					);
+					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+				} else {
+					GL.TexSubImage2D (TextureTarget.Texture2D, 0, 0, 0, imageSurface.Width, imageSurface.Height, PixelFormat.Rgba, PixelType.UnsignedByte, imageSurface.Data);
+				}
+				GL.Clear (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+				GL.Begin (PrimitiveType.Quads);
+				GL.BindTexture (TextureTarget.Texture2D, textures[0]); 
+				GL.TexCoord2 (new Vector2 (0.0f, 1.0f));
+				GL.Vertex2 (new Vector2 (0.0f, 0.0f));
+				GL.TexCoord2 (new Vector2 (1.0f, 1.0f)); 
+				GL.Vertex2(new Vector2 (imageSurface.Width, 0.0f));
+				GL.TexCoord2 (new Vector2 (1.0f, 0.0f)); 
+				GL.Vertex2(new Vector2 (imageSurface.Width, imageSurface.Height));
+				GL.TexCoord2 (new Vector2 (0.0f, 0.0f));
+				GL.Vertex2(new Vector2 (0.0f, imageSurface.Height));
+				GL.End ();
 			}
 			e.Window.Display.Sync (); // Add Sync call to fix resize rendering problem (Jay L. T. Cornwall) - How does this affect VSync?
-			//			graphicsContext.SwapBuffers ();
+			graphicsContext.SwapBuffers ();
 			return result;
-
-
 		}
 
 		protected virtual void OnPainted (PaintEventArgs e)
