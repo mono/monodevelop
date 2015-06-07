@@ -3490,6 +3490,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\WorkspaceId.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

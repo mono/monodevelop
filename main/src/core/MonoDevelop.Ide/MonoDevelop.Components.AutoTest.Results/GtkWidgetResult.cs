@@ -68,13 +68,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {
-				return this;
+				return desiredType == typeof(Notebook) ? new GtkNotebookResult (resultWidget) : this;
 			}
 
 			return null;
 		}
 
-		bool CheckForText (string haystack, string needle, bool exact)
+		protected bool CheckForText (string haystack, string needle, bool exact)
 		{
 			if (exact) {
 				return haystack == needle;

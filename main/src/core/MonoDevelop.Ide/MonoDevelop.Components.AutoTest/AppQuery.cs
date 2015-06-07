@@ -275,6 +275,11 @@ namespace MonoDevelop.Components.AutoTest
 			return CheckType (typeof(TextView), "TextView");
 		}
 
+		public AppQuery Notebook ()
+		{
+			return CheckType (typeof(Notebook), "Notebook");
+		}
+
 		public AppQuery Text (string text)
 		{
 			operations.Add (new TextOperation (text));
