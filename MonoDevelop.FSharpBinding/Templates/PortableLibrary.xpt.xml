@@ -5,12 +5,12 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Portable Library Profile 78</_Name>
+		<_Name>Portable Library</_Name>
 		<Category>other/net/general</Category>
 		<Icon>md-project-library</Icon>
 		<Image id="md-pcl-project" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates a F# PCL library targeting Profile 78 that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
+		<_Description>Creates a F# PCL library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>
 	</TemplateConfiguration>
 	
