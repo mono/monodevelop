@@ -102,6 +102,59 @@ namespace UserInterfaceTests
 			CloseRepositoryConfiguration ();
 		}
 
+		[Test]
+		[Ignore ("When OK is clicked on EditRemoteDialog, it doesn't update the list")]
+		public void EditGitRemoteTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+
+			const string updatedRemoteName = "second-origin";
+			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			EditRemote (updatedRemoteName, updatedRemoteUrl, "git@github.com:mono/monohotdraw-push.git");
+			SelectRemote (updatedRemoteName, updatedRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void FetchRemoteBranches ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			OpenRepositoryConfiguration ("Remote Sources");
+			AddRemote (newRemoteName, newRemoteUrl);
+			FetchRemoteBranch (newRemoteName);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void TrackRemoteBranchInLocalTest()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			OpenRepositoryConfiguration ("Remote Sources");
+			AddRemote (newRemoteName, newRemoteUrl);
+			FetchRemoteBranch (newRemoteName);
+			const string localBranch = "local-branch-random-uitest";
+			CreateEditBranch ("buttonTrackRemote", localBranch);
+			SwitchTab ("Branches");
+			SelectBranch (localBranch);
+			CloseRepositoryConfiguration ();
+		}
+
 		#endregion
 	}
 
@@ -111,6 +164,7 @@ namespace UserInterfaceTests
 
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
+			Session.WaitForElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName));
 			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName)));
 			if (remoteUrl != null) {
 				Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url").Contains (remoteUrl)));
@@ -128,6 +182,20 @@ namespace UserInterfaceTests
 			AddEditRemote ("buttonAddRemote", newRemoteName, remoteUrl, remotePushUrl);
 		}
 
+		protected void FetchRemoteBranch (string remoteName)
+		{
+			SelectRemote (remoteName);
+
+			Assert.IsEmpty (Session.Query (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/")));
+			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonFetch")));
+			TakeScreenShot ("Fetch-Remote");
+
+			Session.ClickElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName));
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/")));
+			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/").Index (0)));
+			TakeScreenShot ("First-Remote-Branch-Selected");
+		}
+
 		void AddEditRemote (string buttonName, string newRemoteName, string remoteUrl, string remotePushUrl)
 		{
 			Assert.IsNotEmpty (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName)));
@@ -141,6 +209,7 @@ namespace UserInterfaceTests
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryPushUrl").Text (remotePushUrl ?? remoteUrl));
 			TakeScreenShot ("Remote-Details-Filled");
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Button ().Marked ("buttonOk")));
+			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog"));
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
 			TakeScreenShot ("Remote-Edit-Dialog-Closed");
 		}
@@ -160,7 +229,7 @@ namespace UserInterfaceTests
 			CreateEditBranch ("buttonEditBranch", newBranchName);
 		}
 
-		void CreateEditBranch (string buttonName, string newBranchName)
+		protected void CreateEditBranch (string buttonName, string newBranchName)
 		{
 			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName), false);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog"));
