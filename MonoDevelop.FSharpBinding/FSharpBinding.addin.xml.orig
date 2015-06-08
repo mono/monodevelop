@@ -28,8 +28,7 @@
     <Import file = "Templates/AssemblyInfo.xft.xml" />
     <Import file = "Templates/FSharpNUnitLibraryProject.xpt.xml" />
     <Import file = "Templates/FSharpNUnitTestType.xft.xml" />
-    <Import file = "Templates/PortableLibrary78.xpt.xml" />
-    <Import file = "Templates/PortableLibrary259.xpt.xml" />
+    <Import file = "Templates/PortableLibrary.xpt.xml" />
 
     <!-- Code templates -->
     <Import file = "Templates/FSharp-templates.xml" />
