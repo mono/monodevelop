@@ -127,6 +127,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectConfiguration.UseGit = useGitCheckBox.Active;
 			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;
+			projectFolderPreviewWidget.ShowGitFolder ();
 			projectFolderPreviewWidget.ShowGitIgnoreFile ();
 		}
 

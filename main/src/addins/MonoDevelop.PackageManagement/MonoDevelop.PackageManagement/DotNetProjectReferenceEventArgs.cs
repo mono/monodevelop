@@ -1,10 +1,10 @@
 ﻿//
-// FakeUninstallPackageAction.cs
+// DotNetProjectReferenceEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2015 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,30 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeUninstallPackageAction : UninstallPackageAction
+	public class DotNetProjectReferenceEventArgs : EventArgs
 	{
-		public bool IsExecuted;
-
-		public FakeUninstallPackageAction (IPackageManagementProject project)
-			: base (project, null)
+		public DotNetProjectReferenceEventArgs (ProjectReference reference)
 		{
+			Reference = reference;
 		}
 
-		protected override void ExecuteCore ()
-		{
-			IsExecuted = true;
-			ExecuteAction ();
-		}
-
-		protected override void BeforeExecute ()
-		{
-		}
-
-		public Action ExecuteAction = () => { };
+		public ProjectReference Reference { get; private set; }
 	}
 }
 

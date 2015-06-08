@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
 using NuGet;
+using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -51,6 +52,8 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<FileRemovingEventArgs> FileRemoving;
 		event EventHandler UpdatedPackagesAvailable;
 		event EventHandler<PackageRestoredEventArgs> PackageRestored;
+		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
+		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -67,6 +70,8 @@ namespace ICSharpCode.PackageManagement
 		void OnUpdatedPackagesAvailable ();
 		bool OnFileRemoving (string path);
 		void OnPackageRestored (IPackage package);
+		void OnReferenceAdding (ProjectReference reference);
+		void OnReferenceRemoving (ProjectReference reference);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);

@@ -62,10 +62,12 @@ namespace MonoDevelop.PackageManagement
 
 		protected override void ExecuteCore ()
 		{
-			using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
-				UninstallPackage ();
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
+					UninstallPackage ();
+				}
+				InstallPackage ();
 			}
-			InstallPackage ();
 		}
 
 		void UninstallPackage ()
@@ -81,6 +83,7 @@ namespace MonoDevelop.PackageManagement
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
 			action.OpenReadMeText = false;
+			action.PreserveLocalCopyReferences = false;
 			action.Execute ();
 		}
 	}
