@@ -141,8 +141,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Click ()
 		{
-			// FIXME: Same as select?
-			return true;
+			if (ParentWidget is TreeView && resultIter.HasValue) {
+				var path = TModel.GetPath (resultIter.Value);
+				var tree = ParentWidget as TreeView;
+				return tree.ExpandRow (path, true);
+			}
+
+			return false;
 		}
 
 		public override bool TypeKey (char key, string state)
