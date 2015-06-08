@@ -24,20 +24,15 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
            Some bytes 
         | _ -> None
 
-    let getOrElse f o = 
-        match o with
-        | Some v -> v
-        | _      -> f()
-
     interface IFileSystem with
         member x.FileStreamReadShim fileName = 
             getOpenDocContent fileName
             |> Option.map (fun bytes -> new MemoryStream (bytes) :> Stream)
-            |> getOrElse (fun () -> defaultFileSystem.FileStreamReadShim fileName)
+            |> Option.getOrElse (fun () -> defaultFileSystem.FileStreamReadShim fileName)
         
         member x.ReadAllBytesShim fileName =
             getOpenDocContent fileName 
-            |> getOrElse (fun () -> defaultFileSystem.ReadAllBytesShim fileName)
+            |> Option.getOrElse (fun () -> defaultFileSystem.ReadAllBytesShim fileName)
         
         member x.GetLastWriteTimeShim fileName =
             let r = maybe {
@@ -51,7 +46,7 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
                                      d
                else return! None
              }
-            getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName) r
+            r |> Option.getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName)
         
         member x.GetTempPathShim() = defaultFileSystem.GetTempPathShim()
         member x.FileStreamCreateShim fileName = defaultFileSystem.FileStreamCreateShim fileName

@@ -393,7 +393,7 @@ type FSharpSyntaxMode(editor, context) =
     override x.DocumentParsed () =
         let localParsedDocument = context.ParsedDocument
         if localParsedDocument <> null then
-            let parseAndCheckResults = localParsedDocument.Ast |> tryCast<ParseAndCheckResults>
+            let parseAndCheckResults = localParsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
             match parseAndCheckResults with
             | Some pd ->
                 let symbolsInFile =

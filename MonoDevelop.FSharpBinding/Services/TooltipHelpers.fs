@@ -8,6 +8,7 @@ open System.Linq
 open System.Xml
 open System.Xml.Linq
 open MonoDevelop.Core
+open ExtCore.Control
 
 type Style = 
 | Type of string 

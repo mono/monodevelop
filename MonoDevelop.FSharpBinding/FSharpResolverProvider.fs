@@ -36,7 +36,7 @@ type FSharpResolverProvider() =
                 // Get the declaration location from the language service
                 let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
                 let! fsSymbolUse = tyRes.GetSymbolAtLocation(line, col, lineStr)
-                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
+                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
                 let domRegion =
                     match findDeclarationResult with
                     | FSharpFindDeclResult.DeclFound(m) ->

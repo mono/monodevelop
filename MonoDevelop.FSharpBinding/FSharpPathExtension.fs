@@ -11,6 +11,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
+open ExtCore.Control
 
 type FSharpPathExtension() =
     inherit TextEditorExtension()
@@ -46,7 +47,7 @@ type FSharpPathExtension() =
         let ast = 
           maybe {let! context = x.DocumentContext |> Option.ofNull
                  let! parsedDocument = context.ParsedDocument |> Option.ofNull
-                 let! ast = parsedDocument.Ast |> tryCast<ParseAndCheckResults>
+                 let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
                  return ast}
         
         ast |> Option.iter (fun ast ->

@@ -68,8 +68,12 @@ module Refactoring =
         if isPrivateToFile then 
             SymbolDeclarationLocation.CurrentFile 
         else
-            let isSymbolLocalForProject = TypedAstUtils.isSymbolLocalForProject symbol 
-            match Option.orElse symbol.ImplementationLocation symbol.DeclarationLocation with
+            let location =
+              match symbol.ImplementationLocation with
+              | Some x -> Some x
+              | None -> symbol.DeclarationLocation
+
+            match location with
             | Some loc ->
                 let filePath = Path.GetFullPathSafe loc.FileName
                 if filePath = currentFile.ToString () then //Or if script?
@@ -85,7 +89,7 @@ module Refactoring =
                           |> Seq.filter (fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = filePath)) with
                     | projects when projects |> Seq.isEmpty ->
                         External (getDocumentationId symbol)
-                    | projects -> SymbolDeclarationLocation.Projects (projects, isSymbolLocalForProject)
+                    | projects -> SymbolDeclarationLocation.Projects (projects, symbol.IsSymbolLocalForProject)
             | None -> SymbolDeclarationLocation.Unknown
 
     let canRename (symbolUse:FSharpSymbolUse) fileName project =
@@ -284,7 +288,7 @@ type CurrentRefactoringOperationsHandler() =
         if fileName |> String.isNullOrEmpty then fileName else
         let fileParts =
             fileName
-            |> String.split [|Path.DirectorySeparatorChar; Path.AltDirectorySeparatorChar|]
+            |> String.split [| Path.DirectorySeparatorChar;Path.AltDirectorySeparatorChar |]
 
         match fileParts with
         | [||] -> fileName
