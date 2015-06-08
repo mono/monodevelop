@@ -475,6 +475,17 @@ namespace MonoDevelop.Components.AutoTest
 			return true;
 		}
 
+		public bool TypeKey (AppResult result, char key, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (key, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
 		public bool Toggle (AppResult result, bool active)
 		{
 			bool success = false;
