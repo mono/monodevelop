@@ -79,6 +79,9 @@ namespace MonoDevelop.VersionControl.Git
 			treeRemotes.Model = storeRemotes;
 			treeRemotes.HeadersVisible = true;
 
+			SemanticModelAttribute remotesModelAttr = new SemanticModelAttribute ("storeRemotes__Remote", "storeRemotes__Name", "storeRemotes__Url", "storeRemotes__BranchName", "storeRemotes__FullName");
+			TypeDescriptor.AddAttributes (storeRemotes, remotesModelAttr);
+
 			treeRemotes.AppendColumn ("Remote Source / Branch", new CellRendererText (), "markup", 1);
 			treeRemotes.AppendColumn ("Url", new CellRendererText (), "text", 2);
 
