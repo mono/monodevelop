@@ -101,8 +101,7 @@
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
     
     <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" >-->
-      <ProjectTemplate id="FSharpPortableLibrary78" file = "Templates/PortableLibrary78.xpt.xml" />
-      <ProjectTemplate id="FSharpPortableLibrary259" file = "Templates/PortableLibrary259.xpt.xml" />
+      <ProjectTemplate id="FSharpPortableLibrary" file = "Templates/PortableLibrary.xpt.xml" />
     </Condition>
   </Extension>
 
