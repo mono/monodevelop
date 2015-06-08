@@ -204,6 +204,7 @@ namespace My
 			Assert.IsTrue (result.Any (t => t.Namespace == "Foo2"));
 		}
 
+		[Ignore]
 		[Test]
 		public void TestExtensionMethod ()
 		{
@@ -320,6 +321,7 @@ namespace sadfhgjhkfj
 		/// <summary>
 		/// Bug 4493 - 'Resolve' context action offers incorrect options
 		/// </summary>
+		[Ignore]
 		[Test]
 		public void TestBug4493 ()
 		{
