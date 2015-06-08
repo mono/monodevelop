@@ -145,7 +145,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
-		public override bool TypeKey (char key, string state)
+		public override bool TypeKey (char key, string state = "")
 		{
 			return false;
 		}
