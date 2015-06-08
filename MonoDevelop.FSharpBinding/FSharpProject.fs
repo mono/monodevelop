@@ -173,7 +173,7 @@ type FSharpProject() as self =
       if not self.Loading then invalidateProjectFile()
 
     override x.OnDispose () =
-      if not self.Loading then invalidateProjectFile()
+      //if not self.Loading then invalidateProjectFile()
 
       // FIXME: is it correct to do it every time a project is disposed?
       //Should only be done on solution close
