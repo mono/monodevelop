@@ -53,10 +53,12 @@ namespace ICSharpCode.PackageManagement
 			this.fileRemover = fileRemover;
 
 			OpenReadMeText = true;
+			PreserveLocalCopyReferences = true;
 		}
 
 		public bool IgnoreDependencies { get; set; }
 		public bool OpenReadMeText { get; set; }
+		public bool PreserveLocalCopyReferences { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -67,7 +69,13 @@ namespace ICSharpCode.PackageManagement
 		{
 			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
 				using (IDisposable fileMonitor = CreateFileMonitor (fileRemover)) {
-					Project.InstallPackage (Package, this);
+					if (PreserveLocalCopyReferences) {
+						using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+							Project.InstallPackage (Package, this);
+						}
+					} else {
+						Project.InstallPackage (Package, this);
+					}
 				}
 				monitor.OpenReadMeFile ();
 				OnParentPackageInstalled ();

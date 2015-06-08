@@ -260,5 +260,10 @@ namespace ICSharpCode.PackageManagement
 				packageManagementEvents,
 				fileRemover);
 		}
+
+		protected LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (packageManagementEvents);
+		}
 	}
 }

@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public Action<Stream> ActionPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
 		public FakePackageManagementProjectService FakeProjectService;
+		public PackageManagementEvents PackageManagementEvents;
 		public FakeLogger FakeLogger;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
@@ -53,6 +54,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				project,
 				new FakeFileService (project),
 				new FakePackageManagementProjectService (),
+				new PackageManagementEvents (),
 				new FakeLogger ())
 		{
 		}
@@ -61,11 +63,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IDotNetProject project,
 			IPackageManagementFileService fileService,
 			IPackageManagementProjectService projectService,
+			PackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
-			: base (project, fileService, projectService, GuiSyncDispatcher)
+			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher)
 		{
 			FakeFileService = (FakeFileService)fileService;
 			FakeProjectService = (FakePackageManagementProjectService)projectService;
+			PackageManagementEvents = packageManagementEvents;
 			Logger = logger;
 		}
 
