@@ -59,7 +59,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			vbox.PackStart(new Xwt.Label (GettextCatalog.GetString ("Tag Name")));
 
-			tagNameEntry = new Xwt.TextEntry ();
+			tagNameEntry = new Xwt.TextEntry { Name = "tagNameEntry" };
 			tagNameEntry.Changed += delegate {
 				CheckSensitive ();
 			};
@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			vbox.PackStart (new Xwt.Label (GettextCatalog.GetString ("Tag Message")));
 
-			tagMessageEntry = new Xwt.TextEntry ();
+			tagMessageEntry = new Xwt.TextEntry { Name = "tagMessageEntry" };
 			vbox.PackStart (tagMessageEntry);
 
 			revisionList = new Xwt.ListView ();

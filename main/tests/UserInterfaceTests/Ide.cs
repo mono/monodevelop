@@ -121,7 +121,7 @@ namespace UserInterfaceTests
 		};
 
 		public readonly static Action WaitForSolutionCheckedOut = delegate {
-			WaitForStatusMessage (new [] {"Solution checked out"}, timeoutInSecs: 360, pollStepInSecs: 5);
+			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 5);
 		};
 
 		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
@@ -146,7 +146,7 @@ namespace UserInterfaceTests
 		{
 			Ide.WaitUntil (() => {
 				var actualStatusMessage = Ide.GetStatusMessage ();
-				return waitForMessage == (statusMessage.Contains (actualStatusMessage));
+				return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 	}

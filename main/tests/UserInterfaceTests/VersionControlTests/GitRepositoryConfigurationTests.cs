@@ -34,6 +34,8 @@ namespace UserInterfaceTests
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitRepositoryConfigurationBase
 	{
+		#region Branch Tab
+
 		[Test]
 		public void CreateNewBranchTest ()
 		{
@@ -70,22 +72,82 @@ namespace UserInterfaceTests
 			SwitchToBranch ("new-new-branch");
 			CloseRepositoryConfiguration ();
 		}
+
+		#endregion
+
+		#region Remotes Tab
+
+		[Test]
+		public void SelectRemoteTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+			SelectRemote ("origin");
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void AddGitRemoteTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			OpenRepositoryConfiguration ("Remote Sources");
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		#endregion
 	}
 
 	public abstract class GitRepositoryConfigurationBase : VCSBase
 	{
-		protected void OpenRepositoryConfiguration ()
+		#region Remotes
+
+		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
-			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.ManageBranches);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
-			TakeScreenShot ("Repository-Configuration-Opened");
+			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName)));
+			if (remoteUrl != null) {
+				Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url").Contains (remoteUrl)));
+			}
+			TakeScreenShot (string.Format ("{0}-Remote-Selected", remoteName));
 		}
 
-		protected void CloseRepositoryConfiguration ()
+		protected void EditRemote (string newRemoteName, string remoteUrl, string remotePushUrl = null)
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonOk"));
-			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+			AddEditRemote ("buttonEditRemote", newRemoteName, remoteUrl, remotePushUrl);
 		}
+
+		protected void AddRemote (string newRemoteName, string remoteUrl, string remotePushUrl = null)
+		{
+			AddEditRemote ("buttonAddRemote", newRemoteName, remoteUrl, remotePushUrl);
+		}
+
+		void AddEditRemote (string buttonName, string newRemoteName, string remoteUrl, string remotePushUrl)
+		{
+			Assert.IsNotEmpty (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName)));
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName), false);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog"));
+			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryName"), newRemoteName));
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryName").Text (newRemoteName));
+			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryUrl"), remoteUrl));
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryUrl").Text (remoteUrl));
+			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryPushUrl"), remotePushUrl ?? remoteUrl));
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryPushUrl").Text (remotePushUrl ?? remoteUrl));
+			TakeScreenShot ("Remote-Details-Filled");
+			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Button ().Marked ("buttonOk")));
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+			TakeScreenShot ("Remote-Edit-Dialog-Closed");
+		}
+
+		#endregion
+
+		#region Branches
 
 		protected void CreateNewBranch (string newBranchName)
 		{
@@ -120,6 +182,12 @@ namespace UserInterfaceTests
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
 
+		protected void SwitchTab (string tabName)
+		{
+			Assert.IsTrue (Session.SelectElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Notebook ().Marked ("notebook1").Text (tabName)));
+			TakeScreenShot (string.Format ("Tab-Changed-{0}", GenerateProjectName (tabName)));
+		}
+
 		protected void SelectBranch (string branchName)
 		{
 			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Contains (branchName)));
@@ -129,6 +197,23 @@ namespace UserInterfaceTests
 		protected bool IsBranchSwitched (string branchName)
 		{
 			return Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Text ("<b>" + branchName + "</b>"));
+		}
+
+		#endregion
+	
+		protected void OpenRepositoryConfiguration (string selectTab = null)
+		{
+			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.ManageBranches);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+			TakeScreenShot ("Repository-Configuration-Opened");
+			if (selectTab != null)
+				SwitchTab (selectTab);
+		}
+
+		protected void CloseRepositoryConfiguration ()
+		{
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonOk"));
+			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
 		}
 	}
 }
