@@ -1,5 +1,6 @@
 ﻿namespace MonoDevelop.FSharp
 open System
+open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<AutoOpen>]
@@ -26,8 +27,6 @@ module FSharpSymbolExt =
         | Some x -> x
         | None -> Some (String.Join(".", x.AccessPath, x.DisplayName))
 
-
-open System.IO
 [<AutoOpen>]
 module FrameworkExt =
   type Path with
@@ -45,6 +44,14 @@ module FrameworkExt =
     member x.FirstCharacterIs f =
       if x.Length > 0 then f x.[0]
       else false
+
+  ///Helper to return an IDisposable for a event on subscribe
+  type IDelegateEvent<'Del when 'Del :> Delegate> with
+    member this.Subscribe handler =
+      do this.AddHandler(handler)
+      { new IDisposable with 
+          member x.Dispose() =
+            this.RemoveHandler(handler) }
 
 module Option =
   let getOrElse f o = 

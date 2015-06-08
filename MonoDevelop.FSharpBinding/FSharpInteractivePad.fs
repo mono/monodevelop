@@ -27,15 +27,6 @@ module ColorHelpers =
         
     let cairoToGdk (c:Cairo.Color) = GtkUtil.ToGdkColor(c)
 
-[<AutoOpen>]
-module EventHandlerHelpers = 
-  type IDelegateEvent<'Del when 'Del :> Delegate> with
-    member this.Subscribe handler =
-      do this.AddHandler(handler)
-      { new IDisposable with 
-          member x.Dispose() =
-            this.RemoveHandler(handler) }
-
 type FSharpCommands = 
   | ShowFSharpInteractive = 0
   | SendSelection = 1
