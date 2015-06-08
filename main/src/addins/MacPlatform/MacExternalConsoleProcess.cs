@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.MacInterop;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -79,7 +81,6 @@ where running an explicit exec causes it to quit after the exec runs, so we can'
 bash pause on exit trick
 */ 
 		string tabId, windowId;
-		bool cancelled;
 
 		public MacExternalConsoleProcess (string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
@@ -88,21 +89,29 @@ bash pause on exit trick
 			CancellationTokenSource = new CancellationTokenSource ();
 			CancellationTokenSource.Token.Register (CloseTerminal);
 
-			// FIXME set value of ExitCode and ProcessId, if possible
+			// FIXME set value of ProcessId, if possible
 
-			RunTerminal (
+			var intTask = RunTerminal (
 				command, arguments, workingDirectory, environmentVariables, title, pauseWhenFinished,
-				out tabId, out windowId
+				out tabId, out windowId, CancellationTokenSource.Token
 			);
+			intTask.ContinueWith (delegate {
+				ExitCode = intTask.Result;
+			});
+			Task = intTask;
 		}
 
 		#region AppleScript terminal manipulation
 
-		internal static void RunTerminal (
+		internal static Task<int> RunTerminal (
 			string command, string arguments, string workingDirectory,
 			IDictionary<string, string> environmentVariables,
-			string title, bool pauseWhenFinished, out string tabId, out string windowId)
+			string title, bool pauseWhenFinished, out string tabId, out string windowId, CancellationToken cancelToken = default(CancellationToken))
 		{
+			TaskCompletionSource<int> taskSource = new TaskCompletionSource<int> ();
+			cancelToken.Register (delegate {
+				taskSource.SetCanceled ();
+			});
 			//build the sh command
 			var sb = new StringBuilder ("clear; ");
 			if (!string.IsNullOrEmpty (workingDirectory))
@@ -117,6 +126,19 @@ bash pause on exit trick
 			}
 			if (command != null) {
 				sb.AppendFormat ("\"{0}\" {1}", Escape (command), arguments);
+				var tempFileName = Path.GetTempFileName ();
+				sb.Append ($"; echo $? > {tempFileName}");
+				var fileWatcher = new FileSystemWatcher (Path.GetDirectoryName (tempFileName), Path.GetFileName (tempFileName));
+				fileWatcher.EnableRaisingEvents = true;
+				fileWatcher.Changed += delegate {
+					lock(taskSource) {
+						if (taskSource.Task.IsCompleted)
+							return;
+						taskSource.SetResult (int.Parse (File.ReadAllText (tempFileName)));
+						File.Delete (tempFileName);
+					}
+				};
+				
 				if (pauseWhenFinished)
 					sb.Append ("; echo; read -p 'Press any key to continue...' -n1");
 				sb.Append ("; exit");
@@ -140,9 +162,10 @@ bash pause on exit trick
 
 			try {
 				AppleScript.Run (sb.ToString ());
-			} catch (AppleScriptException) {
-				//it may already have closed
+			} catch (Exception ex) {
+				taskSource.SetException (ex);
 			}
+			return taskSource.Task;
 		}
 		
 		//FIXME: make escaping work properly
@@ -177,7 +200,6 @@ end tell", tabId, windowId);
 		
 		void CloseTerminal ()
 		{
-			cancelled = true;
 			//FIXME: try to kill the process without closing the window, if pauseWhenFinished is true
 			CloseTerminalWindow (tabId, windowId);
 		}
