@@ -96,14 +96,17 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		uint autoSaveTimer = 0;
-
+		Task autoSaveTask;
 		void InformAutoSave ()
 		{
 			if (isDisposed)
 				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
-				AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
+				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
+					return false;
+
+				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
 				autoSaveTimer = 0;
 				return false;
 			});

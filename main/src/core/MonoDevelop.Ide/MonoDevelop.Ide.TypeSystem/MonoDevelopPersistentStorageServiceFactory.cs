@@ -50,6 +50,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			return singleton;
 		}
 
+		static MD5 md5 = MD5.Create (); 
+		public static string GetMD5 (string data)
+		{
+			var result = new StringBuilder();
+			foreach (var b in md5.ComputeHash (Encoding.ASCII.GetBytes (data))) {
+				result.Append(b.ToString("X2"));
+			}
+			return result.ToString();
+		}
+
 		class NoOpPersistentStorage : IPersistentStorage
 		{
 			static Task<Stream> defaultStreamTask = Task.FromResult (default(Stream));
@@ -146,7 +156,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		class PersistentStorage : IPersistentStorage
 		{
 			static Task<Stream> defaultStreamTask = Task.FromResult (default(Stream));
-			static MD5 md5 = MD5.Create (); 
 
 			string workingFolderPath;
 
@@ -159,14 +168,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 			}
 
-			public static string GetMD5 (string data)
-			{
-				var result = new StringBuilder();
-				foreach (var b in md5.ComputeHash (Encoding.ASCII.GetBytes (data))) {
-					result.Append(b.ToString("X2"));
-				}
-				return result.ToString();
-			}
 
 			const string dataFileExtension = ".dat";
 
