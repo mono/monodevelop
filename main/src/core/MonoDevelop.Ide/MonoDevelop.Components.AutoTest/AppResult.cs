@@ -49,7 +49,8 @@ namespace MonoDevelop.Components.AutoTest
 		// Actions
 		public abstract bool Select ();
 		public abstract bool Click ();
-		public abstract bool TypeKey (char key, string state);
+		public abstract bool TypeKey (char key, string state = "");
+		public abstract bool TypeKey (string keyString, string state = "");
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 
