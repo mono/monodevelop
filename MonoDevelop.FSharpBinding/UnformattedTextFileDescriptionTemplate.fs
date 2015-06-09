@@ -34,7 +34,7 @@ type UnformattedTextFileDescriptionTemplate() =
     override x.ModifyTags (policyParent, project, language, identifier, fileName, tags) =
         base.ModifyTags (policyParent, project, language, identifier, fileName, &tags)
 
-        let ns = getDefaultNs project.Name
+        let ns = project |> function null -> "Application" | project -> getDefaultNs project.Name
         tags.["Namespace"] <- ns
 
     override x.CreateFileContent(policyParent, project, language, fileName, identifier) =
