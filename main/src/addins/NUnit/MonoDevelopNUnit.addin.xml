@@ -189,6 +189,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
 		<DataType class = "MonoDevelop.NUnit.NUnitAssemblyGroupProject" />
+		<DataType class = "MonoDevelop.NUnit.NUnitCategoryOptions" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
