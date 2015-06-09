@@ -8,6 +8,7 @@ open MonoDevelop.Projects.Formats.MSBuild
 open MonoDevelop.Ide
 open System.Xml
 open MonoDevelop.Core.Assemblies
+open ExtCore.Control
 
 type FSharpProject() as self = 
     inherit DotNetProject()
@@ -97,17 +98,13 @@ type FSharpProject() as self =
 
       //Fix pcl netcore and TargetFSharpCoreVersion
       let globalGroup = msproject.GetGlobalPropertyGroup()
-      let targetFrameworkProfile = msproject.EvaluatedProperties.GetProperty("TargetFrameworkProfile") |> Option.ofNull
 
-      match targetFrameworkProfile with
-      | Some targetFrameworkProfile ->
-          match profileMap |> Map.tryFind targetFrameworkProfile.Value with
-          | Some (fsharpcoreversion, netcore) ->
-              globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
-              let targetProfile = if netcore then "netcore" else "mscorlib"
-              globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true)
-          | None -> ()
-      | None -> ()
+      maybe {
+        let! targetFrameworkProfile = msproject.EvaluatedProperties.GetProperty("TargetFrameworkProfile") |> Option.ofNull
+        let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile.Value
+        do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
+        let targetProfile = if netcore then "netcore" else "mscorlib"
+        do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore
 
       // This removes the old guid on saving the project
       let removeGuid (innerText:string) guidToRemove =
