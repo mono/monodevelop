@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -52,6 +53,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 			resultIter = iter;
 		}
 			
+		public override void ToXml (XmlElement element)
+		{
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			return null;

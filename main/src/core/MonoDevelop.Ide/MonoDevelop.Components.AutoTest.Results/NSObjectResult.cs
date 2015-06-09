@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
 using AppKit;
 using Foundation;
 
@@ -39,6 +40,32 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
+		}
+
+		void AddAttribute (XmlElement childElement, string name, string value)
+		{
+			XmlDocument doc = childElement.OwnerDocument;
+			XmlAttribute attr = doc.CreateAttribute (name);
+			attr.Value = value;
+			childElement.Attributes.Append (attr);
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", ResultObject.GetType ().ToString ());
+			AddAttribute (element, "fulltype", ResultObject.GetType ().FullName);
+
+			NSView view = ResultObject as NSView;
+			if (view == null) {
+				return;
+			}
+
+			if (view.Identifier != null) {
+				AddAttribute (element, "name", view.Identifier);
+			}
+
+			AddAttribute (element, "visible", view.Hidden.ToString ());
+			AddAttribute (element, "allocation", view.Frame.ToString ());
 		}
 
 		public override AppResult Marked (string mark)
