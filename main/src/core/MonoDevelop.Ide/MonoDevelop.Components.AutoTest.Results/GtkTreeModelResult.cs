@@ -122,6 +122,28 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return newList;
 		}
 
+		public override List<AppResult> FlattenChildren ()
+		{
+			if (!resultIter.HasValue) {
+				return null;
+			}
+
+			TreeIter currentIter = (TreeIter) resultIter;
+			if (!TModel.IterHasChild (currentIter))
+			{
+				return null;
+			}
+
+			List<AppResult> newList = new List<AppResult> ();
+			for (int i = 0; i < TModel.IterNChildren (currentIter); i++) {
+				TreeIter childIter;
+				if (TModel.IterNthChild (out childIter, currentIter, i)) {
+					newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, childIter));
+				}
+			}
+			return newList;
+		}
+
 		public override bool Select ()
 		{
 			if (!resultIter.HasValue) {

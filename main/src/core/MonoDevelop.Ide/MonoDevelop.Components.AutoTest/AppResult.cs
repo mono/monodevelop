@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public List<AppResult> FlattenChildren ()
+		public virtual List<AppResult> FlattenChildren ()
 		{
 			List<AppResult> children = new List<AppResult> ();
 			AddChildrenToList (children, FirstChild);
