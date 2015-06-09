@@ -168,10 +168,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
-		public override bool TypeKey (char key, string state)
+		public override bool TypeKey (char key, string state = "")
 		{
 			RealTypeKey (key);
 			return true;
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			throw new NotImplementedException ();
 		}
 
 		public override bool Toggle (bool active)

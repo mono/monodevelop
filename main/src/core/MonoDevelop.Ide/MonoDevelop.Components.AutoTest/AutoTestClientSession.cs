@@ -297,6 +297,36 @@ namespace MonoDevelop.Components.AutoTest
 			return false;
 		}
 
+		public bool TypeKey (Func<AppQuery, AppQuery> query, char key, string modifiers)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length > 0) {
+				bool result = session.Select (results [0]);
+				if (!result) {
+					return false;
+				}
+
+				return session.TypeKey (results [0], key, modifiers);
+			}
+
+			return false;
+		}
+
+		public bool TypeKey (Func<AppQuery, AppQuery> query, string keyString, string modifiers)
+		{
+			AppResult[] results = Query (query);
+			if (results.Length > 0) {
+				bool result = session.Select (results [0]);
+				if (!result) {
+					return false;
+				}
+
+				return session.TypeKey (results [0], keyString, modifiers);
+			}
+
+			return false;
+		}
+
 		// FIXME: Not convinced this is the best name
 		public bool ToggleElement (Func<AppQuery, AppQuery> query, bool active)
 		{
