@@ -370,6 +370,42 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		Gdk.Key ParseKeyString (string keyString)
+		{
+			switch (keyString) {
+			case "ESC":
+				return Gdk.Key.Escape;
+
+			case "UP":
+				return Gdk.Key.Up;
+
+			case "DOWN":
+				return Gdk.Key.Down;
+
+			case "LEFT":
+				return Gdk.Key.Left;
+
+			case "RIGHT":
+				return Gdk.Key.Right;
+
+			case "RETURN":
+				return Gdk.Key.Return;
+
+			case "TAB":
+				return Gdk.Key.Tab;
+
+			default:
+				throw new Exception ("Unknown keystring: " + keyString);
+			}
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			Gdk.Key realKey = ParseKeyString (keyString);
+			RealTypeKey (realKey, ParseModifier (state));
+			return true;
+		}
+
 		public override bool EnterText (string text)
 		{
 			foreach (var c in text) {

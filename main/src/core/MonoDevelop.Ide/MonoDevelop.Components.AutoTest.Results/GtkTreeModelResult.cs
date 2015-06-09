@@ -150,6 +150,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override bool EnterText (string text)
 		{
 			return false;
