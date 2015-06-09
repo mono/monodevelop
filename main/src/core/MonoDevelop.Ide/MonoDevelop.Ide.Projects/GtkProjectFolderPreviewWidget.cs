@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 0, IconId.Null, GetLightTextMarkup (".git"), GetTransparentIcon (FolderIconId));
+			return folderTreeStore.InsertWithValues (parent, 0, null, GetLightTextMarkup (".git"), GetTransparentIcon (FolderIconId));
 		}
 
 		static Xwt.Drawing.Image GetTransparentIcon (IconId iconId)
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 1, IconId.Null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (FileIconId));
+			return folderTreeStore.InsertWithValues (parent, 1, null, GetLightTextMarkup (".gitignore"), GetTransparentIcon (FileIconId));
 		}
 
 		static string GetLightTextMarkup (string text)
