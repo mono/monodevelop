@@ -61,10 +61,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			return null;
 		}
-
+		static Task<TooltipInformation> emptyTask = Task.FromResult (new TooltipInformation ());
 		Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 		{
-			return null;
+			return emptyTask;
 		}
 
 		double ISearchDataSource.GetWeight (int item)
