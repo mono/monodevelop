@@ -89,9 +89,33 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Commit-Dialog-Opened");
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().TextView ().Marked ("textview"), commitMsg);
 			TakeScreenShot ("Commit-Msg-Entered");
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().Button ().Marked ("buttonCommit"));
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().Button ().Marked ("buttonCommit"), false);
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
+				TakeScreenShot ("Git-User-Not-Configured");
+				EnterGitUserConfig ("John Doe", "john.doe@example.com");
+			} catch (TimeoutException e) { }
 			Ide.WaitForStatusMessage (new[] {"Commit operation completed."});
 			TakeScreenShot ("Commit-Completed");
+		}
+
+		void EnterGitUserConfig (string gitUser, string gitEmail)
+		{
+			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry"), gitUser);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry").Text (gitUser));
+
+			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("emailEntry"), gitEmail);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("emailEntry").Text (gitEmail));
+
+			Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("globalConfigRadio"), true);
+
+			TakeScreenShot ("Git-User-Email-Filled");
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Button ().Marked ("buttonOk"));
+			if (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog")).Length > 0) {
+				TakeScreenShot ("Provided-User-Details-Mismatch");
+				Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("radioMD"), true);
+				Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog").Children ().Button ().Marked ("buttonOk"));
+			}
 		}
 
 		protected override void OnBuildTemplate (int buildTimeoutInSecs = 180)
