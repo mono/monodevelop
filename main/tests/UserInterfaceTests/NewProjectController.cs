@@ -63,6 +63,11 @@ namespace UserInterfaceTests
 			return Session.ClickElement (c => c.Button ().Marked ("previousButton"));
 		}
 
+		public bool Close ()
+		{
+			return Session.ClickElement (c => c.Button ().Marked ("cancelButton"));
+		}
+
 		public bool SetProjectName (string projectName)
 		{
 			return Session.EnterText (c => c.Textfield ().Marked ("projectNameTextBox"), projectName);
@@ -100,6 +105,39 @@ namespace UserInterfaceTests
 		{
 			AppResult[] results = Session.Query (c => c.Marked (widgetName).Sensitivity (true));
 			return results.Length > 0;
+		}
+
+		public void ValidatePreviewTree (TemplateSelectionOptions templateOptions, string solutionName, string location,
+						bool projectWithinSolution, GitOptions gitOptions)
+		{
+			const string treeName = "folderTreeView";
+			const string nameColumn = "folderTreeStore__NodeName";
+			var rootFolder = projectWithinSolution ? solutionName : templateOptions.ProjectName;
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location)));
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder)));
+
+			Func<AppQuery, AppQuery> checkForGit = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Index (0).Contains ("<span color='#AAAAAA'>.git</span>");
+			Func<AppQuery, AppQuery> checkForGitIgnore = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Index (1).Contains ("<span color='#AAAAAA'>.gitignore</span>");
+
+			if (gitOptions.UseGit) {
+				Assert.IsNotEmpty (Session.Query (checkForGit));
+				if (gitOptions.UseGitIgnore)
+					Assert.IsNotEmpty (Session.Query (checkForGitIgnore));
+				else
+					Assert.IsEmpty (Session.Query (checkForGitIgnore));
+			} else {
+				Assert.IsEmpty (Session.Query (checkForGit));
+				Assert.IsEmpty (Session.Query (checkForGitIgnore));
+			}
+
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (solutionName + ".sln")));
+
+			if (projectWithinSolution) {
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName)));
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName).Children ().Contains (templateOptions.ProjectName + ".csproj")));
+			} else {
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName + ".csproj")));
+			}
 		}
 	}
 }
