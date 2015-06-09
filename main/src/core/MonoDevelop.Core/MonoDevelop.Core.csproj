@@ -546,6 +546,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildWhitespace.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlReader.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildElement.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

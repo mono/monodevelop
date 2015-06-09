@@ -32,12 +32,11 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public abstract class MSBuildObject
+	public abstract class MSBuildObject: MSBuildNode
 	{
-		MSBuildProject project;
-		MSBuildObject parentObject;
 		UnknownAttribute[] unknownAttributes;
 		string [] attributeOrder;
+		List<MSBuildNode> children;
 
 		class UnknownAttribute
 		{
@@ -45,15 +44,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			public string Prefix;
 			public string Namespace;
 			public string Value;
-			public int Position;
+			public string AfterAttribute;
 		}
 
-		internal object StartWhitespace { get; set; }
 		internal object StartInnerWhitespace { get; set; }
 		internal object EndInnerWhitespace { get; set; }
-		internal object EndWhitespace { get; set; }
 
-		internal virtual void Read (MSBuildXmlReader reader)
+		internal override void Read (MSBuildXmlReader reader)
 		{
 			if (reader.ForEvaluation) {
 				if (reader.MoveToFirstAttribute ()) {
@@ -66,33 +63,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				if (reader.MoveToFirstAttribute ()) {
 					var knownAtts = GetKnownAttributes ();
-					int pos = 0;
 					int attOrderIndex = 0;
 					int expectedKnownAttIndex = 0;
 					bool attOrderIsUnexpected = false;
 					List<UnknownAttribute> unknownAttsList = null;
 					attributeOrder = new string [knownAtts.Length];
+					string lastAttr = null;
 					do {
-						int i = Array.IndexOf (knownAtts, reader.LocalName);
+						var attName = reader.LocalName;
+						int i = Array.IndexOf (knownAtts, attName);
 						if (i == -1) {
 							var ua = new UnknownAttribute {
-								LocalName = reader.LocalName,
+								LocalName = attName,
 								Prefix = reader.Prefix,
 								Namespace = reader.NamespaceURI,
 								Value = reader.Value,
-								Position = pos
+								AfterAttribute = lastAttr
 							};
 							if (unknownAttsList == null)
 								unknownAttsList = new List<UnknownAttribute> ();
 							unknownAttsList.Add (ua);
+							lastAttr = null;
 						} else {
-							attributeOrder [attOrderIndex++] = reader.LocalName;
-							ReadAttribute (reader.LocalName, reader.Value);
+							if (attOrderIndex >= attributeOrder.Length)
+								throw new InvalidOperationException ("Attribute specified twice");
+							attributeOrder [attOrderIndex++] = attName;
+							ReadAttribute (attName, reader.Value);
 							if (i < expectedKnownAttIndex) {
 								// Attributes have an unexpected order
 								attOrderIsUnexpected = true;
 							}
 							expectedKnownAttIndex = i + 1;
+							lastAttr = attName;
 						}
 					} while (reader.MoveToNextAttribute ());
 
@@ -100,8 +102,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						unknownAttributes = unknownAttsList.ToArray ();
 					if (!attOrderIsUnexpected)
 						attributeOrder = null;
+					else {
+						// Fill the remaning slots in the attributeOrder array (known attributes that were not read)
+						foreach (var a in knownAtts) {
+							if (!attributeOrder.Contains (a)) {
+								if (attOrderIndex >= attributeOrder.Length)
+									throw new InvalidOperationException ("Attribute specified twice");
+								attributeOrder [attOrderIndex++] = a;
+							}
+						}
+					}
 				}
-			}
+			} 
 			reader.MoveToElement ();
 
 			ReadContent (reader);
@@ -128,10 +140,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						StartInnerWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
 					}
 					ReadChildElement (reader);
-				}
-				else if (reader.IsWhitespace) {
+				} else if (reader.NodeType == XmlNodeType.Text) {
+					var tn = new MSBuildXmlTextNode ();
+					tn.Read (reader);
+					ChildNodes.Add (tn);
+				} else if (reader.NodeType == XmlNodeType.CDATA) {
+					var tn = new MSBuildXmlCDataNode ();
+					tn.Read (reader);
+					ChildNodes.Add (tn);
+				} else if (reader.NodeType == XmlNodeType.Comment) {
+					var tn = new MSBuildXmlCommentNode ();
+					tn.Read (reader);
+					ChildNodes.Add (tn);
+				} else if (reader.IsWhitespace) {
 					reader.ReadAndStoreWhitespace ();
-				}
+				} else if (reader.EOF)
+					throw new InvalidOperationException ("Invalid XML");
 				else
 					reader.Read ();
 			}
@@ -140,28 +164,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			EndInnerWhitespace = reader.ConsumeWhitespace ();
 		}
 
-		internal virtual void Write (XmlWriter writer, WriteContext context)
+		internal override void Write (XmlWriter writer, WriteContext context)
 		{
 			MSBuildWhitespace.Write (StartWhitespace, writer);
 			
-			writer.WriteStartElement (GetElementName (), MSBuildProject.Schema);
+			writer.WriteStartElement (GetElementName (), Namespace);
 
 			if (unknownAttributes != null) {
-				int pos = 0;
 				int unknownIndex = 0;
 				int knownIndex = 0;
 				var knownAtts = attributeOrder ?? GetKnownAttributes ();
+				string lastAttr = null;
 				do {
-					if (unknownIndex < unknownAttributes.Length && pos == unknownAttributes [unknownIndex].Position) {
+					if (unknownIndex < unknownAttributes.Length && (lastAttr == unknownAttributes [unknownIndex].AfterAttribute || unknownAttributes [unknownIndex].AfterAttribute == null)) {
 						var att = unknownAttributes [unknownIndex++];
 						writer.WriteAttributeString (att.Prefix, att.LocalName, att.Namespace, att.Value);
+						lastAttr = att.LocalName;
 					} else if (knownIndex < knownAtts.Length) {
 						var aname = knownAtts [knownIndex++];
+						lastAttr = aname;
 						var val = WriteAttribute (aname);
 						if (val != null)
 							writer.WriteAttributeString (aname, val);
-					}
-					pos++;
+					} else
+						lastAttr = null;
 				} while (unknownIndex < unknownAttributes.Length || knownIndex < knownAtts.Length);
 			} else {
 				var knownAtts = attributeOrder ?? GetKnownAttributes ();
@@ -178,6 +204,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			writer.WriteEndElement ();
 
 			MSBuildWhitespace.Write (EndWhitespace, writer);
+		}
+
+		internal virtual string Namespace
+		{
+			get
+			{
+				return MSBuildProject.Schema;
+			}
 		}
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
@@ -202,61 +236,54 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal virtual void ReadChildElement (MSBuildXmlReader reader)
 		{
-			reader.Skip ();
+			if (reader.ForEvaluation)
+				reader.Skip ();
+			else {
+				var n = new MSBuildXmlElement ();
+				n.Read (reader);
+				n.ParentNode = this;
+				ChildNodes.Add (n);
+			}
+		}
+
+		internal void RemoveUnknownAttribute (string name)
+		{
+			if (unknownAttributes == null)
+				return;
+			var list = new List<UnknownAttribute> (unknownAttributes);
+			int i = list.FindIndex (a => a.LocalName == name);
+			if (i != -1) {
+				list.RemoveAt (i);
+				unknownAttributes = list.ToArray ();
+			}
+		}
+
+		internal string GetUnknownAttribute (string name)
+		{
+			if (unknownAttributes == null)
+				return null;
+			var at = unknownAttributes.FirstOrDefault (a => a.LocalName == name);
+			if (at != null)
+				return at.Value;
+			else
+				return null;
 		}
 
 		internal abstract string [] GetKnownAttributes ();
 
 		internal abstract string GetElementName ();
 
-		internal virtual IEnumerable<MSBuildObject> GetChildren ()
-		{
-			yield break;
-		}
-
-		internal virtual MSBuildObject GetPreviousSibling ()
-		{
-			var p = ParentObject;
-			if (p != null) {
-				MSBuildObject last = null;
-				foreach (var c in p.GetChildren ()) {
-					if (c == this)
-						return last;
-					last = c;
-				}
-			}
-			return null;
-		}
-
-		public MSBuildObject ParentObject {
+		internal List<MSBuildNode> ChildNodes {
 			get {
-				return parentObject;
-			}
-			internal set {
-				parentObject = value;
-				if (parentObject != null && parentObject.ParentProject != null)
-					OnProjectSet ();
+				if (children == null)
+					children = new List<MSBuildNode> ();
+				return children;
 			}
 		}
 
-		public MSBuildProject ParentProject {
-			get {
-				return project ?? (ParentObject != null ? ParentObject.ParentProject : null);
-			}
-			internal set {
-				project = value;
-				OnProjectSet ();
-			}
-		}
-
-		internal void NotifyChanged ()
+		internal override IEnumerable<MSBuildNode> GetChildren ()
 		{
-			if (ParentProject != null)
-				ParentProject.NotifyChanged ();
-		}
-
-		internal virtual void OnProjectSet ()
-		{
+			return children != null ? children : Enumerable.Empty<MSBuildNode> ();
 		}
 
 		internal void ResetIndent (bool closeInNewLine)
@@ -264,26 +291,36 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (ParentProject == null)
 				return;
 			
-			var ps = GetPreviousSibling () as MSBuildObject;
-			if (ps != null) {
-				StartWhitespace = ps.StartWhitespace;
+			ResetIndent (closeInNewLine, ParentProject, ParentObject, GetPreviousSibling ());
+		}
+
+		internal void ResetIndent (bool closeInNewLine, MSBuildProject project, MSBuildObject parent, MSBuildNode previousSibling)
+		{
+			StartInnerWhitespace = StartWhitespace = EndWhitespace = EndInnerWhitespace = null;
+
+			if (previousSibling != null) {
+				StartWhitespace = previousSibling.StartWhitespace;
 				if (closeInNewLine)
 					EndInnerWhitespace = StartWhitespace;
-			} else if (ParentObject != null) {
-				if (ParentObject.StartInnerWhitespace == null) {
-					ParentObject.StartInnerWhitespace = ParentProject.TextFormat.NewLine;
-					ParentObject.EndInnerWhitespace = ParentObject.StartWhitespace;
+			} else if (parent != null) {
+				if (parent.StartInnerWhitespace == null) {
+					parent.StartInnerWhitespace = project.TextFormat.NewLine;
+					parent.EndInnerWhitespace = parent.StartWhitespace;
 				}
-				StartWhitespace = ParentObject.StartWhitespace + "  ";
+				StartWhitespace = parent.StartWhitespace + "  ";
 				if (closeInNewLine)
 					EndInnerWhitespace = StartWhitespace;
 			}
-			EndWhitespace = ParentProject.TextFormat.NewLine;
+			EndWhitespace = project.TextFormat.NewLine;
 			if (closeInNewLine)
-				StartInnerWhitespace = ParentProject.TextFormat.NewLine;
+				StartInnerWhitespace = project.TextFormat.NewLine;
 
+			ResetChildrenIndent ();
+		}
 
-			foreach (var c in GetChildren ())
+		internal void ResetChildrenIndent ()
+		{
+			foreach (var c in GetChildren ().OfType<MSBuildObject> ())
 				c.ResetIndent (false);
 		}
 

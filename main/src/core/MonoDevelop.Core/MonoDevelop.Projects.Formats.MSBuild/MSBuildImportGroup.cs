@@ -32,15 +32,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildImportGroup: MSBuildElement
 	{
-		List<MSBuildImport> imports = new List<MSBuildImport> ();
-
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
 			if (reader.LocalName == "Import") {
 				var item = new MSBuildImport ();
-				item.ParentObject = this;
+				item.ParentNode = this;
 				item.Read (reader);
-				imports.Add (item);
+				ChildNodes.Add (item);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -48,11 +46,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal override string GetElementName ()
 		{
 			return "ImportGroup";
-		}
-
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return imports;
 		}
 
 		public bool IsImported {
@@ -68,12 +61,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			int insertIndex = -1;
 			if (beforeImport != null)
-				insertIndex = imports.IndexOf (beforeImport);
+				insertIndex = ChildNodes.IndexOf (beforeImport);
 
 			if (insertIndex != -1)
-				imports.Insert (insertIndex, import);
+				ChildNodes.Insert (insertIndex, import);
 			else
-				imports.Add (import);
+				ChildNodes.Add (import);
 
 			import.ResetIndent (false);
 			NotifyChanged ();
@@ -84,13 +77,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (import.ParentObject == this) {
 				import.RemoveIndent ();
-				imports.Remove (import);
+				ChildNodes.Remove (import);
 				NotifyChanged ();
 			}
 		}
 
 		public IEnumerable<MSBuildImport> Imports {
-			get { return imports; }
+			get { return ChildNodes.OfType<MSBuildImport> (); }
 		}
 	}
 }

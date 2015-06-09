@@ -32,8 +32,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildChoose: MSBuildElement
 	{
-		List<MSBuildChooseOption> options = new List<MSBuildChooseOption> ();
-
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
 			MSBuildChooseOption op = null;
@@ -42,9 +40,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				case "Otherwise": op = new MSBuildChooseOption (true); break;
 			}
 			if (op != null) {
-				op.ParentObject = this;
+				op.ParentNode = this;
 				op.Read (reader);
-				options.Add (op);
+				ChildNodes.Add (op);
 			} else
 				base.ReadChildElement (reader);
 		}
@@ -54,21 +52,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return "Choose";
 		}
 
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return options;
-		}
-
 		internal IEnumerable<MSBuildChooseOption> GetOptions ()
 		{
-			return options;
+			return ChildNodes.OfType<MSBuildChooseOption> ();
 		}
 	}
 
 	public class MSBuildChooseOption: MSBuildElement
 	{
-		List<MSBuildObject> objects = new List<MSBuildObject> ();
-
 		public MSBuildChooseOption ()
 		{
 		}
@@ -90,11 +81,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
 				case "ImportGroup": ob = new MSBuildImportGroup (); break;
 				case "Choose": ob = new MSBuildChoose (); break;
+				default: ob = new MSBuildXmlElement (); break;
 			}
 			if (ob != null) {
-				ob.ParentObject = this;
+				ob.ParentNode = this;
 				ob.Read (reader);
-				objects.Add (ob);
+				ChildNodes.Add (ob);
 			} else
 				reader.Read ();
 		}
@@ -104,14 +96,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return IsOtherwise ? "Otherwise" : "When";
 		}
 
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return objects;
-		}
-
 		public IEnumerable<MSBuildObject> GetAllObjects ()
 		{
-			return objects;
+			return ChildNodes.OfType<MSBuildObject> ();
 		}
 	}
 }

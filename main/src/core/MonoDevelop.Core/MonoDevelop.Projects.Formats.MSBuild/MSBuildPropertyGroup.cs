@@ -38,7 +38,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
 		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> ();
-		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
 
 		public MSBuildPropertyGroup ()
 		{
@@ -53,9 +52,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				prevSameName.Overwritten = true;
 
 			var prop = new MSBuildProperty ();
-			prop.ParentObject = PropertiesParent ?? this;
+			prop.ParentNode = PropertiesParent ?? this;
+			prop.Owner = this;
 			prop.Read (reader);
-			propertyList.Add (prop);
+			ChildNodes.Add (prop);
 			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 		}
 
@@ -64,33 +64,34 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return "PropertyGroup";
 		}
 
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return propertyList;
-		}
-
 		internal override void OnProjectSet ()
 		{
 			base.OnProjectSet ();
-			foreach (var p in propertyList)
+			foreach (var p in ChildNodes.OfType<MSBuildProperty> ())
 				p.ResolvePath ();
 		}
 
 		internal void CopyFrom (MSBuildPropertyGroup other)
 		{
-			foreach (var prop in other.propertyList) {
-				var cp = prop.Clone ();
-				var currentPropIndex = propertyList.FindIndex (p => p.Name == prop.Name);
-				if (currentPropIndex != -1) {
-					var currentProp = propertyList [currentPropIndex];
-					propertyList [currentPropIndex] = cp;
-				} else {
-					propertyList.Add (cp);
-				}
-				properties [cp.Name] = cp;
-				cp.ResetIndent (false);
+			foreach (var node in other.ChildNodes) {
+				var prop = node as MSBuildProperty;
+				if (prop != null) {
+					var cp = prop.Clone ();
+					var currentPropIndex = ChildNodes.FindIndex (p => (p is MSBuildProperty) && ((MSBuildProperty)p).Name == prop.Name);
+					if (currentPropIndex != -1) {
+						var currentProp = (MSBuildProperty) ChildNodes [currentPropIndex];
+						ChildNodes [currentPropIndex] = cp;
+					} else {
+						ChildNodes.Add (cp);
+					}
+					properties [cp.Name] = cp;
+					cp.ParentNode = PropertiesParent ?? this;
+					cp.Owner = this;
+					cp.ResetIndent (false);
+				} else
+					ChildNodes.Add (node);
 			}
-			foreach (var prop in propertyList.ToArray ()) {
+			foreach (var prop in ChildNodes.OfType<MSBuildProperty> ().ToArray ()) {
 				if (!other.HasProperty (prop.Name))
 					RemoveProperty (prop);
 			}
@@ -140,7 +141,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public IEnumerable<MSBuildProperty> GetProperties ()
 		{
-			return propertyList.Where (p => !p.Overwritten);
+			return ChildNodes.OfType<MSBuildProperty> ();
 		}
 
 		public string GetValue (string name, string defaultValue = null)
@@ -206,22 +207,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (i != -1) {
 				var foundProp = FindExistingProperty (i - 1, -1);
 				if (foundProp != null) {
-					insertIndex = propertyList.IndexOf (foundProp) + 1;
+					insertIndex = ChildNodes.IndexOf (foundProp) + 1;
 				} else {
 					foundProp = FindExistingProperty (i + 1, 1);
 					if (foundProp != null)
-						insertIndex = propertyList.IndexOf (foundProp) - 1;
+						insertIndex = ChildNodes.IndexOf (foundProp) - 1;
 				}
 			}
 
 			var prop = new MSBuildProperty (name);
-			prop.ParentObject = PropertiesParent ?? this;
+			prop.ParentNode = PropertiesParent ?? this;
+			prop.Owner = this;
 			properties [name] = prop;
 
 			if (insertIndex != -1)
-				propertyList.Insert (insertIndex, prop);
+				ChildNodes.Insert (insertIndex, prop);
 			else
-				propertyList.Add (prop);
+				ChildNodes.Add (prop);
 
 			if (condition != null)
 				prop.Condition = condition;
@@ -335,16 +337,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			prop.RemoveIndent ();
 			properties.Remove (prop.Name);
-			propertyList.Remove (prop);
+			ChildNodes.Remove (prop);
 			NotifyChanged ();
 		}
 
 		public void RemoveAllProperties ()
 		{
-			foreach (var p in propertyList)
-				p.RemoveIndent ();
 			properties.Clear ();
-			propertyList.Clear ();
+			ChildNodes.Clear ();
 			NotifyChanged ();
 		}
 

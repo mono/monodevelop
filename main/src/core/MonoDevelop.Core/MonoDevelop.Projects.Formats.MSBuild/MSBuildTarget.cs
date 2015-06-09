@@ -42,7 +42,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildTarget: MSBuildElement
 	{
 		string name;
-		List<MSBuildTask> tasks = new List<MSBuildTask> ();
 
 		static readonly string [] knownAttributes = { "Name", "Condition", "Label" };
 
@@ -75,9 +74,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
 			var task = new MSBuildTask ();
-			task.ParentObject = this;
+			task.ParentNode = this;
 			task.Read (reader);
-			tasks.Add (task);
+			ChildNodes.Add (task);
+		}
+
+		internal override void Write (XmlWriter writer, WriteContext context)
+		{
+			base.Write (writer, context);
 		}
 
 		internal MSBuildTarget ()
@@ -87,12 +91,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public MSBuildTarget (string name, IEnumerable<MSBuildTask> tasks)
 		{
 			this.name = name;
-			this.tasks = new List<MSBuildTask> (tasks);
-		}
-
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return tasks;
+			ChildNodes.AddRange (tasks);
 		}
 
 		public string Name {
@@ -102,7 +101,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public bool IsImported { get; internal set; }
 
 		public IEnumerable<MSBuildTask> Tasks {
-			get { return tasks; }
+			get { return ChildNodes.OfType<MSBuildTask> (); }
 		}
 
 		public void RemoveTask (MSBuildTask task)
@@ -110,7 +109,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (task.ParentObject != this)
 				throw new InvalidOperationException ("Task doesn't belong to the target");
 			task.RemoveIndent ();
-			tasks.Remove (task);
+			ChildNodes.Remove (task);
 		}
 	}
 	

@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					}
 				}
 			}
-			foreach (var im in project.Imports) {
+			foreach (var im in project.Imports.ToArray ()) {
 				if (im.Label == "Shared" && im.Project.EndsWith (".projitems") && !(validProjitems.Contains (im.Project)))
 					project.RemoveImport (im.Project);
 			}

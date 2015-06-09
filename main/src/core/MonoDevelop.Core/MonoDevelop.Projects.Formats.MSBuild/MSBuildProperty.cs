@@ -31,6 +31,8 @@ using System.Xml.Linq;
 using MonoDevelop.Core;
 using System.Globalization;
 using System.Text;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -39,6 +41,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool preserverCase;
 		MSBuildValueType valueType = MSBuildValueType.Default;
 		string value;
+		string rawValue;
 		string name;
 
 		internal MSBuildProperty ()
@@ -59,12 +62,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal override void ReadContent (MSBuildXmlReader reader)
 		{
-			value = ReadValue (reader.XmlReader);
+			value = ReadValue (reader);
 		}
 
 		internal override void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			writer.WriteValue (value);
+			if (rawValue != null)
+				writer.WriteRaw (rawValue);
+			else
+				WriteValue (writer, context, value);
 		}
 
 		internal override string GetElementName ()
@@ -74,21 +80,42 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static XmlDocument helperDoc = new XmlDocument ();
 
-		string ReadValue (XmlReader reader)
+		string ReadValue (MSBuildXmlReader reader)
+		{
+			MSBuildXmlElement elem = new MSBuildXmlElement ();
+			elem.ReadContent (reader);
+
+			if (elem.ChildNodes.Count == 0) {
+				rawValue = elem.GetInnerXml ();
+				return string.Empty;
+			}
+			
+			if (elem.ChildNodes.Count == 1 && (elem.ChildNodes[0] is MSBuildXmlTextNode || elem.ChildNodes[0] is MSBuildXmlCDataNode))
+				return ((MSBuildXmlValueNode)elem.ChildNodes[0]).Value.Trim ();
+			if (elem.ChildNodes.Any (n => n is MSBuildXmlElement))
+				return elem.GetInnerXml ();
+			else
+				return elem.GetText ();
+		}
+
+		string ReadValue2 (XmlReader reader)
 		{
 			// This code is from Microsoft.Build.Internal.Utilities
 
+			string innerXml = reader.ReadInnerXml ();
+
 			XmlElement elem;
-			lock (helperDoc)
-				elem = (XmlElement) helperDoc.ReadNode (reader);
+			lock (helperDoc) {
+				elem = (XmlElement)helperDoc.CreateElement ("a", MSBuildProject.Schema);
+				elem.InnerXml = innerXml;
+            }
+			rawValue = innerXml;
 
 			if (!elem.HasChildNodes)
 				return string.Empty;
 
 			if (elem.ChildNodes.Count == 1 && (elem.FirstChild.NodeType == XmlNodeType.Text || elem.FirstChild.NodeType == XmlNodeType.CDATA))
 				return elem.InnerText.Trim ();
-
-			string innerXml = elem.InnerXml;
 
 			// If there is no markup under the XML node (detected by the presence
 			// of a '<' sign
@@ -120,10 +147,47 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return innerXml;
 		}
 
+		void WriteValue (XmlWriter writer, WriteContext context, string value)
+		{
+			if (value == null)
+				value = string.Empty;
+
+			// This code is from Microsoft.Build.Internal.Utilities
+
+			if (value.IndexOf('<') != -1) {
+				// If the value looks like it probably contains XML markup ...
+				try {
+					var sr = new StringReader ("<a>"+ value + "</a>");
+					var elem = new MSBuildXmlElement ();
+					using (var xr = new XmlTextReader (sr)) {
+						xr.MoveToContent ();
+						var cr = new MSBuildXmlReader { XmlReader = xr };
+						elem.Read (cr);
+					}
+					elem.ParentNode = this;
+					elem.SetNamespace (MSBuildProject.Schema);
+
+					elem.StartWhitespace = StartWhitespace;
+					elem.EndWhitespace = EndWhitespace;
+					elem.ResetChildrenIndent ();
+					elem.WriteContent (writer, context);
+					return;
+				}
+				catch (XmlException) {
+					// But that may fail, in the event that "value" is not really well-formed
+					// XML.  Eat the exception and fall through below ...
+				}
+			}
+
+			// The value does not contain valid XML markup.  Write it as text, so it gets 
+			// escaped properly.
+			writer.WriteValue (value);
+		}
+
 		internal virtual MSBuildProperty Clone (XmlDocument newOwner = null)
 		{
 			var prop = (MSBuildProperty)MemberwiseClone ();
-			prop.ParentObject = null;
+			prop.ParentNode = null;
 			return prop;
 		}
 
@@ -231,41 +295,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal virtual void SetPropertyValue (string value)
 		{
 			this.value = value;
+			this.rawValue = null;
 			if (ParentProject != null && NotifyChanges)
 				ParentProject.NotifyChanged ();
 		}
-
-/*		internal virtual void SetPropertyValue (string value)
-		{
-			if (Element.IsEmpty && string.IsNullOrEmpty (value))
-				return;
-
-			if (value == null)
-				value = string.Empty;
-
-			// This code is from Microsoft.Build.Internal.Utilities
-
-			if (value.IndexOf('<') != -1) {
-				// If the value looks like it probably contains XML markup ...
-				try {
-					// Attempt to store it verbatim as XML.
-					Element.InnerXml = value;
-					if (Project != null)
-						XmlUtil.FormatElement (Project.TextFormat, Element);
-					return;
-				}
-				catch (XmlException) {
-					// But that may fail, in the event that "value" is not really well-formed
-					// XML.  Eat the exception and fall through below ...
-				}
-			}
-
-			// The value does not contain valid XML markup.  Store it as text, so it gets 
-			// escaped properly.
-			Element.InnerText = value;
-			if (Project != null && NotifyChanges)
-				Project.NotifyChanged ();
-		}*/
 
 		internal override string GetPropertyValue ()
 		{

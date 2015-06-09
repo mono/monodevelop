@@ -33,24 +33,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildItemGroup: MSBuildElement
 	{
-		List<MSBuildItem> items = new List<MSBuildItem> ();
-
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
 			var item = new MSBuildItem ();
-			item.ParentObject = this;
+			item.ParentNode = this;
 			item.Read (reader);
-			items.Add (item);
+			ChildNodes.Add (item);
 		}
 
 		internal override string GetElementName ()
 		{
 			return "ItemGroup";
-		}
-
-		internal override IEnumerable<MSBuildObject> GetChildren ()
-		{
-			return items;
 		}
 
 		public bool IsImported {
@@ -68,8 +61,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void AddItem (MSBuildItem item)
 		{
-			items.Add (item);
-			item.ParentObject = this;
+			ChildNodes.Add (item);
+			item.ParentNode = this;
 			item.ResetIndent (false);
 			if (ParentProject != null)
 				ParentProject.NotifyChanged ();
@@ -77,15 +70,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public IEnumerable<MSBuildItem> Items {
 			get {
-				return items;
+				return ChildNodes.OfType<MSBuildItem> ();
 			}
 		}
 
 		internal void RemoveItem (MSBuildItem item)
 		{
-			if (items.Contains (item)) {
+			if (ChildNodes.Contains (item)) {
 				item.RemoveIndent ();
-				items.Remove (item);
+				ChildNodes.Remove (item);
 				NotifyChanged ();
 			}
 		}

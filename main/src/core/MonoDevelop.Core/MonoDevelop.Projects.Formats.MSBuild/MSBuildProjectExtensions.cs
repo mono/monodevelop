@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 
@@ -31,18 +33,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public class MSBuildProjectExtensions: MSBuildElement
 	{
-		XmlElement elem;
-		XmlDocument doc;
-
 		public MSBuildProjectExtensions ()
 		{
 		}
 
 		internal override void Read (MSBuildXmlReader reader)
 		{
-			base.Read (reader);
-			doc = new XmlDocument ();
-			elem = (XmlElement) doc.ReadNode (reader.XmlReader);
+			if (reader.ForEvaluation)
+				reader.Read ();
+			else
+				base.Read (reader);
 		}
 
 		internal override string GetElementName ()
@@ -52,47 +52,52 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal bool IsEmpty {
 			get {
-				return elem == null || elem.ChildNodes.OfType<XmlNode> ().All (n => n is XmlWhitespace);
+				return !ChildNodes.OfType<MSBuildXmlElement> ().Any ();
 			}
 		}
 
 		public XmlElement GetProjectExtension (string section)
 		{
-			if (elem == null)
+			var elem = ChildNodes.OfType<MSBuildXmlElement> ().FirstOrDefault (n => n.Name == section);
+			if (elem != null) {
+				var w = new StringWriter ();
+				using (var tw = new XmlTextWriter (w))
+					elem.Write (tw, new WriteContext ());
+				var doc = new XmlDocument ();
+				doc.LoadXml (w.ToString ());
+				return doc.DocumentElement;
+			} else
 				return null;
-			return elem.SelectSingleNode ("tns:" + section, MSBuildProject.XmlNamespaceManager) as XmlElement;
 		}
 
 		public void SetProjectExtension (XmlElement value)
 		{
-			if (doc == null) {
-				doc = new XmlDocument ();
-				elem = doc.CreateElement (null, "ProjectExtensions", MSBuildProject.Schema);
-				doc.DocumentElement.AppendChild (elem);
-			}
-			
-			if (value.OwnerDocument != doc)
-				value = (XmlElement)doc.ImportNode (value, true);
+			var sr = new StringReader (value.OuterXml);
+			var xr = new XmlTextReader (sr);
+			xr.MoveToContent ();
+			var cr = new MSBuildXmlReader { XmlReader = xr };
+			var section = value.LocalName;
 
-			XmlElement sec = elem [value.LocalName];
-			if (sec == null)
-				elem.AppendChild (value);
+			MSBuildXmlElement elem = new MSBuildXmlElement ();
+			elem.Read (cr);
+
+			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
+			if (i == -1)
+				ChildNodes.Add (elem);
 			else {
-				elem.InsertAfter (value, sec);
-				XmlUtil.RemoveElementAndIndenting (sec);
+				ChildNodes.RemoveAt (i);
+				ChildNodes.Insert (i, elem);
 			}
-			XmlUtil.Indent (ParentProject.TextFormat, value, true);
+			elem.ParentNode = this;
+			elem.ResetIndent (false);
 			NotifyChanged ();
 		}
 
 		public void RemoveProjectExtension (string section)
 		{
-			if (doc == null)
-				return;
-			
-			XmlElement es = elem.SelectSingleNode ("tns:" + section, MSBuildProject.XmlNamespaceManager) as XmlElement;
-			if (es != null) {
-				XmlUtil.RemoveElementAndIndenting (es);
+			int i = ChildNodes.FindIndex (n => (n is MSBuildXmlElement) && ((MSBuildXmlElement)n).Name == section);
+			if (i != -1) {
+				ChildNodes.RemoveAt (i);
 				NotifyChanged ();
 			}
 		}

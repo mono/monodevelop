@@ -44,7 +44,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			metadata = new MSBuildPropertyGroup ();
 			metadata.UppercaseBools = true;
-			metadata.ParentObject = this;
+			metadata.ParentNode = this;
 			metadata.PropertiesParent = this;
 		}
 
@@ -105,7 +105,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return name;
 		}
 
-		internal override IEnumerable<MSBuildObject> GetChildren ()
+		internal override IEnumerable<MSBuildNode> GetChildren ()
 		{
 			return metadata.GetChildren ();
 		}

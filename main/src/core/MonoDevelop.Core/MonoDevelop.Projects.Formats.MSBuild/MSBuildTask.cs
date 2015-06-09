@@ -63,6 +63,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			base.Read (reader);
 		}
 
+		internal override void Write (XmlWriter writer, WriteContext context)
+		{
+			base.Write (writer, context);
+		}
+
 		internal override string GetElementName ()
 		{
 			return Name;
