@@ -1321,6 +1321,11 @@ namespace MonoDevelop.Ide.Gui
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
 
+		/// <summary>
+		/// Is true when the file is already open and reload is requested.
+		/// </summary>
+		public bool IsReloadOperation { get; set; }
+
 		internal DockNotebook DockNotebook { get; set; }
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]

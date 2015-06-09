@@ -333,7 +333,8 @@ namespace MonoDevelop.Ide.Gui
 			if (mc != null) {
 				memento = mc.Memento;
 			}
-			window.ViewContent.Load (window.ViewContent.ContentName);
+			window.ViewContent.DiscardChanges ();
+			window.ViewContent.Load (new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true });
 			if (memento != null) {
 				mc.Memento = memento;
 			}

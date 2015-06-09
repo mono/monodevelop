@@ -421,6 +421,9 @@ namespace MonoDevelop.Ide.Editor
 
 		void IViewContent.DiscardChanges ()
 		{
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.DiscardChanges ();
