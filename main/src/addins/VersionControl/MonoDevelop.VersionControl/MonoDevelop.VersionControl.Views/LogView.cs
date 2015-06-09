@@ -42,15 +42,18 @@ namespace MonoDevelop.VersionControl.Views
 			var lw = new LogWidget (info);
 			
 			widget = lw;
-			info.Updated += delegate {
-				lw.History = this.info.History;
-				vinfo   = this.info.VersionInfo;
-			};
+			info.Updated += OnInfoUpdated;
 			lw.History = this.info.History;
 			vinfo   = this.info.VersionInfo;
 		
 			if (WorkbenchWindow != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
+		}
+
+		void OnInfoUpdated (object sender, EventArgs e)
+		{
+			widget.History = this.info.History;
+			vinfo   = this.info.VersionInfo;
 		}
 
 		[Obsolete]
@@ -99,6 +102,10 @@ namespace MonoDevelop.VersionControl.Views
 			if (changedpathstore != null) {
 				changedpathstore.Dispose ();
 				changedpathstore = null;
+			}
+			if (info != null) {
+				info.Updated -= OnInfoUpdated;
+				info = null;
 			}
 			base.Dispose ();
 		}
