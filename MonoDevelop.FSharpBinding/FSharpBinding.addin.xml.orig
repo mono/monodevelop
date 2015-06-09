@@ -1,5 +1,5 @@
 <Addin id="FSharpBinding" namespace="MonoDevelop" name="F# Language Binding"
-       author="F# Software Foundation (fsharp.org)" copyright="F# Software Foundation (fsharp.org)" url="http://github.com/fsharp/fsharpbinding"
+       author="F# Software Foundation (fsharp.org)" copyright="F# Software Foundation (fsharp.org)" url="http://github.com/fsharp/xamarin-monodevelop-fsharp-addin/"
        description="F# Language Binding (for Xamarin Studio/MonoDevelop INSERT_FSPROJ_MDVERSION4). Install F# before using, see http://fsharp.org" category="Language bindings" version="INSERT_FSPROJ_VERSION">
 
   <Runtime>
