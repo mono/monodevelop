@@ -125,6 +125,14 @@ namespace MonoDevelop.Core.Web
 						{
 							if (_continueIfFailed)
 							{
+								if (IsMonoProxyAuthenticationRequiredError (ex, response))
+								{
+									_previousStatusCode = HttpStatusCode.ProxyAuthenticationRequired;
+									_previousResponse = new MonoProxyAuthenticationRequiredResponse ();
+									_previousRequest = request;
+									continue;
+								}
+
 								// Act like we got a 401 so that we prompt for credentials on the next request
 								_previousStatusCode = HttpStatusCode.Unauthorized;
 								continue;
@@ -257,6 +265,14 @@ namespace MonoDevelop.Core.Web
 			}
 
 			return httpWebResponse;
+		}
+
+		private static bool IsMonoProxyAuthenticationRequiredError (WebException ex, IHttpWebResponse response)
+		{
+			return (response == null) &&
+				!Platform.IsWindows &&
+				(ex.Message != null) &&
+				ex.Message.Contains ("The remote server returned a 407 status code.");
 		}
 
 		private static bool IsAuthenticationResponse(IHttpWebResponse response)
