@@ -174,6 +174,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override bool Toggle (bool active)
 		{
 			NSButton button = ResultObject as NSButton;
