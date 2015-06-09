@@ -664,7 +664,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
-			
 			if (document == null)
 				return;
 			bool isOpen;
@@ -712,7 +711,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 
-					var str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+					string str;
+					if (change.NewText.Length == 0) {
+						str = formatter.FormatText (mp.Policies, currentText, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+					} else {
+						str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+					}
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
@@ -724,14 +728,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					foreach (var change in changes) {
 						delta -= change.Span.Length - change.NewText.Length;
 						var startOffset = change.Span.Start - delta;
-
+							
 						if (projection != null) {
 							int originalOffset;
 							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
 								startOffset = originalOffset;
 						}
-
-						formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+						if (change.NewText.Length == 0) {
+							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+						} else {
+							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+						}
 					}
 				}
 			}
