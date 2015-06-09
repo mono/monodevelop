@@ -29,6 +29,8 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -66,6 +68,9 @@ namespace MonoDevelop.Ide.Projects
 			folderTreeView.ShowExpanders = false;
 			folderTreeView.LevelIndentation = 10;
 			folderTreeView.CanFocus = false;
+
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("folderTreeStore__IconId", "folderTreeStore__NodeName", "folderTreeStore__Image");
+			TypeDescriptor.AddAttributes (folderTreeStore, modelAttr);
 
 			var column = new TreeViewColumn ();
 			var iconRenderer = new CellRendererImage ();
