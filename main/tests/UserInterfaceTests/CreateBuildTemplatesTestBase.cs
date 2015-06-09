@@ -82,7 +82,9 @@ namespace UserInterfaceTests
 
 				OnEnterTemplateSpecificOptions (newProject, projectName, miscOptions);
 
-				OnEnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory, gitOptions);
+				OnEnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory, true, gitOptions);
+
+				OnClickCreate (newProject);
 
 				try {
 					beforeBuild ();
@@ -112,7 +114,7 @@ namespace UserInterfaceTests
 		protected virtual void OnEnterTemplateSpecificOptions (NewProjectController newProject, string projectName, object miscOptions) {}
 
 		protected virtual void OnEnterProjectDetails (NewProjectController newProject, string projectName,
-			string solutionName, string solutionLocation, GitOptions gitOptions = null)
+			string solutionName, string solutionLocation, bool createProjectInSolution = true, GitOptions gitOptions = null)
 		{
 			Assert.IsTrue (newProject.SetProjectName (projectName));
 
@@ -124,13 +126,16 @@ namespace UserInterfaceTests
 				Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
 			}
 
-			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (true));
+			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (createProjectInSolution));
 
 			if (gitOptions != null)
 				Assert.IsTrue (newProject.UseGit (gitOptions));
 
 			TakeScreenShot ("AfterProjectDetailsFilled");
+		}
 
+		protected virtual void OnClickCreate (NewProjectController newProject)
+		{
 			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
 		}
 
