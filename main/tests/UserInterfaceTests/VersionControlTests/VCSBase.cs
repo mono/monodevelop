@@ -101,19 +101,20 @@ namespace UserInterfaceTests
 
 		protected void EnterGitUserConfig (string gitUser, string gitEmail)
 		{
+			Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("repoConfigRadio"), true);
+
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry"), gitUser);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry").Text (gitUser));
 
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("emailEntry"), gitEmail);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("emailEntry").Text (gitEmail));
 
-			Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("globalConfigRadio"), true);
-
 			TakeScreenShot ("Git-User-Email-Filled");
 			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Button ().Marked ("buttonOk"));
 			if (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog")).Length > 0) {
 				TakeScreenShot ("Provided-User-Details-Mismatch");
-				Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("radiobutton2"), true);
+				Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog").Children ().CheckButton ().Marked ("radiobutton2"), true);
+				TakeScreenShot ("Selected-Use-Git-Config");
 				Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog").Children ().Button ().Marked ("buttonOk"));
 			}
 		}
