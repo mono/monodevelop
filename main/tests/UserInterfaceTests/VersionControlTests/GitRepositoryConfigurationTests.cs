@@ -246,7 +246,12 @@ namespace UserInterfaceTests
 		{
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
-			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonSetDefaultBranch")));
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
+			try {
+				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
+				TakeScreenShot ("Git-User-Not-Configured");
+				EnterGitUserConfig ("John Doe", "john.doe@example.com");
+			} catch (TimeoutException e) { }
 			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}

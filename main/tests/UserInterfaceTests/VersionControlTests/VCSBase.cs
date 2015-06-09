@@ -99,7 +99,7 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Commit-Completed");
 		}
 
-		void EnterGitUserConfig (string gitUser, string gitEmail)
+		protected void EnterGitUserConfig (string gitUser, string gitEmail)
 		{
 			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry"), gitUser);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Textfield ().Marked ("usernameEntry").Text (gitUser));
@@ -113,7 +113,7 @@ namespace UserInterfaceTests
 			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().Button ().Marked ("buttonOk"));
 			if (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog")).Length > 0) {
 				TakeScreenShot ("Provided-User-Details-Mismatch");
-				Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("radioMD"), true);
+				Session.ToggleElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog").Children ().CheckButton ().Marked ("radiobutton2"), true);
 				Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog").Children ().Button ().Marked ("buttonOk"));
 			}
 		}
