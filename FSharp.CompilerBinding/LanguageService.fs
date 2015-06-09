@@ -281,7 +281,7 @@ type LanguageService(dirtyNotify) =
   member x.GetCheckerOptions(fileName, projFilename, source) =
     Debug.WriteLine("LanguageService: GetCheckerOptions")
     let opts =
-      if LanguageService.IsAScript fileName then
+      if LanguageService.IsAScript fileName || fileName = projFilename then
         // We are in a stand-alone file or we are in a project, but currently editing a script file
         x.GetScriptCheckerOptions(fileName, projFilename, source)
           
