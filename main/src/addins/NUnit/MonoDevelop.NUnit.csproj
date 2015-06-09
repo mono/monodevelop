@@ -233,7 +233,6 @@
     <Compile Include="Gui\TestResultsPad.cs" />
     <Compile Include="Gui\TestNodeBuilder.cs" />
     <Compile Include="Gui\TestChart.cs" />
-    <Compile Include="Gui\UnitTestOptionsDialog.cs" />
     <Compile Include="Gui\NUnitAssemblyGroupNodeBuilder.cs" />
     <Compile Include="Gui\NUnitAssemblyGroupConfigurationNodeBuilder.cs" />
     <Compile Include="Gui\TestAssemblyNodeBuilder.cs" />
