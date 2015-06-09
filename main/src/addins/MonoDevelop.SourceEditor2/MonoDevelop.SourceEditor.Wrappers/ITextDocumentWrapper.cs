@@ -35,7 +35,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextDocumentWrapper : ITextDocument, IDisposable
 	{
-		TextDocument document;
+		readonly TextDocument document;
 
 		public TextDocument Document {
 			get {
@@ -45,6 +45,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public TextDocumentWrapper (TextDocument document)
 		{
+			if (document == null)
+				throw new ArgumentNullException (nameof (document));
 			this.document = document;
 			this.document.TextReplaced += HandleTextReplaced;
 			this.document.TextReplacing += HandleTextReplacing;
@@ -55,14 +57,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public void Dispose ()
 		{
-			if (document == null)
-				return;
 			document.TextReplaced -= HandleTextReplaced;
 			document.TextReplacing -= HandleTextReplacing;
 			document.LineChanged -= Document_LineChanged; 
 			document.LineInserted -= Document_LineInserted;
 			document.LineRemoved -= Document_LineRemoved;
-			document = null;
 		}
 
 		void Document_LineRemoved (object sender, Mono.TextEditor.LineEventArgs e)
