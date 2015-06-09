@@ -47,22 +47,55 @@ namespace UserInterfaceTests
 			Assert.IsTrue (Session.SelectElement (c => c.Marked ("repCombo").Model ().Text (cvsType.ToString ())));
 			Assert.IsTrue (Session.EnterText (c => c.Textfield ().Marked ("repositoryUrlEntry"), repoUrl));
 			Assert.IsTrue (Session.EnterText (c => c.Textfield ().Marked ("entryFolder"), cloneToLocation));
+			Session.WaitForElement (c => c.Textfield ().Marked ("entryFolder").Text (cloneToLocation));
 			TakeScreenShot ("Before-Clicking-OK");
 			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.SelectRepositoryDialog").Children ().Button ().Marked ("buttonOk")));
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), 15000);
 			TakeScreenShot ("CheckoutClone-In-Progress");
 			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.Dialogs.ProgressDialog"), cloneTimeoutSecs * 1000);
-			TakeScreenShot ("Checkout-Successful");
 
 			return cloneToLocation;
 		}
 
 		protected void TestClone (string repoUrl, string cloneToLocation = null, VersionControlType cvsType = VersionControlType.Git, int cloneTimeoutSecs = 180)
 		{
-			Assert.DoesNotThrow (delegate {
-				var checkoutFolder = CheckoutOrClone (repoUrl, cloneToLocation, cvsType, cloneTimeoutSecs);
-				FoldersToClean.Add (checkoutFolder);
-			});
+			var checkoutFolder = CheckoutOrClone (repoUrl, cloneToLocation, cvsType, cloneTimeoutSecs);
+			FoldersToClean.Add (checkoutFolder);
+		}
+
+		protected void TestGitStash (string stashMsg, int timeoutStashSecs = 10)
+		{
+			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.Stash);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.NewStashDialog"));
+			TakeScreenShot ("Stash-Dialog-Opened");
+			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.NewStashDialog").Children ().Textfield ().Marked ("entryComment"), stashMsg);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.NewStashDialog").Children ().Textfield ().Marked ("entryComment").Text (stashMsg));
+			TakeScreenShot ("Stash-Message-Entered");
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.NewStashDialog").Children ().Button ().Marked ("buttonOk"));
+			Ide.WaitForStatusMessage (new [] { "Changes successfully stashed" }, timeoutStashSecs);
+		}
+
+		protected void TestGitUnstash ()
+		{
+			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.StashPop);
+			Ide.WaitForStatusMessage (new[] {"Stash successfully applied"}, 10);
+		}
+
+		protected void TestCommit (string commitMsg)
+		{
+			Session.ExecuteCommand (MonoDevelop.VersionControl.Commands.SolutionStatus);
+			Session.ClickElement (c => c.Button ().Marked ("buttonCommit"), false);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog"));
+			TakeScreenShot ("Commit-Dialog-Opened");
+			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().TextView ().Marked ("textview"), commitMsg);
+			TakeScreenShot ("Commit-Msg-Entered");
+			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Dialogs.CommitDialog").Children ().Button ().Marked ("buttonCommit"));
+			Ide.WaitForStatusMessage (new[] {"Commit operation completed."});
+			TakeScreenShot ("Commit-Completed");
+		}
+
+		protected override void OnBuildTemplate (int buildTimeoutInSecs = 180)
+		{
 		}
 	}
 }
