@@ -401,7 +401,8 @@ type FSharpSyntaxMode(editor, context) =
                     with _ -> None 
                 let colourisations = pd.GetExtraColorizations ()
                 let lineDetails = editor.GetLines() |> Seq.map (fun line -> line.LineNumber, line.Offset, editor.GetLineText line)
-                let defines = CompilerArguments.getDefineSymbols context.Name (Some(context.Project))
+                let defines =
+                  CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
                                     
                 let processedTokens =
                     let style = getColourScheme ()

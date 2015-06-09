@@ -37,7 +37,7 @@ type FSharpTooltipProvider() =
         if doc = null then null else
 
         let fileName = doc.FileName.FullPath.ToString()
-        let projectFileName = context.Project.FileName.ToString()
+        let projectFileName = context.Project |> function null -> fileName | project -> project.FileName.ToString()
         
         if not <| MDLanguageService.SupportedFileName fileName then null else
 

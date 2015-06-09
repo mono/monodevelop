@@ -332,12 +332,12 @@ type FSharpTextEditorCompletion() =
         
         // Try to get typed result - within the specified timeout
         let! methsOpt =
-            async {let! tyRes =
-                     MDLanguageService.Instance.GetTypedParseResultWithTimeout (x.DocumentContext.Project.FileName.ToString(),
-                                                                                x.DocumentContext.Name,
-                                                                                docText,
-                                                                                AllowStaleResults.MatchingFileName,
-                                                                                ServiceSettings.blockingTimeout) 
+            async {let projectFile = x.DocumentContext.Project |> function null -> x.DocumentContext.Name | project -> project.FileName.ToString()
+                   let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projectFile,
+                                                                                           x.DocumentContext.Name,
+                                                                                           docText,
+                                                                                           AllowStaleResults.MatchingFileName,
+                                                                                           ServiceSettings.blockingTimeout) 
                    match tyRes with
                    | Some tyRes ->
                        let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
@@ -427,7 +427,8 @@ type FSharpTextEditorCompletion() =
     try
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
-      let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(x.DocumentContext.Project.FileName.ToString(), fileName, x.Editor.Text, stale, ServiceSettings.blockingTimeout)
+      let projectFile = x.DocumentContext.Project |> function null -> fileName | project -> project.FileName.ToString()
+      let! typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(projectFile, fileName, x.Editor.Text, stale, ServiceSettings.blockingTimeout)
 
       match typedParseResults with
       | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())

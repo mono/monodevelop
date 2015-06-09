@@ -31,8 +31,8 @@ type HighlightUsagesExtension() =
                 let line, col, lineStr = x.Editor.GetLineInfoByCaretOffset ()
                 let currentFile = x.DocumentContext.Name
                 let source = x.Editor.Text
-
-                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (x.DocumentContext.Project.FileName.ToString(), currentFile, source, line, col, lineStr)
+                let projectFile = x.DocumentContext.Project |> function null -> currentFile | project -> project.FileName.ToString()
+                let! symbolReferences = MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile (projectFile, currentFile, source, line, col, lineStr)
                 return symbolReferences
             with
             | :? Threading.Tasks.TaskCanceledException -> return None
