@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Git
 			TypeDescriptor.AddAttributes (comboStore, modelAttr);
 
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
+				AddValues (b.FriendlyName, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
 
 			foreach (Remote r in repo.GetRemotes ()) {
@@ -117,7 +117,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			comboSources.Sensitive = checkTrack.Active;
 			buttonOk.Sensitive = entryName.Text.Length > 0;
-			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.Name == entryName.Text)) {
+			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.FriendlyName == entryName.Text)) {
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;

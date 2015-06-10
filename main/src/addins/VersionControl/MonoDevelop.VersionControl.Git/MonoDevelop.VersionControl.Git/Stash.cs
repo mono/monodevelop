@@ -34,7 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			int i = 0;
 			foreach (var s in sc) {
-				if (s.Name == stash.Name) {
+				if (s.FriendlyName == stash.FriendlyName) {
 					sc.Remove (i);
 					break;
 				}

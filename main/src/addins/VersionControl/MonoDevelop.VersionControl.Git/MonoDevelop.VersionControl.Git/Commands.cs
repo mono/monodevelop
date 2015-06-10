@@ -110,8 +110,8 @@ namespace MonoDevelop.VersionControl.Git
 			{
 				string currentBranch = repo.GetCurrentBranch ();
 				foreach (Branch branch in repo.GetBranches ()) {
-					CommandInfo ci = info.Add (branch.Name, branch.Name);
-					if (branch.Name == currentBranch)
+					CommandInfo ci = info.Add (branch.FriendlyName, branch.FriendlyName);
+					if (branch.FriendlyName == currentBranch)
 						ci.Checked = true;
 				}
 			}
