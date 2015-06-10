@@ -213,6 +213,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference  ("MyPackage", "1.1");
 			packageManagementEvents.OnParentPackageInstalled (updatedPackage, project);
 
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
@@ -299,6 +301,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.0");
 			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
+			project.PackageReferences.Clear ();
 			packageManagementEvents.OnParentPackageUninstalled (package, project);
 
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
@@ -555,6 +558,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			updatedPackagesInSolution.CheckForUpdates ();
 			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
 			task.ExecuteTaskButNotContinueWith ();
+			project.PackageReferences.Clear ();
 			packageManagementEvents.OnParentPackageUninstalled (package, project);
 			task.ExecuteContinueWith ();
 
@@ -580,6 +584,71 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.DoesNotThrow (() => {
 				task.ExecuteContinueWith ();
 			});
+		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageHasUpdatesAndNewerVersionButNotLatestIsInstalled_UpdatesStillShowAsAvailable ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			var newerPackage = new FakePackage ("MyPackage", "1.1");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.9");
+			updatedPackagesInSolution.CheckForUpdates ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("MyPackage", "1.1");
+			packageManagementEvents.OnParentPackageInstalled (newerPackage, project);
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().First ().Id);
+			Assert.AreEqual ("1.9", updatedPackages.GetPackages ().First ().Version.ToString ());
+		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageUpdatedAndPackageUpdatedWhilstCheckingForUpdates_UpdateIsNotAvailableForPackage ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("MyPackage", "1.1");
+			packageManagementEvents.OnParentPackageInstalled (updatedPackage, project);
+			task.ExecuteContinueWith ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageUpdatedAndNewerButNotLatestPackageIsInstalledWhilstCheckingForUpdates_UpdateIsAvailableForPackage ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			taskFactory.RunTasksSynchronously = false;
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			var installedPackage = FakePackage.CreatePackageWithVersion ("MyPackage", "1.2");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.8");
+			updatedPackagesInSolution.CheckForUpdates ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("MyPackage", "1.2");
+			packageManagementEvents.OnParentPackageInstalled (installedPackage, project);
+			task.ExecuteContinueWith ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().First ().Id);
+			Assert.AreEqual ("1.8", updatedPackages.GetPackages ().First ().Version.ToString ());
 		}
 	}
 }
