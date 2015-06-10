@@ -82,6 +82,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		internal override bool SupportsTextContent {
+			get {
+				return true;
+			}
+		}
+
 		internal override string Namespace {
 			get {
 				if (ns != null)

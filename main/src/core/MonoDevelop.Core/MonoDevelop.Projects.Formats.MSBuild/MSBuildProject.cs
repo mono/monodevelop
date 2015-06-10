@@ -201,7 +201,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				DisableChangeTracking ();
-				reader.XmlReader = new XmlTextReader (new StringReader (xml));
+				XmlReaderSettings readerSettings = new XmlReaderSettings();
+				readerSettings.IgnoreWhitespace = false;
+				var xr = (XmlTextReader)XmlReader.Create (new StringReader (xml), readerSettings);
+				xr.Normalization = false;
+				reader.XmlReader = xr;
+//				reader.XmlReader = new XmlTextReader (new StringReader (xml));
 				LoadFromXml (reader);
 			} finally {
 				EnableChangeTracking ();
@@ -342,7 +347,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			sw.NewLine = format.NewLine;
 			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
 				OmitXmlDeclaration = !hadXmlDeclaration,
-				NewLineChars = format.NewLine
+				NewLineChars = format.NewLine,
+				NewLineHandling = NewLineHandling.Entitize
 			});
 
 			MSBuildWhitespace.Write (initialWhitespace, xw);

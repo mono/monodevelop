@@ -84,7 +84,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			if (reader.NodeType == XmlNodeType.Comment) {
 				var newWs = new MSBuildWhitespace {
-					isComment = reader.NodeType == XmlNodeType.Comment,
+					isComment = true,
 					content = reader.Value
 				};
 				if (ws == null)
@@ -124,6 +124,58 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				else {
 					var val = reader.Value;
 					var sb = new StringBuilder ((string)ws, ((string)ws).Length + val.Length);
+					sb.Append (val);
+					return sb;
+				}
+			}
+		}
+
+		public static object AppendSpace (object ws1, object ws2)
+		{
+			if (ws1 == null)
+				return ws2;
+			if (ws2 == null)
+				return ws1;
+			
+			var ob2 = ws2 as MSBuildWhitespace;
+			if (ob2 != null && ob2.isComment) {
+				if (ws1 is string || ws1 is StringBuilder) {
+					return new MSBuildWhitespace {
+						content = ws1.ToString (),
+						next = ob2
+					};
+				} else {
+					var last = ((MSBuildWhitespace)ws1).GetLast ();
+					last.next = ob2;
+					return ws1;
+				}
+			} else if (ws1 is MSBuildWhitespace) {
+				var last = ((MSBuildWhitespace)ws1).GetLast ();
+				if (last.isComment) {
+					var next = ob2 != null ? ob2 : new MSBuildWhitespace {
+						content = ws2 // is a string or stringbuilder
+					};
+					last.next = new MSBuildWhitespace {
+						content = next
+					};
+				} else if (last.content is StringBuilder) {
+					var val = ob2 != null ? ob2.content.ToString () : ws2.ToString ();
+					((StringBuilder)last.content).Append (val);
+				} else {
+					var val = ob2 != null ? ob2.content.ToString () : ws2.ToString ();
+					var sb = new StringBuilder ((string)last.content, ((string)last.content).Length + val.Length);
+					sb.Append (val);
+					last.content = sb;
+				}
+				return ws1;
+			} else {
+				var val = ob2 != null ? ob2.content.ToString () : ws2.ToString ();
+				if (ws1 is StringBuilder) {
+					((StringBuilder)ws1).Append (val);
+					return ws1;
+				}
+				else {
+					var sb = new StringBuilder ((string)ws1, ((string)ws1).Length + val.Length);
 					sb.Append (val);
 					return sb;
 				}

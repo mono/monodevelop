@@ -41,8 +41,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool preserverCase;
 		MSBuildValueType valueType = MSBuildValueType.Default;
 		string value;
-		string rawValue;
+		string rawValue, textValue;
 		string name;
+
+		static readonly string EmptyElementMarker = new string ('e', 1);
 
 		internal MSBuildProperty ()
 		{
@@ -67,10 +69,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal override void WriteContent (XmlWriter writer, WriteContext context)
 		{
-			if (rawValue != null)
-				writer.WriteRaw (rawValue);
-			else
+			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
+			if (rawValue != null) {
+				if (!object.ReferenceEquals (rawValue, EmptyElementMarker))
+					writer.WriteRaw (rawValue);
+			} else if (textValue != null) {
+				writer.WriteValue (textValue);
+			} else {
 				WriteValue (writer, context, value);
+			}
+			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
+		}
+
+		internal override bool PreferEmptyElement {
+			get {
+				return false;
+			}
 		}
 
 		internal override string GetElementName ()
@@ -78,10 +92,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return name;
 		}
 
-		static XmlDocument helperDoc = new XmlDocument ();
-
 		string ReadValue (MSBuildXmlReader reader)
 		{
+			if (reader.IsEmptyElement) {
+				rawValue = EmptyElementMarker;
+				reader.Skip ();
+				return string.Empty;
+			}
+
 			MSBuildXmlElement elem = new MSBuildXmlElement ();
 			elem.ReadContent (reader);
 
@@ -89,9 +107,25 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				rawValue = elem.GetInnerXml ();
 				return string.Empty;
 			}
-			
-			if (elem.ChildNodes.Count == 1 && (elem.ChildNodes[0] is MSBuildXmlTextNode || elem.ChildNodes[0] is MSBuildXmlCDataNode))
-				return ((MSBuildXmlValueNode)elem.ChildNodes[0]).Value.Trim ();
+
+			if (elem.ChildNodes.Count == 1) {
+				var node = elem.ChildNodes [0] as MSBuildXmlValueNode;
+				if (node is MSBuildXmlTextNode) {
+					StartInnerWhitespace = elem.StartInnerWhitespace;
+					EndInnerWhitespace = elem.EndInnerWhitespace;
+					textValue = node.Value;
+					return node.Value.Trim ();
+				}
+				else if (node is MSBuildXmlCDataNode) {
+					StartInnerWhitespace = elem.StartInnerWhitespace;
+					StartInnerWhitespace = MSBuildWhitespace.AppendSpace (StartInnerWhitespace, node.StartWhitespace);
+					EndInnerWhitespace = node.EndWhitespace;
+					EndInnerWhitespace = MSBuildWhitespace.AppendSpace (EndInnerWhitespace, elem.EndInnerWhitespace);
+					rawValue = "<![CDATA[" + node.Value + "]]>";
+					return node.Value;
+				}
+			}
+
 			if (elem.ChildNodes.Any (n => n is MSBuildXmlElement))
 				return elem.GetInnerXml ();
 			else
@@ -247,6 +281,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.value = value;
 			this.rawValue = null;
+			this.textValue = null;
+			StartInnerWhitespace = null;
+			EndInnerWhitespace = null;
 			if (ParentProject != null && NotifyChanges)
 				ParentProject.NotifyChanged ();
 		}

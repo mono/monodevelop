@@ -37,6 +37,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		UnknownAttribute[] unknownAttributes;
 		string [] attributeOrder;
 		List<MSBuildNode> children;
+		EmptyElementMode emptyElementMode;
+
+		enum EmptyElementMode : byte
+		{
+			Unknow, Empty, NotEmpty
+		}
 
 		class UnknownAttribute
 		{
@@ -49,6 +55,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal object StartInnerWhitespace { get; set; }
 		internal object EndInnerWhitespace { get; set; }
+
+		internal virtual bool PreferEmptyElement { get { return true; } }
 
 		internal override void Read (MSBuildXmlReader reader)
 		{
@@ -73,9 +81,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						var attName = reader.LocalName;
 						int i = Array.IndexOf (knownAtts, attName);
 						if (i == -1) {
+							if (attName == "xmlns")
+								continue;
 							var ua = new UnknownAttribute {
 								LocalName = attName,
-								Prefix = reader.Prefix,
+								Prefix = !string.IsNullOrEmpty (reader.Prefix) ? reader.Prefix : null,
 								Namespace = reader.NamespaceURI,
 								Value = reader.Value,
 								AfterAttribute = lastAttr
@@ -113,8 +123,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 					}
 				}
-			} 
+			}
 			reader.MoveToElement ();
+
+			emptyElementMode = reader.IsEmptyElement ? EmptyElementMode.Empty : EmptyElementMode.NotEmpty;
 
 			if (!string.IsNullOrEmpty (reader.Prefix) && !SupportsNamespacePrefixes)
 				throw new MSBuildFileFormatException ("XML namespace prefixes are not supported for " + reader.LocalName + " elements");
@@ -133,6 +145,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				reader.Skip ();
 				return;
 			}
+			var elemName = reader.LocalName;
+
 			reader.Read ();
 			bool childFound = false;
 
@@ -144,14 +158,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 					ReadChildElement (reader);
 				} else if (reader.NodeType == XmlNodeType.Text) {
+					if (!SupportsTextContent)
+						throw new MSBuildFileFormatException ("Text content is not allowed inside a " + elemName + " element");
+					if (!childFound) {
+						childFound = true;
+						StartInnerWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
+					}
 					var tn = new MSBuildXmlTextNode ();
 					tn.Read (reader);
 					ChildNodes.Add (tn);
 				} else if (reader.NodeType == XmlNodeType.CDATA) {
+					if (!childFound) {
+						childFound = true;
+						StartInnerWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
+					}
 					var tn = new MSBuildXmlCDataNode ();
 					tn.Read (reader);
 					ChildNodes.Add (tn);
 				} else if (reader.NodeType == XmlNodeType.Comment) {
+					if (!childFound) {
+						childFound = true;
+						StartInnerWhitespace = reader.ConsumeWhitespaceUntilNewLine ();
+					}
 					var tn = new MSBuildXmlCommentNode ();
 					tn.Read (reader);
 					ChildNodes.Add (tn);
@@ -225,15 +253,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return false; }
 		}
 
+		internal virtual bool SupportsTextContent {
+			get { return false; }
+		}
+
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)
 		{
+			var hasContent = StartInnerWhitespace != null || EndInnerWhitespace != null;
 			MSBuildWhitespace.Write (StartInnerWhitespace, writer);
 
 			foreach (var c in GetChildren ()) {
 				c.Write (writer, context);
+				hasContent = true;
 			}
 
 			MSBuildWhitespace.Write (EndInnerWhitespace, writer);
+
+			if (!hasContent && (emptyElementMode == EmptyElementMode.NotEmpty || (emptyElementMode == EmptyElementMode.Unknow && !PreferEmptyElement))) {
+				// Don't write an empty element if it wasn't read as an empty element
+				writer.WriteString ("");
+			}
 		}
 
 		internal virtual void ReadAttribute (string name, string value)
