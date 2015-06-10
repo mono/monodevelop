@@ -657,6 +657,12 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
+
+					if (WorkspaceContainsWorkspaceItem (parentWorkspace, dlg.SelectedFile)) {
+						MessageService.ShowMessage (GettextCatalog.GetString ("The workspace already contains '{0}'.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+						return res;
+					}
+
 					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
@@ -665,7 +671,12 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool WorkspaceContainsWorkspaceItem (Workspace workspace, FilePath workspaceItemFileName)
+		{
+			return workspace.Items.Any (existingWorkspaceItem => existingWorkspaceItem.FileName == workspaceItemFileName);
+		}
+
 		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
