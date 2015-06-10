@@ -124,6 +124,7 @@ style "button" {
     GtkWidget::focus-padding = 0
 
     engine "xamarin" {
+        rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color         = shade(0.6, @bg_color)
@@ -150,6 +151,7 @@ style "toggle-button" = "button" {
     bg[PRELIGHT] = shade(0.98, @base_color)
 
     engine "xamarin" {
+        rgba = FALSE
         contrast = 1.0
         gradient_shades     = {0.96, 0.918, 0.926, 0.858}
         focus_color         = shade(0.6, @bg_color)
@@ -301,6 +303,10 @@ style "entry" = "default"
     ythickness = 4
     GtkEntry::inner-border = { 2, 2, 2, 2 }
     base[INSENSITIVE] = shade(1.02, @bg_color)
+
+    engine "xamarin" {
+        rgba = FALSE
+    }
 }
 
 style "search-entry" = "wider"
