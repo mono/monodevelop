@@ -116,6 +116,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} 
 			reader.MoveToElement ();
 
+			if (!string.IsNullOrEmpty (reader.Prefix) && !SupportsNamespacePrefixes)
+				throw new MSBuildFileFormatException ("XML namespace prefixes are not supported for " + reader.LocalName + " elements");
+
 			ReadContent (reader);
 
 			while (reader.IsWhitespace)
@@ -216,6 +219,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get {
 				return null;
 			}
+		}
+
+		internal virtual bool SupportsNamespacePrefixes {
+			get { return false; }
 		}
 
 		internal virtual void WriteContent (XmlWriter writer, WriteContext context)

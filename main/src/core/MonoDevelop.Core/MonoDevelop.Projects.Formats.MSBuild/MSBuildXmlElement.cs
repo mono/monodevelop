@@ -76,6 +76,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return base.WriteAttribute (name);
 		}
 
+		internal override bool SupportsNamespacePrefixes {
+			get {
+				return true;
+			}
+		}
+
 		internal override string Namespace {
 			get {
 				if (ns != null)

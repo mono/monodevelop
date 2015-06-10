@@ -98,55 +98,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return elem.GetText ();
 		}
 
-		string ReadValue2 (XmlReader reader)
-		{
-			// This code is from Microsoft.Build.Internal.Utilities
-
-			string innerXml = reader.ReadInnerXml ();
-
-			XmlElement elem;
-			lock (helperDoc) {
-				elem = (XmlElement)helperDoc.CreateElement ("a", MSBuildProject.Schema);
-				elem.InnerXml = innerXml;
-            }
-			rawValue = innerXml;
-
-			if (!elem.HasChildNodes)
-				return string.Empty;
-
-			if (elem.ChildNodes.Count == 1 && (elem.FirstChild.NodeType == XmlNodeType.Text || elem.FirstChild.NodeType == XmlNodeType.CDATA))
-				return elem.InnerText.Trim ();
-
-			// If there is no markup under the XML node (detected by the presence
-			// of a '<' sign
-			int firstLessThan = innerXml.IndexOf('<');
-			if (firstLessThan == -1) {
-				// return the inner text so it gets properly unescaped
-				return elem.InnerText.Trim ();
-			}
-
-			bool containsNoTagsOtherThanComments = ContainsNoTagsOtherThanComments (innerXml, firstLessThan);
-
-			// ... or if the only XML is comments,
-			if (containsNoTagsOtherThanComments) {
-				// return the inner text so the comments are stripped
-				// (this is how one might comment out part of a list in a property value)
-				return elem.InnerText.Trim ();
-			}
-
-			// ...or it looks like the whole thing is a big CDATA tag ...
-			bool startsWithCData = (innerXml.IndexOf("<![CDATA[", StringComparison.Ordinal) == 0);
-
-			if (startsWithCData) {
-				// return the inner text so it gets properly extracted from the CDATA
-				return elem.InnerText.Trim ();
-			}
-
-			// otherwise, it looks like genuine XML; return the inner XML so that
-			// tags and comments are preserved and any XML escaping is preserved
-			return innerXml;
-		}
-
 		void WriteValue (XmlWriter writer, WriteContext context, string value)
 		{
 			if (value == null)
