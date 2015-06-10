@@ -197,6 +197,15 @@ namespace MonoDevelop.Ide
 					// Reset the socket
 					if (null != socket_filename && File.Exists (socket_filename))
 						File.Delete (socket_filename);
+
+					if (options.IpcTcp) {
+						try {
+							listen_socket.Close();
+							listen_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+						} catch (Exception exc) {
+							LoggingService.LogError("Error resetting TCP socket", exc);
+						}
+					}
 				}
 			}
 			
