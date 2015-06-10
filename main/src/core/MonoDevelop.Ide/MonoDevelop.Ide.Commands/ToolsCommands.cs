@@ -165,6 +165,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
+			info.Visible = IdeApp.Preferences.EnableAutomatedTesting;
 			info.Text = AutoTestService.CurrentRecordSession == null ? "Start Session Recorder" : "Stop Session Recorder";
 		}
 	}
@@ -187,6 +188,11 @@ namespace MonoDevelop.Ide.Commands
 				selector.Destroy ();
 			}
 			AutoTestService.ReplaySessionFromFile (filename);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = IdeApp.Preferences.EnableAutomatedTesting;
 		}
 	}
 }

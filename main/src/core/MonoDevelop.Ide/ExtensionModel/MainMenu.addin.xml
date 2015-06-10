@@ -222,7 +222,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
-		<ItemSet id = "SessionRecorder" _label = "Session Recorder">
+		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
 		</ItemSet>
