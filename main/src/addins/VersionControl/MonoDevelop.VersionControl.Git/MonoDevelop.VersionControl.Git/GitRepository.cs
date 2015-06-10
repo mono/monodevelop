@@ -1416,7 +1416,7 @@ namespace MonoDevelop.VersionControl.Git
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
 			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
-				foreach (var hunk in repository.Blame (repositoryPath)) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { Strategy = BlameStrategy.FollowExactRenames })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
 					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));
