@@ -143,6 +143,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		IType GetElementType (IType result)
 		{
+			IType tmp = null;
 			foreach (var baseType in result.GetAllBaseTypes ()) {
 				var baseTypeDef = baseType.GetDefinition();
 				if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
@@ -150,11 +151,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 						if (baseType.TypeArguments.Count > 0)
 							return baseType.TypeArguments[0];
 					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-						return CurrentContext.Compilation.FindType (KnownTypeCode.Object);
+						tmp = CurrentContext.Compilation.FindType (KnownTypeCode.Object);
 					}
 				}
 			}
-			return new UnknownType ("", "", 0);
+			return tmp == null ? new UnknownType ("", "", 0) : tmp;
 		}
 		
 		
