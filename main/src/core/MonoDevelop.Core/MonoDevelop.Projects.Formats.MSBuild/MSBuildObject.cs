@@ -168,7 +168,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			MSBuildWhitespace.Write (StartWhitespace, writer);
 			
-			writer.WriteStartElement (GetElementName (), Namespace);
+			writer.WriteStartElement (NamespacePrefix, GetElementName (), Namespace);
 
 			if (unknownAttributes != null) {
 				int unknownIndex = 0;
@@ -206,11 +206,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			MSBuildWhitespace.Write (EndWhitespace, writer);
 		}
 
-		internal virtual string Namespace
-		{
-			get
-			{
+		internal virtual string Namespace {
+			get {
 				return MSBuildProject.Schema;
+			}
+		}
+
+		internal virtual string NamespacePrefix {
+			get {
+				return null;
 			}
 		}
 

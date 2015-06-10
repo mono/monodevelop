@@ -1163,7 +1163,8 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task ProjectSerializationRoundtrip (
 			[Values (
-				"broken-condition.csproj"
+				"broken-condition.csproj",
+				"custom-namespace.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
