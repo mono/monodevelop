@@ -713,6 +713,11 @@ namespace MonoDevelop.Ide
 					return res;
 				}
 
+				if (SolutionContainsProject (parentFolder, dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The project '{0}' has already been added.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+					return res;
+				}
+
 				try {
 					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
@@ -725,7 +730,13 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool SolutionContainsProject (SolutionFolder folder, FilePath projectFileName)
+		{
+			Solution solution = folder.ParentSolution;
+			return solution.GetAllProjects ().Any (existingProject => existingProject.FileName == projectFileName);
+		}
+
 		public SolutionItem AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
 			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
