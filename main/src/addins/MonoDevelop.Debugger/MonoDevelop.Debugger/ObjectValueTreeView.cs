@@ -395,6 +395,8 @@ namespace MonoDevelop.Debugger
 			pinCol.Resizable = false;
 			pinCol.Visible = false;
 			pinCol.Expand = false;
+			pinCol.Sizing = TreeViewColumnSizing.Fixed;
+			pinCol.FixedWidth = 16;
 			AppendColumn (pinCol);
 			
 			state = new TreeViewState (this, NameColumn);
@@ -412,6 +414,63 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
+
+
+			expanderSize = (int)this.StyleGetProperty ("expander-size") + 4;//+4 is hardcoded in gtk.c code
+			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
+			grid_line_width = (int)this.StyleGetProperty ("grid-line-width");
+			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
+		}
+
+		int expanderSize;
+		int horizontal_separator;
+		int grid_line_width;
+		int focus_line_width;
+
+		int GetMaxWidth (TreeViewColumn column, TreeIter iter)
+		{
+			var path = Model.GetPath (iter);
+			int x, y, w, h;
+			int columnWidth = 0;
+			column.CellSetCellData (Model, iter, false, false);
+			var area = new Gdk.Rectangle (0, 0, 1000, 1000);
+			bool firstCell = true;
+			foreach (var cellRenderer in column.CellRenderers) {
+				if (!cellRenderer.Visible)
+					continue;
+				if (!firstCell && columnWidth > 0)
+					columnWidth += column.Spacing;
+				cellRenderer.GetSize (this, ref area, out x, out y, out w, out h);
+				columnWidth += w + focus_line_width;
+				firstCell = false;
+			}
+			if (ExpanderColumn == column) {
+				columnWidth += horizontal_separator + (path.Depth - 1) * LevelIndentation;
+				if (ShowExpanders)
+					columnWidth += path.Depth * expanderSize;
+			} else {
+				columnWidth += horizontal_separator;
+			}
+			if (this.GetRowExpanded (path)) {
+				var childrenCount = Model.IterNChildren (iter);
+				for (int i = 0; i < childrenCount; i++) {
+					TreeIter childIter;
+					if (!Model.IterNthChild (out childIter, iter, i))
+						break;
+					columnWidth = Math.Max (columnWidth, GetMaxWidth (column, childIter));
+				}
+			}
+			return columnWidth;
+		}
+
+		void RecalculateWidth ()
+		{
+			TreeIter iter;
+			if (!this.Model.GetIterFirst (out iter))
+				return;
+			foreach (var column in new [] { expCol, valueCol }) {//No need to calculate for Type and PinIcon columns
+				column.FixedWidth = GetMaxWidth (column, iter);
+			}
 		}
 
 		Dictionary<TreeIter, bool> evalSpinnersIcons = new Dictionary<TreeIter, bool>();
@@ -524,6 +583,8 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		protected override void OnRealized ()
@@ -672,15 +733,10 @@ namespace MonoDevelop.Debugger
 				if (compact) {
 					newFont = Style.FontDescription.Copy ();
 					newFont.Size = (newFont.Size * 8) / 10;
-					expCol.Sizing = TreeViewColumnSizing.Autosize;
-					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
-					ColumnsAutosize ();
 				} else {
 					newFont = Style.FontDescription;
-					expCol.Sizing = TreeViewColumnSizing.Fixed;
-					valueCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.MaxWidth = int.MaxValue;
 				}
 				typeCol.Visible = !compact;
@@ -871,7 +927,7 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (compact)
-					ColumnsAutosize ();
+					RecalculateWidth ();
 				enumerableLoading.Remove (value);
 			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 		}
@@ -1219,7 +1275,7 @@ namespace MonoDevelop.Debugger
 			base.OnRowCollapsed (iter, path);
 
 			if (compact)
-				ColumnsAutosize ();
+				RecalculateWidth ();
 
 			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
@@ -1260,7 +1316,7 @@ namespace MonoDevelop.Debugger
 					store.Remove (ref it);
 
 					if (compact)
-						ColumnsAutosize ();
+						RecalculateWidth ();
 				}
 
 				expandTasks.Remove (value);
@@ -1284,8 +1340,11 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			}
-			
+
 			base.OnRowExpanded (iter, path);
+
+			if (compact)
+				RecalculateWidth ();
 
 			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
