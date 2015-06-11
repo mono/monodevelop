@@ -95,7 +95,7 @@ namespace MonoDevelop.Core
 			try {
 				buffer = Marshal.AllocHGlobal (PATHMAX);
 				var result = realpath (this, buffer);
-				return result == IntPtr.Zero ? "" : Marshal.PtrToStringAuto (buffer);
+				return result == IntPtr.Zero ? Path.GetFullPath (this) : Marshal.PtrToStringAuto (buffer);
 			} finally {
 				if (buffer != IntPtr.Zero)
 					Marshal.FreeHGlobal (buffer);
