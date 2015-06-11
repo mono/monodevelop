@@ -206,6 +206,14 @@
       <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\..\..\external\libgit-binary\libgit2.license.txt">
+      <Link>libgit2.license.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\external\libgit-binary\libssh2.license.txt">
+      <Link>libssh2.license.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Choose>
@@ -221,7 +229,7 @@
     </When>
     <When Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\libgit2\build\*.*" />
+        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
       </ItemGroup>
     </When>
   </Choose>

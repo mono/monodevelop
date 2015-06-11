@@ -211,10 +211,12 @@ namespace MonoDevelop.VersionControl.Git
 				monitor.BeginTask ("Applying stash", 1);
 
 			int progress = 0;
-			var res = RootRepository.Stashes.Apply (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
-				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-				OnCheckoutNotify = RefreshFile,
-				CheckoutNotifyFlags = refreshFlags,
+			StashApplyStatus res = RootRepository.Stashes.Apply (stashIndex, new StashApplyOptions {
+				CheckoutOptions = new CheckoutOptions {
+					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+					OnCheckoutNotify = RefreshFile,
+					CheckoutNotifyFlags = refreshFlags,
+				}
 			});
 
 			NotifyFilesChangedForStash (RootRepository.Stashes [stashIndex]);
@@ -231,10 +233,12 @@ namespace MonoDevelop.VersionControl.Git
 
 			var stash = RootRepository.Stashes [stashIndex];
 			int progress = 0;
-			var res = RootRepository.Stashes.Pop (stashIndex, StashApplyModifiers.Default, new CheckoutOptions {
-				OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
-				OnCheckoutNotify = RefreshFile,
-				CheckoutNotifyFlags = refreshFlags,
+			StashApplyStatus res = RootRepository.Stashes.Pop (stashIndex, new StashApplyOptions {
+				CheckoutOptions = new CheckoutOptions {
+					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref progress),
+					OnCheckoutNotify = RefreshFile,
+					CheckoutNotifyFlags = refreshFlags,
+				}
 			});
 			NotifyFilesChangedForStash (stash);
 			if (monitor != null)
@@ -456,15 +460,15 @@ namespace MonoDevelop.VersionControl.Git
 				VersionStatus fstatus = VersionStatus.Versioned;
 
 				if (status != FileStatus.Unaltered) {
-					if ((status & FileStatus.Added) != 0)
+					if ((status & FileStatus.NewInIndex) != 0)
 						fstatus |= VersionStatus.ScheduledAdd;
-					else if ((status & (FileStatus.Removed | FileStatus.Missing)) != 0)
+					else if ((status & (FileStatus.DeletedFromIndex | FileStatus.DeletedFromWorkdir)) != 0)
 						fstatus |= VersionStatus.ScheduledDelete;
-					else if ((status & (FileStatus.TypeChanged | FileStatus.Modified)) != 0)
+					else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.ModifiedInWorkdir)) != 0)
 						fstatus |= VersionStatus.Modified;
-					else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkDir)) != 0)
+					else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkdir)) != 0)
 						fstatus |= VersionStatus.ScheduledReplace;
-					else if ((status & (FileStatus.Nonexistent | FileStatus.Untracked)) != 0)
+					else if ((status & (FileStatus.Nonexistent | FileStatus.NewInWorkdir)) != 0)
 						fstatus = VersionStatus.Unversioned;
 					else if ((status & FileStatus.Ignored) != 0)
 						fstatus = VersionStatus.Ignored;
@@ -582,9 +586,9 @@ namespace MonoDevelop.VersionControl.Git
 
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
-					Rebase (RootRepository.Head.TrackedBranch.Name, options, monitor);
+					Rebase (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
 				else
-					Merge (RootRepository.Head.TrackedBranch.Name, options, monitor);
+					Merge (RootRepository.Head.TrackedBranch.FriendlyName, options, monitor);
 
 				monitor.Step (1);
 			}
@@ -1087,9 +1091,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			RetryUntilSuccess (monitor, () =>
 				RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch, new PushOptions {
-					OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
-						success = false;
-					},
+					OnPushStatusError = pushStatusErrors => success = false,
 					CredentialsProvider = GitCredentials.TryGet
 				})
 			);
@@ -1189,7 +1191,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public IEnumerable<string> GetTags ()
 		{
-			return RootRepository.Tags.Select (t => t.Name);
+			return RootRepository.Tags.Select (t => t.FriendlyName);
 		}
 
 		public void AddTag (string name, Revision rev, string message)
@@ -1218,12 +1220,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
-			return RootRepository.Branches.Where (b => b.IsRemote && b.Remote.Name == remoteName).Select (b => b.Name.Substring (b.Name.IndexOf ('/') + 1));
+			return RootRepository.Branches.Where (b => b.IsRemote && b.Remote.Name == remoteName).Select (b => b.FriendlyName.Substring (b.FriendlyName.IndexOf ('/') + 1));
 		}
 
 		public string GetCurrentBranch ()
 		{
-			return RootRepository.Head.Name;
+			return RootRepository.Head.FriendlyName;
 		}
 
 		public void SwitchToBranch (ProgressMonitor monitor, string branch)
@@ -1414,8 +1416,8 @@ namespace MonoDevelop.VersionControl.Git
 
 			repositoryPath = repository.ToGitPath (repositoryPath);
 			var status = repository.RetrieveStatus (repositoryPath);
-			if (status != FileStatus.Added && status != FileStatus.Untracked) {
-				foreach (var hunk in repository.Blame (repositoryPath)) {
+			if (status != FileStatus.NewInIndex && status != FileStatus.NewInWorkdir) {
+				foreach (var hunk in repository.Blame (repositoryPath, new BlameOptions { Strategy = BlameStrategy.FollowExactRenames })) {
 					var commit = hunk.FinalCommit;
 					var author = hunk.FinalSignature;
 					working = new Annotation (commit.Sha, author.Name, author.When.LocalDateTime, String.Format ("<{0}>", author.Email));

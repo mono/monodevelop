@@ -139,7 +139,7 @@
     </When>
     <When Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\libgit2\build\*.*" />
+        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
       </ItemGroup>
     </When>
   </Choose>

@@ -66,7 +66,7 @@ namespace MonoDevelop.VersionControl.Git
 			tvs.Save ();
 			store.Clear ();
 			foreach (var s in stashes) {
-				string name = s.Name;
+				string name = s.FriendlyName;
 				string branch = GitRepository.GetStashBranchName (name);
 				if (branch != null) {
 					if (branch == "_tmp_")

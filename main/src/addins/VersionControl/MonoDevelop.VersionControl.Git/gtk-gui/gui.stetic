@@ -1938,7 +1938,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserGitConfigDialog" design-size="400 184">
+  <widget class="Gtk.Dialog" id="MonoDevelop.VersionControl.Git.UserGitConfigDialog" design-size="332 184">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <property name="WindowPosition">CenterOnParent</property>
@@ -1953,13 +1953,13 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.VBox" id="vbox5">
+              <widget class="Gtk.HBox" id="hbox5">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Username</property>
+                    <property name="LabelProp" translatable="yes">Username:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -1969,18 +1969,24 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="usernameEntry">
+                  <widget class="Gtk.Alignment" id="alignment8">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnChanged" />
+                    <property name="Xscale">0.9</property>
+                    <property name="Xalign">1</property>
+                    <property name="Yalign">1</property>
+                    <child>
+                      <widget class="Gtk.Entry" id="usernameEntry">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="IsEditable">True</property>
+                        <property name="InvisibleChar">●</property>
+                        <signal name="Changed" handler="OnChanged" />
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
                     <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>
@@ -1992,13 +1998,13 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.VBox" id="vbox6">
+              <widget class="Gtk.HBox" id="hbox6">
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
                   <widget class="Gtk.Label" id="label2">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Email</property>
+                    <property name="LabelProp" translatable="yes">Email:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -2008,18 +2014,24 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="emailEntry">
+                  <widget class="Gtk.Alignment" id="alignment7">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="IsEditable">True</property>
-                    <property name="InvisibleChar">●</property>
-                    <signal name="Changed" handler="OnChanged" />
+                    <property name="Xscale">0.71</property>
+                    <property name="Xalign">1</property>
+                    <property name="Yalign">1</property>
+                    <child>
+                      <widget class="Gtk.Entry" id="emailEntry">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="IsEditable">True</property>
+                        <property name="InvisibleChar">●</property>
+                        <signal name="Changed" handler="OnChanged" />
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
                     <property name="AutoSize">True</property>
-                    <property name="Expand">False</property>
-                    <property name="Fill">False</property>
                   </packing>
                 </child>
               </widget>
