@@ -222,6 +222,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			bestGroups = null;
 			hadXmlDeclaration = false;
 			initialWhitespace = null;
+			StartInnerWhitespace = null;
 
 			while (!reader.EOF && reader.NodeType != XmlNodeType.Element) {
 				if (reader.NodeType == XmlNodeType.XmlDeclaration) {

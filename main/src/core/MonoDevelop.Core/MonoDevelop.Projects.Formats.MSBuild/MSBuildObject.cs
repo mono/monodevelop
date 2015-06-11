@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#define ATTR_STATS
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +60,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal virtual bool PreferEmptyElement { get { return true; } }
 
+		#if ATTR_STATS
+		public static StringCounter UnknownAtts = new StringCounter ();
+		public static StringCounter KnownAttOrder = new StringCounter ();
+		#endif
+
 		internal override void Read (MSBuildXmlReader reader)
 		{
 			if (reader.ForEvaluation) {
@@ -83,6 +90,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						if (i == -1) {
 							if (attName == "xmlns")
 								continue;
+							
+							#if ATTR_STATS
+							UnknownAtts.Add (GetType ().Name + " " + attName);
+							#endif
+
 							var ua = new UnknownAttribute {
 								LocalName = attName,
 								Prefix = !string.IsNullOrEmpty (reader.Prefix) ? reader.Prefix : null,
@@ -122,6 +134,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							}
 						}
 					}
+
+					#if ATTR_STATS
+					var atts = GetType().Name + " - " + string.Join (", ", (attributeOrder ?? knownAtts));
+					if (attributeOrder == null)
+						atts += " *";
+					KnownAttOrder.Add (atts);
+					#endif
 				}
 			}
 			reader.MoveToElement ();
@@ -323,7 +342,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal abstract string GetElementName ();
 
-		internal List<MSBuildNode> ChildNodes {
+		internal virtual List<MSBuildNode> ChildNodes {
 			get {
 				if (children == null)
 					children = new List<MSBuildNode> ();
@@ -378,4 +397,28 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 	}
+
+	#if ATTR_STATS
+	public class StringCounter
+	{
+		Dictionary<string, int> dict = new Dictionary<string, int> ();
+
+		public void Add (string str)
+		{
+			int c;
+			if (dict.TryGetValue (str, out c)) {
+				dict [str] = c + 1;
+			} else
+				dict [str] = 1;
+		}
+
+		public void Dump ()
+		{
+			foreach (var e in dict.GroupBy (en => en.Key.Substring (0, en.Key.IndexOf (' ')))) {
+				foreach (var c in e.OrderByDescending (a => a.Value))
+					Console.WriteLine (c.Key + " : " + c.Value);
+			}
+		}
+	}
+	#endif
 }

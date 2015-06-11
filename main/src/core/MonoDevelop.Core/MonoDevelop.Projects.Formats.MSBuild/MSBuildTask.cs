@@ -50,7 +50,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.Name = name;
 		}
 
-		static readonly string [] knownAttributes = { "Name", "Condition", "Label" };
+		static readonly string [] knownAttributes = { "Condition", "Label" };
 
 		internal override string [] GetKnownAttributes ()
 		{

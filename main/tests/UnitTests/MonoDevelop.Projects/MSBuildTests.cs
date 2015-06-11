@@ -1164,6 +1164,11 @@ namespace MonoDevelop.Projects
 		public async Task ProjectSerializationRoundtrip (
 			[Values (
 				"broken-condition.csproj",
+				"empty-element.csproj",
+				"comment.csproj",
+				"text-spacing.csproj",
+				"inconsistent-line-endings.csproj",
+				"attribute-order.csproj",
 				"custom-namespace.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]

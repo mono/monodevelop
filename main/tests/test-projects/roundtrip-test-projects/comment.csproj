@@ -29,15 +29,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Test comment -->
     <Reference Include="System" />
-    <Ext Include="Foo" />
   </ItemGroup>
-  <ProjectExtensions>
-  	<Foo>
-  		<b:Bar xmlns:b="test">
-  			<c />
-  			<b:d />
-  		</b:Bar>
-  	</Foo>
-  </ProjectExtensions>
 </Project>

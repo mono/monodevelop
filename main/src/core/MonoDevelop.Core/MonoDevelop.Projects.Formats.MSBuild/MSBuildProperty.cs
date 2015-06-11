@@ -101,6 +101,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			MSBuildXmlElement elem = new MSBuildXmlElement ();
+			elem.ParentNode = this;
 			elem.ReadContent (reader);
 
 			if (elem.ChildNodes.Count == 0) {
@@ -110,26 +111,27 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			if (elem.ChildNodes.Count == 1) {
 				var node = elem.ChildNodes [0] as MSBuildXmlValueNode;
-				if (node is MSBuildXmlTextNode) {
-					StartInnerWhitespace = elem.StartInnerWhitespace;
-					EndInnerWhitespace = elem.EndInnerWhitespace;
-					textValue = node.Value;
-					return node.Value.Trim ();
-				}
-				else if (node is MSBuildXmlCDataNode) {
+				if (node != null) {
 					StartInnerWhitespace = elem.StartInnerWhitespace;
 					StartInnerWhitespace = MSBuildWhitespace.AppendSpace (StartInnerWhitespace, node.StartWhitespace);
 					EndInnerWhitespace = node.EndWhitespace;
 					EndInnerWhitespace = MSBuildWhitespace.AppendSpace (EndInnerWhitespace, elem.EndInnerWhitespace);
-					rawValue = "<![CDATA[" + node.Value + "]]>";
-					return node.Value;
+					if (node is MSBuildXmlTextNode) {
+						textValue = node.Value;
+						return node.Value.Trim ();
+					} else if (node is MSBuildXmlCDataNode) {
+						rawValue = "<![CDATA[" + node.Value + "]]>";
+						return node.Value;
+					}
 				}
 			}
 
 			if (elem.ChildNodes.Any (n => n is MSBuildXmlElement))
 				return elem.GetInnerXml ();
-			else
+			else {
+				rawValue = elem.GetInnerXml ();
 				return elem.GetText ();
+			}
 		}
 
 		void WriteValue (XmlWriter writer, WriteContext context, string value)

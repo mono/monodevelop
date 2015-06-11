@@ -42,28 +42,120 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class MSBuildTarget: MSBuildElement
 	{
 		string name;
+		string afterTargets;
+		string inputs;
+		string outputs;
+		string beforeTargets;
+		string dependsOnTargets;
+		string returns;
+		string keepDuplicateOutputs;
 
-		static readonly string [] knownAttributes = { "Name", "Condition", "Label" };
+		static readonly string [] knownAttributes = { "Name", "Condition", "Label", "AfterTargets", "Inputs", "Outputs", "BeforeTargets", "DependsOnTargets", "Returns", "KeepDuplicateOutputs" };
 
 		internal override string [] GetKnownAttributes ()
 		{
 			return knownAttributes;
 		}
 
+		string AfterTargets {
+			get {
+				return this.afterTargets;
+			}
+			set {
+				this.afterTargets = value;
+				NotifyChanged ();
+			}
+		}
+
+		string Inputs {
+			get {
+				return this.inputs;
+			}
+			set {
+				this.inputs = value;
+				NotifyChanged ();
+			}
+		}
+
+		string Outputs {
+			get {
+				return this.outputs;
+			}
+			set {
+				this.outputs = value;
+				NotifyChanged ();
+			}
+		}
+
+		string BeforeTargets {
+			get {
+				return this.beforeTargets;
+			}
+			set {
+				this.beforeTargets = value;
+				NotifyChanged ();
+			}
+		}
+
+		string DependsOnTargets
+		{
+			get {
+				return this.dependsOnTargets;
+			}
+			set {
+				this.dependsOnTargets = value;
+				NotifyChanged ();
+			}
+		}
+
+		string Returns {
+			get {
+				return this.returns;
+			}
+			set {
+				this.returns = value;
+				NotifyChanged ();
+			}
+		}
+
+		string KeepDuplicateOutputs {
+			get {
+				return this.keepDuplicateOutputs;
+			}
+			set {
+				this.keepDuplicateOutputs = value;
+				NotifyChanged ();
+			}
+		}
+
 		internal override void ReadAttribute (string name, string value)
 		{
-			if (name == "Name")
-				this.name = value;
-			else
-				base.ReadAttribute (name, value);
+			switch (name) {
+				case "Name": this.name = value; break;
+				case "AfterTargets": AfterTargets = value; break;
+				case "Inputs": Inputs = value; break;
+				case "Outputs": Outputs = value; break;
+				case "BeforeTargets": BeforeTargets = value; break;
+				case "DependsOnTargets": DependsOnTargets = value; break;
+				case "Returns": Returns = value; break;
+				case "KeepDuplicateOutputs": KeepDuplicateOutputs = value; break;
+				default: base.ReadAttribute (name, value); break;
+			}
 		}
 
 		internal override string WriteAttribute (string name)
 		{
-			if (name == "Name")
-				return this.name;
-			else
-				return base.WriteAttribute (name);
+			switch (name) {
+				case "Name": return this.name;
+				case "AfterTargets": return AfterTargets;
+				case "Inputs": return Inputs;
+				case "Outputs": return Outputs;
+				case "BeforeTargets": return BeforeTargets;
+				case "DependsOnTargets": return DependsOnTargets;
+				case "Returns": return Returns;
+				case "KeepDuplicateOutputs": return KeepDuplicateOutputs;
+				default: return base.WriteAttribute (name);
+			}
 		}
 
 		internal override string GetElementName ()
@@ -73,6 +165,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
+			MSBuildObject ob = null;
+			switch (reader.LocalName) {
+				case "ItemGroup": ob = new MSBuildItemGroup (); break;
+				case "PropertyGroup": ob = new MSBuildPropertyGroup (); break;
+			}
+			if (ob != null) {
+				ob.ParentNode = this;
+				ob.Read (reader);
+				ChildNodes.Add (ob);
+				return;
+			}
+
 			var task = new MSBuildTask ();
 			task.ParentNode = this;
 			task.Read (reader);

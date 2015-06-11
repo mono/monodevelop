@@ -10,6 +10,10 @@
     <RootNamespace>ConsoleProject</RootNamespace>
     <AssemblyName>ConsoleProject</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Escaped>a-&gt;b</Escaped>
+    <Foo>
+        a
+    </Foo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -30,14 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Ext Include="Foo" />
+
   </ItemGroup>
-  <ProjectExtensions>
-  	<Foo>
-  		<b:Bar xmlns:b="test">
-  			<c />
-  			<b:d />
-  		</b:Bar>
-  	</Foo>
-  </ProjectExtensions>
+
 </Project>

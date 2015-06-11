@@ -120,7 +120,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var c = new WriteContext ();
 			StringWriter sb = new StringWriter ();
-			using (var xw = new XmlTextWriter (sb)) {
+
+			var xw = XmlWriter.Create (sb, new XmlWriterSettings {
+				OmitXmlDeclaration = true,
+				NewLineChars = ParentProject.TextFormat.NewLine,
+				NewLineHandling = NewLineHandling.None
+			});
+
+			using (xw) {
 				xw.WriteStartElement ("a");
 				WriteContent (xw, c);
 				xw.WriteEndElement ();

@@ -43,7 +43,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		internal MSBuildObject PropertiesParent { get; set; }
+		internal override List<MSBuildNode> ChildNodes {
+			get {
+				if (ParentNode is MSBuildItem)
+					return ((MSBuildItem)ParentNode).ChildNodes;
+				return base.ChildNodes;
+			}
+		}
+
+		internal MSBuildObject PropertiesParent {
+			get {
+				return (MSBuildObject) (ParentNode as MSBuildItem) ?? this;
+			}
+		}
 
 		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
@@ -52,7 +64,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				prevSameName.Overwritten = true;
 
 			var prop = new MSBuildProperty ();
-			prop.ParentNode = PropertiesParent ?? this;
+			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
 			prop.Read (reader);
 			ChildNodes.Add (prop);
@@ -85,7 +97,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						ChildNodes.Add (cp);
 					}
 					properties [cp.Name] = cp;
-					cp.ParentNode = PropertiesParent ?? this;
+					cp.ParentNode = PropertiesParent;
 					cp.Owner = this;
 					cp.ResetIndent (false);
 				} else
@@ -216,7 +228,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			var prop = new MSBuildProperty (name);
-			prop.ParentNode = PropertiesParent ?? this;
+			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
 			properties [name] = prop;
 

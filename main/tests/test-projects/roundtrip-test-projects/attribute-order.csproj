@@ -30,14 +30,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Ext Include="Foo" />
   </ItemGroup>
-  <ProjectExtensions>
-  	<Foo>
-  		<b:Bar xmlns:b="test">
-  			<c />
-  			<b:d />
-  		</b:Bar>
-  	</Foo>
-  </ProjectExtensions>
+  <Target Name="_SetDefaultPathValues">
+
+    <ReadRegistry Hive="LocalMachine" Key="$(WixInstallRegKey)" Name="InstallRoot" FailIfMissing="false" Condition=" '$(WixToolPath)' == '' ">
+
+      <Output TaskParameter="Value" PropertyName="WixToolPath" />
+    </ReadRegistry>
+
+  </Target>
 </Project>
