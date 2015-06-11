@@ -3491,6 +3491,7 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopPersistentStorageServiceFactory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\SolutionSizeTracker.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
+    <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
