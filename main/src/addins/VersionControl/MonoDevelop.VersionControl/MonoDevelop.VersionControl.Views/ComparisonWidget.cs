@@ -172,6 +172,7 @@ namespace MonoDevelop.VersionControl.Views
 					toEditor.Text = result.Value;
 					IdeApp.Workbench.StatusBar.AutoPulse = false;
 					IdeApp.Workbench.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.ShowReady ();
 					box.Sensitive = true;
 					UpdateDiff ();
 				});
