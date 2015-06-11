@@ -344,7 +344,7 @@ namespace MonoDevelop.Projects
 				if (!File.Exists (preferencesFileName))
 					return;
 			
-				XmlTextReader reader = new XmlTextReader (preferencesFileName);
+				XmlTextReader reader = new XmlTextReader (new StreamReader (preferencesFileName));
 				try {
 					reader.MoveToContent ();
 					if (reader.LocalName != "Properties")
