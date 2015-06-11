@@ -713,6 +713,11 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
+					if (WorkspaceContainsWorkspaceItem (parentWorkspace, dlg.SelectedFile)) {
+						MessageService.ShowMessage (GettextCatalog.GetString ("The workspace already contains '{0}'.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+						return res;
+					}
+
 					res = await AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
@@ -721,7 +726,12 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool WorkspaceContainsWorkspaceItem (Workspace workspace, FilePath workspaceItemFileName)
+		{
+			return workspace.Items.Any (existingWorkspaceItem => existingWorkspaceItem.FileName == workspaceItemFileName);
+		}
+
 		public async Task<WorkspaceItem> AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
 			using (ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
@@ -769,6 +779,11 @@ namespace MonoDevelop.Ide
 					return res;
 				}
 
+				if (SolutionContainsProject (parentFolder, dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The project '{0}' has already been added.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+					return res;
+				}
+
 				try {
 					res = await AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
@@ -781,7 +796,13 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool SolutionContainsProject (SolutionFolder folder, FilePath projectFileName)
+		{
+			Solution solution = folder.ParentSolution;
+			return solution.GetAllProjects ().Any (existingProject => existingProject.FileName == projectFileName);
+		}
+
 		public async Task<SolutionFolderItem> AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
 			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
