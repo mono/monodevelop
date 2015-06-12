@@ -291,5 +291,8 @@
 			<CommandItem id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages" />
 		</Condition>
 	</Extension>
-
+	
+	<Extension path="/MonoDevelop/Ide/SearchCategories">
+		<Class class="MonoDevelop.CSharp.ProjectSearchCategory" />
+	</Extension>
 </ExtensionModel>

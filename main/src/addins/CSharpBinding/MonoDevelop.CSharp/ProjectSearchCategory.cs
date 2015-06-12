@@ -41,17 +41,30 @@ using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using MonoDevelop.Components.MainToolbar;
 
-namespace MonoDevelop.Components.MainToolbar
+namespace MonoDevelop.CSharp
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		static SearchPopupWindow widget;
+		static Components.PopoverWindow widget;
 
-		public ProjectSearchCategory (SearchPopupWindow widget) : base (GettextCatalog.GetString ("Solution"))
+		static ProjectSearchCategory ()
 		{
-			ProjectSearchCategory.widget = widget;
-			lastResult = new WorkerResult (widget);
+			MonoDevelopWorkspace.LoadingFinished += delegate {
+				UpdateSymbolInfos ();
+			};
+		}
+
+		public ProjectSearchCategory () : base (GettextCatalog.GetString ("Solution"))
+		{
+			sortOrder = FirstCategory;
+		}
+
+		public override void Initialize (Components.PopoverWindow popupWindow)
+		{
+			widget = popupWindow;
+			lastResult = new WorkerResult (popupWindow);
 		}
 
 		internal static Task<ImmutableList<DeclaredSymbolInfo>> SymbolInfoTask;

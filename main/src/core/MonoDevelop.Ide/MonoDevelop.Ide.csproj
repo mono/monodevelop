@@ -3194,7 +3194,6 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\ProjectSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
@@ -3493,6 +3492,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\GtkNotebookResult.cs" />
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionKeyHandler.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\FirstCategory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
