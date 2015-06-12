@@ -132,7 +132,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (textEditorResolver != null) {
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
 				if (result != null) {
-					var returnType = result.GetReturnType ();
+					var returnType = GetReturnType (result);
 					if (returnType != null && !returnType.IsReferenceType)
 						return "Length";
 				}
@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
 			if (sym == null)
 				return "var";
-			var rt = sym.GetReturnType ();
+			var rt = GetReturnType (sym);
 			if (rt != null)
 				return rt.ToMinimalDisplayString (compilation, offset);
 			return "var";
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext).Result;
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
-					if (GetElementType (compilation, data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
+					if (GetElementType (compilation, GetReturnType (data.Symbol)).TypeKind != TypeKind.Error) {
 						var method = data as IMethodSymbol;
 						if (method != null) {
 							if (method.Parameters.Length == 0)
@@ -292,6 +292,35 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return new CodeTemplateListDataProvider (GetLengthProperty (callback, match.Groups == null || match.Groups.Count < 3 ? null : match.Groups[2].Value.Trim ('"')));
 			case "GetComponentTypeOf":
 				return new CodeTemplateListDataProvider (GetComponentTypeOf (callback, match.Groups[2].Value.Trim ('"')));
+			}
+			return null;
+		}
+
+		static ITypeSymbol GetReturnType(ISymbol symbol)
+		{
+			if (symbol == null)
+				throw new ArgumentNullException(nameof (symbol));
+			switch (symbol.Kind) {
+				case SymbolKind.Field:
+					           var field = (IFieldSymbol)symbol;
+				return field.Type;
+				case SymbolKind.Method:
+					           var method = (IMethodSymbol)symbol;
+					if (method.MethodKind == MethodKind.Constructor)
+				return method.ContainingType;
+				return method.ReturnType;
+				case SymbolKind.Property:
+					           var property = (IPropertySymbol)symbol;
+				return property.Type;
+				case SymbolKind.Event:
+					           var evt = (IEventSymbol)symbol;
+				return evt.Type;
+				case SymbolKind.Parameter:
+					           var param = (IParameterSymbol)symbol;
+				return param.Type;
+				case SymbolKind.Local:
+					           var local = (ILocalSymbol)symbol;
+				return local.Type;
 			}
 			return null;
 		}
