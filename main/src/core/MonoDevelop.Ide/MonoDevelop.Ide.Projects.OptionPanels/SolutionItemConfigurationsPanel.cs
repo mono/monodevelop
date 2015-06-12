@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void AddConfiguration (string copyFrom)
 		{
-			var dlg = new NewConfigurationDialog (configData.Configurations);
+			var dlg = new NewConfigurationDialog (configData.Entry, configData.Configurations);
 			try {
 				bool done = false;
 				do {
