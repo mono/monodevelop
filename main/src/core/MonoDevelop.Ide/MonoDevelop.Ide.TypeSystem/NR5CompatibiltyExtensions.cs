@@ -32,7 +32,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	static class NR5CompatibiltyExtensions
+	public static class NR5CompatibiltyExtensions
 	{
 		/// <summary>
 		/// Gets the full name of the metadata.
