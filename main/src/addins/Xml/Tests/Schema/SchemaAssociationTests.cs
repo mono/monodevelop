@@ -24,24 +24,22 @@ namespace MonoDevelop.Xml.Tests.Schema
 		}
 				
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Ignore ("This test is broken. It fails under MS.NET and it'll fail under mono 4.2+ as we now use the MS reference source for this code")]
 		public void ToXml()
 		{
 			XmlFileAssociation schema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			schema.WriteTo(writer);
+			writer.Close ();
 			
 			string expectedXml = "<SchemaAssociation extension=\".xml\" namespace=\"http://mono-project.com\" prefix=\"\" />";
 			Assert.AreEqual(expectedXml, xml.ToString());
 		}
 		
 		[Test]
-		[Platform (Exclude = "Win")]
-		[Ignore ("This test is broken. It fails under MS.NET and it'll fail under mono 4.2+ as we now use the MS reference source for this code")]
 		public void FromXml()
 		{
 			XmlFileAssociation expectedSchema = new XmlFileAssociation (".xml", "http://mono-project.com", null);
 			expectedSchema.WriteTo(writer);
+			writer.Close ();
 
 			string propertiesXml = "<SerializedNode>" + xml.ToString() + "</SerializedNode>";
 			XmlTextReader reader = new XmlTextReader (new StringReader(propertiesXml));
