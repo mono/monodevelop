@@ -215,7 +215,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void WriteProjects (SolutionFolder folder, string baseDirectory, StreamWriter writer, bool saveProjects, IProgressMonitor monitor)
 		{
 			monitor.BeginStepTask (GettextCatalog.GetString ("Saving projects"), folder.Items.Count, 1); 
-			foreach (SolutionItem ce in folder.Items)
+			foreach (SolutionItem ce in folder.Items.ToArray ())
 			{
 				string[] l = null;
 				if (ce is SolutionEntityItem) {
