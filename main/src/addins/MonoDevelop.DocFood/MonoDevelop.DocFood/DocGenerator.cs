@@ -30,7 +30,6 @@ using System.Text;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
