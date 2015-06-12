@@ -19,7 +19,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Core;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.CSharp.Diagnostics.SimplifyTypeNames;
 
 namespace MonoDevelop.CSharp.CodeFixes.SimplifyTypeNames

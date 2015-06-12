@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
+	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.CompletionData
 	{
 		List<CompletionData> overloads;
 		
@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+		void ICSharpCode.NRefactory6.CSharp.Completion.CompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.CompletionData data)
 		{
 			if (overloads == null)
 				overloads = new List<CompletionData> ();
@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Completion
 			sorted = null;
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.CompletionData.CompletionCategory { 
 			get {
 				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
 			} 
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Completion
 			} 
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
+		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.CompletionData.DisplayFlags { 
 			get {
 				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
 			}
@@ -76,9 +76,9 @@ namespace MonoDevelop.CSharp.Completion
 
 		List<CompletionData> sorted;
 
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
+		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.CompletionData> ICSharpCode.NRefactory6.CSharp.Completion.CompletionData.OverloadedData {
 			get {
-				return (IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>)OverloadedData;
+				return (IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.CompletionData>)OverloadedData;
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		protected readonly ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.CompletionData.KeyHandler {
 			get {
 				return keyHandler;
 			}

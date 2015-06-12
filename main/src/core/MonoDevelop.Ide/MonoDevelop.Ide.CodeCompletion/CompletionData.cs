@@ -168,4 +168,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
 	}
+
+	public interface ISymbolCompletionData
+	{
+		Microsoft.CodeAnalysis.ISymbol Symbol {
+			get;
+		}
+	}
 }

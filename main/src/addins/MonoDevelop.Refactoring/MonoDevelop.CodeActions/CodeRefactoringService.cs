@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Core.Text;
 using System.Linq;
 

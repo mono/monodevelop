@@ -9,10 +9,10 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading;
 using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeRefactorings.ExtractMethod
 {

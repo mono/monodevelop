@@ -27,21 +27,17 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
-using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.Core;
-using System.Threading.Tasks;
-using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CodeIssues
 {
-	
+
 	class AnalyzersFromAssembly
 	{
 		public List<CodeDiagnosticDescriptor> Analyzers;
@@ -70,7 +66,7 @@ namespace MonoDevelop.CodeIssues
 				var assemblyName = asm.GetName ().Name;
 				if (assemblyName == "MonoDevelop.AspNet" ||
 					assemblyName == "Microsoft.CodeAnalysis.CSharp" ||
-					assemblyName != "NR6Pack" &&
+					assemblyName != "RefactoringEssentials" &&
 					!(asm.GetReferencedAssemblies ().Any (a => a.Name == diagnosticAnalyzerAssembly) && asm.GetReferencedAssemblies ().Any (a => a.Name == "MonoDevelop.Ide")))
 					return;
 			}
