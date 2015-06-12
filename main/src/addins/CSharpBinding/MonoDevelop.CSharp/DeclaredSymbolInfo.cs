@@ -415,7 +415,7 @@ namespace MonoDevelop.CSharp
 		public DeclaredSymbolInfo(SyntaxNode node, string name, string fullyQualifiedContainerName, DeclaredSymbolInfoKind kind, TextSpan span, ushort parameterCount = 0, ushort typeParameterCount = 0)
 			: this()
 		{
-			FilePath = node.SyntaxTree.FilePath;
+			this.FilePath = node.SyntaxTree.FilePath;
 			Name = string.Intern (name);
 //			ContainerDisplayName = string.Intern (containerDisplayName);
 			FullyQualifiedContainerName = fullyQualifiedContainerName;
