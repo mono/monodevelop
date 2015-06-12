@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 		readonly SyntaxNode nodeToCast;
 		readonly ITypeSymbol targetType;
 
-		public CastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler)
+		public CastCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler)
 		{
 			this.targetType = targetType;
 			this.nodeToCast = nodeToCast;

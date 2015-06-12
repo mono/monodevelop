@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Task.FromResult (new TooltipInformation ());
 		}
 
-		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
 		{
 			this.curType = curType;
 			this.varName = varName;

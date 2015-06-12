@@ -2468,7 +2468,7 @@ namespace MonoDevelop.Debugger
 		public event EventHandler CompletionListClosed;
 	}
 	
-	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
+	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		readonly CompletionItem item;
 		
@@ -2492,43 +2492,6 @@ namespace MonoDevelop.Debugger
 		public override string CompletionText {
 			get {
 				return item.Name;
-			}
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
-			get {
-				return keyHandler;
-			}
-		}
-
-		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
-		{
-			base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
-		}
-
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
-			get {
-				return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
-			}
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
-			} 
-			set {
-				base.CompletionCategory = (CompletionCategory)value;
-			} 
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
-			}
-			set {
-				base.DisplayFlags = (DisplayFlags)value;
 			}
 		}
 	}

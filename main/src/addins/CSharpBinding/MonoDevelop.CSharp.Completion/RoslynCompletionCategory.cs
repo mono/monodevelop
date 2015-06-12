@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynCompletionCategory : CompletionCategory, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory
+	class RoslynCompletionCategory : CompletionCategory
 	{
 		readonly ISymbol symbol;
 

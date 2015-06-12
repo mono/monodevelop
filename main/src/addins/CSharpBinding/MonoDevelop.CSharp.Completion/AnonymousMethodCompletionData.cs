@@ -24,12 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	class AnonymousMethodCompletionData : RoslynCompletionData
 	{
-		public AnonymousMethodCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler) : base (keyHandler)
+		public AnonymousMethodCompletionData (ICompletionDataKeyHandler keyHandler) : base (keyHandler)
 		{
 			this.Icon = "md-newmethod";
 		}

@@ -123,7 +123,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
-		static List<ICompletionData> snippets;
+		static List<CompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()
 		{
@@ -142,8 +142,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
 				if (snippets != null)
-					return Task.FromResult ((IEnumerable<ICompletionData>)snippets);
-				var newSnippets = new List<ICompletionData> ();
+					return Task.FromResult((IEnumerable<CompletionData>)snippets);
+				var newSnippets = new List<CompletionData>();
 				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
 					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
 						continue;
@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 					});
 				}
 				snippets = newSnippets;
-				return Task.FromResult ((IEnumerable<ICompletionData>)newSnippets);
+				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
 			};
 
 		}
@@ -408,7 +408,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 
 				foreach (var symbol in completionResult) {
-					list.Add ((CompletionData)symbol); 
+					list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 				}
 
 				if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
@@ -737,12 +737,12 @@ namespace MonoDevelop.CSharp.Completion
 					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
-				protected List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
+				protected List<ICompletionData> overloads;
 				public override bool HasOverloads {
 					get { return overloads != null && overloads.Count > 0; }
 				}
 
-				public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> OverloadedData {
+				public override IEnumerable<ICompletionData> OverloadedData {
 					get {
 						return overloads;
 					}

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Linq;
