@@ -64,11 +64,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static string[] mefHostServices = new [] {
+			"Microsoft.CodeAnalysis.Workspaces",
+			"Microsoft.CodeAnalysis.CSharp.Workspaces",
+//			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
+		};
+
 		static MonoDevelopWorkspace ()
 		{
 			List<Assembly> assemblies = new List<Assembly> ();
-			assemblies.AddRange(Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultAssemblies);
-
+			foreach (var asmName in mefHostServices) {
+				try {
+					var asm = Assembly.Load (asmName);
+					if (asm == null)
+						continue;
+					assemblies.Add (asm);
+				} catch (Exception) {
+					LoggingService.LogError ("Error - can't load host service assembly: " + asmName);
+				}
+			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
