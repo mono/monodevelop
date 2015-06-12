@@ -39,7 +39,6 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Html.Parser;

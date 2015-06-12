@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
 
@@ -39,8 +38,8 @@ namespace MonoDevelop.CSharp.Completion
 		public RoslynCompletionCategory (ISymbol symbol)
 		{
 			this.symbol = symbol;
-			this.DisplayText = symbol.ToDisplayString (Ambience.NameFormat);
-			this.Icon = symbol.GetStockIcon ();
+			this.DisplayText = symbol.ToDisplayString (MonoDevelop.Ide.TypeSystem.Ambience.NameFormat);
+			this.Icon = MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (symbol);
 		}
 
 		public override int CompareTo (CompletionCategory other)

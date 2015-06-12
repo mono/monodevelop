@@ -39,7 +39,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.CSharp.Formatting;
 
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -89,7 +88,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public ParsedDocument ParsedDocument {
+		public MonoDevelop.Ide.TypeSystem.ParsedDocument ParsedDocument {
 			get {
 				return DocumentContext.ParsedDocument;
 			}
@@ -399,7 +398,7 @@ namespace MonoDevelop.CSharp.Completion
 				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
 				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
 					extHandler.Init (roslynCodeCompletionFactory);
-				var engine = new CompletionEngine(TypeSystemService.Workspace, roslynCodeCompletionFactory);
+				var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
@@ -629,7 +628,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
 				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
 				var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
 				return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset);
 			} catch (Exception e) {

@@ -29,3 +29,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.AspNet")]
 [assembly: InternalsVisibleTo("Xamarin.Sketches")]
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]
+[assembly: InternalsVisibleTo("MonoDevelop.GtkCore")]

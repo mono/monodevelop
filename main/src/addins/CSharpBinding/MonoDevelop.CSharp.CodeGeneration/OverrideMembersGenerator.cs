@@ -28,7 +28,6 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
 using System.Threading;

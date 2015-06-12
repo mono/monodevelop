@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using PP = System.IO.Path;
 
 using Gtk;
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;

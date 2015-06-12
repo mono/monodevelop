@@ -36,7 +36,6 @@ using Xwt;
 using Xwt.Drawing;
 using System.Linq;
 using System.IO;
-using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Debugger
 {

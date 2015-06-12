@@ -46,7 +46,7 @@ using MonoDevelop.Debugger.Viewers;
 using MonoDevelop.Ide.TextEditing;
 using System.Linq;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Debugger
 {
@@ -1070,9 +1070,9 @@ namespace MonoDevelop.Debugger
 					var rr = textEditorResolver.GetLanguageItem (doc.Editor.LocationToOffset (location.Line, 1), identifier);
 					var ns = rr as Microsoft.CodeAnalysis.INamespaceSymbol;
 					if (ns != null)
-						return ns.GetFullName ();
+						return ns.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat);
 					var result = rr as Microsoft.CodeAnalysis.INamedTypeSymbol;
-					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.GetFullName () == "dynamic")) {
+					if (result != null && !(result.TypeKind == Microsoft.CodeAnalysis.TypeKind.Dynamic && result.ToDisplayString (Microsoft.CodeAnalysis.SymbolDisplayFormat.CSharpErrorMessageFormat) == "dynamic")) {
 						return result.ToDisplayString (new Microsoft.CodeAnalysis.SymbolDisplayFormat (
 							typeQualificationStyle: Microsoft.CodeAnalysis.SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
 							miscellaneousOptions:
@@ -1146,7 +1146,7 @@ namespace MonoDevelop.Debugger
 		public void SetMessage (DebuggerStartInfo dsi, string message, bool listening, int attemptNumber)
 		{
 			Gtk.Application.Invoke (delegate {
-				IdeApp.Workbench.StatusBar.ShowMessage (Stock.StatusConnecting, message);
+				IdeApp.Workbench.StatusBar.ShowMessage (Ide.Gui.Stock.StatusConnecting, message);
 			});
 		}
 

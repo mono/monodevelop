@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
@@ -40,7 +39,7 @@ namespace MonoDevelop.Refactoring
 {
 	public static class InsertionPointService
 	{
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, int part)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, MonoDevelop.Ide.TypeSystem.ParsedDocument parsedDocument, ITypeSymbol type, int part)
 		{
 			if (data == null)
 				throw new ArgumentNullException (nameof (data));
@@ -127,7 +126,7 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 
-		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location location)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, MonoDevelop.Ide.TypeSystem.ParsedDocument parsedDocument, ITypeSymbol type, Location location)
 		{
 			return GetInsertionPoints (data, parsedDocument, type, location.SourceSpan.Start);
 		}
