@@ -62,6 +62,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 					return this;
 				}
 			}
+
+			Button button = resultWidget as Button;
+			if (button != null) {
+				if (button.Label != null && button.Label.IndexOf (mark) > -1) {
+					return this;
+				}
+			}
+
 			return null;
 		}
 
