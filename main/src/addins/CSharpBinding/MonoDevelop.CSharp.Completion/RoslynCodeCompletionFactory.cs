@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region ICompletionDataFactory implementation
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateGenericData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string data, ICSharpCode.NRefactory6.CSharp.Completion.GenericDataType genericDataType)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateGenericData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string data, ICSharpCode.NRefactory6.CSharp.Completion.GenericDataType genericDataType)
 		{
 			return new RoslynCompletionData (keyHandler) {
 				CompletionText = data,
@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string format, string description, object example)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string format, string description, object example)
 		{
 			return new FormatItemCompletionData (keyHandler, format, description, example);
 		}
@@ -174,7 +174,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateXmlDocCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string title, string description, string insertText)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateXmlDocCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string title, string description, string insertText)
 		{
 			return new XmlDocCompletionData (keyHandler, this, title, description, insertText);
 		}
@@ -189,17 +189,17 @@ namespace MonoDevelop.CSharp.Completion
 			return new RoslynSymbolCompletionData (keyHandler, this, symbol, text);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewOverrideCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, ISymbol m, bool afterKeyword)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewOverrideCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, ISymbol m, bool afterKeyword)
 		{
 			return new CreateOverrideCompletionData (keyHandler, this, declarationBegin, currentType, m, afterKeyword);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePartialCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, IMethodSymbol method, bool afterKeyword)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePartialCompletionData(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, int declarationBegin, ITypeSymbol currentType, IMethodSymbol method, bool afterKeyword)
 		{
 			return new CreatePartialCompletionData (keyHandler, this, declarationBegin, currentType, method, afterKeyword);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateAnonymousMethod(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateAnonymousMethod(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
 		{
 			return new AnonymousMethodCompletionData (keyHandler) {
 				CompletionText = textBeforeCaret + "|" + textAfterCaret,
@@ -208,17 +208,17 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewMethodDelegate(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewMethodDelegate(ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType)
 		{
 			return new EventCreationCompletionData (keyHandler, this, delegateType, varName, curType);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateObjectCreation (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateObjectCreation (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ITypeSymbol type, ISymbol symbol, int declarationBegin, bool afterKeyword)
 		{
 			return new ObjectCreationCompletionData (keyHandler, this, semanticModel, type, symbol, declarationBegin, afterKeyword);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.CompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateCastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateCastCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType)
 		{
 			return new CastCompletionData (keyHandler, this, semanticModel, member, nodeToCast, targetType);
 		}

@@ -38,6 +38,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeActions;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
@@ -46,7 +47,6 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
-using RefactoringEssentials;
 
 namespace MonoDevelop.CodeActions
 {

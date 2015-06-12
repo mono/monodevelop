@@ -274,9 +274,9 @@
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+    <ProjectReference Include="..\..\..\external\NRefactory6\NR6Pack\NR6Pack.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>RefactoringEssentials</Name>
+      <Name>NR6Pack</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

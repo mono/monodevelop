@@ -19,7 +19,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.CSharp.Diagnostics;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Core;
-using RefactoringEssentials;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.CodeFixes.RemoveUnnecessaryCast

@@ -27,6 +27,7 @@ using System;
 using System.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 {

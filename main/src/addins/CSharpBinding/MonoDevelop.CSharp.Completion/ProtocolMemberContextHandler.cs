@@ -48,9 +48,9 @@ namespace MonoDevelop.CSharp.Completion
 			this.factory = factory;
 		}
 
-		protected override IEnumerable<CompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
+		protected override IEnumerable<ICompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
 		{
-			var result = new List<CompletionData> ();
+			var result = new List<ICompletionData> ();
 			ISet<ISymbol> overridableMembers;
 			if (!TryDetermineOverridableMembers (semanticModel, tokenBeforeReturnType, seenAccessibility, out overridableMembers, cancellationToken)) {
 				return result;

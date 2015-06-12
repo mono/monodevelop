@@ -29,7 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ICSharpCode.NRefactory.CSharp;
-using RefactoringEssentials;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;

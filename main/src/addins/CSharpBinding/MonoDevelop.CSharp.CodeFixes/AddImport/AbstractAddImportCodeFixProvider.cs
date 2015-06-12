@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Roslyn.Utilities;
 using ICSharpCode.NRefactory6.CSharp;
-using RefactoringEssentials;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 
