@@ -201,7 +201,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;			
+			return (object.Equals (GetPropertyValue (propertyName), value)) ? this : null;
 		}
 
 		public override List<AppResult> NextSiblings ()
