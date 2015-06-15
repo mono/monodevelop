@@ -125,7 +125,12 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override List<AppResult> FlattenChildren ()
 		{
 			if (!resultIter.HasValue) {
-				return null;
+				List<AppResult> children = new List<AppResult> ();
+				TModel.Foreach ((m, p, i) => {
+					children.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, i));
+					return false;
+				});
+				return children;
 			}
 
 			TreeIter currentIter = (TreeIter) resultIter;
