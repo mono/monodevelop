@@ -98,6 +98,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			});
 
+			TModel.Foreach ((m, p, i) => {
+				if (text == p.ToString ()) {
+					resultIter = i;
+					return true;
+				}
+
+				return false;
+			});
+
 			return resultIter.HasValue ? this : null;
 		}
 
