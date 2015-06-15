@@ -41,7 +41,7 @@ namespace UserInterfaceTests
 
 		public string OtherCategoryRoot { get { return "Other"; } }
 
-		public readonly static Action EmptyAction = delegate { };
+		public readonly static Action EmptyAction = Ide.EmptyAction;
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
 

@@ -40,5 +40,19 @@ namespace UserInterfaceTests
 				Directory.CreateDirectory (tempDirectory);
 			return tempDirectory;
 		}
+
+		public static Action GetAction (this BeforeBuildAction action)
+		{
+			switch (action) {
+			case BeforeBuildAction.None:
+				return Ide.EmptyAction;
+			case BeforeBuildAction.WaitForPackageUpdate:
+				return Ide.WaitForPackageUpdate;
+			case BeforeBuildAction.WaitForSolutionCheckedOut:
+				return Ide.WaitForSolutionCheckedOut;
+			default:
+				return Ide.EmptyAction;
+			}
+		}
 	}
 }

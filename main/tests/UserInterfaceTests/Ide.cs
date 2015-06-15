@@ -116,6 +116,8 @@ namespace UserInterfaceTests
 			WaitUntil (() => c.TotalTime > tt, timeout);
 		}
 
+		public readonly static Action EmptyAction = delegate { };
+
 		public readonly static Action WaitForPackageUpdate = delegate {
 			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."}, timeoutInSecs: 360, pollStepInSecs: 5);
 		};

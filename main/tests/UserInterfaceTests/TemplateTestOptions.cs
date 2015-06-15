@@ -35,6 +35,13 @@ namespace UserInterfaceTests
 		Android = 0x2
 	}
 
+	public enum BeforeBuildAction
+	{
+		None,
+		WaitForPackageUpdate,
+		WaitForSolutionCheckedOut
+	}
+
 	public enum CodeSharingType
 	{
 		PortableClassLibrary,
