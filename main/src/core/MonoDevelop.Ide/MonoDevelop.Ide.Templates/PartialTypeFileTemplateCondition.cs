@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Templates
 			try {
 				filter = (PartialTypeRequirement) Enum.Parse (typeof (PartialTypeRequirement), element.GetAttribute ("Requirement"), true);
 			} catch (ArgumentException) {
-				new InvalidOperationException ("Invalid value for PartialTypeRequirement condition in template.");
+				throw new InvalidOperationException ("Invalid value for PartialTypeRequirement condition in template.");
 			}
 		}
 		
