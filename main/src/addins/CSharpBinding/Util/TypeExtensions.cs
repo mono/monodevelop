@@ -97,21 +97,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 
 		/// <summary>
-		/// Gets all base classes.
-		/// </summary>
-		/// <returns>The all base classes.</returns>
-		/// <param name="type">Type.</param>
-		public static IEnumerable<INamedTypeSymbol> GetAllBaseClasses(this INamedTypeSymbol type, bool includeSuperType = false)
-		{
-			if (!includeSuperType)
-				type = type.BaseType;
-			while (type != null) {
-				yield return type;
-				type = type.BaseType;
-			}
-		}
-
-		/// <summary>
 		/// Gets all base classes and interfaces.
 		/// </summary>
 		/// <returns>All classes and interfaces.</returns>
@@ -129,23 +114,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			foreach (var inter in type.AllInterfaces) {
 				yield return inter;
 			}
-		}
-
-		/// <summary>
-		/// Determines if derived from baseType. Includes itself and all base classes, but does not include interfaces.
-		/// </summary>
-		/// <returns><c>true</c> if is derived from class the specified type baseType; otherwise, <c>false</c>.</returns>
-		/// <param name="type">Type.</param>
-		/// <param name="baseType">Base type.</param>
-		public static bool IsDerivedFromClass(this INamedTypeSymbol type, INamedTypeSymbol baseType)
-		{
-			//NR5 is returning true also for same type
-			for (; type != null; type = type.BaseType) {
-				if (type == baseType) {
-					return true;
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
@@ -171,42 +139,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return false;
 		}
 
-		/// <summary>
-		/// Gets the full name of the metadata.
-		/// In case symbol is not INamedTypeSymbol it returns raw MetadataName
-		/// Example: Generic type returns T1, T2...
-		/// </summary>
-		/// <returns>The full metadata name.</returns>
-		/// <param name="symbol">Symbol.</param>
-		public static string GetFullMetadataName(this ITypeSymbol symbol)
-		{
-			//This is for comaptibility with NR5 reflection name in case of generic types like T1, T2...
-			var namedTypeSymbol = symbol as INamedTypeSymbol;
-			return namedTypeSymbol != null ? GetFullMetadataName (namedTypeSymbol) : symbol.MetadataName;
-		}
-
-		/// <summary>
-		/// Gets the full MetadataName(ReflectionName in NR5).
-		/// Example: Namespace1.Namespace2.Classs1+NestedClassWithTwoGenericTypes`2+NestedClassWithoutGenerics
-		/// </summary>
-		/// <returns>The full metadata name.</returns>
-		/// <param name="symbol">Symbol.</param>
-		public static string GetFullMetadataName(this INamedTypeSymbol symbol) {
-			var fullName=new StringBuilder(symbol.MetadataName);
-			var parentType = symbol.ContainingType;
-			while (parentType != null) {
-				fullName.Insert (0, '+');
-				fullName.Insert (0, parentType.MetadataName);
-				parentType = parentType.ContainingType;
-			}
-			var ns = symbol.ContainingNamespace;
-			while (ns != null && !ns.IsGlobalNamespace) {
-				fullName.Insert (0, '.');
-				fullName.Insert (0, ns.MetadataName);
-				ns = ns.ContainingNamespace;
-			}
-			return fullName.ToString ();
-		}
 	}
 }
 

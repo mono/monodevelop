@@ -33,18 +33,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 {
 	public static class ISymbolExtensions
 	{
-		
-
-		public static bool IsDefinedInMetadata(this ISymbol symbol)
-		{
-			return symbol.Locations.Any (loc => loc.IsInMetadata);
-		}
-
-		public static bool IsDefinedInSource(this ISymbol symbol)
-		{
-			return symbol.Locations.All (loc => loc.IsInSource);
-		}
-
 		public static DeclarationModifiers GetSymbolModifiers(this ISymbol symbol)
 		{
 			// ported from roslyn source - why they didn't use DeclarationModifiers.From (symbol) ?
@@ -56,14 +44,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 				.WithIsOverride (symbol.IsOverride)
 				.WithIsSealed (symbol.IsSealed);
 		}
-
-		public static IEnumerable<SyntaxReference> GetDeclarations(this ISymbol symbol)
-		{
-			return symbol != null
-				? symbol.DeclaringSyntaxReferences.AsEnumerable()
-					: SpecializedCollections.EmptyEnumerable<SyntaxReference>();
-		}
-
 	}
 }
 

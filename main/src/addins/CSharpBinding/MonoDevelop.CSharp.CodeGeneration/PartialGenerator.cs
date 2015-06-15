@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Threading;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {

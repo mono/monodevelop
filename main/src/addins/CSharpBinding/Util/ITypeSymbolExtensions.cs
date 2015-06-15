@@ -318,16 +318,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 //			return explicitMatches.FirstOrDefault() ?? implicitMatches.FirstOrDefault();
 //		}
 
-		public static IEnumerable<ITypeSymbol> GetBaseTypesAndThis(this ITypeSymbol type)
-		{
-			var current = type;
-			while (current != null)
-			{
-				yield return current;
-				current = current.BaseType;
-			}
-		}
-
 		public static IEnumerable<ITypeSymbol> GetContainingTypesAndThis(this ITypeSymbol type)
 		{
 			var current = type;

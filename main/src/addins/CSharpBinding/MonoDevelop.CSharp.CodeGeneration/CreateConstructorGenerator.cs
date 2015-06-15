@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Simplification;
 using ICSharpCode.NRefactory6.CSharp;
 using Gtk;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {

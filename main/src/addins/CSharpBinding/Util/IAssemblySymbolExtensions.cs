@@ -79,14 +79,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			return false;
 		}
-
-		//public static bool IsSameAssemblyOrHasFriendAccessTo(this IAssemblySymbol assembly, IAssemblySymbol toAssembly)
-		//{
-		//	return
-		//		Equals(assembly, toAssembly) ||
-		//		(assembly.IsInteractive && toAssembly.IsInteractive) ||
-		//		toAssembly.GivesAccessTo(assembly);
-		//}
 	}
 }
 

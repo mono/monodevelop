@@ -148,35 +148,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return symbol is ITypeSymbol && ((ITypeSymbol)symbol).TypeKind == TypeKind.Delegate;
 		}
 
-		public static ITypeSymbol GetReturnType(this ISymbol symbol)
-		{
-			if (symbol == null)
-				throw new ArgumentNullException("symbol");
-			switch (symbol.Kind) {
-				case SymbolKind.Field:
-					var field = (IFieldSymbol)symbol;
-					return field.Type;
-				case SymbolKind.Method:
-					var method = (IMethodSymbol)symbol;
-					if (method.MethodKind == MethodKind.Constructor)
-						return method.ContainingType;
-					return method.ReturnType;
-				case SymbolKind.Property:
-					var property = (IPropertySymbol)symbol;
-					return property.Type;
-				case SymbolKind.Event:
-					var evt = (IEventSymbol)symbol;
-					return evt.Type;
-				case SymbolKind.Parameter:
-					var param = (IParameterSymbol)symbol;
-					return param.Type;
-				case SymbolKind.Local:
-					var local = (ILocalSymbol)symbol;
-					return local.Type;
-			}
-			return null;
-		}
-
 		public static ParameterSyntax GenerateParameterSyntax (this IParameterSymbol symbol)
 		{
 			var result = SyntaxFactory.Parameter (SyntaxFactory.Identifier (symbol.Name));

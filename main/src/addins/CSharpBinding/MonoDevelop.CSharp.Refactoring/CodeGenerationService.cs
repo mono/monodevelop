@@ -47,6 +47,7 @@ using MonoDevelop.Ide.CodeFormatting;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
