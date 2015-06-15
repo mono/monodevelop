@@ -705,6 +705,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return true;
 		}
+
+		public static INamedTypeSymbol GetEnclosingNamedType(this SemanticModel semanticModel, int position, CancellationToken cancellationToken)
+		{
+			return semanticModel.GetEnclosingSymbol<INamedTypeSymbol>(position, cancellationToken);
+		}
+
+		public static TSymbol GetEnclosingSymbol<TSymbol>(this SemanticModel semanticModel, int position, CancellationToken cancellationToken)
+			where TSymbol : ISymbol
+		{
+			for (var symbol = semanticModel.GetEnclosingSymbol(position, cancellationToken);
+			     symbol != null;
+			     symbol = symbol.ContainingSymbol)
+			{
+				if (symbol is TSymbol)
+				{
+					return (TSymbol)symbol;
+				}
+			}
+
+			return default(TSymbol);
+		}
 	}
 }
 

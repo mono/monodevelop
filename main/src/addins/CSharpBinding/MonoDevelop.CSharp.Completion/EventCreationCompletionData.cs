@@ -42,7 +42,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
-using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 
@@ -115,7 +114,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (k > 0) {
 							sb.Append(", ");
 						}
-						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, Ambience.LabelFormat)); 
+						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
 					}
 					sb.Append(")");
 
