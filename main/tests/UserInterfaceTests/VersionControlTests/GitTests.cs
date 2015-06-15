@@ -37,7 +37,7 @@ namespace UserInterfaceTests
 		[Test]
 		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone")]
 		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone")]
-		public void TestClone (string url)
+		public void TestGitClone (string url)
 		{
 			TestClone (url);
 			Ide.WaitForSolutionLoaded (TakeScreenShot);
