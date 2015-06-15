@@ -147,7 +147,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			vi = repo2.GetVersionInfo (LocalPath + "file3", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file3"), "Stash pop untracked failure");
-			Assert.AreEqual (VersionStatus.Unversioned, vi.Status & VersionStatus.Unversioned, "Stash pop failure");
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status, "Stash pop failure");
 
 			vi = repo2.GetVersionInfo (LocalPath + "file4", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file4"), "Stash pop conflict failure");
