@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.AutoTest
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
 
-				if (resultSet.Count == 0) {
+				if (resultSet == null || resultSet.Count == 0) {
 					break;
 				}
 			}

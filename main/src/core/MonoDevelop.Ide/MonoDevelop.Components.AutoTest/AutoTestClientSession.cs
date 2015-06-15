@@ -217,7 +217,9 @@ namespace MonoDevelop.Components.AutoTest
 
 		void ClearEventQueue ()
 		{
-			eventQueue.Clear ();
+			lock (eventQueue) {
+				eventQueue.Clear ();
+			}
 		}
 
 		void IAutoTestClient.Connect (AutoTestSession session)
