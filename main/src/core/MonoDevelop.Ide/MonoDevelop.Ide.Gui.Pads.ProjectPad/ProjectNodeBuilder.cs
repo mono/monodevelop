@@ -377,11 +377,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public void UpdateSetAsStartupProject (CommandInfo ci)
 		{
 			Project project = (Project) CurrentNode.DataItem;
-
-			// This should check for SupportsExecute only, but we keep the call to CanExecute in order to
-			// be backwards compatible with the old behavior.
-			// TODO NPM: Remove the CanExecute call
-			ci.Visible = project.SupportsExecute () || project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
+			ci.Visible = project.SupportsExecute ();
 		}
 
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]

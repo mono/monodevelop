@@ -1043,6 +1043,17 @@ namespace MonoDevelop.Projects
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
 		}
 
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			var sf = base.OnGetSupportedFeatures ();
+
+			// Libraries are not executable by default, unless the project has a custom execution command
+			if (compileTarget == CompileTarget.Library && !Configurations.OfType<ProjectConfiguration> ().Any (c => c.CustomCommands.HasCommands (CustomCommandType.Execute)))
+				sf &= ~ProjectFeatures.Execute;
+			
+			return sf;
+		}
+
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
 			var baseFiles = base.OnGetItemFiles (includeReferencedFiles);
