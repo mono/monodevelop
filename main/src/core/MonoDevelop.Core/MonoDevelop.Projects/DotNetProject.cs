@@ -479,6 +479,13 @@ namespace MonoDevelop.Projects
 						References [n] = nr;
 				}
 			}
+
+			// If a referenced assembly changes, dirtify the project.
+			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
+				if (asm == updatedFile) {
+					SetFastBuildCheckDirty ();
+					break;
+				}
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
