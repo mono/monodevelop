@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis.Editing;
 using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstructors
 {

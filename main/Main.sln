@@ -261,8 +261,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NRefactory6", "NRefactory6", "{840E8B8D-929C-4CB2-9D23-2702FF01269A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory6.CSharp", "external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj", "{7E891659-45F3-42B5-B940-A728780CCAE9}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ICSharpCode.NRefactory6.Shared", "external\NRefactory6\ICSharpCode.NRefactory6.Shared\ICSharpCode.NRefactory6.Shared.shproj", "{5AD3093F-F79D-4014-B197-27D09492C3E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NR6Pack", "external\NRefactory6\NR6Pack\NR6Pack.csproj", "{C465A5DC-AD28-49A2-89C0-F81838814A7E}"
@@ -927,26 +925,6 @@ Global
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4B15FB-E8C4-419A-A31C-9310FD9062BD}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Debug|x86.Build.0 = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|x86.ActiveCfg = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.Release|x86.Build.0 = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{7E891659-45F3-42B5-B940-A728780CCAE9}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FCDB0D9-AA7D-44E4-BE74-55312B432389}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2040,7 +2018,6 @@ Global
 		{63D3B27A-D966-4902-90B3-30290E1692F1} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
 		{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
 		{2A705FC6-1A9E-4941-9E47-254D79F2D9D5} = {2D711139-8765-4929-BC7A-AA2DEE6F615D}
-		{7E891659-45F3-42B5-B940-A728780CCAE9} = {840E8B8D-929C-4CB2-9D23-2702FF01269A}
 		{5AD3093F-F79D-4014-B197-27D09492C3E3} = {840E8B8D-929C-4CB2-9D23-2702FF01269A}
 		{C465A5DC-AD28-49A2-89C0-F81838814A7E} = {840E8B8D-929C-4CB2-9D23-2702FF01269A}
 		{BFE8691A-D323-4622-9021-7B8B27F81599} = {5D3F7E65-E55B-45CA-A83B-D1E10040281E}
@@ -2064,7 +2041,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/glade+xml
+		$2.scope = application/json
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2101,7 +2078,7 @@ Global
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
 		$13.inheritsSet = null
-		$13.scope = application/glade+xml
+		$13.scope = application/config+xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False

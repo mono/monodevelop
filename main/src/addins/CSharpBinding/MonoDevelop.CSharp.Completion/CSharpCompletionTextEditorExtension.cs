@@ -56,6 +56,7 @@ using MonoDevelop.Ide;
 using Mono.Addins;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {

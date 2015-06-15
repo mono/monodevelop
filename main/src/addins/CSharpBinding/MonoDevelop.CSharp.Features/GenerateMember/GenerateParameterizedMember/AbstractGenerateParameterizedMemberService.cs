@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {

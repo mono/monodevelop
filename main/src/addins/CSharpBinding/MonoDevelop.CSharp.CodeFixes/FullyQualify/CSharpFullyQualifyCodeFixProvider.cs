@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 {

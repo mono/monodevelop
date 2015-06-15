@@ -121,10 +121,6 @@
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
       <Name>ICSharpCode.NRefactory.Xml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\NRefactory6\NR6Pack\NR6Pack.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>NR6Pack</Name>
@@ -692,6 +688,114 @@
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\XmlDocCommentContextHandler.cs" />
     <Compile Include="MonoDevelop.CSharp\DeclaredSymbolInfo.cs" />
     <Compile Include="MonoDevelop.CSharp\ProjectSearchCategory.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationDestination.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationHelpers.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationOptions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerationTypeParameterSymbol.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CodeGenerator.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\CSharpCodeGenerationService.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\CodeGeneration\SyntaxAnnotationExtensions.cs" />
+    <Compile Include="Util\7BitEncodedInts.cs" />
+    <Compile Include="Util\AnnotationTable.cs" />
+    <Compile Include="Util\ArgumentSyntaxExtensions.cs" />
+    <Compile Include="Util\CastExpressionSyntaxExtensions.cs" />
+    <Compile Include="Util\CloneableStack.cs" />
+    <Compile Include="Util\CodeFixContextExtensions.cs" />
+    <Compile Include="Util\CodeGenerationSymbolFactory.cs" />
+    <Compile Include="Util\CodeRefactoringContextExtensions.cs" />
+    <Compile Include="Util\CommonAccessibilityUtilities.cs" />
+    <Compile Include="Util\CommonLocationExtensions.cs" />
+    <Compile Include="Util\CommonSyntaxNodeOrTokenExtensions.cs" />
+    <Compile Include="Util\CompilationExtensions.cs" />
+    <Compile Include="Util\CompilationUnitSyntaxExtensions.cs" />
+    <Compile Include="Util\CrefSyntaxExtensions.cs" />
+    <Compile Include="Util\CSharpSemanticFactsService.cs" />
+    <Compile Include="Util\CSharpSyntaxContext.cs" />
+    <Compile Include="Util\CSharpSyntaxFactsService.cs" />
+    <Compile Include="Util\CSharpUtil.cs" />
+    <Compile Include="Util\DocumentExtensions.cs" />
+    <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\EnumValueUtilities.cs" />
+    <Compile Include="Util\ExpressionSyntaxExtensions.cs" />
+    <Compile Include="Util\FastSerializer.cs" />
+    <Compile Include="Util\FindTokenHelper.cs" />
+    <Compile Include="Util\FormatStringHelper.cs" />
+    <Compile Include="Util\GeneratedCodeRecognition.cs" />
+    <Compile Include="Util\GeneratedCodeRecognitionService.cs" />
+    <Compile Include="Util\Hash.cs" />
+    <Compile Include="Util\HelpLink.cs" />
+    <Compile Include="Util\IAssemblySymbolExtensions.cs" />
+    <Compile Include="Util\ICodeDefinitionFactoryExtensions.cs" />
+    <Compile Include="Util\ICompilationExtensions.cs" />
+    <Compile Include="Util\IDictionaryExtensions.cs" />
+    <Compile Include="Util\IDocumentExtensions.cs" />
+    <Compile Include="Util\IMethodSymbolExtensions.cs" />
+    <Compile Include="Util\ImmutableArrayExtensions.cs" />
+    <Compile Include="Util\INamedTypeSymbolExtensions.cs" />
+    <Compile Include="Util\INamespaceOrTypeSymbolExtensions.cs" />
+    <Compile Include="Util\IParameterSymbolExtensions.cs" />
+    <Compile Include="Util\IPropertySymbolExtensions.cs" />
+    <Compile Include="Util\ISymbolExtensions.cs" />
+    <Compile Include="Util\ITypeParameterSymbolExtensions.cs" />
+    <Compile Include="Util\ITypeSymbolExtensions.cs" />
+    <Compile Include="Util\LinkedListExtension.cs" />
+    <Compile Include="Util\Matcher.cs" />
+    <Compile Include="Util\MemberDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Util\NameGenerator.cs" />
+    <Compile Include="Util\NamespaceDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Util\NameSyntaxComparer.cs" />
+    <Compile Include="Util\NameSyntaxExtensions.cs" />
+    <Compile Include="Util\NRefactory6Host.cs" />
+    <Compile Include="Util\ObjectExtensions.cs" />
+    <Compile Include="Util\PredefinedOperator.cs" />
+    <Compile Include="Util\QueryExpressionSyntaxExtensions.cs" />
+    <Compile Include="Util\RefactoringHelpers.cs" />
+    <Compile Include="Util\ReferenceComparer.cs" />
+    <Compile Include="Util\ReflectionCompatibilityExtensions.cs" />
+    <Compile Include="Util\SemanticDocument.cs" />
+    <Compile Include="Util\SemanticEquivalence.cs" />
+    <Compile Include="Util\SemanticMap.cs" />
+    <Compile Include="Util\SemanticModelExtensions.cs" />
+    <Compile Include="Util\SignatureComparer.cs" />
+    <Compile Include="Util\SimpleNameSyntaxExtensions.cs" />
+    <Compile Include="Util\SourceTextExtensions.cs" />
+    <Compile Include="Util\SpecializedCollections.cs" />
+    <Compile Include="Util\SpeculationAnalyzer.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
+    <Compile Include="Util\StringPclExtensions.cs" />
+    <Compile Include="Util\SymbolEquivalenceComparer.cs" />
+    <Compile Include="Util\SymbolExtensions.cs" />
+    <Compile Include="Util\SymbolInfoExtensions.cs" />
+    <Compile Include="Util\SymbolKeyExtensions.cs" />
+    <Compile Include="Util\SymbolKeyResolutionExtensions.cs" />
+    <Compile Include="Util\SyntacticDocument.cs" />
+    <Compile Include="Util\SyntaxContext.cs" />
+    <Compile Include="Util\SyntaxExtensions.cs" />
+    <Compile Include="Util\SyntaxKindSet.cs" />
+    <Compile Include="Util\SyntaxListExtension.cs" />
+    <Compile Include="Util\SyntaxNodeExtensions.cs" />
+    <Compile Include="Util\SyntaxTokenExtensions.cs" />
+    <Compile Include="Util\SyntaxTreeExtensions.cs" />
+    <Compile Include="Util\SyntaxTriviaExtensions.cs" />
+    <Compile Include="Util\SyntaxTriviaListExtensions.cs" />
+    <Compile Include="Util\TaskExtensions.cs" />
+    <Compile Include="Util\TextLineExtension.cs" />
+    <Compile Include="Util\TokenComparer.cs" />
+    <Compile Include="Util\TypeDeclarationSyntaxExtensions.cs" />
+    <Compile Include="Util\TypeExtensions.cs" />
+    <Compile Include="Util\TypeGenerator.cs" />
+    <Compile Include="Util\TypeSyntaxComparer.cs" />
+    <Compile Include="Util\TypeSyntaxExtensions.cs" />
+    <Compile Include="Util\UnicodeNewline.cs" />
+    <Compile Include="Util\UsingsAndExternAliasesDirectiveComparer.cs" />
+    <Compile Include="Util\UsingsAndExternAliasesOrganizer.cs" />
+    <Compile Include="Util\ValueTuple.cs" />
+    <Compile Include="Util\ValueTuple`2.cs" />
+    <Compile Include="Util\WordParser.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\CodeRefactoring.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\CSharpSyntaxContext.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\TypeGuessing.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\Resources.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

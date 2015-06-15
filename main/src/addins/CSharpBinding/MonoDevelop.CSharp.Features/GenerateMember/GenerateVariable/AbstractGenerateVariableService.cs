@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.Editing;
 using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 {
@@ -51,7 +52,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 			var result = new List<CodeAction>();
 
-			var canGenerateMember = CodeGenerator.CanAdd(document.Project.Solution, state.TypeToGenerateIn, cancellationToken);
+			var canGenerateMember = ICSharpCode.NRefactory6.CSharp.CodeGenerator.CanAdd(document.Project.Solution, state.TypeToGenerateIn, cancellationToken);
 
 			// prefer fields over properties (and vice versa) depending on the casing of the member.
 			// lowercase -> fields.  title case -> properties.
@@ -184,7 +185,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						accessibility: DetermineMinimalAccessibility(_state),
 						statements: null);
 
-					var result = await CodeGenerator.AddPropertyDeclarationAsync(
+					var result = await ICSharpCode.NRefactory6.CSharp.CodeGenerator.AddPropertyDeclarationAsync(
 						_document.Project.Solution,
 						_state.TypeToGenerateIn,
 						CodeGenerationSymbolFactory.CreatePropertySymbol(
@@ -206,7 +207,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 				}
 				else
 				{
-					var result = await CodeGenerator.AddFieldDeclarationAsync(
+					var result = await ICSharpCode.NRefactory6.CSharp.CodeGenerator.AddFieldDeclarationAsync(
 						_document.Project.Solution,
 						_state.TypeToGenerateIn,
 						CodeGenerationSymbolFactory.CreateFieldSymbol(
@@ -496,7 +497,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 				this.IsContainedInUnsafeType = service.ContainingTypesOrSelfHasUnsafeKeyword(this.TypeToGenerateIn);
 
-				return CanGenerateLocal() || CodeGenerator.CanAdd(document.Project.Solution, this.TypeToGenerateIn, cancellationToken);
+				return CanGenerateLocal() || ICSharpCode.NRefactory6.CSharp.CodeGenerator.CanAdd(document.Project.Solution, this.TypeToGenerateIn, cancellationToken);
 			}
 
 			internal bool CanGenerateLocal()

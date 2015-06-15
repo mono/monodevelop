@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass
 {

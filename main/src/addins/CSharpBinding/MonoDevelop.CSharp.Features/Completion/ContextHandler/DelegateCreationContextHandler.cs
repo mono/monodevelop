@@ -35,6 +35,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {

@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.Simplification;
 using Roslyn.Utilities;
 using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
 {

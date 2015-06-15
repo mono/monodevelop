@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.TypeSystem;
 using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable

@@ -16,6 +16,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.CodeFixes
 {

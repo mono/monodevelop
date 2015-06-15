@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Diagnostics.MonoTODODiagnostic
 {

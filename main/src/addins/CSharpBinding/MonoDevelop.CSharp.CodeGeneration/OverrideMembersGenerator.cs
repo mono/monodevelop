@@ -33,6 +33,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {

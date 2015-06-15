@@ -32,6 +32,7 @@ using System.Threading;
 using System.Linq;
 using Mono.Addins.Description;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {	

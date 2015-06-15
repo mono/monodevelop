@@ -28,6 +28,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
