@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
 using System;
 using MonoDevelop.Ide.Commands;
+using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
@@ -35,16 +35,11 @@ namespace UserInterfaceTests
 	public class GitTests : VCSBase
 	{
 		[Test]
-		public void TestGitSSHClone ()
+		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone")]
+		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone")]
+		public void TestClone (string url)
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionLoaded (TakeScreenShot);
-		}
-
-		[Test]
-		public void TestGitHTTPSClone ()
-		{
-			TestClone ("https://github.com/mono/jurassic.git");
+			TestClone (url);
 			Ide.WaitForSolutionLoaded (TakeScreenShot);
 		}
 
