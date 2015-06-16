@@ -128,6 +128,9 @@ namespace MonoDevelop.Ide.Projects
 			if (disposeNewItem)
 				DisposeExistingNewItems ();
 
+			wizardProvider.Dispose ();
+			imageProvider.Dispose ();
+
 			return IsNewItemCreated;
 		}
 
@@ -242,6 +245,11 @@ namespace MonoDevelop.Ide.Projects
 
 		public FinalProjectConfigurationPage FinalConfiguration {
 			get { return finalConfigurationPage; }
+		}
+
+		public IEnumerable<ProjectConfigurationControl> GetFinalPageControls ()
+		{
+			return wizardProvider.GetFinalPageControls ();
 		}
 
 		void LoadTemplateCategories ()
@@ -523,8 +531,6 @@ namespace MonoDevelop.Ide.Projects
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 			dialog.CloseDialog ();
-			wizardProvider.Dispose ();
-			imageProvider.Dispose ();
 		}
 
 		public WizardPage CurrentWizardPage {
