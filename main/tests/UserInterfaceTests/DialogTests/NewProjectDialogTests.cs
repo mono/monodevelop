@@ -66,9 +66,16 @@ namespace UserInterfaceTests
 
 		void TestFolderPreview (GitOptions gitOptions, bool projectWithinSolution)
 		{
+			var projectDetails = new ProjectDetails {
+				ProjectName = templateOptions.ProjectName,
+				SolutionName = solutionName,
+				SolutionLocation = solutionLocation,
+				ProjectInSolution = projectWithinSolution
+			};
+
 			ctrl.Open ();
 			OnSelectTemplate (ctrl, templateOptions);
-			OnEnterProjectDetails (ctrl, templateOptions.ProjectName, solutionName, solutionLocation, projectWithinSolution, gitOptions);
+			OnEnterProjectDetails (ctrl, projectDetails, gitOptions);
 			ctrl.ValidatePreviewTree (templateOptions, solutionName, solutionLocation, projectWithinSolution, gitOptions);
 			ctrl.Close ();
 		}
