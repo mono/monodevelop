@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	internal static class LinkedListExtensions
+	static class LinkedListExtensions
 	{
 		public static void AddRangeAtHead<T>(this LinkedList<T> list, IEnumerable<T> values)
 		{

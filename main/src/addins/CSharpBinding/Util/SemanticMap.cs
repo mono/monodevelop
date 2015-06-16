@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public partial class SemanticMap
+	partial class SemanticMap
 	{
 		private readonly Dictionary<SyntaxNode, SymbolInfo> _expressionToInfoMap =
 			new Dictionary<SyntaxNode, SymbolInfo>();

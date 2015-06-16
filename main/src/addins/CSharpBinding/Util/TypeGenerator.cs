@@ -39,7 +39,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public class TypeGenerator 
+	class TypeGenerator 
 	{
 		readonly static Type typeInfo;
 

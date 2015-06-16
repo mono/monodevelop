@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class QueryExpressionSyntaxExtensions
+	static class QueryExpressionSyntaxExtensions
 	{
 		public static IList<SyntaxNode> GetAllClauses(this QueryExpressionSyntax query)
 		{

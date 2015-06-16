@@ -26,6 +26,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp.Analysis
 {

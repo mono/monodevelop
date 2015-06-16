@@ -32,7 +32,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CompilationExtensions
+	static class CompilationExtensions
 	{
 		static INamespaceSymbol FindNamespace(INamespaceSymbol globalNamespace, string fullName, CancellationToken cancellationToken = default(CancellationToken))
 		{

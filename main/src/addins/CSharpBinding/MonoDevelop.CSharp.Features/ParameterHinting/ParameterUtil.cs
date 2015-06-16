@@ -29,6 +29,7 @@ using Microsoft.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {

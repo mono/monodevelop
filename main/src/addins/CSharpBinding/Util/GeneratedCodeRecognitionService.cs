@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class GeneratedCodeRecognitionService
+	static class GeneratedCodeRecognitionService
 	{
 		public static bool IsFileNameForGeneratedCode(string fileName)
 		{

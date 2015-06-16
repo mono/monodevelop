@@ -39,7 +39,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class TypeExtensions
+	static class TypeExtensions
 	{
 		readonly static MethodInfo generateTypeSyntaxMethod;
 		readonly static MethodInfo findDerivedClassesAsyncMethod;

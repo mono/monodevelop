@@ -19,7 +19,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CSharpSemanticFactsService
+	static class CSharpSemanticFactsService
 	{
 		public static bool SupportsImplicitInterfaceImplementation
 		{

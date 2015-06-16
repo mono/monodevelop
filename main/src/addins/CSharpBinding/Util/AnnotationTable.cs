@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// 
 	/// also, note that this table is not thread safe.
 	/// </summary>
-	internal class AnnotationTable<TAnnotation> where TAnnotation : class
+	class AnnotationTable<TAnnotation> where TAnnotation : class
 	{
 		private int _globalId = 0;
 

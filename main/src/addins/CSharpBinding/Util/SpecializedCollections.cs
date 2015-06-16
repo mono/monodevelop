@@ -29,7 +29,7 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class SpecializedCollections
+	static partial class SpecializedCollections
 	{
 		public static readonly byte[] EmptyBytes = EmptyArray<byte>();
 		public static readonly object[] EmptyObjects = EmptyArray<object>();

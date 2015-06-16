@@ -7,7 +7,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class ITypeParameterSymbolExtensions
+	static class ITypeParameterSymbolExtensions
 	{
 		public static INamedTypeSymbol GetNamedTypeSymbolConstraint(this ITypeParameterSymbol typeParameter)
 		{

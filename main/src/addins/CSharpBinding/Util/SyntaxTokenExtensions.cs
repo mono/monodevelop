@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SyntaxTokenExtensions
+	static class SyntaxTokenExtensions
 	{
 		public static SyntaxNode GetAncestor(this SyntaxToken token, Func<SyntaxNode, bool> predicate)
 		{

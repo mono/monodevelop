@@ -38,7 +38,7 @@ using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CommonAccessibilityUtilities
+	static class CommonAccessibilityUtilities
 	{
 		public static Accessibility Minimum(Accessibility accessibility1, Accessibility accessibility2)
 		{

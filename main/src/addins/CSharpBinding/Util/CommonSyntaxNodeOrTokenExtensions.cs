@@ -10,7 +10,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CommonSyntaxNodeOrTokenExtensions
+	static class CommonSyntaxNodeOrTokenExtensions
 	{
 		public static IEnumerable<SyntaxNodeOrToken> DepthFirstTraversal(this SyntaxNodeOrToken node)
 		{

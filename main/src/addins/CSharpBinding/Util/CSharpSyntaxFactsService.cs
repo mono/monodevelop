@@ -35,7 +35,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CSharpSyntaxFactsService
+	static class CSharpSyntaxFactsService
 	{
 		public static bool IsAwaitKeyword (this SyntaxToken token)
 		{

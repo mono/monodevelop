@@ -32,7 +32,7 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class FormatStringHelper
+	static class FormatStringHelper
 	{
 		static readonly string[] parameterNames = { "format", "frmt", "fmt" };
 		

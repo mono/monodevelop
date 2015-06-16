@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SymbolExtensions
+	static class SymbolExtensions
 	{
 		//		public static string GetDocumentationId (this ISymbol symbol)
 		//		{
@@ -1372,7 +1372,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 //		}
 	}
 
-	public enum SymbolVisibility
+	enum SymbolVisibility
 	{
 		Public,
 		Internal,

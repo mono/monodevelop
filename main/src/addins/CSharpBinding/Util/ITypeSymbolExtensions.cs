@@ -41,7 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 namespace ICSharpCode.NRefactory6.CSharp
 {
 	[EditorBrowsableAttribute (EditorBrowsableState.Never)]
-	public static class ITypeSymbolExtensions
+	static class ITypeSymbolExtensions
 	{
 		readonly static MethodInfo generateTypeSyntax;
 		readonly static MethodInfo inheritsFromOrEqualsIgnoringConstructionMethod;

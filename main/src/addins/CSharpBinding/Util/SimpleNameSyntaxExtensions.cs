@@ -8,7 +8,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SimpleNameSyntaxExtensions
+	static class SimpleNameSyntaxExtensions
 	{
 		public static ExpressionSyntax GetLeftSideOfDot(this SimpleNameSyntax name)
 		{

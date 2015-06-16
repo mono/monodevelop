@@ -10,7 +10,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	static class RefactoringHelpers
+	class RefactoringHelpers
 	{
 		public static TypeSyntax ConvertType(SemanticModel model, int position, ITypeSymbol type)
 		{

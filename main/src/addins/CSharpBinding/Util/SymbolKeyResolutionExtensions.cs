@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SymbolKeyResolutionExtensions
+	static class SymbolKeyResolutionExtensions
 	{
 		public static ISymbol GetAnySymbol(this SymbolKeyResolution resolution)
 		{

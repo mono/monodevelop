@@ -15,7 +15,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class INamedTypeSymbolExtensions
+	static partial class INamedTypeSymbolExtensions
 	{
 		public static IEnumerable<INamedTypeSymbol> GetBaseTypesAndThis(this INamedTypeSymbol namedType)
 		{

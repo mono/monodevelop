@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class IDictionaryExtensions
+	static class IDictionaryExtensions
 	{
 		// Copied from ConcurrentDictionary since IDictionary doesn't have this useful method
 		public static V GetOrAdd<K, V>(this IDictionary<K, V> dictionary, K key, Func<K, V> function)

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class ISymbolExtensions
+	static class ISymbolExtensions
 	{
 		public static DeclarationModifiers GetSymbolModifiers(this ISymbol symbol)
 		{

@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Core.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {

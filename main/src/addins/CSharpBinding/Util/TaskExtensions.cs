@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.ErrorReporting;
 namespace ICSharpCode.NRefactory6.CSharp
 {
 	[SuppressMessage("ApiDesign", "RS0011", Justification = "Matching TPL Signatures")]
-	public static partial class TaskExtensions
+	static partial class TaskExtensions
 	{
 		public static T WaitAndGetResult<T>(this Task<T> task, CancellationToken cancellationToken)
 		{

@@ -30,7 +30,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SymbolInfoExtensions
+	static class SymbolInfoExtensions
 	{
 		public static IEnumerable<ISymbol> GetAllSymbols(this SymbolInfo info)
 		{

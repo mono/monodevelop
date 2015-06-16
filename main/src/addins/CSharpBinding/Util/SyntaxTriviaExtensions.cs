@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SyntaxTriviaExtensions
+	static class SyntaxTriviaExtensions
 	{
 		public static int Width(this SyntaxTrivia trivia)
 		{

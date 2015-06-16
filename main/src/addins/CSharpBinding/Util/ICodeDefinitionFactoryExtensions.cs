@@ -11,7 +11,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class ICodeDefinitionFactoryExtensions
+	static class ICodeDefinitionFactoryExtensions
 	{
 		readonly static Type typeInfo;
 

@@ -31,7 +31,7 @@ using System.ComponentModel.Design;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SemanticEquivalence
+	static class SemanticEquivalence
 	{
 		readonly static Type typeInfo;
 

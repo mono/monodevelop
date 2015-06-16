@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CommonLocationExtensions
+	static class CommonLocationExtensions
 	{
 		public static SyntaxToken FindToken(this Location location, CancellationToken cancellationToken)
 		{

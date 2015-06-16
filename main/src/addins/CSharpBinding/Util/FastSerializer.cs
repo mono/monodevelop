@@ -26,7 +26,7 @@ using System.Runtime.Serialization;
 
 namespace ICSharpCode.NRefactory6.Utils
 {
-	public class FastSerializer
+	class FastSerializer
 	{
 		#region Properties
 		/// <summary>
@@ -1344,7 +1344,7 @@ namespace ICSharpCode.NRefactory6.Utils
 	/// a different version of the class than the current one.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum)]
-	public class FastSerializerVersionAttribute : Attribute
+	class FastSerializerVersionAttribute : Attribute
 	{
 		readonly int versionNumber;
 		

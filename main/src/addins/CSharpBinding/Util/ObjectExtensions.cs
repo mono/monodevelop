@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6
 {
-	public static partial class ObjectExtensions
+	static partial class ObjectExtensions
 	{
 		
 

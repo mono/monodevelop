@@ -8,7 +8,7 @@ using System.Reflection;
 namespace ICSharpCode.NRefactory6.CSharp
 {
 	// struct with two values
-	public struct ValueTuple<T1, T2> : IEquatable<ValueTuple<T1, T2>>
+	struct ValueTuple<T1, T2> : IEquatable<ValueTuple<T1, T2>>
 	{
 		private static readonly EqualityComparer<T1> s_comparer1 = EqualityComparer<T1>.Default;
 		private static readonly EqualityComparer<T2> s_comparer2 = EqualityComparer<T2>.Default;

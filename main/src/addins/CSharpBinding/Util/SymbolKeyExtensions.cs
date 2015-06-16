@@ -9,7 +9,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public class SymbolKey
+	class SymbolKey
 	{
 		readonly static Type typeInfo;
 
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 	}
 
-	public class SymbolKeyResolution
+	class SymbolKeyResolution
 	{
 		readonly static Type typeInfo;
 		readonly static PropertyInfo symbolProperty;
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 	}
 
-	public static class SymbolKeyExtensions
+	static class SymbolKeyExtensions
 	{
 		public static SymbolKey GetSymbolKey(this ISymbol symbol)
 		{

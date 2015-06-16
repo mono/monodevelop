@@ -10,7 +10,7 @@ using System.Collections.Immutable;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class MemberDeclarationSyntaxExtensions
+	static partial class MemberDeclarationSyntaxExtensions
 	{
 //		private static readonly ConditionalWeakTable<MemberDeclarationSyntax, Dictionary<string, ImmutableArray<SyntaxToken>>> s_declarationCache =
 //			new ConditionalWeakTable<MemberDeclarationSyntax, Dictionary<string, ImmutableArray<SyntaxToken>>>();

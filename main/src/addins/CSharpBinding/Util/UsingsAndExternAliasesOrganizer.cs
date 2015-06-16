@@ -31,7 +31,7 @@ using System.Reflection;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class UsingsAndExternAliasesOrganizer
+	static class UsingsAndExternAliasesOrganizer
 	{
 		static UsingsAndExternAliasesOrganizer ()
 		{

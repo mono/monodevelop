@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	/// Generates symbols that describe declarations to be generated.
 	/// </summary>
-	public static class CodeGenerationSymbolFactory
+	static class CodeGenerationSymbolFactory
 	{
 		readonly static Type typeInfo;
 

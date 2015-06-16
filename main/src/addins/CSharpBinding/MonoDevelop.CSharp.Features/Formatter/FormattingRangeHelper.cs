@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	/// this help finding a range of tokens to format based on given ending token
 	/// </summary>
-	public static class FormattingRangeHelper
+	static class FormattingRangeHelper
 	{
 		public static ValueTuple<SyntaxToken, SyntaxToken>? FindAppropriateRange(SyntaxToken endToken, bool useDefaultRange = true)
 		{

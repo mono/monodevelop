@@ -48,7 +48,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SyntaxExtensions
+	static class SyntaxExtensions
 	{
 		readonly static MethodInfo canRemoveParenthesesMethod;
 //		readonly static MethodInfo isLeftSideOfDotMethod;

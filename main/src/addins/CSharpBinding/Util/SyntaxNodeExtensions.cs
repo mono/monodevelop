@@ -44,7 +44,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class SyntaxNodeExtensions
+	static partial class SyntaxNodeExtensions
 	{
 		public static IEnumerable<SyntaxNodeOrToken> DepthFirstTraversal(this SyntaxNode node)
 		{

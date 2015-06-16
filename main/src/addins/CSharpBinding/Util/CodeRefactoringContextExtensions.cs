@@ -30,7 +30,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CodeRefactoringContextExtensions
+	static class CodeRefactoringContextExtensions
 	{
 		public static void RegisterRefactorings(this CodeRefactoringContext context, IEnumerable<CodeAction> actions)
 		{

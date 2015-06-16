@@ -786,7 +786,6 @@
     <Compile Include="Util\TypeGenerator.cs" />
     <Compile Include="Util\TypeSyntaxComparer.cs" />
     <Compile Include="Util\TypeSyntaxExtensions.cs" />
-    <Compile Include="Util\UnicodeNewline.cs" />
     <Compile Include="Util\UsingsAndExternAliasesDirectiveComparer.cs" />
     <Compile Include="Util\UsingsAndExternAliasesOrganizer.cs" />
     <Compile Include="Util\ValueTuple.cs" />

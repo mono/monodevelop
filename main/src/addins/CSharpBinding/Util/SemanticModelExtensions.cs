@@ -35,7 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SemanticModelExtensions
+	static class SemanticModelExtensions
 	{
 		public static IEnumerable<ITypeSymbol> LookupTypeRegardlessOfArity(
 			this SemanticModel semanticModel,

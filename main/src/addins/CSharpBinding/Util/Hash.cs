@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class Hash
+	static class Hash
 	{
 		/// <summary>
 		/// This is how VB Anonymous Types combine hash values for fields.

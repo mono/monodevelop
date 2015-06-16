@@ -1,4 +1,4 @@
-﻿/*//
+﻿//
 // CloneableStack.cs
 //
 // Author:
@@ -198,4 +198,4 @@ namespace ICSharpCode.NRefactory6.CSharp
 			#endregion
 		}
 	}
-}*/
+}

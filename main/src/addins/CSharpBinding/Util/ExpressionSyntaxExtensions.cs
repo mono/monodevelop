@@ -23,7 +23,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class ExpressionSyntaxExtensions
+	static partial class ExpressionSyntaxExtensions
 	{
 		static MethodInfo castIfPossibleMethod;
 
@@ -2344,7 +2344,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	/// Operator precedence classes from section 7.3.1 of the C# language specification.
 	/// </summary>
-	public enum OperatorPrecedence
+	enum OperatorPrecedence
 	{
 		None = 0,
 		AssignmentAndLambdaExpression,

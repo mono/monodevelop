@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static partial class INamespaceOrTypeSymbolExtensions
+	static partial class INamespaceOrTypeSymbolExtensions
 	{
 		private static readonly ConditionalWeakTable<INamespaceOrTypeSymbol, List<string>> s_namespaceOrTypeToNameMap =
 			new ConditionalWeakTable<INamespaceOrTypeSymbol, List<string>>();

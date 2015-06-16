@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class ImmutableArrayExtensions
+	static class ImmutableArrayExtensions
 	{
 		public static ImmutableArray<T> ToImmutableArrayOrEmpty<T>(this IEnumerable<T> items)
 		{

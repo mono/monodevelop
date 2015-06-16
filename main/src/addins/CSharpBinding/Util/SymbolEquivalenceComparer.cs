@@ -30,7 +30,7 @@ using System.Reflection;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class SymbolEquivalenceComparer
+	static class SymbolEquivalenceComparer
 	{
 		public static readonly IEqualityComparer<ISymbol> Instance;
 		public static readonly IEqualityComparer<ISymbol> IgnoreAssembliesInstance;

@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class IMethodSymbolExtensions
+	static class IMethodSymbolExtensions
 	{
 //		public static bool CompatibleSignatureToDelegate(this IMethodSymbol method, INamedTypeSymbol delegateType)
 //		{

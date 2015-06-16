@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class FormattingHelpers
+	static class FormattingHelpers
 	{
 		// TODO:  Need to determine correct way to handle newlines
 		public const string NewLine = "\r\n";

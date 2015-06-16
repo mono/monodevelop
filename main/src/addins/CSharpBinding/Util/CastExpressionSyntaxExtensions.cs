@@ -9,7 +9,7 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CastExpressionSyntaxExtensions
+	static class CastExpressionSyntaxExtensions
 	{
 		readonly static MethodInfo isUnnecessaryCastMethod;
 

@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory6.Utils
 	/// <summary>
 	/// A binary reader that can read the output of BinaryWriterWith7BitEncodedInts.
 	/// </summary>
-	public sealed class BinaryReaderWith7BitEncodedInts : BinaryReader
+	sealed class BinaryReaderWith7BitEncodedInts : BinaryReader
 	{
 		public BinaryReaderWith7BitEncodedInts(Stream stream) : base(stream)
 		{
