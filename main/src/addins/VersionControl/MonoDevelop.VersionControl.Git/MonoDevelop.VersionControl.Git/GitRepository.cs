@@ -312,20 +312,21 @@ namespace MonoDevelop.VersionControl.Git
 			var revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
-			var sinceRev = (GitRevision)since;
+			//var sinceRev = (GitRevision)since;
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
 				return new GitRevision [0];
 
+			var sinceRev = since != null ? ((GitRevision)since).Commit : null;
 			IEnumerable<Commit> commits = repository.Commits;
-			if (localFile.CanonicalPath != RootPath.CanonicalPath) {
+			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
 					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
 					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
 			}
 
-			foreach (var commit in commits) {
+			foreach (var commit in commits.TakeWhile (c => c != sinceRev)) {
 				var author = commit.Author;
 				var rev = new GitRevision (this, repository, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 					Email = author.Email,

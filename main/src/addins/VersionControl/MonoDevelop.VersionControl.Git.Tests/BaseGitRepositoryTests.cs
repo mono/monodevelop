@@ -91,6 +91,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.RootRepository.Config.Set<string> ("user.email", Email);
 		}
 
+		protected override void CheckLog (Repository repo)
+		{
+			int index = 2;
+			foreach (Revision rev in Repo.GetHistory (LocalPath, null))
+				Assert.AreEqual (String.Format ("Commit #{0}\n", index--), rev.Message);
+		}
+
 		[Test]
 		[Ignore ("Not implemented in GitRepository.")]
 		public override void LocksEntities ()
