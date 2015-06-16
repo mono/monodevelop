@@ -105,11 +105,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			var newRule = new NameConventionRule ();
 			newRule.Name = "New Rule";
-			var diag = new NameConventionEditRuleDialog (newRule);
-			var result = MessageService.ShowCustomDialog (diag);
-			if (result == (int)ResponseType.Ok)
-				treeStore.AppendValues (newRule);
-			OnPolicyChanged (EventArgs.Empty);
+			using (var diag = new NameConventionEditRuleDialog (newRule)) {
+				var result = MessageService.ShowCustomDialog (diag);
+				if (result == (int)ResponseType.Ok)
+					treeStore.AppendValues (newRule);
+				OnPolicyChanged (EventArgs.Empty);
+			}
 		}
 
 		void EditSelectedEntry ()
@@ -118,11 +119,12 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			if (!treeviewConventions.Selection.GetSelected (out iter))
 				return;
 			var rule = treeStore.GetValue (iter, 0) as NameConventionRule;
-			var diag = new NameConventionEditRuleDialog (rule);
-			int result = MessageService.ShowCustomDialog (diag);
-			treeviewConventions.QueueResize ();
-			if (result == (int)Gtk.ResponseType.Ok) 
-				OnPolicyChanged (EventArgs.Empty);
+			using (var diag = new NameConventionEditRuleDialog (rule)) {
+				int result = MessageService.ShowCustomDialog (diag);
+				treeviewConventions.QueueResize ();
+				if (result == (int)Gtk.ResponseType.Ok)
+					OnPolicyChanged (EventArgs.Empty);
+			}
 		}
 		
 		void RemoveSelectedEntry ()

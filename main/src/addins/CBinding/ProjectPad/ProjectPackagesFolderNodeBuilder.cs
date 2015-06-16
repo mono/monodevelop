@@ -129,8 +129,9 @@ namespace CBinding.ProjectPad
 		{
 			CProject project = (CProject)CurrentNode.GetParentDataItem (
 			    typeof(CProject), false);
-			
-			MessageService.ShowCustomDialog (new EditPackagesDialog (project));
+
+			using (var dlg = new EditPackagesDialog (project))
+				MessageService.ShowCustomDialog (dlg);
 			
 			IdeApp.ProjectOperations.Save (project);
 			CurrentNode.Expanded = true;

@@ -767,10 +767,11 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			NewFileDialog nfd = new NewFileDialog (parentProject, basePath);
-			if (selectedTemplateId != null)
-				nfd.SelectTemplate (selectedTemplateId);
-			return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
+			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
+				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
+			}
 		}
 
 		public bool AddReferenceToProject (DotNetProject project)

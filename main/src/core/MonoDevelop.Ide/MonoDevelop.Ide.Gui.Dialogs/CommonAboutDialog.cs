@@ -130,8 +130,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				instance.Present ();
 				return;
 			}
-			
-			MessageService.ShowCustomDialog (new CommonAboutDialog ());
+
+			using (var dlg = new CommonAboutDialog ())
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 }
