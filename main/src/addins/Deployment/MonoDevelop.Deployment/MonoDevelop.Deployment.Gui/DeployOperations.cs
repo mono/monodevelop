@@ -18,6 +18,7 @@ namespace MonoDevelop.Deployment.Gui
 						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName, configuration);
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 		}
@@ -51,9 +52,10 @@ namespace MonoDevelop.Deployment.Gui
 		
 		public static void ShowPackageSettings (Package package)
 		{
-			EditPackageDialog dlg = new EditPackageDialog (package);
-			if (MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok)
-				IdeApp.ProjectOperations.SaveAsync (package.ParentProject);
+			using (EditPackageDialog dlg = new EditPackageDialog (package)) {
+				if (MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok)
+					IdeApp.ProjectOperations.SaveAsync (package.ParentProject);
+			}
 		}
 	}
 }

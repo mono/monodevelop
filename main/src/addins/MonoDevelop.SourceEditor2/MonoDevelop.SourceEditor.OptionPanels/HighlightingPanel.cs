@@ -83,8 +83,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void HandleButtonNewClicked (object sender, EventArgs e)
 		{
-			var newShemeDialog = new NewColorShemeDialog ();
-			MessageService.ShowCustomDialog (newShemeDialog, dialog);
+			using (var newShemeDialog = new NewColorShemeDialog ()) {
+				MessageService.ShowCustomDialog (newShemeDialog, dialog);
+			}
 			ShowStyles ();
 		}
 
@@ -113,10 +114,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var editor = new ColorShemeEditor (this);
-				var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
-				editor.SetSheme (colorScheme);
-				MessageService.ShowCustomDialog (editor, dialog);
+				using (var editor = new ColorShemeEditor (this)) {
+					var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+					editor.SetSheme (colorScheme);
+					MessageService.ShowCustomDialog (editor, dialog);
+				}
 			}
 		}
 		

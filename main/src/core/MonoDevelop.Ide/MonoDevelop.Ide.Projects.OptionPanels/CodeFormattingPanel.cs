@@ -395,6 +395,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

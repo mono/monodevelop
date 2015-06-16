@@ -65,10 +65,11 @@ namespace MonoDevelop.Components.Extensions
 
 		protected override bool RunDefault ()
 		{
-			var errorDialog = new MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog (TransientFor, Title, Message, Buttons);
-			errorDialog.AddDetails (Exception.ToString (), false);
-			int result = MonoDevelop.Ide.MessageService.ShowCustomDialog (errorDialog);
-			ResultButton = result >= 0 ? Buttons [result] : null;
+			using (var errorDialog = new MonoDevelop.Ide.Gui.Dialogs.GtkErrorDialog (TransientFor, Title, Message, Buttons)) {
+				errorDialog.AddDetails (Exception.ToString (), false);
+				int result = MonoDevelop.Ide.MessageService.ShowCustomDialog (errorDialog);
+				ResultButton = result >= 0 ? Buttons [result] : null;
+			}
 			return true;
 		}
 	}

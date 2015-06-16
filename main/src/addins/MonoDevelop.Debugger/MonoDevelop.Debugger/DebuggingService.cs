@@ -249,9 +249,10 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
-			var dlg = new ValueVisualizerDialog ();
-			dlg.Show (val);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new ValueVisualizerDialog ()) {
+				dlg.Show (val);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
@@ -321,12 +322,12 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			var dlg = new ExpressionEvaluatorDialog ();
+			using (var dlg = new ExpressionEvaluatorDialog ()) {
+				if (expression != null)
+					dlg.Expression = expression;
 
-			if (expression != null)
-				dlg.Expression = expression;
-
-			MessageService.ShowCustomDialog (dlg);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowExceptionCaughtDialog ()

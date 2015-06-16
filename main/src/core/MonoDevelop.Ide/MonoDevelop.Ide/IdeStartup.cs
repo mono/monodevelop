@@ -216,9 +216,10 @@ namespace MonoDevelop.Ide
 				ImageService.Initialize ();
 				
 				if (errorsList.Count > 0) {
-					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
-					if (!dlg.Run ())
-						return 1;
+					using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false)) {
+						if (!dlg.Run ())
+							return 1;
+					}
 					reportedFailures = errorsList.Count;
 				}
 
@@ -256,8 +257,8 @@ namespace MonoDevelop.Ide
 			}
 
 			if (errorsList.Count > reportedFailures) {
-				AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true);
-				dlg.Run ();
+				using (AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), true))
+					dlg.Run ();
 			}
 			
 			errorsList = null;

@@ -119,6 +119,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				} while (!done);
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -144,6 +145,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -170,6 +172,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				} while (!done);
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

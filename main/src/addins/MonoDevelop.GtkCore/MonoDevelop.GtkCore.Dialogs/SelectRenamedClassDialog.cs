@@ -88,7 +88,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		public void Dispose ()
 		{
-			dialog.Destroy ();
+			dialog.Dispose ();
 		}
 	}
 	

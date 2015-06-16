@@ -445,17 +445,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				return;
 			}
 
-			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot);
-			impdlg.AddFiles (foundFiles);
-			if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
-				return;
-				
-			var srcFiles = impdlg.SelectedFiles;
-			var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+			using (var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot)) {
+				impdlg.AddFiles (foundFiles);
+				if (MessageService.ShowCustomDialog (impdlg) != (int) ResponseType.Ok)
+					return;
+					
+				var srcFiles = impdlg.SelectedFiles;
+				var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
 
-			var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
-			if (added)
-				await IdeApp.ProjectOperations.SaveAsync (project);
+				var added = IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ();
+				if (added)
+					await IdeApp.ProjectOperations.SaveAsync (project);
+			}
 		}
 
 		///<summary>Adds an existing folder to the current folder</summary>
@@ -502,17 +503,18 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
 			
-			var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot.ParentDirectory);
-			impdlg.AddFiles (foundFiles);
-			if (MessageService.ShowCustomDialog (impdlg) == (int) ResponseType.Ok) {
-				var srcFiles = impdlg.SelectedFiles;
-				var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
-				if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
-					changedProject = true;
-			}
+			using (var impdlg = new IncludeNewFilesDialog (GettextCatalog.GetString ("Select files to add from {0}", srcRoot.FileName), srcRoot.ParentDirectory)) {
+				impdlg.AddFiles (foundFiles);
+				if (MessageService.ShowCustomDialog (impdlg) == (int)ResponseType.Ok) {
+					var srcFiles = impdlg.SelectedFiles;
+					var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
+					if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
+						changedProject = true;
+				}
 			
-			if (changedProject)
-				await IdeApp.ProjectOperations.SaveAsync (project);
+				if (changedProject)
+					await IdeApp.ProjectOperations.SaveAsync (project);
+			}
 		}
 		
 		[CommandHandler (ProjectCommands.NewFolder)]

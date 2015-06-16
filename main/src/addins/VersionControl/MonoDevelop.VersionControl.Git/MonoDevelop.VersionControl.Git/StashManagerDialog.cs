@@ -133,6 +133,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 				Respond (ResponseType.Ok);
 			}
