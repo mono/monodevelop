@@ -318,12 +318,12 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			var dlg = new ExpressionEvaluatorDialog ();
+			using (var dlg = new ExpressionEvaluatorDialog ()) {
+				if (expression != null)
+					dlg.Expression = expression;
 
-			if (expression != null)
-				dlg.Expression = expression;
-
-			MessageService.ShowCustomDialog (dlg);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowExceptionCaughtDialog ()
