@@ -17,6 +17,7 @@ namespace MonoDevelop.Deployment.Gui
 						DeployService.Install (mon, entry, dlg.Prefix, dlg.AppName, configuration);
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 		}

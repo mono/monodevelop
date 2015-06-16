@@ -75,6 +75,7 @@ namespace MonoDevelop.VersionControl.Git
 				});
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -106,6 +107,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

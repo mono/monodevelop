@@ -113,6 +113,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 		

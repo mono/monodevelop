@@ -255,6 +255,7 @@ namespace MonoDevelop.Ide.Execution
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			});
 			return cmode;

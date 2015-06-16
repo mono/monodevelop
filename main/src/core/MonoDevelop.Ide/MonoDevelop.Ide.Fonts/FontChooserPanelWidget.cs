@@ -99,6 +99,7 @@ namespace MonoDevelop.Ide.Fonts
 						setFontButton.Label = selectionDialog.FontName;
 					} finally {
 						selectionDialog.Destroy ();
+						selectionDialog.Dispose ();
 					}
 				};
 				hBox.PackStart (setFontButton, true, true, 0);

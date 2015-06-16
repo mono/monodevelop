@@ -153,6 +153,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					
 				} finally {
 					chooser.Destroy ();
+					chooser.Dispose ();
 				}
 			}
 			static IAsyncOperation currentUpdateTranslationOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;

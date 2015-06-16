@@ -166,6 +166,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
