@@ -1474,17 +1474,17 @@ namespace MonoDevelop.VersionControl.Git
 			RootRepository.Stage (".gitignore");
 		}
 
-		public override bool GetFileIsBinary (FilePath path)
+		public override bool GetFileIsText (FilePath path)
 		{
 			Commit c = GetHeadCommit (GetRepository (path));
 			if (c == null)
-				return base.GetFileIsBinary (path);
+				return base.GetFileIsText (path);
 
 			var blob = GetBlob (c, path);
 			if (blob == null)
-				return base.GetFileIsBinary (path);
+				return base.GetFileIsText (path);
 
-			return blob.IsBinary;
+			return !blob.IsBinary;
 		}
 	}
 

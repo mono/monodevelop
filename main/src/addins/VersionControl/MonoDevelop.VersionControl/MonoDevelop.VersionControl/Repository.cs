@@ -834,7 +834,7 @@ namespace MonoDevelop.VersionControl
 
 		protected abstract void OnUnignore (FilePath[] localPath);
 
-		public virtual bool GetFileIsBinary (FilePath path)
+		public virtual bool GetFileIsText (FilePath path)
 		{
 			return DesktopService.GetFileIsText (path);
 		}
