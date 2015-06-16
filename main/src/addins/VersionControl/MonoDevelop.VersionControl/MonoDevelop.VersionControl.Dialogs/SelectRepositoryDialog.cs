@@ -216,6 +216,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					UpdateRepoDescription ();
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 		}

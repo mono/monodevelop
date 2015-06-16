@@ -112,6 +112,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return false;
 			} finally {
 				win.Destroy ();
+				win.Dispose ();
 			}
 		}
 	}
