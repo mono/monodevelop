@@ -3502,6 +3502,7 @@
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionKeyHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\FirstCategory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NR5CompatibiltyExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

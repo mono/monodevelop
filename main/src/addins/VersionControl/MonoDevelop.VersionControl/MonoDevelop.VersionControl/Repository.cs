@@ -9,6 +9,7 @@ using MonoDevelop.Core;
 using System.Linq;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.VersionControl
 {
@@ -832,6 +833,11 @@ namespace MonoDevelop.VersionControl
 		}
 
 		protected abstract void OnUnignore (FilePath[] localPath);
+
+		public virtual bool GetFileIsText (FilePath path)
+		{
+			return DesktopService.GetFileIsText (path);
+		}
 	}
 	
 	public class Annotation

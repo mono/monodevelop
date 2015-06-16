@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide.Projects
 				return templatesHBox;
 			} else if (controller.IsLastPage) {
 				controller.FinalConfiguration.UpdateFromParameters ();
-				projectConfigurationWidget.Load (controller.FinalConfiguration);
+				projectConfigurationWidget.Load (controller.FinalConfiguration, controller.GetFinalPageControls ());
 				return projectConfigurationWidget;
 			} else {
 				return controller.CurrentWizardPage;
