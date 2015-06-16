@@ -420,6 +420,9 @@ namespace MonoDevelop.NUnit
 				    item,
 				    test.CanRun,
 				    info);
+
+				foreach (var ci in info)
+					ci.Enabled = runningTestOperation == null;
 			}
 		}
 		
