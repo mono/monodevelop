@@ -184,15 +184,12 @@ namespace MonoDevelop.DesignerSupport
 				TooltipText = GettextCatalog.GetString ("Open preferences dialog"),
 			};
 			preferencesButton.Clicked += delegate {
-				var dialog = new ClassOutlineSortingPreferencesDialog (settings);
-				try {
+				using (var dialog = new ClassOutlineSortingPreferencesDialog (settings)) {
 					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
 						dialog.SaveSettings ();
 						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
-				} finally {
-					dialog.Destroy ();
 				}
 			};
 			

@@ -124,6 +124,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					MessageService.PlaceDialog (instance, IdeApp.Workbench.RootWindow);
 					instance.Response += delegate {
 						instance.Destroy ();
+						instance.Dispose ();
 						instance = null;
 					};
 				}
