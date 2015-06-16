@@ -37,7 +37,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
 using System.Threading.Tasks;
 

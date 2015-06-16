@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Core;
 using Mono.Cecil;
-using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Ide.TypeSystem
 {

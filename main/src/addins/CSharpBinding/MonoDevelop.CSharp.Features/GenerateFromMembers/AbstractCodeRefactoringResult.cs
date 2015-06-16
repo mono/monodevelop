@@ -2,7 +2,7 @@
 
 using System.Threading;
 using Microsoft.CodeAnalysis.CodeRefactorings;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers
 {

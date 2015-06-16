@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.Threading;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable

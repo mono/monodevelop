@@ -27,14 +27,14 @@ using System;
 using System.Text;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.Serialization;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials.CSharp.Diagnostics;
 
 namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 {
 	[DataItem ("NamingRule")]
 	sealed class NameConventionRule
 	{
-		ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule wrappedRule = new ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule (ICSharpCode.NRefactory6.CSharp.Diagnostics.AffectedEntity.None);
+		NamingRule wrappedRule = new NamingRule (AffectedEntity.None);
 
 		[ItemProperty]
 		public string Name {
@@ -73,19 +73,19 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 		}
 
 		[ItemProperty]
-		public ICSharpCode.NRefactory6.CSharp.Diagnostics.AffectedEntity AffectedEntity {
+		public AffectedEntity AffectedEntity {
 			get { return wrappedRule.AffectedEntity; } 
 			set { wrappedRule.AffectedEntity = value;} 
 		}
 
 		[ItemProperty]
-		public ICSharpCode.NRefactory6.CSharp.Diagnostics.Modifiers VisibilityMask {
+		public Modifiers VisibilityMask {
 			get { return wrappedRule.VisibilityMask; } 
 			set { wrappedRule.VisibilityMask = value;} 
 		}
 
 		[ItemProperty]
-		public ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingStyle NamingStyle {
+		public NamingStyle NamingStyle {
 			get { return wrappedRule.NamingStyle; } 
 			set { wrappedRule.NamingStyle = value;} 
 		}
@@ -102,7 +102,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			set { wrappedRule.IncludeStaticEntities = value;} 
 		}
 
-		internal NameConventionRule (ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule wrappedRule)
+		internal NameConventionRule (NamingRule wrappedRule)
 		{
 			this.wrappedRule = wrappedRule;
 		}
@@ -123,7 +123,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			return wrappedRule.GetPreview ();
 		}
 
-		internal ICSharpCode.NRefactory6.CSharp.Diagnostics.NamingRule GetNRefactoryRule ()
+		internal NamingRule GetNRefactoryRule ()
 		{
 			return wrappedRule;
 		}

@@ -39,7 +39,7 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.CodeActions;
 using System;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core;

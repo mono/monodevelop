@@ -35,7 +35,6 @@ using MonoDevelop.Ide.Tasks;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Linq;
-using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 

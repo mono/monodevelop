@@ -37,7 +37,6 @@ using MonoDevelop.Core.Text;
 using Gtk;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Components.MainToolbar
 {

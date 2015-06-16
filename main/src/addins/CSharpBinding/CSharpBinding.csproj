@@ -121,10 +121,9 @@
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
       <Name>ICSharpCode.NRefactory.Xml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NRefactory6\NR6Pack\NR6Pack.csproj">
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>NR6Pack</Name>
-      <Private>False</Private>
+      <Name>RefactoringEssentials</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
