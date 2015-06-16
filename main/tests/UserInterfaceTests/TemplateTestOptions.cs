@@ -73,5 +73,16 @@ namespace UserInterfaceTests
 
 		public bool UseGitIgnore { get; set; }
 	}
+
+	public class ProjectDetails
+	{
+		public string ProjectName { get; set; }
+
+		public string SolutionName { get; set; }
+
+		public string SolutionLocation { get; set; }
+
+		public bool ProjectInSolution { get; set; }
+	}
 }
 
