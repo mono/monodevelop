@@ -85,12 +85,12 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			dialog.DefaultWidth = 500;
 			dialog.DefaultHeight = 400;
 			dialog.ShowAll ();
-			return MonoDevelop.Ide.MessageService.RunCustomDialog (dialog, parent);
+			return MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, parent);
 		}
 		
 		public void Dispose ()
 		{
-			dialog.Destroy ();
+			dialog.Dispose ();
 		}
 		
 		void OnToggled (object s, Gtk.ToggledArgs args)

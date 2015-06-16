@@ -149,6 +149,7 @@ namespace MonoDevelop.Ide.Commands
 					newLayoutName = dlg.LayoutName; 
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 			if (newLayoutName != null) {
 				IdeApp.Workbench.CurrentLayout = newLayoutName;

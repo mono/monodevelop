@@ -116,9 +116,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var template = GetSelectedTemplate ();
 			if (template != null) {
 				templatesToSave.Add (template);
-				var editDialog = new EditTemplateDialog (template, false);
-				if (MessageService.ShowCustomDialog (editDialog, this.Toplevel as Gtk.Window) == (int)ResponseType.Ok)
-					templatesToSave.Add (template);
+				using (var editDialog = new EditTemplateDialog (template, false))
+					if (MessageService.ShowCustomDialog (editDialog, this.Toplevel as Gtk.Window) == (int)ResponseType.Ok)
+						templatesToSave.Add (template);
 				HandleChanged (this, EventArgs.Empty);
 			}
 		}
@@ -134,11 +134,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 		void ButtonAddClicked (object sender, EventArgs e)
 		{
 			var newTemplate = new CodeTemplate ();
-			var editDialog = new EditTemplateDialog (newTemplate, true);
-			if (MessageService.ShowCustomDialog (editDialog, this.Toplevel as Gtk.Window) == (int)ResponseType.Ok) {
-				InsertTemplate (newTemplate);
-				templates.Add (newTemplate);
-				templatesToSave.Add (newTemplate);
+			using (var editDialog = new EditTemplateDialog (newTemplate, true)) {
+				if (MessageService.ShowCustomDialog (editDialog, this.Toplevel as Gtk.Window) == (int)ResponseType.Ok) {
+					InsertTemplate (newTemplate);
+					templates.Add (newTemplate);
+					templatesToSave.Add (newTemplate);
+				}
 			}
 		}
 		

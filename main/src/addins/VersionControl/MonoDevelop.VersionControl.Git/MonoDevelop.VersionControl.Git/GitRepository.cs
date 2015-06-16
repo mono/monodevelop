@@ -800,6 +800,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			});
 			return res;
@@ -858,6 +859,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 					} finally {
 						dlg.Destroy ();
+						dlg.Dispose ();
 					}
 				});
 
