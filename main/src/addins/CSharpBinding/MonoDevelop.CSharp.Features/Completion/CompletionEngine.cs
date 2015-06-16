@@ -38,7 +38,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	partial class CompletionEngine 
+	public partial class CompletionEngine 
 	{
 		static CompletionContextHandler[] handlers = {
 			new RoslynRecommendationsCompletionContextHandler (),

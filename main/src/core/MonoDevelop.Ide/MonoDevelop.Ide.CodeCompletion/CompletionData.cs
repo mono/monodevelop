@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 	}
 
-	class ISymbolCompletionData : CompletionData
+	public class ISymbolCompletionData : CompletionData
 	{
 		public virtual Microsoft.CodeAnalysis.ISymbol Symbol {
 			get;

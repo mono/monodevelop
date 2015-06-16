@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		NamedParameter
 	}
 
-	interface ICompletionDataFactory
+	public interface ICompletionDataFactory
 	{
 		CompletionData CreateGenericData (ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType = GenericDataType.Undefined);
 
