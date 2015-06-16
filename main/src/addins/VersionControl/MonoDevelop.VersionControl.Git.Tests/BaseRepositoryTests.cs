@@ -273,10 +273,28 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
-			int index = 0;
-			foreach (Revision rev in Repo.GetHistory (LocalPath + "testfile", null)) {
-				Assert.AreEqual (String.Format ("Commit #{0}", index++), rev.Message);
-			}
+			AddFile ("testfile3", null, true, true);
+
+			CheckLog (Repo);
+		}
+
+		protected abstract void CheckLog (Repository repo);
+
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(2)]
+		// Tests Repository.GetHistory with slices.
+		public void LogSinceWorks (int historyId)
+		{
+			AddFile ("testfile", null, true, true);
+			AddFile ("testfile2", null, true, true);
+			AddFile ("testfile3", null, true, true);
+
+			var history = Repo.GetHistory (LocalPath, null);
+			foreach (var rev in Repo.GetHistory (LocalPath, history[historyId]))
+				Assert.AreNotEqual (history [historyId].GetPrevious (), rev, "The revision was found in slice, yet should not be in it.");
+
+			Assert.True (history.Any (r => r == history[historyId]));
 		}
 
 		[Test]
