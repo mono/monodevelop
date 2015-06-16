@@ -311,7 +311,7 @@ namespace MonoDevelop.VersionControl.Git
 			var revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
-			var sinceRev = (GitRevision)since;
+			//var sinceRev = (GitRevision)since;
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
 				return new GitRevision [0];
