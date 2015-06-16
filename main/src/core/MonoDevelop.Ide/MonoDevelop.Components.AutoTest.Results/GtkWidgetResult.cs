@@ -184,12 +184,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		object GetPropertyValue (string propertyName)
+		protected object GetPropertyValue (string propertyName, object requestedObject = null)
 		{
 			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				PropertyInfo propertyInfo = resultWidget.GetType().GetProperty(propertyName);
+				requestedObject = requestedObject ?? resultWidget;
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName);
 				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (resultWidget);
+					var propertyValue = propertyInfo.GetValue (requestedObject);
 					if (propertyValue != null) {
 						return propertyValue;
 					}

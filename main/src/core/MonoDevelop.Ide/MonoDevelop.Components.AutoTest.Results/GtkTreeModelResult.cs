@@ -29,7 +29,7 @@ using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
-	public class GtkTreeModelResult : AppResult
+	public class GtkTreeModelResult : GtkWidgetResult
 	{
 		Widget ParentWidget;
 		TreeModel TModel;
@@ -37,14 +37,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
@@ -103,7 +103,20 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return null;
+			TModel.Foreach ((m, p, i) => {
+				var objectToCompare = TModel.GetValue (i, Column);
+				foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
+					objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
+				}
+				if (object.Equals (objectToCompare, value)) {
+					resultIter = i;
+					return true;
+				}
+
+				return false;
+			});
+
+			return resultIter.HasValue ? this : null;
 		}
 
 		public override List<AppResult> NextSiblings ()
