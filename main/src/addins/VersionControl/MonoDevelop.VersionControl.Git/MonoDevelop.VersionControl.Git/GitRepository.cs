@@ -318,7 +318,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			var sinceRev = since != null ? ((GitRevision)since).Commit : null;
 			IEnumerable<Commit> commits = repository.Commits;
-			if (localFile.CanonicalPath != RootPath.CanonicalPath) {
+			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
 					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
