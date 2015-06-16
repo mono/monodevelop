@@ -271,6 +271,9 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetHistory.
 		public void LogIsProper ()
 		{
+			if (!Platform.IsWindows)
+				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
+
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
 			AddFile ("testfile3", null, true, true);
@@ -286,6 +289,9 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetHistory with slices.
 		public void LogSinceWorks (int historyId)
 		{
+			if (!Platform.IsWindows)
+				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
+
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
 			AddFile ("testfile3", null, true, true);
