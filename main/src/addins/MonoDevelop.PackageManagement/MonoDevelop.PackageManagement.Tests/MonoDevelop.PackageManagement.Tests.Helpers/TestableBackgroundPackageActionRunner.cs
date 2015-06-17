@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -34,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
 	{
-		MessageHandler backgroundDispatcher;
+		public List<MessageHandler> BackgroundDispatchersQueued = new List<MessageHandler> ();
 
 		public TestableBackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -42,16 +43,45 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IProgressProvider progressProvider)
 			: base (progressMonitorFactory, packageManagementEvents, progressProvider)
 		{
+			Init ();
+		}
+
+		void Init ()
+		{
+			CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
+				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+				return EventsMonitor;
+			};
+		}
+
+		public void ExecuteSingleBackgroundDispatch ()
+		{
+			BackgroundDispatchersQueued [0].Invoke ();
+			BackgroundDispatchersQueued.RemoveAt (0);
 		}
 
 		public void ExecuteBackgroundDispatch ()
 		{
-			backgroundDispatcher.Invoke ();
+			foreach (MessageHandler dispatcher in BackgroundDispatchersQueued) {
+				dispatcher.Invoke ();
+			}
+			BackgroundDispatchersQueued.Clear ();
 		}
 
 		protected override void BackgroundDispatch (MessageHandler handler)
 		{
-			backgroundDispatcher = handler;
+			BackgroundDispatchersQueued.Add (handler);
+		}
+
+		public bool InvokeBackgroundDispatchAndWaitImmediately = true;
+
+		protected override void BackgroundDispatchAndWait (MessageHandler handler)
+		{
+			if (InvokeBackgroundDispatchAndWaitImmediately) {
+				handler.Invoke ();
+			} else {
+				BackgroundDispatchersQueued.Add (handler);
+			}
 		}
 
 		protected override void GuiDispatch (MessageHandler handler)
@@ -59,13 +89,17 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			handler.Invoke ();
 		}
 
+		public Func<IProgressMonitor,
+			IPackageManagementEvents,
+			IProgressProvider,
+			PackageManagementEventsMonitor> CreateEventMonitorAction;
+
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
 			IProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
-			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
-			return EventsMonitor;
+			return CreateEventMonitorAction (monitor, packageManagementEvents, progressProvider);
 		}
 
 		public TestablePackageManagementEventsMonitor EventsMonitor;
