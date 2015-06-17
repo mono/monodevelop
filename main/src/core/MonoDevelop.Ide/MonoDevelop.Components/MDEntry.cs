@@ -115,6 +115,11 @@ namespace MonoDevelop.Components
 		void PasteText ()
 		{
 			if (IsEditable) {
+				var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				clipboard.RequestText ((cb, text) => {
+					InsertText (text);
+				});
 			} else {
 				ErrorBell ();
 			}
