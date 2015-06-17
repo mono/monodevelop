@@ -69,6 +69,7 @@
     <Compile Include="VersionControlTests\SvnTests.cs" />
     <Compile Include="VersionControlTests\GitRepositoryConfigurationTests.cs" />
     <Compile Include="DialogTests\NewProjectDialogTests.cs" />
+    <Compile Include="NewFileController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

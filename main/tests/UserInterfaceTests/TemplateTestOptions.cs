@@ -84,5 +84,18 @@ namespace UserInterfaceTests
 
 		public bool ProjectInSolution { get; set; }
 	}
+
+	public class NewFileOptions
+	{
+		public string FileName { get; set; }
+
+		public string FileType { get; set; }
+
+		public string FileTypeCategory { get; set; }
+
+		public string FileTypeCategoryRoot { get; set; }
+
+		public string AddToProjectName { get; set; }
+	}
 }
 
