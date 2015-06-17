@@ -70,6 +70,7 @@
     <Compile Include="VersionControlTests\GitRepositoryConfigurationTests.cs" />
     <Compile Include="DialogTests\NewProjectDialogTests.cs" />
     <Compile Include="NewFileController.cs" />
+    <Compile Include="IdeQuery.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

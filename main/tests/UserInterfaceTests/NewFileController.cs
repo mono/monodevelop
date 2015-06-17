@@ -55,9 +55,9 @@ namespace UserInterfaceTests
 
 		public void Open ()
 		{
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench"));
+			Session.WaitForElement (IdeQuery.DefaultWorkbench);
 			Session.ExecuteCommand (FileCommands.NewFile);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.NewFileDialog"));
+			Session.WaitForElement (IdeQuery.NewFileDialog);
 			takeScreenshot ("NewFileDialog-Opened");
 		}
 
@@ -94,7 +94,7 @@ namespace UserInterfaceTests
 
 		public bool Done ()
 		{
-			return Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.Ide.Projects.NewFileDialog").Children ().Button ().Marked ("okButton"));
+			return Session.ClickElement (c => IdeQuery.NewFileDialog (c).Children ().Button ().Marked ("okButton"));
 		}
 	}
 }
