@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide
 			JumpTo (symbol, locations.FirstOrDefault (), project);
 		}
 
-		public async void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null)
+		public async void JumpToMetadata (string metadataDllName, string documentationCommentId, Project project = null, bool openInPublicOnlyMode = true)
 		{
 			if (metadataDllName == null)
 				throw new ArgumentNullException ("metadataDllName");
@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide
 				doc.RunWhenLoaded (delegate {
 					var handler = doc.PrimaryView.GetContent<MonoDevelop.Ide.Gui.Content.IOpenNamedElementHandler> ();
 					if (handler != null)
-						handler.Open (documentationCommentId);
+						handler.Open (documentationCommentId, openInPublicOnlyMode);
 				});
 			}
 		}
