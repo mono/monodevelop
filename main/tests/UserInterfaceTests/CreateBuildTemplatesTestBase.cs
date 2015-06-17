@@ -106,6 +106,22 @@ namespace UserInterfaceTests
 			}
 		}
 
+		public void CreateProject (TemplateSelectionOptions templateOptions,
+			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
+		{
+			var newProject = new NewProjectController ();
+			newProject.Open ();
+			TakeScreenShot ("Open");
+
+			OnSelectTemplate (newProject, templateOptions);
+
+			OnEnterTemplateSpecificOptions (newProject, projectDetails.ProjectName, miscOptions);
+
+			OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
+
+			OnClickCreate (newProject);
+		}
+
 		protected virtual void OnSelectTemplate (NewProjectController newProject, TemplateSelectionOptions templateOptions)
 		{
 			Assert.IsTrue (newProject.SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category));
