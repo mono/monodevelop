@@ -79,17 +79,7 @@ namespace UserInterfaceTests
 				ProjectInSolution = true
 			};
 			try {
-				var newProject = new NewProjectController ();
-				newProject.Open ();
-				TakeScreenShot ("Open");
-
-				OnSelectTemplate (newProject, templateOptions);
-
-				OnEnterTemplateSpecificOptions (newProject, projectName, miscOptions);
-
-				OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
-
-				OnClickCreate (newProject);
+				CreateProject (templateOptions,projectDetails, gitOptions, miscOptions);
 
 				try {
 					beforeBuild ();
