@@ -8,11 +8,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		private global::Gtk.Table table3;
 
-		private global::Gtk.Entry entryName;
+		private global::MonoDevelop.Components.MDEntry entryName;
 
-		private global::Gtk.Entry entryPushUrl;
+		private global::MonoDevelop.Components.MDEntry entryPushUrl;
 
-		private global::Gtk.Entry entryUrl;
+		private global::MonoDevelop.Components.MDEntry entryUrl;
 
 		private global::Gtk.Label label7;
 
@@ -48,7 +48,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.table3.RowSpacing = ((uint)(6));
 			this.table3.ColumnSpacing = ((uint)(6));
 			// Container child table3.Gtk.Table+TableChild
-			this.entryName = new global::Gtk.Entry ();
+			this.entryName = new global::MonoDevelop.Components.MDEntry ();
 			this.entryName.CanFocus = true;
 			this.entryName.Name = "entryName";
 			this.entryName.IsEditable = true;
@@ -57,9 +57,10 @@ namespace MonoDevelop.VersionControl.Git
 			global::Gtk.Table.TableChild w2 = ((global::Gtk.Table.TableChild)(this.table3 [this.entryName]));
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
+			w2.XOptions = ((global::Gtk.AttachOptions)(4));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.entryPushUrl = new global::Gtk.Entry ();
+			this.entryPushUrl = new global::MonoDevelop.Components.MDEntry ();
 			this.entryPushUrl.CanFocus = true;
 			this.entryPushUrl.Name = "entryPushUrl";
 			this.entryPushUrl.IsEditable = true;
@@ -70,9 +71,10 @@ namespace MonoDevelop.VersionControl.Git
 			w3.BottomAttach = ((uint)(3));
 			w3.LeftAttach = ((uint)(1));
 			w3.RightAttach = ((uint)(2));
+			w3.XOptions = ((global::Gtk.AttachOptions)(4));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
-			this.entryUrl = new global::Gtk.Entry ();
+			this.entryUrl = new global::MonoDevelop.Components.MDEntry ();
 			this.entryUrl.CanFocus = true;
 			this.entryUrl.Name = "entryUrl";
 			this.entryUrl.IsEditable = true;
@@ -83,6 +85,7 @@ namespace MonoDevelop.VersionControl.Git
 			w4.BottomAttach = ((uint)(2));
 			w4.LeftAttach = ((uint)(1));
 			w4.RightAttach = ((uint)(2));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
 			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
 			this.label7 = new global::Gtk.Label ();

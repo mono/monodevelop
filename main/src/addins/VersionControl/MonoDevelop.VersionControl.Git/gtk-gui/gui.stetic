@@ -895,7 +895,7 @@
                   <placeholder />
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entryName">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1075,7 +1075,7 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="Gtk.Entry" id="entryName">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1086,8 +1086,9 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -1096,7 +1097,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entryPushUrl">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryPushUrl">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1109,8 +1110,9 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -1119,7 +1121,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entryUrl">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryUrl">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
@@ -1132,8 +1134,9 @@
                     <property name="LeftAttach">1</property>
                     <property name="RightAttach">2</property>
                     <property name="AutoSize">True</property>
+                    <property name="XOptions">Fill</property>
                     <property name="YOptions">Fill</property>
-                    <property name="XExpand">True</property>
+                    <property name="XExpand">False</property>
                     <property name="XFill">True</property>
                     <property name="XShrink">False</property>
                     <property name="YExpand">False</property>
@@ -1768,9 +1771,10 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Entry" id="entryComment">
+              <widget class="MonoDevelop.Components.MDEntry" id="entryComment">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
+                <property name="Type">Custom</property>
                 <property name="IsEditable">True</property>
                 <property name="InvisibleChar">●</property>
               </widget>
@@ -1886,9 +1890,10 @@
                 <property name="RowSpacing">6</property>
                 <property name="ColumnSpacing">6</property>
                 <child>
-                  <widget class="Gtk.Entry" id="entryEmail">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryEmail">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Type">Custom</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
@@ -1909,9 +1914,10 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Gtk.Entry" id="entryName">
+                  <widget class="MonoDevelop.Components.MDEntry" id="entryName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
+                    <property name="Type">Custom</property>
                     <property name="IsEditable">True</property>
                     <property name="InvisibleChar">●</property>
                     <signal name="Changed" handler="OnChanged" />
@@ -2017,9 +2023,10 @@
                     <property name="Xalign">1</property>
                     <property name="Yalign">1</property>
                     <child>
-                      <widget class="Gtk.Entry" id="usernameEntry">
+                      <widget class="MonoDevelop.Components.MDEntry" id="usernameEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="Type">Custom</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                         <signal name="Changed" handler="OnChanged" />
@@ -2062,9 +2069,10 @@
                     <property name="Xalign">1</property>
                     <property name="Yalign">1</property>
                     <child>
-                      <widget class="Gtk.Entry" id="emailEntry">
+                      <widget class="MonoDevelop.Components.MDEntry" id="emailEntry">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
+                        <property name="Type">Custom</property>
                         <property name="IsEditable">True</property>
                         <property name="InvisibleChar">●</property>
                         <signal name="Changed" handler="OnChanged" />

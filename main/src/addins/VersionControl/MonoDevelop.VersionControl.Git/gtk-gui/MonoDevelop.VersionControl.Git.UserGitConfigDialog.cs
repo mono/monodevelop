@@ -12,7 +12,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		private global::Gtk.Alignment alignment8;
 		
-		private global::Gtk.Entry usernameEntry;
+		private global::MonoDevelop.Components.MDEntry usernameEntry;
 		
 		private global::Gtk.HBox hbox6;
 		
@@ -20,7 +20,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		private global::Gtk.Alignment alignment7;
 		
-		private global::Gtk.Entry emailEntry;
+		private global::MonoDevelop.Components.MDEntry emailEntry;
 		
 		private global::Gtk.Button buttonCancel;
 		
@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.alignment8 = new global::Gtk.Alignment (1F, 1F, 0.9F, 1F);
 			this.alignment8.Name = "alignment8";
 			// Container child alignment8.Gtk.Container+ContainerChild
-			this.usernameEntry = new global::Gtk.Entry ();
+			this.usernameEntry = new global::MonoDevelop.Components.MDEntry ();
 			this.usernameEntry.CanFocus = true;
 			this.usernameEntry.Name = "usernameEntry";
 			this.usernameEntry.IsEditable = true;
@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.alignment7 = new global::Gtk.Alignment (1F, 1F, 0.71F, 1F);
 			this.alignment7.Name = "alignment7";
 			// Container child alignment7.Gtk.Container+ContainerChild
-			this.emailEntry = new global::Gtk.Entry ();
+			this.emailEntry = new global::MonoDevelop.Components.MDEntry ();
 			this.emailEntry.CanFocus = true;
 			this.emailEntry.Name = "emailEntry";
 			this.emailEntry.IsEditable = true;

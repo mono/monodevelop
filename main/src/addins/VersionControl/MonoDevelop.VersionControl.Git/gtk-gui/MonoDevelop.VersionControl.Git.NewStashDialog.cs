@@ -6,7 +6,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		private global::Gtk.HBox hbox3;
 		private global::Gtk.Label label3;
-		private global::Gtk.Entry entryComment;
+		private global::MonoDevelop.Components.MDEntry entryComment;
 		private global::Gtk.Button buttonCancel;
 		private global::Gtk.Button buttonOk;
 		
@@ -36,7 +36,7 @@ namespace MonoDevelop.VersionControl.Git
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
-			this.entryComment = new global::Gtk.Entry ();
+			this.entryComment = new global::MonoDevelop.Components.MDEntry ();
 			this.entryComment.CanFocus = true;
 			this.entryComment.Name = "entryComment";
 			this.entryComment.IsEditable = true;

@@ -9,8 +9,8 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.CheckButton checkAuthor;
 		private global::Gtk.Alignment authorBox;
 		private global::Gtk.Table table1;
-		private global::Gtk.Entry entryEmail;
-		private global::Gtk.Entry entryName;
+		private global::MonoDevelop.Components.MDEntry entryEmail;
+		private global::MonoDevelop.Components.MDEntry entryName;
 		private global::Gtk.Label labelMail;
 		private global::Gtk.Label labelName;
 		
@@ -58,7 +58,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.table1.RowSpacing = ((uint)(6));
 			this.table1.ColumnSpacing = ((uint)(6));
 			// Container child table1.Gtk.Table+TableChild
-			this.entryEmail = new global::Gtk.Entry ();
+			this.entryEmail = new global::MonoDevelop.Components.MDEntry ();
 			this.entryEmail.CanFocus = true;
 			this.entryEmail.Name = "entryEmail";
 			this.entryEmail.IsEditable = true;
@@ -71,7 +71,7 @@ namespace MonoDevelop.VersionControl.Git
 			w3.RightAttach = ((uint)(2));
 			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
-			this.entryName = new global::Gtk.Entry ();
+			this.entryName = new global::MonoDevelop.Components.MDEntry ();
 			this.entryName.CanFocus = true;
 			this.entryName.Name = "entryName";
 			this.entryName.IsEditable = true;
