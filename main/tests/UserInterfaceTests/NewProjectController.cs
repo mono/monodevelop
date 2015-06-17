@@ -107,17 +107,16 @@ namespace UserInterfaceTests
 			return results.Length > 0;
 		}
 
-		public void ValidatePreviewTree (TemplateSelectionOptions templateOptions, string solutionName, string location,
-						bool projectWithinSolution, GitOptions gitOptions)
+		public void ValidatePreviewTree (ProjectDetails projectDetails, GitOptions gitOptions)
 		{
 			const string treeName = "folderTreeView";
 			const string nameColumn = "folderTreeStore__NodeName";
-			var rootFolder = projectWithinSolution ? solutionName : templateOptions.ProjectName;
-			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location)));
-			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder)));
+			var rootFolder = projectDetails.ProjectInSolution ? projectDetails.SolutionName : projectDetails.ProjectName;
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation)));
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder)));
 
-			Func<AppQuery, AppQuery> checkForGit = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Index (0).Contains ("<span color='#AAAAAA'>.git</span>");
-			Func<AppQuery, AppQuery> checkForGitIgnore = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Index (1).Contains ("<span color='#AAAAAA'>.gitignore</span>");
+			Func<AppQuery, AppQuery> checkForGit = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Index (0).Contains ("<span color='#AAAAAA'>.git</span>");
+			Func<AppQuery, AppQuery> checkForGitIgnore = c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Index (1).Contains ("<span color='#AAAAAA'>.gitignore</span>");
 
 			if (gitOptions.UseGit) {
 				Assert.IsNotEmpty (Session.Query (checkForGit));
@@ -130,13 +129,13 @@ namespace UserInterfaceTests
 				Assert.IsEmpty (Session.Query (checkForGitIgnore));
 			}
 
-			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (solutionName + ".sln")));
+			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Contains (projectDetails.SolutionName + ".sln")));
 
-			if (projectWithinSolution) {
-				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName)));
-				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName).Children ().Contains (templateOptions.ProjectName + ".csproj")));
+			if (projectDetails.ProjectInSolution) {
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Contains (projectDetails.ProjectName)));
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Contains (projectDetails.ProjectName).Children ().Contains (projectDetails.ProjectName + ".csproj")));
 			} else {
-				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (location).Children ().Contains (rootFolder).Children ().Contains (templateOptions.ProjectName + ".csproj")));
+				Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked (treeName).Model (nameColumn).Contains (projectDetails.SolutionLocation).Children ().Contains (rootFolder).Children ().Contains (projectDetails.ProjectName + ".csproj")));
 			}
 		}
 	}
