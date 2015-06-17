@@ -173,7 +173,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 						finally {
 							monitor.Dispose ();
-							statusTracker.NotifyChanges ();
+							statusTracker.Dispose ();
 						}
 					});
 				}
@@ -205,7 +205,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				finally {
 					monitor.Dispose ();
-					statusTracker.NotifyChanges ();
+					statusTracker.Dispose ();
 				}
 			});
 		}
