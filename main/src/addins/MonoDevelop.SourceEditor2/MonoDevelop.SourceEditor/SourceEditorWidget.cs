@@ -473,6 +473,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (!isDisposed) {
 				vbox.Destroy ();
+				isDisposed = true;
 			}
 		}
 		
