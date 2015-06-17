@@ -27,6 +27,7 @@
 using NUnit.Framework;
 using System;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Components.AutoTest;
 
 namespace UserInterfaceTests
 {
@@ -162,12 +163,16 @@ namespace UserInterfaceTests
 	{
 		#region Remotes
 
+		Func<AppQuery, AppQuery> remoteTreeName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name");
+		Func<AppQuery, AppQuery> remoteTreeUrl = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url");
+		Func<AppQuery, AppQuery> remoteTreeFullName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName");
+
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
-			Session.WaitForElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName));
-			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName)));
+			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
+			Assert.IsTrue (Session.SelectElement (c => remoteTreeName (c).Contains (remoteName)));
 			if (remoteUrl != null) {
-				Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url").Contains (remoteUrl)));
+				Assert.IsTrue (Session.SelectElement (c => remoteTreeUrl (c).Contains (remoteUrl)));
 			}
 			TakeScreenShot (string.Format ("{0}-Remote-Selected", remoteName));
 		}
@@ -186,37 +191,44 @@ namespace UserInterfaceTests
 		{
 			SelectRemote (remoteName);
 
-			Assert.IsEmpty (Session.Query (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/")));
-			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonFetch")));
+			Assert.IsEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
+			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonFetch")));
 			TakeScreenShot ("Fetch-Remote");
 
-			Session.ClickElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name").Contains (remoteName));
-			Assert.IsNotEmpty (Session.Query (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/")));
-			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName").Contains (remoteName+"/").Index (0)));
+			Session.ClickElement (c => remoteTreeName (c).Contains (remoteName));
+			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
+			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/").Index (0)));
 			TakeScreenShot ("First-Remote-Branch-Selected");
 		}
 
 		void AddEditRemote (string buttonName, string newRemoteName, string remoteUrl, string remotePushUrl)
 		{
-			Assert.IsNotEmpty (Session.Query (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName)));
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName), false);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog"));
-			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryName"), newRemoteName));
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryName").Text (newRemoteName));
-			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryUrl"), remoteUrl));
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryUrl").Text (remoteUrl));
-			Assert.IsTrue (Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryPushUrl"), remotePushUrl ?? remoteUrl));
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Textfield ().Marked ("entryPushUrl").Text (remotePushUrl ?? remoteUrl));
+			Assert.IsNotEmpty (Session.Query (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked (buttonName)));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked (buttonName), false);
+			Session.WaitForElement (IdeQuery.EditRemoteDialog);
+
+			Func<AppQuery, AppQuery> EditRemoteDialogChildren = c => IdeQuery.EditRemoteDialog (c).Children ();
+			Assert.IsTrue (Session.EnterText (c => EditRemoteDialogChildren (c).Textfield ().Marked ("entryName"), newRemoteName));
+			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryName").Text (newRemoteName));
+
+			Assert.IsTrue (Session.EnterText (c => EditRemoteDialogChildren (c).Textfield ().Marked ("entryUrl"), remoteUrl));
+			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Marked ("entryUrl").Text (remoteUrl));
+
+			Assert.IsTrue (Session.EnterText (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryPushUrl"), remotePushUrl ?? remoteUrl));
+			Session.WaitForElement (c =>  EditRemoteDialogChildren (c).Textfield ().Marked ("entryPushUrl").Text (remotePushUrl ?? remoteUrl));
 			TakeScreenShot ("Remote-Details-Filled");
-			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog").Children ().Button ().Marked ("buttonOk")));
-			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog"));
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+
+			Assert.IsTrue (Session.ClickElement (c =>  EditRemoteDialogChildren (c).Button ().Marked ("buttonOk")));
+			Session.WaitForNoElement (IdeQuery.EditRemoteDialog);
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 			TakeScreenShot ("Remote-Edit-Dialog-Closed");
 		}
 
 		#endregion
 
 		#region Branches
+
+		Func<AppQuery, AppQuery> branchDisplayName = c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName");
 
 		protected void CreateNewBranch (string newBranchName)
 		{
@@ -231,14 +243,16 @@ namespace UserInterfaceTests
 
 		protected void CreateEditBranch (string buttonName, string newBranchName)
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked (buttonName), false);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog"));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked (buttonName), false);
+			Session.WaitForElement (IdeQuery.EditBranchDialog);
 			TakeScreenShot ("Edit-Branch-Dialog-Opened");
-			Session.EnterText (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Textfield ().Marked ("entryName"), newBranchName);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Textfield ().Marked ("entryName").Text (newBranchName));
+
+			Session.EnterText (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName"), newBranchName);
+			Session.WaitForElement (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName").Text (newBranchName));
 			TakeScreenShot ("Branch-Name-Entered");
-			Assert.IsTrue (Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog").Children ().Button ().Marked ("buttonOk")));
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+
+			Assert.IsTrue (Session.ClickElement (c => IdeQuery.EditBranchDialog (c).Children ().Button ().Marked ("buttonOk")));
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 			TakeScreenShot ("Edit-Branch-Dialog-Opened-Closed");
 		}
 
@@ -246,31 +260,33 @@ namespace UserInterfaceTests
 		{
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
+
 			try {
-				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
+				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 				TakeScreenShot ("Git-User-Not-Configured");
 				EnterGitUserConfig ("John Doe", "john.doe@example.com");
 			} catch (TimeoutException e) { }
+
 			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
 
 		protected void SwitchTab (string tabName)
 		{
-			Assert.IsTrue (Session.SelectElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Notebook ().Marked ("notebook1").Text (tabName)));
+			Assert.IsTrue (Session.SelectElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Notebook ().Marked ("notebook1").Text (tabName)));
 			TakeScreenShot (string.Format ("Tab-Changed-{0}", GenerateProjectName (tabName)));
 		}
 
 		protected void SelectBranch (string branchName)
 		{
-			Assert.IsTrue (Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Contains (branchName)));
+			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
 			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName));
 		}
 
 		protected bool IsBranchSwitched (string branchName)
 		{
-			return Session.SelectElement (c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName").Text ("<b>" + branchName + "</b>"));
+			return Session.SelectElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
 		}
 
 		#endregion
@@ -278,7 +294,7 @@ namespace UserInterfaceTests
 		protected void OpenRepositoryConfiguration (string selectTab = null)
 		{
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.ManageBranches);
-			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 			TakeScreenShot ("Repository-Configuration-Opened");
 			if (selectTab != null)
 				SwitchTab (selectTab);
@@ -286,8 +302,8 @@ namespace UserInterfaceTests
 
 		protected void CloseRepositoryConfiguration ()
 		{
-			Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog").Children ().Button ().Marked ("buttonOk"));
-			Session.WaitForNoElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog"));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
+			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
 		}
 	}
 }
