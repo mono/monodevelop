@@ -79,7 +79,9 @@ namespace MonoDevelop.Components.AutoTest
 		public static void ReplaySessionFromFile (string filename)
 		{
 			currentRecordSession = new SessionRecord (commandManager, filename);
-			currentRecordSession.ReplayEvents ();
+			currentRecordSession.ReplayEvents (() => {
+				currentRecordSession = null;
+			});
 		}
 
 		public static SessionRecord StartRecordingSession ()
@@ -376,7 +378,7 @@ namespace MonoDevelop.Components.AutoTest
 			return true;
 		}
 
-		public void ReplayEvents ()
+		public void ReplayEvents (Action completionHandler = null)
 		{
 			AutoTestSession testSession = new AutoTestSession ();
 			Stopwatch sw = new Stopwatch ();
@@ -399,6 +401,10 @@ namespace MonoDevelop.Components.AutoTest
 				sw.Stop ();
 				LoggingService.LogInfo ("Time elapsed to replay {0} events: {1}", eventCount, sw.Elapsed);
 				state = State.Idle;
+
+				if (completionHandler != null) {
+					completionHandler ();
+				}
 
 				return false;
 			});
