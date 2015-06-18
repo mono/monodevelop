@@ -119,7 +119,13 @@ namespace UserInterfaceTests
 		public readonly static Action EmptyAction = delegate { };
 
 		public readonly static Action WaitForPackageUpdate = delegate {
-			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."}, timeoutInSecs: 360, pollStepInSecs: 5);
+			WaitForStatusMessage (new [] {
+				"Package updates are available.",
+				"Packages are up to date.",
+				"No updates found but warnings were reported.",
+				"Packages successfully updated.",
+				"Packages updated with warnings."},
+				timeoutInSecs: 360, pollStepInSecs: 5);
 		};
 
 		public readonly static Action WaitForSolutionCheckedOut = delegate {
