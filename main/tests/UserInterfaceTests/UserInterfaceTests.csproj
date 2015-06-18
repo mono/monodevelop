@@ -71,6 +71,7 @@
     <Compile Include="DialogTests\NewProjectDialogTests.cs" />
     <Compile Include="NewFileController.cs" />
     <Compile Include="IdeQuery.cs" />
+    <Compile Include="SolutionExplorerController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
