@@ -47,6 +47,28 @@ namespace MonoDevelop.VersionControl
 				{ "Version", vcs.Version },
 			});
 		}
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as Repository;
+			return other != null &&
+				other.RootPath == RootPath &&
+				other.VersionControlSystem == VersionControlSystem &&
+				other.LocationDescription == LocationDescription &&
+				other.Name == Name;
+		}
+
+		public override int GetHashCode ()
+		{
+			int result = 0;
+			result ^= RootPath.GetHashCode ();
+			if (VersionControlSystem != null)
+				result ^= VersionControlSystem.GetHashCode ();
+			if (LocationDescription != null)
+				result ^= LocationDescription.GetHashCode ();
+			result ^= Name.GetHashCode ();
+			return result;
+		}
 		
 		public virtual void CopyConfigurationFrom (Repository other)
 		{
