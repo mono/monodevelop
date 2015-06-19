@@ -971,6 +971,7 @@ namespace MonoDevelop.SourceEditor
 			widget.Dispose ();
 			if (wrapper != null) {
 				wrapper.Dispose ();
+				wrapper = null;
 			}
 			this.Project = null;
 		}
