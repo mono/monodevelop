@@ -434,7 +434,7 @@ namespace MonoDevelop.NUnit
 				
 			} catch (Exception ex) {
 				if (ReportCrash (testContext, crashLogFile)) {
-					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Undhandled exception"), null);
+					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Unhandled exception"), null);
 				}
 				else if (!localMonitor.Canceled) {
 					LoggingService.LogError (ex.ToString ());
