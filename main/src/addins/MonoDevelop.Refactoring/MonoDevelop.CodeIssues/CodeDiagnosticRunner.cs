@@ -80,17 +80,17 @@ namespace MonoDevelop.CodeIssues
 
 				CompilationWithAnalyzers compilationWithAnalyzer;
 				var analyzers = System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
+				var diagnosticList = new List<Diagnostic> ();
 				try {
-					compilationWithAnalyzer = localCompilation.WithAnalyzers (analyzers, null, cancellationToken); 
+					compilationWithAnalyzer = localCompilation.WithAnalyzers (analyzers, null, cancellationToken);
+					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
+						return Enumerable.Empty<Result> ();
+					diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
 				} catch (Exception) {
 					return Enumerable.Empty<Result> ();
+				} finally {
+					CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
 				}
-
-				if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
-					return Enumerable.Empty<Result> ();
-				var diagnosticList = new List<Diagnostic> ();
-				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
-				CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
 
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
