@@ -49,6 +49,12 @@ namespace Mono.TextEditor
 			this.editor.Caret.PositionChanged += HandlePositionChanged;;
 		}
 
+		public override void Dispose ()
+		{
+			editor.Caret.PositionChanged -= HandlePositionChanged;;
+			base.Dispose ();
+		}
+
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			if (e.Location.Line == editor.Caret.Line)
