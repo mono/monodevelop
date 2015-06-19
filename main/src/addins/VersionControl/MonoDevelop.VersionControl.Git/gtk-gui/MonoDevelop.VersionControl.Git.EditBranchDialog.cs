@@ -8,7 +8,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		private global::Gtk.Table table4;
 		
-		private global::Gtk.Entry entryName;
+		private global::MonoDevelop.Components.MDEntry entryName;
 		
 		private global::Gtk.Label label4;
 		
@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.table4.RowSpacing = ((uint)(6));
 			this.table4.ColumnSpacing = ((uint)(6));
 			// Container child table4.Gtk.Table+TableChild
-			this.entryName = new global::Gtk.Entry ();
+			this.entryName = new global::MonoDevelop.Components.MDEntry ();
 			this.entryName.CanFocus = true;
 			this.entryName.Name = "entryName";
 			this.entryName.IsEditable = true;
