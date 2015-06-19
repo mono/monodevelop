@@ -79,8 +79,9 @@ namespace MonoDevelop.CodeIssues
 				);
 
 				CompilationWithAnalyzers compilationWithAnalyzer;
+				var analyzers = System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
 				try {
-					compilationWithAnalyzer = localCompilation.WithAnalyzers (System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers), null, cancellationToken); 
+					compilationWithAnalyzer = localCompilation.WithAnalyzers (analyzers, null, cancellationToken); 
 				} catch (Exception) {
 					return Enumerable.Empty<Result> ();
 				}
@@ -89,6 +90,8 @@ namespace MonoDevelop.CodeIssues
 					return Enumerable.Empty<Result> ();
 				var diagnosticList = new List<Diagnostic> ();
 				diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerDiagnosticsAsync ().Result);
+				CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
+
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
 					.Select (diagnostic => {
