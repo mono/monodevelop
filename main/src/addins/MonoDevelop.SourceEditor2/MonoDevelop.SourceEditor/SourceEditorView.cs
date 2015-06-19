@@ -972,6 +972,7 @@ namespace MonoDevelop.SourceEditor
 			if (wrapper != null) {
 				wrapper.Dispose ();
 			}
+			this.Project = null;
 		}
 
 		bool CheckReadOnly (int line)
