@@ -470,7 +470,7 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			StopCaretThread ();
 			DisposeSearchPatternWorker ();
-
+			HideCodeSegmentPreviewWindow ();
 			textEditor.VScroll -= HandleVAdjustmentValueChanged;
 			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
 

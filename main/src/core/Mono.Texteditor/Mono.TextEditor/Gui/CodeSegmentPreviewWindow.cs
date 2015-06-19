@@ -138,6 +138,7 @@ namespace Mono.TextEditor
 				foldBgGC.Dispose ();
 				textGC = textBgGC = foldGC = foldBgGC = null;
 			}
+			editor = null;
 			base.OnDestroyed ();
 		}
 		
