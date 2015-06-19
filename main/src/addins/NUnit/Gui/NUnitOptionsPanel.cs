@@ -166,7 +166,7 @@ namespace MonoDevelop.NUnit
 		void OnCategoryEdited (object sender, EditedArgs args)
 		{
 			TreeIter iter;
-			if (!store.GetIter (out iter, new TreePath (args.Path)))
+			if (!store.GetIterFromString (out iter, args.Path))
 				return;
 			
 			string old = (string) store.GetValue (iter, 0);
