@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandArrayInfo: IEnumerable
+	public class CommandArrayInfo: IEnumerable<CommandInfo>
 	{
 		List<CommandInfo> list = new List<CommandInfo> ();
 		CommandInfo defaultInfo;
@@ -128,10 +128,15 @@ namespace MonoDevelop.Components.Commands
 		public CommandInfo DefaultCommandInfo {
 			get { return defaultInfo; }
 		}
-		
-		public IEnumerator GetEnumerator ()
+
+		public IEnumerator<CommandInfo> GetEnumerator ()
 		{
 			return list.GetEnumerator ();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
 		}
 		
 		// When set in an update handler, the command manager will ignore this handler method

@@ -128,6 +128,12 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public string[] CounterStats {
+			get {
+				return session.GetCounterStats ();
+			}
+		}
+
 		public void ExitApp ()
 		{
 			ClearEventQueue ();

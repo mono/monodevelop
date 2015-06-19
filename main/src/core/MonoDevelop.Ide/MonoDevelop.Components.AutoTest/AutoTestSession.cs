@@ -87,6 +87,11 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public string[] GetCounterStats ()
+		{
+			return Counters.CounterReport ();
+		}
+
 		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
 			Gtk.Application.Invoke (delegate {
