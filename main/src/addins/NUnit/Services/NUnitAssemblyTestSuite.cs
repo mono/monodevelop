@@ -559,6 +559,7 @@ namespace MonoDevelop.NUnit
 				return UnitTestResult.CreateIgnored ("Test execution failed");
 			} finally {
 				File.Delete (outFile);
+				cons.Dispose ();
 			}
 		}
 
