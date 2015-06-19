@@ -44,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
 		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
+		int runCount;
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
@@ -53,6 +54,10 @@ namespace MonoDevelop.PackageManagement
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
+		}
+
+		public bool IsRunning {
+			get { return runCount > 0; }
 		}
 
 		public IEnumerable<InstallPackageAction> PendingInstallActions {
@@ -73,7 +78,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
-			BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+			runCount++;
+			BackgroundDispatch (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
 		}
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
@@ -87,7 +93,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
-			DispatchService.BackgroundDispatchAndWait (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+			runCount++;
+			BackgroundDispatchAndWait (() => TryRunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+		}
+
+		void TryRunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> actions)
+		{
+			try {
+				RunActionsWithProgressMonitor (progressMessage, actions);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			} finally {
+				GuiDispatch (() => runCount--);
+			}
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
@@ -208,6 +226,11 @@ namespace MonoDevelop.PackageManagement
 		protected virtual void BackgroundDispatch (MessageHandler handler)
 		{
 			DispatchService.BackgroundDispatch (handler);
+		}
+
+		protected virtual void BackgroundDispatchAndWait (MessageHandler handler)
+		{
+			DispatchService.BackgroundDispatchAndWait (handler);
 		}
 
 		protected virtual void GuiDispatch (Action handler)

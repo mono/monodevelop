@@ -60,16 +60,16 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			object monitor = new Object ();
 			
 			EventHandler del = delegate {
+					SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
 					try {
-						SslServerTrustDialog dlg = new SslServerTrustDialog (realm, failures, certInfo, may_save);
 						res = (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok);
 						if (res) {
 							local_save = dlg.Save;
 							local_accepted_failures = dlg.AcceptedFailures;
 						}
-					
-						dlg.Destroy ();
 					} finally {
+						dlg.Destroy ();
+						dlg.Dispose ();
 						lock (monitor) {
 							System.Threading.Monitor.Pulse (monitor);
 						}

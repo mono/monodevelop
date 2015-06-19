@@ -43,6 +43,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 						}
 					} finally {
 						dlg.Destroy ();
+						dlg.Dispose ();
 						lock (monitor) {
 							System.Threading.Monitor.Pulse (monitor);
 						}

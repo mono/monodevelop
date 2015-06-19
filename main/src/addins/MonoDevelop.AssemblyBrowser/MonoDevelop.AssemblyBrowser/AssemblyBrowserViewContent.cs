@@ -111,11 +111,13 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (Microsoft.CodeAnalysis.ISymbol element)
 		{
 			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
+			widget.PublicApiOnly = element.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
 			widget.Open (url);
 		}
 
-		public void Open (string documentationCommentId)
+		public void Open (string documentationCommentId, bool openInPublicOnlyMode = true)
 		{
+			widget.PublicApiOnly = openInPublicOnlyMode;
 			widget.Open (documentationCommentId);
 		}
 

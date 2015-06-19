@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 			return ApplyDiplayFlagsFormatting (result);
 		}
 
-		public CreatePartialCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, ISymbol member, bool afterKeyword) : base (keyHandler, factory, member)
+		public CreatePartialCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, ISymbol member, bool afterKeyword) : base (keyHandler, factory, member)
 		{
 			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;

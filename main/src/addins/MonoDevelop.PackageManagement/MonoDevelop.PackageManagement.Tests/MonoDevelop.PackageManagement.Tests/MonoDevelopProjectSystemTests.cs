@@ -1174,6 +1174,43 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, targetCountBeforeSave);
 			Assert.AreEqual (0, msbuildProject.Targets.Count ());
 		}
+
+		[Test]
+		public void AddReference_AddReferenceToNUnitFramework_ReferenceAddingEventIsFired ()
+		{
+			CreateTestProject ();
+			CreateProjectSystem (project);
+			ProjectReference referenceBeingAdded = null;
+			projectSystem.PackageManagementEvents.ReferenceAdding += (sender, e) => {
+				referenceBeingAdded = e.Reference;
+			};
+
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
+			projectSystem.AddReference (fileName, null);
+
+			Assert.AreEqual (fileName, referenceBeingAdded.HintPath.ToString ());
+			Assert.IsTrue (referenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void RemoveReference_RemoveReferenceToNUnitFramework_ReferenceRemovingEventIsFired ()
+		{
+			CreateTestProject ();
+			CreateProjectSystem (project);
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
+			ProjectHelper.AddReference (project, fileName);
+			ProjectReference referenceBeingRemoved = null;
+			bool projectIsSaved = false;
+			projectSystem.PackageManagementEvents.ReferenceRemoving += (sender, e) => {
+				referenceBeingRemoved = e.Reference;
+				projectIsSaved = project.IsSaved;
+			};
+
+			projectSystem.RemoveReference (fileName);
+
+			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath.ToString ());
+			Assert.IsFalse (projectIsSaved);
+		}
 	}
 }
 

@@ -52,6 +52,7 @@ namespace MonoDevelop.WebReferences.Commands
 				MessageService.ShowError ("The web reference could not be added", exception);
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 
@@ -199,6 +200,7 @@ namespace MonoDevelop.WebReferences.Commands
 				LoggingService.LogInternalError (exception);
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 	}	

@@ -73,6 +73,9 @@ namespace MonoDevelop.AssemblyBrowser
 			get {
 				return TreeView.PublicApiOnly;
 			}
+			set {
+				comboboxVisibilty.Active = value ? 0 : 1;
+			}
 		}
 		
 		DocumentationPanel documentationPanel = new DocumentationPanel ();

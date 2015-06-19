@@ -173,15 +173,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
 			
-			FilePath oldPath, newPath, newLink = FilePath.Null;
+			FilePath newPath, newLink = FilePath.Null;
 			if (file.IsLink) {
 				var oldLink = file.ProjectVirtualPath;
 				newLink = oldLink.ParentDirectory.Combine (newName);
-				oldPath = file.Project.BaseDirectory.Combine (oldLink);
 				newPath = file.Project.BaseDirectory.Combine (newLink);
 			} else {
-				oldPath = file.Name;
-				newPath = oldPath.ParentDirectory.Combine (newName);	
+				newPath = file.FilePath.ParentDirectory.Combine (newName);	
 			}
 			
 			try {
@@ -190,16 +188,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				if (!FileService.IsValidPath (newPath)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} else if (newProjectFile != null && newProjectFile != file) {
+				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
 					// If there is already a file under the newPath which is *different*, then throw an exception
 					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} else {
-					if (file.IsLink) {
-						file.Link = newLink;
-					} else {
-						// This could throw an exception if we try to replace another file during the rename.
-						FileService.RenameFile (oldPath, newName);
-					}
+					FileService.RenameFile (file.FilePath, newName);
 					if (file.Project != null)
 						await IdeApp.ProjectOperations.SaveAsync (file.Project);
 				}

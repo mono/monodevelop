@@ -64,8 +64,14 @@
     <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
     <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
     <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
-    <Compile Include="VersionControlTests\VCSUtils.cs" />
     <Compile Include="VersionControlTests\GitTests.cs" />
+    <Compile Include="VersionControlTests\VCSBase.cs" />
+    <Compile Include="VersionControlTests\SvnTests.cs" />
+    <Compile Include="VersionControlTests\GitRepositoryConfigurationTests.cs" />
+    <Compile Include="DialogTests\NewProjectDialogTests.cs" />
+    <Compile Include="NewFileController.cs" />
+    <Compile Include="IdeQuery.cs" />
+    <Compile Include="SolutionExplorerController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -98,4 +104,7 @@
     </PropertyGroup>
     <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
+  <ItemGroup>
+    <Folder Include="DialogTests\" />
+  </ItemGroup>
 </Project>

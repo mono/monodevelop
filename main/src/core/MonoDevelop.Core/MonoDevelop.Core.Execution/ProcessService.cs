@@ -211,7 +211,7 @@ namespace MonoDevelop.Core.Execution
 
 				if (p != null) {
 					if (exited != null)
-						p.Task.ContinueWith (t => exited (p, EventArgs.Empty), TaskScheduler.FromCurrentSynchronizationContext ());
+						p.Task.ContinueWith (t => exited (p, EventArgs.Empty), Runtime.MainTaskScheduler);
 					Counters.ProcessesStarted++;
 					return p;
 				} else {

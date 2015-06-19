@@ -188,6 +188,11 @@
 		</ConditionType>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/BraceMatcher" name = "Brace matcher">
+		<Description>Algorithm for providing matching braces in a file.</Description>
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

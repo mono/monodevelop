@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.CodeFixes.ImplementAbstractClass

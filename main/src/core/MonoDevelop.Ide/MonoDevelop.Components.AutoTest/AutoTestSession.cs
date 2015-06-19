@@ -87,6 +87,11 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public string[] GetCounterStats ()
+		{
+			return Counters.CounterReport ();
+		}
+
 		public void ExecuteCommand (object cmd, object dataItem = null, CommandSource source = CommandSource.Unknown)
 		{
 			Gtk.Application.Invoke (delegate {
@@ -470,6 +475,28 @@ namespace MonoDevelop.Components.AutoTest
 				ExecuteOnIdle (() => result.EnterText (text));
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("EnterText", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool TypeKey (AppResult result, char key, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (key, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
+			}
+
+			return true;
+		}
+
+		public bool TypeKey (AppResult result, string keyString, string modifiers)
+		{
+			try {
+				ExecuteOnIdle (() => result.TypeKey (keyString, modifiers));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("TypeKey", result.SourceQuery, result, e);
 			}
 
 			return true;

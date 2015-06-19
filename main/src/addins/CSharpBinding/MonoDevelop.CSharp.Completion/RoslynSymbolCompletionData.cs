@@ -40,19 +40,11 @@ using System.Threading;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynSymbolCompletionData : RoslynCompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData
+	class RoslynSymbolCompletionData : RoslynCompletionData
 	{
-		readonly ISymbol symbol;
-
-		public ISymbol Symbol {
-			get {
-				return symbol;
-			}
-		}
-		
 		public override string DisplayText {
 			get {
-				return text ?? symbol.Name;
+				return text ?? Symbol.Name;
 			}
 			set {
 				text = value;
@@ -61,7 +53,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override string CompletionText {
 			get {
-				return text ?? symbol.Name;
+				return text ?? Symbol.Name;
 			}
 			set {
 				throw new NotSupportedException ();
@@ -70,7 +62,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override MonoDevelop.Core.IconId Icon {
 			get {
-				return MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (symbol);
+				return MonoDevelop.Ide.TypeSystem.Stock.GetStockIcon (Symbol);
 			}
 			set {
 				throw new NotSupportedException ();
@@ -85,11 +77,11 @@ namespace MonoDevelop.CSharp.Completion
 
 		protected CSharpCompletionTextEditorExtension ext { get { return factory.Ext; } }
 
-		public RoslynSymbolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
+		public RoslynSymbolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
 		{
 			this.factory = factory;
 			this.text = text;
-			this.symbol = symbol;
+			Symbol = symbol;
 		}
 
 		static readonly SymbolDisplayFormat nameOnlyFormat =
@@ -109,7 +101,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			if (text != null)
 				return text;
-			return symbol.ToDisplayString (nameOnlyFormat);
+			return Symbol.ToDisplayString (nameOnlyFormat);
 		}
 
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken ctoken)

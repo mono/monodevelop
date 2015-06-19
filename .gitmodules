@@ -35,10 +35,6 @@
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
 	branch = master
-[submodule "main/external/NRefactory6"]
-	path = main/external/NRefactory6
-	url = git://github.com/icsharpcode/NRefactory.git
-	branch = roslyn
 [submodule "main/external/monomac"]
 	path = main/external/monomac
 	url = git://github.com/mono/monomac.git
@@ -48,7 +44,18 @@
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
 	url = git://github.com/libgit2/libgit2sharp.git
-	branch = therzok/mdNext
+	branch = xs-5.10-v1
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
 	url = git://github.com/mono/libgit-binary.git
+[submodule "main/external/libgit2"]
+	path = main/external/libgit2
+	url = git://github.com/mono/libgit2.git
+	branch = xs-5.10-v1
+[submodule "main/external/RefactoringEssentials"]
+	path = main/external/RefactoringEssentials
+	url = git://github.com/icsharpcode/RefactoringEssentials.git
+[submodule "main/external/roslyn"]
+	path = main/external/roslyn
+	url = git://github.com/mono/roslyn.git
+	branch = monodevelop

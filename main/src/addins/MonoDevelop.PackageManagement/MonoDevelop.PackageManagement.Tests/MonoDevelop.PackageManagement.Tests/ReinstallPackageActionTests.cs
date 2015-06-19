@@ -26,6 +26,7 @@
 
 using ICSharpCode.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using MonoDevelop.Projects;
 using NuGet;
 using NUnit.Framework;
 
@@ -91,6 +92,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Execute ();
 
 			Assert.IsTrue (project.FakeUninstallPackageAction.ForceRemove);
+		}
+
+		[Test]
+		public void Execute_ReferenceHasLocalCopyFalseWhenUninstalled_ReferenceHasLocalCopyFalseAfterBeingReinstalled ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			FakePackage package = AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			project.FakeUninstallPackageAction.ExecuteAction = () => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = false;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+			};
+			bool installActionMaintainsLocalCopyReferences = false;
+			project.InstallPackageExecuteAction = () => {
+				installActionMaintainsLocalCopyReferences = project.LastInstallPackageCreated.PreserveLocalCopyReferences;
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (installActionMaintainsLocalCopyReferences, "Should be false since the reinstall action will maintain the local copies");
 		}
 
 		[Test]

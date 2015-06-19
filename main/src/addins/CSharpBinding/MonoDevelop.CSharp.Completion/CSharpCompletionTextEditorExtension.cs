@@ -39,7 +39,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.CSharp.Formatting;
 
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -57,6 +56,7 @@ using MonoDevelop.Ide;
 using Mono.Addins;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public ParsedDocument ParsedDocument {
+		public MonoDevelop.Ide.TypeSystem.ParsedDocument ParsedDocument {
 			get {
 				return DocumentContext.ParsedDocument;
 			}
@@ -123,7 +123,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		static Func<Microsoft.CodeAnalysis.Document, CancellationToken, Task<Microsoft.CodeAnalysis.Document>> WithFrozenPartialSemanticsAsync;
-		static List<ICompletionData> snippets;
+		static List<CompletionData> snippets;
 
 		static CSharpCompletionTextEditorExtension ()
 		{
@@ -142,8 +142,8 @@ namespace MonoDevelop.CSharp.Completion
 
 			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
 				if (snippets != null)
-					return Task.FromResult ((IEnumerable<ICompletionData>)snippets);
-				var newSnippets = new List<ICompletionData> ();
+					return Task.FromResult((IEnumerable<CompletionData>)snippets);
+				var newSnippets = new List<CompletionData>();
 				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
 					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
 						continue;
@@ -155,7 +155,7 @@ namespace MonoDevelop.CSharp.Completion
 					});
 				}
 				snippets = newSnippets;
-				return Task.FromResult ((IEnumerable<ICompletionData>)newSnippets);
+				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
 			};
 
 		}
@@ -399,7 +399,7 @@ namespace MonoDevelop.CSharp.Completion
 				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
 				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
 					extHandler.Init (roslynCodeCompletionFactory);
-				var engine = new CompletionEngine(TypeSystemService.Workspace, roslynCodeCompletionFactory);
+				var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
 				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
 				ctx.AdditionalContextHandlers = additionalContextHandlers;
 				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
@@ -408,7 +408,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 
 				foreach (var symbol in completionResult) {
-					list.Add ((CompletionData)symbol); 
+					list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 				}
 
 				if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
@@ -629,7 +629,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
 				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-				var engine = new ParameterHintingEngine (TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
 				var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
 				return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset);
 			} catch (Exception e) {
@@ -737,12 +737,12 @@ namespace MonoDevelop.CSharp.Completion
 					return tooltipFunc != null ? tooltipFunc (List, smartWrap) : new TooltipInformation ();
 				}
 
-				protected List<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> overloads;
+				protected List<ICompletionData> overloads;
 				public override bool HasOverloads {
 					get { return overloads != null && overloads.Count > 0; }
 				}
 
-				public override IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> OverloadedData {
+				public override IEnumerable<ICompletionData> OverloadedData {
 					get {
 						return overloads;
 					}

@@ -43,7 +43,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		readonly ProjectCollection engine;
 		readonly string file;
 		ILogWriter currentLogWriter;
-		readonly ConsoleLogger consoleLogger;
 		readonly BuildEngine buildEngine;
 
 		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
@@ -51,7 +50,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.file = file;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
-			consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 			Refresh ();
 		}
 
@@ -71,7 +69,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					ILogger[] loggers;
 					var logger = new LocalLogger (file);
 					if (logWriter != null) {
-						consoleLogger.Verbosity = GetVerbosity (verbosity);
+						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWriteLine, null, null);
 						loggers = new ILogger[] { logger, consoleLogger };
 					} else {
 						loggers = new ILogger[] { logger };

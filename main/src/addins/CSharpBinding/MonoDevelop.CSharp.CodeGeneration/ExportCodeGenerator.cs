@@ -32,6 +32,7 @@ using MonoDevelop.CSharp.Completion;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.CSharp.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {

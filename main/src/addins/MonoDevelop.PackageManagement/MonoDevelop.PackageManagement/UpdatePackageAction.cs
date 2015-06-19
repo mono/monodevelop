@@ -28,8 +28,8 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
 using MonoDevelop.PackageManagement;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -74,8 +74,10 @@ namespace ICSharpCode.PackageManagement
 			if (ShouldUpdatePackage ()) {
 				using (IOpenPackageReadMeMonitor readmeMonitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
 					using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
-						Project.UpdatePackage (Package, this);
-						readmeMonitor.OpenReadMeFile ();
+						using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+							Project.UpdatePackage (Package, this);
+							readmeMonitor.OpenReadMeFile ();
+						}
 					}
 				}
 				OnParentPackageInstalled ();

@@ -324,6 +324,7 @@ namespace MonoDevelop.Components.Extensions
 				return result == (int) Gtk.ResponseType.Ok;
 			} finally {
 				fdiag.Destroy ();
+				fdiag.Dispose ();
 			}
 		}
 	}

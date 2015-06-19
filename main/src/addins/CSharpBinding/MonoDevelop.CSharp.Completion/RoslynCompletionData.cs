@@ -38,7 +38,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class RoslynCompletionData : CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
+	class RoslynCompletionData : ISymbolCompletionData
 	{
 		List<CompletionData> overloads;
 		
@@ -47,8 +47,9 @@ namespace MonoDevelop.CSharp.Completion
 				return overloads != null;
 			}
 		}
-		
-		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
+
+
+		public override void AddOverload (CompletionData data)
 		{
 			if (overloads == null)
 				overloads = new List<CompletionData> ();
@@ -56,31 +57,7 @@ namespace MonoDevelop.CSharp.Completion
 			sorted = null;
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
-			} 
-			set {
-				base.CompletionCategory = (CompletionCategory)value;
-			} 
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
-			}
-			set {
-				base.DisplayFlags = (DisplayFlags)value;
-			}
-		}
-
 		List<CompletionData> sorted;
-
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
-			get {
-				return (IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>)OverloadedData;
-			}
-		}
 
 		public override IReadOnlyList<CompletionData> OverloadedData {
 			get {
@@ -96,46 +73,39 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		protected readonly ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
-			get {
-				return keyHandler;
-			}
+		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler)
+		{
+			this.KeyHandler = keyHandler;
 		}
 
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler)
+		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler, string text) : base (text)
 		{
-			this.keyHandler = keyHandler;
+			this.KeyHandler = keyHandler;
 		}
 
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text) : base (text)
+		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler, string text, IconId icon) : base (text, icon)
 		{
-			this.keyHandler = keyHandler;
+			this.KeyHandler = keyHandler;
 		}
 
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon) : base (text, icon)
+		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler, string text, IconId icon, string description) : base (text, icon, description)
 		{
-			this.keyHandler = keyHandler;
-		}
-
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string text, IconId icon, string description) : base (text, icon, description)
-		{
-			this.keyHandler = keyHandler;
+			this.KeyHandler = keyHandler;
 		}
 		
-		public RoslynCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, string displayText, IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
+		public RoslynCompletionData (ICompletionDataKeyHandler keyHandler, string displayText, IconId icon, string description, string completionText) : base (displayText, icon, description, completionText)
 		{
-			this.keyHandler = keyHandler;
+			this.KeyHandler = keyHandler;
 		}
 		
-//		class OverloadSorter : IComparer<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData>
+//		class OverloadSorter : IComparer<ICompletionData>
 //		{
 //			public OverloadSorter ()
 //			{
 //			}
 //
-//			public int Compare (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData x, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData y)
+//			public int Compare (ICompletionData x, ICompletionData y)
 //			{
 //				var mx = ((RoslynCompletionData)x).Entity as IMember;
 //				var my = ((RoslynCompletionData)y).Entity as IMember;

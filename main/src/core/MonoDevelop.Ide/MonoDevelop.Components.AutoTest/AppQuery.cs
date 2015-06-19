@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.AutoTest
 				// Some subqueries can select different results
 				resultSet = subquery.Execute (resultSet);
 
-				if (resultSet.Count == 0) {
+				if (resultSet == null || resultSet.Count == 0) {
 					break;
 				}
 			}
@@ -273,6 +273,11 @@ namespace MonoDevelop.Components.AutoTest
 		public AppQuery TextView ()
 		{
 			return CheckType (typeof(TextView), "TextView");
+		}
+
+		public AppQuery Notebook ()
+		{
+			return CheckType (typeof(Notebook), "Notebook");
 		}
 
 		public AppQuery Text (string text)

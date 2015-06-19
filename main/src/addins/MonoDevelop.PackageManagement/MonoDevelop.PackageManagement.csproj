@@ -372,6 +372,8 @@
     <Compile Include="MonoDevelop.PackageManagement\OpenPackageReadmeMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IOpenPackageReadMeMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NullOpenPackageReadMeMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectReferenceEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

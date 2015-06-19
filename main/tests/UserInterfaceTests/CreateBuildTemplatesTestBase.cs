@@ -41,7 +41,7 @@ namespace UserInterfaceTests
 
 		public string OtherCategoryRoot { get { return "Other"; } }
 
-		public readonly static Action EmptyAction = delegate { };
+		public readonly static Action EmptyAction = Ide.EmptyAction;
 
 		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
 
@@ -70,19 +70,16 @@ namespace UserInterfaceTests
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
 			var templateName = templateOptions.TemplateKind;
-			var projectName = !string.IsNullOrEmpty (templateOptions.ProjectName) ? templateOptions.ProjectName: GenerateProjectName (templateName);
-
+			var projectName = GenerateProjectName (templateName);
 			var solutionParentDirectory = Util.CreateTmpDir (projectName);
+			var projectDetails = new ProjectDetails {
+				ProjectName = projectName,
+				SolutionName = projectName,
+				SolutionLocation = solutionParentDirectory,
+				ProjectInSolution = true
+			};
 			try {
-				var newProject = new NewProjectController ();
-				newProject.Open ();
-				TakeScreenShot ("Open");
-
-				OnSelectTemplate (newProject, templateOptions);
-
-				OnEnterTemplateSpecificOptions (newProject, projectName, miscOptions);
-
-				OnEnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory, gitOptions);
+				CreateProject (templateOptions,projectDetails, gitOptions, miscOptions);
 
 				try {
 					beforeBuild ();
@@ -99,6 +96,22 @@ namespace UserInterfaceTests
 			}
 		}
 
+		public void CreateProject (TemplateSelectionOptions templateOptions,
+			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
+		{
+			var newProject = new NewProjectController ();
+			newProject.Open ();
+			TakeScreenShot ("Open");
+
+			OnSelectTemplate (newProject, templateOptions);
+
+			OnEnterTemplateSpecificOptions (newProject, projectDetails.ProjectName, miscOptions);
+
+			OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
+
+			OnClickCreate (newProject);
+		}
+
 		protected virtual void OnSelectTemplate (NewProjectController newProject, TemplateSelectionOptions templateOptions)
 		{
 			Assert.IsTrue (newProject.SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category));
@@ -111,26 +124,29 @@ namespace UserInterfaceTests
 
 		protected virtual void OnEnterTemplateSpecificOptions (NewProjectController newProject, string projectName, object miscOptions) {}
 
-		protected virtual void OnEnterProjectDetails (NewProjectController newProject, string projectName,
-			string solutionName, string solutionLocation, GitOptions gitOptions = null)
+		protected virtual void OnEnterProjectDetails (NewProjectController newProject, ProjectDetails projectDetails,
+			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			Assert.IsTrue (newProject.SetProjectName (projectName));
+			Assert.IsTrue (newProject.SetProjectName (projectDetails.ProjectName));
 
-			if (!string.IsNullOrEmpty (solutionName)) {
-				Assert.IsTrue (newProject.SetSolutionName (solutionName));
+			if (!string.IsNullOrEmpty (projectDetails.SolutionName)) {
+				Assert.IsTrue (newProject.SetSolutionName (projectDetails.SolutionName));
 			}
 
-			if (!string.IsNullOrEmpty (solutionLocation)) {
-				Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
+			if (!string.IsNullOrEmpty (projectDetails.SolutionLocation)) {
+				Assert.IsTrue (newProject.SetSolutionLocation (projectDetails.SolutionLocation));
 			}
 
-			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (true));
+			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (projectDetails.ProjectInSolution));
 
 			if (gitOptions != null)
 				Assert.IsTrue (newProject.UseGit (gitOptions));
 
 			TakeScreenShot ("AfterProjectDetailsFilled");
+		}
 
+		protected virtual void OnClickCreate (NewProjectController newProject)
+		{
 			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
 		}
 

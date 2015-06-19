@@ -304,13 +304,6 @@ namespace MonoDevelop.NUnit
 			get { return rootTests; }
 		}
 		
-		public static void ShowOptionsDialog (UnitTest test)
-		{
-			Properties properties = new Properties ();
-			properties.Set ("UnitTest", test);
-			MessageService.ShowCustomDialog (new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties));
-		}
-		
 		void NotifyTestSuiteChanged ()
 		{
 			Runtime.RunInMainThread (() => {

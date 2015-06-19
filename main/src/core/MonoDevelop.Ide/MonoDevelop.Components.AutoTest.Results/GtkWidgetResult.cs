@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -69,13 +68,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {
-				return this;
+				return desiredType == typeof(Notebook) ? new GtkNotebookResult (resultWidget) : this;
 			}
 
 			return null;
 		}
 
-		bool CheckForText (string haystack, string needle, bool exact)
+		protected bool CheckForText (string haystack, string needle, bool exact)
 		{
 			if (exact) {
 				return haystack == needle;
@@ -185,12 +184,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		object GetPropertyValue (string propertyName)
+		protected object GetPropertyValue (string propertyName, object requestedObject = null)
 		{
 			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				PropertyInfo propertyInfo = resultWidget.GetType().GetProperty(propertyName);
+				requestedObject = requestedObject ?? resultWidget;
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName);
 				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (resultWidget);
+					var propertyValue = propertyInfo.GetValue (requestedObject);
 					if (propertyValue != null) {
 						return propertyValue;
 					}
@@ -202,7 +202,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;			
+			return (object.Equals (GetPropertyValue (propertyName), value)) ? this : null;
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -297,7 +297,67 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
 		}
 
-		public override bool TypeKey (char key, string state)
+		Gdk.ModifierType ParseModifier (string modifierString)
+		{
+			string[] modifiers = modifierString.Split ('|');
+			Gdk.ModifierType modifier = Gdk.ModifierType.None;
+
+			foreach (var m in modifiers) {
+				switch (m) {
+				case "Shift":
+					modifier |= Gdk.ModifierType.ShiftMask;
+					break;
+
+				case "Lock":
+					modifier |= Gdk.ModifierType.LockMask;
+					break;
+
+				case "Control":
+					modifier |= Gdk.ModifierType.ControlMask;
+					break;
+
+				case "Mod1":
+					modifier |= Gdk.ModifierType.Mod1Mask;
+					break;
+
+				case "Mod2":
+					modifier |= Gdk.ModifierType.Mod2Mask;
+					break;
+
+				case "Mod3":
+					modifier |= Gdk.ModifierType.Mod3Mask;
+					break;
+
+				case "Mod4":
+					modifier |= Gdk.ModifierType.Mod4Mask;
+					break;
+
+				case "Mod5":
+					modifier |= Gdk.ModifierType.Mod5Mask;
+					break;
+
+				case "Super":
+					modifier |= Gdk.ModifierType.SuperMask;
+					break;
+
+				case "Hyper":
+					modifier |= Gdk.ModifierType.HyperMask;
+					break;
+
+				case "Meta":
+					modifier |= Gdk.ModifierType.MetaMask;
+					break;
+
+				default:
+					modifier |= Gdk.ModifierType.None;
+					break;
+				}
+			}
+
+			return modifier;
+		}
+
+		public override bool TypeKey (char key, string state = "")
 		{
 			Gdk.Key realKey;
 
@@ -306,16 +366,51 @@ namespace MonoDevelop.Components.AutoTest.Results
 			else
 				realKey = (Gdk.Key) Gdk.Global.UnicodeToKeyval ((uint)key);
 
-			// FIXME: Parse @state into a Gdk.ModifierType
-			RealTypeKey (realKey, Gdk.ModifierType.None);
+			RealTypeKey (realKey, ParseModifier (state));
 
+			return true;
+		}
+
+		Gdk.Key ParseKeyString (string keyString)
+		{
+			switch (keyString) {
+			case "ESC":
+				return Gdk.Key.Escape;
+
+			case "UP":
+				return Gdk.Key.Up;
+
+			case "DOWN":
+				return Gdk.Key.Down;
+
+			case "LEFT":
+				return Gdk.Key.Left;
+
+			case "RIGHT":
+				return Gdk.Key.Right;
+
+			case "RETURN":
+				return Gdk.Key.Return;
+
+			case "TAB":
+				return Gdk.Key.Tab;
+
+			default:
+				throw new Exception ("Unknown keystring: " + keyString);
+			}
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			Gdk.Key realKey = ParseKeyString (keyString);
+			RealTypeKey (realKey, ParseModifier (state));
 			return true;
 		}
 
 		public override bool EnterText (string text)
 		{
 			foreach (var c in text) {
-				TypeKey (c, null);
+				TypeKey (c);
 			}
 
 			return true;

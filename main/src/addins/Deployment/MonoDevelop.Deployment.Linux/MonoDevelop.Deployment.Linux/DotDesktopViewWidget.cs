@@ -235,6 +235,7 @@ namespace MonoDevelop.Deployment.Linux
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

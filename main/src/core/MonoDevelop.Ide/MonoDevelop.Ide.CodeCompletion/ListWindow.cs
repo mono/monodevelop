@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using System.Linq;
 using Gdk;

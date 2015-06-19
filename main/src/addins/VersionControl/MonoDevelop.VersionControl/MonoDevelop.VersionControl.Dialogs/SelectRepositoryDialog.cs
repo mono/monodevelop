@@ -166,6 +166,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -215,6 +216,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					UpdateRepoDescription ();
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 		}

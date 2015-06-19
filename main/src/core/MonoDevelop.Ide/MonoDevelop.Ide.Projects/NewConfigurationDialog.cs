@@ -35,8 +35,12 @@ namespace MonoDevelop.Ide.Projects
 	partial class NewConfigurationDialog : Gtk.Dialog
 	{
 		ItemConfigurationCollection<ItemConfiguration> configurations;
-		
-		public NewConfigurationDialog (ItemConfigurationCollection<ItemConfiguration> configurations)
+
+		public NewConfigurationDialog (ItemConfigurationCollection<ItemConfiguration> configurations): this (null, configurations)
+		{
+		}
+
+		public NewConfigurationDialog (IConfigurationTarget item, ItemConfigurationCollection<ItemConfiguration> configurations)
 		{
 			this.Build();
 			this.configurations = configurations;
@@ -50,6 +54,11 @@ namespace MonoDevelop.Ide.Projects
 				    comboPlatform.AppendText (plat);
 			}
 			comboPlatform.Entry.Text = MultiConfigItemOptionsPanel.GetPlatformName ("");
+			if (!(item is Solution)) {
+				createChildrenCheck.Active = false;
+				createChildrenCheck.Visible = false;
+				DefaultHeight = 0;
+			}
 		}
 		
 		public string ConfigName {

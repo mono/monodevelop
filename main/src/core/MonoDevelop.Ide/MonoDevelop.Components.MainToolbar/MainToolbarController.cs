@@ -109,7 +109,6 @@ namespace MonoDevelop.Components.MainToolbar
 
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			MonoDevelopWorkspace.LoadingFinished += delegate {
-				ProjectSearchCategory.UpdateSymbolInfos ();
 				HandleSearchEntryChanged (null, EventArgs.Empty);
 			};
 		}

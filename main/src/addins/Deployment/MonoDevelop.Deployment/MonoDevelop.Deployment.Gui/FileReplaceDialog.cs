@@ -73,7 +73,7 @@ namespace MonoDevelop.Deployment
 				break;
 			}
 			
-			if (response == ReplaceResponse.ReplaceOlderAll || response == ReplaceResponse.ReplaceOlderAll || response == ReplaceResponse.SkipAll)
+			if (response == ReplaceResponse.ReplaceOlderAll || response == ReplaceResponse.SkipAll)
 				applyAll.Active = true;
 		}
 

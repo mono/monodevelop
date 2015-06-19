@@ -532,7 +532,7 @@ namespace MonoDevelop.Projects
 			get { return LanguageBinding.SupportsPartialTypes; }
 		}
 
-		void CheckReferenceChange (FilePath updatedFile)
+		async void CheckReferenceChange (FilePath updatedFile)
 		{
 			for (int n=0; n<References.Count; n++) {
 				ProjectReference pr = References [n];
@@ -545,6 +545,13 @@ namespace MonoDevelop.Projects
 						References [n] = nr;
 				}
 			}
+
+			// If a referenced assembly changes, dirtify the project.
+			foreach (var asm in await GetReferencedAssemblies (DefaultConfiguration.Selector))
+				if (asm == updatedFile) {
+					SetFastBuildCheckDirty ();
+					break;
+				}
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
@@ -1041,6 +1048,17 @@ namespace MonoDevelop.Projects
 				cmd.Target = context.ExecutionTarget;
 
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
+		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			var sf = base.OnGetSupportedFeatures ();
+
+			// Libraries are not executable by default, unless the project has a custom execution command
+			if (compileTarget == CompileTarget.Library && !Configurations.OfType<ProjectConfiguration> ().Any (c => c.CustomCommands.HasCommands (CustomCommandType.Execute)))
+				sf &= ~ProjectFeatures.Execute;
+			
+			return sf;
 		}
 
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)

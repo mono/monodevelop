@@ -501,8 +501,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.ShowCustomDialog (dlg);
+			using (ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 	
@@ -515,8 +515,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.ShowCustomDialog (dlg);
+			using (ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 }

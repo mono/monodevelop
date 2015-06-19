@@ -343,21 +343,23 @@ namespace MonoDevelop.Projects
 			await Task.Run (() => {
 				if (!File.Exists (preferencesFileName))
 					return;
-			
-				XmlTextReader reader = new XmlTextReader (preferencesFileName);
-				try {
-					reader.MoveToContent ();
-					if (reader.LocalName != "Properties")
-						return;
 
-					XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
-					ser.SerializationContext.BaseFile = preferencesFileName;
-					userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
-				} catch (Exception e) {
-					LoggingService.LogError ("Exception while loading user solution preferences.", e);
-					return;
-				} finally {
-					reader.Close ();
+				using (var streamReader = new StreamReader (preferencesFileName)) {
+					XmlTextReader reader = new XmlTextReader (streamReader);
+					try {
+						reader.MoveToContent ();
+						if (reader.LocalName != "Properties")
+							return;
+
+						XmlDataSerializer ser = new XmlDataSerializer (new DataContext ());
+						ser.SerializationContext.BaseFile = preferencesFileName;
+						userProperties = (PropertyBag)ser.Deserialize (reader, typeof(PropertyBag));
+					} catch (Exception e) {
+						LoggingService.LogError ("Exception while loading user solution preferences.", e);
+						return;
+					} finally {
+						reader.Close ();
+					}
 				}
 			});
 		}

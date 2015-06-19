@@ -64,11 +64,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		static string[] mefHostServices = new [] {
+			"Microsoft.CodeAnalysis.Workspaces",
+			"Microsoft.CodeAnalysis.CSharp.Workspaces",
+//			"Microsoft.CodeAnalysis.VisualBasic.Workspaces"
+		};
+
 		static MonoDevelopWorkspace ()
 		{
 			List<Assembly> assemblies = new List<Assembly> ();
-			assemblies.AddRange(Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultAssemblies);
-
+			foreach (var asmName in mefHostServices) {
+				try {
+					var asm = Assembly.Load (asmName);
+					if (asm == null)
+						continue;
+					assemblies.Add (asm);
+				} catch (Exception) {
+					LoggingService.LogError ("Error - can't load host service assembly: " + asmName);
+				}
+			}
 			assemblies.Add (typeof(MonoDevelopWorkspace).Assembly);
 			services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.Create (assemblies);
 		}
@@ -664,7 +678,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
-			
 			if (document == null)
 				return;
 			bool isOpen;
@@ -712,7 +725,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 
 
-					var str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+					string str;
+					if (change.NewText.Length == 0) {
+						str = formatter.FormatText (mp.Policies, currentText, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+					} else {
+						str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+					}
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}
 				data.Save ();
@@ -724,14 +742,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					foreach (var change in changes) {
 						delta -= change.Span.Length - change.NewText.Length;
 						var startOffset = change.Span.Start - delta;
-
+							
 						if (projection != null) {
 							int originalOffset;
 							if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
 								startOffset = originalOffset;
 						}
-
-						formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+						if (change.NewText.Length == 0) {
+							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+						} else {
+							formatter.OnTheFlyFormat ((TextEditor)data, documentContext, startOffset, startOffset + change.NewText.Length);
+						}
 					}
 				}
 			}

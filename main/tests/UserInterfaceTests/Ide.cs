@@ -116,8 +116,20 @@ namespace UserInterfaceTests
 			WaitUntil (() => c.TotalTime > tt, timeout);
 		}
 
+		public readonly static Action EmptyAction = delegate { };
+
 		public readonly static Action WaitForPackageUpdate = delegate {
-			WaitForStatusMessage (new [] {"Package updates are available.", "Packages are up to date."}, timeoutInSecs: 360, pollStepInSecs: 5);
+			WaitForStatusMessage (new [] {
+				"Package updates are available.",
+				"Packages are up to date.",
+				"No updates found but warnings were reported.",
+				"Packages successfully updated.",
+				"Packages updated with warnings."},
+				timeoutInSecs: 360, pollStepInSecs: 5);
+		};
+
+		public readonly static Action WaitForSolutionCheckedOut = delegate {
+			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 5);
 		};
 
 		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
@@ -125,7 +137,7 @@ namespace UserInterfaceTests
 			WaitForStatusMessage (new [] {"Loading..."});
 			afterEachStep ("Loading-Solution");
 			WaitForNoStatusMessage (new [] {"Loading..."});
-			afterEachStep ("Solution Loaded");
+			afterEachStep ("Solution-Loaded");
 		}
 
 		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
@@ -142,7 +154,7 @@ namespace UserInterfaceTests
 		{
 			Ide.WaitUntil (() => {
 				var actualStatusMessage = Ide.GetStatusMessage ();
-				return waitForMessage == (statusMessage.Contains (actualStatusMessage));
+				return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 	}

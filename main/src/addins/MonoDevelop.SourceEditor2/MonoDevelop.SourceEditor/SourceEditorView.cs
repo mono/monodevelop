@@ -739,7 +739,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding);
+			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
 		}
 
 		MonoDevelop.Ide.Gui.Document ownerDocument;
@@ -770,7 +770,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateMimeType (fileName);
 			string text = null;
 			bool didLoadCleanly;
-			if (AutoSave.AutoSaveExists (fileName)) {
+			if (!reload && AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
 				encoding = loadEncoding;
 				didLoadCleanly = false;
@@ -973,6 +973,7 @@ namespace MonoDevelop.SourceEditor
 				wrapper.Dispose ();
 				wrapper = null;
 			}
+			this.Project = null;
 		}
 
 		bool CheckReadOnly (int line)
