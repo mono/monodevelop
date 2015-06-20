@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Runtime.InteropServices;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -469,6 +470,155 @@ namespace MonoDevelop.Components
 
 			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent); 
 			return new EventKeyWrapper (ptr);
+		}
+
+		public static IEnumerable<Gtk.Widget> FindAllChildWidgets (this Gtk.Container container)
+		{
+			var widgets = new Stack<Widget> (new[] { container });
+
+			while (widgets.Any ()) {
+				var widget = widgets.Pop ();
+				yield return widget;
+
+				if (widget is Gtk.Bin) {
+					var bin = (Gtk.Bin)widget;
+					widgets.Push (bin.Child);
+				} else if (widget is Gtk.Container) {
+					var c = (Gtk.Container)widget;
+					foreach (var w in c.Children) {
+						widgets.Push (w);
+					}
+				}
+			}
+		}
+
+		public static void UseNativeContextMenus (this Gtk.Window window)
+		{
+			#if MAC
+			var entries = window.FindAllChildWidgets ().OfType<Gtk.Entry> ();
+			foreach (var entry in entries) {
+				entry.ButtonPressEvent += EntryButtonPressHandler;
+			}
+			#endif
+		}
+
+		static ContextMenu context_menu;
+		static ContextMenuItem cut;
+		static ContextMenuItem copy;
+		static ContextMenuItem paste;
+		static ContextMenuItem delete;
+		static ContextMenuItem select_all;
+
+		static void ShowNativeContextMenu (this Gtk.Entry entry, Gdk.EventButton evt)
+		{
+			if (context_menu == null) {
+				context_menu = new ContextMenu ();
+
+				cut = new ContextMenuItem { Label = GettextCatalog.GetString ("Cut"), Context = entry };
+				cut.Clicked += CutClicked;
+				context_menu.Items.Add (cut);
+
+				copy = new ContextMenuItem { Label = GettextCatalog.GetString ("Copy"), Context = entry };
+				copy.Clicked += CopyClicked;
+				context_menu.Items.Add (copy);
+
+				paste = new ContextMenuItem { Label = GettextCatalog.GetString ("Paste"), Context = entry };
+				paste.Clicked += PasteClicked;
+				context_menu.Items.Add (paste);
+
+				delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
+				delete.Clicked += DeleteClicked;
+				context_menu.Items.Add (delete);
+
+				select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
+				select_all.Clicked += SelectAllClicked;
+				context_menu.Items.Add (select_all);
+			}
+
+			/* Update the menu items' sensitivities */
+			copy.Sensitive = select_all.Sensitive = (entry.Text.Length > 0);
+			cut.Sensitive = delete.Sensitive = (entry.Text.Length > 0 && entry.IsEditable);
+			paste.Sensitive = entry.IsEditable;
+
+			context_menu.Show (entry, evt);
+		}
+
+		static void CutClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				int selection_start, selection_end;
+
+				if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+					var text = entry.GetChars (selection_start, selection_end);
+					var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+					clipboard.Text = text;
+					entry.DeleteText (selection_start, selection_end);
+				}
+			} else {
+				entry.ErrorBell ();
+			}
+		}
+
+		static void CopyClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+			int selection_start, selection_end;
+
+			if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+				var text = entry.GetChars (selection_start, selection_end);
+				var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				clipboard.Text = text;
+			}
+		}
+
+		static void PasteClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				var clipboard = Gtk.Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+
+				clipboard.RequestText ((cb, text) => {
+					entry.InsertText (text);
+				});
+			} else {
+				entry.ErrorBell ();
+			}
+		}
+
+		static void DeleteClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			if (entry.IsEditable) {
+				int selection_start, selection_end;
+
+				if (entry.GetSelectionBounds (out selection_start, out selection_end)) {
+					entry.DeleteText (selection_start, selection_end);
+				}
+			}
+		}
+
+		static void SelectAllClicked (object o, ContextMenuItemClickedEventArgs e)
+		{
+			var entry = (Gtk.Entry)e.Context;
+
+			entry.SelectRegion (0, entry.Text.Length - 1);
+		}
+
+		[GLib.ConnectBefore]
+		static void EntryButtonPressHandler (object o, ButtonPressEventArgs args)
+		{
+			if (args.Event.Button == 3) {
+				var entry = (Gtk.Entry)o;
+
+				entry.ShowNativeContextMenu (args.Event);
+				args.RetVal = true;
+			}
 		}
 	}
 

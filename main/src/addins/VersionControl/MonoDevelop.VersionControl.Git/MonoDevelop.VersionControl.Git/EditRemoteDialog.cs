@@ -23,8 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using LibGit2Sharp;
 
+using LibGit2Sharp;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -38,6 +39,10 @@ namespace MonoDevelop.VersionControl.Git
 		public EditRemoteDialog (Remote remote)
 		{
 			this.Build ();
+
+			var window = (Gtk.Window)this;
+			window.UseNativeContextMenus ();
+
 			if (remote != null) {
 				entryName.Text = remote.Name;
 				entryUrl.Text = remote.Url ?? "";
