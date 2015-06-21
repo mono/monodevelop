@@ -74,6 +74,18 @@ namespace UserInterfaceTests
 
 	public class ProjectDetails
 	{
+		public ProjectDetails ()
+		{
+			SolutionLocation = Util.CreateTmpDir ();
+			ProjectInSolution = true;
+		}
+
+		public ProjectDetails (TemplateSelectionOptions templateData) : this ()
+		{
+			ProjectName = CreateBuildTemplatesTestBase.GenerateProjectName (templateData.TemplateKind);
+			SolutionName = ProjectName;
+		}
+
 		public string ProjectName { get; set; }
 
 		public string SolutionName { get; set; }

@@ -35,6 +35,7 @@ namespace UserInterfaceTests
 		readonly static Func<AppQuery, AppQuery> _gitConfigurationDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.GitConfigurationDialog");
 		readonly static Func<AppQuery, AppQuery> _editRemoteDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditRemoteDialog");
 		readonly static Func<AppQuery, AppQuery> _editBranchDialog = c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.EditBranchDialog");
+		readonly static Func<AppQuery, AppQuery> _textArea = c => c.Window ().Children ().Marked ("Mono.TextEditor.TextArea");
 
 		public static Func<AppQuery, AppQuery> DefaultWorkbench
 		{
@@ -68,6 +69,13 @@ namespace UserInterfaceTests
 		{
 			get {
 				return _editBranchDialog;
+			}
+		}
+
+		public static Func<AppQuery, AppQuery> TextArea
+		{
+			get {
+				return _textArea;
 			}
 		}
 	}
