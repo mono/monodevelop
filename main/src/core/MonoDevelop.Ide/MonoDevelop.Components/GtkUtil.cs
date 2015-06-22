@@ -472,7 +472,7 @@ namespace MonoDevelop.Components
 			return new EventKeyWrapper (ptr);
 		}
 
-		public static IEnumerable<Gtk.Widget> FindAllChildWidgets (this Gtk.Container container)
+		static IEnumerable<Gtk.Widget> FindAllChildWidgets (this Gtk.Container container)
 		{
 			var widgets = new Stack<Widget> (new[] { container });
 
@@ -480,10 +480,7 @@ namespace MonoDevelop.Components
 				var widget = widgets.Pop ();
 				yield return widget;
 
-				if (widget is Gtk.Bin) {
-					var bin = (Gtk.Bin)widget;
-					widgets.Push (bin.Child);
-				} else if (widget is Gtk.Container) {
+				if (widget is Gtk.Container) {
 					var c = (Gtk.Container)widget;
 					foreach (var w in c.Children) {
 						widgets.Push (w);
