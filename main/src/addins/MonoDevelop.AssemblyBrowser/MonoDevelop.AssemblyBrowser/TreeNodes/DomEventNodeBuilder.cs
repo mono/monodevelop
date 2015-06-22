@@ -103,6 +103,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var evt = CecilLoader.GetCecilObject ((IUnresolvedEvent)navigator.DataItem);
+			if (evt == null)
+				return null;
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
 		}
 
@@ -111,6 +113,8 @@ namespace MonoDevelop.AssemblyBrowser
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var evt = CecilLoader.GetCecilObject ((IUnresolvedEvent)navigator.DataItem);
+			if (evt == null)
+				return null;
 			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), evt.DeclaringType, b => b.AddEvent (evt));
 		}
 
