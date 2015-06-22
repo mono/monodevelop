@@ -201,12 +201,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			try {
 				DisableChangeTracking ();
-				XmlReaderSettings readerSettings = new XmlReaderSettings();
-				readerSettings.IgnoreWhitespace = false;
-				var xr = (XmlTextReader)XmlReader.Create (new StringReader (xml), readerSettings);
+				var xr = new XmlTextReader (new StringReader (xml));
+				xr.WhitespaceHandling = WhitespaceHandling.All;
 				xr.Normalization = false;
 				reader.XmlReader = xr;
-//				reader.XmlReader = new XmlTextReader (new StringReader (xml));
 				LoadFromXml (reader);
 			} finally {
 				EnableChangeTracking ();
