@@ -67,6 +67,7 @@
     <Compile Include="CallOverloadedMethod.cs" />
     <Compile Include="CheckedUnchecked.cs" />
     <Compile Include="ControlFlow.cs" />
+    <Compile Include="DoubleConstants.cs" />
     <Compile Include="ExpressionTrees.cs" />
     <None Include="IL\SequenceOfNestedIfs.Output.cs" />
     <Compile Include="IL\ILTests.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="CustomShortCircuitOperators.cs" />
     <Compile Include="Helpers\CodeAssert.cs" />
     <Compile Include="IncrementDecrement.cs" />
+    <Compile Include="Lock.cs" />
     <Compile Include="PInvoke.cs" />
     <Compile Include="QueryExpressions.cs" />
     <Compile Include="Switch.cs" />
@@ -126,11 +128,12 @@
       <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IL" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="BooleanConsumedAsInteger.il" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
