@@ -106,31 +106,31 @@
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.AttributedModel">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Composition.AttributedModel.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System.Composition.Runtime">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Composition.Runtime.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -3484,6 +3484,13 @@
     <Compile Include="MonoDevelop.Components.MainToolbar\FirstCategory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NR5CompatibiltyExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectCacheHostServiceFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\ProjectCacheService.cs">
+      <DependentUpon>MonoDevelopProjectCacheHostServiceFactory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Ide.TypeSystem\DocumentTrackingService.cs">
+      <DependentUpon>MonoDevelopProjectCacheHostServiceFactory.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

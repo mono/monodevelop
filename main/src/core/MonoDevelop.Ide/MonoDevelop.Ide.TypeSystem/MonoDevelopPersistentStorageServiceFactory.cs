@@ -39,7 +39,7 @@ using System.Security.Cryptography;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), ServiceLayer.Host), Shared]
+//	[ExportWorkspaceServiceFactory(typeof(IPersistentStorageService), ServiceLayer.Host), Shared]
 	class PersistenceServiceFactory : IWorkspaceServiceFactory
 	{
 		static readonly IPersistentStorage NoOpPersistentStorageInstance = new NoOpPersistentStorage();
@@ -213,8 +213,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public async Task<bool> WriteStreamAsync(Document document, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				string fileName = Path.Combine (workingFolderPath, GetDocumentDataFileName (document, name));
-				using (var newStream = File.OpenWrite (fileName)) {
-					await stream.CopyToAsync (newStream, 81920, cancellationToken);
+				try {
+					using (var newStream = File.OpenWrite (fileName)) {
+						await stream.CopyToAsync (newStream, 81920, cancellationToken);
+					}
+				} catch (IOException) {
+					return false;
 				}
 				return true;
 			}
@@ -222,8 +226,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public async Task<bool> WriteStreamAsync(Project project, string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				string fileName = Path.Combine (workingFolderPath, GetProjectDataFileName (project, name));
-				using (var newStream = File.OpenWrite (fileName)) {
-					await stream.CopyToAsync (newStream, 81920, cancellationToken);
+				try {
+					using (var newStream = File.OpenWrite (fileName)) {
+						await stream.CopyToAsync (newStream, 81920, cancellationToken);
+					}
+				} catch (IOException) {
+					return false;
 				}
 				return true;
 			}
@@ -231,8 +239,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			public async Task<bool> WriteStreamAsync(string name, Stream stream, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				string fileName = Path.Combine (workingFolderPath, GetFileName (name));
-				using (var newStream = File.OpenWrite (fileName)) {
-					await stream.CopyToAsync (newStream, 81920, cancellationToken);
+				try {
+					using (var newStream = File.OpenWrite (fileName)) {
+						await stream.CopyToAsync (newStream, 81920, cancellationToken);
+					}
+				} catch (IOException) {
+					return false;
 				}
 				return true;
 			}

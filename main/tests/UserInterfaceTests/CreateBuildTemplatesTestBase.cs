@@ -51,7 +51,7 @@ namespace UserInterfaceTests
 		{
 		}
 
-		public string GenerateProjectName (string templateName)
+		public static string GenerateProjectName (string templateName)
 		{
 			return cleanSpecialChars.Replace (templateName, string.Empty);
 		}
@@ -69,17 +69,21 @@ namespace UserInterfaceTests
 		public void CreateBuildProject (TemplateSelectionOptions templateOptions, Action beforeBuild,
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			var templateName = templateOptions.TemplateKind;
-			var projectName = GenerateProjectName (templateName);
-			var solutionParentDirectory = Util.CreateTmpDir (projectName);
+			var projectName = GenerateProjectName (templateOptions.TemplateKind);
 			var projectDetails = new ProjectDetails {
 				ProjectName = projectName,
 				SolutionName = projectName,
-				SolutionLocation = solutionParentDirectory,
+				SolutionLocation = Util.CreateTmpDir (),
 				ProjectInSolution = true
 			};
+			CreateBuildProject (templateOptions, projectDetails, beforeBuild, gitOptions, miscOptions);
+		}
+
+		public void CreateBuildProject (TemplateSelectionOptions templateOptions, ProjectDetails projectDetails,
+			Action beforeBuild, GitOptions gitOptions = null, object miscOptions = null)
+		{
 			try {
-				CreateProject (templateOptions,projectDetails, gitOptions, miscOptions);
+				CreateProject (templateOptions, projectDetails, gitOptions, miscOptions);
 
 				try {
 					beforeBuild ();
@@ -93,6 +97,8 @@ namespace UserInterfaceTests
 			} catch (Exception e) {
 				TakeScreenShot ("TestFailedWithGenericException");
 				Assert.Fail (e.ToString ());
+			} finally {
+				FoldersToClean.Add (projectDetails.SolutionLocation);
 			}
 		}
 

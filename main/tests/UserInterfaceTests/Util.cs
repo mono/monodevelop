@@ -27,14 +27,17 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using System.Reflection;
 
 namespace UserInterfaceTests
 {
 	public static class Util
 	{
-		public static FilePath CreateTmpDir (string hint)
+		public static FilePath CreateTmpDir (string hint = null)
 		{
-			string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName(), hint);
+			var cwd = new FileInfo (Assembly.GetExecutingAssembly ().Location).DirectoryName;
+			string tempDirectory = Path.Combine (cwd, Path.GetRandomFileName());
+			tempDirectory = hint != null ? Path.Combine (tempDirectory, hint) : tempDirectory;
 
 			if (!Directory.Exists (tempDirectory))
 				Directory.CreateDirectory (tempDirectory);

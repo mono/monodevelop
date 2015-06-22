@@ -41,7 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static NR5CompatibiltyExtensions ()
 		{
-			ISymbolExtensionsTypeInfo = Type.GetType ("Microsoft.CodeAnalysis.Shared.Extensions.ISymbolExtensions, Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35", true);
+			ISymbolExtensionsTypeInfo = Type.GetType ("Microsoft.CodeAnalysis.Shared.Extensions.ISymbolExtensions, Microsoft.CodeAnalysis.Workspaces", true);
 
 			isAccessibleWithin1Method = ISymbolExtensionsTypeInfo.GetMethod ("IsAccessibleWithin", BindingFlags.Static | BindingFlags.Public, null, new [] { typeof(ISymbol), typeof(IAssemblySymbol), typeof(ITypeSymbol) }, null);
 			if (isAccessibleWithin1Method == null)
