@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Projects
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
 					Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
-					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.ParentWindow, rect);
+					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
 					x = screenRect.X;
 					y = screenRect.Bottom;
 					pushIn = false;
