@@ -109,7 +109,7 @@ namespace MonoDevelop.Core
 		static string GetStringInternal (string phrase)
 		{
 			try {
-				return GettextCatalog.GetString (phrase);
+				return Catalog.GetString (phrase);
 			} catch (Exception e) {
 				LoggingService.LogError ("Failed to localize string", e);
 				return phrase;
