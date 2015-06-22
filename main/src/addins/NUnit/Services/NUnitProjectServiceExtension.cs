@@ -66,7 +66,7 @@ namespace MonoDevelop.NUnit
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
 			var sf = base.OnGetSupportedFeatures ();
-			if (!sf.HasFlag (ProjectFeatures.Execute)) {
+			if (!sf.HasFlag (ProjectFeatures.Execute) && IdeApp.Workspace != null) {
 				// Unit test projects support execution
 				UnitTest test = NUnitService.Instance.FindRootTest (Project);
 				if (test != null)
