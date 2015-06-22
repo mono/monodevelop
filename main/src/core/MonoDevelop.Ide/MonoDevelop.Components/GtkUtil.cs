@@ -499,38 +499,29 @@ namespace MonoDevelop.Components
 			#endif
 		}
 
-		static ContextMenu context_menu;
-		static ContextMenuItem cut;
-		static ContextMenuItem copy;
-		static ContextMenuItem paste;
-		static ContextMenuItem delete;
-		static ContextMenuItem select_all;
-
 		static void ShowNativeContextMenu (this Gtk.Entry entry, Gdk.EventButton evt)
 		{
-			if (context_menu == null) {
-				context_menu = new ContextMenu ();
+			var context_menu = new ContextMenu ();
 
-				cut = new ContextMenuItem { Label = GettextCatalog.GetString ("Cut"), Context = entry };
-				cut.Clicked += CutClicked;
-				context_menu.Items.Add (cut);
+			var cut = new ContextMenuItem { Label = GettextCatalog.GetString ("Cut"), Context = entry };
+			cut.Clicked += CutClicked;
+			context_menu.Items.Add (cut);
 
-				copy = new ContextMenuItem { Label = GettextCatalog.GetString ("Copy"), Context = entry };
-				copy.Clicked += CopyClicked;
-				context_menu.Items.Add (copy);
+			var copy = new ContextMenuItem { Label = GettextCatalog.GetString ("Copy"), Context = entry };
+			copy.Clicked += CopyClicked;
+			context_menu.Items.Add (copy);
 
-				paste = new ContextMenuItem { Label = GettextCatalog.GetString ("Paste"), Context = entry };
-				paste.Clicked += PasteClicked;
-				context_menu.Items.Add (paste);
+			var paste = new ContextMenuItem { Label = GettextCatalog.GetString ("Paste"), Context = entry };
+			paste.Clicked += PasteClicked;
+			context_menu.Items.Add (paste);
 
-				delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
-				delete.Clicked += DeleteClicked;
-				context_menu.Items.Add (delete);
+			var delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
+			delete.Clicked += DeleteClicked;
+			context_menu.Items.Add (delete);
 
-				select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
-				select_all.Clicked += SelectAllClicked;
-				context_menu.Items.Add (select_all);
-			}
+			var select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
+			select_all.Clicked += SelectAllClicked;
+			context_menu.Items.Add (select_all);
 
 			/* Update the menu items' sensitivities */
 			copy.Sensitive = select_all.Sensitive = (entry.Text.Length > 0);
