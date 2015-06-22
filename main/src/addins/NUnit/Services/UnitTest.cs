@@ -231,7 +231,7 @@ namespace MonoDevelop.NUnit
 		void SaveOptions ()
 		{
 			if (options == null) {
-				OnSaveOptions (null);
+				OnSaveOptions (new OptionsData[0]);
 				return;
 			}
 			
