@@ -878,8 +878,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 			
 			val = Eval ("(SomeEnum)3");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 		}
 
@@ -1395,8 +1395,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("two", val.DisplayValue);
 			
 			val = Eval ("SomeEnum.one | SomeEnum.two");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 		}
 
 		[Test]
