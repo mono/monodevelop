@@ -45,14 +45,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopTemporaryStorageServiceFactory ()
 		{
-			if (Core.Platform.IsWindows) {
-				var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
-				if (asm != null) {
-					var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
-					if (type != null)
-						microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
-				}
-			}
+			//if (Core.Platform.IsWindows) {
+			//	var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
+			//	if (asm != null) {
+			//		var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
+			//		if (type != null)
+			//			microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
+			//	}
+			//}
 		}
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
