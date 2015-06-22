@@ -51,7 +51,7 @@ namespace UserInterfaceTests
 		{
 		}
 
-		public string GenerateProjectName (string templateName)
+		public static string GenerateProjectName (string templateName)
 		{
 			return cleanSpecialChars.Replace (templateName, string.Empty);
 		}
