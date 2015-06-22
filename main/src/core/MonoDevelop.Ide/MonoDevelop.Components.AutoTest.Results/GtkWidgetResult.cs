@@ -188,7 +188,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			return AutoTestService.CurrentSession.UnsafeSync (delegate {
 				requestedObject = requestedObject ?? resultWidget;
-				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName);
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 				if (propertyInfo != null) {
 					var propertyValue = propertyInfo.GetValue (requestedObject);
 					if (propertyValue != null) {
