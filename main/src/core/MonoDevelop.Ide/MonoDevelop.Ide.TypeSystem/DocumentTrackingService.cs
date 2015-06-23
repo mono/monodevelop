@@ -31,7 +31,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			public MonoDevelopDocumentTrackingService ()
 			{
-				IdeApp.Workbench.ActiveDocumentChanged += MonoDevelop_Ide_IdeApp_Workbench_ActiveDocumentChanged;
+				if (IdeApp.IsInitialized)
+					IdeApp.Workbench.ActiveDocumentChanged += MonoDevelop_Ide_IdeApp_Workbench_ActiveDocumentChanged;
 			}
 
 			#region IDocumentTrackingService implementation
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public DocumentId GetActiveDocument ()
 			{
-				var document = IdeApp.Workbench.ActiveDocument;
+				var document = IdeApp.Workbench?.ActiveDocument;
 				if (document == null)
 					return null;
 				return TypeSystemService.GetDocumentId (document.Project, document.FileName);

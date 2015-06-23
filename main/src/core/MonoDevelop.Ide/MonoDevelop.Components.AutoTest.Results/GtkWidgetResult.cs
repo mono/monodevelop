@@ -202,7 +202,19 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (object.Equals (GetPropertyValue (propertyName), value)) ? this : null;
+			return MatchProperty (propertyName, resultWidget, value);
+		}
+
+		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
+		{
+			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
+				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
+			}
+			if (objectToCompare != null && value != null &&
+				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				return this;
+			}
+			return null;
 		}
 
 		public override List<AppResult> NextSiblings ()

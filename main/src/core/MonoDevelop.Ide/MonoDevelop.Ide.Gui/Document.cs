@@ -522,9 +522,6 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 			}
 			UnloadAdhocProject ();
-			if (Editor != null) {
-				Editor.Dispose ();
-			}
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
 			window.Closed -= OnClosed;

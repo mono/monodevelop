@@ -64,7 +64,8 @@ namespace MonoDevelop.NUnit
 			UnitTestResult res = new UnitTestResult ();
 			res.status = ResultStatus.Failure;
 			res.Message = message;
-			res.stackTrace = ex.Message + "\n" + ex.StackTrace;
+			if (ex != null)
+				res.stackTrace = ex.Message + "\n" + ex.StackTrace;
 			return res;
 		}
 		

@@ -581,6 +581,8 @@ namespace MonoDevelop.Ide.Editor
 		bool isDisposed;
 		void IDisposable.Dispose ()
 		{
+			if (isDisposed)
+				return;
 			isDisposed = true;
 			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
@@ -592,7 +594,6 @@ namespace MonoDevelop.Ide.Editor
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
 			RemoveErrorUndelinesResetTimerId ();
-			textEditorImpl.Dispose ();
 		}
 
 		#endregion
