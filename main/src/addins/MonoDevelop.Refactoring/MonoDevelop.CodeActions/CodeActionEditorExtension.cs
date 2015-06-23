@@ -434,7 +434,7 @@ namespace MonoDevelop.CodeActions
 		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
 		{
 			var menu = new AppKit.NSMenu {
-				Font = NSFont.MenuFontOfSize (12),
+				Font = AppKit.NSFont.MenuFontOfSize (12),
 			};
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
