@@ -72,12 +72,15 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			this.textEditor.DocumentContextChanged += delegate {
-				if (currentContext != null)
-					currentContext.DocumentParsed -= HandleDocumentParsed;
-				currentContext = textEditor.DocumentContext;
-				currentContext.DocumentParsed += HandleDocumentParsed;
-			};
+			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
+		}
+
+		void HandleDocumentContextChanged (object sender, EventArgs e)
+		{
+			if (currentContext != null)
+				currentContext.DocumentParsed -= HandleDocumentParsed;
+			currentContext = textEditor.DocumentContext;
+			currentContext.DocumentParsed += HandleDocumentParsed;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -579,6 +582,11 @@ namespace MonoDevelop.Ide.Editor
 		void IDisposable.Dispose ()
 		{
 			isDisposed = true;
+			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
+			textEditor.TextChanged -= HandleTextChanged;
+			textEditor.DocumentContextChanged -= HandleDocumentContextChanged;
+
 			currentContext.DocumentParsed -= HandleDocumentParsed;
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
