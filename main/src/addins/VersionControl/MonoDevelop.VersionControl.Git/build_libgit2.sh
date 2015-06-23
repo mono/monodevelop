@@ -33,4 +33,3 @@ cmake --build .
 popd
 popd
 
-cp ../../../../external/libgit2/build/*.so* ../../../../build/AddIns/VersionControl
