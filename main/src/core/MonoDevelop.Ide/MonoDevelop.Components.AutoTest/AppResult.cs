@@ -121,10 +121,12 @@ namespace MonoDevelop.Components.AutoTest
 		protected ObjectProperties GetProperties (object resultObject)
 		{
 			var propertiesObject = new ObjectProperties ();
-			var properties = resultObject.GetType ().GetProperties (
-				BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-			foreach (var property in properties) {
-				propertiesObject.Add (property.Name, new ObjectResult (property, GetPropertyValue (property.Name, resultObject)));
+			if (resultObject != null) {
+				var properties = resultObject.GetType ().GetProperties (
+					                BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+				foreach (var property in properties) {
+					propertiesObject.Add (property.Name, new ObjectResult (property, GetPropertyValue (property.Name, resultObject)));
+				}
 			}
 
 			return propertiesObject;

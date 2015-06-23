@@ -33,16 +33,24 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		PropertyInfo propertyInfo;
 		object value;
+		PropertyMetaData metaData;
 
 		internal ObjectResult (PropertyInfo propertyInfo, object value)
 		{
 			this.propertyInfo = propertyInfo;
 			this.value = value;
+			this.metaData = new PropertyMetaData (propertyInfo);
 		}
 
 		public override string ToString ()
 		{
 			return value != null ? value.ToString () : "null";
+		}
+
+		public PropertyMetaData PropertyMetaData {
+			get {
+				return metaData;
+			}
 		}
 
 		#region implemented abstract members of AppResult
@@ -79,7 +87,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override ObjectProperties Properties ()
 		{
-			return null;
+			return GetProperties (value);
 		}
 
 		public override bool Select ()
