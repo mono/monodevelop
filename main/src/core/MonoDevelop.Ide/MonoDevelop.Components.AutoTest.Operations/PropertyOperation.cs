@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 
 		public override string ToString ()
 		{
-			return string.Format ("{0} ({1})", PropertyName, DesiredValue);
+			return string.Format ("Property ({0}, {1})", PropertyName, DesiredValue);
 		}
 	}
 }
