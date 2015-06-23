@@ -352,15 +352,6 @@ namespace MonoDevelop.Components.AutoTest
 			} catch (TimeoutException e) {
 				throw new TimeoutException (string.Format ("Timeout while executing ExecuteQuery: {0}", query), e);
 			}
-/*
-			if (DispatchService.IsGuiThread) {
-				return ExecuteQueryNoWait (query);
-			}
-
-			ExecuteOnIdleAndWait (() => {
-				resultSet = ExecuteQueryNoWait (query);
-			});
-*/
 			return resultSet;
 		}
 

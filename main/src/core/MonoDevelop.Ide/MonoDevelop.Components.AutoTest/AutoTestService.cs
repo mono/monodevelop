@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -185,7 +186,10 @@ namespace MonoDevelop.Components.AutoTest
 			Replaying
 		};
 		State state;
-		
+
+		StringBuilder pendingText;
+		Gdk.ModifierType pendingModifiers = Gdk.ModifierType.None;
+
 		public abstract class RecordEvent
 		{
 			public abstract XElement ToXML ();
@@ -233,7 +237,47 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			}
 		}
-		
+
+		public class StringEvent: RecordEvent
+		{
+			internal string Text;
+			internal Gdk.ModifierType Modifiers { get; set; }
+
+			public override XElement ToXML ()
+			{
+				return new XElement ("event", new XAttribute ("type", "StringEvent"),
+					new XElement ("text", Text),
+					new XElement ("modifier", Modifiers.ToString ()));
+			}
+
+			public override void ParseXML (XElement element)
+			{
+				foreach (var e in element.Elements ()) {
+					if (e.Name == "text") {
+						Text = e.Value;
+					} else if (e.Name == "modifier") {
+						Modifiers = (Gdk.ModifierType)Enum.Parse (typeof(Gdk.ModifierType), e.Value);
+					}
+				}
+			}
+
+			public override void Replay (AutoTestSession testSession)
+			{
+				AppQuery query = testSession.CreateNewQuery ();
+				AppResult[] results = query.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Execute ();
+				if (results.Length == 0) {
+					return;
+				}
+
+				testSession.Select (results [0]);
+
+				if (results [0] is AutoTest.Results.GtkWidgetResult) {
+					AutoTest.Results.GtkWidgetResult widgetResult = (AutoTest.Results.GtkWidgetResult)results [0];
+					widgetResult.EnterText (Text);
+				}
+			}
+		}
+
 		public class CommandEvent: RecordEvent
 		{
 			public object CommandId { get; set; }
@@ -335,9 +379,45 @@ namespace MonoDevelop.Components.AutoTest
 			events.Add (cme);
 		}
 
+		void CompleteStringEvent (string s, Gdk.ModifierType modifiers)
+		{
+			events.Add (new StringEvent { Text = pendingText.ToString (), Modifiers = pendingModifiers });
+			pendingText = null;
+			pendingModifiers = Gdk.ModifierType.None;
+		}
+
 		void HandleCommandManagerKeyPressed (object sender, KeyPressArgs e)
 		{
-			events.Add (new KeyPressEvent () { Key = e.Key, Modifiers = e.Modifiers });
+			uint unicode = Gdk.Keyval.ToUnicode (e.KeyValue);
+			if (pendingText != null) {
+				if (pendingModifiers != e.Modifiers || unicode == 0) {
+					CompleteStringEvent (pendingText.ToString (), pendingModifiers);
+				} else {
+					pendingText.Append ((char)unicode);
+					return;
+				}
+
+				// If text event has been completed, then we need to reset the pending events
+				if (unicode != 0) {
+					pendingText = new StringBuilder ();
+					pendingText.Append ((char)unicode);
+					pendingModifiers = e.Modifiers;
+				} else {
+					// Don't have a unicode key, so just issue a standard key event
+					events.Add (new KeyPressEvent { Key = e.Key, Modifiers = e.Modifiers });
+					pendingText = null;
+					pendingModifiers = Gdk.ModifierType.None;
+				}
+			} else {
+				if (unicode == 0) {
+					events.Add (new KeyPressEvent () { Key = e.Key, Modifiers = e.Modifiers });
+					return;
+				}
+
+				pendingText = new StringBuilder ();
+				pendingText.Append ((char)unicode);
+				pendingModifiers = e.Modifiers;
+			}
 		}
 
 		public void WriteLogToFile (string filepath)
@@ -365,6 +445,8 @@ namespace MonoDevelop.Components.AutoTest
 					ev = new KeyPressEvent ();
 				} else if (evType == "CommandEvent") {
 					ev = new CommandEvent ();
+				} else if (evType == "StringEvent") {
+					ev = new StringEvent ();
 				}
 
 				if (ev == null) {
