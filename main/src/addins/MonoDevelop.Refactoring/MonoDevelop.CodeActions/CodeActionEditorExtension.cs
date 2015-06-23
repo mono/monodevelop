@@ -496,7 +496,7 @@ namespace MonoDevelop.CodeActions
 				var fix = fix_;
 				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+					? "_" + (mnemonic++ % 10).ToString () + " \u2013 " + escapedLabel
 					: "  " + escapedLabel;
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
@@ -516,7 +516,7 @@ namespace MonoDevelop.CodeActions
 
 				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
 				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
+					? "_" + (mnemonic++ % 10).ToString () + " \u2013 " + escapedLabel
 					: "  " + escapedLabel;
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
