@@ -17,7 +17,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DocumentId GetActiveDocument ();
 	}
 
-	[ExportWorkspaceServiceFactory (typeof(IMDDocumentTrackingService), ServiceLayer.Host), Shared]
+//	[ExportWorkspaceServiceFactory (typeof(IMDDocumentTrackingService), ServiceLayer.Host), Shared]
 	class MonoDevelopDocumentTrackingServiceFactory : IWorkspaceServiceFactory
 	{
 		private IMDDocumentTrackingService _singleton;

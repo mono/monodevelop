@@ -8,8 +8,8 @@ using System.Composition;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	[ExportWorkspaceServiceFactory(typeof(IProjectCacheHostService), ServiceLayer.Host)]
-	[Shared]
+//	[ExportWorkspaceServiceFactory(typeof(IProjectCacheHostService), ServiceLayer.Host)]
+//	[Shared]
 	internal partial class MonoDevelopProjectCacheHostServiceFactory : IWorkspaceServiceFactory
 	{
 		private const int ImplicitCacheTimeoutInMS = 10000;
