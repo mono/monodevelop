@@ -482,6 +482,16 @@ namespace MonoDevelop.CodeActions
 			return menu;
 		}
 
+		static string CreateLabel (string title, ref int mnemonic)
+		{
+			var escapedLabel = title.Replace ("_", "__");
+			#if MAC
+			return escapedLabel;
+			#else
+			return (mnemonic <= 10) ? "_" + mnemonic++ % 10 + " \u2013 " + escapedLabel : "  " + escapedLabel;
+			#endif
+		}
+
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
@@ -496,10 +506,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				var fix = fix_;
-				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
-				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " \u2013 " + escapedLabel
-					: "  " + escapedLabel;
+				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
@@ -516,10 +523,7 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				var escapedLabel = fix.CodeAction.Title.Replace ("_", "__");
-				var label = (mnemonic <= 10)
-					? "_" + (mnemonic++ % 10).ToString () + " \u2013 " + escapedLabel
-					: "  " + escapedLabel;
+				var label = CreateLabel (fix.CodeAction.Title, ref mnemonic);
 				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
 					new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run (null, EventArgs.Empty);
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
