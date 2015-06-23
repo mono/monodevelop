@@ -694,6 +694,7 @@ namespace MonoDevelop.Ide
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
 			newProjectDialog.SelectedTemplateId = defaultItemId;
+			newProjectDialog.ParentWorkspace = parentWorkspace;
 
 			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
 				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);

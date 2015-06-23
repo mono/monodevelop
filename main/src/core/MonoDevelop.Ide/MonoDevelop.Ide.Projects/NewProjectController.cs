@@ -87,6 +87,7 @@ namespace MonoDevelop.Ide.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
 		public string SelectedTemplateId { get; set; }
+		public Workspace ParentWorkspace { get; set; }
 
 		string DefaultSelectedCategoryPath {
 			get {
@@ -562,6 +563,11 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 			}
 
+			if (ParentWorkspace != null && SolutionAlreadyExistsInParentWorkspace ()) {
+				MessageService.ShowError (GettextCatalog.GetString ("A solution with that filename is already in your workspace"));
+				return false;
+			}
+
 			ProcessedTemplateResult result = null;
 
 			try {
@@ -596,6 +602,16 @@ namespace MonoDevelop.Ide.Projects
 			}	
 			processedTemplate = result;
 			return true;
+		}
+
+		bool SolutionAlreadyExistsInParentWorkspace ()
+		{
+			if (finalConfigurationPage.IsWorkspace)
+				return false;
+
+			string solutionFileName = Path.Combine (projectConfiguration.SolutionLocation, finalConfigurationPage.SolutionFileName);
+			return ParentWorkspace.GetChildren ().OfType<Solution> ()
+				.Any (solution => solution.FileName == solutionFileName);
 		}
 
 		void DisposeExistingNewItems ()
