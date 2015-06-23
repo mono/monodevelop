@@ -44,7 +44,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class DebugValueTooltipProvider: TooltipProvider, IDisposable
+	class DebugValueTooltipProvider: TooltipProvider
 	{
 		DebugValueWindow tooltip;
 		
@@ -162,14 +162,15 @@ namespace MonoDevelop.SourceEditor
 		
 		#endregion 
 		
-		#region IDisposable implementation
-		public void Dispose ()
+		public override void Dispose ()
 		{
+			if (IsDisposed)
+				return;
 			DebuggingService.CurrentFrameChanged -= CurrentFrameChanged;
 			DebuggingService.DebugSessionStarted -= DebugSessionStarted;
 			if (DebuggingService.DebuggerSession != null)
 				DebuggingService.DebuggerSession.TargetExited -= TargetProcessExited;
+			base.Dispose ();
 		}
-		#endregion
 	}
 }

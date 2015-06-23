@@ -104,10 +104,12 @@ namespace MonoDevelop.VersionControl.Git
 							return false;
 					} finally {
 						dlg.Destroy ();
+						dlg.Dispose ();
 					}
 				}
 
-				if (user != sol.AuthorInformation.Name || email != sol.AuthorInformation.Email) {
+				if ((!string.IsNullOrEmpty (sol.AuthorInformation.Name) && !string.IsNullOrEmpty (sol.AuthorInformation.Email)) &&
+					(user != sol.AuthorInformation.Name || email != sol.AuthorInformation.Email)) {
 					// There is a conflict. Ask the user what to do
 					string gitInfo = GetDesc (user, email);
 					string mdInfo = GetDesc (sol.AuthorInformation.Name, sol.AuthorInformation.Email);
@@ -126,6 +128,7 @@ namespace MonoDevelop.VersionControl.Git
 							return false;
 					} finally {
 						dlg.Destroy ();
+						dlg.Dispose ();
 					}
 				}
 			}

@@ -123,11 +123,15 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 
-			categories.Add (new ProjectSearchCategory (this));
 			categories.Add (new FileSearchCategory (this));
 			categories.Add (new CommandSearchCategory (this));
 			categories.Add (new SearchInSolutionSearchCategory ());
-			categories.AddRange (AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories"));
+			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
+				categories.Add (cat);
+				cat.Initialize (this);
+			}
+
+			categories.Sort ();
 
 			layout = new Pango.Layout (PangoContext);
 			headerLayout = new Pango.Layout (PangoContext);

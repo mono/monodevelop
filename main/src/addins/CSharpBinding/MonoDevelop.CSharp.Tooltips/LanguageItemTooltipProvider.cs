@@ -104,9 +104,12 @@ namespace MonoDevelop.SourceEditor
 
 		#region IDisposable implementation
 
-		public void Dispose ()
+		public override void Dispose ()
 		{
+			if (IsDisposed)
+				return;
 			DestroyLastTooltipWindow ();
+			base.Dispose ();
 		}
 
 		#endregion

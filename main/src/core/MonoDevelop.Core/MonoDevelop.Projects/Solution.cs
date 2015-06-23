@@ -638,24 +638,24 @@ namespace MonoDevelop.Projects
 			return Clean (monitor, (SolutionConfigurationSelector) configuration);
 		}
 
-		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
-			return await SolutionExtension.Clean (monitor, configuration);
+			return await SolutionExtension.Clean (monitor, configuration, operationContext);
 		}
 
-		public async Task<BuildResult> Build (ProgressMonitor monitor, string configuration)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, string configuration, OperationContext operationContext = null)
 		{
-			return await SolutionExtension.Build (monitor, (SolutionConfigurationSelector) configuration);
+			return await SolutionExtension.Build (monitor, (SolutionConfigurationSelector) configuration, operationContext);
 		}
 
-		Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets)
+		Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets, OperationContext operationContext)
 		{
-			return Build (monitor, configuration);
+			return Build (monitor, configuration, operationContext);
 		}
 
-		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
-			return await SolutionExtension.Build (monitor, configuration);
+			return await SolutionExtension.Build (monitor, configuration, operationContext);
 		}
 
 		public bool NeedsBuilding (ConfigurationSelector configuration)
@@ -698,9 +698,9 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.GetExecutionTargets (this, configuration);
 		}
 
-		/*protected virtual*/ Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		/*protected virtual*/ Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return RootFolder.Build (monitor, configuration);
+			return RootFolder.Build (monitor, configuration, operationContext:operationContext);
 		}
 
 		/*protected virtual*/ bool OnGetNeedsBuilding (ConfigurationSelector configuration)
@@ -708,9 +708,9 @@ namespace MonoDevelop.Projects
 			return RootFolder.NeedsBuilding (configuration);
 		}
 
-		/*protected virtual*/ Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		/*protected virtual*/ Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{	
-			return RootFolder.Clean (monitor, configuration);
+			return RootFolder.Clean (monitor, configuration, operationContext);
 		}
 
 		/*protected virtual*/ bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
@@ -1097,9 +1097,9 @@ namespace MonoDevelop.Projects
 				return Solution.OnGetItemFiles (includeReferencedFiles);
 			}
 
-			internal protected override Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 			{
-				return Solution.OnBuild (monitor, configuration);
+				return Solution.OnBuild (monitor, configuration, operationContext);
 			}
 
 			internal protected override bool NeedsBuilding (ConfigurationSelector configuration)
@@ -1107,9 +1107,9 @@ namespace MonoDevelop.Projects
 				return Solution.OnGetNeedsBuilding (configuration);
 			}
 
-			internal protected override Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 			{
-				return Solution.OnClean (monitor, configuration);
+				return Solution.OnClean (monitor, configuration, operationContext);
 			}
 
 			internal protected override Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

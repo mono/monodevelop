@@ -28,20 +28,33 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class TargetEvaluationContext
+	public class TargetEvaluationContext: ProjectOperationContext
 	{
 		public TargetEvaluationContext ()
 		{
 			PropertiesToEvaluate = new HashSet<string> ();
 			ItemsToEvaluate = new HashSet<string> ();
-			GlobalProperties = new ProjectItemMetadata (null);
 		}
 
-		public IPropertySet GlobalProperties { get; private set; }
+		public TargetEvaluationContext (OperationContext other): this ()
+		{
+			if (other != null)
+				CopyFrom (other);
+		}
 
 		public HashSet<string> PropertiesToEvaluate { get; private set; }
 
 		public HashSet<string> ItemsToEvaluate { get; private set; }
+
+		public override void CopyFrom (OperationContext other)
+		{
+			base.CopyFrom (other);
+			var o = other as TargetEvaluationContext;
+			if (o != null) {
+				PropertiesToEvaluate = new HashSet<string> (o.PropertiesToEvaluate);
+				o.ItemsToEvaluate = new HashSet<string> (o.ItemsToEvaluate);
+			}
+		}
 	}
 }
 

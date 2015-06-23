@@ -39,20 +39,38 @@ namespace MonoDevelop.Projects
 		int initialMetadataCount;
 		MSBuildProject project;
 
+		internal ProjectItemMetadata ()
+		{
+		}
+
 		internal ProjectItemMetadata (MSBuildProject project)
 		{
 			this.project = project;
 		}
 
+		internal ProjectItemMetadata (ProjectItemMetadata other)
+		{
+			this.project = other.project;
+			if (other.properties != null) {
+				properties = new Dictionary<string, MSBuildProperty> (other.properties.Count);
+				foreach (var p in other.propertyList) {
+					var pc = p.Clone ();
+					propertyList.Add (pc);
+					properties [p.Name] = pc;
+				}
+			}
+			initialMetadataCount = other.initialMetadataCount;
+		}
+
 		internal void SetProject (MSBuildProject project)
 		{
 			foreach (var p in propertyList) {
-				p.Project = project;
+				p.ParentProject = project;
 				p.ResolvePath ();
 			}
 		}
 
-		internal void LoadProperties (XmlElement element)
+/*		internal void LoadProperties (XmlElement element)
 		{
 			foreach (var pelem in element.ChildNodes.OfType<XmlElement> ()) {
 				MSBuildProperty prevSameName;
@@ -69,7 +87,7 @@ namespace MonoDevelop.Projects
 				properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
 			}
 			initialMetadataCount = properties.Count;
-		}
+		}*/
 
 		internal bool PropertyCountHasChanged {
 			get { return initialMetadataCount != (properties != null ? properties.Count : 0); }
@@ -166,8 +184,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			var prop = new ItemMetadataProperty (project, name);
-			prop.Project = project;
+			var prop = new ItemMetadataProperty (name);
+			prop.ParentProject = project;
 			properties [name] = prop;
 
 			if (insertIndex != -1)
@@ -183,7 +201,7 @@ namespace MonoDevelop.Projects
 				properties = new Dictionary<string, MSBuildProperty> ();
 				propertyList = new List<MSBuildProperty> ();
 			}
-			prop.Project = project;
+			prop.ParentProject = project;
 			properties [prop.Name] = prop;
 			propertyList.Add (prop);
 		}

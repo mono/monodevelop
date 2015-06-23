@@ -181,18 +181,5 @@ namespace MonoDevelop.NUnit
 			UnitTestResult res = test.GetLastResult ();
 			return res != null && res.IsFailure;
 		}
-		
-		[CommandUpdateHandler (ProjectCommands.Options)]
-		protected void OnUpdateShowOptions (CommandInfo info)
-		{
-			info.Visible = !(CurrentNode.DataItem is SolutionFolderTestGroup);
-		}
-		
-		[CommandHandler (ProjectCommands.Options)]
-		protected void OnShowOptions ()
-		{
-			UnitTest test = CurrentNode.DataItem as UnitTest;
-			NUnitService.ShowOptionsDialog (test);
-		}
 	}
 }

@@ -44,7 +44,6 @@ using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Razor.Dom;
 using MonoDevelop.AspNet.Razor.Parser;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -549,7 +548,7 @@ namespace MonoDevelop.AspNet.Razor
 				list.Add ("!DOCTYPE", "md-literal", MonoDevelop.Core.GettextCatalog.GetString ("Document type"));
 		}
 
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
 				&& !(Tracker.Engine.Nodes.Peek () is XElement)) {

@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -168,12 +169,12 @@ namespace MonoDevelop.CodeIssues
 				foreach (var node in g.OrderBy (n => n.Item1.Name, StringComparer.Ordinal)) {
 					var title = node.Item1.Name;
 					MarkupSearchResult (filter, ref title);
-					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Item1.Name);
+					var nodeIter = treeStore.AppendValues (categoryIter, title, node, Ambience.EscapeText (node.Item1.Name));
 					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 1) {
 						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
-							title = subIssue.Description.ToString ();
+							title = subIssue.Title.ToString ();
 							MarkupSearchResult (filter, ref title);
-							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node.Item1, subIssue), subIssue.Description);
+							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>(node.Item1, subIssue), Ambience.EscapeText (node.Item1.Name));
 						}
 					}
 				}

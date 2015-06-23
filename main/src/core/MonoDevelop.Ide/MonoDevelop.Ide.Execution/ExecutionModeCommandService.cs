@@ -123,8 +123,8 @@ namespace MonoDevelop.Ide.Execution
 		{
 			CommandItem item = (CommandItem) data;
 			if (item.Mode == null) {
-				var dlg = new CustomExecutionModeManagerDialog (item.Context);
-				MessageService.ShowCustomDialog (dlg);
+				using (var dlg = new CustomExecutionModeManagerDialog (item.Context))
+					MessageService.ShowCustomDialog (dlg);
 				return null;
 			}
 			
@@ -255,6 +255,7 @@ namespace MonoDevelop.Ide.Execution
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			});
 			return cmode;

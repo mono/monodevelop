@@ -38,28 +38,24 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
-      <HintPath>..\..\..\..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+      <HintPath>..\..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -148,7 +144,4 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>

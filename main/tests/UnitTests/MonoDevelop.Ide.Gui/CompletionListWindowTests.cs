@@ -503,6 +503,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("/AbAb", output);
 		}
 
+		[Ignore]
 		[Test]
 		public void TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
 		{
@@ -931,6 +932,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			string output = RunSimulation ("", "expr\t", true, true, false, "expression", "PostfixExpressionStatementSyntax");
 			Assert.AreEqual ("expression", output);
+		}
+
+		/// <summary>
+		/// Bug 30591 - [Roslyn] Enum code-completion doesn't generate type on "."(dot)
+		/// </summary>
+		[Test]
+		public void TestBug30591 ()
+		{
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
+			Assert.AreEqual ("foo", output);
 		}
 
 

@@ -111,11 +111,13 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (Microsoft.CodeAnalysis.ISymbol element)
 		{
 			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
+			widget.PublicApiOnly = element.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
 			widget.Open (url);
 		}
 
-		public void Open (string documentationCommentId)
+		public void Open (string documentationCommentId, bool openInPublicOnlyMode = true)
 		{
+			widget.PublicApiOnly = openInPublicOnlyMode;
 			widget.Open (documentationCommentId);
 		}
 
@@ -139,7 +141,7 @@ namespace MonoDevelop.AssemblyBrowser
 			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
-		public void FillWidget ()
+		public async void FillWidget ()
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {
@@ -152,7 +154,7 @@ namespace MonoDevelop.AssemblyBrowser
 					var netProject = project as DotNetProject;
 					if (netProject == null)
 						continue;
-					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+					foreach (string file in await netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
 						if (!System.IO.File.Exists (file))
 							continue;
 						Widget.AddReferenceByFileName (file); 

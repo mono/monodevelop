@@ -251,6 +251,28 @@ eeeeeeeeee
 ffffffffff");
 		}
 
+		/// <summary>
+		/// Bug 29193 - Last line of code is duplicated on the same line 
+		/// </summary>
+		[Test()]
+		public void TestDuplicateLines_Bug29193 ()
+		{
+			var data = Create (@"aaaaaaaaa
+bbbbbbbbbb
+cccccccccc
+dddddddddd
+eeeeeeeeee
+ffffffffff$");
+			MiscActions.DuplicateLine (data);
+			Check (data, @"aaaaaaaaa
+bbbbbbbbbb
+cccccccccc
+dddddddddd
+eeeeeeeeee
+ffffffffff
+ffffffffff$");
+		}
+
 		[Test()]
 		public void TestDuplicateSelectedText ()
 		{

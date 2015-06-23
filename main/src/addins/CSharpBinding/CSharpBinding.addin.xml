@@ -12,6 +12,9 @@
 				_label = "S_how Code Generation Window"
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
+		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
+			_label = "_Find reference usages"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
@@ -279,4 +282,17 @@
 		<Class class="MonoDevelop.CSharp.Completion.ProtocolMemberContextHandler" />
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/Ide/BraceMatcher">
+		<Class class="MonoDevelop.CSharp.CSharpBraceMatcher" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ItemType" value="ProjectReference|Reference">
+			<CommandItem id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages" />
+		</Condition>
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Ide/SearchCategories">
+		<Class class="MonoDevelop.CSharp.ProjectSearchCategory" />
+	</Extension>
 </ExtensionModel>

@@ -42,19 +42,19 @@ namespace MonoDevelop.Deployment
 			return conf;
 		}
 		
-		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			foreach (Package p in packages)
 				p.Clean (monitor);
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 		
-		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			foreach (Package p in packages)
 				if (!await p.Build (monitor))
 					break;
-			return BuildResult.Success;
+			return BuildResult.CreateSuccess ();
 		}
 		
 		protected override bool OnGetNeedsBuilding (ConfigurationSelector configuration)

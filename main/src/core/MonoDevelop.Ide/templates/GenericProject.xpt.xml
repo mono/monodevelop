@@ -8,6 +8,7 @@
 		<_Name>Generic Project</_Name>
 		<Category>other/misc/generic</Category>
 		<Icon>md-project</Icon>
+		<FileExtension>.mdproj</FileExtension>
 		<_Description>Creates a project which can contain any kind of file.</_Description>
 	</TemplateConfiguration>
 	

@@ -39,8 +39,6 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory6.CSharp;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Html.Parser;
@@ -240,7 +238,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		
-		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
+		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 /*			//completion for ASP.NET expressions
 			// TODO: Detect <script> state here !!!

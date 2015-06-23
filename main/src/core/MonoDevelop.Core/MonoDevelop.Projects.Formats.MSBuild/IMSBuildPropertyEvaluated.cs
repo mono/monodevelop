@@ -40,7 +40,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		string Name { get; }
 
-		MSBuildProject Project { get; }
+		MSBuildProject ParentProject { get; }
 
 		string Value { get; }
 

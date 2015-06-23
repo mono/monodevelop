@@ -90,6 +90,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return null;
 		}
 
+		public override void Dispose ()
+		{
+			projectedTooltipProvider.Dispose ();
+			base.Dispose ();
+		}
 	}
 }
 

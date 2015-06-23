@@ -47,14 +47,14 @@ namespace MonoDevelop.Ide.Templates
 			try {
 				clrVersion = (ClrVersion) Enum.Parse (typeof (ClrVersion), element.GetAttribute ("ClrVersion"), true);
 			} catch (ArgumentException) {
-				new InvalidOperationException ("Invalid value for ClrVersion condition in template.");
+				throw new InvalidOperationException ("Invalid value for ClrVersion condition in template.");
 			}
 			
 			condition = ClrVersionCondition.None;
 			try {
 				condition = (ClrVersionCondition) Enum.Parse (typeof (ClrVersionCondition), element.GetAttribute ("Condition"), true);
 			} catch (ArgumentException) {
-				new InvalidOperationException ("Invalid value for ClrVersionCondition condition in template.");
+				throw new InvalidOperationException ("Invalid value for ClrVersionCondition condition in template.");
 			}
 		}
 		

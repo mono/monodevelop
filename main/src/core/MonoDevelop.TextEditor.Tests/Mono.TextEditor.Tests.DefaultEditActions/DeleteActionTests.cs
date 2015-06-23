@@ -114,6 +114,31 @@ namespace Mono.TextEditor.Tests.Actions
 1234567890", data.Document.Text);
 		}
 
+		[Test]
+		public void TestDeleteCaretLineToStart ()
+		{
+			var data = Create (@"1234567890
+1234$67890
+1234567890");
+			DeleteActions.CaretLineToStart (data);
+			Assert.AreEqual (@"1234567890
+67890
+1234567890", data.Document.Text);
+		}
+
+		[Test]
+		public void TestDeleteCaretLineToStartWithFoldings ()
+		{
+			var data = Create (@"1234567890
+1234+[567890
+1234567890
+123]4$67890
+1234567890");
+			DeleteActions.CaretLineToStart (data);
+			Assert.AreEqual (@"1234567890
+67890
+1234567890", data.Document.Text);
+		}
 
 		[Test]
 		public void TestDeleteCaretLineToEnd ()

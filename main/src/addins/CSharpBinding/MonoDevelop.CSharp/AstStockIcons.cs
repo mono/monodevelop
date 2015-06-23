@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Components.MainToolbar;
 
 namespace MonoDevelop.CSharp
 {
@@ -226,6 +227,43 @@ namespace MonoDevelop.CSharp
 				acc = Accessibility.Public;
 			return fieldIconTable [(int) (acc)];
 		}
+
+		internal static IconId GetStockIconForSymbolInfo (this DeclaredSymbolInfo symbol)
+		{
+			switch (symbol.Kind) {
+				case DeclaredSymbolInfoKind.Class:
+				return AstStockIcons.Class;
+				case DeclaredSymbolInfoKind.Constant:
+				return AstStockIcons.Field;
+				case DeclaredSymbolInfoKind.Constructor:
+				return AstStockIcons.Method;
+				case DeclaredSymbolInfoKind.Delegate:
+				return AstStockIcons.Delegate;
+				case DeclaredSymbolInfoKind.Enum:
+				return AstStockIcons.Enum;
+				case DeclaredSymbolInfoKind.EnumMember:
+				return AstStockIcons.Field;
+				case DeclaredSymbolInfoKind.Event:
+				return AstStockIcons.Event;
+				case DeclaredSymbolInfoKind.Field:
+				return AstStockIcons.Field;
+				case DeclaredSymbolInfoKind.Indexer:
+				return AstStockIcons.Method;
+				case DeclaredSymbolInfoKind.Interface:
+				return AstStockIcons.Interface;
+				case DeclaredSymbolInfoKind.Method:
+				return AstStockIcons.Method;
+				case DeclaredSymbolInfoKind.Module:
+				return AstStockIcons.Method;
+				case DeclaredSymbolInfoKind.Property:
+				return AstStockIcons.Property;
+				case DeclaredSymbolInfoKind.Struct:
+				return AstStockIcons.Struct;
+				default:
+					throw new ArgumentOutOfRangeException ();
+			}
+		}
+
 	}
 
 }

@@ -29,7 +29,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	struct BraceMatchingResult
+	public struct BraceMatchingResult
 	{
 		public ISegment LeftSegment { get; }
 

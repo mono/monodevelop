@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		ListStore logstore = new ListStore (typeof (Revision));
+		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
 		Gtk.Button revertButton, revertToButton, refreshButton;
@@ -266,6 +266,13 @@ namespace MonoDevelop.VersionControl.Views
 
 			toolbar.ShowAll ();
 		}
+
+		static void SetLogSearchFilter (ListStore store, string filter)
+		{
+			TreeIter iter;
+			if (store.GetIterFirst (out iter))
+				store.SetValue (iter, 1, filter);
+		}
 		
 		bool filtering;
 		void HandleSearchEntryFilterChanged (object sender, EventArgs e)
@@ -276,6 +283,7 @@ namespace MonoDevelop.VersionControl.Views
 			GLib.Timeout.Add (100, delegate {
 				filtering = false;
 				currentFilter = searchEntry.Entry.Text;
+				SetLogSearchFilter (logstore, currentFilter);
 				UpdateHistory ();
 				return false;
 			});
@@ -458,6 +466,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();
+			treeviewFiles.Dispose ();
 		}
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -487,9 +496,21 @@ namespace MonoDevelop.VersionControl.Views
 			model.IterNthChild (out node, model.IterNChildren () - 1);
 			renderer.LastNode =  node.Equals (iter);
 		}
-		
-		void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+
+		static string GetCurrentFilter (Gtk.TreeModel model)
 		{
+			TreeIter filterIter;
+			string filter = string.Empty;
+			if (model.GetIterFirst (out filterIter))
+				filter = (string)model.GetValue (filterIter, 1);
+
+			return filter;
+		}
+		
+		static void MessageFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			string filter = GetCurrentFilter (model);
+
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
 			if (string.IsNullOrEmpty (rev.Message)) {
@@ -499,15 +520,17 @@ namespace MonoDevelop.VersionControl.Views
 				int idx = message.IndexOf ('\n');
 				if (idx > 0)
 					message = message.Substring (0, idx);
-				if (string.IsNullOrEmpty (currentFilter))
+				if (string.IsNullOrEmpty (filter))
 					renderer.Text = message;
 				else
-					renderer.Markup = EscapeWithFilterMarker (message);
+					renderer.Markup = EscapeWithFilterMarker (message, filter);
 			}
 		}
 		
-		void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void AuthorFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			string filter = GetCurrentFilter (model);
+
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
 			string author = rev.Author;
@@ -516,13 +539,13 @@ namespace MonoDevelop.VersionControl.Views
 			int idx = author.IndexOf ("<", StringComparison.Ordinal);
 			if (idx >= 0 && idx < author.IndexOf (">", StringComparison.Ordinal))
 				author = author.Substring (0, idx).Trim ();
-			if (string.IsNullOrEmpty (currentFilter))
+			if (string.IsNullOrEmpty (filter))
 				renderer.Text = author;
 			else
-				renderer.Markup = EscapeWithFilterMarker (author);
+				renderer.Markup = EscapeWithFilterMarker (author, filter);
 		}
 		
-		void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void AuthorIconFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererImage renderer = (CellRendererImage)cell;
 			var rev = (Revision)model.GetValue (iter, 0);
@@ -534,29 +557,32 @@ namespace MonoDevelop.VersionControl.Views
 			if (img.Downloading) {
 				img.Completed += (sender, e) => {
 					renderer.Image = img.Image;
-					if (logstore.IterIsValid (iter))
+					if (((ListStore)model).IterIsValid (iter))
 						model.EmitRowChanged (model.GetPath (iter), iter);
 				};
 			}
 		}
 		
-		void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void RevisionFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
+			string filter = GetCurrentFilter (model);
+
 			CellRendererText renderer = (CellRendererText)cell;
 			var rev = model.GetValue (iter, 0).ToString ();
-			if (string.IsNullOrEmpty (currentFilter))
+			if (string.IsNullOrEmpty (filter))
 				renderer.Text = rev;
 			else
-				renderer.Markup = EscapeWithFilterMarker (rev);
+				renderer.Markup = EscapeWithFilterMarker (rev, filter);
 		}
 		
-		void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void SetDiffCellData (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			CellRendererDiff rc = (CellRendererDiff)cell;
-			string[] lines = (string[])changedpathstore.GetValue (iter, colDiff);
+			string[] lines = (string[])model.GetValue (iter, colDiff);
 			if (lines == null)
-				lines = new string[] { (string)changedpathstore.GetValue (iter, colOperation) };
-			rc.InitCell (treeviewFiles, changedpathstore.IterDepth (iter) != 0, lines, changedpathstore.GetPath (iter));
+				lines = new string[] { (string)model.GetValue (iter, colOperation) };
+
+			rc.InitCell (tree_column.TreeView, ((TreeStore)model).IterDepth (iter) != 0, lines, model.GetPath (iter));
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
@@ -667,8 +693,9 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			foreach (var rev in h) {
 				if (MatchesFilter (rev))
-					logstore.AppendValues (rev);
+					logstore.AppendValues (rev, string.Empty);
 			}
+			SetLogSearchFilter (logstore, currentFilter);
 		}
 		
 		bool MatchesFilter (Revision rev)
@@ -688,12 +715,12 @@ namespace MonoDevelop.VersionControl.Views
 			return false;
 		}
 		
-		string EscapeWithFilterMarker (string txt)
+		static string EscapeWithFilterMarker (string txt, string filter)
 		{
-			if (string.IsNullOrEmpty (currentFilter))
+			if (string.IsNullOrEmpty (filter))
 				return GLib.Markup.EscapeText (txt);
 			
-			int i = txt.IndexOf (currentFilter, StringComparison.CurrentCultureIgnoreCase);
+			int i = txt.IndexOf (filter, StringComparison.CurrentCultureIgnoreCase);
 			if (i == -1)
 				return GLib.Markup.EscapeText (txt);
 			
@@ -701,9 +728,9 @@ namespace MonoDevelop.VersionControl.Views
 			int last = 0;
 			while (i != -1) {
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
-				sb.Append ("<span color='blue'>").Append (txt.Substring (i, currentFilter.Length)).Append ("</span>");
-				last = i + currentFilter.Length;
-				i = txt.IndexOf (currentFilter, last, StringComparison.CurrentCultureIgnoreCase);
+				sb.Append ("<span color='blue'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				last = i + filter.Length;
+				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
 			}
 			if (last < txt.Length)
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, txt.Length - last)));

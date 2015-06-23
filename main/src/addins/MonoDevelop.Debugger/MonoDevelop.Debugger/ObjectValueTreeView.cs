@@ -337,11 +337,15 @@ namespace MonoDevelop.Debugger
 				var val = (ObjectValue) model.GetValue (iter, ObjectColumn);
 				Xwt.Drawing.Color? color;
 
-				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
-					color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
-				else
+				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
+					try {
+						color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
+					} catch (Exception) {
+						color = null;
+					}
+				} else {
 					color = null;
-
+				}
 				if (color != null) {
 					((CellRendererColorPreview) cell).Color = (Xwt.Drawing.Color) color;
 					cell.Visible = true;
@@ -391,6 +395,8 @@ namespace MonoDevelop.Debugger
 			pinCol.Resizable = false;
 			pinCol.Visible = false;
 			pinCol.Expand = false;
+			pinCol.Sizing = TreeViewColumnSizing.Fixed;
+			pinCol.FixedWidth = 16;
 			AppendColumn (pinCol);
 			
 			state = new TreeViewState (this, NameColumn);
@@ -408,6 +414,63 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
+
+
+			expanderSize = (int)this.StyleGetProperty ("expander-size") + 4;//+4 is hardcoded in gtk.c code
+			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
+			grid_line_width = (int)this.StyleGetProperty ("grid-line-width");
+			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
+		}
+
+		int expanderSize;
+		int horizontal_separator;
+		int grid_line_width;
+		int focus_line_width;
+
+		int GetMaxWidth (TreeViewColumn column, TreeIter iter)
+		{
+			var path = Model.GetPath (iter);
+			int x, y, w, h;
+			int columnWidth = 0;
+			column.CellSetCellData (Model, iter, false, false);
+			var area = new Gdk.Rectangle (0, 0, 1000, 1000);
+			bool firstCell = true;
+			foreach (var cellRenderer in column.CellRenderers) {
+				if (!cellRenderer.Visible)
+					continue;
+				if (!firstCell && columnWidth > 0)
+					columnWidth += column.Spacing;
+				cellRenderer.GetSize (this, ref area, out x, out y, out w, out h);
+				columnWidth += w + focus_line_width;
+				firstCell = false;
+			}
+			if (ExpanderColumn == column) {
+				columnWidth += horizontal_separator + (path.Depth - 1) * LevelIndentation;
+				if (ShowExpanders)
+					columnWidth += path.Depth * expanderSize;
+			} else {
+				columnWidth += horizontal_separator;
+			}
+			if (this.GetRowExpanded (path)) {
+				var childrenCount = Model.IterNChildren (iter);
+				for (int i = 0; i < childrenCount; i++) {
+					TreeIter childIter;
+					if (!Model.IterNthChild (out childIter, iter, i))
+						break;
+					columnWidth = Math.Max (columnWidth, GetMaxWidth (column, childIter));
+				}
+			}
+			return columnWidth;
+		}
+
+		void RecalculateWidth ()
+		{
+			TreeIter iter;
+			if (!this.Model.GetIterFirst (out iter))
+				return;
+			foreach (var column in new [] { expCol, valueCol }) {//No need to calculate for Type and PinIcon columns
+				column.FixedWidth = GetMaxWidth (column, iter);
+			}
 		}
 
 		Dictionary<TreeIter, bool> evalSpinnersIcons = new Dictionary<TreeIter, bool>();
@@ -520,6 +583,8 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnShown ();
 			AdjustColumnSizes ();
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		protected override void OnRealized ()
@@ -653,7 +718,22 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public PinnedWatch PinnedWatch { get; set; }
+		PinnedWatch pinnedWatch = null;
+		public PinnedWatch PinnedWatch {
+			get {
+				return pinnedWatch;
+			}
+			set {
+				if (pinnedWatch == value)
+					return;
+				pinnedWatch = value;
+				if (value == null) {
+					pinCol.FixedWidth = 16;
+				} else {
+					pinCol.FixedWidth = 38;
+				}
+			}
+		}
 		
 		public string PinnedWatchFile { get; set; }
 		public int PinnedWatchLine { get; set; }
@@ -668,15 +748,10 @@ namespace MonoDevelop.Debugger
 				if (compact) {
 					newFont = Style.FontDescription.Copy ();
 					newFont.Size = (newFont.Size * 8) / 10;
-					expCol.Sizing = TreeViewColumnSizing.Autosize;
-					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
-					ColumnsAutosize ();
 				} else {
 					newFont = Style.FontDescription;
-					expCol.Sizing = TreeViewColumnSizing.Fixed;
-					valueCol.Sizing = TreeViewColumnSizing.Fixed;
 					valueCol.MaxWidth = int.MaxValue;
 				}
 				typeCol.Visible = !compact;
@@ -712,6 +787,8 @@ namespace MonoDevelop.Debugger
 		{
 			values.Add (value);
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 		
 		public void AddValues (IEnumerable<ObjectValue> newValues)
@@ -719,12 +796,16 @@ namespace MonoDevelop.Debugger
 			foreach (ObjectValue val in newValues)
 				values.Add (val);
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 		
 		public void RemoveValue (ObjectValue value)
 		{
 			values.Remove (value);
 			Refresh (true);
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		public void ReplaceValue (ObjectValue old, ObjectValue @new)
@@ -735,6 +816,8 @@ namespace MonoDevelop.Debugger
 
 			values [idx] = @new;
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		public void ClearAll ()
@@ -867,7 +950,7 @@ namespace MonoDevelop.Debugger
 				}
 
 				if (compact)
-					ColumnsAutosize ();
+					RecalculateWidth ();
 				enumerableLoading.Remove (value);
 			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
 		}
@@ -967,6 +1050,8 @@ namespace MonoDevelop.Debugger
 					}
 				}
 				UnregisterValue (val);
+				if (compact)
+					RecalculateWidth ();
 			});
 		}
 
@@ -1098,7 +1183,11 @@ namespace MonoDevelop.Debugger
 				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				if (!val.IsNull && DebuggingService.HasInlineVisualizer (val)) {
-					strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+					try {
+						strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+					} catch (Exception) {
+						strval = val.DisplayValue ?? "(null)";
+					}
 				} else {
 					strval = val.DisplayValue ?? "(null)";
 				}
@@ -1211,7 +1300,7 @@ namespace MonoDevelop.Debugger
 			base.OnRowCollapsed (iter, path);
 
 			if (compact)
-				ColumnsAutosize ();
+				RecalculateWidth ();
 
 			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
@@ -1252,7 +1341,7 @@ namespace MonoDevelop.Debugger
 					store.Remove (ref it);
 
 					if (compact)
-						ColumnsAutosize ();
+						RecalculateWidth ();
 				}
 
 				expandTasks.Remove (value);
@@ -1276,8 +1365,11 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			}
-			
+
 			base.OnRowExpanded (iter, path);
+
+			if (compact)
+				RecalculateWidth ();
 
 			ScrollToCell (path, expCol, true, 0f, 0f);
 		}
@@ -2376,7 +2468,7 @@ namespace MonoDevelop.Debugger
 		public event EventHandler CompletionListClosed;
 	}
 	
-	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData, ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData
+	class DebugCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		readonly CompletionItem item;
 		
@@ -2400,43 +2492,6 @@ namespace MonoDevelop.Debugger
 		public override string CompletionText {
 			get {
 				return item.Name;
-			}
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler;
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.KeyHandler {
-			get {
-				return keyHandler;
-			}
-		}
-
-		void ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.AddOverload (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData data)
-		{
-			base.AddOverload ((MonoDevelop.Ide.CodeCompletion.CompletionData)data);
-		}
-
-		IEnumerable<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.OverloadedData {
-			get {
-				return OverloadedData.OfType<ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData> ();
-			}
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.CompletionCategory { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionCategory)base.CompletionCategory;
-			} 
-			set {
-				base.CompletionCategory = (CompletionCategory)value;
-			} 
-		}
-
-		ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData.DisplayFlags { 
-			get {
-				return (ICSharpCode.NRefactory6.CSharp.Completion.DisplayFlags)base.DisplayFlags;
-			}
-			set {
-				base.DisplayFlags = (DisplayFlags)value;
 			}
 		}
 	}

@@ -126,16 +126,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			var bar = new ButtonBar (barItems);
 			buttonBarCache.Add (bar);
+
+			// Note: We're leaving a 1 dead pixel size here because Apple bug
+			// on Yosemite. Segmented controls have 3px padding on left and right
+			// on Mavericks.
+			nfloat size = 6 + 33 * bar.SegmentCount;
+
 			// By default, Cocoa doesn't want to duplicate items in the toolbar.
 			// Use different Ids to prevent this and not have to subclass.
 			var item = new NSToolbarItem (ButtonBarId + buttonBarCount) {
 				View = bar,
-				MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
-				MaxSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height),
+				MinSize = new CGSize (size, bar.FittingSize.Height),
+				MaxSize = new CGSize (size, bar.FittingSize.Height),
 			};
 			bar.ResizeRequested += (o, e) => {
-				item.MinSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
-				item.MaxSize = new CGSize (bar.SegmentCount * 40, bar.FittingSize.Height);
+				nfloat resize = 6 + 33 * bar.SegmentCount;
+				item.MinSize = new CGSize (resize, bar.FittingSize.Height);
+				item.MaxSize = new CGSize (resize, bar.FittingSize.Height);
 				centeringSpace.UpdateWidth ();
 			};
 			return item;

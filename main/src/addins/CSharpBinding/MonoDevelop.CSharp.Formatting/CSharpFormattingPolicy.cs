@@ -184,6 +184,17 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+
+		[ItemProperty]
+		public bool NewLinesForBracesInProperties {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInProperties);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInProperties, value);
+			}
+		}
+
 		[ItemProperty]
 		public bool NewLinesForBracesInAnonymousMethods {
 			get {

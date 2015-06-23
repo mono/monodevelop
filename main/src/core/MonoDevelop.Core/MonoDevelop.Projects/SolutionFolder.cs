@@ -43,7 +43,7 @@ using System.Collections.Immutable;
 namespace MonoDevelop.Projects
 {
 	[DataInclude (typeof(SolutionConfiguration))]
-	public sealed class SolutionFolder : SolutionFolderItem
+	public sealed class SolutionFolder : SolutionFolderItem, IBuildTarget
 	{
 		SolutionFolderItemCollection items;
 		SolutionFolderFileCollection files;
@@ -384,13 +384,24 @@ namespace MonoDevelop.Projects
 			entry.Modified -= NotifyItemModified;
 		}
 		
-		public void Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
+			return Task.FromResult (false);
 		}
 
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return false;
+		}
+
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return Task.FromResult (false);
+		}
+
+		public IEnumerable<IBuildTarget> GetExecutionDependencies ()
+		{
+			yield break;
 		}
 
 		/// <remarks>
@@ -553,7 +564,7 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
 		{
 			if (ParentSolution == null)
 				return new BuildResult ();
@@ -574,7 +585,7 @@ namespace MonoDevelop.Projects
 			monitor.BeginTask (GettextCatalog.GetString ("Cleaning Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 			try {
 				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
-					return item.Clean (m, configuration);
+					return item.Clean (m, configuration, operationContext);
 				}, false);
 			}
 			finally {
@@ -592,7 +603,7 @@ namespace MonoDevelop.Projects
 
 		static bool asyncBuild = true;
 		
-		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false)
+		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
 				
@@ -608,7 +619,7 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (GettextCatalog.GetString ("Building Solution: {0} ({1})", Name, configuration.ToString ()), allProjects.Count);
 
 				return await RunParallelBuildOperation (monitor, configuration, allProjects, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, configuration, false);
+					return item.Build (m, configuration, false, operationContext);
 				}, false);
 
 			} finally {

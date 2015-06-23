@@ -42,8 +42,9 @@ using MonoDevelop.Ide;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Threading;
-using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -59,7 +60,7 @@ namespace MonoDevelop.CSharp.Completion
 			return Task.FromResult (new TooltipInformation ());
 		}
 
-		public EventCreationCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
 		{
 			this.curType = curType;
 			this.varName = varName;
@@ -91,11 +92,10 @@ namespace MonoDevelop.CSharp.Completion
 				document.Editor,
 				parsedDocument,
 				declaringType,
-				declaringType.Locations.First()
+				editor.CaretOffset
 			);
-
 			var options = new InsertionModeOptions (
-				"Create new method",
+				GettextCatalog.GetString ("Create new method"),
 				insertionPoints,
 				async point => {
 					if (!point.Success) 
@@ -115,7 +115,7 @@ namespace MonoDevelop.CSharp.Completion
 						if (k > 0) {
 							sb.Append(", ");
 						}
-						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, Ambience.LabelFormat)); 
+						sb.Append (delegateMethod.Parameters [k].ToMinimalDisplayString (semanticModel, position, MonoDevelop.Ide.TypeSystem.Ambience.LabelFormat)); 
 					}
 					sb.Append(")");
 

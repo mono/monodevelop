@@ -31,6 +31,8 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using System.Linq;
 using Mono.Addins.Description;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Completion
 {	
@@ -48,9 +50,9 @@ namespace MonoDevelop.CSharp.Completion
 			this.factory = factory;
 		}
 
-		protected override IEnumerable<ICompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
+		protected override IEnumerable<CompletionData> CreateCompletionData (CompletionEngine engine, SemanticModel semanticModel, int position, ITypeSymbol returnType, Accessibility seenAccessibility, SyntaxToken startToken, SyntaxToken tokenBeforeReturnType, bool afterKeyword, CancellationToken cancellationToken)
 		{
-			var result = new List<ICompletionData> ();
+			var result = new List<CompletionData> ();
 			ISet<ISymbol> overridableMembers;
 			if (!TryDetermineOverridableMembers (semanticModel, tokenBeforeReturnType, seenAccessibility, out overridableMembers, cancellationToken)) {
 				return result;
@@ -59,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 				overridableMembers = FilterOverrides (overridableMembers, returnType);
 			}
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (startToken.SpanStart, cancellationToken);
-			var declarationBegin = afterKeyword ? startToken.SpanStart : position;
+			var declarationBegin = afterKeyword ? startToken.SpanStart : position - 1;
 			foreach (var m in overridableMembers) {
 				var data = new ProtocolCompletionData (this, factory, declarationBegin, curType, m, afterKeyword);
 				result.Add (data);
@@ -106,11 +108,11 @@ namespace MonoDevelop.CSharp.Completion
 			string name;
 			if (!HasProtocolAttribute (containingType, out name))
 				return;
-
-			var protocolType = semanticModel.Compilation.GetTypeByMetadataName (name);
+			var protocolType = semanticModel.Compilation.GlobalNamespace.GetAllTypes (cancellationToken).FirstOrDefault (t => string.Equals (t.Name, name, StringComparison.OrdinalIgnoreCase));
 			if (protocolType == null)
 				return;
 			
+
 			foreach (var member in protocolType.GetMembers ().OfType<IMethodSymbol> ()) {
 				if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
 					continue;
@@ -140,14 +142,16 @@ namespace MonoDevelop.CSharp.Completion
 
 		internal static bool HasProtocolAttribute (INamedTypeSymbol type, out string name)
 		{
-			foreach (var attrs in type.GetAttributes ()) {
-				if (attrs.AttributeClass.Name == "ProtocolAttribute" && IsFoundationNamespace (attrs.AttributeClass.ContainingNamespace.GetFullName ())) {
-					foreach (var na in attrs.NamedArguments) {
-						if (na.Key != "Name")
-							continue;
-						name = na.Value.Value as string;
-						if (name != null)
-							return true;
+			foreach (var baseType in type.GetAllBaseClassesAndInterfaces (true)) {
+				foreach (var attrs in baseType.GetAttributes ()) {
+					if (attrs.AttributeClass.Name == "ProtocolAttribute" && IsFoundationNamespace (attrs.AttributeClass.ContainingNamespace.GetFullName ())) {
+						foreach (var na in attrs.NamedArguments) {
+							if (na.Key != "Name")
+								continue;
+							name = na.Value.Value as string;
+							if (name != null)
+								return true;
+						}
 					}
 				}
 			}

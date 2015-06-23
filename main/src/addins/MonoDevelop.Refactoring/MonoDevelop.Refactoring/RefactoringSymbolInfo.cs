@@ -42,26 +42,33 @@ namespace MonoDevelop.Refactoring
 
 	class RefactoringSymbolInfo
 	{
-		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo(new SymbolInfo());
+		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo (new SymbolInfo ());
 
 		SymbolInfo symbolInfo;
 
-		public ISymbol Symbol {
-			get {
+		public ISymbol Symbol
+		{
+			get
+			{
 				return symbolInfo.Symbol;
 			}
 		}
 
-		public ImmutableArray<ISymbol> CandidateSymbols {
-			get {
+		public ImmutableArray<ISymbol> CandidateSymbols
+		{
+			get
+			{
 				return symbolInfo.CandidateSymbols;
 			}
 		}
 
-		public ISymbol DeclaredSymbol {
+		public ISymbol DeclaredSymbol
+		{
 			get;
 			internal set;
 		}
+
+		public SyntaxNode Node { get; private set; }
 
 		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
 		{
@@ -71,7 +78,7 @@ namespace MonoDevelop.Refactoring
 		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (DocumentContext document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (document == null)
-				throw new ArgumentNullException ("document");
+				throw new ArgumentNullException (nameof (document));
 			if (document.ParsedDocument == null)
 				return RefactoringSymbolInfo.Empty;
 			var unit = document.ParsedDocument.GetAst<SemanticModel> ();
@@ -83,7 +90,8 @@ namespace MonoDevelop.Refactoring
 						return RefactoringSymbolInfo.Empty;
 					var symbol = unit.GetSymbolInfo (token.Parent);
 					return new RefactoringSymbolInfo (symbol) {
-						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null
+						DeclaredSymbol = token.IsKind (SyntaxKind.IdentifierToken) ? unit.GetDeclaredSymbol (token.Parent) : null,
+						Node = token.Parent
 					};
 				} catch (Exception) {
 					return RefactoringSymbolInfo.Empty;
@@ -92,5 +100,5 @@ namespace MonoDevelop.Refactoring
 			return RefactoringSymbolInfo.Empty;
 		}
 	}
-	
+
 }

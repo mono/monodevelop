@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
 			// The Ide.Document generates a file service changed event this needs to be skipped.
-			if (!TypeSystemService.TrackFileChanges)
+			if (!TypeSystemService.TrackFileChanges || SuspendFileWatch)
 				return;
 			bool foundOneChange = false;
 			foreach (var file in e) {

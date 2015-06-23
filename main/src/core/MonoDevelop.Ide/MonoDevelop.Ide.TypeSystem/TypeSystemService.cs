@@ -162,10 +162,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			try {
 				if (!File.Exists (fileName))
-					return null;
+					return TaskUtil.Default<ParsedDocument>();
 				text = StringTextSource.ReadFrom (fileName);
 			} catch (Exception) {
-				return null;
+				return TaskUtil.Default<ParsedDocument>();
 			}
 
 			return ParseFile (project, fileName, DesktopService.GetMimeTypeForUri (fileName), text, cancellationToken);
@@ -180,17 +180,17 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var parser = GetParser (mimeType);
 			if (parser == null)
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
 				var result = parser.Parse (options, cancellationToken);
-				return result;
+				return result ?? TaskUtil.Default<ParsedDocument>();
 			} catch (OperationCanceledException) {
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
-				return Task.FromResult ((ParsedDocument)null);
+				return TaskUtil.Default<ParsedDocument>();
 			} finally {
 				t.Dispose ();
 			}

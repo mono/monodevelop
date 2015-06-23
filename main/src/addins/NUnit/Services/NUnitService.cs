@@ -109,7 +109,7 @@ namespace MonoDevelop.NUnit
 			
 			if (buildOwnerObject) {
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
-				if (bt != null && bt.NeedsBuilding (IdeApp.Workspace.ActiveConfiguration)) {
+				if (bt != null) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
 						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
 						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
@@ -304,13 +304,6 @@ namespace MonoDevelop.NUnit
 			get { return rootTests; }
 		}
 		
-		public static void ShowOptionsDialog (UnitTest test)
-		{
-			Properties properties = new Properties ();
-			properties.Set ("UnitTest", test);
-			MessageService.ShowCustomDialog (new UnitTestOptionsDialog (IdeApp.Workbench.RootWindow, properties));
-		}
-		
 		void NotifyTestSuiteChanged ()
 		{
 			Runtime.RunInMainThread (() => {
@@ -371,11 +364,13 @@ namespace MonoDevelop.NUnit
 			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
 			resultsPad.InitializeTestRun (test);
+			Task = new Task (RunTests);
 		}
 		
 		public Task Start ()
 		{
-			return Task = Task.Run ((Action)RunTests);
+			Task.Start ();
+			return Task;
 		}
 		
 		void RunTests ()

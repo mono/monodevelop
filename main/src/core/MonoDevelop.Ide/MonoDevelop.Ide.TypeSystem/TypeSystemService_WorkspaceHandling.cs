@@ -105,6 +105,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return emptyWorkspace;
 		}
 
+		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
+		{
+			foreach (var ws in Workspaces) {
+				if (ws.Id.Equals (id))
+					return ws;
+			}
+			return emptyWorkspace;
+		}
+
 		public static Microsoft.CodeAnalysis.Workspace Workspace {
 			get {
 				var solution = IdeApp.ProjectOperations?.CurrentSelectedSolution;
@@ -342,10 +351,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-				var project = pr as DotNetProject;
-				if (project != null)
-					CheckProjectOutput (project, true);
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
+				foreach (var pr in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+					var project = pr as DotNetProject;
+					if (project != null)
+						CheckProjectOutput (project, true);
+				}
 			}
 		}
 

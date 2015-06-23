@@ -149,9 +149,9 @@ namespace MonoDevelop.Projects
 
 		#region Building
 
-		internal protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return next.OnClean (monitor, configuration);
+			return next.OnClean (monitor, configuration, operationContext);
 		}
 
 		internal protected virtual bool OnNeedsBuilding (ConfigurationSelector configuration)
@@ -159,9 +159,9 @@ namespace MonoDevelop.Projects
 			return next.OnNeedsBuilding (configuration);
 		}
 
-		internal protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return next.OnBuild (monitor, configuration);
+			return next.OnBuild (monitor, configuration, operationContext);
 		}
 
 		internal protected virtual DateTime OnGetLastBuildTime (ConfigurationSelector configuration)

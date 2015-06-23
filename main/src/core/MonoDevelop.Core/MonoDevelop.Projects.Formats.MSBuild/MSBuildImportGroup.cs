@@ -30,13 +30,22 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildImportGroup: MSBuildObject
+	public class MSBuildImportGroup: MSBuildElement
 	{
-		MSBuildProject parent;
-
-		internal MSBuildImportGroup (MSBuildProject parent, XmlElement elem): base (elem)
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			this.parent = parent;
+			if (reader.LocalName == "Import") {
+				var item = new MSBuildImport ();
+				item.ParentNode = this;
+				item.Read (reader);
+				ChildNodes.Add (item);
+			} else
+				base.ReadChildElement (reader);
+		}
+
+		internal override string GetElementName ()
+		{
+			return "ImportGroup";
 		}
 
 		public bool IsImported {
@@ -46,36 +55,35 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildImport AddNewImport (string name, string condition = null, MSBuildImport beforeImport = null)
 		{
-			XmlElement elem = AddChildElement ("Import");
-			elem.SetAttribute ("Project", name);
-			if (condition != null)
-				elem.SetAttribute ("Condition", condition);
+			var import = new MSBuildImport ();
+			import.Project = name;
+			import.Condition = condition;
 
-			if (beforeImport != null) {
-				Element.InsertBefore (elem, beforeImport.Element);
-			} else {
-				Element.AppendChild (elem);
-			}
-			XmlUtil.Indent (parent.TextFormat, elem, false);
-			parent.NotifyChanged ();
-			return parent.GetImport (elem);
+			int insertIndex = -1;
+			if (beforeImport != null)
+				insertIndex = ChildNodes.IndexOf (beforeImport);
+
+			if (insertIndex != -1)
+				ChildNodes.Insert (insertIndex, import);
+			else
+				ChildNodes.Add (import);
+
+			import.ResetIndent (false);
+			NotifyChanged ();
+			return import;
 		}
 
-		MSBuildImport[] items;
-		public IEnumerable<MSBuildImport> Imports {
-			get {
-				lock (parent.ReadLock) {
-					if (items == null)
-						items = Element.ChildNodes.OfType<XmlElement> ().Select (e => parent.GetImport (e)).ToArray ();
-					return items;
-				}
-			}
-		}
-
-		internal void ResetItemCache ()
+		public void RemoveImport (MSBuildImport import)
 		{
-			lock (parent.ReadLock)
-				items = null;
+			if (import.ParentObject == this) {
+				import.RemoveIndent ();
+				ChildNodes.Remove (import);
+				NotifyChanged ();
+			}
+		}
+
+		public IEnumerable<MSBuildImport> Imports {
+			get { return ChildNodes.OfType<MSBuildImport> (); }
 		}
 	}
 }

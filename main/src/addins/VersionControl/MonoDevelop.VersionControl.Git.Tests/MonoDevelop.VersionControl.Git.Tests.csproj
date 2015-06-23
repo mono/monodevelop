@@ -19,21 +19,19 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\build\tests</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <DebugSymbols>true</DebugSymbols>
-    <NoWarn>1591;1573</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,10 +39,10 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,10 +50,10 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugGnome|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,10 +61,37 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseGnome|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1591;1573</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -103,19 +128,19 @@
     </ProjectReference>
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(Configuration)' == 'DebugMac' ">
+    <When Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
       <ItemGroup>
         <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(Configuration)' == 'DebugWin32' ">
+    <When Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
       <ItemGroup>
         <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(Configuration)' == 'DebugGnome' ">
+    <When Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\libgit2\build\*.*" />
+        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
       </ItemGroup>
     </When>
   </Choose>

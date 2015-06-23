@@ -253,12 +253,12 @@ namespace MonoDevelop.Ide
 			monitor.EndTask ();
 		}
 		
-		async Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferences)
+		async Task<BuildResult> IBuildTarget.Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferences, OperationContext operationContext)
 		{
 			BuildResult result = null;
 			var items = Items.OfType<IBuildTarget> ().ToList ();
 			foreach (var it in items) {
-				BuildResult res = await it.Build (monitor, configuration, buildReferences);
+				BuildResult res = await it.Build (monitor, configuration, buildReferences, operationContext);
 				if (res != null) {
 					if (result == null)
 						result = new BuildResult ();
@@ -268,12 +268,12 @@ namespace MonoDevelop.Ide
 			return result;
 		}
 
-		async Task<BuildResult> IBuildTarget.Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		async Task<BuildResult> IBuildTarget.Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			BuildResult result = null;
 			var items = Items.OfType<IBuildTarget> ().ToList ();
 			foreach (var it in items) {
-				BuildResult res = await it.Clean (monitor, configuration);
+				BuildResult res = await it.Clean (monitor, configuration, operationContext);
 				if (res != null) {
 					if (result == null)
 						result = new BuildResult ();

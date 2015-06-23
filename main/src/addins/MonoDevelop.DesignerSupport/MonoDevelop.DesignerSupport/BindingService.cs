@@ -37,11 +37,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.DesignerSupport
 {

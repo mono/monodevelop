@@ -346,7 +346,7 @@ namespace MonoDevelop.Gettext
 			}
 		}
 		
-		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			var toBuild = Translations.Where (t => t.NeedsBuilding(configuration)).ToArray ();
 			BuildResult results = new BuildResult ("", 1, 0);
@@ -365,13 +365,13 @@ namespace MonoDevelop.Gettext
 			return results;
 		}
 		
-		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected async override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			isDirty = true;
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Removing all .mo files."));
 			string outputDirectory = GetOutputDirectory (configuration);
 			if (string.IsNullOrEmpty (outputDirectory))
-				return BuildResult.Success;
+				return BuildResult.CreateSuccess ();
 
 			var toClean = Translations.Select (t => t.GetOutFile (configuration)).ToArray ();
 			await Task.Run (delegate {
@@ -380,7 +380,7 @@ namespace MonoDevelop.Gettext
 						File.Delete (moFileName);
 				}
 			});
-			return BuildResult.Success;
+			return BuildResult.CreateSuccess ();
 		}
 
 #region Deployment

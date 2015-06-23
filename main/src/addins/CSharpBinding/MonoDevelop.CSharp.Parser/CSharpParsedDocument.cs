@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -105,7 +106,7 @@ namespace MonoDevelop.CSharp.Parser
 				if (text.Length > 2) {
 					if (text [text.Length - 2] == '\r' && text [text.Length - 1] == '\n')
 						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 2);
-					else if (ICSharpCode.NRefactory6.NewLine.IsNewLine (text [text.Length - 1]))
+					else if (NewLine.IsNewLine (text [text.Length - 1]))
 						fullSpan = new Microsoft.CodeAnalysis.Text.TextSpan (fullSpan.Start, fullSpan.Length - 1);
 				}
 				try {

@@ -63,24 +63,20 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -196,8 +192,5 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.AssemblyBrowser\TreeNodes\" />
     <Folder Include="XmlDocIdLib\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

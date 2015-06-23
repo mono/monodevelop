@@ -49,8 +49,10 @@ namespace MonoDevelop.NUnit
 				test = ((NUnitAssemblyGroupProject)entry).RootTest;
 			
 			UnitTestGroup grp = test as UnitTestGroup;
-			if (grp != null && !grp.HasTests)
+			if (grp != null && !grp.HasTests) {
+				test.Dispose ();
 				return null;
+			}
 			
 			return test;
 		}

@@ -638,6 +638,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -660,6 +661,7 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.RunCustomDialog (ops, parentWindow);
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -1320,6 +1322,11 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+
+		/// <summary>
+		/// Is true when the file is already open and reload is requested.
+		/// </summary>
+		public bool IsReloadOperation { get; set; }
 
 		internal DockNotebook DockNotebook { get; set; }
 

@@ -39,11 +39,11 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.CodeActions;
 using System;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
-using MonoDevelop.Ide.TypeSystem;
+using RefactoringEssentials;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 {
@@ -299,7 +299,7 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 
 		private static IList<string> GetNameParts(INamespaceOrTypeSymbol symbol)
 		{
-			return symbol.ToDisplayString(Ambience.NameFormat).Split('.');
+			return symbol.ToDisplayString(MonoDevelop.Ide.TypeSystem.Ambience.NameFormat).Split('.');
 		}
 
 		private int Compare(INamespaceOrTypeSymbol n1, INamespaceOrTypeSymbol n2)

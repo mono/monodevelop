@@ -67,12 +67,12 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			dialog.DefaultWidth = 500;
 			dialog.DefaultHeight = 400;
 			dialog.ShowAll ();
-			return MonoDevelop.Ide.MessageService.RunCustomDialog (dialog, dialog.TransientFor);
+			return MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, dialog.TransientFor);
 		}
 		
 		public void Dispose ()
 		{
-			dialog.Destroy ();
+			dialog.Dispose ();
 		}
 	}
 }

@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Tests
 {
@@ -270,12 +271,36 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetHistory.
 		public void LogIsProper ()
 		{
+			if (!Platform.IsWindows)
+				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
+
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
-			int index = 0;
-			foreach (Revision rev in Repo.GetHistory (LocalPath + "testfile", null)) {
-				Assert.AreEqual (String.Format ("Commit #{0}", index++), rev.Message);
-			}
+			AddFile ("testfile3", null, true, true);
+
+			CheckLog (Repo);
+		}
+
+		protected abstract void CheckLog (Repository repo);
+
+		[TestCase(0)]
+		[TestCase(1)]
+		[TestCase(2)]
+		// Tests Repository.GetHistory with slices.
+		public void LogSinceWorks (int historyId)
+		{
+			if (!Platform.IsWindows)
+				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
+
+			AddFile ("testfile", null, true, true);
+			AddFile ("testfile2", null, true, true);
+			AddFile ("testfile3", null, true, true);
+
+			var history = Repo.GetHistory (LocalPath, null);
+			foreach (var rev in Repo.GetHistory (LocalPath, history[historyId]))
+				Assert.AreNotEqual (history [historyId].GetPrevious (), rev, "The revision was found in slice, yet should not be in it.");
+
+			Assert.True (history.Any (r => r == history[historyId]));
 		}
 
 		[Test]
@@ -298,10 +323,30 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, true);
 			string added = LocalPath + "testfile";
 
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			// Revert to head.
 			File.WriteAllText (added, content);
 			Repo.Revert (added, false, new ProgressMonitor ());
 			Assert.AreEqual (Repo.GetBaseText (added), File.ReadAllText (added));
+		}
+
+		[TestCase (true)]
+		[TestCase (false)]
+		// Tests Repository.Revert
+		public void Reverts2 (bool stage)
+		{
+			AddFile ("init", null, true, true);
+
+			string added = LocalPath + "testfile";
+			AddFile ("testfile", "test", stage, false);
+
+			// Force cache evaluation.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
+			Repo.Revert (added, false, new ProgressMonitor ());
+			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
 
 		[Test]
@@ -598,6 +643,10 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			var added = LocalPath.Combine ("testfile");
 			AddFile ("testfile", "test", true, true);
+
+			// Force cache update.
+			Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+
 			Repo.DeleteFile (added, true, new ProgressMonitor (), false);
 			Repo.Revert (added, false, new ProgressMonitor ());
 

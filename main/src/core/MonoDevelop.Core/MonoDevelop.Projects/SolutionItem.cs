@@ -557,10 +557,15 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
 		{
-			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences));
+			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences, new OperationContext ()));
 		}
 
-		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences)
+		public Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
+		{
+			return BindTask (ct => BuildTask (monitor.WithCancellationToken (ct), solutionConfiguration, buildReferences, operationContext));
+		}
+
+		async Task<BuildResult> BuildTask (ProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, OperationContext operationContext)
 		{
 			if (!buildReferences) {
 				try {
@@ -569,7 +574,7 @@ namespace MonoDevelop.Projects
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 
 					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
-						return await InternalBuild (monitor, solutionConfiguration);
+						return await InternalBuild (monitor, solutionConfiguration, operationContext);
 					}
 
 				} finally {
@@ -591,7 +596,7 @@ namespace MonoDevelop.Projects
 				monitor.BeginTask (null, sortedReferenced.Count);
 
 				return await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
-					return item.Build (m, solutionConfiguration, false);
+					return item.Build (m, solutionConfiguration, false, operationContext);
 				}, false);
 			} finally {
 				monitor.EndTask ();
@@ -599,7 +604,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		async Task<BuildResult> InternalBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		async Task<BuildResult> InternalBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			if (IsUnsupportedProject) {
 				var r = new BuildResult ();
@@ -621,7 +626,7 @@ namespace MonoDevelop.Projects
 			if (monitor.CancellationToken.IsCancellationRequested)
 				return new BuildResult (new CompilerResults (null), "");
 
-			BuildResult res = await ItemExtension.OnBuild (monitor, configuration);
+			BuildResult res = await ItemExtension.OnBuild (monitor, configuration, operationContext);
 
 			if (conf != null && !monitor.CancellationToken.IsCancellationRequested && !res.Failed) {
 				if (conf.CustomCommands.CanExecute (this, CustomCommandType.AfterBuild, null, configuration)) {
@@ -642,9 +647,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to build the project
 		/// </param>
-		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
@@ -677,10 +682,15 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration));
+			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration, new OperationContext ()));
 		}
 
-		async Task<BuildResult> CleanTask (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		{
+			return BindTask (ct => CleanTask (monitor.WithCancellationToken (ct), configuration, operationContext));
+		}
+
+		async Task<BuildResult> CleanTask (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			ITimeTracker tt = Counters.BuildProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
 			try {
@@ -701,9 +711,9 @@ namespace MonoDevelop.Projects
 					}
 
 					if (monitor.CancellationToken.IsCancellationRequested)
-						return BuildResult.Success;
+						return BuildResult.CreateSuccess ();
 
-					var res = await ItemExtension.OnClean (monitor, configuration);
+					var res = await ItemExtension.OnClean (monitor, configuration, operationContext);
 
 					if (conf != null && !monitor.CancellationToken.IsCancellationRequested) {
 						if (conf.CustomCommands.CanExecute (this, CustomCommandType.AfterClean, null, configuration)) {
@@ -730,9 +740,9 @@ namespace MonoDevelop.Projects
 		/// <param name='configuration'>
 		/// Configuration to use to clean the project
 		/// </param>
-		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected virtual Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
 		/// <summary>
@@ -1441,14 +1451,14 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			internal protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 			{
-				return Item.OnBuild (monitor, configuration);
+				return Item.OnBuild (monitor, configuration, operationContext);
 			}
 
-			internal protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration)
+			internal protected override Task<BuildResult> OnClean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext buildSession)
 			{
-				return Item.OnClean (monitor, configuration);
+				return Item.OnClean (monitor, configuration, buildSession);
 			}
 
 			internal protected override bool OnNeedsBuilding (ConfigurationSelector configuration)

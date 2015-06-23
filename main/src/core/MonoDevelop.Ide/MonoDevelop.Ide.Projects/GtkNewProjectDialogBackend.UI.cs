@@ -217,6 +217,7 @@ namespace MonoDevelop.Ide.Projects
 			cancelButtonBox.Name = "cancelButtonBox";
 			cancelButtonBox.BorderWidth = 16;
 			cancelButton = new Button ();
+			cancelButton.Name = "cancelButton";
 			cancelButton.Label = "gtk-cancel";
 			cancelButton.UseStock = true;
 			cancelButtonBox.PackStart (cancelButton, false, false, 0);

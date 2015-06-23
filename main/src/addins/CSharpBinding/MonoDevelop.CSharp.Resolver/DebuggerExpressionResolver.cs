@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Debugger;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Resolver
 {

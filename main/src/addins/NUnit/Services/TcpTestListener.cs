@@ -201,6 +201,7 @@ namespace MonoDevelop.NUnit.External
 
 			var message = (string)element.Attribute ("message");
 			var stackTrace = (string)element.Attribute ("stack-trace");
+			var output = (string)element.Attribute ("output");
 
 			return new UnitTestResult {
 				Status = result,
@@ -209,7 +210,8 @@ namespace MonoDevelop.NUnit.External
 				Ignored = ignored,
 				Inconclusive = inconclusive,
 				Message = message,
-				StackTrace = stackTrace
+				StackTrace = stackTrace,
+				ConsoleOutput = output
 			};
 		}
 	}

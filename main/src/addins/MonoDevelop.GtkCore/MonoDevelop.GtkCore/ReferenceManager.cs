@@ -166,6 +166,7 @@ namespace MonoDevelop.GtkCore {
 
 			if (!gtk) {
 				project.References.Add (ProjectReference.CreateAssemblyReference ("gtk-sharp" + ", " + assm_version));
+				project.ExtendedProperties ["GtkReferenceExists"] = true;
 				changed = true;
 			}
 

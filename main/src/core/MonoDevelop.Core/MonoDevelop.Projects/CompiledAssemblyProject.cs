@@ -137,9 +137,9 @@ namespace MonoDevelop.Projects
 			return string.Join (Path.DirectorySeparatorChar.ToString (), s1, 0, n);
 		}
 		
-		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
+		protected override Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return Task.FromResult (BuildResult.Success);
+			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 		
 		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

@@ -34,18 +34,11 @@ using System.Globalization;
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 
-	public abstract class MSBuildPropertyCore: MSBuildObject
+	public abstract class MSBuildPropertyCore: MSBuildElement
 	{
-		MSBuildProject project;
-
-		internal MSBuildPropertyCore (MSBuildProject project, XmlElement elem): base (elem)
+		internal override string GetElementName ()
 		{
-			this.project = project;
-		}
-
-		public MSBuildProject Project {
-			get { return project; }
-			internal set { project = value; }
+			return GetName ();
 		}
 
 		public string Name {
@@ -92,13 +85,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (relativeToPath != null) {
 				baseDir = relativeToPath;
 			} else if (relativeToProject) {
-				if (project == null) {
+				if (ParentProject == null) {
 					// The path can't yet be resolved, return the raw value
 					value = val;
 					return true;
 				}
 
-				baseDir = project.BaseDirectory;
+				baseDir = ParentProject.BaseDirectory;
 			}
 			string path;
 			var res = MSBuildProjectService.FromMSBuildPath (baseDir, val, out path);

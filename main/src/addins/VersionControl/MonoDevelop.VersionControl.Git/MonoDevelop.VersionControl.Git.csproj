@@ -22,6 +22,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -45,6 +47,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugGnome|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -57,6 +60,7 @@
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -70,6 +74,36 @@
     <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseGnome|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.xml</DocumentationFile>
+    <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -179,27 +213,35 @@
       <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\..\..\external\libgit-binary\libgit2.license.txt">
+      <Link>libgit2.license.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\external\libgit-binary\libssh2.license.txt">
+      <Link>libssh2.license.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Choose>
-    <When Condition=" '$(Configuration)' == 'DebugMac' ">
+    <When Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
       <ItemGroup>
         <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(Configuration)' == 'DebugWin32' ">
+    <When Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
       <ItemGroup>
         <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" />
       </ItemGroup>
     </When>
-    <When Condition=" '$(Configuration)' == 'DebugGnome' ">
+    <When Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\libgit2\build\*.*" />
+        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
       </ItemGroup>
     </When>
   </Choose>
   <Target Name="BeforeBuild">
-    <Exec Command="bash build_libgit2.sh" Condition=" '$(Configuration)' == 'DebugGnome' " />
+    <Exec Command="bash build_libgit2.sh" Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' " />
   </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />

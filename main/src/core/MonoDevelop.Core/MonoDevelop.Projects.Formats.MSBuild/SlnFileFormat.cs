@@ -203,7 +203,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void WriteProjects (SolutionFolder folder, SlnFile sln, ProgressMonitor monitor, HashSet<string> unknownProjects)
 		{
 			monitor.BeginTask (folder.Items.Count); 
-			foreach (SolutionFolderItem ce in folder.Items)
+			foreach (SolutionFolderItem ce in folder.Items.ToArray ())
 			{
 				monitor.BeginStep ();
 				if (ce is SolutionItem) {

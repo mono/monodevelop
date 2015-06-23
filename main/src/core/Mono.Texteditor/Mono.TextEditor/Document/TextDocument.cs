@@ -1142,8 +1142,10 @@ namespace Mono.TextEditor
 				} else {
 					DocumentLine startLine = splitter.GetLineByOffset (offset);
 					DocumentLine endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
-					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
-					newFoldSegment.Column = offset - startLine.Offset + 1;
+					if (endLine != null)
+						newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
+					if (startLine != null)
+						newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					foldedSegmentAdded |= newFoldSegment.IsFolded;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {

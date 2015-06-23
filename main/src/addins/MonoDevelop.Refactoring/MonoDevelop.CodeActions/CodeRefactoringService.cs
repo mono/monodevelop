@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CodeIssues;
 using Mono.Addins;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.Core.Text;
 using System.Linq;
 
@@ -112,11 +112,12 @@ namespace MonoDevelop.CodeActions
 				tokenSegment = token.Span;
 			try {
 				foreach (var descriptor in await GetCodeRefactoringsAsync (doc, MimeTypeToLanguage(editor.MimeType), cancellationToken).ConfigureAwait (false)) {
-					if (cancellationToken.IsCancellationRequested)
+					var analysisDocument = doc.AnalysisDocument;
+					if (cancellationToken.IsCancellationRequested || analysisDocument == null)
 						return Enumerable.Empty<ValidCodeAction> ();
 					try {
 						await descriptor.GetProvider ().ComputeRefactoringsAsync (
-							new CodeRefactoringContext (doc.AnalysisDocument, span, delegate (CodeAction ca) {
+							new CodeRefactoringContext (analysisDocument, span, delegate (CodeAction ca) {
 								var nrca = ca as NRefactoryCodeAction;
 								var validSegment = tokenSegment;
 								if (nrca != null)

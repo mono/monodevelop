@@ -71,13 +71,13 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					ip = MSBuildProjectService.ToMSBuildPath (Project.ItemDirectory, ip);
 					validProjitems.Add (ip);
 					if (!project.Imports.Any (im => im.Project == ip)) {
-						var im = project.AddNewImport (ip, beforeImport:project.Imports.FirstOrDefault (i => i.Label != "Shared"));
+						var im = project.AddNewImport (ip, beforeObject:project.Imports.FirstOrDefault (i => i.Label != "Shared"));
 						im.Label = "Shared";
 						im.Condition = "Exists('" + ip + "')";
 					}
 				}
 			}
-			foreach (var im in project.Imports) {
+			foreach (var im in project.Imports.ToArray ()) {
 				if (im.Label == "Shared" && im.Project.EndsWith (".projitems") && !(validProjitems.Contains (im.Project)))
 					project.RemoveImport (im.Project);
 			}

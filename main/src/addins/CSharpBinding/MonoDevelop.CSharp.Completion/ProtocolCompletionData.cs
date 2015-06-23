@@ -83,8 +83,26 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public override string GetDisplayTextMarkup ()
+		{
+			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
-		public ProtocolCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
+			var result = base.Symbol.ToMinimalDisplayString (model, declarationBegin, Ambience.LabelFormat) + " {...}";
+			var idx = result.IndexOf (Symbol.Name);
+			if (idx >= 0) {
+				result = 
+					result.Substring(0, idx) +
+					      "<b>" + Symbol.Name + "</b>"+
+					      result.Substring(idx + Symbol.Name.Length);
+			}
+
+			if (!afterKeyword)
+				result = "override " + result;
+
+			return ApplyDiplayFlagsFormatting (result);
+		}
+
+		public ProtocolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
 		{
 			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;

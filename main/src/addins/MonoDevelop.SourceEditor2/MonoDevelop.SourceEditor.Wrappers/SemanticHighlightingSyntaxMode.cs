@@ -34,7 +34,7 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	sealed class SemanticHighlightingSyntaxMode : SyntaxMode
+	sealed class SemanticHighlightingSyntaxMode : SyntaxMode, IDisposable
 	{
 		readonly ExtensibleTextEditor editor;
 		readonly SyntaxMode syntaxMode;
@@ -97,21 +97,42 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			this.editor = editor;
 			this.semanticHighlighting = semanticHighlighting;
 			this.syntaxMode = syntaxMode as SyntaxMode;
-			semanticHighlighting.SemanticHighlightingUpdated += delegate {
-				Application.Invoke (delegate {
-					foreach (var kv in lineSegments) {
-						try {
-							kv.Value.RemoveListener ();
-						} catch (Exception) {
-						}
-					}
-					lineSegments.Clear ();
+			semanticHighlighting.SemanticHighlightingUpdated += SemanticHighlighting_SemanticHighlightingUpdated;
+		}
 
-					var margin = editor.TextViewMargin;
-					margin.PurgeLayoutCache ();
-					editor.QueueDraw ();
-				});
-			};
+		void SemanticHighlighting_SemanticHighlightingUpdated (object sender, EventArgs e)
+		{
+			Application.Invoke (delegate {
+				if (lineSegments == null)
+					return;
+				UnregisterLineSegmentTrees ();
+				lineSegments.Clear ();
+
+				var margin = editor.TextViewMargin;
+				margin.PurgeLayoutCache ();
+				editor.QueueDraw ();
+			});
+		}
+
+		void UnregisterLineSegmentTrees ()
+		{
+			if (lineSegments == null)
+				return;
+			foreach (var kv in lineSegments) {
+				try {
+					kv.Value.RemoveListener ();
+				} catch (Exception) {
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			if (lineSegments == null)
+				return;
+			UnregisterLineSegmentTrees ();
+			lineSegments = null;
+			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 		}
 
 		public override SpanParser CreateSpanParser (Mono.TextEditor.DocumentLine line, CloneableStack<Span> spanStack)

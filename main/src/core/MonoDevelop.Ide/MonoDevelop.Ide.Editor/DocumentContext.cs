@@ -66,10 +66,11 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		WorkspaceId workspaceId = WorkspaceId.Empty;
 		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace
 		{
-			get;
-			protected set;
+			get { return TypeSystemService.GetWorkspace (workspaceId); }
+			protected set { workspaceId = ((MonoDevelopWorkspace)value).Id; }
 		}
 
 		/// <summary>

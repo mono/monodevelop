@@ -137,10 +137,7 @@ namespace Mono.TextEditor
 
 			textEditor.Document.TextReplaced += HandleTextReplaced;
 			base.cursor = xtermCursor;
-			textEditor.HighlightSearchPatternChanged += delegate {
-				selectedRegions.Clear ();
-				RefreshSearchMarker ();
-			};
+			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
 			textEditor.GetTextEditorData ().SearchChanged += HandleSearchChanged;
 			markerLayout = PangoUtil.CreateLayout (textEditor);
@@ -149,6 +146,12 @@ namespace Mono.TextEditor
 			textEditor.TextArea.FocusInEvent += HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent += HandleFocusOutEvent;
 			textEditor.VScroll += HandleVAdjustmentValueChanged;
+		}
+
+		void TextEditor_HighlightSearchPatternChanged (object sender, EventArgs e)
+		{
+			selectedRegions.Clear ();
+			RefreshSearchMarker ();
 		}
 
 		void HandleFocusInEvent (object o, FocusInEventArgs args)
@@ -467,7 +470,10 @@ namespace Mono.TextEditor
 			CancelCodeSegmentTooltip ();
 			StopCaretThread ();
 			DisposeSearchPatternWorker ();
-			
+			HideCodeSegmentPreviewWindow ();
+			textEditor.VScroll -= HandleVAdjustmentValueChanged;
+			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
+
 			textEditor.Document.TextReplaced -= HandleTextReplaced;
 			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
 			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;

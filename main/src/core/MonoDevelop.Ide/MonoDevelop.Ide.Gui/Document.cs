@@ -333,7 +333,8 @@ namespace MonoDevelop.Ide.Gui
 			if (mc != null) {
 				memento = mc.Memento;
 			}
-			window.ViewContent.Load (window.ViewContent.ContentName);
+			window.ViewContent.DiscardChanges ();
+			window.ViewContent.Load (new FileOpenInformation (window.ViewContent.ContentName) { IsReloadOperation = true });
 			if (memento != null) {
 				mc.Memento = memento;
 			}
@@ -456,9 +457,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
-			Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
-
-			FileService.NotifyFileChanged (filename);
+			Window.ViewContent.Save (new FileSaveInformation (filename, encoding));
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
 			
 			OnSaved (EventArgs.Empty);

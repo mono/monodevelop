@@ -75,20 +75,16 @@
     <Reference Include="nunit.util">
       <HintPath>..\..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.util.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -118,9 +114,9 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp</Name>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -185,10 +181,12 @@
     <!--
     <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-light-32.png</LogicalName>
-    </EmbeddedResource> --> <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
+    </EmbeddedResource> -->
+    <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
     <!--<EmbeddedResource Include="Gui\icons\project-nunit-overlay-32@2x.png">
       <LogicalName>project-nunit-overlay-light-32@2x.png</LogicalName>
-    </EmbeddedResource> --> <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
+    </EmbeddedResource> -->
+    <!-- TODO: VV: Duped definition to not break fsharpbinding (https://github.com/fsharp/fsharpbinding/blob/master/monodevelop/MonoDevelop.FSharpBinding/Templates/FSharpNUnitLibraryProject.xpt.xml#L8) -->
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
@@ -233,7 +231,6 @@
     <Compile Include="Gui\TestResultsPad.cs" />
     <Compile Include="Gui\TestNodeBuilder.cs" />
     <Compile Include="Gui\TestChart.cs" />
-    <Compile Include="Gui\UnitTestOptionsDialog.cs" />
     <Compile Include="Gui\NUnitAssemblyGroupNodeBuilder.cs" />
     <Compile Include="Gui\NUnitAssemblyGroupConfigurationNodeBuilder.cs" />
     <Compile Include="Gui\TestAssemblyNodeBuilder.cs" />

@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildEngineManager EngineManager { get; private set; }
 
-		public abstract object LoadProject (MSBuildProject project, XmlDocument doc, FilePath fileName);
+		public abstract object LoadProject (MSBuildProject project, string xml, FilePath fileName);
 
 		public abstract void UnloadProject (object project);
 

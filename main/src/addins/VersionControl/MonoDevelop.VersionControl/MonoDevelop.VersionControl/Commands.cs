@@ -13,6 +13,7 @@ namespace MonoDevelop.VersionControl
 		Diff,
 		Log,
 		Status,
+		SolutionStatus,
 		Add,
 		Remove,
 		Publish,

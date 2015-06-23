@@ -652,6 +652,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 				return null;
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 	}

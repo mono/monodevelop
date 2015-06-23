@@ -236,6 +236,15 @@ namespace MonoDevelop.CSharp.Formatting
 			AddOption (newLineOptions, category, "NewLinesForBracesInMethods", GettextCatalog.GetString ("Place open brace on new line for methods"), @"void Example()
 {
 }");
+			AddOption (newLineOptions, category, "NewLinesForBracesInProperties", GettextCatalog.GetString ("Place open brace on new line for properties"), @"int Example { 
+	get  { 
+		return 1;
+	}
+	set {
+		// nothing
+	}
+}
+");
 			AddOption (newLineOptions, category, "NewLinesForBracesInAnonymousMethods", GettextCatalog.GetString ("Place open brace on new line for anonymous methods"), @"void Example()
 {
 	var del = new delegate (int i, int j) {

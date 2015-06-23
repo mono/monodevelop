@@ -48,12 +48,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			projects = new ProjectCollection ();
 		}
 
-		public override object LoadProject (MSBuildProject project, XmlDocument doc, FilePath fileName)
+		public override object LoadProject (MSBuildProject project, string xml, FilePath fileName)
 		{
 			var d = Environment.CurrentDirectory;
 			Environment.CurrentDirectory = Path.GetDirectoryName (fileName);
 			try {
-				var p = projects.LoadProject (new XmlTextReader (new StringReader (doc.OuterXml)));
+				var p = projects.LoadProject (new XmlTextReader (new StringReader (xml)));
 				p.FullPath = fileName;
 				return p;
 			} finally {
@@ -151,22 +151,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public override IEnumerable<MSBuildTarget> GetTargets (object project)
 		{
-			var doc = new XmlDocument ();
 			var p = (MSProject)project;
 			foreach (var t in p.Targets) {
-				var te = doc.CreateElement (t.Key, MSBuildProject.Schema);
-				te.SetAttribute ("Name", t.Key);
-				if (!string.IsNullOrEmpty (t.Value.Condition))
-					te.SetAttribute ("Condition", t.Value.Condition);
-				foreach (var task in t.Value.Tasks) {
-					var tke = doc.CreateElement (task.Name, MSBuildProject.Schema);
-					tke.SetAttribute ("Name", task.Name);
-					if (!string.IsNullOrEmpty (task.Condition))
-						tke.SetAttribute ("Condition", task.Condition);
-					te.AppendChild (tke);
-				}
-				yield return new MSBuildTarget (te) {
-					IsImported = t.Value.Location.File == p.FullPath
+				List<MSBuildTask> tasks = new List<MSBuildTask> ();
+				foreach (var task in t.Value.Tasks)
+					tasks.Add (new MSBuildTask (task.Name) { Condition = task.Condition });
+				yield return new MSBuildTarget (t.Key, tasks) {
+					IsImported = t.Value.Location.File == p.FullPath,
+					Condition = t.Value.Condition
 				};
 			}
 		}

@@ -30,10 +30,10 @@ using System.Text;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.DocFood
 {
@@ -303,7 +303,8 @@ namespace MonoDevelop.DocFood
 					case "startsWithWord":
 						if (member == null)
 							break;
-						result |= GetName (member).StartsWith (val);
+						var name2 = SeparateWords (GetName (member));
+						result |= name2.StartsWith (val + " ");
 						break;
 					case "wordCount":
 						result |= Int32.Parse (val) == wordCount;
@@ -876,7 +877,61 @@ namespace MonoDevelop.DocFood
 		
 		void SplitWords (object obj, string name)
 		{
-			StringBuilder result = new StringBuilder ();
+			List<string> words = new List<string> (SeparateWords (name).Split (' '));
+			wordCount = words.Count;
+			for (int i = 0; i < words.Count; i++) {
+				string lowerWord = words [i].ToLower ();
+				if (DocConfig.Instance.WordExpansions.ContainsKey (lowerWord)) {
+					words [i] = DocConfig.Instance.WordExpansions [lowerWord];
+				} else if (DocConfig.Instance.WordLists ["acronyms"].Contains (words [i].ToUpper ())) {
+					words [i] = words [i].ToUpper ();
+				}
+			}
+			tags ["First"] = words [0];
+			tags ["AllWords"] = string.Join (" ", words.ToArray ());
+			tags ["AllWordsExceptFirst"] = string.Join (" ", words.ToArray (), 1, words.Count - 1);
+
+			int theIndex = 0;
+			int ofTheIndex = 0;
+			if (obj is IMethodSymbol) {
+				theIndex = ofTheIndex = 1;
+			}
+
+			if (ofTheIndex < words.Count && DocConfig.Instance.WordLists ["prefixThe"].Contains (words [ofTheIndex].ToLower ()))
+				ofTheIndex++;
+
+			int ofIndex = words.Count - 1;
+			if (ofTheIndex + 1 < words.Count && DocConfig.Instance.WordLists ["ofThe"].Contains (words [ofIndex].ToLower ())) {
+				string word = words [ofIndex];
+				words.RemoveAt (ofIndex);
+				words.Insert (ofTheIndex, "the");
+				words.Insert (ofTheIndex, "of");
+				words.Insert (ofTheIndex, word);
+			}
+
+			tags ["FirstAsVerbPastParticiple"] = GetPastParticipleVerb (words [0]);
+			if (obj is IMethodSymbol && words.Count > 1) {
+				if (words [0].EndsWith ("s")) {
+					words [0] += "es";
+				} else if (words [0].EndsWith ("y")) {
+					words [0] = words [0].Substring (0, words [0].Length - 1) + "ies";
+				} else {
+					words [0] += "s";
+				}
+				theIndex = 1;
+			}
+
+			tags ["FirstAsVerb"] = words [0];
+
+			if (theIndex < words.Count && !DocConfig.Instance.WordLists ["noThe"].Contains (words [theIndex].ToLower ()))
+				words.Insert (theIndex, "the");
+
+			tags ["Sentence"] = string.Join (" ", words.ToArray ());
+		}
+
+		static string SeparateWords (string name)
+		{
+			var result = new StringBuilder ();
 			bool wasUnderscore = false;
 			for (int i = 0; i < name.Length; i++) {
 				char ch = name [i];
@@ -888,14 +943,21 @@ namespace MonoDevelop.DocFood
 					wasUnderscore = false;
 					if (result.Length > 0)
 						result.Append (" ");
-					if (i + 1 < name.Length && char.IsUpper (name[i + 1])) {
-						while (i + 1 < name.Length && char.IsUpper (name[i + 1])) {
-							result.Append (name[i]);
+					if (i + 1 < name.Length && char.IsUpper (name [i + 1])) {
+						int j = i;
+						while (i < name.Length && char.IsUpper (name [i])) {
 							i++;
 						}
+						if (i >= name.Length || name [i] == '_') {
+							if (i != j)
+								result.Append (name.Substring (j, i - j).ToLower ());
+							continue;
+						}
+						if (i != j)
+							result.Append (name.Substring (j, i - j));
 						if (i + 1 < name.Length) {
 							result.Append (" ");
-							result.Append (char.ToLower (name[i]));
+							result.Append (char.ToLower (name [i]));
 						}
 						continue;
 					}
@@ -903,59 +965,11 @@ namespace MonoDevelop.DocFood
 				wasUnderscore = false;
 				result.Append (char.ToLower (ch));
 			}
-			
-			List<string> words = new List<string> (result.ToString ().Split (' '));
-			wordCount = words.Count;
-			for (int i = 0; i < words.Count; i++) {
-				string lowerWord = words[i].ToLower ();
-				if (DocConfig.Instance.WordExpansions.ContainsKey (lowerWord)) {
-					words[i] = DocConfig.Instance.WordExpansions[lowerWord];
-				} else if (DocConfig.Instance.WordLists["acronyms"].Contains (words[i].ToUpper ())) {
-					words[i] = words[i].ToUpper ();
-				}
-			}
-			tags["First"] = words[0];
-			tags["AllWords"] = string.Join (" ", words.ToArray ());
-			tags["AllWordsExceptFirst"] = string.Join (" ", words.ToArray (), 1, words.Count - 1);
-			
-			int theIndex = 0;
-			int ofTheIndex = 0;
-			if (obj is IMethodSymbol) {
-				theIndex = ofTheIndex = 1;
-			}
-			
-			if (ofTheIndex < words.Count && DocConfig.Instance.WordLists["prefixThe"].Contains (words[ofTheIndex].ToLower ()))
-				ofTheIndex++;
-			
-			int ofIndex = words.Count - 1;
-			if (ofTheIndex + 1 < words.Count && DocConfig.Instance.WordLists["ofThe"].Contains (words[ofIndex].ToLower ())) {
-				string word = words[ofIndex];
-				words.RemoveAt (ofIndex);
-				words.Insert (ofTheIndex, "the");
-				words.Insert (ofTheIndex, "of");
-				words.Insert (ofTheIndex, word);
-			} 
 
-			tags["FirstAsVerbPastParticiple"] = GetPastParticipleVerb (words[0]);
-			if (obj is IMethodSymbol && words.Count > 1) {
-				if (words[0].EndsWith("s")) {
-					words[0] += "es";
-				} else if (words[0].EndsWith("y")) {
-					words[0] = words[0].Substring (0, words[0].Length - 1) + "ies";
-				} else {
-					words[0] += "s";
-				}
-				theIndex = 1;
-			}
-			
-			tags["FirstAsVerb"] = words[0];
-			
-			if (theIndex < words.Count && !DocConfig.Instance.WordLists["noThe"].Contains (words[theIndex].ToLower ()))
-				words.Insert (theIndex, "the");
-			
-			tags["Sentence"] = string.Join (" ", words.ToArray ());
+			return result.ToString ();
 		}
-		
+
+
 		public void Set (string name, string parameterName, string doc)
 		{
 			if (name.StartsWith ("param", StringComparison.Ordinal) && name.Length > "param".Length) {

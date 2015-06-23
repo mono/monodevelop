@@ -404,7 +404,7 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
-		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", true);
+		ConfigurationProperty<bool> useViModes = ConfigurationProperty.Create ("UseViModes", false);
 		public bool UseViModes {
 			get {
 				return useViModes;

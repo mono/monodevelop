@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using System.Linq;
 using Gdk;
@@ -294,7 +293,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			var keyChar = descriptor.KeyChar;
 
-			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:";
+			const string commitChars = " <>()[]{}=+-*/%~&^|!.,;:?";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
 			
@@ -318,8 +317,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					UpdateWordSelection ();
 					return KeyActions.Process;
 				}
-//				if (keyChar == '.')
-//					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
+				if (keyChar == '.' && !list.AutoCompleteEmptyMatch && PartialWord == ".")
+					list.AutoSelect = list.AutoCompleteEmptyMatch = true;
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset - 1;
 
 				if (list.SelectionEnabled && CompletionCharacters.CompleteOn (keyChar)) {
@@ -608,7 +607,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				bestMruIndex = int.MaxValue;
 				currentData = null;
 			}
-
 			for (int i = 0; i < list.filteredItems.Count; i++) {
 				var mruData = completionDataList [list.filteredItems [i]];
 				int curMruIndex = cache.GetIndex (mruData);
@@ -617,7 +615,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (curMruIndex < bestMruIndex) {
 					int r1 = 0, r2 = 0;
 					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
-						if (r1 >= r2) {
+						if (r1 >= r2 || PartialWord.Length <= 1) {
 							bestMruIndex = curMruIndex;
 							idx = i;
 							currentData = mruData;
@@ -625,7 +623,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 					}
 				}
 			}
-
 			return idx;
 		}
 

@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public async Task AddOverload (CompletionData data, CancellationToken cancelToken)
 		{
 			var tooltipInformation = await data.CreateTooltipInformation (false, cancelToken);
-			if (tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
+			if (tooltipInformation == null || tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
 				return;
 
 			using (var layout = new Pango.Layout (PangoContext)) {

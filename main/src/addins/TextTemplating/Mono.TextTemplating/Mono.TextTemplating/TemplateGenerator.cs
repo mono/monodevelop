@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using Microsoft.VisualStudio.TextTemplating;
 
@@ -204,6 +205,13 @@ namespace Mono.TextTemplating
  				if (System.IO.File.Exists (path))
  					return path;
  			}
+
+			var assemblyName = new AssemblyName(assemblyReference);
+			if (assemblyName.Version != null)
+				return assemblyReference;
+
+			if (!assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase) && !assemblyReference.EndsWith (".exe", StringComparison.OrdinalIgnoreCase))
+				return assemblyReference + ".dll";
 			return assemblyReference;
 		}
 		
@@ -226,7 +234,7 @@ namespace Mono.TextTemplating
 			var asmPath = ResolveAssemblyReference (value.Value);
 			if (asmPath == null)
 				throw new Exception (string.Format ("Could not resolve assembly '{0}' for directive processor '{1}'", value.Value, processorName));
-			var asm = System.Reflection.Assembly.LoadFrom (asmPath);
+			var asm = Assembly.LoadFrom (asmPath);
 			return asm.GetType (value.Key, true);
 		}
 		

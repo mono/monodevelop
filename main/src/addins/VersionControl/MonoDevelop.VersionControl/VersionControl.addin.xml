@@ -178,7 +178,7 @@
 			description = "Add items to version control ignore list"/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Unignore"
 			_label = "Remove from ignore list"
-			description = "Add items to version control ignore list"/>
+			description = "Removes items to version control ignore list"/>
 		<Command id = "MonoDevelop.VersionControl.Commands.ResolveConflicts"
 			_label = "Resolve Conflicts"
 			description = "Resolve conflicts on the project file."/>

@@ -26,7 +26,7 @@
 using System;
 using System.Xml.Serialization;
 using System.IO;
-using ICSharpCode.NRefactory6.Utils;
+using ICSharpCode.NRefactory.Utils;
 
 namespace MonoDevelop.NUnit
 {

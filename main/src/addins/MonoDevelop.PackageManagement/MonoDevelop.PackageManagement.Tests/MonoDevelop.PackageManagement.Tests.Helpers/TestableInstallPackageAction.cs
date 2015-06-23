@@ -33,8 +33,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestableInstallPackageAction (
 			IPackageManagementProject project,
-			IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			FakeFileRemover fileRemover)
+			: base (project, packageManagementEvents, fileRemover)
 		{
 			CreateOpenPackageReadMeMonitorAction = packageId => {
 				IOpenPackageReadMeMonitor monitor = base.CreateOpenPackageReadMeMonitor (packageId);

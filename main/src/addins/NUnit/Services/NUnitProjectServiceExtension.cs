@@ -62,6 +62,18 @@ namespace MonoDevelop.NUnit
 					await NUnitService.Instance.RunTest (test, context.ExecutionHandler, false, false, cs);
 			}
 		}
+
+		protected override ProjectFeatures OnGetSupportedFeatures ()
+		{
+			var sf = base.OnGetSupportedFeatures ();
+			if (!sf.HasFlag (ProjectFeatures.Execute) && IdeApp.IsInitialized) {
+				// Unit test projects support execution
+				UnitTest test = NUnitService.Instance.FindRootTest (Project);
+				if (test != null)
+					sf |= ProjectFeatures.Execute;
+			}
+			return sf;
+		}
 		
 		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{

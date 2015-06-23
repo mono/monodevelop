@@ -74,17 +74,17 @@ namespace MonoDevelop.CSharp.Completion
 			if (idx >= 0) {
 				result = 
 					result.Substring(0, idx) +
-					"<b>" + Symbol.Name + "</b>"+
-					result.Substring(idx + Symbol.Name.Length);
+					      "<b>" + Symbol.Name + "</b>"+
+					      result.Substring(idx + Symbol.Name.Length);
 			}
 
 			if (!afterKeyword)
 				result = "override " + result;
-			
+
 			return ApplyDiplayFlagsFormatting (result);
 		}
 
-		public CreateOverrideCompletionData (ICSharpCode.NRefactory6.CSharp.Completion.ICompletionKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
+		public CreateOverrideCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member, bool afterKeyword) : base (keyHandler, factory, member, member.ToDisplayString ())
 		{
 			this.afterKeyword = afterKeyword;
 			this.currentType = currentType;

@@ -51,14 +51,14 @@ namespace MonoDevelop.Projects
 			return item is Solution;
 		}
 
-		internal protected virtual Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return next.Build (monitor, configuration);
+			return next.Build (monitor, configuration, operationContext);
 		}
 
-		internal protected virtual Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration)
+		internal protected virtual Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			return next.Clean (monitor, configuration);
+			return next.Clean (monitor, configuration, operationContext);
 		}
 
 		internal protected virtual Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

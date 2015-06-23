@@ -88,16 +88,17 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
-		public void GotoDeclaration_Update (CommandInfo ci)
+		public async void GotoDeclaration_Update (CommandInfo ci)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			if (doc.ParsedDocument == null || doc.ParsedDocument.GetAst<SemanticModel> () == null) {
 				ci.Enabled = false;
+				return;
 			}
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
-			ci.Enabled = info.Symbol != null;
+			var symbol = await GoToDefinitionService.FindSymbolAsync (base.DocumentContext.AnalysisDocument, Editor.CaretOffset, default(CancellationToken));
+			ci.Enabled = symbol != null;
 		}
 
 		[CommandHandler (RefactoryCommands.GotoDeclaration)]

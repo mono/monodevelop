@@ -35,62 +35,80 @@ using Microsoft.Build.BuildEngine;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
-	public class MSBuildPropertyGroup: MSBuildObject, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
+	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
-		Dictionary<string,MSBuildProperty> properties;
-		List<MSBuildProperty> propertyList = new List<MSBuildProperty> ();
-		MSBuildProject project;
-		
-		internal MSBuildPropertyGroup (MSBuildProject parent, XmlElement elem): base (elem)
+		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> ();
+
+		public MSBuildPropertyGroup ()
 		{
-			this.project = parent;
 		}
 
-		internal static MSBuildPropertyGroup CreateEmpty ()
-		{
-			XmlDocument doc = new XmlDocument ();
-			XmlElement elem = doc.CreateElement (null, "PropertyGroup", MSBuildProject.Schema);
-			return new MSBuildPropertyGroup (null, elem);
-		}
-
-		void InitProperties ()
-		{
-			if (project != null) {
-				lock (project.ReadLock) {
-					if (properties != null)
-						return;
-
-					properties = new Dictionary<string,MSBuildProperty> ();
-					propertyList = new List<MSBuildProperty> ();
-
-					foreach (var pelem in Element.ChildNodes.OfType<XmlElement> ()) {
-						MSBuildProperty prevSameName;
-						if (properties.TryGetValue (pelem.Name, out prevSameName))
-							prevSameName.Overwritten = true;
-
-						var prop = new MSBuildProperty (project, pelem);
-						prop.Owner = this;
-						propertyList.Add (prop);
-						properties [pelem.Name] = prop; // If a property is defined more than once, we only care about the last registered value
-					}
-				}
-			} else if (properties == null) {
-				properties = new Dictionary<string,MSBuildProperty> ();
-				propertyList = new List<MSBuildProperty> ();
+		internal override List<MSBuildNode> ChildNodes {
+			get {
+				if (ParentNode is MSBuildItem)
+					return ((MSBuildItem)ParentNode).ChildNodes;
+				return base.ChildNodes;
 			}
 		}
 
-		internal void SetProject (MSBuildProject project)
+		internal MSBuildObject PropertiesParent {
+			get {
+				return (MSBuildObject) (ParentNode as MSBuildItem) ?? this;
+			}
+		}
+
+		internal override void ReadChildElement (MSBuildXmlReader reader)
 		{
-			this.project = project;
-			Element = (XmlElement) project.Document.ImportNode (Element, true);
-			var children = Element.ChildNodes.OfType<XmlElement> ().ToArray ();
-			for (int n=0; n<propertyList.Count; n++) {
-				var p = propertyList [n];
-				p.Element = children [n];
-				p.Project = project;
+			MSBuildProperty prevSameName;
+			if (properties.TryGetValue (reader.LocalName, out prevSameName))
+				prevSameName.Overwritten = true;
+
+			var prop = new MSBuildProperty ();
+			prop.ParentNode = PropertiesParent;
+			prop.Owner = this;
+			prop.Read (reader);
+			ChildNodes.Add (prop);
+			properties [prop.Name] = prop; // If a property is defined more than once, we only care about the last registered value
+		}
+
+		internal override string GetElementName ()
+		{
+			return "PropertyGroup";
+		}
+
+		internal override void OnProjectSet ()
+		{
+			base.OnProjectSet ();
+			foreach (var p in ChildNodes.OfType<MSBuildProperty> ())
 				p.ResolvePath ();
+		}
+
+		internal void CopyFrom (MSBuildPropertyGroup other)
+		{
+			foreach (var node in other.ChildNodes) {
+				var prop = node as MSBuildProperty;
+				if (prop != null) {
+					var cp = prop.Clone ();
+					var currentPropIndex = ChildNodes.FindIndex (p => (p is MSBuildProperty) && ((MSBuildProperty)p).Name == prop.Name);
+					if (currentPropIndex != -1) {
+						var currentProp = (MSBuildProperty) ChildNodes [currentPropIndex];
+						ChildNodes [currentPropIndex] = cp;
+					} else {
+						ChildNodes.Add (cp);
+					}
+					properties [cp.Name] = cp;
+					cp.ParentNode = PropertiesParent;
+					cp.Owner = this;
+					cp.ResetIndent (false);
+				} else
+					ChildNodes.Add (node);
 			}
+			foreach (var prop in ChildNodes.OfType<MSBuildProperty> ().ToArray ()) {
+				if (!other.HasProperty (prop.Name))
+					RemoveProperty (prop);
+			}
+
+			NotifyChanged ();
 		}
 
 		public bool IsImported {
@@ -98,12 +116,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set;
 		}
 		
-		public MSBuildProject Project {
-			get {
-				return this.project;
-			}
-		}
-
 		internal bool IgnoreDefaultValues { get; set; }
 
 		internal bool UppercaseBools { get; set; }
@@ -134,7 +146,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public MSBuildProperty GetProperty (string name, string condition)
 		{
-			InitProperties ();
 			MSBuildProperty prop;
 			properties.TryGetValue (name, out prop);
 			return prop;
@@ -142,8 +153,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		public IEnumerable<MSBuildProperty> GetProperties ()
 		{
-			InitProperties ();
-			return propertyList.Where (p => !p.Overwritten);
+			return ChildNodes.OfType<MSBuildProperty> ();
 		}
 
 		public string GetValue (string name, string defaultValue = null)
@@ -204,43 +214,35 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		MSBuildProperty AddProperty (string name, string condition = null)
 		{
-			InitProperties ();
 			int i = propertyOrder.IndexOf (name);
-			var pelem = Element.OwnerDocument.CreateElement (null, name, MSBuildProject.Schema);
 			int insertIndex = -1;
 			if (i != -1) {
 				var foundProp = FindExistingProperty (i - 1, -1);
 				if (foundProp != null) {
-					Element.InsertAfter (pelem, foundProp.Element);
-					insertIndex = propertyList.IndexOf (foundProp) + 1;
+					insertIndex = ChildNodes.IndexOf (foundProp) + 1;
 				} else {
 					foundProp = FindExistingProperty (i + 1, 1);
-					if (foundProp != null) {
-						Element.InsertBefore (pelem, foundProp.Element);
-						insertIndex = propertyList.IndexOf (foundProp) - 1;
-					}
-					else
-						Element.AppendChild (pelem);
+					if (foundProp != null)
+						insertIndex = ChildNodes.IndexOf (foundProp) - 1;
 				}
-			} else
-				Element.AppendChild (pelem);
+			}
 
-			if (Project != null)
-				XmlUtil.Indent (Project.TextFormat, pelem, false);
-			
-			var prop = new MSBuildProperty (project, pelem);
+			var prop = new MSBuildProperty (name);
+			prop.ParentNode = PropertiesParent;
 			prop.Owner = this;
 			properties [name] = prop;
 
 			if (insertIndex != -1)
-				propertyList.Insert (insertIndex, prop);
+				ChildNodes.Insert (insertIndex, prop);
 			else
-				propertyList.Add (prop);
+				ChildNodes.Add (prop);
 
 			if (condition != null)
 				prop.Condition = condition;
-			if (project != null)
-				project.NotifyChanged ();
+			
+			prop.ResetIndent (false);
+
+			NotifyChanged ();
 			return prop;
 		}
 
@@ -345,28 +347,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void RemoveProperty (MSBuildProperty prop)
 		{
-			InitProperties ();
+			prop.RemoveIndent ();
 			properties.Remove (prop.Name);
-			propertyList.Remove (prop);
-			XmlUtil.RemoveElementAndIndenting (prop.Element);
-			if (project != null)
-				project.NotifyChanged ();
+			ChildNodes.Remove (prop);
+			NotifyChanged ();
 		}
 
 		public void RemoveAllProperties ()
 		{
-			InitProperties ();
-			var toDelete = new List<XmlElement> ();
-			foreach (XmlNode node in Element.ChildNodes) {
-				if (node is XmlElement)
-					toDelete.Add ((XmlElement)node);
-			}
-			foreach (var node in toDelete)
-				XmlUtil.RemoveElementAndIndenting (node);
 			properties.Clear ();
-			propertyList.Clear ();
-			if (project != null)
-				project.NotifyChanged ();
+			ChildNodes.Clear ();
+			NotifyChanged ();
 		}
 
 		public void UnMerge (IMSBuildPropertySet baseGrp, ISet<string> propsToExclude)
@@ -400,7 +391,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public bool HasProperty (string name)
 		{
-			InitProperties ();
 			return properties.ContainsKey (name);
 		}
 

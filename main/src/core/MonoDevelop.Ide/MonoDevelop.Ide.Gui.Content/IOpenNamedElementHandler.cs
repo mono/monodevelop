@@ -33,6 +33,6 @@ namespace MonoDevelop.Ide.Gui.Content
 	interface IOpenNamedElementHandler
 	{
 		void Open (Microsoft.CodeAnalysis.ISymbol element);
-		void Open (string documentationCommentId);
+		void Open (string documentationCommentId, bool openInPublicOnlyMode = true);
 	}
 }

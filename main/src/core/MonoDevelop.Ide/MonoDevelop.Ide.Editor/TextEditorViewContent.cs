@@ -72,12 +72,15 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			this.textEditor.DocumentContextChanged += delegate {
-				if (currentContext != null)
-					currentContext.DocumentParsed -= HandleDocumentParsed;
-				currentContext = textEditor.DocumentContext;
-				currentContext.DocumentParsed += HandleDocumentParsed;
-			};
+			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
+		}
+
+		void HandleDocumentContextChanged (object sender, EventArgs e)
+		{
+			if (currentContext != null)
+				currentContext.DocumentParsed -= HandleDocumentParsed;
+			currentContext = textEditor.DocumentContext;
+			currentContext.DocumentParsed += HandleDocumentParsed;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -96,12 +99,17 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		uint autoSaveTimer = 0;
-
+		Task autoSaveTask;
 		void InformAutoSave ()
 		{
+			if (isDisposed)
+				return;
 			RemoveAutoSaveTimer ();
 			autoSaveTimer = GLib.Timeout.Add (500, delegate {
-				AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
+				if (autoSaveTask != null && !autoSaveTask.IsCompleted)
+					return false;
+
+				autoSaveTask = AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
 				autoSaveTimer = 0;
 				return false;
 			});
@@ -192,12 +200,12 @@ namespace MonoDevelop.Ide.Editor
 
 		async void UpdateErrorUndelines (ParsedDocument parsedDocument, CancellationToken token)
 		{
-			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
+			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null || isDisposed)
 				return;
 			try {
 				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
 				Application.Invoke (delegate {
-					if (token.IsCancellationRequested)
+					if (token.IsCancellationRequested || isDisposed)
 						return;
 					RemoveErrorUndelinesResetTimerId ();
 					const uint timeout = 500;
@@ -225,7 +233,7 @@ namespace MonoDevelop.Ide.Editor
 		CancellationTokenSource src = new CancellationTokenSource ();
 		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false, CancellationToken token = default (CancellationToken))
 		{
-			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin)
+			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin || isDisposed)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
@@ -416,6 +424,9 @@ namespace MonoDevelop.Ide.Editor
 
 		void IViewContent.DiscardChanges ()
 		{
+			if (autoSaveTask != null)
+				autoSaveTask.Wait (TimeSpan.FromSeconds (5));
+			RemoveAutoSaveTimer ();
 			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
 				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.DiscardChanges ();
@@ -567,9 +578,16 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 
 		#region IDisposable implementation
-
+		bool isDisposed;
 		void IDisposable.Dispose ()
 		{
+			isDisposed = true;
+			textEditorImpl.DirtyChanged -= HandleDirtyChanged;
+			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
+			textEditor.TextChanged -= HandleTextChanged;
+			textEditor.DocumentContextChanged -= HandleDocumentContextChanged;
+
+			currentContext.DocumentParsed -= HandleDocumentParsed;
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
@@ -841,6 +859,8 @@ namespace MonoDevelop.Ide.Editor
 
 		async void UpdateQuickTasks (ParsedDocument doc, CancellationToken token)
 		{
+			if (isDisposed)
+				return;
 			var newTasks = new List<QuickTask> ();
 			if (doc != null) {
 				foreach (var cmt in await doc.GetTagCommentsAsync(token).ConfigureAwait (false)) {
@@ -854,7 +874,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			Application.Invoke (delegate {
-				if (token.IsCancellationRequested)
+				if (token.IsCancellationRequested || isDisposed)
 					return;
 				tasks = newTasks;
 				OnTasksUpdated (EventArgs.Empty);

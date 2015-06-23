@@ -61,6 +61,7 @@ namespace MonoDevelop.AspNet.WebForms
 					masterPage = dialog.SelectedFile;
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 			if (masterPage == null)
 				return;

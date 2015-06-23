@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.ShiftMask | subwordModifier), action);
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.BackSpace, subwordModifier), DeleteActions.PreviousSubword);
-			
+
 			action = DeleteActions.NextSubword;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Delete, subwordModifier), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Delete, subwordModifier), action);
@@ -294,42 +294,42 @@ namespace Mono.TextEditor
 			// === Home ===
 			
 			action = CaretMoveActions.LineHome;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Home), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.MetaMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask), action); //emacs
 			keyBindings.Add (GetKeyCode (Gdk.Key.a, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveLineHome);
-			
+
 			action = SelectionActions.MoveLineHome;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 			
 			action = CaretMoveActions.ToDocumentStart;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.MetaMask), action);
 
 			action = SelectionActions.MoveToDocumentStart;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 
 			// ==== End ====
 			
 			action = CaretMoveActions.LineEnd;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.End), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.MetaMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.e, Gdk.ModifierType.ControlMask), action); //emacs
 			keyBindings.Add (GetKeyCode (Gdk.Key.e, Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask), SelectionActions.MoveLineEnd);
 			
 			
 			action = SelectionActions.MoveLineEnd;
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 			
 			action = CaretMoveActions.ToDocumentEnd;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.End), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.MetaMask), action);
 
 			action = SelectionActions.MoveToDocumentEnd;
-			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask), action);
-			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 
 			// ==== Cut, copy, paste ===
@@ -377,7 +377,10 @@ namespace Mono.TextEditor
 			
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.MetaMask), MiscActions.Undo);
 			keyBindings.Add (GetKeyCode (Gdk.Key.z, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), MiscActions.Redo);
-			
+
+			keyBindings.Add (GetKeyCode (Key.BackSpace, ModifierType.Mod1Mask | ModifierType.ShiftMask), DeleteActions.PreviousSubword);
+			keyBindings.Add (GetKeyCode (Key.Delete, ModifierType.Mod1Mask | ModifierType.ShiftMask), DeleteActions.NextSubword);
+
 			// selection actions
 			
 			action = SelectionActions.MoveDown;

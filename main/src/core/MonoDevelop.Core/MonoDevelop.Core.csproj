@@ -98,23 +98,26 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Utilities.v12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -534,6 +537,18 @@
     <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildImportGroup.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildChoose.cs" />
+    <Compile Include="MonoDevelop.Projects\OperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
+    <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTarget.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTask.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildWhitespace.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlReader.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildElement.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlNode.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildFileFormatException.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildXmlElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -547,6 +562,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="MSBuild\CodeSharing.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.Features.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll">
+      <Link>External\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -595,10 +626,6 @@
       <Project>{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD}</Project>
       <Name>Mono.Cecil.Mdb</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\Newtonsoft.Json\Src\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
@@ -628,6 +655,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
     <Folder Include="MSBuild\" />
+    <Folder Include="External\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />

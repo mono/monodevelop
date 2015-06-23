@@ -320,8 +320,14 @@ namespace MonoDevelop.Components
 		{
 			int ox, oy;
 			w.GetOrigin (out ox, out oy);
-			ox += widget.Allocation.X;
-			oy += widget.Allocation.Y;
+			//Bug 31032 - this is workaround bug in GTK on Windows OS which has widget.Allocation.X/Y
+			//relative to widget.GdkWindow.Toplevel instead to widget.GdkWindow which is GdkWindow decicated
+			//to TreeView so widget.Allocation.X/Y should always be 0,0(which is true on Mac)
+			//hence skipping adding Allocation.X/Y since they should always be 0,0 anyway
+			if (!(widget is TreeView)) {
+				ox += widget.Allocation.X;
+				oy += widget.Allocation.Y;
+			}
 			return new Gdk.Point (ox + x, oy + y);
 		}
 

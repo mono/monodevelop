@@ -101,6 +101,7 @@ namespace Mono.MHex
 
 		public HexEditor ()
 		{
+			BackgroundColor = Color.FromBytes (0, 0, 0);
 			CanGetFocus = true;
 			HexEditorData = new HexEditorData ();
 			HexEditorData.EditMode = new SimpleEditMode ();
@@ -159,6 +160,17 @@ namespace Mono.MHex
 			
 			Options = HexEditorOptions.DefaultOptions;
 			Options.Changed += OptionsChanged;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			Options.Changed -= OptionsChanged;
+			if (caretTimer != null) { 
+				caretTimer.Elapsed -= UpdateCaret;
+				caretTimer.Dispose ();
+				caretTimer = null;
+			}
+			base.Dispose (disposing);
 		}
 		
 		public void PurgeLayoutCaches ()

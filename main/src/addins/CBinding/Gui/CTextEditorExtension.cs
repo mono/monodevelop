@@ -47,7 +47,6 @@ using CBinding.Parser;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
@@ -286,19 +285,18 @@ namespace CBinding
 //			return null;
 //		}
 		
-		public override ICompletionDataList CodeCompletionCommand (
+		public override Task<ICompletionDataList> CodeCompletionCommand (
 		    CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
 			string lineText = Editor.GetLineText (Editor.CaretLine).Trim();
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
-				if(lineText.EndsWith(pair.Key)) {
-					return HandleCodeCompletionAsync (completionContext, Editor.GetCharAt (pos)).Result;
-				}
+				if (lineText.EndsWith(pair.Key))
+					return HandleCodeCompletionAsync (completionContext, Editor.GetCharAt (pos));
 			}
 
-			return GlobalComplete ();
+			return Task.FromResult<ICompletionDataList> (GlobalComplete ());
 		}
 		
 		/// <summary>
@@ -578,7 +576,7 @@ namespace CBinding
 			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
-				return null;
+				return Task.FromResult<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> (null);
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
 			string lineText = Editor.GetLineText (Editor.CaretLine).TrimEnd ();
@@ -592,9 +590,9 @@ namespace CBinding
 			string functionName = lineText.Substring (nameStart).Trim ();
 			
 			if (string.IsNullOrEmpty (functionName))
-				return null;
-			
-			return Task.FromResult ((MonoDevelop.Ide.CodeCompletion.ParameterHintingResult)new ParameterDataProvider (nameStart, Editor, info, functionName));
+				return Task.FromResult<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> (null);
+
+			return Task.FromResult ((MonoDevelop.Ide.CodeCompletion.ParameterHintingResult) new ParameterDataProvider (nameStart, Editor, info, functionName));
 		}
 		
 		private bool AllWhiteSpace (string lineText)

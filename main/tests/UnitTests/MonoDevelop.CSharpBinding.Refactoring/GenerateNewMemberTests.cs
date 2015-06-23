@@ -127,16 +127,16 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			doc.SetProject (project);
 			var parsedFile = doc.UpdateParseDocument ();
 			var model = parsedFile.GetAst<SemanticModel> ();
-
-			var sym = model.GetEnclosingSymbol (data.Text.IndexOf ('{'));
-			var type = sym as INamedTypeSymbol ?? sym.ContainingType;
-
-			var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
-			//	Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
-			for (int i = 0; i < loc.Count; i++) {
-				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
-				Assert.AreEqual (loc[i].LineAfter, foundPoints[i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
-				Assert.AreEqual (loc[i].LineBefore, foundPoints[i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
+			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
+			if (type != null) {
+				var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
+				//	Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
+				for (int i = 0; i < loc.Count; i++) {
+					Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");
+					Assert.AreEqual (loc [i].LineAfter, foundPoints [i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+					Assert.AreEqual (loc [i].LineBefore, foundPoints [i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+				}
 			}
 
 			TypeSystemService.Unload (solution);

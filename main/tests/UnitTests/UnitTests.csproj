@@ -58,27 +58,34 @@
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="GuiUnit">
-      <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Collections.Immutable">
-      <HintPath>..\..\packages\System.Collections.Immutable.1.1.33-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Reflection.Metadata">
-      <HintPath>..\..\packages\System.Reflection.Metadata.1.0.18-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Desktop">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0-rc2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -201,10 +208,9 @@
       <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
       <Name>MonoDevelop.NUnit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
-      <Name>ICSharpCode.NRefactory6.CSharp</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -291,7 +297,6 @@
     <None Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
     <None Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
     <None Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

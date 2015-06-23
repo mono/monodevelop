@@ -37,7 +37,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	class MonoDevelopSourceText : SourceText
+	sealed class MonoDevelopSourceText : SourceText
 	{
 		readonly ITextSource doc;
 
@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 	}
 
-	class MonoDevelopSourceTextContainer : SourceTextContainer
+	sealed class MonoDevelopSourceTextContainer : SourceTextContainer, IDisposable
 	{
 		readonly ITextDocument document;
 		public DocumentId Id {
@@ -95,11 +95,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.document.TextChanging += HandleTextReplacing;
 		}
 
-		~MonoDevelopSourceTextContainer ()
-		{
-			document.TextChanging -= HandleTextReplacing;
-		}
-
 		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			var handler = TextChanged;
@@ -110,6 +105,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			
 		}
+
+		public void Dispose ()
+		{
+			document.TextChanging -= HandleTextReplacing;
+		}
+
 		#region implemented abstract members of SourceTextContainer
 		public override SourceText CurrentText {
 			get {

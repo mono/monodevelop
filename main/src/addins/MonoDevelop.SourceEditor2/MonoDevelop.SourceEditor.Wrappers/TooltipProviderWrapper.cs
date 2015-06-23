@@ -29,7 +29,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	class TooltipProviderWrapper : TooltipProvider
+	class TooltipProviderWrapper : TooltipProvider, IDisposable
 	{
 		readonly MonoDevelop.Ide.Editor.TooltipProvider provider;
 		TooltipItem lastWrappedItem;
@@ -65,7 +65,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (item == null)
 				return null;
 			if (lastUnwrappedItem != null) {
-				if (lastUnwrappedItem.Offset == item.Offset && lastUnwrappedItem.Length == item.Length) {
+				if (lastUnwrappedItem.Offset == item.Offset &&
+					lastUnwrappedItem.Length == item.Length &&
+					lastUnwrappedItem.Item.Equals (item.Item)) {
 					return lastWrappedItem;
 				}
 			}
@@ -111,6 +113,16 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState, mouseX, mouseY);
 			return tipWindow;
+		}
+
+		public void Dispose ()
+		{
+			var disposableProvider = provider as IDisposable;
+			if (disposableProvider != null) {
+				disposableProvider.Dispose ();
+			}
+			lastWrappedItem = null;
+			lastUnwrappedItem = null;
 		}
 		#endregion
 	}

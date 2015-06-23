@@ -961,7 +961,6 @@ namespace Mono.TextEditor
 				EnsureCaretIsNotVirtual ();
 				if (len > 0)
 					Remove (segment.Offset, len);
-				caret.Location = loc;
 				break;
 			case SelectionMode.Block:
 				DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);

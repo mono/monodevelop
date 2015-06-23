@@ -38,7 +38,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeActions;
-using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using RefactoringEssentials;
 using MonoDevelop.AnalysisCore;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
@@ -46,6 +46,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
+using System.Reflection;
 
 namespace MonoDevelop.CodeActions
 {
@@ -87,6 +88,9 @@ namespace MonoDevelop.CodeActions
 		{
 			if (currentSmartTag != null) {
 				Editor.RemoveMarker (currentSmartTag);
+				currentSmartTag.CancelPopup -= CurrentSmartTag_CancelPopup;
+				currentSmartTag.ShowPopup -= CurrentSmartTag_ShowPopup;
+
 				currentSmartTag = null;
 				currentSmartTagBegin = -1;
 			}
@@ -200,12 +204,14 @@ namespace MonoDevelop.CodeActions
 									.OfType<Diagnostic> ())
 									.GroupBy (d => d.Location.SourceSpan);
 								foreach (var g in groupedDiagnostics) {
+									if (token.IsCancellationRequested)
+										return CodeActionContainer.Empty;
 									var diagnosticSpan = g.Key;
 
 									var validDiagnostics = g.Where (d => provider.FixableDiagnosticIds.Contains (d.Id)).ToImmutableArray ();
 									if (validDiagnostics.Length == 0)
 										continue;
-									await provider.RegisterCodeFixesAsync (new CodeFixContext(ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
+									await provider.RegisterCodeFixesAsync (new CodeFixContext (ad, diagnosticSpan, validDiagnostics, (ca, d) => codeIssueFixes.Add (new ValidCodeDiagnosticAction (cfp, ca, diagnosticSpan)), token));
 
 									// TODO: Is that right ? Currently it doesn't really make sense to run one code fix provider on several overlapping diagnostics at the same location
 									//       However the generate constructor one has that case and if I run it twice the same code action is generated twice. So there is a dupe check problem there.
@@ -223,7 +229,7 @@ namespace MonoDevelop.CodeActions
 							}
 						}
 						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
+						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token)) {
 							codeActions.Add (action);
 						}
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
@@ -243,7 +249,12 @@ namespace MonoDevelop.CodeActions
 						return CodeActionContainer.Empty;
 					} catch (OperationCanceledException) {
 						return CodeActionContainer.Empty;
+					} catch (TargetInvocationException ex) {
+						if (ex.InnerException is OperationCanceledException)
+							return CodeActionContainer.Empty;
+						throw;
 					}
+
 				}, token);
 			} else {
 				RemoveWidget ();
@@ -330,7 +341,7 @@ namespace MonoDevelop.CodeActions
 			Gtk.Widget widget = Editor;
 			var rect = new Gdk.Rectangle (
 				(int)p.X + widget.Allocation.X,
-				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);
+				(int)p.Y + widget.Allocation.Y, 0, 0);
 
 			ShowFixesMenu (widget, rect, menu);
 		}
@@ -593,7 +604,7 @@ namespace MonoDevelop.CodeActions
 							                     document.Editor,
 							                     parsedDocument,
 							                     insertion.Type,
-							                     insertion.Location
+							                     insertion.Location.SourceSpan.Start
 						                     );
 
 						var options = new InsertionModeOptions (
@@ -737,8 +748,20 @@ namespace MonoDevelop.CodeActions
 			var realLoc = Editor.OffsetToLocation (smartTagLocBegin);
 
 			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, smartTagLocBegin, realLoc);
+			currentSmartTag.CancelPopup += CurrentSmartTag_CancelPopup;
+			currentSmartTag.ShowPopup += CurrentSmartTag_ShowPopup;
 			currentSmartTag.Tag = fixes;
 			editor.AddMarker (currentSmartTag);
+		}
+
+		void CurrentSmartTag_ShowPopup (object sender, EventArgs e)
+		{
+			CurrentSmartTagPopup ();
+		}
+
+		void CurrentSmartTag_CancelPopup (object sender, EventArgs e)
+		{
+			CancelSmartTagPopupTimeout ();
 		}
 
 		protected override void Initialize ()

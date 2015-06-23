@@ -35,16 +35,30 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstallPackageAction : ProcessPackageOperationsAction
 	{
+		IFileRemover fileRemover;
+
 		public InstallPackageAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+			: this (project, packageManagementEvents, new FileRemover ())
 		{
-			OpenReadMeText = true;
 		}
-		
+
+		public InstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
+			: base (project, packageManagementEvents)
+		{
+			this.fileRemover = fileRemover;
+
+			OpenReadMeText = true;
+			PreserveLocalCopyReferences = true;
+		}
+
 		public bool IgnoreDependencies { get; set; }
 		public bool OpenReadMeText { get; set; }
+		public bool PreserveLocalCopyReferences { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -54,7 +68,15 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
-				Project.InstallPackage (Package, this);
+				using (IDisposable fileMonitor = CreateFileMonitor (fileRemover)) {
+					if (PreserveLocalCopyReferences) {
+						using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+							Project.InstallPackage (Package, this);
+						}
+					} else {
+						Project.InstallPackage (Package, this);
+					}
+				}
 				monitor.OpenReadMeFile ();
 				OnParentPackageInstalled ();
 			}

@@ -49,9 +49,12 @@ namespace MonoDevelop.Components.AutoTest
 		// Actions
 		public abstract bool Select ();
 		public abstract bool Click ();
-		public abstract bool TypeKey (char key, string state);
+		public abstract bool TypeKey (char key, string state = "");
+		public abstract bool TypeKey (string keyString, string state = "");
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
+
+		public string SourceQuery { get; set; }
 
 		void AddChildrenToList (List<AppResult> children, AppResult child)
 		{
@@ -64,7 +67,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
-		public List<AppResult> FlattenChildren ()
+		public virtual List<AppResult> FlattenChildren ()
 		{
 			List<AppResult> children = new List<AppResult> ();
 			AddChildrenToList (children, FirstChild);

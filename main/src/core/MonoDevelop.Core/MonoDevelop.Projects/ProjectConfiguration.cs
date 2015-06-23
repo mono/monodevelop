@@ -111,9 +111,9 @@ namespace MonoDevelop.Projects
 				pset.SetValue ("DebugType", debugType, "");
 			
 			if (environmentVariables.Count > 0) {
-				XElement e = new XElement ("EnvironmentVariables");
+				XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
 				foreach (var v in environmentVariables) {
-					var val = new XElement ("Variable");
+					var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
 					val.SetAttributeValue ("name", v.Key);
 					val.SetAttributeValue ("value", v.Value);
 					e.Add (val);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Projects
 			get {
 				if (properties == null) {
 					if (ParentItem == null)
-						properties = MSBuildPropertyGroup.CreateEmpty ();
+						properties = new MSBuildPropertyGroup ();
 					else
 						properties = ParentItem.MSBuildProject.CreatePropertyGroup ();
 				}
@@ -245,6 +245,9 @@ namespace MonoDevelop.Projects
 			pauseConsoleOutput = projectConf.pauseConsoleOutput;
 			externalConsole = projectConf.externalConsole;
 			commandLineParameters = projectConf.commandLineParameters;
+			debugType = projectConf.debugType;
+			debugTypeWasNone = projectConf.debugTypeWasNone;
+			debugTypeReadAsEmpty = projectConf.debugTypeReadAsEmpty;
 
 			environmentVariables.Clear ();
 			foreach (KeyValuePair<string, string> el in projectConf.environmentVariables) {
@@ -252,6 +255,8 @@ namespace MonoDevelop.Projects
 			}
 
 			runWithWarnings = projectConf.runWithWarnings;
+
+			((MSBuildPropertyGroup)Properties).CopyFrom ((MSBuildPropertyGroup)projectConf.Properties);
 		}
 
 		public new Project ParentItem {

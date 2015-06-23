@@ -456,7 +456,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Program7_test1.cs", p.Files[6].FilePath.FileName, "Item conditions are ignored");
 
 			var testRef = Path.Combine (dir, "MonoDevelop.Core.dll");
-			var asms = p.GetReferencedAssemblies (sol.Configurations [0].Selector).ToArray ();
+			var asms = (await p.GetReferencedAssemblies (sol.Configurations [0].Selector)).ToArray ();
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
@@ -1163,7 +1163,13 @@ namespace MonoDevelop.Projects
 		[Test]
 		public async Task ProjectSerializationRoundtrip (
 			[Values (
-				"broken-condition.csproj"
+				"broken-condition.csproj",
+				"empty-element.csproj",
+				"comment.csproj",
+				"text-spacing.csproj",
+				"inconsistent-line-endings.csproj",
+				"attribute-order.csproj",
+				"custom-namespace.csproj"
 				//"ICSharpCode.NRefactory.Cecil.csproj"
 			)]
 			string project)
@@ -1296,6 +1302,52 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("bar", items [0].Include);
 			Assert.AreEqual ("Hello", items [0].Metadata.GetValue ("MyMetadata"));
         }
+
+		[Test]
+		public async Task BuildWithCustomProps ()
+		{
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target.csproj");
+			var p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			var ctx = new ProjectOperationContext ();
+			ctx.GlobalProperties.SetValue ("TestProp", "foo");
+			var res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, ctx);
+
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
+		}
+
+		[Test]
+		public async Task CopyConfiguration ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Project p = (Project) sol.Items [0];
+
+			var conf = p.Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Name == "Debug");
+			conf.Properties.SetValue ("Foo", "Bar");
+
+			var newConf = p.CreateConfiguration ("Test");
+			newConf.CopyFrom (conf);
+			p.Configurations.Add (newConf);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var refXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + ".config-copied"));
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public void DefaultMSBuildSupport ()
+		{
+			var project = Services.ProjectService.CreateDotNetProject ("C#");
+			bool byDefault, require;
+			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+			Assert.IsTrue (byDefault);
+			Assert.IsFalse (require);
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode

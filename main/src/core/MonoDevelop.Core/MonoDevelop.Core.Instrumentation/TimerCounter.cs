@@ -43,7 +43,12 @@ namespace MonoDevelop.Core.Instrumentation
 		public TimerCounter (string name, CounterCategory category): base (name, category)
 		{
 		}
-		
+
+		public override string ToString ()
+		{
+			return string.Format ("[TimerCounter: Name={0} Id={1} Category={2} MinSeconds={3}, TotalTime={4}, AverageTime={5}, MinTime={6}, MaxTime={7}, CountWithDuration={8}]",Name, Id, Category, MinSeconds, TotalTime, AverageTime, MinTime, MaxTime, CountWithDuration);
+		}
+
 		public double MinSeconds {
 			get { return this.minSeconds; }
 			set { this.minSeconds = value; }

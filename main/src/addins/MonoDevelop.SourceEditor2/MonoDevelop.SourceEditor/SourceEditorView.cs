@@ -596,7 +596,8 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (widget.HasMessageBar)
 				return;
-			
+			if (encoding != null)
+				this.encoding = encoding;
 			if (ContentName != fileName) {
 				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
@@ -701,6 +702,7 @@ namespace MonoDevelop.SourceEditor
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
 			} finally {
+				FileService.NotifyFileChanged (fileName);
 				FileRegistry.SuspendFileWatch = false;
 			}
 				
@@ -737,7 +739,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding);
+			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding, fileOpenInformation.IsReloadOperation);
 		}
 
 		MonoDevelop.Ide.Gui.Document ownerDocument;
@@ -768,7 +770,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateMimeType (fileName);
 			string text = null;
 			bool didLoadCleanly;
-			if (AutoSave.AutoSaveExists (fileName)) {
+			if (!reload && AutoSave.AutoSaveExists (fileName)) {
 				widget.ShowAutoSaveWarning (fileName);
 				encoding = loadEncoding;
 				didLoadCleanly = false;
@@ -966,6 +968,12 @@ namespace MonoDevelop.SourceEditor
 			}
 
 			RemoveMarkerQueue ();
+			widget.Dispose ();
+			if (wrapper != null) {
+				wrapper.Dispose ();
+				wrapper = null;
+			}
+			this.Project = null;
 		}
 
 		bool CheckReadOnly (int line)
@@ -2652,6 +2660,8 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
+			if (this.isDisposed)
+				return;
 			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList ());
 		}
 
@@ -2893,7 +2903,7 @@ namespace MonoDevelop.SourceEditor
 
 		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false);
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)

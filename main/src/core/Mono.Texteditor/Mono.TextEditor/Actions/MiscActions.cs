@@ -508,7 +508,11 @@ namespace Mono.TextEditor
 					DocumentLine line = data.Document.GetLine (data.Caret.Line);
 					if (line == null)
 						return;
-					data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter));
+					if (line.DelimiterLength == 0) {
+						data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter) + data.EolMarker);
+					} else {
+						data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter));
+					}
 				}
 			}
 		}

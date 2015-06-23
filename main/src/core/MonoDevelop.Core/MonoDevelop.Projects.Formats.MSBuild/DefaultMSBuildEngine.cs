@@ -74,7 +74,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 		}
 
-		public override object LoadProject (MSBuildProject project, XmlDocument doc, FilePath fileName)
+		public override object LoadProject (MSBuildProject project, string xml, FilePath fileName)
 		{
 			return project;
 		}
@@ -93,7 +93,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return pi.Project;
 				}
 				MSBuildProject p = new MSBuildProject (EngineManager);
-				p.Load (fileName);
+				p.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
 				loadedProjects [fileName] = new LoadedProjectInfo { Project = p };
 				//Console.WriteLine ("Loaded: " + fileName);
 				return p;
@@ -206,7 +206,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (!string.IsNullOrEmpty (group.Condition) && !SafeParseAndEvaluate (group.Condition, context))
 				return;
 
-			foreach (var prop in group.Element.ChildNodes.OfType<XmlElement> ())
+			foreach (var prop in group.GetProperties ())
 				Evaluate (project, context, prop);
 		}
 
@@ -219,13 +219,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			foreach (var item in items.Items) {
 
-				XmlElement e;
-				context.Evaluate (item.Element, out e);
-				var it = CreateEvaluatedItem (project.Project, item, e, e.GetAttribute ("Include"));
+				var include = context.EvaluateString (item.Include);
+				var exclude = context.EvaluateString (item.Exclude);
+
+				var it = CreateEvaluatedItem (context, project.Project, item, include);
 
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (it.Condition, context));
 
-				var exclude = e.GetAttribute ("Exclude");
 				var excludeRegex = !string.IsNullOrEmpty (exclude) ? new Regex (ExcludeToRegex (exclude)) : null;
 
 				if (it.Include.IndexOf (';') == -1)
@@ -255,9 +255,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			else if (include != it.Include) {
 				if (excludeRegex != null && excludeRegex.IsMatch (include))
 					return;
-				XmlElement e;
-				context.Evaluate (item.Element, out e);
-				it = CreateEvaluatedItem (project.Project, item, e, include);
+				it = CreateEvaluatedItem (context, project.Project, item, include);
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
@@ -325,10 +323,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					baseDir += '\\';
 				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => {
 					context.SetItemContext (f, basePath.ToRelative (baseRecursiveDir));
-					XmlElement e;
-					context.Evaluate (sourceItem.Element, out e);
 					var ev = baseDir + Path.GetFileName (f);
-					return CreateEvaluatedItem (project, sourceItem, e, ev);
+					return CreateEvaluatedItem (context, project, sourceItem, ev);
 				}));
 			}
 			else {
@@ -382,13 +378,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };
 
-		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildProject project, MSBuildItem sourceItem, XmlElement e, string include)
+		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
-			var it = new MSBuildItemEvaluated (project, e.LocalName, sourceItem.Include, include);
+			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,MSBuildPropertyEvaluated> ();
-			foreach (var c in e.ChildNodes.OfType<XmlElement> ()) {
-				var cm = sourceItem.Element.ChildNodes.OfType<XmlElement> ().FirstOrDefault (me => me.LocalName == c.LocalName);
-				md [c.LocalName] = new MSBuildPropertyEvaluated (project, c.LocalName, cm.InnerXml, c.InnerXml);
+			foreach (var c in sourceItem.Metadata.GetProperties ()) {
+				md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
 			it.SourceItem = sourceItem;
@@ -398,22 +393,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static char[] wildcards = { '*', '%' };
 
-		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, XmlElement prop)
+		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
-			XmlElement e;
-			context.Evaluate (prop, out e);
-			var ep = new MSBuildProperty (project.Project, e);
-			if (string.IsNullOrEmpty (ep.Condition) || SafeParseAndEvaluate (ep.Condition, context)) {
-				project.Properties [ep.Name] = new PropertyInfo { Name = ep.Name, Value = prop.Value, FinalValue = ep.Value };
-				context.SetPropertyValue (prop.Name, ep.Value);
+			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (prop.Condition, context)) {
+				var val = context.EvaluateString (prop.Value);
+				project.Properties [prop.Name] = new PropertyInfo { Name = prop.Name, Value = prop.Value, FinalValue = val };
+				context.SetPropertyValue (prop.Name, val);
 			}
 		}
 
 		MSBuildItemEvaluated Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
 		{
-			XmlElement e;
-			context.Evaluate (item.Element, out e);
-			return CreateEvaluatedItem (project.Project, item, e, e.GetAttribute ("Include"));
+			return CreateEvaluatedItem (context, project.Project, item, context.EvaluateString (item.Include));
 		}
 
 		IEnumerable<ProjectInfo> GetImportedProjects (ProjectInfo project, MSBuildImport import)
@@ -516,9 +507,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildTarget target)
 		{
-			XmlElement e;
-			context.Evaluate (target.Element, out e);
-			project.Targets.Add (new MSBuildTarget (e));
+			// TODO NPM
+			project.Targets.Add (target);
 		}
 
 		static bool SafeParseAndEvaluate (string cond, MSBuildEvaluationContext context)
