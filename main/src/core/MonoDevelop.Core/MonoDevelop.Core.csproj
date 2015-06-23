@@ -555,6 +555,22 @@
     <None Include="MSBuild\CodeSharing.CSharp.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.Features.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll">
+      <Link>External\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll">
+      <Link>External\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Core.addin.xml">
@@ -630,6 +646,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
     <Folder Include="MSBuild\" />
+    <Folder Include="External\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">
     <Csc Sources="BuildVariables.gen.cs" OutputAssembly="BuildVariables.gen.exe" />

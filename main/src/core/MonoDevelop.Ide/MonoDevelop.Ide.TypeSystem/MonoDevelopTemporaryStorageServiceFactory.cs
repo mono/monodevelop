@@ -45,14 +45,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopTemporaryStorageServiceFactory ()
 		{
-			//if (Core.Platform.IsWindows) {
-			//	var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
-			//	if (asm != null) {
-			//		var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
-			//		if (type != null)
-			//			microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
-			//	}
-			//}
+			if (Core.Platform.IsWindows) {
+				var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
+				if (asm != null) {
+					var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
+					if (type != null)
+						microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
+				}
+			}
 		}
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
@@ -74,6 +74,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return new TemporaryTextStorage ();
 			}
 		}
+
+		/*
 		sealed class StreamStorage : ITemporaryStreamStorage
 		{
 			MemoryStream _stream;
@@ -152,8 +154,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Task.FromResult (true);
 			}
 		}
-
-	/*	class TemporaryTextStorage : ITemporaryTextStorage
+*/
+		class TemporaryTextStorage : ITemporaryTextStorage
 		{
 			string fileName;
 			Encoding encoding;
@@ -254,7 +256,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
-	*/
 	}
 }
 
