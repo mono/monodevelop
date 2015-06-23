@@ -835,8 +835,13 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.AddSkipChar (offset, ch);
 		}
 
+		bool isDisposed;
+
 		protected override void Dispose (bool disposing)
 		{
+			if (isDisposed)
+				return;
+			isDisposed = true;
 			DetachExtensionChain ();
 			FileNameChanged -= TextEditor_FileNameChanged;
 			MimeTypeChanged -= TextEditor_MimeTypeChanged;
