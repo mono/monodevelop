@@ -763,93 +763,92 @@ namespace MonoDevelop.Projects
 		{
 			if (CheckUseMSBuildEngine (configuration)) {
 				LogWriter logWriter = new LogWriter (monitor.Log);
-				try {
-					var configs = GetConfigurations (configuration);	
+				var configs = GetConfigurations (configuration);	
 
-					string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
-					string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
+				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
+				string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
-					var globalProperties = new Dictionary<string, string> ();
-					if (context != null) {
-						var md = (ProjectItemMetadata)context.GlobalProperties;
-						md.SetProject (sourceProject);
-						foreach (var p in md.GetProperties ())
-							globalProperties [p.Name] = p.Value;
+				var globalProperties = new Dictionary<string, string> ();
+				if (context != null) {
+					var md = (ProjectItemMetadata)context.GlobalProperties;
+					md.SetProject (sourceProject);
+					foreach (var p in md.GetProperties ())
+						globalProperties [p.Name] = p.Value;
+				}
+
+				MSBuildResult result = null;
+				await Task.Run (async delegate {
+
+					TimerCounter buildTimer = null;
+					switch (target) {
+					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
+					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					MSBuildResult result = null;
-					await Task.Run (async delegate {
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
-						TimerCounter buildTimer = null;
-						switch (target) {
-						case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
-						case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
+					RemoteProjectBuilder builder = await GetProjectBuilder ();
+					if (builder.IsBusy)
+						builder = await RequestLockedBuilder ();
+					else
+						builder.Lock ();
+
+					try {
+						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+					} finally {
+						builder.Unlock ();
+						if (builder != this.projectBuilder) {
+							// Dispose the builder after a while, so that it can be reused
+							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
 						}
+						t1.End ();
+						if (t2 != null)
+							t2.End ();
+					}
 
-						var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
-						var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
+					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
+				});
 
-						RemoteProjectBuilder builder = await GetProjectBuilder ();
-						if (builder.IsBusy)
-							builder = await RequestLockedBuilder ();
-						else
-							builder.Lock ();
+				var br = new BuildResult ();
+				foreach (var err in result.Errors) {
+					FilePath file = null;
+					if (err.File != null)
+						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
-						try {
-							result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
-						} finally {
-							builder.Unlock ();
-                            if (builder != this.projectBuilder)
-								Task.Delay (10000).ContinueWith (t => builder.Dispose ());
-							t1.End ();
-							if (t2 != null)
-								t2.End ();
-						}
-
-						System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
+					br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
+						Subcategory = err.Subcategory,
+						EndLine = err.EndLineNumber,
+						EndColumn = err.EndColumnNumber,
+						IsWarning = err.IsWarning
 					});
+				}
 
-					var br = new BuildResult ();
-					foreach (var err in result.Errors) {
-						FilePath file = null;
-						if (err.File != null)
-							file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
+				// Get the evaluated properties
 
-						br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
-							Subcategory = err.Subcategory,
-							EndLine = err.EndLineNumber,
-							EndColumn = err.EndColumnNumber,
-							IsWarning = err.IsWarning
-						});
+				var properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
+				foreach (var p in result.Properties)
+					properties [p.Key] = new MSBuildPropertyEvaluated (sourceProject, p.Key, p.Value, p.Value);
+
+				var props = new MSBuildPropertyGroupEvaluated (sourceProject);
+				props.SetProperties (properties);
+
+				// Get the evaluated items
+
+				var evItems = new List<IMSBuildItemEvaluated> ();
+				foreach (var it in result.Items.SelectMany (d => d.Value)) {
+					var eit = new MSBuildItemEvaluated (sourceProject, it.Name, it.ItemSpec, it.ItemSpec);
+					if (it.Metadata.Count > 0) {
+						var imd = (MSBuildPropertyGroupEvaluated)eit.Metadata;
+						properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
+						foreach (var m in it.Metadata)
+							properties [m.Key] = new MSBuildPropertyEvaluated (sourceProject, m.Key, m.Value, m.Value);
+						imd.SetProperties (properties);
 					}
+					evItems.Add (eit);
+				}
 
-					// Get the evaluated properties
-
-					var properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
-					foreach (var p in result.Properties)
-						properties [p.Key] = new MSBuildPropertyEvaluated (sourceProject, p.Key, p.Value, p.Value);
-
-					var props = new MSBuildPropertyGroupEvaluated (sourceProject);
-					props.SetProperties (properties);
-
-					// Get the evaluated items
-
-					var evItems = new List<IMSBuildItemEvaluated> ();
-					foreach (var it in result.Items.SelectMany (d => d.Value)) {
-						var eit = new MSBuildItemEvaluated (sourceProject, it.Name, it.ItemSpec, it.ItemSpec);
-						if (it.Metadata.Count > 0) {
-							var imd = (MSBuildPropertyGroupEvaluated)eit.Metadata;
-							properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
-							foreach (var m in it.Metadata)
-								properties [m.Key] = new MSBuildPropertyEvaluated (sourceProject, m.Key, m.Value, m.Value);
-							imd.SetProperties (properties);
-						}
-						evItems.Add (eit);
-					}
-
-					return new TargetEvaluationResult (br, evItems, props);
-				} finally {
-                }
+				return new TargetEvaluationResult (br, evItems, props);
 			}
 			else {
 				CleanupProjectBuilder ();

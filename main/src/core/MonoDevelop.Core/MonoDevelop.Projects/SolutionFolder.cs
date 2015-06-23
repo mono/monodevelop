@@ -629,8 +629,6 @@ namespace MonoDevelop.Projects
 
 		internal static async Task<BuildResult> RunParallelBuildOperation (ProgressMonitor monitor, ConfigurationSelector configuration, IEnumerable<SolutionItem> sortedItems, Func<ProgressMonitor,SolutionItem,Task<BuildResult>> buildAction, bool ignoreFailed)
 		{
-			var ta = DateTime.Now;
-
 			List<SolutionItem> toBuild = new List<SolutionItem> (sortedItems);
 			BuildResult cres = new BuildResult ();
 			cres.BuildCount = 0;
@@ -669,13 +667,9 @@ namespace MonoDevelop.Projects
 					if (!ignoreFailed && (refStatus.Any (bs => bs.Failed) || t.IsFaulted)) {
 						myStatus.Failed = true;
 					} else {
-						DateTime tt = DateTime.Now;
-						Console.WriteLine (">> Building " + item.FileName.FileName);
 						myStatus.Result = await buildAction (myMonitor, item);
-						Console.WriteLine (">> Done " + item.FileName.FileName + " " + (DateTime.Now - tt).TotalMilliseconds);
 						myStatus.Failed = myStatus.Result != null && myStatus.Result.ErrorCount > 0;
 					}
-					//wwmonitor.Step (1);
 					myMonitor.Dispose ();
 				}, Runtime.MainTaskScheduler).Unwrap ();
 
@@ -694,11 +688,6 @@ namespace MonoDevelop.Projects
 				if (buildStatus.TryGetValue (it, out bs) && bs.Result != null)
 					cres.Append (bs.Result);
 			}
-
-			Console.WriteLine ("TOTAL TIME: " + (DateTime.Now - ta).TotalMilliseconds);
-			if (asyncBuild)
-				Console.WriteLine ("ASYNC");
-			//asyncBuild = !asyncBuild;
 
 			return cres;
 		}

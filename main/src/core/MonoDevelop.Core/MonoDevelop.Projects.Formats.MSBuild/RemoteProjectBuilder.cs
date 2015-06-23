@@ -53,7 +53,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 
 			Interlocked.Increment (ref count);
-			Console.WriteLine ("> BUILDER CREATED " + count);
 		}
 
 		public event EventHandler Disconnected;
@@ -146,7 +145,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void Dispose ()
 		{
 			Interlocked.Decrement (ref count);
-			Console.WriteLine ("< BUILDER DISPOSED " + count);
 			try {
 				alive = false;
 				if (proc != null) {
