@@ -74,7 +74,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				return new TemporaryTextStorage ();
 			}
 		}
-		/*
 		sealed class StreamStorage : ITemporaryStreamStorage
 		{
 			MemoryStream _stream;
@@ -153,8 +152,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				return Task.FromResult (true);
 			}
 		}
-		*/
-		class TemporaryTextStorage : ITemporaryTextStorage
+
+	/*	class TemporaryTextStorage : ITemporaryTextStorage
 		{
 			string fileName;
 			Encoding encoding;
@@ -255,6 +254,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 		}
+	*/
 	}
 }
 
