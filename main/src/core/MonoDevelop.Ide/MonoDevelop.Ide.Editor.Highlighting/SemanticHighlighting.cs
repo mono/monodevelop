@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				DocumentParsed (); 
 		}
 
-		public void Dispose ()
+		public virtual void Dispose ()
 		{
 			documentContext.DocumentParsed -= HandleDocumentParsed;
 		}
