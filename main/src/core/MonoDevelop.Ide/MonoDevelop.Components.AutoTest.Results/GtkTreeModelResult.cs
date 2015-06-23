@@ -103,17 +103,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			
 			if (resultIter != null && resultIter.HasValue) {
 				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
-				foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
-					objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
-				}
-
-				if (objectToCompare != null && value != null &&
-					base.CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
-					return this;
-				}
+				return MatchProperty (propertyName, objectToCompare, value);
 			}
 
 			return null;

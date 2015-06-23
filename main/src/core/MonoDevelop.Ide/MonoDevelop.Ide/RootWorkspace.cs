@@ -1444,7 +1444,7 @@ namespace MonoDevelop.Ide
 				FileService.NotifyFilesChanged (modified);
 		}
 		
-		void IDisposable.Dispose ()
+		public void Dispose ()
 		{
 			NotifyChanges ();
 		}

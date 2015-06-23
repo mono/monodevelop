@@ -1298,6 +1298,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			
 			ITreeNavigator nav = TreeView.GetRootNode ();
+			if (nav == null)
+				return;
+			
 			do {
 				if (nav.DataItem == cu) {
 					nav.ExpandToNode ();
@@ -1483,7 +1486,9 @@ namespace MonoDevelop.AssemblyBrowser
 				// Select the project.
 				if (selectReference) {
 					ITreeNavigator navigator = TreeView.GetNodeAtObject (project);
-					navigator.Selected = true;
+
+					if (navigator != null)
+						navigator.Selected = true;
 				}
 
 				return;
