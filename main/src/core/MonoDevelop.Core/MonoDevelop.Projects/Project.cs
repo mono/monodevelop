@@ -77,7 +77,7 @@ namespace MonoDevelop.Projects
 		protected Project ()
 		{
 			items = new ProjectItemCollection (this);
-			FileService.FileChanged += OnFileChanged;
+			FileService.FileChanged += HandleFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged += OnDefaultRuntimeChanged;
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
@@ -641,7 +641,7 @@ namespace MonoDevelop.Projects
 					disp.Dispose ();
 			}
 
-			FileService.FileChanged -= OnFileChanged;
+			FileService.FileChanged -= HandleFileChanged;
 			Runtime.SystemAssemblyService.DefaultRuntimeChanged -= OnDefaultRuntimeChanged;
 			CleanupProjectBuilder ();
 
@@ -1545,6 +1545,16 @@ namespace MonoDevelop.Projects
 				return DateTime.MinValue;
 			else
 				return finfo.LastWriteTime;
+		}
+
+		void HandleFileChanged (object source, FileEventArgs e)
+		{
+			// File change events are fired asynchronously, so the project might already be
+			// disposed when the event is received.
+			if (Disposed)
+				return;
+			
+			OnFileChanged (source, e);
 		}
 
 		internal virtual void OnFileChanged (object source, FileEventArgs e)
