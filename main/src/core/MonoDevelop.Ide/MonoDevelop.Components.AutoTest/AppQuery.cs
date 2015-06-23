@@ -218,7 +218,7 @@ namespace MonoDevelop.Components.AutoTest
 				resultSet = subquery.Execute (resultSet);
 
 				if (resultSet == null || resultSet.Count == 0) {
-					break;
+					return new AppResult[0];
 				}
 			}
 
