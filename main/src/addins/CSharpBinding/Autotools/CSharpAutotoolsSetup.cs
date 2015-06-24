@@ -98,7 +98,7 @@ namespace CSharpBinding.Autotools
 			//}
 			
 			if (parameters.DefineSymbols.Length > 0) {
-				writer.Write (string.Format (" \"-define:{0}\"", parameters.DefineSymbols.TrimEnd(';'))));
+				writer.Write (string.Format (" \"-define:{0}\"", parameters.DefineSymbols.TrimEnd(';')));
 			}
 				
 			if (projectParameters.MainClass != null && projectParameters.MainClass != "") {
