@@ -90,7 +90,8 @@ namespace MonoDevelop.Ide.Execution
 			}
 
 			var targets = new List<ExecutionTarget> ();
-			FlattenExecutionTargets (targets, project.GetExecutionTargets (IdeApp.Workspace.ActiveConfiguration));
+			if (project != null)
+				FlattenExecutionTargets (targets, project.GetExecutionTargets (IdeApp.Workspace.ActiveConfiguration));
 
 			if (targets.Count > 1) {
 				foreach (var t in targets) {
