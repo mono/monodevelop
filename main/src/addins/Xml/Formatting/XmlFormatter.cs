@@ -57,8 +57,10 @@ namespace MonoDevelop.Xml.Formatting
 			return sw.ToString ();
 		}
 
-		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int endOffset)
+		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int length)
 		{
+			if (policyParent == null)
+				policyParent = PolicyService.DefaultPolicies;
 			var txtPol = policyParent.Get<TextStylePolicy> (mimeType);
 			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
 			return new StringTextSource(FormatXml (txtPol, xmlPol, input.Text));

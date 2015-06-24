@@ -45,63 +45,61 @@ namespace MonoDevelop.Ide.CodeFormatting
 			}
 		}
 
+		public bool SupportsPartialDocumentFormatting { get { return formatter.SupportsPartialDocumentFormatting; }  }
+
 		internal CodeFormatter (string mimeType, AbstractCodeFormatter formatter)
 		{
 			this.mimeType = mimeType;
 			this.formatter = formatter;
 		}
 
+		[Obsolete("Use Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null) instead. This function is going to be removed.")]
 		public ITextSource Format (PolicyContainer policyParent, ITextSource input, int fromOffset, int toOffset)
 		{
 			return formatter.Format (policyParent, mimeType, input, fromOffset, toOffset);
 		}
 
-		public ITextSource Format (PolicyContainer policyParent, ITextSource input, ISegment segment)
+		public ITextSource Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null)
 		{
 			if (segment == null)
-				throw new ArgumentNullException (nameof (segment));
+				return formatter.Format (policyParent, mimeType, input);
 			return formatter.Format (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
 		}
 
-		public ITextSource Format (PolicyContainer policyParent, ITextSource input)
-		{
-			return formatter.Format (policyParent, mimeType, input);
-		}
-
+		[Obsolete("Use FormatText (PolicyContainer policyParent, string input, ISegment segment) instead. This function is going to be removed.")]
 		public string FormatText (PolicyContainer policyParent, string input, int fromOffset, int toOffset)
 		{
 			return formatter.FormatText (policyParent, mimeType, input, fromOffset, toOffset);
 		}
 
-		public string FormatText (PolicyContainer policyParent, string input, ISegment segment)
+		public string FormatText (PolicyContainer policyParent, string input, ISegment segment = null)
 		{
-			if (segment == null)
-				throw new ArgumentNullException (nameof (segment));
+            if (segment != null)
+				return formatter.FormatText (policyParent, mimeType, input, 0, input.Length);
 			return formatter.FormatText (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
-		}
-
-		public string FormatText (PolicyContainer policyParent, string input)
-		{
-			return formatter.FormatText (policyParent, mimeType, input);
 		}
 
 		public bool SupportsOnTheFlyFormatting { get { return formatter.SupportsOnTheFlyFormatting; } }
 
+		[Obsolete("Use OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment) instead. This function is going to be removed.")]
 		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
 		{
-			formatter.OnTheFlyFormat (editor, context, startOffset, endOffset);
+			formatter.OnTheFlyFormat (editor, context, startOffset, endOffset - startOffset);
 		}
 
-		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment)
+		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment = null)
 		{
-			if (segment == null)
-				throw new ArgumentNullException (nameof (segment));
-			formatter.OnTheFlyFormat (editor, context, segment.Offset, segment.EndOffset);
+			if (segment == null) {
+				formatter.OnTheFlyFormat (editor, context, 0, editor.Length);
+			} else {
+				formatter.OnTheFlyFormat (editor, context, segment.Offset, segment.Length);
+			}
 		}
 
+		[Obsolete("Use OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment) instead. This function is going to be removed.")]
 		public void OnTheFlyFormat (Document ideDocument, int startOffset, int endOffset)
 		{
-			formatter.OnTheFlyFormat (ideDocument, startOffset, endOffset);
+			formatter.OnTheFlyFormat (ideDocument.Editor, ideDocument, startOffset, endOffset - startOffset);
 		}
 
 		public bool SupportsCorrectingIndent { get { return formatter.SupportsCorrectingIndent; } }
@@ -119,4 +117,3 @@ namespace MonoDevelop.Ide.CodeFormatting
 		}
 	}
 }
-

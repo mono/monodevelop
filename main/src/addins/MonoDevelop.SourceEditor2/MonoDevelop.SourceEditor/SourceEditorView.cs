@@ -623,7 +623,7 @@ namespace MonoDevelop.SourceEditor
 					var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 					if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
 						using (var undo = TextEditor.OpenUndoGroup ()) {
-							formatter.OnTheFlyFormat (WorkbenchWindow.Document, 0, Document.TextLength);
+							formatter.OnTheFlyFormat (WorkbenchWindow.Document.Editor, WorkbenchWindow.Document);
 							wasEdited = false;
 						}
 					}

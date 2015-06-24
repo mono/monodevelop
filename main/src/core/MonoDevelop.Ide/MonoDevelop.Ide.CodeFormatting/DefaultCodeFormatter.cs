@@ -44,14 +44,20 @@ namespace MonoDevelop.Ide.CodeFormatting
 			return 1 + (result / tabSize) * tabSize;
 		}
 
-		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int endOffset)
+		public override bool SupportsPartialDocumentFormatting {
+			get {
+				return true;
+			}
+		}
+
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
 			var currentPolicy = policyParent.Get<TextStylePolicy> (mimeType);
 			
 			int line = 0, col = 0;
 			string eolMarker = currentPolicy.GetEolMarker ();
 			var result = new StringBuilder ();
-			
+			var endOffset = startOffset + length;
 			for (int i = startOffset; i < endOffset && i < input.Length; i++) {
 				char ch = input[i];
 				switch (ch) {

@@ -727,9 +727,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					string str;
 					if (change.NewText.Length == 0) {
-						str = formatter.FormatText (mp.Policies, currentText, Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1));
+						str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
 					} else {
-						str = formatter.FormatText (mp.Policies, currentText, startOffset, startOffset + change.NewText.Length);
+						str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
 					}
 					data.ReplaceText (startOffset, change.NewText.Length, str);
 				}

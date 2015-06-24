@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			Document doc;
 			var formatter = GetFormatter (out doc);
-			info.Enabled = formatter != null;
+			info.Enabled = formatter != null && formatter.SupportsOnTheFlyFormatting;
 		}
 		
 		protected override void Run (object tool)
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				}
 			} else {
 				var text = doc.Editor.Text;
-				string formattedText = formatter.FormatText (doc.Project.Policies, text);
+				string formattedText = formatter.FormatText (doc.Project?.Policies, text);
 				if (formattedText == null || formattedText == text)
 					return;
 
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		{
 			Document doc;
 			var formatter = FormatBufferHandler.GetFormatter (out doc);
-			info.Enabled = formatter != null && !formatter.IsDefault;
+			info.Enabled = formatter != null && !formatter.IsDefault && formatter.SupportsPartialDocumentFormatting && formatter.SupportsOnTheFlyFormatting;
 		}
 		
 		protected override void Run (object tool)
@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					try {
 						var editorText = editor.Text;
-						string text = formatter.FormatText (pol, editorText, selection.Offset, selection.EndOffset);
+						string text = formatter.FormatText (pol, editorText, selection);
 						if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
 							editor.ReplaceText (selection.Offset, selection.Length, text);
 						}

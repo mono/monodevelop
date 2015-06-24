@@ -53,6 +53,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
+		public override bool SupportsPartialDocumentFormatting { get { return true; } }
+
 		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 			var lineSegment = editor.GetLine (line);
@@ -83,9 +85,9 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
+		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
-			OnTheFlyFormatter.Format (editor, context, startOffset, endOffset);
+			OnTheFlyFormatter.Format (editor, context, startOffset, startOffset + length);
 		}
 
 		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string input, int startOffset, int endOffset)
@@ -100,12 +102,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int endOffset)
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
 			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeType);
 			var textPolicy = policyParent.Get<TextStylePolicy> (mimeType);
 
-			return new StringTextSource (FormatText (policy, textPolicy, input.Text, startOffset, endOffset));
+			return new StringTextSource (FormatText (policy, textPolicy, input.Text, startOffset, startOffset + length));
 		}
 	}
 }
