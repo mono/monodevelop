@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public string FormatText (PolicyContainer policyParent, string input, ISegment segment = null)
 		{
-            if (segment != null)
+			if (segment == null)
 				return formatter.FormatText (policyParent, mimeType, input, 0, input.Length);
 			return formatter.FormatText (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
 		}
