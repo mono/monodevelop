@@ -201,6 +201,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			return false;
 		}
+
+		public override void Flash ()
+		{
+		}
 	}
 }
 
