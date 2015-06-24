@@ -31,6 +31,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
 
@@ -351,6 +352,15 @@ namespace MonoDevelop.Components.AutoTest
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);
 			action ();
 			session.WaitForTimerContext (context);
+		}
+
+		public XmlDocument ResultsAsXml (AppResult[] results)
+		{
+			string xmlResults = session.ResultsAsXml (results);
+			XmlDocument document = new XmlDocument ();
+			document.LoadXml (xmlResults);
+
+			return document;
 		}
 	}
 

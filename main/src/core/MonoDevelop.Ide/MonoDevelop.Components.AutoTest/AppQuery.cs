@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Components.AutoTest.Operations;
 using MonoDevelop.Components.AutoTest.Results;
 using System.Linq;
+using System.Xml;
 
 #if MAC
 using AppKit;
