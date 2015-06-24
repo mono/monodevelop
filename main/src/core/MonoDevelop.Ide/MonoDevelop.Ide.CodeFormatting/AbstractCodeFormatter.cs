@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				throw new ArgumentNullException (nameof (input));
 			if (mimeType == null)
 				throw new ArgumentNullException (nameof (mimeType));
-			return FormatImplementation (policyParent, mimeType, new StringTextSource (input), fromOffset, toOffset - fromOffset).Text;
+			return FormatImplementation (policyParent ?? PolicyService.DefaultPolicies, mimeType, new StringTextSource (input), fromOffset, toOffset - fromOffset).Text;
 		}
 
 		public string FormatText (PolicyContainer policyParent, string mimeType, string input)
