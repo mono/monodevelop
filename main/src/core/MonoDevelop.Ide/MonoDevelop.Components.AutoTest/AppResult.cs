@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Xml;
+using System.Reflection;
+using System.Linq;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -94,6 +96,43 @@ namespace MonoDevelop.Components.AutoTest
 			XmlAttribute attr = doc.CreateAttribute (name);
 			attr.Value = value;
 			element.Attributes.Append (attr);
+		}
+
+		protected object GetPropertyValue (string propertyName, object requestedObject)
+		{
+			return AutoTestService.CurrentSession.UnsafeSync (delegate {
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+				if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
+					var propertyValue = propertyInfo.GetValue (requestedObject);
+					if (propertyValue != null) {
+						return propertyValue;
+					}
+				}
+
+				return null;
+			});
+		}
+
+		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
+		{
+			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
+				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
+			}
+			if (objectToCompare != null && value != null &&
+				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				return this;
+			}
+			return null;
+		}
+
+		protected bool CheckForText (string haystack, string needle, bool exact)
+		{
+			if (exact) {
+				return haystack == needle;
+			} else {
+				return (haystack.IndexOf (needle, StringComparison.Ordinal) > -1);
+			}
 		}
 	}
 }
