@@ -25,7 +25,11 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Linq;
+using MonoDevelop.Components.AutoTest.Results;
+using System.Reflection;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -45,6 +49,8 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract AppResult Model (string column);
 		public abstract AppResult Property (string propertyName, object value);
 		public abstract List<AppResult> NextSiblings ();
+
+		public abstract ObjectProperties Properties ();
 
 		// Actions
 		public abstract bool Select ();
@@ -73,6 +79,119 @@ namespace MonoDevelop.Components.AutoTest
 			AddChildrenToList (children, FirstChild);
 
 			return children;
+		}
+
+		protected object GetPropertyValue (string propertyName, object requestedObject)
+		{
+			return AutoTestService.CurrentSession.UnsafeSync (delegate {
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+				if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
+					var propertyValue = propertyInfo.GetValue (requestedObject);
+					if (propertyValue != null) {
+						return propertyValue;
+					}
+				}
+
+				return null;
+			});
+		}
+
+		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
+		{
+			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
+				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
+			}
+			if (objectToCompare != null && value != null &&
+				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				return this;
+			}
+			return null;
+		}
+
+		protected bool CheckForText (string haystack, string needle, bool exact)
+		{
+			if (exact) {
+				return haystack == needle;
+			} else {
+				return (haystack.IndexOf (needle) > -1);
+			}
+		}
+
+		protected ObjectProperties GetProperties (object resultObject)
+		{
+			var propertiesObject = new ObjectProperties ();
+			if (resultObject != null) {
+				var properties = resultObject.GetType ().GetProperties (
+					                BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+				foreach (var property in properties) {
+					propertiesObject.Add (property.Name, new ObjectResult (property, GetPropertyValue (property.Name, resultObject)));
+				}
+			}
+
+			return propertiesObject;
+		}
+	}
+
+	public class ObjectProperties : MarshalByRefObject
+	{
+		readonly Dictionary<string,ObjectResult> propertyMap = new Dictionary<string,ObjectResult> ();
+
+		internal ObjectProperties () { }
+
+		internal void Add (string propertyName, ObjectResult propertyValue)
+		{
+			propertyMap.Add (propertyName, propertyValue);
+		}
+
+		public ReadOnlyCollection<string> GetPropertyNames ()
+		{
+			return propertyMap.Keys.ToList ().AsReadOnly ();
+		}
+
+		public ObjectResult this [string key]
+		{
+			get {
+				return propertyMap [key];
+			}
+		}
+	}
+
+	public class PropertyMetaData : MarshalByRefObject
+	{
+		readonly PropertyInfo propertyInfo;
+
+		internal PropertyMetaData (PropertyInfo propertyInfo)
+		{
+			this.propertyInfo = propertyInfo;
+		}
+
+		public string Name
+		{
+			get {
+				return propertyInfo.Name;
+			}
+		}
+
+		public bool CanRead
+		{
+			get {
+				return propertyInfo.CanRead;
+			}
+		}
+
+		public bool CanWrite
+		{
+			get {
+				return propertyInfo.CanWrite;
+			}
+		}
+
+		public string PropertyType
+		{
+			get {
+				return propertyInfo.PropertyType.FullName;
+			}
 		}
 	}
 }

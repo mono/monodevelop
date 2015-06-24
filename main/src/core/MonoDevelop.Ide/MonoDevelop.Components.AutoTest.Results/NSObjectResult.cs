@@ -116,6 +116,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (ResultObject);
+		}
+
 		public override bool Select ()
 		{
 			return false;
