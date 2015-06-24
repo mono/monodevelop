@@ -23,7 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -32,6 +34,7 @@ namespace MonoDevelop.VersionControl.Git
 		public UserGitConfigDialog ()
 		{
 			this.Build ();
+			this.UseNativeContextMenus ();
 			SetResponseSensitive (Gtk.ResponseType.Ok, false);
 		}
 

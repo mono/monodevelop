@@ -40,8 +40,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
-			var window = (Gtk.Window)this;
-			window.UseNativeContextMenus ();
+			this.UseNativeContextMenus ();
 
 			if (remote != null) {
 				entryName.Text = remote.Name;
