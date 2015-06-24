@@ -26,16 +26,20 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+
+using System.Xml;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -520,6 +524,80 @@ namespace MonoDevelop.Components.AutoTest
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
 		{
 			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);
+		}
+
+		void AddChildrenToDocument (XmlDocument document, XmlElement parentElement, AppResult children, bool withSiblings = true)
+		{
+			while (children != null) {
+				XmlElement childElement = document.CreateElement ("result");
+				children.ToXml (childElement);
+				parentElement.AppendChild (childElement);
+
+				if (children.FirstChild != null) {
+					AddChildrenToDocument (document, childElement, children.FirstChild);
+				}
+
+				children = withSiblings ? children.NextSibling : null;
+			}
+		}
+
+		class UTF8StringWriter : StringWriter
+		{
+			public override Encoding Encoding {
+				get {
+					return Encoding.UTF8;
+				}
+			}
+		}
+
+		//
+		// The XML result structure
+		// <AutoTest>
+		//   <query>c =&gt; c.Window()</query>
+		//   <results>
+		//     <result type="Gtk.Window" fulltype="Gtk.Window" name="Main Window" visible="true" sensitive="true" allocation="1,1 1024x1024">
+		//       ... contains result elements for all children widgets ...
+		//     </result>
+		//     ... and more result element trees for each of the AppResult in results ...
+		//   </results>
+		// </AutoTest>
+		//
+		public string ResultsAsXml (AppResult[] results)
+		{
+			XmlDocument document = new XmlDocument ();
+			XmlElement rootElement = document.CreateElement ("AutoTest");
+			document.AppendChild (rootElement);
+
+			if (results [0].SourceQuery != null) {
+				XmlElement queryElement = document.CreateElement ("query");
+				queryElement.AppendChild (document.CreateTextNode (results [0].SourceQuery));
+				rootElement.AppendChild (queryElement);
+			}
+
+			XmlElement resultsElement = document.CreateElement ("results");
+			rootElement.AppendChild (resultsElement);
+
+			try {
+				ExecuteOnIdle (() => {
+					foreach (var result in results) {
+						AddChildrenToDocument (document, resultsElement, result, false);
+					}
+				});
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("ResultsAsXml", null, null, e);
+			}
+
+			string output;
+
+			using (var sw = new UTF8StringWriter ()) {
+				using (var xw = XmlWriter.Create (sw, new XmlWriterSettings { Indent = true })) {
+					document.WriteTo (xw);
+				}
+
+				output = sw.ToString ();
+			}
+
+			return output;
 		}
 	}
 

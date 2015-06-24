@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -37,6 +38,10 @@ namespace MonoDevelop.Components.AutoTest
 		public AppResult FirstChild { get; set; }
 		public AppResult PreviousSibling { get; set; }
 		public AppResult NextSibling { get; set; }
+
+		public virtual void ToXml (XmlElement element)
+		{
+		}
 
 		// Operations
 		public abstract AppResult Marked (string mark);
@@ -74,6 +79,19 @@ namespace MonoDevelop.Components.AutoTest
 
 			return children;
 		}
+
+		/// <summary>
+		/// Convenience function to add an attribute to an element
+		/// </summary>
+		/// <param name="element">The element to add the attribute</param>
+		/// <param name="name">The name of the attribute</param>
+		/// <param name="value">The value of the attribute</param>
+		protected void AddAttribute (XmlElement element, string name, string value)
+		{
+			XmlDocument doc = element.OwnerDocument;
+			XmlAttribute attr = doc.CreateAttribute (name);
+			attr.Value = value;
+			element.Attributes.Append (attr);
+		}
 	}
 }
-
