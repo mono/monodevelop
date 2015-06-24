@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -44,6 +45,20 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override string ToString ()
 		{
 			return String.Format ("{0} - {1} - {2} - {3}, - {4}", resultWidget, resultWidget.Allocation, resultWidget.Name, resultWidget.GetType ().FullName, resultWidget.Toplevel.Name);
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", resultWidget.GetType ().ToString ());
+			AddAttribute (element, "fulltype", resultWidget.GetType ().FullName);
+
+			if (resultWidget.Name != null) {
+				AddAttribute (element, "name", resultWidget.Name);
+			}
+
+			AddAttribute (element, "visible", resultWidget.Visible.ToString ());
+			AddAttribute (element, "sensitive", resultWidget.Sensitive.ToString ());
+			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
 		}
 
 		public override AppResult Marked (string mark)
