@@ -62,6 +62,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", view.Frame.ToString ());
 		}
 
+		public override Type GetResultType  ()
+		{
+			return ResultObject.GetType ();
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (ResultObject is NSView) {
@@ -135,6 +140,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override List<AppResult> NextSiblings ()
 		{
 			return null;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (ResultObject);
 		}
 
 		public override bool Select ()

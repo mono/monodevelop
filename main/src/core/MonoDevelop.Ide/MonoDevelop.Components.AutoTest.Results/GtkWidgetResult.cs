@@ -61,6 +61,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
 		}
 
+		public override Type GetResultType  ()
+		{
+			return resultWidget.GetType ();
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
@@ -87,15 +92,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return null;
-		}
-
-		protected bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
 		}
 
 		public override AppResult Text (string text, bool exact)
@@ -199,38 +195,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		protected object GetPropertyValue (string propertyName, object requestedObject = null)
-		{
-			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				requestedObject = requestedObject ?? resultWidget;
-				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
-					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
-				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (requestedObject);
-					if (propertyValue != null) {
-						return propertyValue;
-					}
-				}
-
-				return null;
-			});
-		}
-
 		public override AppResult Property (string propertyName, object value)
 		{
 			return MatchProperty (propertyName, resultWidget, value);
-		}
-
-		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
-		{
-			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
-				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
-			}
-			if (objectToCompare != null && value != null &&
-				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
-				return this;
-			}
-			return null;
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -259,6 +226,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return siblingResults;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (resultWidget);
 		}
 
 		public override bool Select ()

@@ -1,10 +1,10 @@
 ﻿//
-// ChildrenOperation.cs
+// PropertyMetadata.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+using System.Reflection;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Components.AutoTest
 {
-	public class ChildrenOperation : Operation
+	public class PropertyMetadata : MarshalByRefObject
 	{
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		readonly PropertyInfo propertyInfo;
+
+		internal PropertyMetadata (PropertyInfo propertyInfo)
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
-
-			foreach (var result in resultSet) {
-				List<AppResult> flattenedChildren = result.Children ();
-				if (flattenedChildren != null) {
-					newResultSet.AddRange (flattenedChildren);
-				}
-			}
-
-			return newResultSet;
+			this.propertyInfo = propertyInfo;
 		}
 
-		public override string ToString ()
+		public string Name
 		{
-			return string.Format ("Children ()");
+			get {
+				return propertyInfo.Name;
+			}
+		}
+
+		public bool CanRead
+		{
+			get {
+				return propertyInfo.CanRead;
+			}
+		}
+
+		public bool CanWrite
+		{
+			get {
+				return propertyInfo.CanWrite;
+			}
+		}
+
+		public string PropertyType
+		{
+			get {
+				return propertyInfo.PropertyType.FullName;
+			}
 		}
 	}
 }
