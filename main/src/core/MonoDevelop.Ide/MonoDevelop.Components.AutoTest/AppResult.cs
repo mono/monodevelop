@@ -23,12 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Xml;
 using System.Reflection;
 using System.Linq;
+using System.Collections.ObjectModel;
+using MonoDevelop.Components.AutoTest.Results;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -62,6 +64,10 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool Toggle (bool active);
 
 		public abstract void Flash (Action completionHandler);
+
+		// Inspection Operations
+		public abstract ObjectProperties Properties ();
+		public abstract Type GetResultType  ();
 
 		public string SourceQuery { get; set; }
 
@@ -112,6 +118,40 @@ namespace MonoDevelop.Components.AutoTest
 
 				return null;
 			});
+		}
+
+		protected ObjectProperties GetProperties (object resultObject)
+		{
+			var propertiesObject = new ObjectProperties ();
+			if (resultObject != null) {
+				var properties = resultObject.GetType ().GetProperties (
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+				foreach (var property in properties) {
+					var value = GetPropertyValue (property.Name, resultObject);
+					AppResult result = null;
+
+					var gtkNotebookValue = value as Gtk.Notebook;
+					if (gtkNotebookValue != null)
+						result = new GtkNotebookResult (gtkNotebookValue);
+					var gtkTreeviewValue = value as Gtk.TreeView;
+					if (gtkTreeviewValue != null && result == null)
+						result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
+					var gtkWidgetValue = value as Gtk.Widget;
+					if (gtkWidgetValue != null && result == null)
+						result = new GtkWidgetResult (gtkWidgetValue);
+					#if MAC
+					var nsObjectValue = value as Foundation.NSObject;
+					if (nsObjectValue != null && result == null)
+						result = new NSObjectResult (nsObjectValue);
+					#endif
+					if (result == null)
+						result = new ObjectResult (value);
+
+					propertiesObject.Add (property.Name, result, property);
+				}
+			}
+
+			return propertiesObject;
 		}
 
 		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)

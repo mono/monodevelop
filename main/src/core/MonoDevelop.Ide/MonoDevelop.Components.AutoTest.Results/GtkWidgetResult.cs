@@ -61,6 +61,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
 		}
 
+		public override Type GetResultType  ()
+		{
+			return resultWidget.GetType ();
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
@@ -221,6 +226,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return siblingResults;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (resultWidget);
 		}
 
 		public override bool Select ()
