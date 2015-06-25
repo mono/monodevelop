@@ -500,6 +500,7 @@ namespace MonoDevelop.Core
 		public readonly ConfigurationProperty<bool> EnableAutomatedTesting = ConfigurationProperty.Create ("MonoDevelop.EnableAutomatedTesting", false);
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceLanguage", "");
 		public readonly ConfigurationProperty<MSBuildVerbosity> MSBuildVerbosity = ConfigurationProperty.Create ("MonoDevelop.Ide.MSBuildVerbosity", MonoDevelop.Projects.Formats.MSBuild.MSBuildVerbosity.Normal);
+		public readonly ConfigurationProperty<bool> ParallelBuild = ConfigurationProperty.Create ("MonoDevelop.ParallelBuild", true);
 
 		public readonly ConfigurationProperty<string> AuthorName = ConfigurationProperty.Create ("Author.Name", Environment.UserName, oldName:"ChangeLogAddIn.Name");
 		public readonly ConfigurationProperty<string> AuthorEmail = ConfigurationProperty.Create ("Author.Email", "", oldName:"ChangeLogAddIn.Email");

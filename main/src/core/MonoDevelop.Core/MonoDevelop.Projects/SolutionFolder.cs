@@ -601,8 +601,6 @@ namespace MonoDevelop.Projects
 			public BuildResult Result;
 		}
 
-		static bool asyncBuild = true;
-		
 		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
 		{
 			ReadOnlyCollection<SolutionItem> allProjects;
@@ -673,7 +671,7 @@ namespace MonoDevelop.Projects
 					myMonitor.Dispose ();
 				}, Runtime.MainTaskScheduler).Unwrap ();
 
-				if (!asyncBuild)
+				if (!Runtime.Preferences.ParallelBuild.Value)
 					await myStatus.Task;
 			}
 
