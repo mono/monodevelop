@@ -521,6 +521,15 @@ namespace MonoDevelop.Components.AutoTest
 			return success;
 		}
 
+		public void Flash (AppResult result)
+		{
+			try {
+				ExecuteOnIdle (() => result.Flash (() => AutoTestService.NotifyEvent ("FlashCompleted")));
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
+			}
+		}
+
 		void ThrowOperationTimeoutException (string operation, string query, AppResult result, Exception innerException)
 		{
 			throw new TimeoutException (string.Format ("Timeout while executing {0}: {1}\n\ton Element: {2}", operation, query, result), innerException);

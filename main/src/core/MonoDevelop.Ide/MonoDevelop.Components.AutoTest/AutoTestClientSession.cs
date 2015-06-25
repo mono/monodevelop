@@ -347,6 +347,14 @@ namespace MonoDevelop.Components.AutoTest
 			return session.Toggle (results [0], active);
 		}
 
+		public void Flash (Func<AppQuery, AppQuery> query)
+		{
+			AppResult[] results = Query (query);
+			foreach (var result in results) {
+				session.Flash (result);
+			}
+		}
+
 		public void RunAndWaitForTimer (Action action, string counterName, int timeout = 20000)
 		{
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);

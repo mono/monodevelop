@@ -454,6 +454,44 @@ namespace MonoDevelop.Components.AutoTest.Results
 			toggleButton.Active = active;
 			return true;
 		}
+
+		bool flashState;
+
+		void OnFlashWidget (object o, ExposeEventArgs args)
+		{
+			flashState = !flashState;
+
+			if (flashState) {
+				return;
+			}
+
+			Cairo.Context cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow);
+			cr.SetSourceRGB (1.0, 0.0, 0.0);
+
+			Gdk.Rectangle allocation = resultWidget.Allocation;
+			Gdk.CairoHelper.Rectangle (cr, allocation);
+			cr.Stroke ();
+		}
+
+		public override void Flash (System.Action completionHandler)
+		{
+			int flashCount = 10;
+
+			flashState = true;
+			resultWidget.ExposeEvent += OnFlashWidget;
+
+			GLib.Timeout.Add (1000, () => {
+				resultWidget.QueueDraw ();
+				flashCount--;
+
+				if (flashCount == 0) {
+					resultWidget.ExposeEvent -= OnFlashWidget;
+					completionHandler ();
+					return false;
+				}
+				return true;
+			});
+		}
 	}
 }
 
