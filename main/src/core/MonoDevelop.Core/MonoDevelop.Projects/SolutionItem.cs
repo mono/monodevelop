@@ -593,26 +593,13 @@ namespace MonoDevelop.Projects
 
 				var sortedReferenced = TopologicalSort (referenced, solutionConfiguration);
 
-				BuildResult cres = new BuildResult ();
-				cres.BuildCount = 0;
-				var failedItems = new HashSet<SolutionItem> ();
-
 				monitor.BeginTask (null, sortedReferenced.Count);
-				foreach (var p in sortedReferenced) {
-					if (!p.ContainsReferences (failedItems, solutionConfiguration)) {
-						BuildResult res = await p.Build (monitor, solutionConfiguration, false, operationContext);
-						cres.Append (res);
-						if (res.ErrorCount > 0)
-							failedItems.Add (p);
-					} else
-						failedItems.Add (p);
-					monitor.Step (1);
-					if (monitor.CancellationToken.IsCancellationRequested)
-						break;
-				}
-				monitor.EndTask ();
-				return cres;
+
+				return await SolutionFolder.RunParallelBuildOperation (monitor, solutionConfiguration, sortedReferenced, (ProgressMonitor m, SolutionItem item) => {
+					return item.Build (m, solutionConfiguration, false, operationContext);
+				}, false);
 			} finally {
+				monitor.EndTask ();
 				tt.End ();
 			}
 		}

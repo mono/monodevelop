@@ -100,17 +100,9 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
-			if (stepWork == -1) {
-				foreach (MonitorInfo info in monitors)
-					if ((info.ActionMask & MonitorAction.Tasks) != 0)
-						info.Monitor.BeginTask (name, totalWork);
-			} else {
-				foreach (MonitorInfo info in monitors)
-					if ((info.ActionMask & MonitorAction.Tasks) != 0) {
-						info.Monitor.BeginStep (stepWork);
-						info.Monitor.BeginTask (name, totalWork);
-					}
-			}
+			foreach (MonitorInfo info in monitors)
+				if ((info.ActionMask & MonitorAction.Tasks) != 0)
+					info.Monitor.BeginTask (name, totalWork);
 		}
 
 		protected override void OnEndTask (string name, int totalWork, int stepWork)
@@ -136,8 +128,11 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			var am = (AggregatedProgressMonitor) stepMonitor;
 			foreach (MonitorInfo info in monitors)
-				if ((info.ActionMask & MonitorAction.Tasks) != 0)
-					am.AddSlaveMonitor (info.Monitor.BeginAsyncStep (message, work));
+				if ((info.ActionMask & MonitorAction.Tasks) != 0) {
+					var sm = info.Monitor.BeginAsyncStep (message, work);
+					sm.ReportGlobalDataToParent = false;
+					am.AddSlaveMonitor (sm);
+				}
 		}
 
 		protected override void OnWriteLog (string message)
@@ -177,7 +172,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		public override void Dispose ()
 		{
-			foreach (MonitorInfo info in monitors) {
+			base.Dispose ();
+            foreach (MonitorInfo info in monitors) {
 				if ((info.ActionMask & MonitorAction.Dispose) != 0)
 					info.Monitor.Dispose ();
 				if ((info.ActionMask & MonitorAction.SlaveCancel) != 0)

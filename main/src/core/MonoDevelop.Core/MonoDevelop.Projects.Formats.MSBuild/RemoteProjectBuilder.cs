@@ -41,7 +41,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		IBuildEngine engine;
 		Process proc;
 		bool alive = true;
-		
+		static int count;
+		int busy;
+
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
 		
@@ -49,9 +51,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			this.proc = proc;
 			this.engine = engine;
+
+			Interlocked.Increment (ref count);
 		}
 
 		public event EventHandler Disconnected;
+
+		public int AciveEngines {
+			get {
+				return count;
+			}
+		}
 
 		public IProjectBuilder LoadProject (string projectFile)
 		{
@@ -134,6 +144,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		public void Dispose ()
 		{
+			Interlocked.Decrement (ref count);
 			try {
 				alive = false;
 				if (proc != null) {
@@ -146,6 +157,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					engine.Dispose ();
 			} catch {
 				// Ignore
+			}
+		}
+
+		public bool Lock ()
+		{
+			return Interlocked.Increment (ref busy) == 1;
+		}
+
+		public void Unlock ()
+		{
+			Interlocked.Decrement (ref busy);
+		}
+
+		public bool IsBusy {
+			get {
+				return busy > 0;
 			}
 		}
 	}
@@ -181,10 +208,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			return cancellationToken.Register (() => {
 				try {
+					BeginOperation ();
 					engine.CancelTask (taskId);
 				} catch (Exception ex) {
 					// Ignore
 					LoggingService.LogError ("CancelTask failed", ex);
+				} finally {
+					EndOperation ();
 				}
 			});
 		}
@@ -206,6 +236,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			var t = Task.Run (() => {
 				try {
+					BeginOperation ();
 					var res = builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId);
 					if (res == null && cancellationToken.IsCancellationRequested) {
 						MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
@@ -220,6 +251,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Unknown MSBuild failure. Please try building the project again", "");
 					MSBuildResult res = new MSBuildResult (new [] { err });
 					return res;
+				} finally {
+					EndOperation ();
 				}
 			});
 
@@ -255,14 +288,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					MSBuildResult result;
 					try {
+						BeginOperation ();
 						result = builder.Run (
-						            configurations, null, MSBuildVerbosity.Normal,
-						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
-					            );
+									configurations, null, MSBuildVerbosity.Normal,
+									new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+								);
 					} catch (Exception ex) {
 						CheckDisconnected ();
 						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
-						return new string[0];
+						return new string [0];
+					} finally {
+						EndOperation ();
 					}
 
 					List<MSBuildEvaluatedItem> items;
@@ -290,10 +326,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			await Task.Run (() => {
 				try {
+					BeginOperation ();
 					builder.Refresh ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("MSBuild refresh failed", ex);
 					CheckDisconnected ();
+				} finally {
+					EndOperation ();
 				}
 			});
 		}
@@ -305,10 +344,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			await Task.Run (() => {
 				try {
+					BeginOperation ();
 					builder.RefreshWithContent (projectContent);
 				} catch (Exception ex) {
 					LoggingService.LogError ("MSBuild refresh failed", ex);
 					CheckDisconnected ();
+				} finally {
+					EndOperation ();
 				}
 			});
 		}
@@ -332,6 +374,32 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		~RemoteProjectBuilder ()
 		{
 			Dispose ();
+		}
+
+		void BeginOperation ()
+		{
+			engine.Lock ();
+        }
+
+		void EndOperation ()
+		{
+			engine.Unlock ();
+		}
+
+		public void Lock ()
+		{
+			BeginOperation ();
+        }
+
+		public void Unlock ()
+		{
+			EndOperation ();
+		}
+
+		public bool IsBusy {
+			get {
+				return engine.IsBusy;
+			}
 		}
 	}
 }

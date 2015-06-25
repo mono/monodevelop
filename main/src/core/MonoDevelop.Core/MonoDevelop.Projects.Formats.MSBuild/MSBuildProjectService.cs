@@ -64,7 +64,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		static DataContext dataContext;
 		
 		static IMSBuildGlobalPropertyProvider[] globalPropertyProviders;
-		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
+		static BuilderCache builders = new BuilderCache ();
 		static Dictionary<string,Type> genericProjectTypes = new Dictionary<string, Type> ();
 		static Dictionary<string,string> importRedirects = new Dictionary<string, string> ();
 		static UnknownProjectTypeNode[] unknownProjectTypeNodes;
@@ -160,7 +160,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			using (await buildersLock.EnterAsync ()) {
 				var gpp = (IMSBuildGlobalPropertyProvider)sender;
-				foreach (var builder in builders.Values)
+				foreach (var builder in builders.GetAllBuilders ())
 					builder.SetGlobalProperties (gpp.GetGlobalProperties ());
 			}
 		}
@@ -847,7 +847,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		static bool runLocal = false;
 		
-		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
+		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool lockBuilder = false)
 		{
 			using (await buildersLock.EnterAsync ())
 			{
@@ -873,9 +873,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				//one builder per solution
-				string builderKey = runtime.Id + " # " + solutionFile;
-				RemoteBuildEngine builder;
-				if (builders.TryGetValue (builderKey, out builder)) {
+				string builderKey = runtime.Id + " # " + solutionFile + " # " + customId;
+
+				RemoteBuildEngine builder = null;
+
+				if (lockBuilder) {
+					foreach (var b in builders.GetBuilders (builderKey)) {
+						if (b.Lock ()) {
+							builder = b;
+							break;
+						}
+						b.Unlock ();
+					}
+				} else
+					builder = builders.GetBuilders (builderKey).FirstOrDefault ();
+				
+				if (builder != null) {
 					builder.ReferenceCount++;
 					return new RemoteProjectBuilder (file, builder);
 				}
@@ -945,12 +958,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						throw;
 					}
 
-					builders [builderKey] = builder;
+					builders.Add (builderKey, builder);
 					builder.ReferenceCount = 1;
 					builder.Disconnected += async delegate {
 						using (await buildersLock.EnterAsync ())
-							builders.Remove (builderKey);
+							builders.Remove (builder);
 					};
+					if (lockBuilder)
+						builder.Lock ();
 					return new RemoteProjectBuilder (file, builder);
 				});
 			}
@@ -998,7 +1013,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			using (await buildersLock.EnterAsync ()) {
 				if (--engine.ReferenceCount != 0)
 					return;
-				builders.Remove (builders.First (kvp => kvp.Value == engine).Key);
+				builders.Remove (engine);
 			}
 			engine.Dispose ();
 		}
@@ -1131,5 +1146,43 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			return MSBuildProjectService.CreateGenericProject (fileName);
 		}
+	}
+
+	class BuilderCache
+	{
+		Dictionary<string,List<RemoteBuildEngine>> builders = new Dictionary<string, List<RemoteBuildEngine>> ();
+
+		public void Add (string key, RemoteBuildEngine builder)
+		{
+			List<RemoteBuildEngine> list;
+			if (!builders.TryGetValue (key, out list))
+				builders [key] = list = new List<RemoteBuildEngine> ();
+			list.Add (builder);
+        }
+
+		public IEnumerable<RemoteBuildEngine> GetBuilders (string key)
+		{
+			List<RemoteBuildEngine> list;
+			if (builders.TryGetValue (key, out list))
+				return list;
+			else
+				return Enumerable.Empty<RemoteBuildEngine> ();
+		}
+
+		public IEnumerable<RemoteBuildEngine> GetAllBuilders ()
+		{
+			return builders.Values.SelectMany (r => r);
+		}
+
+		public void Remove (RemoteBuildEngine builder)
+		{
+			foreach (var p in builders) {
+				if (p.Value.Remove (builder)) {
+					if (p.Value.Count == 0)
+						builders.Remove (p.Key);
+					return;
+                }
+            }
+        }
 	}
 }

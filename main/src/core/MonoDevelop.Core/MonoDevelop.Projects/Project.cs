@@ -82,7 +82,7 @@ namespace MonoDevelop.Projects
 			files = new ProjectFileCollection ();
 			Items.Bind (files);
 			DependencyResolutionEnabled = true;
-		}
+        }
 
 		public ProjectItemCollection Items {
 			get { return items; }
@@ -763,15 +763,14 @@ namespace MonoDevelop.Projects
 		{
 			if (CheckUseMSBuildEngine (configuration)) {
 				LogWriter logWriter = new LogWriter (monitor.Log);
-				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				var configs = GetConfigurations (configuration);
+				var configs = GetConfigurations (configuration);	
 
-				string[] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string[0];
-				string[] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string[0];
+				string [] evaluateItems = context != null ? context.ItemsToEvaluate.ToArray () : new string [0];
+				string [] evaluateProperties = context != null ? context.PropertiesToEvaluate.ToArray () : new string [0];
 
 				var globalProperties = new Dictionary<string, string> ();
 				if (context != null) {
-					var md = (ProjectItemMetadata) context.GlobalProperties;
+					var md = (ProjectItemMetadata)context.GlobalProperties;
 					md.SetProject (sourceProject);
 					foreach (var p in md.GetProperties ())
 						globalProperties [p.Name] = p.Value;
@@ -779,7 +778,7 @@ namespace MonoDevelop.Projects
 
 				MSBuildResult result = null;
 				await Task.Run (async delegate {
-					
+
 					TimerCounter buildTimer = null;
 					switch (target) {
 					case "Build": buildTimer = Counters.BuildMSBuildProjectTimer; break;
@@ -789,9 +788,20 @@ namespace MonoDevelop.Projects
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
+					RemoteProjectBuilder builder = await GetProjectBuilder ();
+					if (builder.IsBusy)
+						builder = await RequestLockedBuilder ();
+					else
+						builder.Lock ();
+
 					try {
-						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
+						builder.Unlock ();
+						if (builder != this.projectBuilder) {
+							// Dispose the builder after a while, so that it can be reused
+							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
+						}
 						t1.End ();
 						if (t2 != null)
 							t2.End ();
@@ -807,11 +817,11 @@ namespace MonoDevelop.Projects
 						file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
 					br.Append (new BuildError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message) {
-								Subcategory = err.Subcategory,
-								EndLine = err.EndLineNumber,
-								EndColumn = err.EndColumnNumber,
-								IsWarning = err.IsWarning
-								});
+						Subcategory = err.Subcategory,
+						EndLine = err.EndLineNumber,
+						EndColumn = err.EndColumnNumber,
+						IsWarning = err.IsWarning
+					});
 				}
 
 				// Get the evaluated properties
@@ -819,7 +829,7 @@ namespace MonoDevelop.Projects
 				var properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
 				foreach (var p in result.Properties)
 					properties [p.Key] = new MSBuildPropertyEvaluated (sourceProject, p.Key, p.Value, p.Value);
-				
+
 				var props = new MSBuildPropertyGroupEvaluated (sourceProject);
 				props.SetProperties (properties);
 
@@ -829,7 +839,7 @@ namespace MonoDevelop.Projects
 				foreach (var it in result.Items.SelectMany (d => d.Value)) {
 					var eit = new MSBuildItemEvaluated (sourceProject, it.Name, it.ItemSpec, it.ItemSpec);
 					if (it.Metadata.Count > 0) {
-						var imd = (MSBuildPropertyGroupEvaluated) eit.Metadata;
+						var imd = (MSBuildPropertyGroupEvaluated)eit.Metadata;
 						properties = new Dictionary<string, MSBuildPropertyEvaluated> ();
 						foreach (var m in it.Metadata)
 							properties [m.Key] = new MSBuildPropertyEvaluated (sourceProject, m.Key, m.Value, m.Value);
@@ -852,6 +862,8 @@ namespace MonoDevelop.Projects
 
 		internal ProjectConfigurationInfo[] GetConfigurations (ConfigurationSelector configuration, bool includeReferencedProjects = true)
 		{
+			var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
+
 			// Returns a list of project/configuration information for the provided item and all its references
 			List<ProjectConfigurationInfo> configs = new List<ProjectConfigurationInfo> ();
 			var c = GetConfiguration (configuration);
@@ -860,20 +872,15 @@ namespace MonoDevelop.Projects
 				Configuration = c != null ? c.Name : "",
 				Platform = c != null ? GetExplicitPlatform (c) : "",
 				ProjectGuid = ItemId,
-				Enabled = true
+				Enabled = sc == null || sc.BuildEnabledForItem (this)
 			});
 			if (includeReferencedProjects) {
-				var sc = ParentSolution != null ? ParentSolution.GetConfiguration (configuration) : null;
 				foreach (var refProject in GetReferencedItems (configuration).OfType<Project> ()) {
-					var refConfig = refProject.GetConfiguration (configuration);
-					if (refConfig != null) {
-						configs.Add (new ProjectConfigurationInfo () {
-							ProjectFile = refProject.FileName,
-							Configuration = refConfig.Name,
-							Platform = GetExplicitPlatform (refConfig),
-							ProjectGuid = refProject.ItemId,
-							Enabled = sc == null || sc.BuildEnabledForItem (refProject)
-						});
+					// Recursively get all referenced projects. This is necessary if one of the referenced
+					// projects is using the local copy flag.
+					foreach (var rp in refProject.GetConfigurations (configuration)) {
+						if (!configs.Any (pc => pc.ProjectFile == rp.ProjectFile))
+							configs.Add (rp);
 					}
 				}
 			}
@@ -915,7 +922,7 @@ namespace MonoDevelop.Projects
 						projectBuilder.Dispose ();
 						projectBuilder = null;
 					}
-					projectBuilder = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile);
+					projectBuilder = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
 					projectBuilder.Disconnected += delegate {
 						CleanupProjectBuilder ();
 					};
@@ -931,6 +938,25 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return projectBuilder;
+		}
+
+		static int builderCounter;
+
+		async Task<RemoteProjectBuilder> RequestLockedBuilder ()
+		{
+			TargetRuntime runtime = null;
+			var ap = this as IAssemblyProject;
+			runtime = ap != null ? ap.TargetRuntime : Runtime.SystemAssemblyService.CurrentRuntime;
+
+			var sln = ParentSolution;
+			var slnFile = sln != null ? sln.FileName : null;
+
+			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
+			if (modifiedInMemory) {
+				WriteProject (new ProgressMonitor ());
+				await pb.RefreshWithContent (sourceProject.SaveToString ());
+			}
+			return pb;
 		}
 
 		void CleanupProjectBuilder ()
