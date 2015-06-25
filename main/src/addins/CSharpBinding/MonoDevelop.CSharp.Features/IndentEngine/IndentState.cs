@@ -1305,20 +1305,22 @@ namespace ICSharpCode.NRefactory6.CSharp
 						{
 							if (!Engine.ifDirectiveEvalResults.Peek())
 							{
-								ExitState();
+								if (Engine.currentState is PreProcessorCommentState)
+									ExitState();
 								Engine.ifDirectiveEvalResults.Pop();
 								goto case PreProcessorDirective.If;
 							}
+							// previous if was true -> comment
+							ChangeState<PreProcessorCommentState>();
 						}
-						// previous if was true -> comment
-						ChangeState<PreProcessorCommentState>();
 						break;
 					case PreProcessorDirective.Else:
 						if (Engine.ifDirectiveEvalResults.Count > 0 && Engine.ifDirectiveEvalResults.Peek())
 						{
 							// some if/elif directive was true -> change to a state that will 
 							// ignore any chars until #endif
-							ChangeState<PreProcessorCommentState>();
+							if (!(Engine.currentState is PreProcessorCommentState))
+								ChangeState<PreProcessorCommentState>();
 						}
 						else
 						{
@@ -1345,8 +1347,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 						// marks the end of this block
 						if (Engine.currentState is PreProcessorCommentState)
 							ExitState();
-						Engine.ifDirectiveEvalResults.Pop();
-						Engine.ifDirectiveIndents.Pop();
+						if (Engine.ifDirectiveEvalResults.Count > 0)
+							Engine.ifDirectiveEvalResults.Pop();
+						if (Engine.ifDirectiveIndents.Count > 0)
+							Engine.ifDirectiveIndents.Pop();
 						break;
 					case PreProcessorDirective.Region:
 					case PreProcessorDirective.Pragma:
