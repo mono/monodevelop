@@ -417,11 +417,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render.Pushed = true;
 				args.RetVal = true;
 				var entryset = BuildEntrySet ();
-				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
-				if (menu != null) {
-					menu.Hidden += HandleMenuHidden;
-					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
-				}
+
+				IdeApp.CommandService.ShowContextMenu (tree, args.Event, entryset, this, HandleMenuHidden);
 			}
 		}
 
@@ -500,7 +497,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void HandleMenuHidden (object sender, EventArgs e)
 		{
-			((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
+			if (sender is Gtk.Menu) {
+				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
+			}
 			text_render.Pushed = false;
 			QueueDraw ();
 		}
