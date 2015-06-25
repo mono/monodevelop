@@ -26,6 +26,7 @@
 
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -35,6 +36,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 			HasSeparator = false;
+
+			this.UseNativeContextMenus ();
 		}
 
 		public void Load (string file)

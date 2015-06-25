@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Components;
+
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class NewStashDialog : Gtk.Dialog
@@ -31,6 +33,8 @@ namespace MonoDevelop.VersionControl.Git
 		public NewStashDialog ()
 		{
 			this.Build ();
+
+			this.UseNativeContextMenus ();
 
 			entryComment.Activated += (o, e) => Respond (Gtk.ResponseType.Ok);
 		}
