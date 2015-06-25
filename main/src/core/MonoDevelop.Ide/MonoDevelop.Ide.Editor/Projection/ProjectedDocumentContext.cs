@@ -95,7 +95,8 @@ namespace MonoDevelop.Ide.Editor.Projection
 				FileName = projectedEditor.FileName,
 				Content = projectedEditor,
 				Project = Project,
-				RoslynDocument = projectedDocument
+				RoslynDocument = projectedDocument,
+				OldParsedDocument = parsedDocument
 			}; 
 			parsedDocument = TypeSystemService.ParseFile (options, projectedEditor.MimeType).Result;
 

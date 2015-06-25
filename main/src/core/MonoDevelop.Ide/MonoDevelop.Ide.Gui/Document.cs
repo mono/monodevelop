@@ -720,13 +720,14 @@ namespace MonoDevelop.Ide.Gui
 				CancelOldParsing();
 				var project = Project ?? adhocProject;
 
-				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
+				var options = new ParseOptions {
+					Project = project,
+					Content = currentParseText,
+					FileName = currentParseFile,
+					OldParsedDocument = parsedDocument
+				};
 
-					var options = new ParseOptions {
-						Project = project,
-						Content = currentParseText,
-						FileName = currentParseFile
-					};
+				if (project != null && TypeSystemService.CanParseProjections (project, Editor.MimeType, FileName)) {
 					var projectFile = project.GetProjectFile (currentParseFile);
                     if (projectFile != null)
 						options.BuildAction = projectFile.BuildAction;
@@ -741,7 +742,7 @@ namespace MonoDevelop.Ide.Gui
 						Editor.SetOrUpdateProjections (this, projections, p.DisabledProjectionFeatures);
 					}
 				} else { 
-					this.parsedDocument = TypeSystemService.ParseFile (project, currentParseFile, editor.MimeType, currentParseText).Result ?? this.parsedDocument;
+					this.parsedDocument = TypeSystemService.ParseFile (options, editor.MimeType).Result ?? this.parsedDocument;
 				}
 			} finally {
 
@@ -840,15 +841,16 @@ namespace MonoDevelop.Ide.Gui
 				var projectFile = project?.GetProjectFile (currentParseFile);
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
+					var options = new ParseOptions {
+						Project = project,
+						Content = currentParseText,
+						FileName = currentParseFile,
+						OldParsedDocument = parsedDocument
+					};
+					if (projectFile != null)
+						options.BuildAction = projectFile.BuildAction;
+					
 					if (project != null && TypeSystemService.CanParseProjections (project, mimeType, currentParseFile)) {
-						var options = new ParseOptions {
-							Project = project,
-							Content = currentParseText,
-							FileName = currentParseFile
-						};
-
-						if (projectFile != null)
-							options.BuildAction = projectFile.BuildAction;
 						TypeSystemService.ParseProjection (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
@@ -866,7 +868,7 @@ namespace MonoDevelop.Ide.Gui
 							});
 						}, TaskContinuationOptions.OnlyOnRanToCompletion);
 					} else {
-						TypeSystemService.ParseFile (project, currentParseFile, mimeType, currentParseText, token).ContinueWith (task => {
+						TypeSystemService.ParseFile (options, mimeType, token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
 							Application.Invoke (delegate {
