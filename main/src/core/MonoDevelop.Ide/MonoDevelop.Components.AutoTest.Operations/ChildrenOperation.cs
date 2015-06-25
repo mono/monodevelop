@@ -35,7 +35,7 @@ namespace MonoDevelop.Components.AutoTest.Operations
 			List<AppResult> newResultSet = new List<AppResult> ();
 
 			foreach (var result in resultSet) {
-				List<AppResult> flattenedChildren = result.FlattenChildren ();
+				List<AppResult> flattenedChildren = result.Children ();
 				if (flattenedChildren != null) {
 					newResultSet.AddRange (flattenedChildren);
 				}

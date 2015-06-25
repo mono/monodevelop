@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return newList;
 		}
 
-		public override List<AppResult> FlattenChildren ()
+		public override List<AppResult> Children (bool recursive = true)
 		{
 			if (resultIter == null || !resultIter.HasValue) {
 				List<AppResult> children = new List<AppResult> ();

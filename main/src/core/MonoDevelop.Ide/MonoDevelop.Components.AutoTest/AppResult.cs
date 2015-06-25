@@ -71,21 +71,22 @@ namespace MonoDevelop.Components.AutoTest
 
 		public string SourceQuery { get; set; }
 
-		void AddChildrenToList (List<AppResult> children, AppResult child)
+		void AddChildrenToList (List<AppResult> children, AppResult child, bool recursive = true)
 		{
 			AppResult node = child.FirstChild;
 			children.Add (child);
 
 			while (node != null) {
-				AddChildrenToList (children, node);
+				if (recursive)
+					AddChildrenToList (children, node);
 				node = node.NextSibling;
 			}
 		}
 
-		public virtual List<AppResult> FlattenChildren ()
+		public virtual List<AppResult> Children (bool recursive = true)
 		{
 			List<AppResult> children = new List<AppResult> ();
-			AddChildrenToList (children, FirstChild);
+			AddChildrenToList (children, FirstChild, recursive);
 
 			return children;
 		}
