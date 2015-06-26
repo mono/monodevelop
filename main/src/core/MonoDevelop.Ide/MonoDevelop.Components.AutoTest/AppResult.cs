@@ -67,7 +67,7 @@ namespace MonoDevelop.Components.AutoTest
 
 		// Inspection Operations
 		public abstract ObjectProperties Properties ();
-		public abstract Type GetResultType  ();
+		public abstract string GetResultType  ();
 
 		public string SourceQuery { get; set; }
 

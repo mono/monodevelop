@@ -62,9 +62,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", view.Frame.ToString ());
 		}
 
-		public override Type GetResultType  ()
+		public override string GetResultType  ()
 		{
-			return ResultObject.GetType ();
+			return ResultObject.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)

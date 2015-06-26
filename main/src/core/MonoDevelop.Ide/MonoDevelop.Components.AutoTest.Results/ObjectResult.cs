@@ -43,9 +43,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return value != null ? value.ToString () : "null";
 		}
 
-		public override Type GetResultType  ()
+		public override string GetResultType  ()
 		{
-			return value.GetType ();
+			return value.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)

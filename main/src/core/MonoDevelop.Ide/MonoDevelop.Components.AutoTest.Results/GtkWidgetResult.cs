@@ -61,9 +61,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
 		}
 
-		public override Type GetResultType  ()
+		public override string GetResultType  ()
 		{
-			return resultWidget.GetType ();
+			return resultWidget.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)
