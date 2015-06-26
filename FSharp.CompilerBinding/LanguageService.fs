@@ -414,7 +414,7 @@ type LanguageService(dirtyNotify) =
       Debug.WriteLine("LanguageService: GetUsesOfSymbolInProject: project={0}, currentFile = {1}, symbol = {2}", projectFilename, file, symbol.DisplayName )
       let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
       let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
-      
+
       let! allProjectResults =
         sourceProjectOptions :: dependentProjectsOptions
         |> Async.List.map checker.ParseAndCheckProject
@@ -426,6 +426,72 @@ type LanguageService(dirtyNotify) =
         |> Async.map Array.concat
     
      return allSymbolUses }
+
+  /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
+  member x.GetDerivedSymbolsInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
+
+    let predicate (symbolUse: FSharpSymbolUse) =
+      try
+        match symbolAtCaret with
+
+        | :? FSharpMemberOrFunctionOrValue as caretmfv ->
+            match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as mfv ->
+              let isOverrideOrDefault = mfv.IsOverrideOrExplicitInterfaceImplementation
+              let baseTypeMatch() =
+                match mfv.EnclosingEntity.BaseType with
+                | Some bt -> caretmfv.EnclosingEntity.IsEffectivelySameAs bt.TypeDefinition
+                | _ -> false
+              let nameMatch = mfv.DisplayName = caretmfv.DisplayName
+              let parameterMatch() =
+                let both = (mfv.CurriedParameterGroups |> Seq.concat) |> Seq.zip (caretmfv.CurriedParameterGroups |> Seq.concat)
+                let allMatch = both |> Seq.forall (fun (one, two) -> one.Type = two.Type)
+                allMatch
+              let allmatch = nameMatch && isOverrideOrDefault && baseTypeMatch() && parameterMatch()
+              allmatch
+            | _ -> false
+
+        | :? FSharpEntity as ent -> 
+            match symbolUse.Symbol with
+            | :? FSharpEntity as fse ->
+                match fse.BaseType with
+                | Some basetype ->
+                    basetype.TypeDefinition.IsEffectivelySameAs ent
+                | _ -> false
+            | _ -> false
+
+        | _ -> false
+      with ex ->
+        false
+
+    async { 
+      Debug.WriteLine("LanguageService: GetDerivedSymbolInProject: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
+      let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
+        |> Async.List.map checker.ParseAndCheckProject
+
+      let! allSymbolUses =
+        allProjectResults
+        |> List.map (fun checkedProj -> checkedProj.GetAllUsesOfAllSymbols())
+        |> Async.Parallel
+        |> Async.map Array.concat
+      
+      let filteredSymbols = allSymbolUses |> Array.filter predicate 
+              
+      return filteredSymbols }
+
+  /// Get all overloads derived from the specified symbol in the current project
+  member x.GetOverridesForSymbolInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol) =
+    try
+      match symbolAtCaret with
+      | :? FSharpMemberOrFunctionOrValue as caretmfv ->
+        caretmfv.Overloads(false)
+      | _ -> None
+    with _ -> None
+           
 
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed
