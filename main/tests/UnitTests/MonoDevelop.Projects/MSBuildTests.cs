@@ -1316,8 +1316,8 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
 
-			p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
-			res = p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+			await p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = await p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
 
 			// Check that the global property is reset
 			Assert.AreEqual (1, res.Errors.Count);
