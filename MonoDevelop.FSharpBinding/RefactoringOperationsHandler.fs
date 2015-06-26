@@ -128,6 +128,12 @@ module Refactoring =
                 | Some bt -> bt.HasTypeDefinition
                 | _ -> false
             | _ -> false
+
+    let canGotoOverloads (symbolUse:FSharpSymbolUse) =
+      match symbolUse.Symbol with
+      | :? FSharpMemberOrFunctionOrValue as mfv ->
+        mfv.Overloads(false).IsSome
+      | _ -> false
          
     type BaseSymbol =
         | Member of FSharpMemberOrFunctionOrValue
@@ -235,51 +241,105 @@ module Refactoring =
     let getProjectOutputFilename config (p:Project) =
         p.GetOutputFileName(config).ToString() |> Path.GetFileNameWithoutExtension
 
+    let getDependentProjects (project:Project) (symbolUse:FSharpSymbolUse) = 
+      try
+        let allProjects = project.ParentSolution.GetAllProjects() |> Seq.toList
+        let config = IdeApp.Workspace.ActiveConfiguration
+        let currentContextProjectFilename = getProjectOutputFilename config project
+        let symbolAssemblyFilename = symbolUse.Symbol.Assembly.SimpleName
+        let filteredProjects = 
+            allProjects
+            |> List.filter (fun proj ->
+              match proj with
+              | :? DotNetProject as dnp ->
+                  let projectOutputfilename = getProjectOutputFilename config proj 
+                  //filter out the current project as this will be included with current dirty source file
+                  if currentContextProjectFilename = projectOutputfilename then false
+                  //if the symbol and project match include it
+                  elif projectOutputfilename = symbolAssemblyFilename then true
+                  else
+                    let references = dnp.References |> Seq.toArray
+                    let matchingProject = 
+                      references 
+                      |> Array.tryFind (fun rp ->
+                                          let referencedFilenames =
+                                            rp.GetReferencedFileNames config
+                                            |> Array.map Path.GetFileNameWithoutExtension
+                                         
+                                          referencedFilenames
+                                          |> Array.contains symbolAssemblyFilename)
+                    matchingProject.IsSome
+              | _ -> false )
+
+        filteredProjects
+        |> List.map (fun p -> p.FileName.ToString() ) 
+      with _ -> []
+
     let findReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
-        let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
-        let findAsync = async { 
-            let dependentProjects =
-                try
-                    let allProjects = ctx.Project.ParentSolution.GetAllProjects()
-                    let config = IdeApp.Workspace.ActiveConfiguration
-                    let currentContextProjectFilename = getProjectOutputFilename config ctx.Project
-                    let symbolAssemblyFilename = symbolUse.Symbol.Assembly.SimpleName
-                    let filteredProjects = 
-                        allProjects
-                        |> Seq.filter (fun proj ->
-                                            let projectOutputfilename = getProjectOutputFilename config proj 
-                                            //filter out the current project as this will be included with current dirty source file
-                                            if currentContextProjectFilename = projectOutputfilename then false
-                                            //if the symbol and project and symbol match include it
-                                            elif projectOutputfilename = symbolAssemblyFilename then true
-                                            else
-                                                let projectsRefSymbol =
-                                                    proj.GetReferencedItems(config)
-                                                    |> Seq.cast<DotNetProject>
-                                                    |> Seq.tryFind (fun rp -> let projectOutput = getProjectOutputFilename config rp
-                                                                              projectOutput = symbolAssemblyFilename)
-                                                projectsRefSymbol.IsSome )
+      let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+      let findAsync = async { 
+        let dependentProjects = getDependentProjects ctx.Project symbolUse
 
-                    filteredProjects
-                    |> Seq.map (fun p -> p.FileName.ToString()) 
-                    |> Seq.toList
-                with _ -> []
+        let! symbolrefs =
+            langServ.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
 
-            let! symbolrefs =
-                langServ.GetUsesOfSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+        let distinctRefs = 
+            symbolrefs
+            |> Array.map (Symbols.getOffsetsTrimmed lastIdent)
+            |> Seq.distinct
 
-            let distinctRefs = 
-                symbolrefs
-                |> Array.map (Symbols.getOffsetsTrimmed lastIdent)
-                |> Seq.distinct
+        for (filename, startOffset, endOffset) in distinctRefs do
+            let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+            monitor.ReportResult sr 
+          }
+      let onComplete _ = monitor.Dispose()
+      Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
-            for (filename, startOffset, endOffset) in distinctRefs do
-                let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
-                monitor.ReportResult sr
+    let findDerivedReferences (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
+      let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+      let findAsync = async { 
+        let dependentProjects = getDependentProjects ctx.Project symbolUse
 
-            }
-        let onComplete _ = monitor.Dispose()
-        Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+        let! symbolrefs =
+            langServ.GetDerivedSymbolsInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+
+        let distinctRefs = 
+            symbolrefs
+            |> Array.map (Symbols.getOffsetsTrimmed lastIdent)
+            |> Seq.distinct
+
+        for (filename, startOffset, endOffset) in distinctRefs do
+            let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+            monitor.ReportResult sr 
+          }
+      let onComplete _ = monitor.Dispose()
+      Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+
+    let findOverloads (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, _lastIdent) =
+      let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+      let findAsync = async { 
+        //let dependentProjects = getDependentProjects ctx.Project symbolUse
+        let overrides = langServ.GetOverridesForSymbolInProject(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol)
+
+        let distinctRefs = 
+            match overrides with
+            | Some meths ->
+              //Note no trimming here as per norm, see lastident above
+              //The compiler is returning no Overloads for F# method overloads currently so expect empty results
+              meths
+              |> Seq.map (fun s -> let declLoc = s.DeclarationLocation
+                                   let startOffset = editor.LocationToOffset(declLoc.StartLine, declLoc.StartColumn)
+                                   let endOffset = editor.LocationToOffset(declLoc.EndLine, declLoc.EndColumn)
+                                   declLoc.FileName, startOffset, endOffset)
+              |> Seq.distinct
+            | _ -> Seq.empty
+
+        for (filename, startOffset, endOffset) in distinctRefs do
+            let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+            monitor.ReportResult sr 
+          }
+      let onComplete _ = monitor.Dispose()
+      Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
@@ -311,6 +371,7 @@ type CurrentRefactoringOperationsHandler() =
         base.Update (ci)
           
     override x.Update (ainfo:CommandArrayInfo) =
+        let getCatalogString = GettextCatalog.GetString
         match tryGetValidDoc() with
         | None -> ()
         | Some doc ->
@@ -321,7 +382,7 @@ type CurrentRefactoringOperationsHandler() =
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast doc.Editor with
                     | (_line, col, lineTxt), Some symbolUse ->
-                        let ciset = new CommandInfoSet (Text = GettextCatalog.GetString ("Refactor"))
+                        let ciset = new CommandInfoSet (Text = getCatalogString "Refactor")
             
                         //last ident part of surrent symbol
                         let lastIdent = Symbols.lastIdent col lineTxt
@@ -343,9 +404,9 @@ type CurrentRefactoringOperationsHandler() =
                                 commandInfo.Enabled <- true
                                 ainfo.Add (commandInfo, Action (fun _ -> Refactoring.jumpToDeclaration (doc.Editor, doc, symbolUse) ))
                             | locations ->
-                                let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("_Go to Declaration"))
+                                let declSet = CommandInfoSet (Text = getCatalogString "_Go to Declaration")
                                 for location in locations do
-                                    let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
+                                    let commandText = String.Format (getCatalogString "{0}, Line {1}", formatFileName location.FileName, location.StartLine)
                                     declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbolUse.Symbol, location)))
                                     |> ignore
                                 ainfo.Add (declSet)
@@ -359,35 +420,62 @@ type CurrentRefactoringOperationsHandler() =
                                     match bs with
                                     | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
                                     | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
-                                let _baseIdent = symbol.DisplayName
+                                //let _baseIdent = symbol.DisplayName
                                 let locations = Symbols.getLocationFromSymbol symbol
                                 match locations with
                                 | [] -> ()
                                 | [location] -> 
-                                    let description = GettextCatalog.GetString ("Go to _Base Symbol")
+                                    let description =
+                                      match symbolUse.Symbol with
+                                      | :? FSharpEntity ->
+                                          getCatalogString "Go to _Base Type"
+                                      | :? FSharpMemberOrFunctionOrValue as mfv when mfv.EnclosingEntity.IsInterface ->
+                                          if mfv.IsProperty then getCatalogString "Go to _Interface Property"
+                                          elif mfv.IsEvent then getCatalogString "Go to _Interface Event"
+                                          else GettextCatalog.GetString ("Go to _Interface Method")
+                                      | :? FSharpMemberOrFunctionOrValue as mfv ->
+                                          if mfv.IsProperty then  getCatalogString "Go to _Base Property"
+                                          elif mfv.IsEvent then getCatalogString "Go to _Base Event"
+                                          else getCatalogString "Go to _Base Method"
+                                      | _-> getCatalogString "Go to _Base Symbol"
                                     ainfo.Add (description, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
                                     |> ignore
                                     
                                 | locations ->
-                                    let declSet = CommandInfoSet (Text = GettextCatalog.GetString ("Go to _Base Symbol"))
+                                    let declSet = CommandInfoSet (Text = getCatalogString "Go to _Base Symbol")
                                     for location in locations do
-                                        let commandText = String.Format (GettextCatalog.GetString ("{0}, Line {1}"), formatFileName location.FileName, location.StartLine)
+                                        let commandText = String.Format (getCatalogString"{0}, Line {1}", formatFileName location.FileName, location.StartLine)
                                         declSet.CommandInfos.Add (commandText, Action (fun () -> Refactoring.jumpTo (doc.Editor, doc, symbol, location)))
                                         |> ignore
                                     ainfo.Add (declSet)
                             | _ -> ()
  
                         //find references
-                        // renamable indicates the source symbol is internal to the project
-                        if canRename then
-                            let command = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences)
-                            command.Enabled <- true
-                            ainfo.Add (command, Action (fun () -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)))
-                            //this one finds all overloads of a given symbol
-                            //All that needs to happen here is to pass all dependent project infos
-                            //ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), Action (fun () -> Refactoring.FindRefs (sym)))
+                        let findReferencesCommand = IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences)
+                        findReferencesCommand.Enabled <- true
+                        ainfo.Add (findReferencesCommand, Action (fun () -> Refactoring.findReferences (doc.Editor, doc, symbolUse, lastIdent)))
 
-                        //TODO: find derived symbols, find overloads, find extension methods, find type extensions
+                        //TODO: this one finds all overloads of a given symbol
+                        //All that needs to happen here is to pass all dependent project infos
+                        //ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), Action (fun () -> Refactoring.FindRefs (sym)))
+
+                        // find derived symbols
+                        if symbolUse.Symbol :? FSharpEntity || symbolUse.Symbol :? FSharpMemberOrFunctionOrValue  then
+                          let description = 
+                            match symbolUse.Symbol with
+                            | :? FSharpEntity as fse when fse.IsInterface -> getCatalogString "Find Implementing Types"
+                            | :? FSharpEntity -> getCatalogString "Find Derived Types"
+                            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.EnclosingEntity.IsInterface -> getCatalogString "Find Implementing Symbols"
+                            | :? FSharpMemberOrFunctionOrValue -> getCatalogString "Find overriden Symbols"
+                            | _ -> getCatalogString "Find Derived Symbols"
+                          ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
+
+                        //find overloads
+                        if Refactoring.canGotoOverloads symbolUse then
+                          let description = getCatalogString "Find Method Overloads"
+                          ainfo.Add (description, Action (fun () -> Refactoring.findOverloads (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
+
+                        //TODO: find extension methods, find type extensions
             
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
