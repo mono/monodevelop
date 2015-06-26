@@ -152,7 +152,7 @@ module ExtendedPatterns =
     let (|Constructor|_|) symbol =
         match symbol with
         | CorePatterns.MemberFunctionOrValue func -> 
-            if func.CompiledName = ".ctor" || func.IsImplicitConstructor then Some func
+            if isConstructor func || func.IsImplicitConstructor then Some func
             else None
         | _ -> None
 
