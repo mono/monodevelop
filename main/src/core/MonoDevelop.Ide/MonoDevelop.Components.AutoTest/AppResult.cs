@@ -23,10 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Xml;
+using System.Reflection;
+using System.Linq;
+using System.Collections.ObjectModel;
+using MonoDevelop.Components.AutoTest.Results;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -59,23 +63,30 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 
+		public abstract void Flash (Action completionHandler);
+
+		// Inspection Operations
+		public abstract ObjectProperties Properties ();
+		public abstract string GetResultType  ();
+
 		public string SourceQuery { get; set; }
 
-		void AddChildrenToList (List<AppResult> children, AppResult child)
+		void AddChildrenToList (List<AppResult> children, AppResult child, bool recursive = true)
 		{
 			AppResult node = child.FirstChild;
 			children.Add (child);
 
 			while (node != null) {
-				AddChildrenToList (children, node);
+				if (recursive)
+					AddChildrenToList (children, node);
 				node = node.NextSibling;
 			}
 		}
 
-		public virtual List<AppResult> FlattenChildren ()
+		public virtual List<AppResult> Children (bool recursive = true)
 		{
 			List<AppResult> children = new List<AppResult> ();
-			AddChildrenToList (children, FirstChild);
+			AddChildrenToList (children, FirstChild, recursive);
 
 			return children;
 		}
@@ -92,6 +103,77 @@ namespace MonoDevelop.Components.AutoTest
 			XmlAttribute attr = doc.CreateAttribute (name);
 			attr.Value = value;
 			element.Attributes.Append (attr);
+		}
+
+		protected object GetPropertyValue (string propertyName, object requestedObject)
+		{
+			return AutoTestService.CurrentSession.UnsafeSync (delegate {
+				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
+				if (propertyInfo != null && propertyInfo.CanRead && !propertyInfo.GetIndexParameters ().Any ()) {
+					var propertyValue = propertyInfo.GetValue (requestedObject);
+					if (propertyValue != null) {
+						return propertyValue;
+					}
+				}
+
+				return null;
+			});
+		}
+
+		protected ObjectProperties GetProperties (object resultObject)
+		{
+			var propertiesObject = new ObjectProperties ();
+			if (resultObject != null) {
+				var properties = resultObject.GetType ().GetProperties (
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+				foreach (var property in properties) {
+					var value = GetPropertyValue (property.Name, resultObject);
+					AppResult result = null;
+
+					var gtkNotebookValue = value as Gtk.Notebook;
+					if (gtkNotebookValue != null)
+						result = new GtkNotebookResult (gtkNotebookValue);
+					var gtkTreeviewValue = value as Gtk.TreeView;
+					if (gtkTreeviewValue != null && result == null)
+						result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
+					var gtkWidgetValue = value as Gtk.Widget;
+					if (gtkWidgetValue != null && result == null)
+						result = new GtkWidgetResult (gtkWidgetValue);
+					#if MAC
+					var nsObjectValue = value as Foundation.NSObject;
+					if (nsObjectValue != null && result == null)
+						result = new NSObjectResult (nsObjectValue);
+					#endif
+					if (result == null)
+						result = new ObjectResult (value);
+
+					propertiesObject.Add (property.Name, result, property);
+				}
+			}
+
+			return propertiesObject;
+		}
+
+		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
+		{
+			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
+				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
+			}
+			if (objectToCompare != null && value != null &&
+				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
+				return this;
+			}
+			return null;
+		}
+
+		protected bool CheckForText (string haystack, string needle, bool exact)
+		{
+			if (exact) {
+				return haystack == needle;
+			} else {
+				return (haystack.IndexOf (needle, StringComparison.Ordinal) > -1);
+			}
 		}
 	}
 }

@@ -62,6 +62,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", view.Frame.ToString ());
 		}
 
+		public override string GetResultType  ()
+		{
+			return ResultObject.GetType ().FullName;
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (ResultObject is NSView) {
@@ -137,6 +142,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (ResultObject);
+		}
+
 		public override bool Select ()
 		{
 			return false;
@@ -209,6 +219,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
 			return true;
+		}
+
+		public override void Flash (Action completionHandler)
+		{
+			completionHandler ();
 		}
 	}
 }

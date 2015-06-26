@@ -53,6 +53,8 @@ namespace MonoDevelop.VersionControl.Git
 			oldName = name;
 			currentTracking = tracking;
 
+			this.UseNativeContextMenus ();
+
 			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			comboSources.Model = comboStore;
 			var crp = new CellRendererImage ();

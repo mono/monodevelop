@@ -61,6 +61,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
 		}
 
+		public override string GetResultType  ()
+		{
+			return resultWidget.GetType ().FullName;
+		}
+
 		public override AppResult Marked (string mark)
 		{
 			if (resultWidget.Name != null && resultWidget.Name.IndexOf (mark) > -1) {
@@ -87,15 +92,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return null;
-		}
-
-		protected bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
 		}
 
 		public override AppResult Text (string text, bool exact)
@@ -199,38 +195,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		protected object GetPropertyValue (string propertyName, object requestedObject = null)
-		{
-			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				requestedObject = requestedObject ?? resultWidget;
-				PropertyInfo propertyInfo = requestedObject.GetType().GetProperty(propertyName,
-					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
-				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (requestedObject);
-					if (propertyValue != null) {
-						return propertyValue;
-					}
-				}
-
-				return null;
-			});
-		}
-
 		public override AppResult Property (string propertyName, object value)
 		{
 			return MatchProperty (propertyName, resultWidget, value);
-		}
-
-		protected AppResult MatchProperty (string propertyName, object objectToCompare, object value)
-		{
-			foreach (var singleProperty in propertyName.Split (new [] { '.' })) {
-				objectToCompare = GetPropertyValue (singleProperty, objectToCompare);
-			}
-			if (objectToCompare != null && value != null &&
-				CheckForText (objectToCompare.ToString (), value.ToString (), false)) {
-				return this;
-			}
-			return null;
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -259,6 +226,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return siblingResults;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (resultWidget);
 		}
 
 		public override bool Select ()
@@ -453,6 +425,44 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			toggleButton.Active = active;
 			return true;
+		}
+
+		bool flashState;
+
+		void OnFlashWidget (object o, ExposeEventArgs args)
+		{
+			flashState = !flashState;
+
+			if (flashState) {
+				return;
+			}
+
+			Cairo.Context cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow);
+			cr.SetSourceRGB (1.0, 0.0, 0.0);
+
+			Gdk.Rectangle allocation = resultWidget.Allocation;
+			Gdk.CairoHelper.Rectangle (cr, allocation);
+			cr.Stroke ();
+		}
+
+		public override void Flash (System.Action completionHandler)
+		{
+			int flashCount = 10;
+
+			flashState = true;
+			resultWidget.ExposeEvent += OnFlashWidget;
+
+			GLib.Timeout.Add (1000, () => {
+				resultWidget.QueueDraw ();
+				flashCount--;
+
+				if (flashCount == 0) {
+					resultWidget.ExposeEvent -= OnFlashWidget;
+					completionHandler ();
+					return false;
+				}
+				return true;
+			});
 		}
 	}
 }

@@ -40,6 +40,7 @@ namespace MonoDevelop.VersionControl.Git
 		public StashManagerDialog (GitRepository repo)
 		{
 			this.Build ();
+			this.UseNativeContextMenus ();
 			repository = repo;
 
 			stashes = repo.GetStashes ();

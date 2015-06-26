@@ -46,6 +46,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.Build ();
 
+			this.UseNativeContextMenus ();
+
 			this.repo = repo;
 			this.rebasing = rebasing;
 

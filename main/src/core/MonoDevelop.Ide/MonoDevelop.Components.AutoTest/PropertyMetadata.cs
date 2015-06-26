@@ -1,10 +1,10 @@
-//
-// NewStashDialog.cs
+﻿//
+// PropertyMetadata.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,47 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Reflection;
 
-using MonoDevelop.Components;
-
-namespace MonoDevelop.VersionControl.Git
+namespace MonoDevelop.Components.AutoTest
 {
-	partial class NewStashDialog : Gtk.Dialog
+	public class PropertyMetadata : MarshalByRefObject
 	{
-		public NewStashDialog ()
+		readonly PropertyInfo propertyInfo;
+
+		internal PropertyMetadata (PropertyInfo propertyInfo)
 		{
-			this.Build ();
-
-			this.UseNativeContextMenus ();
-
-			entryComment.Activated += (o, e) => Respond (Gtk.ResponseType.Ok);
+			this.propertyInfo = propertyInfo;
 		}
 
-		public string Comment {
-			get { return entryComment.Text; }
+		public string Name
+		{
+			get {
+				return propertyInfo.Name;
+			}
+		}
+
+		public bool CanRead
+		{
+			get {
+				return propertyInfo.CanRead;
+			}
+		}
+
+		public bool CanWrite
+		{
+			get {
+				return propertyInfo.CanWrite;
+			}
+		}
+
+		public string PropertyType
+		{
+			get {
+				return propertyInfo.PropertyType.FullName;
+			}
 		}
 	}
 }
+

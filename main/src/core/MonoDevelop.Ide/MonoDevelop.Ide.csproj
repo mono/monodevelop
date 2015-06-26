@@ -3482,6 +3482,9 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\DocumentTrackingService.cs">
       <DependentUpon>MonoDevelopProjectCacheHostServiceFactory.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonoDevelop.Components.AutoTest.Results\ObjectResult.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
+    <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

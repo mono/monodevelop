@@ -1,10 +1,10 @@
 ﻿//
-// ChildrenOperation.cs
+// ObjectProperties.cs
 //
 // Author:
-//       iain holmes <iain@xamarin.com>
+//       Manish Sinha <manish.sinha@xamarin.com>
 //
-// Copyright (c) 2015 Xamarin, Inc
+// Copyright (c) 2015 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Linq;
 
-namespace MonoDevelop.Components.AutoTest.Operations
+namespace MonoDevelop.Components.AutoTest
 {
-	public class ChildrenOperation : Operation
+	public class ObjectProperties : MarshalByRefObject
 	{
-		public override List<AppResult> Execute (List<AppResult> resultSet)
+		readonly Dictionary<string,AppResult> propertyMap = new Dictionary<string,AppResult> ();
+
+		readonly Dictionary<string,PropertyMetadata> propertyMetaData = new Dictionary<string,PropertyMetadata> ();
+
+		internal ObjectProperties () { }
+
+		internal void Add (string propertyName, AppResult propertyValue, PropertyInfo propertyInfo)
 		{
-			List<AppResult> newResultSet = new List<AppResult> ();
-
-			foreach (var result in resultSet) {
-				List<AppResult> flattenedChildren = result.Children ();
-				if (flattenedChildren != null) {
-					newResultSet.AddRange (flattenedChildren);
-				}
-			}
-
-			return newResultSet;
+			propertyMap.Add (propertyName, propertyValue);
+			propertyMetaData.Add (propertyName, new PropertyMetadata (propertyInfo));
 		}
 
-		public override string ToString ()
+		public ReadOnlyCollection<string> GetPropertyNames ()
 		{
-			return string.Format ("Children ()");
+			return propertyMap.Keys.ToList ().AsReadOnly ();
+		}
+
+		public AppResult this [string propertyName]
+		{
+			get {
+				return propertyMap [propertyName];
+			}
+		}
+
+		public PropertyMetadata GetMetaData (string propertyName)
+		{
+			return propertyMetaData [propertyName];
 		}
 	}
 }
