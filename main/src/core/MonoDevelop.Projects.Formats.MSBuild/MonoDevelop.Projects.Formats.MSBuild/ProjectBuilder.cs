@@ -89,8 +89,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						buildEngine.Engine.BuildProject (project, runTargets, new Hashtable (), BuildSettings.None);
 
 						if (globalProperties != null) {
-							foreach (var p in globalProperties.Keys)
+							foreach (var p in globalProperties.Keys) {
 								project.GlobalProperties.RemoveProperty (p);
+								buildEngine.Engine.GlobalProperties.RemoveProperty (p);
+							}
 						}
 					}
 
