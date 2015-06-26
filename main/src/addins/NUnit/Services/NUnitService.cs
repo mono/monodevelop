@@ -145,14 +145,14 @@ namespace MonoDevelop.NUnit
 			
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
+			if (checkCurrentRunOperation)
+				IdeApp.ProjectOperations.CurrentRunOperation = session;
+			
 			try {
 				await session.Start ();
 			} finally {
 				resultsPad.Sticky = false;
 			}
-
-			if (checkCurrentRunOperation)
-				IdeApp.ProjectOperations.CurrentRunOperation = session;
 		}
 		
 		public Task RefreshTests (CancellationToken ct)
