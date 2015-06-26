@@ -49,11 +49,13 @@ namespace MonoDevelop.Platform
 		void btnDown_Click (object sender, RoutedEventArgs e)
 		{
 			ShownEncodings.Move (shownLst.SelectedIndex, shownLst.SelectedIndex + 1);
+			UpdateButtons ();
 		}
 
 		void btnUp_Click (object sender, RoutedEventArgs e)
 		{
 			ShownEncodings.Move (shownLst.SelectedIndex, shownLst.SelectedIndex - 1);
+			UpdateButtons ();
 		}
 
 		void btnRight_Click (object sender, RoutedEventArgs e)
