@@ -347,7 +347,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var xw = XmlWriter.Create (sw, new XmlWriterSettings {
 				OmitXmlDeclaration = !hadXmlDeclaration,
 				NewLineChars = format.NewLine,
-				NewLineHandling = NewLineHandling.Entitize
+				NewLineHandling = NewLineHandling.Replace
 			});
 
 			MSBuildWhitespace.Write (initialWhitespace, xw);
