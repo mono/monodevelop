@@ -492,13 +492,12 @@ namespace MonoDevelop.NUnit
 				// Note that we always dispose the tcp listener as we don't want it listening
 				// forever if the test runner does not try to connect to it
 				using (tcpListener) {
-					using (var p = testContext.ExecutionContext.Execute (cmd, cons)) {
-						testContext.Monitor.CancelRequested += p.Cancel;
-						if (testContext.Monitor.IsCancelRequested)
-							p.Cancel ();
-						p.Task.Wait ();
-						testContext.Monitor.CancelRequested -= p.Cancel;
-					}
+					var p = testContext.ExecutionContext.Execute (cmd, cons);
+					testContext.Monitor.CancelRequested += p.Cancel;
+					if (testContext.Monitor.IsCancelRequested)
+						p.Cancel ();
+					p.Task.Wait ();
+					testContext.Monitor.CancelRequested -= p.Cancel;
 
 					if (new FileInfo (outFile).Length == 0)
 						throw new Exception ("Command failed");
