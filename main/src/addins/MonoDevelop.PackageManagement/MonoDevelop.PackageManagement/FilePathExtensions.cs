@@ -38,7 +38,14 @@ namespace MonoDevelop.PackageManagement
 				return false;
 			}
 
-			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase);
+			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase) ||
+				IsProjectSpecificPackagesConfigFile (filePath.FileName);
+		}
+
+		static bool IsProjectSpecificPackagesConfigFile (FilePath filePath)
+		{
+			return filePath.Extension.Equals (".config", StringComparison.OrdinalIgnoreCase) &&
+				filePath.FileNameWithoutExtension.StartsWith ("packages.", StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

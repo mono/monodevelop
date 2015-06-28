@@ -27,11 +27,11 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
-using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -82,22 +82,62 @@ namespace ICSharpCode.PackageManagement
 
 		public static bool HasPackages (this DotNetProject project)
 		{
-			return File.Exists (project.GetPackagesConfigFilePath ());
+			return HasPackages (project.BaseDirectory, project.Name);
 		}
 
 		public static string GetPackagesConfigFilePath (this DotNetProject project)
 		{
-			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
+			return GetPackagesConfigFilePath (project.BaseDirectory, project.Name);
 		}
 
 		public static bool HasPackages (this IDotNetProject project)
 		{
-			return File.Exists (project.GetPackagesConfigFilePath ());
+			return AnyFileExists (GetPossiblePackagesConfigFilePaths (project.BaseDirectory, project.Name));
+		}
+
+		static bool HasPackages (string projectDirectory, string projectName)
+		{
+			return AnyFileExists (GetPossiblePackagesConfigFilePaths (projectDirectory, projectName));
+		}
+
+		static bool AnyFileExists (IEnumerable<string> files)
+		{
+			return files.Any (File.Exists);
+		}
+
+		static IEnumerable<string> GetPossiblePackagesConfigFilePaths (string projectDirectory, string projectName)
+		{
+			yield return GetNonDefaultProjectPackagesConfigFilePath (projectDirectory, projectName);
+			yield return GetDefaultPackagesConfigFilePath (projectDirectory);
+		}
+
+		static string GetNonDefaultProjectPackagesConfigFilePath (string projectDirectory, string projectName)
+		{
+			return Path.Combine (projectDirectory, GetNonDefaultProjectPackagesConfigFileName (projectName));
+		}
+
+		static string GetNonDefaultProjectPackagesConfigFileName (string projectName)
+		{
+			return "packages." + projectName.Replace (' ', '_') + ".config";
+		}
+
+		static string GetDefaultPackagesConfigFilePath (string projectDirectory)
+		{
+			return Path.Combine (projectDirectory, Constants.PackageReferenceFile);
 		}
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
 		{
-			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
+			return GetPackagesConfigFilePath (project.BaseDirectory, project.Name);
+		}
+
+		static string GetPackagesConfigFilePath (string projectDirectory, string projectName)
+		{
+			string nonDefaultPackagesConfigFilePath = GetNonDefaultProjectPackagesConfigFilePath (projectDirectory, projectName);
+			if (File.Exists (nonDefaultPackagesConfigFilePath)) {
+				return nonDefaultPackagesConfigFilePath;
+			}
+			return GetDefaultPackagesConfigFilePath (projectDirectory);
 		}
 	}
 }
