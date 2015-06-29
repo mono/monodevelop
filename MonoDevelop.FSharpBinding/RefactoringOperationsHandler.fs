@@ -136,8 +136,8 @@ module Refactoring =
       | _ -> false
          
     type BaseSymbol =
-        | Member of FSharpMemberOrFunctionOrValue
-        | Type of FSharpEntity
+      | Member of FSharpMemberOrFunctionOrValue
+      | Type of FSharpEntity
         
     let getBaseSymbol (symbolUse:FSharpSymbolUse) =
         match symbolUse.Symbol with
@@ -341,6 +341,26 @@ module Refactoring =
       let onComplete _ = monitor.Dispose()
       Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
+    let findExtensionMethods (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse, lastIdent) =
+      let monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)
+      let findAsync = async { 
+        let dependentProjects = getDependentProjects ctx.Project symbolUse
+
+        let! symbolrefs =
+            langServ.GetExtensionMethods(ctx.Project.FileName.ToString(), editor.FileName.ToString(), editor.Text, symbolUse.Symbol, dependentProjects)
+
+        let distinctRefs = 
+            symbolrefs
+            |> Array.map (Symbols.getOffsetsTrimmed lastIdent)
+            |> Seq.distinct
+
+        for (filename, startOffset, endOffset) in distinctRefs do
+            let sr = SearchResult (FileProvider (filename), startOffset, endOffset-startOffset)
+            monitor.ReportResult sr 
+          }
+      let onComplete _ = monitor.Dispose()
+      Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
+
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
 
@@ -475,7 +495,10 @@ type CurrentRefactoringOperationsHandler() =
                           let description = getCatalogString "Find Method Overloads"
                           ainfo.Add (description, Action (fun () -> Refactoring.findOverloads (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
 
-                        //TODO: find extension methods, find type extensions
+                        //find type extensions
+                        if symbolUse.Symbol :? FSharpEntity then
+                          let extMethodDescription = getCatalogString "Find Type Extensions"
+                          ainfo.Add (extMethodDescription, Action (fun () -> Refactoring.findExtensionMethods (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
             
                         if ciset.CommandInfos.Count > 0 then
                             ainfo.Add (ciset, null)
