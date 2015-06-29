@@ -107,6 +107,11 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 			
+			if (data.TransientFor != null)
+				panel.ParentWindow = GtkQuartz.GetWindow (data.TransientFor);
+			else
+				panel.ParentWindow = NSApplication.SharedApplication.KeyWindow;
+
 			var openPanel = panel as NSOpenPanel;
 			if (openPanel != null) {
 				openPanel.AllowsMultipleSelection = data.SelectMultiple;
