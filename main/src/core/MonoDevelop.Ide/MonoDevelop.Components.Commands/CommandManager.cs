@@ -911,6 +911,30 @@ namespace MonoDevelop.Components.Commands
 		}
 
 		/// <summary>
+		/// Shows the context menu.
+		/// </summary>
+		/// <returns><c>true</c>, if context menu was shown, <c>false</c> otherwise.</returns>
+		/// <param name="parent">Widget for which the context menu is shown</param>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		/// <param name="entrySet">Entry set with the command definitions</param>
+		/// <param name="initialCommandTarget">Initial command target.</param>
+		public bool ShowContextMenu (Gtk.Widget parent, int x, int y, CommandEntrySet entrySet,
+			object initialCommandTarget = null)
+		{
+#if MAC
+			var menu = CreateNSMenu (entrySet, initialCommandTarget);
+			ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, menu);
+#else
+			var menu = CreateMenu (entrySet);
+			if (menu != null)
+				ShowContextMenu (parent, x, y, menu, initialCommandTarget);
+#endif
+
+			return true;
+		}
+
+		/// <summary>
 		/// Shows a context menu.
 		/// </summary>
 		/// <param name='parent'>
@@ -934,7 +958,17 @@ namespace MonoDevelop.Components.Commands
 
 			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
-		
+
+		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
+			object initialCommandTarget = null)
+		{
+			if (menu is CommandMenu) {
+				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
+			}
+
+			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
+		}
+
 		/// <summary>
 		/// Creates a toolbar.
 		/// </summary>
