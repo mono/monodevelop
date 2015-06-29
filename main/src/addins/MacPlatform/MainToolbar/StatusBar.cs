@@ -689,8 +689,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var attrString = GetPopoverString (tooltip);
 
+			var height = attrString.BoundingRectWithSize (new CGSize (230, nfloat.MaxValue),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
+			
 			popover.ContentViewController.View = new NSTextField {
-				Frame = new CGRect (0, 0, 230, attrString.GetSize ().Height + 14),
+				Frame = new CGRect (0, 0, 230, height + 14),
 				DrawsBackground = false,
 				Bezeled = true,
 				Editable = false,
