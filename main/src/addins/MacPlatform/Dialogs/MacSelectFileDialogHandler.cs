@@ -107,9 +107,14 @@ namespace MonoDevelop.MacIntegration
 			if (!string.IsNullOrEmpty (data.CurrentFolder))
 				panel.DirectoryUrl = new NSUrl (data.CurrentFolder, true);
 			
-			if (data.TransientFor != null)
+			if (data.TransientFor != null) {
 				panel.ParentWindow = GtkQuartz.GetWindow (data.TransientFor);
-			else
+				if (data.TransientFor.TransientFor == null) {
+					LoggingService.LogDebug ("The window being attached to is not attached to the root window, hiding will crash:{0}{1}",
+						Environment.NewLine,
+						Environment.StackTrace);
+				}
+			} else
 				panel.ParentWindow = NSApplication.SharedApplication.KeyWindow;
 
 			var openPanel = panel as NSOpenPanel;
