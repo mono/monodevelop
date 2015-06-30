@@ -1777,7 +1777,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
 
-			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
+			if (evt == null) {
+				var paths = tree.Selection.GetSelectedRows ();
+				if (paths != null) {
+					var area = tree.GetCellArea (paths [0], tree.Columns [0]);
+
+					IdeApp.CommandService.ShowContextMenu (this, area.Left, area.Top, entryset, this);
+				}
+			} else {
+				IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
+			}
 		}
 
 		protected CommandEntrySet BuildEntrySet ()
