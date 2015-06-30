@@ -210,6 +210,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\OpenPackageReadMeMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableInstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatePackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\FilePathExtensionsTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetProjectExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

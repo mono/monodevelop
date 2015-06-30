@@ -40,7 +40,9 @@ namespace ICSharpCode.PackageManagement
 	{
 		public static readonly Guid WebApplication = Guid.Parse("{349C5851-65DF-11DA-9384-00065B846F21}");
 		public static readonly Guid WebSite = Guid.Parse("{E24C65DC-7377-472B-9ABA-BC803B73C61A}");
-		
+
+		public static Func<string, bool> FileExists = File.Exists;
+
 		public static bool IsWebProject(this IDotNetProject project)
 		{
 			return project.HasProjectType(WebApplication) || project.HasProjectType(WebSite);
@@ -102,7 +104,7 @@ namespace ICSharpCode.PackageManagement
 
 		static bool AnyFileExists (IEnumerable<string> files)
 		{
-			return files.Any (File.Exists);
+			return files.Any (FileExists);
 		}
 
 		static IEnumerable<string> GetPossiblePackagesConfigFilePaths (string projectDirectory, string projectName)
@@ -134,7 +136,7 @@ namespace ICSharpCode.PackageManagement
 		static string GetPackagesConfigFilePath (string projectDirectory, string projectName)
 		{
 			string nonDefaultPackagesConfigFilePath = GetNonDefaultProjectPackagesConfigFilePath (projectDirectory, projectName);
-			if (File.Exists (nonDefaultPackagesConfigFilePath)) {
+			if (FileExists (nonDefaultPackagesConfigFilePath)) {
 				return nonDefaultPackagesConfigFilePath;
 			}
 			return GetDefaultPackagesConfigFilePath (projectDirectory);
