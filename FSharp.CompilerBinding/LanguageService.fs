@@ -341,7 +341,6 @@ type LanguageService(dirtyNotify) =
     // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
     //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
 
-
   member x.StartBackgroundCompileOfProject (projectFilename) =
     let opts = x.GetProjectCheckerOptions(projectFilename)
     checker.StartBackgroundCompile(opts)
@@ -395,7 +394,6 @@ type LanguageService(dirtyNotify) =
     match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
     | Some results -> results
     | None -> ParseAndCheckResults.Empty
-
 
   /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
   member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
@@ -510,7 +508,6 @@ type LanguageService(dirtyNotify) =
       let sameLogicalParent = parentEntity.IsEffectivelySameAs extslogicalEntity
       isExt && sameLogicalParent
 
-
     let predicate (symbolUse: FSharpSymbolUse) =
       try
         match symbolAtCaret with
@@ -543,7 +540,6 @@ type LanguageService(dirtyNotify) =
               
       return filteredSymbols }
            
-
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
   /// e.g. dependent references have changed
   member x.InvalidateConfiguration(options) =
