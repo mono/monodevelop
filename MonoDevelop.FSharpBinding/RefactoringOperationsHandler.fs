@@ -92,54 +92,8 @@ module Refactoring =
                     | projects -> SymbolDeclarationLocation.Projects (projects, symbol.IsSymbolLocalForProject)
             | None -> SymbolDeclarationLocation.Unknown
 
-    let canRename (symbolUse:FSharpSymbolUse) fileName project =
-        match getSymbolDeclarationLocation symbolUse.Symbol fileName project with
-        | SymbolDeclarationLocation.External _ -> false
-        | SymbolDeclarationLocation.Unknown -> false
-        | _ -> true
-
-    let canJump (symbolUse:FSharpSymbolUse) currentFile solution =
-        //Reference:
-        //For Roslyn the following symbol types *cant* be jumped to: 
-        //Alias, ArrayType, Assembly, DynamicType, ErrorType, NetModule, NameSpace, PointerType, PreProcessor
-        match symbolUse.Symbol with
-        | :? FSharpMemberOrFunctionOrValue
-        | :? FSharpUnionCase
-        | :? FSharpEntity
-        | :? FSharpField
-        | :? FSharpGenericParameter
-        | :? FSharpActivePatternCase
-        | :? FSharpParameter
-        | :? FSharpStaticParameter ->
-            match getSymbolDeclarationLocation symbolUse.Symbol currentFile solution with
-            | SymbolDeclarationLocation.External _ -> true
-            | SymbolDeclarationLocation.Unknown -> false
-            | _ -> true
-        | _ -> false
-        
-    let canGotoBase (symbolUse:FSharpSymbolUse) =
-        match symbolUse.Symbol with
-            | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
-                match mfv.EnclosingEntity.BaseType with
-                | Some bt -> bt.HasTypeDefinition
-                | _ -> false
-            | :? FSharpEntity as ent ->
-                match ent.BaseType with
-                | Some bt -> bt.HasTypeDefinition
-                | _ -> false
-            | _ -> false
-
-    let canGotoOverloads (symbolUse:FSharpSymbolUse) =
-      match symbolUse.Symbol with
-      | :? FSharpMemberOrFunctionOrValue as mfv ->
-        mfv.Overloads(false).IsSome
-      | _ -> false
-         
-    type BaseSymbol =
-      | Member of FSharpMemberOrFunctionOrValue
-      | Type of FSharpEntity
-        
-    let getBaseSymbol (symbolUse:FSharpSymbolUse) =
+               
+    let getBaseSymbol (symbolUse:FSharpSymbolUse) : FSharpSymbol option =
         match symbolUse.Symbol with
         | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
             match mfv.EnclosingEntity.BaseType with
@@ -152,12 +106,12 @@ module Refactoring =
                 
                 //assume just the first for now
                 match baseDefs |> Seq.tryFind (fun btd -> btd.DisplayName = mfv.DisplayName) with
-                | Some bm -> Some (Member(bm))
+                | Some bm -> Some (bm :> _)
                 | _ -> None
             | _ -> None
         | :? FSharpEntity as ent ->
             match ent.BaseType with
-            | Some bt when bt.HasTypeDefinition -> Some (Type(bt.TypeDefinition))
+            | Some bt when bt.HasTypeDefinition -> Some (bt.TypeDefinition :> _)
             | _ -> None
         | _ -> None
     
@@ -361,6 +315,56 @@ module Refactoring =
       let onComplete _ = monitor.Dispose()
       Async.StartWithContinuations(findAsync, onComplete, onComplete, onComplete)
 
+    module Operations =
+      let canRename (symbolUse:FSharpSymbolUse) fileName project =
+          match getSymbolDeclarationLocation symbolUse.Symbol fileName project with
+          | SymbolDeclarationLocation.External _ -> false
+          | SymbolDeclarationLocation.Unknown -> false
+          | _ -> true
+
+      let canJump (symbolUse:FSharpSymbolUse) currentFile solution =
+          //Reference:
+          //For Roslyn the following symbol types *cant* be jumped to: 
+          //Alias, ArrayType, Assembly, DynamicType, ErrorType, NetModule, NameSpace, PointerType, PreProcessor
+          match symbolUse.Symbol with
+          | :? FSharpMemberOrFunctionOrValue
+          | :? FSharpUnionCase
+          | :? FSharpEntity
+          | :? FSharpField
+          | :? FSharpGenericParameter
+          | :? FSharpActivePatternCase
+          | :? FSharpParameter
+          | :? FSharpStaticParameter ->
+              match getSymbolDeclarationLocation symbolUse.Symbol currentFile solution with
+              | SymbolDeclarationLocation.External _ -> true
+              | SymbolDeclarationLocation.Unknown -> false
+              | _ -> true
+          | _ -> false
+          
+      let canGotoBase (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as mfv when mfv.IsDispatchSlot ->
+            match mfv.EnclosingEntity.BaseType with
+            | Some bt -> bt.HasTypeDefinition
+            | _ -> false
+        | :? FSharpEntity as ent ->
+            match ent.BaseType with
+            | Some bt -> bt.HasTypeDefinition
+            | _ -> false
+        | _ -> false
+
+      let canGotoOverloads (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as mfv ->
+          mfv.Overloads(false).IsSome
+        | _ -> false
+
+      let canFindDerived (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+        | :? FSharpEntity as entity when not entity.IsFSharpModule -> true
+        | :? FSharpMemberOrFunctionOrValue -> true
+        | _ -> false
+
 type CurrentRefactoringOperationsHandler() =
     inherit CommandHandler()
 
@@ -408,14 +412,14 @@ type CurrentRefactoringOperationsHandler() =
                         let lastIdent = Symbols.lastIdent col lineTxt
             
                         //rename refactoring
-                        let canRename = Refactoring.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
+                        let canRename = Refactoring.Operations.canRename symbolUse doc.Editor.FileName doc.Project.ParentSolution
                         if canRename then
                             let commandInfo = IdeApp.CommandService.GetCommandInfo (Commands.EditCommands.Rename)
                             commandInfo.Enabled <- true
                             ciset.CommandInfos.Add (commandInfo, Action(fun _ -> (Refactoring.rename (doc.Editor, doc, lastIdent, symbolUse))))
             
                         // goto to declaration
-                        if Refactoring.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
+                        if Refactoring.Operations.canJump symbolUse doc.Editor.FileName doc.Project.ParentSolution then
                             let locations = Symbols.getLocationFromSymbolUse symbolUse
                             match locations with
                             | [] -> ()
@@ -432,14 +436,11 @@ type CurrentRefactoringOperationsHandler() =
                                 ainfo.Add (declSet)
                         
                         //goto base
-                        if Refactoring.canGotoBase symbolUse then
+                        if Refactoring.Operations.canGotoBase symbolUse then
                             let baseSymbol = Refactoring.getBaseSymbol symbolUse
                             match baseSymbol with
                             | Some bs ->
-                                let symbol = 
-                                    match bs with
-                                    | Refactoring.BaseSymbol.Member m -> m :> FSharpSymbol
-                                    | Refactoring.BaseSymbol.Type t -> t :> FSharpSymbol
+                                let symbol = bs
                                 //let _baseIdent = symbol.DisplayName
                                 let locations = Symbols.getLocationFromSymbol symbol
                                 match locations with
@@ -480,7 +481,7 @@ type CurrentRefactoringOperationsHandler() =
                         //ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), Action (fun () -> Refactoring.FindRefs (sym)))
 
                         // find derived symbols
-                        if symbolUse.Symbol :? FSharpEntity || symbolUse.Symbol :? FSharpMemberOrFunctionOrValue  then
+                        if Refactoring.Operations.canFindDerived symbolUse then
                           let description = 
                             match symbolUse.Symbol with
                             | :? FSharpEntity as fse when fse.IsInterface -> getCatalogString "Find Implementing Types"
@@ -491,7 +492,7 @@ type CurrentRefactoringOperationsHandler() =
                           ainfo.Add (description, Action (fun () -> Refactoring.findDerivedReferences (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
 
                         //find overloads
-                        if Refactoring.canGotoOverloads symbolUse then
+                        if Refactoring.Operations.canGotoOverloads symbolUse then
                           let description = getCatalogString "Find Method Overloads"
                           ainfo.Add (description, Action (fun () -> Refactoring.findOverloads (doc.Editor, doc, symbolUse, lastIdent))) |> ignore
 
@@ -520,7 +521,7 @@ type RenameHandler() =
                 | Some ast ->
                     match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                     //set bypass is we cant rename
-                    | _lineinfo, Some sym when not (Refactoring.canRename sym editor.FileName doc.Project.ParentSolution) ->
+                    | _lineinfo, Some sym when not (Refactoring.Operations.canRename sym editor.FileName doc.Project.ParentSolution) ->
                         ci.Bypass <- true
                     | _lineinfo, _symbol -> ()
                 //disable for no ast
@@ -540,7 +541,7 @@ type RenameHandler() =
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //Is this a double check, i.e. isnt update checking can rename?
-                | (_line, col, lineTxt), Some sym when Refactoring.canRename sym editor.FileName ctx.Project.ParentSolution ->
+                | (_line, col, lineTxt), Some sym when Refactoring.Operations.canRename sym editor.FileName ctx.Project.ParentSolution ->
                     let lastIdent = Symbols.lastIdent col lineTxt
                     Refactoring.rename (editor, ctx, lastIdent, sym)
                 | _ -> ()
@@ -565,7 +566,7 @@ type GotoDeclarationHandler() =
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
                 //set bypass as we cant jump
-                | _lineinfo, Some sym when not (Refactoring.canJump sym editor.FileName doc.Project.ParentSolution) ->
+                | _lineinfo, Some sym when not (Refactoring.Operations.canJump sym editor.FileName doc.Project.ParentSolution) ->
                     ci.Bypass <- true
                 | _lineinfo, _symbol -> ()
             //disable for no ast
@@ -581,7 +582,7 @@ type GotoDeclarationHandler() =
             match context.ParsedDocument.TryGetAst() with
             | Some ast ->
                 match Refactoring.getSymbolAndLineInfoAtCaret ast editor with
-                | (_line, _col, _lineTxt), Some symbolUse when Refactoring.canJump symbolUse editor.FileName context.Project.ParentSolution ->
+                | (_line, _col, _lineTxt), Some symbolUse when Refactoring.Operations.canJump symbolUse editor.FileName context.Project.ParentSolution ->
                         //let lastIdent = Symbols.lastIdent col lineTxt
                         Refactoring.jumpToDeclaration (editor, context, symbolUse)
                 | _ -> ()
