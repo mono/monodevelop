@@ -484,6 +484,8 @@ type LanguageService(dirtyNotify) =
       return filteredSymbols }
 
   /// Get all overloads derived from the specified symbol in the current project
+  //Currently there seems to be an issue in FCS where a methods EnclosingEntity returns the wrong type
+  //The sanest option is to just use the OverloadsProperty for now.
   member x.GetOverridesForSymbolInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol) =
     try
       match symbolAtCaret with
@@ -523,7 +525,7 @@ type LanguageService(dirtyNotify) =
         false
 
     async { 
-      Debug.WriteLine("LanguageService: GetDerivedSymbolInProject: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
+      Debug.WriteLine("LanguageService: GetExtensionMethods: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
       let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
       let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
 
