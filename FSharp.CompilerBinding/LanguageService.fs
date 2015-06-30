@@ -491,6 +491,55 @@ type LanguageService(dirtyNotify) =
         caretmfv.Overloads(false)
       | _ -> None
     with _ -> None
+
+  member x.GetExtensionMethods(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
+
+    let isAnAttributedExtensionMethod (symbolToCompare:FSharpMemberOrFunctionOrValue) parentEntity = 
+      let hasExtension = symbolToCompare.Attributes |> Seq.tryFind (fun a -> a.AttributeType.DisplayName = "ExtensionAttribute") |> Option.isSome
+      if hasExtension then
+        let firstCurriedParamter = symbolToCompare.CurriedParameterGroups.[0].[0]
+        let sameAs = firstCurriedParamter.Type.TypeDefinition.IsEffectivelySameAs parentEntity
+        sameAs
+      else false
+
+    let isAnExtensionMethod (mfv:FSharpMemberOrFunctionOrValue) (parentEntity:FSharpSymbol) =
+      let isExt = mfv.IsExtensionMember
+      let extslogicalEntity = mfv.LogicalEnclosingEntity
+      let sameLogicalParent = parentEntity.IsEffectivelySameAs extslogicalEntity
+      isExt && sameLogicalParent
+
+
+    let predicate (symbolUse: FSharpSymbolUse) =
+      try
+        match symbolAtCaret with
+
+        | :? FSharpEntity as caretEntity ->
+            match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as mfv ->
+                isAnExtensionMethod mfv caretEntity || isAnAttributedExtensionMethod mfv caretEntity
+            | _ -> false
+        | _ -> false
+      with ex ->
+        false
+
+    async { 
+      Debug.WriteLine("LanguageService: GetDerivedSymbolInProject: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
+      let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
+        |> Async.List.map checker.ParseAndCheckProject
+
+      let! allSymbolUses =
+        allProjectResults
+        |> List.map (fun checkedProj -> checkedProj.GetAllUsesOfAllSymbols())
+        |> Async.Parallel
+        |> Async.map Array.concat
+      
+      let filteredSymbols = allSymbolUses |> Array.filter predicate 
+              
+      return filteredSymbols }
            
 
   /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
