@@ -116,6 +116,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				m |= ModifierKeys.Alt;
 			if ((s & Gdk.ModifierType.Mod2Mask) != 0)
 				m |= ModifierKeys.Command;
+			if ((s & Gdk.ModifierType.MetaMask) != 0)
+				m |= ModifierKeys.Command;
 			return m;
 		}
 		#endregion

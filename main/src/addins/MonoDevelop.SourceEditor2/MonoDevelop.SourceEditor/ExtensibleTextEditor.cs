@@ -98,14 +98,18 @@ namespace MonoDevelop.SourceEditor
 		static Gdk.ModifierType ConvertModifiers (ModifierKeys s)
 		{
 			Gdk.ModifierType m = Gdk.ModifierType.None;
-			if ((s & ModifierKeys.Shift) != 0)
+			if ((s & ModifierKeys.Shift) != 0) {
 				m |= Gdk.ModifierType.ShiftMask;
+				if ((s & ModifierKeys.Command) != 0)
+					m |= Gdk.ModifierType.MetaMask;
+			} else {
+				if ((s & ModifierKeys.Command) != 0)
+					m |= Gdk.ModifierType.Mod2Mask;
+			}
 			if ((s & ModifierKeys.Control) != 0)
 				m |= Gdk.ModifierType.ControlMask;
 			if ((s & ModifierKeys.Alt) != 0)
 				m |= Gdk.ModifierType.Mod1Mask;
-			if ((s & ModifierKeys.Command) != 0)
-				m |= Gdk.ModifierType.Mod2Mask;
 			return m;
 		}
 

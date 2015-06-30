@@ -140,7 +140,6 @@ namespace Mono.TextEditor
 			
 			
 			// == subword motions ==
-						
 			action = CaretMoveActions.PreviousSubword;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, subwordModifier), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, subwordModifier), action);
@@ -179,7 +178,7 @@ namespace Mono.TextEditor
 			action = SelectionActions.MoveLineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), action);
-			
+
 			action = CaretMoveActions.ToDocumentStart;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ControlMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ControlMask), action);
@@ -303,8 +302,9 @@ namespace Mono.TextEditor
 			action = SelectionActions.MoveLineHome;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Home, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Home, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Left, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Left, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
-			
+
 			action = CaretMoveActions.ToDocumentStart;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Up, Gdk.ModifierType.MetaMask), action);
 
@@ -324,8 +324,9 @@ namespace Mono.TextEditor
 			action = SelectionActions.MoveLineEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.KP_End, Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.End, Gdk.ModifierType.ShiftMask), action);
+			keyBindings.Add (GetKeyCode (Gdk.Key.KP_Right, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
 			keyBindings.Add (GetKeyCode (Gdk.Key.Right, Gdk.ModifierType.MetaMask | Gdk.ModifierType.ShiftMask), action);
-			
+
 			action = CaretMoveActions.ToDocumentEnd;
 			keyBindings.Add (GetKeyCode (Gdk.Key.Down, Gdk.ModifierType.MetaMask), action);
 
