@@ -45,20 +45,36 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopTemporaryStorageServiceFactory ()
 		{
-			if (Core.Platform.IsWindows) {
-				var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
-				if (asm != null) {
-					var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
-					if (type != null)
-						microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
+			if (Core.Platform.IsWindows || IsCompatibleMono()) {
+				try {
+					var asm = Assembly.Load ("Microsoft.CodeAnalysis.Workspaces.Desktop");
+					if (asm != null) {
+						var type = asm.GetType ("Microsoft.CodeAnalysis.Host.TemporaryStorageServiceFactory");
+						if (type != null)
+							microsoftFactory = Activator.CreateInstance (type) as IWorkspaceServiceFactory;
+					}
+				} catch (Exception e) {
+					LoggingService.LogWarning ("MonoDevelopTemporaryStorageServiceFactory: Can't load microsoft temporary storage, fallback to default.", e);
 				}
+			}
+		}
+
+		// remove, if mono >= 4.3 is realeased as stable.
+		static bool IsCompatibleMono ()
+		{
+			try {
+				var type = typeof (System.IO.MemoryMappedFiles.MemoryMappedViewAccessor);
+				return type.GetProperty ("PointerOffset", BindingFlags.Instance | BindingFlags.Public) != null;
+			} catch (Exception) {
+				return false;
 			}
 		}
 
 		public IWorkspaceService CreateService (HostWorkspaceServices workspaceServices)
 		{
-			if (microsoftFactory != null)
+			if (microsoftFactory != null) {
 				return microsoftFactory.CreateService (workspaceServices);
+			}
 			return new TemporaryStorageService ();
 		}
 
@@ -216,7 +232,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public StreamStorage ()
 			{
-					Console.WriteLine ("Create stream storage !!!");
 			}
 
 			public void Dispose()
