@@ -881,6 +881,31 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
 			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
+
+			// Casting primitive <-> custom class via implicit operator
+			val = Eval ("(myNint)3");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("{3}", val.Value);
+			Assert.AreEqual ("myNint", val.TypeName);
+
+			val = Eval ("(int)(myNint)4");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("4", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]

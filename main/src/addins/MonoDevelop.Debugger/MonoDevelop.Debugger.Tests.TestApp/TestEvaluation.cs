@@ -537,6 +537,31 @@ class ClassWithCompilerGeneratedNestedClass
 	}
 }
 
+struct myNint
+{
+	long v;
+
+	public static implicit operator myNint (int v)
+	{
+		return new myNint (v);
+	}
+
+	public static implicit operator int (myNint v)
+	{
+		return (int)v.v;
+	}
+
+	public override string ToString ()
+	{
+		return v.ToString ();
+	}
+
+	myNint (int v)
+	{
+		this.v = v;
+	}
+}
+
 class BinaryOperatorOverrides
 {
 	int value;
