@@ -375,7 +375,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		async Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
+		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -388,49 +388,51 @@ namespace MonoDevelop.CSharp.Completion
 
 			var list = new CSharpCompletionDataList ();
 			list.TriggerWordLength = triggerWordLength;
-			try {
-				var analysisDocument = DocumentContext.AnalysisDocument;
-				if (analysisDocument == null)
-					return null;
-				
-				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
-				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-
-				var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
-				foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
-					extHandler.Init (roslynCodeCompletionFactory);
-				var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
-				var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
-				ctx.AdditionalContextHandlers = additionalContextHandlers;
-				var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
-				var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token);
-				if (completionResult == CompletionResult.Empty)
-					return null;
-
-				foreach (var symbol in completionResult) {
-					list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
-				}
-
-				if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
-					AddImportCompletionData (list, semanticModel, offset, token);
-				}
-
-				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
-				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
-				list.AutoSelect = completionResult.AutoSelect;
-				list.DefaultCompletionString = completionResult.DefaultCompletionString;
-				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
-				if (ctrlSpace)
-					list.AutoCompleteUniqueMatch = true;
-			} catch (OperationCanceledException) {
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
 				return null;
-			} catch (AggregateException e) {
-				foreach (var inner in e.Flatten ().InnerExceptions)
-					LoggingService.LogError ("Error while getting C# recommendations", inner); 
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while getting C# recommendations", e); 
-			}
-			return (ICompletionDataList)list;
+			return Task.Run (async delegate {
+				try {
+					
+					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+					var semanticModel = await partialDoc.GetSemanticModelAsync (token).ConfigureAwait (false);
+
+					var roslynCodeCompletionFactory = new RoslynCodeCompletionFactory (this, semanticModel);
+					foreach (var extHandler in additionalContextHandlers.OfType<IExtensionContextHandler> ())
+						extHandler.Init (roslynCodeCompletionFactory);
+					var engine = new CompletionEngine(MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, roslynCodeCompletionFactory);
+					var ctx = new ICSharpCode.NRefactory6.CSharp.CompletionContext (partialDoc, offset, semanticModel);
+					ctx.AdditionalContextHandlers = additionalContextHandlers;
+					var triggerInfo = new CompletionTriggerInfo (ctrlSpace ? CompletionTriggerReason.CompletionCommand : CompletionTriggerReason.CharTyped, completionChar);
+					var completionResult = await engine.GetCompletionDataAsync (ctx, triggerInfo, token).ConfigureAwait (false);
+					if (completionResult == CompletionResult.Empty)
+						return null;
+					
+					foreach (var symbol in completionResult) {
+						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
+					}
+
+					if (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol)) {
+						AddImportCompletionData (list, semanticModel, offset, token);
+					}
+
+					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
+					// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
+					list.AutoSelect = completionResult.AutoSelect;
+					list.DefaultCompletionString = completionResult.DefaultCompletionString;
+					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
+					if (ctrlSpace)
+						list.AutoCompleteUniqueMatch = true;
+				} catch (OperationCanceledException) {
+					return null;
+				} catch (AggregateException e) {
+					foreach (var inner in e.Flatten ().InnerExceptions)
+						LoggingService.LogError ("Error while getting C# recommendations", inner); 
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting C# recommendations", e); 
+				}
+				return (ICompletionDataList)list;
+			});
 		}
 		
 		public override Task<ICompletionDataList> CodeCompletionCommand (CodeCompletionContext completionContext)
