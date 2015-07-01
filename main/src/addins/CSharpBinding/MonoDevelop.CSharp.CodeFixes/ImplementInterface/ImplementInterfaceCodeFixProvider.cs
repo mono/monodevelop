@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface;
 using ICSharpCode.NRefactory6.CSharp;
+using RefactoringEssentials;
 
 namespace MonoDevelop.CSharp.CodeFixes.ImplementInterface
 {

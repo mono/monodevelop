@@ -708,7 +708,6 @@
     <Compile Include="Util\FastSerializer.cs" />
     <Compile Include="Util\FindTokenHelper.cs" />
     <Compile Include="Util\FormatStringHelper.cs" />
-    <Compile Include="Util\GeneratedCodeRecognition.cs" />
     <Compile Include="Util\GeneratedCodeRecognitionService.cs" />
     <Compile Include="Util\Hash.cs" />
     <Compile Include="Util\HelpLink.cs" />
