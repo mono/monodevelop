@@ -882,6 +882,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 
+			IgnoreCorDebugger ("CorDebugger: Implicit casting");
+
 			// Casting primitive <-> custom class via implicit operator
 			val = Eval ("(myNint)3");
 			if (!AllowTargetInvokes) {
