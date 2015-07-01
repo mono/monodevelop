@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -199,10 +200,9 @@ namespace MonoDevelop.Components.AutoTest
 		}
 		*/
 
-		// FIXME: This shouldn't be here
-		public bool IsBuildSuccessful ()
+		public int ErrorCount (TaskSeverity severity)
 		{
-			return session.IsBuildSuccessful ();
+			return session.ErrorCount (severity);
 		}
 
 		public void WaitForEvent (string name)
