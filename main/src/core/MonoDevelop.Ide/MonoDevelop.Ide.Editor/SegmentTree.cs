@@ -699,20 +699,24 @@ namespace MonoDevelop.Ide.Editor
 			int totalLength = DistanceToPrevNode;
 			int distanceToMaxEnd = Length;
 
-			if (Left != null) {
-				totalLength += Left.TotalLength;
-				int leftdistance = Left.DistanceToMaxEnd - DistanceToPrevNode;
-				if (Left.Right != null)
-					leftdistance -= Left.Right.TotalLength;
+			var left = Left;
+			if (left != null) {
+				totalLength += left.TotalLength;
+				int leftdistance = left.DistanceToMaxEnd - DistanceToPrevNode;
+				var leftRight = left.Right;
+				if (leftRight != null)
+					leftdistance -= leftRight.TotalLength;
 				if (leftdistance > distanceToMaxEnd)
 					distanceToMaxEnd = leftdistance;
 			}
 
-			if (Right != null) {
-				totalLength += Right.TotalLength;
-				int rightdistance = Right.DistanceToMaxEnd + Right.DistanceToPrevNode;
-				if (Right.Left != null)
-					rightdistance += Right.Left.TotalLength;
+			var right = Right;
+			if (right != null) {
+				totalLength += right.TotalLength;
+				int rightdistance = right.DistanceToMaxEnd + right.DistanceToPrevNode;
+				var rightLeft = right.Left;
+				if (rightLeft != null)
+					rightdistance += rightLeft.TotalLength;
 				if (rightdistance > distanceToMaxEnd)
 					distanceToMaxEnd = rightdistance;
 			}
@@ -720,8 +724,7 @@ namespace MonoDevelop.Ide.Editor
 			if (TotalLength != totalLength || DistanceToMaxEnd != distanceToMaxEnd) {
 				TotalLength = totalLength;
 				DistanceToMaxEnd = distanceToMaxEnd;
-				if (Parent != null)
-					Parent.UpdateAugmentedData ();
+				Parent?.UpdateAugmentedData ();
 			}
 		}
 
