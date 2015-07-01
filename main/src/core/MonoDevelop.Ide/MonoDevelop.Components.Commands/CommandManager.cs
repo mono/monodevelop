@@ -955,7 +955,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 			
-			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
 		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
@@ -965,7 +965,7 @@ namespace MonoDevelop.Components.Commands
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
+			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
 		}
 
 		/// <summary>
