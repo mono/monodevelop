@@ -621,15 +621,7 @@ namespace MonoDevelop.SourceEditor
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 			if (Platform.IsMac) {
-				if (evt == null) {
-					int x, y;
-					var pt = LocationToPoint (this.Caret.Location);
-					TranslateCoordinates (Toplevel, pt.X, pt.Y, out x, out y);
-
-					IdeApp.CommandService.ShowContextMenu (this, x, y, cset, this);
-				} else {
-					IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
-				}
+				IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 			} else {
 				Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 				var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
@@ -643,8 +635,7 @@ namespace MonoDevelop.SourceEditor
 					GtkWorkarounds.ShowContextMenu (menu, this, evt);
 				} else {
 					var pt = LocationToPoint (this.Caret.Location);
-
-					GtkWorkarounds.ShowContextMenu (menu, this, (int)pt.X, (int)pt.Y);
+					GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
 				}
 			}
 		}
