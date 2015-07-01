@@ -906,6 +906,30 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("4", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestCastingArgument(4)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"4\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("new RichClass(5).publicPropInt1");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
