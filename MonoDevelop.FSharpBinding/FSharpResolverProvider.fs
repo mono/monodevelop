@@ -48,7 +48,7 @@ type FSharpResolverProvider() =
                         | FSharpFindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
                         | FSharpFindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
                         | FSharpFindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)
-                        DocumentRegion ()               
+                        DocumentRegion ()
 
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
                 let lastIdent = Symbols.lastIdent col lineStr

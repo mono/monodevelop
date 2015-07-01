@@ -20,7 +20,7 @@ module Refactoring =
     | CurrentFile
     | Projects of Project seq * isSymbolLocal:bool
     | External of string
-    | Unknown      
+    | Unknown
 
     let langServ = MDLanguageService.Instance
 
@@ -120,7 +120,7 @@ module Refactoring =
         let symbol = ast.GetSymbolAtLocation lineInfo |> Async.RunSynchronously
         lineInfo, symbol
 
-    let rename (editor:TextEditor, ctx:DocumentContext, lastIdent, symbol:FSharpSymbolUse) =         
+    let rename (editor:TextEditor, ctx:DocumentContext, lastIdent, symbol:FSharpSymbolUse) =
         let symbols = 
             let activeDocFileName = editor.FileName.ToString ()
             Async.RunSynchronously
@@ -179,7 +179,7 @@ module Refactoring =
                     IdeApp.ProjectOperations.JumpToMetadata(filename, docId)
                 | None -> 
                     ()
-            | _ -> ()    
+            | _ -> ()
 
                 
     let jumpToDeclaration (editor:TextEditor, ctx:DocumentContext, symbolUse:FSharpSymbolUse) =

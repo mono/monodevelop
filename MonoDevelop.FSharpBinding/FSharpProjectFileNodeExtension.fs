@@ -168,5 +168,3 @@ type FSharpProjectFileNodeExtension() =
     | _ -> NodeBuilder.DefaultSort
 
   override x.CommandHandlerType = typeof<FSharpProjectNodeCommandHandler>
-
-

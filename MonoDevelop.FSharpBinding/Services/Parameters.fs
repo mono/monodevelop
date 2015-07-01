@@ -13,7 +13,7 @@ open MonoDevelop.Core.Serialization
 type FSharpCompilerParameters() = 
   inherit MonoDevelop.Projects.DotNetCompilerParameters()
 
-  [<ItemProperty ("Optimize")>]           
+  [<ItemProperty ("Optimize")>]
   let mutable optimize = true
      
   [<ItemProperty ("GenerateTailCalls", DefaultValue = false)>] 
@@ -63,4 +63,3 @@ type FSharpCompilerParameters() =
 
   override x.CreateParseOptions () =
       null //TODO
-

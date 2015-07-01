@@ -47,7 +47,7 @@ type FSharpFormattingPolicyPanelWidget() =
             propertyGrid.CurrentObject <- format
         | None -> ()
         updateCurrentName()
-        propertyGrid.Sensitive <- so.IsSome    
+        propertyGrid.Sensitive <- so.IsSome
 
     let handleListViewSelectionChanged _ =
         let it : TreeIter ref = ref Unchecked.defaultof<_>

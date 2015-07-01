@@ -225,7 +225,7 @@ module CompilerArguments =
         let parsed_version_s = (if version.[0] = 'v' then version.[1..] else version).Split('.')
         let parsed_version =
           try
-            Array.map (fun x -> int x) parsed_version_s
+            Array.map int parsed_version_s
           with
             | _ -> [| 0 |]
         let mutable level = 0
@@ -275,7 +275,7 @@ module CompilerArguments =
     | Some(dir,file)-> Some(Path.Combine(dir,file))
     | None-> 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler None with
-    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsi.exe")) ->  
+    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsi.exe")) ->
         Some(Path.Combine(dir,"fsi.exe"))
     | _ -> None
 
@@ -304,7 +304,7 @@ module CompilerArguments =
     | Some(dir,file) -> Some(Path.Combine(dir,file))
     | None -> 
     match FSharpEnvironment.BinFolderOfDefaultFSharpCompiler None with
-    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsc.exe")) ->  
+    | Some(dir) when FSharpEnvironment.safeExists(Path.Combine(dir, "fsc.exe")) ->
         Some(Path.Combine(dir,"fsc.exe"))
     | _ -> None
 

@@ -259,7 +259,7 @@ type FSharpInteractivePad() as this =
             |> Seq.filter (fun refs -> refs.ReferenceType = ReferenceType.Project)
             |> Seq.map (fun refs -> IdeApp.Workspace.GetAllProjects() 
                                     |> Seq.find (fun proj -> proj.Name = refs.Reference && proj :? DotNetProject) :?> DotNetProject)
-            |> Seq.collect (fun dnp -> getAbsProjRefs dnp)
+            |> Seq.collect getAbsProjRefs
 
         getAbsProjRefs project
         |> Seq.append projRefAssemblies

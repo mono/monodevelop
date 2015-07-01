@@ -107,7 +107,7 @@ module NRefactory =
            // TODO; this is surely not correct, we should be using the compilation retrieved from the 
            // appropriate document.  However it doesn't seem to matter in practice.
 
-           let comp = SimpleCompilation(unresolvedAssembly, Array.empty) //TODO get AssemblyReferences
+           let comp = SimpleCompilation(unresolvedAssembly, [||]) //TODO get AssemblyReferences
     
            // Create a resolution context for the resolved type definition.
            let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)
@@ -148,7 +148,7 @@ module NRefactory =
            //
            // TODO; this is surely not correct, we should be using the compilation retrieved from the 
            // appropriate document.  However it doesn't seem to matter in practice.
-           let comp = SimpleCompilation(unresolvedAssembly, Array.empty) //TODO projectContent.AssemblyReferences
+           let comp = SimpleCompilation(unresolvedAssembly, [||]) //TODO projectContent.AssemblyReferences
     
            // Create a resolution context for the resolved method definition.
            let resolvedAssembly = unresolvedAssembly.Resolve(comp.TypeResolveContext)

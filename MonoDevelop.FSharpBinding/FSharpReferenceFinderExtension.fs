@@ -46,7 +46,7 @@ open MonoDevelop.Projects
 //        for symbol in symbols do 
 //          match symbol with
 //          | SymbolWithRegion(_region) & SymbolWithFSharpInfo(fsSymbol) ->
-//            
+//
 //            // Get the active document, but only to 
 //            //   (a) determine if this is a script
 //            //   (b) find the active project confifuration. 
@@ -56,7 +56,7 @@ open MonoDevelop.Projects
 //
 //            // Get the source, but only in order to infer the project options for a script.
 //            let activeDocSource = activeDoc.Editor.Text
-//            
+//
 //            let projectFilename, projectFiles, projectArgs = MonoDevelop.getCheckerArgs(project, activeDocFileName)
 //            let references = 
 //                try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, fsSymbol.FSharpSymbol) 
@@ -72,4 +72,3 @@ open MonoDevelop.Projects
 //            | None -> ()
 //
 //          | _ -> () }
-             

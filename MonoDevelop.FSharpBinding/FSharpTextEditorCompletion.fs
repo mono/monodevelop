@@ -35,7 +35,7 @@ type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, ove
   /// Split apart the elements into separate overloads
   override x.OverloadedData =
     overloads
-    |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, List.empty) :> CompletionData)
+    |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, []) :> CompletionData)
     |> ResizeArray.ofList :> _
 
   override x.AddOverload (_data) = () //not currently called

@@ -301,8 +301,7 @@ module Tokens =
         | _ -> None
 
     let isSameType (token1:FSharpTokenInfo) (token2:FSharpTokenInfo) =
-      if token1.ColorClass = token2.ColorClass then true
-      else false
+      token1.ColorClass = token2.ColorClass
 
     let mergeTokens newest oldest =
       {oldest with RightColumn = newest.RightColumn;FullMatchedLength = oldest.FullMatchedLength + newest.RightColumn - newest.LeftColumn}
