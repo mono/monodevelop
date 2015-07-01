@@ -155,6 +155,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			Console.WriteLine (n); /*break*/
 		}
 
+		public string TestCastingArgument (myNint nint)
+		{
+			return nint.v.ToString ();
+		}
+
 		public int TestMethod ()
 		{
 			float c = 4;
@@ -306,6 +311,11 @@ class RichClass
 		privatePropStringA = "stringA";
 		privatePropStringB = "stringB";
 		privatePropStringC = "stringC";
+	}
+
+	public RichClass (myNint i)
+	{
+		publicPropInt1 = i;
 	}
 }
 
@@ -534,6 +544,31 @@ class ClassWithCompilerGeneratedNestedClass
 	public class NestedClass
 	{
 
+	}
+}
+
+struct myNint
+{
+	public long v;
+
+	public static implicit operator myNint (int v)
+	{
+		return new myNint (v);
+	}
+
+	public static implicit operator int (myNint v)
+	{
+		return (int)v.v;
+	}
+
+	public override string ToString ()
+	{
+		return v.ToString ();
+	}
+
+	myNint (int v)
+	{
+		this.v = v;
 	}
 }
 

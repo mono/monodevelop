@@ -28,6 +28,26 @@ using System;
 
 namespace MonoDevelop.Components
 {
+	public class ContextMenuItemClickedEventArgs : EventArgs
+	{
+		public object Context {
+			get { return context; }
+		}
+
+		public ContextMenuItemClickedEventArgs (object context)
+		{
+			this.context = context;
+		}
+
+		public ContextMenuItemClickedEventArgs ()
+		{
+		}
+
+		object context;
+	}
+
+	public delegate void ContextMenuItemClickedEventHandler (object sender, ContextMenuItemClickedEventArgs e);
+
 	public class ContextMenuItem
 	{
 		ContextMenu subMenu;
@@ -52,6 +72,7 @@ namespace MonoDevelop.Components
 		}
 
 		public string Label { get; set; }
+		public object Context { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="MonoDevelop.Components.ContextMenuItem"/> uses a mnemonic.
@@ -85,7 +106,7 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public event EventHandler Clicked;
+		public event ContextMenuItemClickedEventHandler Clicked;
 
 		public void Show ()
 		{
@@ -104,10 +125,10 @@ namespace MonoDevelop.Components
 
 		protected virtual void DoClick ()
 		{
-			OnClicked (EventArgs.Empty);
+			OnClicked (new ContextMenuItemClickedEventArgs (Context));
 		}
 
-		protected virtual void OnClicked (EventArgs e)
+		protected virtual void OnClicked (ContextMenuItemClickedEventArgs e)
 		{
 			if (Clicked != null)
 				Clicked (this, e);

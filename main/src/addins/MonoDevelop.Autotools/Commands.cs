@@ -90,6 +90,7 @@ namespace MonoDevelop.Autotools
 				deployer.GenerateFiles (ctx, solution, dialog.DefaultConfiguration, monitor);
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 				if (ctx != null)
 					ctx.Dispose ();
 				if (monitor != null)

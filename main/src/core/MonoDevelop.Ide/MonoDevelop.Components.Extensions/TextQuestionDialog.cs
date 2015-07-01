@@ -101,8 +101,10 @@ namespace MonoDevelop.Components.Extensions
 				
 				return false;
 			} finally {
-				if (md != null)
+				if (md != null) {
 					md.Destroy ();
+					md.Dispose ();
+				}
 			}
 		}
 	}

@@ -48,6 +48,8 @@ namespace MonoDevelop.VersionControl.Git
 			this.repo = repo;
 			this.HasSeparator = false;
 
+			this.UseNativeContextMenus ();
+
 			// Branches list
 
 			storeBranches = new ListStore (typeof(Branch), typeof(string), typeof(string), typeof(string));
@@ -167,6 +169,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -191,6 +194,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -233,6 +237,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -259,6 +264,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -310,6 +316,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

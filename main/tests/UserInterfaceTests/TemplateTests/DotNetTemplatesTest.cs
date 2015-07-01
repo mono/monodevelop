@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -36,30 +35,11 @@ namespace UserInterfaceTests
 		readonly string dotNetCategory = ".NET";
 
 		[Test]
-		public void TestCreateBuildConsoleProject ()
-		{
-			RunDotNetTests ("Console Project", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildGtkSharp20Project ()
-		{
-			RunDotNetTests ("Gtk# 2.0 Project", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildLibrary ()
-		{
-			RunDotNetTests ("Library", EmptyAction);
-		}
-
-		[Test]
-		public void TestCreateBuildNUnitLibraryProject ()
-		{
-			RunDotNetTests ("NUnit Library Project", WaitForPackageUpdate);
-		}
-
-		void RunDotNetTests (string templateName, Action beforeBuild)
+		[TestCase ("Console Project", BeforeBuildAction.None, TestName = "TestCreateBuildConsoleProject")]
+		[TestCase ("Gtk# 2.0 Project", BeforeBuildAction.None, TestName = "TestCreateBuildGtkSharp20Project")]
+		[TestCase ("Library", BeforeBuildAction.None, TestName = "TestCreateBuildLibrary")]
+		[TestCase ("NUnit Library Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestCreateBuildNUnitLibraryProject")]
+		public void RunDotNetTests (string templateName, BeforeBuildAction beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
@@ -67,7 +47,7 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, beforeBuild);
+			CreateBuildProject (templateOptions, beforeBuild.GetAction ());
 		}
 	}
 }

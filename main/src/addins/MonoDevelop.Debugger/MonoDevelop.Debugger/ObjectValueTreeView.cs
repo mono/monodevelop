@@ -719,7 +719,22 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public PinnedWatch PinnedWatch { get; set; }
+		PinnedWatch pinnedWatch = null;
+		public PinnedWatch PinnedWatch {
+			get {
+				return pinnedWatch;
+			}
+			set {
+				if (pinnedWatch == value)
+					return;
+				pinnedWatch = value;
+				if (value == null) {
+					pinCol.FixedWidth = 16;
+				} else {
+					pinCol.FixedWidth = 38;
+				}
+			}
+		}
 		
 		public string PinnedWatchFile { get; set; }
 		public int PinnedWatchLine { get; set; }
@@ -773,6 +788,8 @@ namespace MonoDevelop.Debugger
 		{
 			values.Add (value);
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 		
 		public void AddValues (IEnumerable<ObjectValue> newValues)
@@ -780,12 +797,16 @@ namespace MonoDevelop.Debugger
 			foreach (ObjectValue val in newValues)
 				values.Add (val);
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 		
 		public void RemoveValue (ObjectValue value)
 		{
 			values.Remove (value);
 			Refresh (true);
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		public void ReplaceValue (ObjectValue old, ObjectValue @new)
@@ -796,6 +817,8 @@ namespace MonoDevelop.Debugger
 
 			values [idx] = @new;
 			Refresh (false);
+			if (compact)
+				RecalculateWidth ();
 		}
 
 		public void ClearAll ()
@@ -1028,6 +1051,8 @@ namespace MonoDevelop.Debugger
 					}
 				}
 				UnregisterValue (val);
+				if (compact)
+					RecalculateWidth ();
 			});
 		}
 

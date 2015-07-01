@@ -339,14 +339,15 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				MessageService.ShowWarning (Warnings[0]);
 			}
 			else if (Errors.Count > 0 || Warnings.Count > 0) {
-				var resultDialog = new MultiMessageDialog () {
+				using (var resultDialog = new MultiMessageDialog () {
 					Modal = true,
-				};
-				foreach (string m in Errors)
-					resultDialog.AddError (m);
-				foreach (string m in Warnings)
-					resultDialog.AddWarning (m);
-				MessageService.ShowCustomDialog (resultDialog);
+				}) {
+					foreach (string m in Errors)
+						resultDialog.AddError (m);
+					foreach (string m in Warnings)
+						resultDialog.AddWarning (m);
+					MessageService.ShowCustomDialog (resultDialog);
+				}
 			}
 		}
 		

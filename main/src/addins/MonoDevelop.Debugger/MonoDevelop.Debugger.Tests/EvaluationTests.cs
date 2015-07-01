@@ -878,9 +878,60 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 			
 			val = Eval ("(SomeEnum)3");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
+
+			IgnoreCorDebugger ("CorDebugger: Implicit casting");
+
+			// Casting primitive <-> custom class via implicit operator
+			val = Eval ("(myNint)3");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("{3}", val.Value);
+			Assert.AreEqual ("myNint", val.TypeName);
+
+			val = Eval ("(int)(myNint)4");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("4", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestCastingArgument(4)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"4\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("new RichClass(5).publicPropInt1");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
@@ -1395,8 +1446,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("two", val.DisplayValue);
 			
 			val = Eval ("SomeEnum.one | SomeEnum.two");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 		}
 
 		[Test]

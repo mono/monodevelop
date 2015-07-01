@@ -59,6 +59,8 @@ namespace MonoDevelop.Ide.Projects
 		void Create ();
 
 		Image GetImage (SolutionTemplate template);
+
+		IEnumerable<ProjectConfigurationControl> GetFinalPageControls ();
 	}
 }
 

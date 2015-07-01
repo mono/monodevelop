@@ -23,8 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using LibGit2Sharp;
 
+using LibGit2Sharp;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -38,6 +39,9 @@ namespace MonoDevelop.VersionControl.Git
 		public EditRemoteDialog (Remote remote)
 		{
 			this.Build ();
+
+			this.UseNativeContextMenus ();
+
 			if (remote != null) {
 				entryName.Text = remote.Name;
 				entryUrl.Text = remote.Url ?? "";
@@ -65,7 +69,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void UpdateButtons ()
 		{
-			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0;
+			buttonOk.Sensitive = entryName.Text.Length > 0 && entryUrl.Text.Length > 0 && entryPushUrl.Text.Length > 0;
 		}
 
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
@@ -74,6 +78,11 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		protected virtual void OnEntryUrlChanged (object sender, System.EventArgs e)
+		{
+			UpdateButtons ();
+		}
+
+		protected void OnEntryPushUrlChanged (object sender, System.EventArgs e)
 		{
 			UpdateButtons ();
 		}

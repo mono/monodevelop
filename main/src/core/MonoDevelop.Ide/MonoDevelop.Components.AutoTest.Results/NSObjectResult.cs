@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
+
 using AppKit;
 using Foundation;
 
@@ -39,6 +41,30 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", ResultObject.GetType ().ToString ());
+			AddAttribute (element, "fulltype", ResultObject.GetType ().FullName);
+
+			NSView view = ResultObject as NSView;
+			if (view == null) {
+				return;
+			}
+
+			if (view.Identifier != null) {
+				AddAttribute (element, "name", view.Identifier);
+			}
+
+			// In Cocoa the attribute is Hidden as opposed to Gtk's Visible.
+			AddAttribute (element, "visible", (!view.Hidden).ToString ());
+			AddAttribute (element, "allocation", view.Frame.ToString ());
+		}
+
+		public override string GetResultType  ()
+		{
+			return ResultObject.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)
@@ -116,6 +142,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (ResultObject);
+		}
+
 		public override bool Select ()
 		{
 			return false;
@@ -188,6 +219,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
 			return true;
+		}
+
+		public override void Flash (Action completionHandler)
+		{
+			completionHandler ();
 		}
 	}
 }

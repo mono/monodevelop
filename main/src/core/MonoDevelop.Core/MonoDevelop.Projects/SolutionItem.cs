@@ -705,8 +705,6 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (!SupportsExecute ())
-				return false;
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 

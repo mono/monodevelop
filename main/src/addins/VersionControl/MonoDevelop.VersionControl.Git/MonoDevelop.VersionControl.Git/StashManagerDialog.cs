@@ -40,6 +40,7 @@ namespace MonoDevelop.VersionControl.Git
 		public StashManagerDialog (GitRepository repo)
 		{
 			this.Build ();
+			this.UseNativeContextMenus ();
 			repository = repo;
 
 			stashes = repo.GetStashes ();
@@ -135,6 +136,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 				Respond (ResponseType.Ok);
 			}

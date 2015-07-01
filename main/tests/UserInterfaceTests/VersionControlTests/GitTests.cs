@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
 using System;
 using MonoDevelop.Ide.Commands;
+using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
@@ -35,17 +35,12 @@ namespace UserInterfaceTests
 	public class GitTests : VCSBase
 	{
 		[Test]
-		public void TestGitSSHClone ()
+		[TestCase ("git@github.com:mono/jurassic.git", TestName = "TestGitSSHClone")]
+		[TestCase ("https://github.com/mono/jurassic.git", TestName = "TestGitHTTPSClone")]
+		public void TestGitClone (string url)
 		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionLoaded (TakeScreenShot);
-		}
-
-		[Test]
-		public void TestGitHTTPSClone ()
-		{
-			TestClone ("https://github.com/mono/jurassic.git");
-			Ide.WaitForSolutionLoaded (TakeScreenShot);
+			TestClone (url);
+			Ide.WaitForSolutionCheckedOut ();
 		}
 
 		[Test]
@@ -57,10 +52,12 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateBuildProject (templateOptions, delegate {
-				System.Threading.Thread.Sleep (2000);
-				TestCommit ("First commit");
-			}, new GitOptions { UseGit = true, UseGitIgnore = true});
+			CreateProject (templateOptions,
+				new ProjectDetails (templateOptions),
+				new GitOptions { UseGit = true, UseGitIgnore = true});
+			
+			Session.WaitForElement (IdeQuery.TextArea);
+			TestCommit ("First commit");
 		}
 
 		[Test]
@@ -72,13 +69,15 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateBuildProject (templateOptions, delegate {
-				System.Threading.Thread.Sleep (2000);
-				TestCommit ("First commit");
-				Session.ExecuteCommand (FileCommands.CloseAllFiles);
-				Assert.Throws <TimeoutException> (() => TestGitStash ("No changes stash attempt"));
-				Ide.WaitForStatusMessage (new [] {"No changes were available to stash"}, 20);
-			}, new GitOptions { UseGit = true, UseGitIgnore = true});
+			CreateProject (templateOptions,
+				new ProjectDetails (templateOptions),
+				new GitOptions { UseGit = true, UseGitIgnore = true});
+			
+			Session.WaitForElement (IdeQuery.TextArea);
+			TestCommit ("First commit");
+			Session.ExecuteCommand (FileCommands.CloseAllFiles);
+			Assert.Throws <TimeoutException> (() => TestGitStash ("No changes stash attempt"));
+			Ide.WaitForStatusMessage (new [] {"No changes were available to stash"}, 20);
 		}
 
 		[Test]
@@ -90,10 +89,13 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateBuildProject (templateOptions, delegate {
-				Assert.Throws <TimeoutException> (() => TestGitStash ("Stash without head commit"));
-				TakeScreenShot ("Stash-Window-Doesnt-Show");
-			}, new GitOptions { UseGit = true, UseGitIgnore = true});
+			CreateProject (templateOptions,
+				new ProjectDetails (templateOptions),
+				new GitOptions { UseGit = true, UseGitIgnore = true});
+			
+			Session.WaitForElement (IdeQuery.TextArea);
+			Assert.Throws <TimeoutException> (() => TestGitStash ("Stash without head commit"));
+			TakeScreenShot ("Stash-Window-Doesnt-Show");
 		}
 
 		[Test]
@@ -105,30 +107,28 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateBuildProject (templateOptions, delegate {
-				System.Threading.Thread.Sleep (2000);
-				TestCommit ("First commit");
+			CreateProject (templateOptions, 
+				new ProjectDetails (templateOptions),
+				new GitOptions { UseGit = true, UseGitIgnore = true });
+			
+			Session.WaitForElement (IdeQuery.TextArea);
+			TestCommit ("First commit");
 
-				Session.ExecuteCommand (FileCommands.CloseFile);
-				System.Threading.Thread.Sleep (3000);
+			Session.ExecuteCommand (FileCommands.CloseFile);
+			Session.WaitForElement (IdeQuery.TextArea);
 
-				Session.ExecuteCommand (TextEditorCommands.InsertNewLine);
-				System.Threading.Thread.Sleep (2000);
-				Session.ExecuteCommand (FileCommands.SaveAll);
-				System.Threading.Thread.Sleep (4000);
-				TakeScreenShot ("Inserted New Line");
+			Session.ExecuteCommand (TextEditorCommands.InsertNewLine);
+			TakeScreenShot ("Inserted-Newline-Marked-Dirty");
+			Session.ExecuteCommand (FileCommands.SaveAll);
+			TakeScreenShot ("Inserted-Newline-SaveAll-Called");
 
-				TestGitStash ("Entered new blank line");
+			TestGitStash ("Entered new blank line");
 
+			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("After-Stash");
 
-				System.Threading.Thread.Sleep (3000);
-				TakeScreenShot ("After-Stash");
-
-				TestGitUnstash ();
-
-				System.Threading.Thread.Sleep (4000);
-				TakeScreenShot ("Untash-Successful");
-			}, new GitOptions { UseGit = true, UseGitIgnore = true});
+			TestGitUnstash ();
+			TakeScreenShot ("Untash-Successful");
 		}
 	}
 }

@@ -37,10 +37,10 @@ namespace UserInterfaceTests
 			CategoryRoot = "Other",
 			Category = ".NET",
 			TemplateKindRoot = "General",
-			TemplateKind = "Console Project",
-			ProjectName = "ConsoleProject"
+			TemplateKind = "Console Project"
 		};
 
+		readonly string projectName = "ConsoleProject";
 		readonly string solutionName = "ConsoleSolution";
 
 		readonly NewProjectController ctrl = new NewProjectController ();
@@ -66,10 +66,17 @@ namespace UserInterfaceTests
 
 		void TestFolderPreview (GitOptions gitOptions, bool projectWithinSolution)
 		{
+			var projectDetails = new ProjectDetails {
+				ProjectName = projectName,
+				SolutionName = solutionName,
+				SolutionLocation = solutionLocation,
+				ProjectInSolution = projectWithinSolution
+			};
+
 			ctrl.Open ();
 			OnSelectTemplate (ctrl, templateOptions);
-			OnEnterProjectDetails (ctrl, templateOptions.ProjectName, solutionName, solutionLocation, projectWithinSolution, gitOptions);
-			ctrl.ValidatePreviewTree (templateOptions, solutionName, solutionLocation, projectWithinSolution, gitOptions);
+			OnEnterProjectDetails (ctrl, projectDetails, gitOptions);
+			ctrl.ValidatePreviewTree (projectDetails, gitOptions);
 			ctrl.Close ();
 		}
 	}

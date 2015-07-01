@@ -126,7 +126,8 @@ namespace MonoDevelop.AnalysisCore.Fixes
 				//FIXME: performchanges should probably use a monitor too, as it can be slow
 				var changes = Refactoring.PerformChanges (Options, Properties);
 				if (Preview) {
-					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
+					using (var dlg = new RefactoringPreviewDialog (changes))
+						MessageService.ShowCustomDialog (dlg);
 				} else {
 					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
 					RefactoringService.AcceptChanges (monitor, changes);

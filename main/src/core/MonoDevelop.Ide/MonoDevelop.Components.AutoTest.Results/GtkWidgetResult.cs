@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Xml;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -44,6 +45,25 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override string ToString ()
 		{
 			return String.Format ("{0} - {1} - {2} - {3}, - {4}", resultWidget, resultWidget.Allocation, resultWidget.Name, resultWidget.GetType ().FullName, resultWidget.Toplevel.Name);
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", resultWidget.GetType ().ToString ());
+			AddAttribute (element, "fulltype", resultWidget.GetType ().FullName);
+
+			if (resultWidget.Name != null) {
+				AddAttribute (element, "name", resultWidget.Name);
+			}
+
+			AddAttribute (element, "visible", resultWidget.Visible.ToString ());
+			AddAttribute (element, "sensitive", resultWidget.Sensitive.ToString ());
+			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
+		}
+
+		public override string GetResultType  ()
+		{
+			return resultWidget.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)
@@ -72,15 +92,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return null;
-		}
-
-		protected bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
 		}
 
 		public override AppResult Text (string text, bool exact)
@@ -184,24 +195,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		object GetPropertyValue (string propertyName)
-		{
-			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				PropertyInfo propertyInfo = resultWidget.GetType().GetProperty(propertyName);
-				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (resultWidget);
-					if (propertyValue != null) {
-						return propertyValue;
-					}
-				}
-
-				return null;
-			});
-		}
-
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;			
+			return MatchProperty (propertyName, resultWidget, value);
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -230,6 +226,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return siblingResults;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (resultWidget);
 		}
 
 		public override bool Select ()
@@ -424,6 +425,44 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			toggleButton.Active = active;
 			return true;
+		}
+
+		bool flashState;
+
+		void OnFlashWidget (object o, ExposeEventArgs args)
+		{
+			flashState = !flashState;
+
+			if (flashState) {
+				return;
+			}
+
+			Cairo.Context cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow);
+			cr.SetSourceRGB (1.0, 0.0, 0.0);
+
+			Gdk.Rectangle allocation = resultWidget.Allocation;
+			Gdk.CairoHelper.Rectangle (cr, allocation);
+			cr.Stroke ();
+		}
+
+		public override void Flash (System.Action completionHandler)
+		{
+			int flashCount = 10;
+
+			flashState = true;
+			resultWidget.ExposeEvent += OnFlashWidget;
+
+			GLib.Timeout.Add (1000, () => {
+				resultWidget.QueueDraw ();
+				flashCount--;
+
+				if (flashCount == 0) {
+					resultWidget.ExposeEvent -= OnFlashWidget;
+					completionHandler ();
+					return false;
+				}
+				return true;
+			});
 		}
 	}
 }

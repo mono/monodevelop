@@ -417,11 +417,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render.Pushed = true;
 				args.RetVal = true;
 				var entryset = BuildEntrySet ();
-				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
-				if (menu != null) {
-					menu.Hidden += HandleMenuHidden;
-					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
-				}
+
+				IdeApp.CommandService.ShowContextMenu (tree, args.Event, entryset, this, HandleMenuHidden);
 			}
 		}
 
@@ -500,7 +497,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void HandleMenuHidden (object sender, EventArgs e)
 		{
-			((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
+			if (sender is Gtk.Menu) {
+				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
+			}
 			text_render.Pushed = false;
 			QueueDraw ();
 		}
@@ -1786,7 +1785,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
 
-			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
+			if (evt == null) {
+				var paths = tree.Selection.GetSelectedRows ();
+				if (paths != null) {
+					var area = tree.GetCellArea (paths [0], tree.Columns [0]);
+
+					IdeApp.CommandService.ShowContextMenu (this, area.Left, area.Top, entryset, this);
+				}
+			} else {
+				IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
+			}
 		}
 
 		protected CommandEntrySet BuildEntrySet ()

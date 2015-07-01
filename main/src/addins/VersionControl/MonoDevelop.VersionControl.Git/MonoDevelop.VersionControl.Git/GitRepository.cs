@@ -311,20 +311,20 @@ namespace MonoDevelop.VersionControl.Git
 			var revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
-			var sinceRev = (GitRevision)since;
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
 				return new GitRevision [0];
 
+			var sinceRev = since != null ? ((GitRevision)since).Commit : null;
 			IEnumerable<Commit> commits = repository.Commits;
-			if (localFile.CanonicalPath != RootPath.CanonicalPath) {
+			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
 				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
 					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
 					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
 			}
 
-			foreach (var commit in commits) {
+			foreach (var commit in commits.TakeWhile (c => c != sinceRev)) {
 				var author = commit.Author;
 				var rev = new GitRevision (this, repository, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 					Email = author.Email,
@@ -799,6 +799,7 @@ namespace MonoDevelop.VersionControl.Git
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			});
 			return res;
@@ -857,6 +858,7 @@ namespace MonoDevelop.VersionControl.Git
 						}
 					} finally {
 						dlg.Destroy ();
+						dlg.Dispose ();
 					}
 				});
 
@@ -1059,15 +1061,19 @@ namespace MonoDevelop.VersionControl.Git
 			return diffs.ToArray ();
 		}
 
+		Blob GetBlob (Commit c, FilePath file)
+		{
+			TreeEntry entry = c [GetRepository (file).ToGitPath (file)];
+			return entry != null ? (Blob)entry.Target : null;
+		}
+
 		string GetCommitTextContent (Commit c, FilePath file)
 		{
-			var repository = GetRepository (file);
-			TreeEntry treeEntry = c [repository.ToGitPath (file)];
-			if (treeEntry != null) {
-				var blob = (Blob)treeEntry.Target;
-				return blob.IsBinary ? String.Empty : blob.GetContentText ();
-			}
-			return string.Empty;
+			Blob blob = GetBlob (c, file);
+			if (blob == null)
+				return string.Empty;
+
+			return blob.IsBinary ? String.Empty : blob.GetContentText ();
 		}
 
 		public string GetCurrentRemote ()
@@ -1468,6 +1474,19 @@ namespace MonoDevelop.VersionControl.Git
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 			RootRepository.Stage (".gitignore");
+		}
+
+		public override bool GetFileIsText (FilePath path)
+		{
+			Commit c = GetHeadCommit (GetRepository (path));
+			if (c == null)
+				return base.GetFileIsText (path);
+
+			var blob = GetBlob (c, path);
+			if (blob == null)
+				return base.GetFileIsText (path);
+
+			return !blob.IsBinary;
 		}
 	}
 

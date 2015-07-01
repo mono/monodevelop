@@ -17,10 +17,6 @@ then
     fi
 fi
 
-cp CMakeLists.txt .CMakeLists.txt.mdcopy
-echo 'SET(CMAKE_SKIP_RPATH TRUE)' > CMakeLists.txt
-cat .CMakeLists.txt.mdcopy >> CMakeLists.txt
-
 mkdir build
 pushd build
 
@@ -30,10 +26,10 @@ cmake -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
       -DUSE_SSH=ON \
       -DLIBGIT2_FILENAME=git2-$SHORTSHA \
       -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
+      -DCMAKE_SKIP_RPATH=TRUE \
       ..
 
 cmake --build .
 popd
-
-mv .CMakeLists.txt.mdcopy CMakeLists.txt
 popd
+

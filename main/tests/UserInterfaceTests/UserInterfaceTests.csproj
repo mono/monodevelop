@@ -50,6 +50,9 @@
       <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -58,7 +61,6 @@
     <Compile Include="ProcessUtils.cs" />
     <Compile Include="Ide.cs" />
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
-    <Compile Include="NewProjectController.cs" />
     <Compile Include="UITestDebug.cs" />
     <Compile Include="TemplateTestOptions.cs" />
     <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
@@ -69,6 +71,12 @@
     <Compile Include="VersionControlTests\SvnTests.cs" />
     <Compile Include="VersionControlTests\GitRepositoryConfigurationTests.cs" />
     <Compile Include="DialogTests\NewProjectDialogTests.cs" />
+    <Compile Include="IdeQuery.cs" />
+    <Compile Include="Controllers\NewFileController.cs" />
+    <Compile Include="Controllers\NewProjectController.cs" />
+    <Compile Include="Controllers\SolutionExplorerController.cs" />
+    <Compile Include="Controllers\NuGetController.cs" />
+    <Compile Include="DialogTests\NuGetDialogTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -103,5 +111,6 @@
   </Target>
   <ItemGroup>
     <Folder Include="DialogTests\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 </Project>

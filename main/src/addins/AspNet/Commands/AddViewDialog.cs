@@ -344,6 +344,7 @@ namespace MonoDevelop.AspNet.Commands
 					masterEntry.Text = project.LocalToVirtualPath (dialog.SelectedFile.FilePath);
 			} finally {
 				dialog.Destroy ();
+				dialog.Dispose ();
 			}
 		}
 		

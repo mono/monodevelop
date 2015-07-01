@@ -31,6 +31,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
 
@@ -128,6 +129,12 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 
+		public string[] CounterStats {
+			get {
+				return session.GetCounterStats ();
+			}
+		}
+
 		public void ExitApp ()
 		{
 			ClearEventQueue ();
@@ -217,7 +224,9 @@ namespace MonoDevelop.Components.AutoTest
 
 		void ClearEventQueue ()
 		{
-			eventQueue.Clear ();
+			lock (eventQueue) {
+				eventQueue.Clear ();
+			}
 		}
 
 		void IAutoTestClient.Connect (AutoTestSession session)
@@ -338,11 +347,28 @@ namespace MonoDevelop.Components.AutoTest
 			return session.Toggle (results [0], active);
 		}
 
+		public void Flash (Func<AppQuery, AppQuery> query)
+		{
+			AppResult[] results = Query (query);
+			foreach (var result in results) {
+				session.Flash (result);
+			}
+		}
+
 		public void RunAndWaitForTimer (Action action, string counterName, int timeout = 20000)
 		{
 			AutoTestSession.TimerCounterContext context = session.CreateNewTimerContext (counterName);
 			action ();
 			session.WaitForTimerContext (context);
+		}
+
+		public XmlDocument ResultsAsXml (AppResult[] results)
+		{
+			string xmlResults = session.ResultsAsXml (results);
+			XmlDocument document = new XmlDocument ();
+			document.LoadXml (xmlResults);
+
+			return document;
 		}
 	}
 

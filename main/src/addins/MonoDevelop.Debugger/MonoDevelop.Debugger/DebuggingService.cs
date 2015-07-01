@@ -246,9 +246,10 @@ namespace MonoDevelop.Debugger
 		
 		public static void ShowValueVisualizer (ObjectValue val)
 		{
-			var dlg = new ValueVisualizerDialog ();
-			dlg.Show (val);
-			MessageService.ShowCustomDialog (dlg);
+			using (var dlg = new ValueVisualizerDialog ()) {
+				dlg.Show (val);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
@@ -318,12 +319,12 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			var dlg = new ExpressionEvaluatorDialog ();
+			using (var dlg = new ExpressionEvaluatorDialog ()) {
+				if (expression != null)
+					dlg.Expression = expression;
 
-			if (expression != null)
-				dlg.Expression = expression;
-
-			MessageService.ShowCustomDialog (dlg);
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 
 		public static void ShowExceptionCaughtDialog ()
@@ -446,13 +447,16 @@ namespace MonoDevelop.Debugger
 			currentSession.Dispose ();
 		}
 
+		static string oldLayout;
 		static void UnsetDebugLayout ()
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
 				IdeApp.Workbench.HideCommandBar ("Debug");
-				if (IdeApp.Workbench.CurrentLayout == "Debug")
-					IdeApp.Workbench.CurrentLayout = "Solution";
+				if (IdeApp.Workbench.CurrentLayout == "Debug") {
+					IdeApp.Workbench.CurrentLayout = oldLayout ?? "Solution";
+				}
+				oldLayout = null;
 			});
 		}
 
@@ -460,6 +464,7 @@ namespace MonoDevelop.Debugger
 		{
 			// Dispatch synchronously to avoid start/stop races
 			DispatchService.GuiSyncDispatch (delegate {
+				oldLayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Debug";
 				IdeApp.Workbench.ShowCommandBar ("Debug");
 			});

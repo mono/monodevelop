@@ -38,6 +38,7 @@ namespace MonoDevelop.Ide.Projects
 	partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
 	{
 		INewProjectDialogController controller;
+		Menu popupMenu;
 
 		public GtkNewProjectDialogBackend ()
 		{
@@ -112,20 +113,30 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			if (templateTextRenderer.IsLanguageButtonPressed (args.Event)) {
-				var menu = new Menu ();
-				menu.AttachToWidget (this, null);
-				AddLanguageMenuItems (menu, template);
-				menu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
-				menu.ShowAll ();
+				if (popupMenu == null) {
+					popupMenu = new Menu ();
+					popupMenu.AttachToWidget (this, null);
+				}
+				ClearPopupMenuItems ();
+				AddLanguageMenuItems (popupMenu, template);
+				popupMenu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
+				popupMenu.ShowAll ();
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
 					Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
-					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.ParentWindow, rect);
+					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.GdkWindow, rect);
 					x = screenRect.X;
 					y = screenRect.Bottom;
 					pushIn = false;
 				};
-				menu.Popup (null, null, posFunc, 0, args.Event.Time);
+				popupMenu.Popup (null, null, posFunc, 0, args.Event.Time);
+			}
+		}
+
+		void ClearPopupMenuItems ()
+		{
+			foreach (Widget widget in popupMenu.Children) {
+				widget.Destroy ();
 			}
 		}
 
@@ -183,6 +194,15 @@ namespace MonoDevelop.Ide.Projects
 		void CancelButtonClicked (object sender, EventArgs e)
 		{
 			Destroy ();
+		}
+
+		public override void Destroy ()
+		{
+			if (popupMenu != null) {
+				popupMenu.Destroy ();
+				popupMenu = null;
+			}
+			base.Destroy ();
 		}
 
 		void LoadTemplates ()
@@ -429,7 +449,7 @@ namespace MonoDevelop.Ide.Projects
 				return templatesHBox;
 			} else if (controller.IsLastPage) {
 				controller.FinalConfiguration.UpdateFromParameters ();
-				projectConfigurationWidget.Load (controller.FinalConfiguration);
+				projectConfigurationWidget.Load (controller.FinalConfiguration, controller.GetFinalPageControls ());
 				return projectConfigurationWidget;
 			} else {
 				return controller.CurrentWizardPage;

@@ -29,7 +29,7 @@ using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
-	public class GtkTreeModelResult : AppResult
+	public class GtkTreeModelResult : GtkWidgetResult
 	{
 		Widget ParentWidget;
 		TreeModel TModel;
@@ -37,14 +37,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter)
+		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
@@ -103,6 +103,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
+			if (resultIter != null && resultIter.HasValue) {
+				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
+				return MatchProperty (propertyName, objectToCompare, value);
+			}
+
 			return null;
 		}
 
@@ -122,10 +127,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return newList;
 		}
 
-		public override List<AppResult> FlattenChildren ()
+		public override List<AppResult> Children (bool recursive = true)
 		{
-			if (!resultIter.HasValue) {
-				return null;
+			if (resultIter == null || !resultIter.HasValue) {
+				List<AppResult> children = new List<AppResult> ();
+				TModel.Foreach ((m, p, i) => {
+					children.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, i));
+					return false;
+				});
+				return children;
 			}
 
 			TreeIter currentIter = (TreeIter) resultIter;
@@ -190,6 +200,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override bool Toggle (bool active)
 		{
 			return false;
+		}
+
+		public override void Flash (System.Action completionHandler)
+		{
+			completionHandler ();
 		}
 	}
 }

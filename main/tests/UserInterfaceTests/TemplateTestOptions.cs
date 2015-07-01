@@ -35,6 +35,13 @@ namespace UserInterfaceTests
 		Android = 0x2
 	}
 
+	public enum BeforeBuildAction
+	{
+		None,
+		WaitForPackageUpdate,
+		WaitForSolutionCheckedOut
+	}
+
 	public enum CodeSharingType
 	{
 		PortableClassLibrary,
@@ -50,8 +57,6 @@ namespace UserInterfaceTests
 		public string TemplateKindRoot { get; set; }
 
 		public string TemplateKind { get; set; }
-
-		public string ProjectName { get; set; }
 	}
 
 	public class GitOptions
@@ -65,6 +70,42 @@ namespace UserInterfaceTests
 		public bool UseGit { get; set; }
 
 		public bool UseGitIgnore { get; set; }
+	}
+
+	public class ProjectDetails
+	{
+		public ProjectDetails ()
+		{
+			SolutionLocation = Util.CreateTmpDir ();
+			ProjectInSolution = true;
+		}
+
+		public ProjectDetails (TemplateSelectionOptions templateData) : this ()
+		{
+			ProjectName = CreateBuildTemplatesTestBase.GenerateProjectName (templateData.TemplateKind);
+			SolutionName = ProjectName;
+		}
+
+		public string ProjectName { get; set; }
+
+		public string SolutionName { get; set; }
+
+		public string SolutionLocation { get; set; }
+
+		public bool ProjectInSolution { get; set; }
+	}
+
+	public class NewFileOptions
+	{
+		public string FileName { get; set; }
+
+		public string FileType { get; set; }
+
+		public string FileTypeCategory { get; set; }
+
+		public string FileTypeCategoryRoot { get; set; }
+
+		public string AddToProjectName { get; set; }
 	}
 }
 
