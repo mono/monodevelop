@@ -54,8 +54,8 @@ module TooltipsXml =
         |> String.concat(" ")
             
     let private unqualifyName (txt:String) = txt.Substring(txt.LastIndexOf(".") + 1)
-            
-    let private elementValue (addStyle: Style -> string) (element:XElement) =
+
+    let private elementValue (style: Style -> string) (element:XElement) =
         let sb = StringBuilder()
         if element = null then sb else
         let rec processNodes (sb: StringBuilder) (nodes: IEnumerable<XNode>) =
@@ -68,15 +68,15 @@ module TooltipsXml =
                        
                        | "see" -> match element |> attribute "cref" with
                                   | null -> acc
-                                  | attrib -> let fragment = attrib.Value |> (strip "T:" >> unqualifyName >> Style.Type >> addStyle)
+                                  | attrib -> let fragment = attrib.Value |> (strip "T:" >> unqualifyName >> Style.Type >> style)
                                               acc.Append(fragment)
                                   
                        | "paramref" -> match element |> attribute "name" with
                                        | null -> acc
-                                       | attrib -> let fragment = attrib.Value |> (Style.Parameter >> addStyle)
+                                       | attrib -> let fragment = attrib.Value |> (Style.Parameter >> style)
                                                    acc.Append(fragment)
                                           
-                       | "c" -> let fragment = element.Value |> (GLib.Markup.EscapeText >> Style.Code >> addStyle)
+                       | "c" -> let fragment = element.Value |> (GLib.Markup.EscapeText >> Style.Code >> style)
                                 acc.Append(fragment)
                        | "attribution" -> acc //skip attribution elements
                        | unknown -> 
@@ -86,7 +86,7 @@ module TooltipsXml =
                 | _ -> acc )
         processNodes sb (element.Nodes())
 
-    let getTooltipSummary (addStyle: Style -> string) (str:string) = 
+    let getTooltipSummary (style: Style -> string) (str:string) = 
         try let xdoc =
                 if str.StartsWith("<?xml") then XElement.Parse(str)
                 else XElement.Parse("<Root>" + str + "</Root>")
@@ -94,16 +94,16 @@ module TooltipsXml =
             //if no nodes were found then return the string verbatim
             let anyNodes = xdoc.Descendants() |> Enumerable.Any
             if not anyNodes then str else
-            let summary = xdoc.Descendants(xn "summary") |> firstOrDefault |> elementValue addStyle
+            let summary = xdoc.Descendants(xn "summary") |> firstOrDefault |> elementValue style
 
             xdoc.Elements(xn "exception")
             |> Seq.iteri (fun i element -> 
                 if i = 0 then summary.Append("\n\nExceptions\n") |> ignore
                 match element |> attribute "cref" with 
                 | null -> ()
-                | cref -> let exceptionType = cref.Value |> (strip "T:" >> unqualifyName >> Style.Exception >> addStyle)
-                          let formatter = if i = 0 then "{0}: {1}" else "\n{0} {1}"
-                          summary.AppendFormat( formatter,exceptionType, element.Value) |> ignore)
+                | cref -> let exceptionType = cref.Value |> (strip "T:" >> unqualifyName >> Style.Exception >> style)
+                          if i > 0 then summary.AppendLine() |> ignore
+                          summary.AppendFormat( "{0}: {1}", exceptionType, element.Value) |> ignore)
 
             if summary.Length > 0 then summary.ToString()
             //If theres nothing in the StringBuilder then there's either no summary or exception elements,
