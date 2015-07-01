@@ -103,7 +103,7 @@ namespace UserInterfaceTests
 
 		public static bool IsBuildSuccessful ()
 		{
-			return Session.IsBuildSuccessful ();
+			return Session.ErrorCount (MonoDevelop.Ide.Tasks.TaskSeverity.Error) == 0;
 		}
 
 		public static void RunAndWaitForTimer (Action action, string counter, int timeout = 20000)

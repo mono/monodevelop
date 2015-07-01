@@ -216,9 +216,9 @@ namespace MonoDevelop.Components.AutoTest
 		}
 			
 		// FIXME: This shouldn't be here.
-		public bool IsBuildSuccessful ()
+		public int ErrorCount (TaskSeverity severity)
 		{
-			return TaskService.Errors.Count (x => x.Severity == TaskSeverity.Error) == 0;
+			return TaskService.Errors.Count (x => x.Severity == severity);
 		}
 
 		object SafeObject (object ob)
