@@ -100,6 +100,9 @@ aot:
 run:
 	cd main && $(MAKE) run
 
+run-64:
+	cd main && $(MAKE) run-64
+
 run-boehm:
 	cd main && $(MAKE) run-boehm
 
@@ -109,6 +112,8 @@ run-sgen:
 run-gdb:
 	cd main && $(MAKE) run-gdb
 
+run-gdb-64:
+	cd main && (MAKE) run-gdb-64
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
 
