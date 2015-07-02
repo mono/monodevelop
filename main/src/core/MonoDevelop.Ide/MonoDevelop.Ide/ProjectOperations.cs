@@ -838,8 +838,10 @@ namespace MonoDevelop.Ide
 		public bool AddReferenceToProject (DotNetProject project)
 		{
 			try {
-				if (selDialog == null)
+				if (selDialog == null) {
 					selDialog = new SelectReferenceDialog ();
+					selDialog.TransientFor = MessageService.RootWindow;
+				}
 				
 				selDialog.SetProject (project);
 

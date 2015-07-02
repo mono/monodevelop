@@ -182,7 +182,9 @@ namespace MonoDevelop.Debugger.Win32
 			string addressSpace = "";
 			string file = "";
 			int line = 0;
+			int endLine = 0;
 			int column = 0;
+			int endColumn = 0;
 			string method = "";
 			string lang = "";
 			string module = "";
@@ -204,6 +206,8 @@ namespace MonoDevelop.Debugger.Win32
 					if (sp != null) {
 						line = sp.StartLine;
 						column = sp.StartColumn;
+						endLine = sp.EndLine;
+						endColumn = sp.EndColumn;
 						file = sp.Document.URL;
 						address = (uint)sp.Offset;
 					}
@@ -251,7 +255,7 @@ namespace MonoDevelop.Debugger.Win32
 			if (method == null)
 				method = "<Unknown>";
 
-			var loc = new SourceLocation (method, file, line, column);
+			var loc = new SourceLocation (method, file, line, column, endLine, endColumn);
 			return new StackFrame ((long)address, addressSpace, loc, lang, external, hasDebugInfo, hidden, null, null);
 		}
 

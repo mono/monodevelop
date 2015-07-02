@@ -674,43 +674,52 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			});
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
+		NSPopover popover;
 
-			popover.ContentViewController.View = new NSTextField {
-				DrawsBackground = false,
-				Bezeled = false,
-				Editable = false,
-				Frame = new CGRect (0, 0, 230, 30),
-				AutoresizingMask = NSViewResizingMask.HeightSizable,
-				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
+		void CreatePopoverForLayer (CALayer layer)
+		{
+			popover = new NSPopover {
+				ContentViewController = new NSViewController (null, null),
+				Animates = false
 			};
-		}
 
-		NSPopover popover = new NSPopover {
-			ContentViewController = new NSViewController (null, null),
-			Animates = false,
-		};
-
-		public void ShowPopoverForLayer (CALayer layer)
-		{
-			if (!layerToStatus.ContainsKey (layer.Name))
-				return;
-
-			var field = (NSTextField)popover.ContentViewController.View;
 			string tooltip = layerToStatus [layer.Name].ToolTip;
 			if (tooltip == null)
 				return;
 
-			field.AttributedStringValue = GetPopoverString (tooltip);
+			var attrString = GetPopoverString (tooltip);
+
+			var height = attrString.BoundingRectWithSize (new CGSize (230, nfloat.MaxValue),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
+			
+			popover.ContentViewController.View = new NSTextField {
+				Frame = new CGRect (0, 0, 230, height + 14),
+				DrawsBackground = false,
+				Bezeled = true,
+				Editable = false,
+				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
+			};
+			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
+		}
+
+		public void ShowPopoverForLayer (CALayer layer)
+		{
+			if (popover != null)
+				return;
+
+			if (!layerToStatus.ContainsKey (layer.Name))
+				return;
+
+			CreatePopoverForLayer (layer);
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void DestroyPopover ()
 		{
 			oldLayer = null;
-			popover.Close ();
+			if (popover != null)
+				popover.Close ();
+			popover = null;
 		}
 
 		CALayer LayerForEvent (NSEvent theEvent)
