@@ -101,11 +101,19 @@ namespace MonoDevelop.MacIntegration
 						viewerSelector = new NSPopUpButton {
 							Enabled = false,
 						};
-						
-						if (encodingSelector != null) {
+
+						if (encodingSelector != null || IdeApp.Workspace.IsOpen) {
 							viewerSelector.Activated += delegate {
 								var idx = viewerSelector.IndexOfSelectedItem;
-								encodingSelector.Enabled = ! (idx == 0 && currentViewers [0] == null);
+								bool workbenchViewerSelected = idx == 0 && currentViewers [0] == null;
+								if (encodingSelector != null)
+									encodingSelector.Enabled = !workbenchViewerSelected;
+								if (closeSolutionButton != null) {
+									if (closeSolutionButton.Hidden == workbenchViewerSelected) {
+										closeSolutionButton.Hidden = !workbenchViewerSelected;
+										CenterAccessoryView (box);
+									}
+								}
 							};
 						}
 						
@@ -149,26 +157,10 @@ namespace MonoDevelop.MacIntegration
 					var selection = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
-						FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
-						if (currentViewers.Count == 0 || currentViewers [0] != null) {
-							if (closeSolutionButton != null)
-								closeSolutionButton.Hidden = true;
-							slnViewerSelected = false;
-						} else {
-							if (closeSolutionButton != null)
-								closeSolutionButton.Hidden = false;
-							slnViewerSelected = true;
-						}
-						box.Layout ();
-						
-						//re-center the accessory view in its parent, Cocoa does this for us initially and after
-						//resizing the window, but we need to do it again after altering its layout
-						var superFrame = box.View.Superview.Frame;
-						var frame = box.View.Frame;
-						//not sure why it's ceiling, but this matches the Cocoa layout
-						frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
-						frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
-						box.View.Frame = frame;
+						slnViewerSelected = FillViewers (currentViewers, viewerSelector, closeSolutionButton, selection);
+						if (closeSolutionButton != null)
+							closeSolutionButton.Hidden = !slnViewerSelected;
+						CenterAccessoryView (box);
 					} 
 					if (encodingSelector != null)
 						encodingSelector.Enabled = !slnViewerSelected;
@@ -201,23 +193,24 @@ namespace MonoDevelop.MacIntegration
 			return true;
 		}
 		
-		static void FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, NSButton closeSolutionButton, FilePath[] filenames)
+		static bool FillViewers (List<FileViewer> currentViewers, NSPopUpButton button, NSButton closeSolutionButton, FilePath[] filenames)
 		{
 			button.Menu.RemoveAllItems ();
 			currentViewers.Clear ();
 			
 			if (filenames == null || filenames.Length == 0) {
 				button.Enabled = false;
-				return;
+				return false;
 			}
 			
 			var filename = filenames[0];
 			if (System.IO.Directory.Exists (filename))
-				return;
+				return false;
 			
 			int selected = -1;
 			int i = 0;
-			
+			bool hasWorkbenchViewer = false;
+
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (filename)) {
 				button.Menu.AddItem (new NSMenuItem { Title = GettextCatalog.GetString ("Solution Workbench") });
 				currentViewers.Add (null);
@@ -226,6 +219,7 @@ namespace MonoDevelop.MacIntegration
 					closeSolutionButton.State = NSCellStateValue.On;
 				
 				selected = 0;
+				hasWorkbenchViewer = true;
 				i++;
 			}
 			
@@ -246,6 +240,21 @@ namespace MonoDevelop.MacIntegration
 			
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (selected);
+			return hasWorkbenchViewer;
+		}
+
+		static void CenterAccessoryView (MDBox box)
+		{
+			box.Layout ();
+
+			//re-center the accessory view in its parent, Cocoa does this for us initially and after
+			//resizing the window, but we need to do it again after altering its layout
+			var superFrame = box.View.Superview.Frame;
+			var frame = box.View.Frame;
+			//not sure why it's ceiling, but this matches the Cocoa layout
+			frame.X = (float)Math.Ceiling ((superFrame.Width - frame.Width) / 2);
+			frame.Y = (float)Math.Ceiling ((superFrame.Height - frame.Height) / 2);
+			box.View.Frame = frame;
 		}
 	}
 }
