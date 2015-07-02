@@ -238,6 +238,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, eventArgs.Count);
 		}
+
+		[Test]
+		public void SolutionUnloaded_TwoSolutionsLoadedInWorkspaceAndBothSolutionsUnloaded_NullReferenceExceptionIsNotThrown ()
+		{
+			CreateProjectTargetFrameworkMonitor ();
+			LoadSolutionWithOneProject ();
+			projectService.OpenProjects.Clear ();
+			LoadSolutionWithOneProject ();
+			UnloadSolution ();
+
+			Assert.DoesNotThrow (UnloadSolution);
+		}
 	}
 }
 

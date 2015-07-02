@@ -59,6 +59,9 @@ namespace MonoDevelop.PackageManagement
 
 		void SolutionUnloaded (object sender, EventArgs e)
 		{
+			if (solution == null)
+				return;
+
 			foreach (IDotNetProject project in projects) {
 				project.Modified -= ProjectModified;
 			}
