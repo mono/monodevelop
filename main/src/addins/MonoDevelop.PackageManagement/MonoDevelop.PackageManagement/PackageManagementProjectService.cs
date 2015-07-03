@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement
 
 			EventHandler handler = SolutionLoaded;
 			if (handler != null) {
-				handler (this, new MonoDevelop.PackageManagement.SolutionEventArgs (OpenSolution));
+				handler (this, new ISolutionEventArgs (OpenSolution));
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace ICSharpCode.PackageManagement
 			var handler = SolutionUnloaded;
 			if (handler != null) {
 				var proxy = new SolutionProxy (solution);
-				handler (this, new MonoDevelop.PackageManagement.SolutionEventArgs (proxy));
+				handler (this, new ISolutionEventArgs (proxy));
 			}
 		}
 
