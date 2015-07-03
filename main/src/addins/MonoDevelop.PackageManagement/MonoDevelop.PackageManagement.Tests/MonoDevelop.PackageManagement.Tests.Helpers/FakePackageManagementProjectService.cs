@@ -81,7 +81,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void RaiseSolutionLoadedEvent (ISolution solution)
 		{
 			if (SolutionLoaded != null) {
-				SolutionLoaded (this, new SolutionEventArgs (solution));
+				SolutionLoaded (this, new ISolutionEventArgs (solution));
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void RaiseSolutionUnloadedEvent (ISolution solution)
 		{
 			if (SolutionUnloaded != null) {
-				SolutionUnloaded (this, new SolutionEventArgs (solution));
+				SolutionUnloaded (this, new ISolutionEventArgs (solution));
 			}
 		}
 
