@@ -57,7 +57,7 @@ namespace MonoDevelop.PackageManagement
 
 		void SolutionUnloaded (object sender, EventArgs e)
 		{
-			MonitoredSolution monitoredSolution = FindMonitoredSolution ((ISolutionEventArgs)e);
+			MonitoredSolution monitoredSolution = FindMonitoredSolution ((DotNetSolutionEventArgs)e);
 			if (monitoredSolution == null)
 				return;
 
@@ -70,7 +70,7 @@ namespace MonoDevelop.PackageManagement
 			monitoredSolutions.Remove (monitoredSolution);
 		}
 
-		MonitoredSolution FindMonitoredSolution (ISolutionEventArgs eventArgs)
+		MonitoredSolution FindMonitoredSolution (DotNetSolutionEventArgs eventArgs)
 		{
 			return FindMonitoredSolution (eventArgs.Solution);
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.PackageManagement
 
 		void SolutionLoaded (object sender, EventArgs e)
 		{
-			var solutionEventArgs = (ISolutionEventArgs)e;
+			var solutionEventArgs = (DotNetSolutionEventArgs)e;
 			ISolution solution = solutionEventArgs.Solution;
 			solution.ProjectAdded += ProjectAdded;
 			List<IDotNetProject> projects = solution.GetAllProjects ().ToList ();
