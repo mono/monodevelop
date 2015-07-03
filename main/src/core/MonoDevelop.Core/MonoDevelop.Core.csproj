@@ -541,6 +541,7 @@
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\AsyncCriticalSection.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTarget.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\SupportsTargetCondition.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTask.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildProjectExtensions.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildWhitespace.cs" />

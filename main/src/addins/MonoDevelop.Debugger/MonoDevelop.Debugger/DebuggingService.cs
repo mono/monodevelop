@@ -664,7 +664,7 @@ namespace MonoDevelop.Debugger
 		{
 			Gtk.Application.Invoke (delegate {
 				if (ex is DebuggerException)
-					MessageService.ShowError (ex.Message);
+					MessageService.ShowError (ex.Message, ex);
 				else
 					MessageService.ShowError ("Debugger operation failed", ex);
 			});

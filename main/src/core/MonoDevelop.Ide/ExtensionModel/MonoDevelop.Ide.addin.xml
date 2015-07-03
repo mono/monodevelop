@@ -330,4 +330,9 @@
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.DotNetProjectConfiguration"
+			name = "RunCodeAnalysis" type = "System.Boolean" defaultValue="false" />
+	</Extension>
+	
 </ExtensionModel>
