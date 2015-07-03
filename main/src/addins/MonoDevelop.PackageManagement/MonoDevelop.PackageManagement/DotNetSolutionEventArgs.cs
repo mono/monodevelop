@@ -1,5 +1,5 @@
 ﻿//
-// ISolutionEventArgs.cs
+// DotNetSolutionEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,9 +28,9 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ISolutionEventArgs : EventArgs
+	public class DotNetSolutionEventArgs : EventArgs
 	{
-		public ISolutionEventArgs (ISolution solution)
+		public DotNetSolutionEventArgs (ISolution solution)
 		{
 			Solution = solution;
 		}
