@@ -49,6 +49,7 @@ AC_SUBST(MONO_GAC_PREFIX)
 default_gnomeplatform=no
 default_windowsplatform=no
 default_macplatform=no
+default_macarch=i386
 
 case `uname` in
     Darwin) default_macplatform=yes ;;
@@ -215,10 +216,25 @@ AC_ARG_ENABLE(macplatform,
 		enable_macplatform=${enableval}, enable_macplatform=$default_macplatform)
 
 if test x$enable_macplatform = xyes; then
-	platform_bindings="${platform_bindings}Mac "
+	platform_bindings="${platform_bindings}Mac ${with_macarch}"
 fi
 
 AM_CONDITIONAL(ENABLE_MACPLATFORM, [test x$enable_macplatform = xyes])
+
+# What architecture for Mac
+AC_ARG_WITH(macarch,
+	AC_HELP_STRING([--with-macarch],
+		[which architecture for mac: i386, x86_64 [default=i386]]),
+	with_macarch=${withval}, with_macarch=$default_macarch)
+
+SGEN_SUFFIX=
+if test x$with_macarch = xx86_64; then
+	SGEN_SUFFIX=64
+fi
+AC_SUBST(SGEN_SUFFIX)
+
+MAC_ARCHITECTURE=${with_macarch}
+AC_SUBST(MAC_ARCHITECTURE)
 
 # Windows platform addin
 AC_ARG_ENABLE(windowsplatform,

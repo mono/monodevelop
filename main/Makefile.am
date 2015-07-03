@@ -122,28 +122,19 @@ run-64: run-sgen-64
 run-boehm: runmd
 
 run-sgen: runmd-sgen
-run-sgen-64: runmd-sgen-64
 
 runmd: $(PROGRAM)
 	$(MD_LAUNCH) --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 runmd-sgen: $(PROGRAM)
-	$(MD_LAUNCH)-sgen --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
-
-runmd-sgen-64: $(PROGRAM)
-	$(MD_LAUNCH)-sgen64 --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
+	$(MD_LAUNCH)-sgen@SGEN_SUFFIX@ --debug $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-debug: $(PROGRAM)
 	MONODEVELOP_CONSOLE_LOG_LEVEL=All $(MD_LAUNCH) --debug=casts $(MD_BIN_PATH)/MonoDevelop.exe --no-redirect
 
 run-gdb: $(PROGRAM)
 	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
-	$(MD_LAUNCH_SETUP) gdb $(RUNTIME) -x gdb.commands
-	rm -f gdb.commands
-
-run-gdb-64: $(PROGRAM)
-	echo "run --debug $(MD_BIN_PATH)/MonoDevelop.exe" > gdb.commands
-	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)-64 -x gdb.commands
+	$(MD_LAUNCH_SETUP) gdb $(RUNTIME)@SGEN_SUFFIX) -x gdb.commands
 	rm -f gdb.commands
 
 run-gdb-sgen: $(PROGRAM)
