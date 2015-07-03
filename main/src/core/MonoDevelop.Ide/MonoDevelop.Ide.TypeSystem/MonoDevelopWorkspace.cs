@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectId = GetOrCreateProjectId (p);
 			var projectData = GetOrCreateProjectData (projectId);
 
-			List<MetadataReference> references = await CreateMetadataReferences (p, projectId, token);
+			List<MetadataReference> references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 
 			return await Task.Run (() => {
 				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
@@ -404,7 +404,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				projectData.Info = info;
 				return info;
-			});
+			}).ConfigureAwait (false);
 		}
 
 		internal void UpdateProjectionEnntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
@@ -508,24 +508,27 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			bool addFacadeAssemblies = false;
 
-			foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
-				if (token.IsCancellationRequested)
-					return result;
-				string fileName;
-				if (!Path.IsPathRooted (file)) {
-					fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-				} else {
-					fileName = Path.GetFullPath (file);
+			try {
+				foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
+					if (token.IsCancellationRequested)
+						return result;
+					string fileName;
+					if (!Path.IsPathRooted (file)) {
+						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
+					} else {
+						fileName = Path.GetFullPath (file);
+					}
+					if (hashSet.Contains (fileName))
+						continue;
+					hashSet.Add (fileName);
+					if (!File.Exists (fileName))
+						continue;
+					result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
+					addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
 				}
-				if (hashSet.Contains (fileName))
-					continue;
-				hashSet.Add (fileName);
-				if (!File.Exists (fileName))
-					continue;
-				result.Add (MetadataReferenceCache.LoadReference (projectId, fileName));
-				addFacadeAssemblies |= MonoDevelop.Core.Assemblies.SystemAssemblyService.ContainsReferenceToSystemRuntime (fileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting referenced assemblies", e);
 			}
-
 			// HACK: Facade assemblies should be added by the project system. Remove that when the project system can do that.
 			if (addFacadeAssemblies) {
 				if (netProject != null) {
@@ -861,7 +864,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public async Task AddProject (MonoDevelop.Projects.Project project)
 		{
-			var info = await LoadProject (project, default(CancellationToken));
+			var info = await LoadProject (project, default(CancellationToken)).ConfigureAwait (false);
 			OnProjectAdded (info); 
 		}
 
@@ -957,7 +960,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var project = (MonoDevelop.Projects.Project)sender;
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
-				OnProjectReloaded (await LoadProject (project, default(CancellationToken)));
+				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
 			}
 		}
 
