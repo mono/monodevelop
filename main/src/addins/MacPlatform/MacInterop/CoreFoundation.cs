@@ -64,7 +64,7 @@ namespace MonoDevelop.MacInterop
 		
 		[DllImport (CFLib, CharSet=CharSet.Unicode)]
 		extern static IntPtr CFStringGetCharacters (IntPtr handle, CFRange range, IntPtr buffer);
-		
+
 		public static string FetchString (IntPtr handle)
 		{
 			if (handle == IntPtr.Zero)
