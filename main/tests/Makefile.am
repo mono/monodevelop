@@ -2,7 +2,7 @@ include $(top_srcdir)/xbuild.include
 
 SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests
 
-MONO=mono
+MONO=mono$(SGEN_SUFFIX)
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
