@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.MacIntegration;
+using MonoDevelop.MacInterop;
 using MonoDevelop.Ide;
 using UnitTests;
 
@@ -53,6 +54,16 @@ namespace MacPlatform.Tests
 		{
 			// Verify no exception is thrown
 			DesktopService.GetMimeTypeForUri (null);
+		}
+
+		[Test]
+		public void CreateString ()
+		{
+			string str = "Hello World!";
+			IntPtr cfstr = CoreFoundation.CreateString (str);
+			string fetchedStr = CoreFoundation.FetchString (cfstr);
+
+			Assert.IsTrue (str.Equals (fetchedStr));
 		}
 	}
 }
