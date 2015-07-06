@@ -910,7 +910,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
 
                 customize.SetControlState(control.Id, state);
             }
-            else if (propertyName == "Enabled" && dialogControl != null)
+            else if (propertyName == "Enabled" && (dialogControl = control as CommonFileDialogControl) != null)
             {
                 ShellNativeMethods.ControlState state;
                 customize.GetControlState(control.Id, out state);
