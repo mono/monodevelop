@@ -48,8 +48,8 @@ namespace MonoDevelop.MacInterop
 		public static extern void Release (IntPtr cfRef);
 		
 		struct CFRange {
-			public int Location, Length;
-			public CFRange (int l, int len)
+			public nint Location, Length;
+			public CFRange (nint l, nint len)
 			{
 				Location = l;
 				Length = len;
