@@ -51,9 +51,11 @@ namespace MonoDevelop.Platform
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			CommonFileDialog dialog;
-			if (data.Action == FileChooserAction.Open)
-				dialog = new CustomCommonOpenFileDialog ();
-			else
+			if (data.Action == FileChooserAction.Open) {
+				dialog = new CustomCommonOpenFileDialog {
+					EnsureFileExists = true
+				};
+			} else
 				dialog = new CustomCommonSaveFileDialog ();
 
 			dialog.SetCommonFormProperties (data);
@@ -163,6 +165,8 @@ namespace MonoDevelop.Platform
 				if (ex != null && ex.ErrorCode == -2147467259)
 					return filenames;
 				throw;
+			} catch (FileNotFoundException) {
+				return filenames;
 			}
 
 			var hr = (int)resultsArray.GetCount (out count);
