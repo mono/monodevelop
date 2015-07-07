@@ -1948,9 +1948,10 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public SnapshotDocument (TextDocument doc) : base (doc.buffer.Clone(), new ImmutableLineSplitter (doc.splitter))
+			public SnapshotDocument (TextDocument doc) : base (doc.buffer.Clone(), new LazyLineSplitter (doc.LineCount))
 			{
 				this.version = doc.Version;
+				((LazyLineSplitter)splitter).src = this;
 				fileName = doc.fileName;
 				Encoding = doc.Encoding;
 				UseBom = doc.UseBom;

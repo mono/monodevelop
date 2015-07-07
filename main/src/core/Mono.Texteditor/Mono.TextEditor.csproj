@@ -236,8 +236,8 @@
     <Compile Include="Mono.TextEditor.Utils\ImmutableStack.cs" />
     <Compile Include="Mono.TextEditor.Utils\CharRope.cs" />
     <Compile Include="Mono.TextEditor.Utils\RopeTextReader.cs" />
-    <Compile Include="Mono.TextEditor\Document\ImmutableLineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Gui\MonoTextEditor.cs" />
+    <Compile Include="Mono.TextEditor\Document\LazyLineSplitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

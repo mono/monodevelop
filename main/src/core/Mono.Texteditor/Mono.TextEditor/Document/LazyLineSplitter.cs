@@ -1,5 +1,5 @@
 ﻿//
-// ImmutableLineSplitter.cs
+// LazyLineSplitter.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -27,16 +27,18 @@ using System;
 using System.Linq;
 using ICSharpCode.NRefactory;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
-	class ImmutableLineSplitter : ILineSplitter
+	class LazyLineSplitter : ILineSplitter
 	{
-		readonly LineSegment[] lines;
+		internal ITextSource src;
+		LineSegment[] lines;
 
 		sealed class LineSegment : DocumentLine
 		{
-			readonly ImmutableLineSplitter splitter;
+			readonly LazyLineSplitter splitter;
 			readonly int lineNumber;
 
 			public override int Offset { get; set; }
@@ -59,7 +61,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public LineSegment (ImmutableLineSplitter splitter, int lineNumber, int offset, int length, UnicodeNewline newLine) : base(length, newLine)
+			public LineSegment (LazyLineSplitter splitter, int lineNumber, int offset, int length, UnicodeNewline newLine) : base(length, newLine)
 			{
 				this.splitter = splitter;
 				this.lineNumber = lineNumber;
@@ -67,16 +69,43 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ImmutableLineSplitter (ILineSplitter src)
+		void EnsureBuild()
 		{
-			if (src == null)
-				throw new ArgumentNullException ("src");
-			lines = new LineSegment[src.Count];
-			int cur = 0;
-			foreach (var line in src.Lines) {
-				lines [cur] = new LineSegment (this, cur, line.Offset, line.LengthIncludingDelimiter, line.UnicodeNewline);
-				cur++;
+			if (this.lines != null)
+				return;
+			Console.WriteLine ("build lines !!!");
+			Console.WriteLine (Environment.StackTrace);
+			var text = src.Text;
+			var nodes = new List<LineSegment> ();
+
+			var delimiterType = UnicodeNewline.Unknown;
+			int offset = 0, maxLength = 0, lineNumber = 0;
+			while (true) {
+				var delimiter = LineSplitter.NextDelimiter (text, offset);
+				if (delimiter.IsInvalid)
+					break;
+				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
+				var length = delimiterEndOffset - offset;
+				var newLine = new LineSegment (this, lineNumber++, offset, length, delimiter.UnicodeNewline);
+				nodes.Add (newLine);
+				if (length > maxLength) {
+					maxLength = length;
+				}
+				if (offset > 0) {
+					LineEndingMismatch |= delimiterType != delimiter.UnicodeNewline;
+				} else {
+					delimiterType = delimiter.UnicodeNewline;
+				}
+				offset = delimiterEndOffset;
 			}
+			var lastLine = new LineSegment (this, lineNumber++, offset, text.Length - offset, UnicodeNewline.Unknown);
+			nodes.Add (lastLine);
+			this.lines = nodes.ToArray ();
+		}
+
+		public LazyLineSplitter (int lineCount)
+		{
+			this.Count = lineCount;
 		}
 
 		#region ILineSplitter implementation
@@ -98,16 +127,19 @@ namespace Mono.TextEditor
 
 		public DocumentLine Get (int number)
 		{
+			EnsureBuild ();
 			return lines [number - 1];
 		}
 
 		public DocumentLine GetLineByOffset (int offset)
 		{
+			EnsureBuild ();
 			return lines [OffsetToLineNumber (offset) - 1];
 		}
 
 		public int OffsetToLineNumber (int offset)
 		{
+			EnsureBuild ();
 			int min = 0;
 			int max = lines.Length - 1;
 			while (min <= max) {
@@ -155,9 +187,8 @@ namespace Mono.TextEditor
 		}
 
 		public int Count {
-			get {
-				return lines.Length;
-			}
+			get;
+			private set;
 		}
 
 		public bool LineEndingMismatch {
@@ -167,13 +198,11 @@ namespace Mono.TextEditor
 
 		public System.Collections.Generic.IEnumerable<DocumentLine> Lines {
 			get {
+				EnsureBuild ();
 				return lines;
 			}
 		}
 
 		#endregion
-
-
 	}
 }
-
