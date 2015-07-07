@@ -785,6 +785,11 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return kinds.Contains(token.Kind());
 		}
 
+		public static bool IsKind(this SyntaxToken token, SyntaxKind kind)
+		{
+			return token.Kind() == kind;
+		}
+
 		public static bool IsLiteral(this SyntaxToken token)
 		{
 			switch (token.Kind())
