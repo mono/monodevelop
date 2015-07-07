@@ -82,7 +82,12 @@ namespace MonoDevelop.Core.Instrumentation
 			this.name = name;
 			this.category = category;
 		}
-		
+
+		public override string ToString ()
+		{
+			return string.Format ("[Counter: Name={0}, Enabled={1}, Id={2}, Category={3}, Count={4}, TotalCount={5}, LastValue={6}]", Name, Enabled, Id, Category, Count, TotalCount, LastValue);
+		}
+
 		public string Name {
 			get { return name; }
 		}

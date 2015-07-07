@@ -46,7 +46,8 @@ namespace MonoDevelop.Ide.Projects
 		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionEntityItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
-			this.DefaultHeight = 640;
+			this.DefaultWidth = 960;
+			this.DefaultHeight = 680;
 		}
 		
 		public static void RenameItem (IWorkspaceFileObject item, string newName)
@@ -96,7 +97,7 @@ namespace MonoDevelop.Ide.Projects
 		
 		static bool RenameItemFile (FilePath oldFile, FilePath newFile)
 		{
-			if (File.Exists (newFile)) {
+			if (File.Exists (newFile) && FileService.GetPhysicalFileName (newFile) != FileService.GetPhysicalFileName (oldFile)) {
 				string msg = GettextCatalog.GetString ("The file '{0}' already exist. Do you want to replace it?", newFile.FileName);
 				if (!MessageService.Confirm (msg, AlertButton.Replace))
 				    return false;

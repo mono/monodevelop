@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Projects
 			this.versionControlLabelHBox.Name = "versionControlLabelHBox";
 			// Container child versionControlLabelHBox.Gtk.Box+BoxChild
 			this.versionControlSpacerLabel = new global::Gtk.Label ();
-			this.versionControlSpacerLabel.WidthRequest = 7;
+			this.versionControlSpacerLabel.WidthRequest = 24;
 			this.versionControlSpacerLabel.Name = "versionControlSpacerLabel";
 			this.versionControlSpacerLabel.Justify = ((global::Gtk.Justification)(1));
 			this.versionControlLabelHBox.Add (this.versionControlSpacerLabel);

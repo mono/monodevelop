@@ -1,22 +1,22 @@
-// 
+//
 // GitUtilsTests.cs
-//  
+//
 // Author:
 //       IBBoard <dev@ibboard.co.uk>
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>
-// 
+//
 // Copyright (c) 2011 IBBoard
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,14 +24,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+/*using System;
 using System.Linq;
 using NUnit.Framework;
-using NGit.Storage.File;
-using NGit.Revwalk;
-using NGit;
 using System.IO;
 using System.Collections.Generic;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -39,21 +37,19 @@ namespace MonoDevelop.VersionControl.Git.Tests
 	public class GitIntegrityTests
 	{
 		readonly string PROJECT_ROOT = "../../../";
-		readonly Dictionary<string, RevCommit[]> blames = new Dictionary<string, RevCommit[]>();
-		FileRepository repo;
-		RevWalk walker;
-		
+		readonly Dictionary<string, Commit[]> blames = new Dictionary<string, Commit[]>();
+		LibGit2Sharp.Repository repo;
+
 		[SetUp]
 		public void Setup() {
 			var gitDir = new DirectoryInfo (PROJECT_ROOT + ".git");
-			repo = new FileRepository (gitDir.FullName);
-			walker = new RevWalk (repo);
+			repo = new LibGit2Sharp.Repository (gitDir.FullName);
 		}
 
 		[Test]
 		public void TestBlameLineCountWithMultipleCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
+			Commit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
 			Assert.That (blameCommits.Length, Is.EqualTo (72));
 		}
 
@@ -61,7 +57,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithMultipleCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
+			Commit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
 			var blames = new List<BlameFragment> ();
 			blames.Add (new BlameFragment (1, 27, "b6e41ee2"));
 			blames.Add (new BlameFragment (28, 1, "15ed2793"));
@@ -83,17 +79,17 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			blames.Add(new BlameFragment(67, 1, "b6e41ee2"));
 			blames.Add(new BlameFragment(68, 1, "c5f4319e"));
 			blames.Add(new BlameFragment(69, 4, "b6e41ee2"));
-			
+
 			CompareBlames (blameCommits, blames);
 		}
-		
+
 		[Test]
 		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithTwoCommits ()
 		{
 			string commit1 = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
 			string commit2 = "15ed279";
-			RevCommit[] blameCommits = GetBlameForFixedFile (commit2);
+			Commit[] blameCommits = GetBlameForFixedFile (commit2);
 			var blames = new List<BlameFragment> ();
 			blames.Add (new BlameFragment (1, 27, commit1));
 			blames.Add (new BlameFragment (28, 1, commit2));
@@ -110,42 +106,43 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			blames.Add (new BlameFragment (64, 4, commit1));
 			CompareBlames (blameCommits, blames);
 		}
-		
+
 		[Test]
 		public void TestBlameLineCountWithTwoCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ("15ed279");
+			Commit[] blameCommits = GetBlameForFixedFile ("15ed279");
 			Assert.That (blameCommits.Length, Is.EqualTo (67));
 		}
-		
+
 		[Test]
 		public void TestBlameRevisionsWithOneCommit ()
 		{
 			string commit = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
-			RevCommit[] blameCommits = GetBlameForFixedFile (commit);
+			Commit[] blameCommits = GetBlameForFixedFile (commit);
 			var blames = new List<BlameFragment> ();
-			blames.Add (new BlameFragment (1, 56, commit));	
+			blames.Add (new BlameFragment (1, 56, commit));
 			CompareBlames (blameCommits, blames);
 		}
-		
+
 		[Test]
 		public void TestBlameLineCountWithOneCommit ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
+			Commit[] blameCommits = GetBlameForFixedFile ("b6e41ee2dd00e8744abc4835567e06667891b2cf");
 			Assert.That (blameCommits.Length, Is.EqualTo (56));
 		}
-		
+
 		[Test]
 		public void TestBlameLineCountWithNoCommits ()
 		{
-			RevCommit[] blameCommits = GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298");
+			Commit[] blameCommits = GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298");
 			Assert.That (blameCommits, Is.Null);
 		}
-		
+
 		[Test]
+		[Ignore]
 		public void TestBlameForProjectDom ()
 		{
-			RevCommit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
+			Commit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
 			var blames = new List<BlameFragment> ();
 			blames.Add(new BlameFragment(1, 59, "3352c438"));
 			blames.Add(new BlameFragment(60, 5, "85dfe8a5"));
@@ -222,22 +219,23 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			blames.Add(new BlameFragment(1025, 43, "3352c438"));
 			CompareBlames(blameCommits, blames);
 		}
-		
+
 		[Test]
 		public void GetCommitChangesAddedRemoved ()
 		{
 			var commit = "9ed729ee";
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit + "^"), repo.Resolve (commit)).ToArray ();
+			var com = repo.Lookup<Commit> (commit);
+			var changes = GitUtil.CompareCommits (repo, com.Parents.First (), com).ToArray ();
 
-			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
-			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs", StringComparison.Ordinal));
+			var add = changes.First (c => c.Path.EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
+			var remove = changes.First (c => c.OldPath.EndsWith ("LineSegment.cs", StringComparison.Ordinal));
 
-			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.ADD, add.GetChangeType (), "#1");
-			Assert.AreEqual ("/dev/null", add.GetOldPath (), "#2");
-			Assert.AreEqual (NGit.Diff.DiffEntry.ChangeType.DELETE, remove.GetChangeType (), "#3");
-			Assert.AreEqual ("/dev/null", remove.GetNewPath (), "#4");
+			Assert.AreEqual (ChangeKind.Renamed, add.Status, "#1");
+			Assert.AreEqual ("main/src/core/Mono.Texteditor/Mono.TextEditor/Document/LineSegment.cs".Replace ('/', Path.DirectorySeparatorChar), add.OldPath, "#2");
+			Assert.AreEqual (ChangeKind.Renamed, remove.Status, "#3");
+			Assert.AreEqual ("main/src/core/Mono.Texteditor/Mono.TextEditor/Document/DocumentLine.cs".Replace ('/', Path.DirectorySeparatorChar), remove.Path, "#4");
 		}
-		
+
 		[Test]
 		public void GetCommitChangesModifications ()
 		{
@@ -255,51 +253,50 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				"TextEditor.cs",
 				"TextViewMargin.cs",
 			};
-			
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit + "^"), repo.Resolve (commit)).ToArray ();
+
+			var c = repo.Lookup<Commit> (commit);
+			var changes = GitUtil.CompareCommits (repo, c.Parents.First (), c).ToArray ();
 			Assert.AreEqual (11, changes.Length, "#1");
-			
+
 			foreach (var file in changedFiles)
-				Assert.IsTrue (changes.Any (f => f.GetNewPath ().EndsWith (".cs", StringComparison.Ordinal)), "#2." + file);
+				Assert.IsTrue (changes.Any (f => f.Path.EndsWith (".cs", StringComparison.Ordinal)), "#2." + file);
 		}
-		
-		RevCommit[] GetBlameForFixedFile (string revision)
+
+		Commit[] GetBlameForFixedFile (string revision)
 		{
 			string filePath = "main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitVersionControl.cs";
 			return GetBlameForFile (revision, filePath);
 		}
-		
-		RevCommit[] GetBlameForFile (string revision, string filePath)
+
+		Commit[] GetBlameForFile (string revision, string filePath)
 		{
-			RevCommit[] blame;
+			Commit[] blame;
 			string path = PROJECT_ROOT + filePath;
 			string key = path + revision;
 			blames.TryGetValue(key, out blame);
-			
+
 			if (blame == null)
 			{
-				var git = new NGit.Api.Git (repo);
-				var commit = git.GetRepository ().Resolve (revision);
-				var result = git.Blame ().SetFilePath (filePath).SetStartCommit (commit).Call ();
+				var result = repo.Blame (filePath);
 				if (result == null)
 					return null;
 
-				blame = new RevCommit [result.GetResultContents ().Size ()];
-				for (int i = 0; i < result.GetResultContents ().Size (); i ++)
-					blame [i] = result.GetSourceCommit (i);
+				blame = new Commit [result.Count ()];
+				for (int i = 0; i < result.Count (); i ++)
+					blame [i] = result[i].FinalCommit;
 				blames.Add(key, blame);
 			}
-			
+
 			return blame;
 		}
-		
-		static void CompareBlames (RevCommit[] blameCommits,List<BlameFragment> blames)
+
+		static void CompareBlames (Commit[] blameCommits,List<BlameFragment> blames)
 		{
 			foreach (BlameFragment blame in blames) {
 				int zeroBasedStartLine = blame.StartLine - 1;
-				
+
 				for (int i = 0; i < blame.LineCount; i++) {
-					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Name, Is.StringStarting (blame.RevID), "Error at line {0}", blame.StartLine + i);
+					Assert.That (blameCommits [zeroBasedStartLine + i].Id.Sha, Is.StringStarting (blame.RevID), "Error at line {0}", blame.StartLine + i);
 				}
 			}
 		}
@@ -319,4 +316,4 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 	}
 }
-
+*/

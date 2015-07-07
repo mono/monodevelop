@@ -46,6 +46,9 @@ if ENABLE_WINDOWSPLATFORM
 TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
+UITEST_ASSEMBLIES = \
+	$(TEST_DIR)/UserInterfaceTests.dll
+
 test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
@@ -69,11 +72,31 @@ test:
 		fi; \
 	fi
 
+uitest:
+	rm -rf $(TEST_DIR)/TestResults
+	@if test -n "$(assembly)"; then \
+		for asm in $(UITEST_ASSEMBLIES); do \
+			if test `basename $$asm` = $(assembly); then \
+				if test -n "$(categories)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \
+				fi; \
+				if ! test -n "$(categories)"; then \
+					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
+				fi; \
+			fi; \
+		done; \
+	fi
+
+	@if ! test -n "$(assembly)"; then \
+		echo "You must pass 'assembly' argument"; \
+		exit 1; \
+	fi
+
 coverage:
 	if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			echo Generating coverage for `basename $$asm`...; \
-			($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:coverage,onlycoverage,output=CoverageResult_`basename $$asm`.mlpd,ffile=`basename $$asm`.filter "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
+			($(MD_LAUNCH_SETUP) exec -a "mdtool" $(RUNTIME) --debug --profile=log:coverage,onlycoverage,output=CoverageResult_`basename $$asm`.mlpd,covfilter-file=`basename $$asm`.filter "$(MD_BIN_PATH)/mdtool.exe" run-md-tests $$asm); \
 			mprof-report --coverage-out=CoverageResult_`basename $$asm`.xml CoverageResult_`basename $$asm`.mlpd > /dev/null; \
 		done; \
 	fi

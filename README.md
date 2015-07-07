@@ -4,6 +4,8 @@ See http://www.monodevelop.com for more info.
 
 [![Build Status](http://jenkins.mono-project.com/job/test-monodevelop-mainline/badge/icon)](http://jenkins.mono-project.com/job/test-monodevelop-mainline/)
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mono/monodevelop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Directory organization
 ----------------------
 
@@ -78,6 +80,8 @@ Dependencies
 	Gtk# >= 2.12.8
 	monodoc >= 1.0
 	mono-addins >= 0.6
+	cmake (Linux only for git support)
+	libssh2 (Linux only for git support)
 
 Special Environment Variables
 -----------------------------
@@ -110,7 +114,7 @@ http://www.monodevelop.com
 
 **Gnome Human Interface Guidelines (HIG)**
 
-http://developer.gnome.org/projects/gup/hig/1.0/
+https://developer.gnome.org/hig/stable/
 
 **freedesktop.org standards**
 

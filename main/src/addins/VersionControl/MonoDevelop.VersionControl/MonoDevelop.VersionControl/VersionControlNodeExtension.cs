@@ -387,11 +387,6 @@ namespace MonoDevelop.VersionControl
 		[CommandUpdateHandler (Commands.ResolveConflicts)]
 		protected void UpdateResolveConflicts (CommandInfo item)
 		{
-			if (!(CurrentNode.DataItem is UnknownSolutionItem)) {
-				item.Visible = false;
-				return;
-			}
-
 			TestCommand (Commands.ResolveConflicts, item, false);
 		}
 

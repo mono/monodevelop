@@ -189,6 +189,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -206,6 +207,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -262,6 +264,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

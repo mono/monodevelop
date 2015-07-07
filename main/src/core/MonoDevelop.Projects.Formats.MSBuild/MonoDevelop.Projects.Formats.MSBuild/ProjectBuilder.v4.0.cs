@@ -43,7 +43,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		readonly ProjectCollection engine;
 		readonly string file;
 		ILogWriter currentLogWriter;
-		readonly ConsoleLogger consoleLogger;
 		readonly BuildEngine buildEngine;
 
 		public ProjectBuilder (BuildEngine buildEngine, ProjectCollection engine, string file)
@@ -51,13 +50,26 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.file = file;
 			this.engine = engine;
 			this.buildEngine = buildEngine;
-			consoleLogger = new ConsoleLogger (LoggerVerbosity.Normal, LogWriteLine, null, null);
 			Refresh ();
+		}
+
+		public string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations)
+		{
+			string[] result = null;
+			BuildEngine.RunSTA (delegate {
+				try {
+					var project = SetupProject (configurations);
+					result = project.Targets.Select (t => t.Key).ToArray ();
+				} catch {
+					result = new string [0];
+				}
+			});
+			return result;
 		}
 
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties)
 		{
 			if (runTargets == null || runTargets.Length == 0)
 				throw new ArgumentException ("runTargets is empty");
@@ -71,7 +83,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					ILogger[] loggers;
 					var logger = new LocalLogger (file);
 					if (logWriter != null) {
-						consoleLogger.Verbosity = GetVerbosity (verbosity);
+						var consoleLogger = new ConsoleLogger (GetVerbosity (verbosity), LogWriteLine, null, null);
 						loggers = new ILogger[] { logger, consoleLogger };
 					} else {
 						loggers = new ILogger[] { logger };
@@ -79,6 +91,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 					//building the project will create items and alter properties, so we use a new instance
 					var pi = project.CreateProjectInstance ();
+
+					if (globalProperties != null)
+						foreach (var p in globalProperties)
+							pi.SetProperty (p.Key, p.Value);
 
 					pi.Build (runTargets, loggers);
 

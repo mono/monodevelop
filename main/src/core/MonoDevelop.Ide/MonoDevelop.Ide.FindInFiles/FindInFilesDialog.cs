@@ -37,6 +37,12 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
+	public enum PathMode {
+		Absolute,
+		Relative,
+		Hidden
+	}
+
 	public partial class FindInFilesDialog : Gtk.Dialog
 	{
 		readonly bool writeScope = true;
@@ -801,6 +807,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
+
+					searchMonitor.PathMode = scope.PathMode;
+
 					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 
 					lock (searchesInProgress)

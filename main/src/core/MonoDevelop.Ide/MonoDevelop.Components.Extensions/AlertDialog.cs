@@ -94,10 +94,12 @@ namespace MonoDevelop.Components.Extensions
 			}
 			
 			if (!data.Message.CancellationToken.IsCancellationRequested) {
-				MessageService.ShowCustomDialog (alertDialog, data.TransientFor);
-				if (alertDialog.ApplyToAll)
-					data.ApplyToAll = true;
-				data.ResultButton = alertDialog.ResultButton;
+				using (alertDialog) {
+					MessageService.ShowCustomDialog (alertDialog, data.TransientFor);
+					if (alertDialog.ApplyToAll)
+						data.ApplyToAll = true;
+					data.ResultButton = alertDialog.ResultButton;
+				}
 			}
 			alertDialog = null;
 			

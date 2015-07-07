@@ -119,8 +119,10 @@ namespace MonoDevelop.AspNet.Commands
 			} finally {
 				if (host != null)
 					host.Dispose ();
-				if (dialog != null)
+				if (dialog != null) {
 					dialog.Destroy ();
+					dialog.Dispose ();
+				}
 			}
 
 			if (System.IO.File.Exists (outputFile)) {

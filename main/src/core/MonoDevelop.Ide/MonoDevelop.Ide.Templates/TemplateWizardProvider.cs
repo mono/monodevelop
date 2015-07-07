@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
@@ -36,6 +38,7 @@ namespace MonoDevelop.Ide.Templates
 		WizardPage currentWizardPage;
 
 		List<WizardPage> cachedWizardPages = new List<WizardPage> ();
+		List<ProjectConfigurationControl> cachedFinalPageControls;
 
 		public bool IsFirstPage { get; private set; }
 		public bool IsLastPage { get; private set; }
@@ -93,8 +96,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			CurrentWizard.Parameters = parameters;
-			CurrentWizard.UpdateSupportedParameters (template.SupportedParameters);
-			CurrentWizard.UpdateDefaultParameters (template.DefaultParameters);
+			CurrentWizard.UpdateParameters (template);
 			IsFirstPage = true;
 			CurrentPageNumber = 1;
 
@@ -136,6 +138,7 @@ namespace MonoDevelop.Ide.Templates
 			IsLastPage = false;
 
 			DisposeWizardPages ();
+			DisposeFinalPageControls ();
 		}
 
 		void DisposeWizardPages ()
@@ -145,6 +148,18 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			cachedWizardPages.Clear ();
+		}
+
+		void DisposeFinalPageControls ()
+		{
+			if (cachedFinalPageControls == null)
+				return;
+
+			foreach (ProjectConfigurationControl control in cachedFinalPageControls) {
+				control.Dispose ();
+			}
+
+			cachedFinalPageControls = null;
 		}
 
 		public bool MoveToNextPage ()
@@ -184,6 +199,19 @@ namespace MonoDevelop.Ide.Templates
 		public void Dispose ()
 		{
 			Reset ();
+		}
+
+		public IEnumerable<ProjectConfigurationControl> GetFinalPageControls ()
+		{
+			if (cachedFinalPageControls != null)
+				return cachedFinalPageControls;
+
+			if (HasWizard) {
+				cachedFinalPageControls = CurrentWizard.GetFinalPageControls ().ToList ();
+				return cachedFinalPageControls;
+			}
+
+			return Enumerable.Empty <ProjectConfigurationControl> ();
 		}
 	}
 }

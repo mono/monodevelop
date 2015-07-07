@@ -351,21 +351,24 @@ namespace MonoDevelop.VersionControl.Views
 			public BlameRenderer (BlameWidget widget)
 			{
 				this.widget = widget;
-				widget.info.Updated += delegate { QueueDraw (); };
+				widget.info.Updated += OnWidgetChanged;
 				annotations = new List<Annotation> ();
 				UpdateAnnotations ();
 	//			widget.Document.Saved += UpdateAnnotations;
 				document = widget.Editor.Document;
 				document.TextReplacing += EditorDocumentTextReplacing;
 				document.LineChanged += EditorDocumentLineChanged;
-				widget.vScrollBar.ValueChanged += delegate {
-					QueueDraw ();
-				};
+				widget.vScrollBar.ValueChanged += OnWidgetChanged;
 				
 				layout = new Pango.Layout (PangoContext);
 				Events |= EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 				OptionsChanged ();
 				Show ();
+			}
+
+			void OnWidgetChanged (object sender, EventArgs e)
+			{
+				QueueDraw ();
 			}
 			
 			public void OptionsChanged ()
@@ -387,6 +390,11 @@ namespace MonoDevelop.VersionControl.Views
 				if (layout != null) {
 					layout.Dispose ();
 					layout = null;
+				}
+				if (widget != null && widget.info != null) {
+					widget.info.Updated -= OnWidgetChanged;
+					widget.vScrollBar.ValueChanged -= OnWidgetChanged;
+					widget = null;
 				}
 			}
 			

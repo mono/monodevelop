@@ -27,6 +27,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.IO;
 using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Framework;
@@ -59,9 +60,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		//HACK: Mono does not implement 3.5 CustomMetadataNames API
 		FieldInfo evaluatedMetadataField = typeof(BuildItem).GetField ("evaluatedMetadata", BindingFlags.NonPublic | BindingFlags.Instance);
 
+		public string[] GetSupportedTargets (ProjectConfigurationInfo[] configurations)
+		{
+			string[] result = null;
+			BuildEngine.RunSTA (delegate {
+				try {
+					var project = SetupProject (configurations);
+					result = project.Targets.OfType<Target> ().Select (t => t.Name).ToArray ();
+				} catch {
+					result = new string [0];
+				}
+			});
+			return result;
+		}
+
 		public MSBuildResult Run (
 			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
-			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties, Dictionary<string,string> globalProperties)
 		{
 			MSBuildResult result = null;
 			BuildEngine.RunSTA (delegate {
@@ -79,9 +94,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					}
 
 					if (runTargets != null && runTargets.Length > 0) {
+						if (globalProperties != null) {
+							foreach (var p in globalProperties)
+								project.GlobalProperties.SetProperty (p.Key, p.Value);
+						}
 						// We are using this BuildProject overload and the BuildSettings.None argument as a workaround to
 						// an xbuild bug which causes references to not be resolved after the project has been built once.
 						buildEngine.Engine.BuildProject (project, runTargets, new Hashtable (), BuildSettings.None);
+
+						if (globalProperties != null) {
+							foreach (var p in globalProperties.Keys) {
+								project.GlobalProperties.RemoveProperty (p);
+								buildEngine.Engine.GlobalProperties.RemoveProperty (p);
+							}
+						}
 					}
 
 					result = new MSBuildResult (logger.BuildResult.ToArray ());

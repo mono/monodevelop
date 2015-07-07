@@ -339,6 +339,7 @@ namespace MonoDevelop.Ide
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -527,6 +528,7 @@ namespace MonoDevelop.Ide
 				return false;
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		
@@ -572,6 +574,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			} else if (entry is Solution) {
 				Solution solution = (Solution) entry;
@@ -587,6 +590,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 			else {
@@ -606,6 +610,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					optionsDialog.Destroy ();
+					optionsDialog.Dispose ();
 				}
 			}
 		}
@@ -633,6 +638,7 @@ namespace MonoDevelop.Ide
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
 			newProjectDialog.SelectedTemplateId = defaultItemId;
+			newProjectDialog.ParentWorkspace = parentWorkspace;
 
 			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
 				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);
@@ -657,6 +663,12 @@ namespace MonoDevelop.Ide
 			
 			if (dlg.Run ()) {
 				try {
+
+					if (WorkspaceContainsWorkspaceItem (parentWorkspace, dlg.SelectedFile)) {
+						MessageService.ShowMessage (GettextCatalog.GetString ("The workspace already contains '{0}'.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+						return res;
+					}
+
 					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
 					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
@@ -665,7 +677,12 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool WorkspaceContainsWorkspaceItem (Workspace workspace, FilePath workspaceItemFileName)
+		{
+			return workspace.Items.Any (existingWorkspaceItem => existingWorkspaceItem.FileName == workspaceItemFileName);
+		}
+
 		public WorkspaceItem AddWorkspaceItem (Workspace parentWorkspace, string itemFileName)
 		{
 			using (IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
@@ -713,6 +730,11 @@ namespace MonoDevelop.Ide
 					return res;
 				}
 
+				if (SolutionContainsProject (parentFolder, dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The project '{0}' has already been added.", Path.GetFileNameWithoutExtension (dlg.SelectedFile)));
+					return res;
+				}
+
 				try {
 					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
@@ -725,7 +747,13 @@ namespace MonoDevelop.Ide
 
 			return res;
 		}
-		
+
+		static bool SolutionContainsProject (SolutionFolder folder, FilePath projectFileName)
+		{
+			Solution solution = folder.ParentSolution;
+			return solution.GetAllProjects ().Any (existingProject => existingProject.FileName == projectFileName);
+		}
+
 		public SolutionItem AddSolutionItem (SolutionFolder folder, string entryFileName)
 		{
 			AddEntryEventArgs args = new AddEntryEventArgs (folder, entryFileName);
@@ -745,17 +773,20 @@ namespace MonoDevelop.Ide
 		
 		public bool CreateProjectFile (Project parentProject, string basePath, string selectedTemplateId)
 		{
-			NewFileDialog nfd = new NewFileDialog (parentProject, basePath);
-			if (selectedTemplateId != null)
-				nfd.SelectTemplate (selectedTemplateId);
-			return MessageService.ShowCustomDialog (nfd) == (int) Gtk.ResponseType.Ok;
+			using (NewFileDialog nfd = new NewFileDialog (parentProject, basePath)) {
+				if (selectedTemplateId != null)
+					nfd.SelectTemplate (selectedTemplateId);
+				return MessageService.ShowCustomDialog (nfd) == (int)Gtk.ResponseType.Ok;
+			}
 		}
 
 		public bool AddReferenceToProject (DotNetProject project)
 		{
 			try {
-				if (selDialog == null)
+				if (selDialog == null) {
 					selDialog = new SelectReferenceDialog ();
+					selDialog.TransientFor = MessageService.RootWindow;
+				}
 				
 				selDialog.SetProject (project);
 
@@ -833,6 +864,7 @@ namespace MonoDevelop.Ide
 					}
 				} finally {
 					dlg.Destroy ();
+					dlg.Dispose ();
 				}
 			}
 			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
@@ -1075,6 +1107,11 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation Rebuild (IBuildTarget entry)
 		{
+			return Rebuild (entry, null);
+		}
+
+		public IAsyncOperation Rebuild (IBuildTarget entry, ProjectOperationContext context)
+		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			
 			ITimeTracker tt = Counters.BuildItemTimer.BeginTiming ("Rebuilding " + entry.Name);
@@ -1092,7 +1129,7 @@ namespace MonoDevelop.Ide
 					if (StartBuild != null) {
 						DispatchService.GuiSyncDispatch (() => BeginBuild (monitor, tt, true));
 					}
-					BuildSolutionItemAsync (entry, monitor, tt);
+					BuildSolutionItemAsync (entry, monitor, tt, context:context);
 				}, null);
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
@@ -1351,7 +1388,12 @@ namespace MonoDevelop.Ide
 			return Build (entry, false);
 		}
 
-		IAsyncOperation Build (IBuildTarget entry, bool skipPrebuildCheck)
+		public IAsyncOperation Build (IBuildTarget entry, ProjectOperationContext context)
+		{
+			return Build (entry, false, context);
+		}
+
+		IAsyncOperation Build (IBuildTarget entry, bool skipPrebuildCheck, ProjectOperationContext context = null)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) return currentBuildOperation;
 			/*
@@ -1376,7 +1418,7 @@ namespace MonoDevelop.Ide
 			try {
 				IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor ();
 				BeginBuild (monitor, tt, false);
-				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck));
+				DispatchService.ThreadDispatch (() => BuildSolutionItemAsync (entry, monitor, tt, skipPrebuildCheck, context));
 				currentBuildOperation = monitor.AsyncOperation;
 				currentBuildOperationOwner = entry;
 				currentBuildOperation.Completed += delegate { currentBuildOperationOwner = null; };
@@ -1387,7 +1429,7 @@ namespace MonoDevelop.Ide
 			return currentBuildOperation;
 		}
 		
-		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false)
+		void BuildSolutionItemAsync (IBuildTarget entry, IProgressMonitor monitor, ITimeTracker tt, bool skipPrebuildCheck = false, ProjectOperationContext context = null)
 		{
 			BuildResult result = null;
 			try {
@@ -1403,7 +1445,9 @@ namespace MonoDevelop.Ide
 					tt.Trace ("Building item");
 					SolutionItem it = entry as SolutionItem;
 					if (it != null)
-						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true);
+						result = it.Build (monitor, IdeApp.Workspace.ActiveConfiguration, true, context);
+					else if (entry is WorkspaceItem)
+						result = ((WorkspaceItem)entry).Build (monitor, IdeApp.Workspace.ActiveConfiguration, context);
 					else
 						result = entry.RunTarget (monitor, ProjectService.BuildTarget, IdeApp.Workspace.ActiveConfiguration);
 				}
@@ -1797,8 +1841,10 @@ namespace MonoDevelop.Ide
 							newFileList.Add (null);
 						}
 					} finally {
-						if (addExternalDialog != null)
+						if (addExternalDialog != null) {
 							addExternalDialog.Destroy ();
+							addExternalDialog.Dispose ();
+						}
 					}
 				}
 			}

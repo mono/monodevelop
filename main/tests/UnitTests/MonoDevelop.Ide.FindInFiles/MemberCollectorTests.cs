@@ -32,7 +32,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using Mono.CSharp.Nullable;
 using GLib;
 
 namespace MonoDevelop.Ide.FindInFiles

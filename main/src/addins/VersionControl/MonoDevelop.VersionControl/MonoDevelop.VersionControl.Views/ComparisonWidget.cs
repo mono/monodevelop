@@ -172,6 +172,7 @@ namespace MonoDevelop.VersionControl.Views
 					toEditor.Text = result.Value;
 					IdeApp.Workbench.StatusBar.AutoPulse = false;
 					IdeApp.Workbench.StatusBar.EndProgress ();
+					IdeApp.Workbench.StatusBar.ShowReady ();
 					box.Sensitive = true;
 					UpdateDiff ();
 				});
@@ -217,7 +218,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (n == 1)
 					return "Base";
 				Revision rev = widget.info.History[n - 2];
-				return GLib.Markup.EscapeText (rev.ToString () + "\t" + rev.Time.ToString () + "\t" + rev.Author);
+				return GLib.Markup.EscapeText (string.Format ("{0}\t{1}\t{2}", rev, rev.Time, rev.Author));
 			}
 
 			public Xwt.Drawing.Image GetIcon (int n)

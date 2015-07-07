@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.Projects
 			WidthRequest = 901;
 			HeightRequest = 632;
 
-			Modal = true;
 			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;
@@ -218,6 +217,7 @@ namespace MonoDevelop.Ide.Projects
 			cancelButtonBox.Name = "cancelButtonBox";
 			cancelButtonBox.BorderWidth = 16;
 			cancelButton = new Button ();
+			cancelButton.Name = "cancelButton";
 			cancelButton.Label = "gtk-cancel";
 			cancelButton.UseStock = true;
 			cancelButtonBox.PackStart (cancelButton, false, false, 0);

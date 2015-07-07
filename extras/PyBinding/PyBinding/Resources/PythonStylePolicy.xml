@@ -1,8 +1,0 @@
-<TextStylePolicy scope="text/x-python">
-        <FileWidth>80</FileWidth>
-        <TabWidth>4</TabWidth>
-        <TabsToSpaces>True</TabsToSpaces>
-        <NoTabsAfterNonTabs>True</NoTabsAfterNonTabs>
-        <RemoveTrailingWhitespace>True</RemoveTrailingWhitespace>
-        <EolMarker>Native</EolMarker>
-</TextStylePolicy>

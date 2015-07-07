@@ -90,8 +90,8 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			ObjectValue val = Eval ("this");
-			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
-			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.TypeName);
+			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChild}", val.Value);
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChild", val.TypeName);
 		}
 
 		[Test]
@@ -171,6 +171,38 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("ClassWithCompilerGeneratedNestedClass.NestedClass", children [0].Value);
 			Assert.AreEqual ("<type>", children [0].TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, children [0].Flags & ObjectValueFlags.OriginMask);
+		}
+
+		[Test]
+		public virtual void HiddenMembers ()
+		{
+			IgnoreCorDebugger ("TODO");
+			ObjectValue val;
+			val = Eval ("HiddenField");
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("HiddenProperty");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("HiddenMethod()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
@@ -878,9 +910,60 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("SomeEnum", val.TypeName);
 			
 			val = Eval ("(SomeEnum)3");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 			Assert.AreEqual ("SomeEnum", val.TypeName);
+
+			IgnoreCorDebugger ("CorDebugger: Implicit casting");
+
+			// Casting primitive <-> custom class via implicit operator
+			val = Eval ("(myNint)3");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("{3}", val.Value);
+			Assert.AreEqual ("myNint", val.TypeName);
+
+			val = Eval ("(int)(myNint)4");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("4", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("TestCastingArgument(4)");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"4\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("new RichClass(5).publicPropInt1");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("5", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
@@ -953,7 +1036,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 			
 			val = Eval ("this + \"a\"");
-			Assert.AreEqual ("\"MonoDevelop.Debugger.Tests.TestApp.TestEvaluationa\"", val.Value);
+			Assert.AreEqual ("\"MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChilda\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 			
 			// Equality
@@ -1334,6 +1417,10 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("(null)", val.Value);
 			Assert.AreEqual ("byte[]", val.TypeName);
 			Assert.IsTrue (val.IsNull);
+
+			val = Eval ("arrayWithLowerBounds");
+			Assert.AreEqual ("int[,,]", val.TypeName);
+			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 		}
 
 		[Test]
@@ -1391,8 +1478,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("two", val.DisplayValue);
 			
 			val = Eval ("SomeEnum.one | SomeEnum.two");
-			Assert.AreEqual ("SomeEnum.one|SomeEnum.two", val.Value);
-			Assert.AreEqual ("one|two", val.DisplayValue);
+			Assert.AreEqual ("SomeEnum.one | SomeEnum.two", val.Value);
+			Assert.AreEqual ("one | two", val.DisplayValue);
 		}
 
 		[Test]
@@ -1956,7 +2043,7 @@ namespace MonoDevelop.Debugger.Tests
 				val = val.Sync ();
 			}
 			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
-			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
+			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChild}", val.Value);
 		}
 
 		[Test]
@@ -1986,6 +2073,33 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("DebuggerDisplayMethodTest", val.TypeName);
 				Assert.AreEqual ("First Int:32 Second Int:43", val.Value);
 			}
+		}
+
+		[Test]
+		public void ArrayTests ()
+		{
+			ObjectValue val;
+
+			val = Eval ("numbersMulti[1,2,3]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("133", val.Value);
+
+			val = Eval ("numbersArrays[0][7]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("24", val.Value);
+
+			val = Eval ("arrayWithLowerBounds[5,6,7]");
+			Assert.AreEqual ("int", val.TypeName);
+			Assert.AreEqual ("114", val.Value);
+
+			if (AllowTargetInvokes) {
+				val = Eval ("arrayWithLowerBounds.GetValue(5,6,7)");
+				Assert.AreEqual ("int", val.TypeName);
+				Assert.AreEqual ("114", val.Value);
+			}
+
+			var children = Eval ("arrayWithLowerBounds").GetAllChildrenSync ();
+			Assert.AreEqual ("[5, ...]", children [0].Name);
 		}
 	}
 }

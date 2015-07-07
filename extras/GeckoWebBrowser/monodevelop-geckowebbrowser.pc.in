@@ -1,6 +1,0 @@
-Name: GeckoWebBrowser
-Description: GeckoWebBrowser
-Version: 0.1
-
-Requires: 
-Libs: -r:@prefix@/lib/@PACKAGE@/MonoDevelop.GeckoWebBrowser.dll

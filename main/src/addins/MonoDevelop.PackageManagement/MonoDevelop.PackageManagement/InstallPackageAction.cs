@@ -28,21 +28,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class InstallPackageAction : ProcessPackageOperationsAction
 	{
+		IFileRemover fileRemover;
+
 		public InstallPackageAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+			: this (project, packageManagementEvents, new FileRemover ())
 		{
 		}
-		
+
+		public InstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
+			: base (project, packageManagementEvents)
+		{
+			this.fileRemover = fileRemover;
+
+			OpenReadMeText = true;
+			PreserveLocalCopyReferences = true;
+		}
+
 		public bool IgnoreDependencies { get; set; }
+		public bool OpenReadMeText { get; set; }
+		public bool PreserveLocalCopyReferences { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
@@ -51,12 +67,31 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, this);
-			OnParentPackageInstalled ();
+			using (IOpenPackageReadMeMonitor monitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
+				using (IDisposable fileMonitor = CreateFileMonitor (fileRemover)) {
+					if (PreserveLocalCopyReferences) {
+						using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+							Project.InstallPackage (Package, this);
+						}
+					} else {
+						Project.InstallPackage (Package, this);
+					}
+				}
+				monitor.OpenReadMeFile ();
+				OnParentPackageInstalled ();
+			}
 		}
 
 		protected override string StartingMessageFormat {
 			get { return "Adding {0}..."; }
+		}
+
+		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)
+		{
+			if (OpenReadMeText) {
+				return base.CreateOpenPackageReadMeMonitor (packageId);
+			}
+			return NullOpenPackageReadMeMonitor.Null;
 		}
 	}
 }

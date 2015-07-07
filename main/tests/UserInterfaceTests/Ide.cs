@@ -35,6 +35,7 @@ using MonoDevelop.Components.AutoTest;
 using NUnit.Framework;
 
 using Gdk;
+using System.Linq;
 
 
 namespace UserInterfaceTests
@@ -47,26 +48,14 @@ namespace UserInterfaceTests
 
 		public static void OpenFile (FilePath file)
 		{
-			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (FilePath) file, true);
-			Assert.AreEqual (file, Ide.GetActiveDocumentFilename ());
-		}
-
-		public static FilePath OpenTestSolution (string solution)
-		{
-			FilePath path = Util.GetSampleProject (solution);
-
-			RunAndWaitForTimer (
-				() => Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workspace.OpenWorkspaceItem", (string)path),
-				"MonoDevelop.Ide.Counters.OpenWorkspaceItemTimer"
-			);
-
-			return path;
+			Session.GlobalInvoke ("MonoDevelop.Ide.IdeApp.Workbench.OpenDocument", (string) file, true);
+			Assert.AreEqual (file, GetActiveDocumentFilename ());
 		}
 
 		public static void CloseAll ()
 		{
 			Session.ExecuteCommand (FileCommands.CloseWorkspace);
-			Session.ExecuteCommand (FileCommands.CloseAllFiles);
+			Session.ExitApp ();
 		}
 
 		public static FilePath GetActiveDocumentFilename ()
@@ -74,13 +63,10 @@ namespace UserInterfaceTests
 			return Session.GetGlobalValue<FilePath> ("MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.FileName");
 		}
 
-		public static bool BuildSolution (bool isPass = true)
+		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 180)
 		{
-			RunAndWaitForTimer (
-				() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"MonoDevelop.Ide.Counters.BuildItemTimer"
-			);
-
+			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
+				"Ide.Shell.ProjectBuilt", timeout: timeoutInSecs * 1000);
 			var status = IsBuildSuccessful ();
 			return isPass == status;
 		}
@@ -94,7 +80,7 @@ namespace UserInterfaceTests
 				Thread.Sleep (pollStep);
 			} while (timeout > 0);
 
-			throw new Exception ("Timed out waiting for event");
+			throw new TimeoutException ("Timed out waiting for Function: "+done.Method.Name);
 		}
 
 		//no saner way to do this
@@ -115,10 +101,9 @@ namespace UserInterfaceTests
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
-		public static bool IsBuildSuccessful (int timeout = 3000)
+		public static bool IsBuildSuccessful ()
 		{
-			Thread.Sleep (timeout);
-			return Session.IsBuildSuccessful ();
+			return Session.ErrorCount (MonoDevelop.Ide.Tasks.TaskSeverity.Error) == 0;
 		}
 
 		public static void RunAndWaitForTimer (Action action, string counter, int timeout = 20000)
@@ -129,6 +114,48 @@ namespace UserInterfaceTests
 			action ();
 
 			WaitUntil (() => c.TotalTime > tt, timeout);
+		}
+
+		public readonly static Action EmptyAction = delegate { };
+
+		public readonly static Action WaitForPackageUpdate = delegate {
+			WaitForStatusMessage (new [] {
+				"Package updates are available.",
+				"Packages are up to date.",
+				"No updates found but warnings were reported.",
+				"Packages successfully updated.",
+				"Packages updated with warnings."},
+				timeoutInSecs: 360, pollStepInSecs: 5);
+		};
+
+		public readonly static Action WaitForSolutionCheckedOut = delegate {
+			WaitForStatusMessage (new [] {"Solution checked out", "Solution Loaded."}, timeoutInSecs: 360, pollStepInSecs: 5);
+		};
+
+		public static void WaitForSolutionLoaded (Action<string> afterEachStep)
+		{
+			WaitForStatusMessage (new [] {"Loading..."});
+			afterEachStep ("Loading-Solution");
+			WaitForNoStatusMessage (new [] {"Loading..."});
+			afterEachStep ("Solution-Loaded");
+		}
+
+		public static void WaitForStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
+		{
+			PollStatusMessage (statusMessage, timeoutInSecs, pollStepInSecs);
+		}
+
+		public static void WaitForNoStatusMessage (string[] statusMessage, int timeoutInSecs = 240, int pollStepInSecs = 1)
+		{
+			PollStatusMessage (statusMessage, timeoutInSecs, pollStepInSecs, false);
+		}
+
+		static void PollStatusMessage (string[] statusMessage, int timeoutInSecs, int pollStepInSecs, bool waitForMessage = true)
+		{
+			Ide.WaitUntil (() => {
+				var actualStatusMessage = Ide.GetStatusMessage ();
+				return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
+			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}
 	}
 

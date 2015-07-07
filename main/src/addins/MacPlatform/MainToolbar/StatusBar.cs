@@ -197,7 +197,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, delegate {
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => DispatchService.GuiDispatch (() => {
 				if (Window == null)
 					return;
 
@@ -210,7 +210,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
 					buildResultText.ContentsScale = Window.BackingScaleFactor;
 				}
-			});
+			}));
 
 			AddSubview (imageView);
 			AddSubview (textField);
@@ -350,7 +350,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					right -= item.Bounds.Width + 6;
 					item.Frame = new CGRect (right, 3, item.Bounds.Width, item.Bounds.Height);
 
-					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
 					AddTrackingArea (area);
 
 					icon.TrackingArea = area;
@@ -378,7 +378,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 			layer.Frame = new CGRect (right, 3, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
 
-			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInActiveApp, this, null);
+			var area = new NSTrackingArea (layer.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
 			AddTrackingArea (area);
 
 			var statusIcon = new StatusIcon (this, layer, area) {
@@ -674,43 +674,52 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			});
 		}
 
-		public override void ViewDidMoveToSuperview ()
-		{
-			base.ViewDidMoveToSuperview ();
+		NSPopover popover;
 
-			popover.ContentViewController.View = new NSTextField {
-				DrawsBackground = false,
-				Bezeled = false,
-				Editable = false,
-				Frame = new CGRect (0, 0, 230, 30),
-				AutoresizingMask = NSViewResizingMask.HeightSizable,
-				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
+		void CreatePopoverForLayer (CALayer layer)
+		{
+			popover = new NSPopover {
+				ContentViewController = new NSViewController (null, null),
+				Animates = false
 			};
-		}
 
-		NSPopover popover = new NSPopover {
-			ContentViewController = new NSViewController (null, null),
-			Animates = false,
-		};
-
-		public void ShowPopoverForLayer (CALayer layer)
-		{
-			if (!layerToStatus.ContainsKey (layer.Name))
-				return;
-
-			var field = (NSTextField)popover.ContentViewController.View;
 			string tooltip = layerToStatus [layer.Name].ToolTip;
 			if (tooltip == null)
 				return;
 
-			field.AttributedStringValue = GetPopoverString (tooltip);
+			var attrString = GetPopoverString (tooltip);
+
+			var height = attrString.BoundingRectWithSize (new CGSize (230, nfloat.MaxValue),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
+			
+			popover.ContentViewController.View = new NSTextField {
+				Frame = new CGRect (0, 0, 230, height + 14),
+				DrawsBackground = false,
+				Bezeled = true,
+				Editable = false,
+				Cell = new VerticallyCenteredTextFieldCell (yOffset: -1),
+			};
+			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
+		}
+
+		public void ShowPopoverForLayer (CALayer layer)
+		{
+			if (popover != null)
+				return;
+
+			if (!layerToStatus.ContainsKey (layer.Name))
+				return;
+
+			CreatePopoverForLayer (layer);
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void DestroyPopover ()
 		{
 			oldLayer = null;
-			popover.Close ();
+			if (popover != null)
+				popover.Close ();
+			popover = null;
 		}
 
 		CALayer LayerForEvent (NSEvent theEvent)
@@ -772,11 +781,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					layerToStatus [layer.Name].NotifyClicked (button);
 					return;
 				}
-			}
 
-			if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
-				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
-				return;
+				if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
+					IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+					return;
+				}
 			}
 
 			if (sourcePad != null)

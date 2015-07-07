@@ -118,7 +118,7 @@ namespace MonoDevelop.VersionControl
 				DirectoryStatus vis;
 				if (directoryStatus.TryGetValue (localDirectory.CanonicalPath, out vis)) {
 					if (versionInfos.Length == vis.FileInfo.Length && (hasRemoteStatus == vis.HasRemoteStatus)) {
-						bool allEqual = false;
+						bool allEqual = true;
 						for (int n=0; n<versionInfos.Length; n++) {
 							if (!versionInfos[n].Equals (vis.FileInfo[n])) {
 								allEqual = false;

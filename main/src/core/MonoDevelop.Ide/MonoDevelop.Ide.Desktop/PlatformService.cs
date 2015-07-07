@@ -434,7 +434,13 @@ namespace MonoDevelop.Ide.Desktop
 		/// </summary>
 		public virtual void GrabDesktopFocus (Gtk.Window window)
 		{
-			window.Present ();
+			if (Platform.IsWindows && window.IsRealized) {
+				/* On Windows calling Present() will break out of window edge snapping mode. */
+				window.GdkWindow.Focus (0);
+				window.GdkWindow.Raise ();
+			} else {
+				window.Present ();
+			}
 		}
 
 		internal virtual void RemoveWindowShadow (Gtk.Window window)

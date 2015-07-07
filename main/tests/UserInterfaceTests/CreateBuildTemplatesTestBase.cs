@@ -27,26 +27,34 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using MonoDevelop.Core;
-
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
 	public abstract class CreateBuildTemplatesTestBase: UITestBase
 	{
-		public readonly static Action EmptyAction = () => { };
+		public string GeneralKindRoot { get { return "General"; } }
 
-		public readonly static Action WaitForPackageUpdate = delegate {
-			Ide.WaitUntil (() => Ide.GetStatusMessage () == "Package updates are available.",
-				pollStep: 1000, timeout: 30000);
-		};
+		public string OtherCategoryRoot { get { return "Other"; } }
 
-		public CreateBuildTemplatesTestBase () {}
+		public readonly static Action EmptyAction = Ide.EmptyAction;
 
-		public CreateBuildTemplatesTestBase (string mdBinPath) : base (mdBinPath) {}
+		static Regex cleanSpecialChars = new Regex ("[^0-9a-zA-Z]+", RegexOptions.Compiled);
+
+		public readonly static Action WaitForPackageUpdate = Ide.WaitForPackageUpdate;
+
+		protected CreateBuildTemplatesTestBase (string mdBinPath = null) : base (mdBinPath)
+		{
+		}
+
+		public static string GenerateProjectName (string templateName)
+		{
+			return cleanSpecialChars.Replace (templateName, string.Empty);
+		}
 
 		public void AssertExeHasOutput (string exe, string expectedOutput)
 		{
@@ -58,72 +66,105 @@ namespace UserInterfaceTests
 			Assert.AreEqual (expectedOutput, output.Trim ());
 		}
 
-		public void CreateBuildProject (string projectName, string kind, string category, string categoryRoot, Action beforeBuild)
+		public void CreateBuildProject (TemplateSelectionOptions templateOptions, Action beforeBuild,
+			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			var solutionParentDirectory = Util.CreateTmpDir (projectName);
-			string actualSolutionDirectory = string.Empty;
+			var projectName = GenerateProjectName (templateOptions.TemplateKind);
+			var projectDetails = new ProjectDetails {
+				ProjectName = projectName,
+				SolutionName = projectName,
+				SolutionLocation = Util.CreateTmpDir (),
+				ProjectInSolution = true
+			};
+			CreateBuildProject (templateOptions, projectDetails, beforeBuild, gitOptions, miscOptions);
+		}
+
+		public void CreateBuildProject (TemplateSelectionOptions templateOptions, ProjectDetails projectDetails,
+			Action beforeBuild, GitOptions gitOptions = null, object miscOptions = null)
+		{
 			try {
-				var newProject = new NewProjectController ();
-				newProject.Open ();
+				CreateProject (templateOptions, projectDetails, gitOptions, miscOptions);
 
-				SelectTemplate (newProject, kind, category, categoryRoot);
-
-				Assert.IsTrue (newProject.Next ());
-				Thread.Sleep (3000);
-
-				EnterProjectDetails (newProject, projectName, projectName, solutionParentDirectory);
-
-				Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (false));
-				Thread.Sleep (2000);
-
-				Assert.IsTrue (newProject.UseGit (true, false));
-				Thread.Sleep (2000);
-
-				Assert.IsTrue (newProject.Next ());
-				Thread.Sleep (2000);
-
-				actualSolutionDirectory = GetSolutionDirectory ();
-
-				beforeBuild ();
-				Thread.Sleep (1000);
-
-				Assert.IsTrue (Ide.BuildSolution ());
-			} finally {
-				Ide.CloseAll ();
 				try {
-					if (Directory.Exists (actualSolutionDirectory))
-						Directory.Delete (actualSolutionDirectory, true);
-				} catch (IOException) { }
+					beforeBuild ();
+					TakeScreenShot ("BeforeBuild");
+				} catch (TimeoutException e) {
+					TakeScreenShot ("BeforeBuildActionFailed");
+					Assert.Fail (e.ToString ());
+				}
+
+				OnBuildTemplate ();
+			} catch (Exception e) {
+				TakeScreenShot ("TestFailedWithGenericException");
+				Assert.Fail (e.ToString ());
+			} finally {
+				FoldersToClean.Add (projectDetails.SolutionLocation);
 			}
 		}
 
-		public void SelectTemplate (NewProjectController newProject, string kind, string category, string categoryRoot)
+		public void CreateProject (TemplateSelectionOptions templateOptions,
+			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
 		{
-			Assert.IsTrue (newProject.SelectTemplateType (category, categoryRoot));
-			Thread.Sleep (3000);
-			Assert.IsTrue (newProject.SelectTemplate (kind));
-			Thread.Sleep (3000);
+			var newProject = new NewProjectController ();
+			newProject.Open ();
+			TakeScreenShot ("Open");
+
+			OnSelectTemplate (newProject, templateOptions);
+
+			OnEnterTemplateSpecificOptions (newProject, projectDetails.ProjectName, miscOptions);
+
+			OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
+
+			OnClickCreate (newProject);
 		}
 
-		public void EnterProjectDetails (NewProjectController newProject, string projectName, string solutionName, string solutionLocation)
+		protected virtual void OnSelectTemplate (NewProjectController newProject, TemplateSelectionOptions templateOptions)
 		{
-			Assert.IsTrue (newProject.SetProjectName (projectName));
-			Thread.Sleep (2000);
-
-			if (!string.IsNullOrEmpty (solutionName)) {
-				Assert.IsTrue (newProject.SetSolutionName (solutionName));
-				Thread.Sleep (2000);
-			}
-
-			if (!string.IsNullOrEmpty (solutionLocation)) {
-				Assert.IsTrue (newProject.SetSolutionLocation (solutionLocation));
-				Thread.Sleep (2000);
-			}
+			Assert.IsTrue (newProject.SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category));
+			TakeScreenShot ("TemplateCategorySelected");
+			Assert.IsTrue (newProject.SelectTemplate (templateOptions.TemplateKindRoot, templateOptions.TemplateKind));
+			TakeScreenShot ("TemplateSelected");
+			Assert.IsTrue (newProject.Next ());
+			TakeScreenShot ("NextAfterTemplateSelected");
 		}
 
-		public string GetSolutionDirectory ()
+		protected virtual void OnEnterTemplateSpecificOptions (NewProjectController newProject, string projectName, object miscOptions) {}
+
+		protected virtual void OnEnterProjectDetails (NewProjectController newProject, ProjectDetails projectDetails,
+			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
+			Assert.IsTrue (newProject.SetProjectName (projectDetails.ProjectName));
+
+			if (!string.IsNullOrEmpty (projectDetails.SolutionName)) {
+				Assert.IsTrue (newProject.SetSolutionName (projectDetails.SolutionName));
+			}
+
+			if (!string.IsNullOrEmpty (projectDetails.SolutionLocation)) {
+				Assert.IsTrue (newProject.SetSolutionLocation (projectDetails.SolutionLocation));
+			}
+
+			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (projectDetails.ProjectInSolution));
+
+			if (gitOptions != null)
+				Assert.IsTrue (newProject.UseGit (gitOptions));
+
+			TakeScreenShot ("AfterProjectDetailsFilled");
+		}
+
+		protected virtual void OnClickCreate (NewProjectController newProject)
+		{
+			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
+		}
+
+		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
+		{
+			try {
+				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs));
+				TakeScreenShot ("AfterBuildFinishedSuccessfully");
+			} catch (TimeoutException e) {
+				TakeScreenShot ("AfterBuildFailed");
+				Assert.Fail (e.ToString ());
+			}
 		}
 	}
 }

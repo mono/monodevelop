@@ -28,14 +28,13 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
 using MonoDevelop.PackageManagement;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
 	{
-		IPackageManagementEvents packageManagementEvents;
 		IFileRemover fileRemover;
 
 		public UpdatePackageAction (
@@ -54,7 +53,6 @@ namespace ICSharpCode.PackageManagement
 			IFileRemover fileRemover)
 			: base (project, packageManagementEvents)
 		{
-			this.packageManagementEvents = packageManagementEvents;
 			this.fileRemover = fileRemover;
 			UpdateDependencies = true;
 			UpdateIfPackageDoesNotExistInProject = true;
@@ -74,8 +72,13 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			if (ShouldUpdatePackage ()) {
-				using (IDisposable monitor = CreateFileMonitor ()) {
-					Project.UpdatePackage (Package, this);
+				using (IOpenPackageReadMeMonitor readmeMonitor = CreateOpenPackageReadMeMonitor (Package.Id)) {
+					using (IDisposable monitor = CreateFileMonitor (fileRemover)) {
+						using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+							Project.UpdatePackage (Package, this);
+							readmeMonitor.OpenReadMeFile ();
+						}
+					}
 				}
 				OnParentPackageInstalled ();
 			} else {
@@ -106,13 +109,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			string message = String.Format ("No updates available for '{0}' in project '{1}'.", packageId, Project.Name);
 			Logger.Log (MessageLevel.Info, message);
-		}
-
-		IDisposable CreateFileMonitor ()
-		{
-			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				packageManagementEvents,
-				fileRemover);
 		}
 
 		protected override string StartingMessageFormat {

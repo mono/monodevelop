@@ -61,7 +61,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		void CreateGitRepository (FilePath solutionPath)
 		{
-			GitUtil.Init (solutionPath, null);
+			using (var repo = GitUtil.Init (solutionPath, null))
+				repo.Stage ("*", new LibGit2Sharp.StageOptions ());
 		}
 	}
 }

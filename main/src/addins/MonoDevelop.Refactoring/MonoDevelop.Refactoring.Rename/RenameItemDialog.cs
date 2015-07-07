@@ -196,7 +196,8 @@ namespace MonoDevelop.Refactoring.Rename
 			var properties = Properties;
 			((Widget)this).Destroy ();
 			List<Change> changes = rename.PerformChanges (options, properties);
-			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
+			using (var dlg = new RefactoringPreviewDialog (changes))
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 		

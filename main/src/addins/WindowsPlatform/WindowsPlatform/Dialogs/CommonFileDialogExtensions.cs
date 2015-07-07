@@ -54,6 +54,7 @@ namespace MonoDevelop.Platform
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null) {
 				fileDialog.Multiselect = data.SelectMultiple;
+				fileDialog.ShowHiddenItems = data.ShowHidden;
 				if (data.Action == FileChooserAction.SelectFolder) {
 					fileDialog.IsFolderPicker = true;
 					return;

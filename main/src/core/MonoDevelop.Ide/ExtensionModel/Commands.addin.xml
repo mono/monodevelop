@@ -355,6 +355,12 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy"
 			defaultHandler="MonoDevelop.Ide.Commands.ExportPolicyHandler"
 			_label = "Export Policy..." />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisSolutionHandler"
+			_label = "Run Code Analysis on Solution" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisProjectHandler"
+			_label = "Run Code Analysis on Project" />
 	</Category>
 
 
@@ -481,9 +487,16 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
 			_label = "_Open Folder"
 			_description = "Opens the folder in a file manager."/>
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+	<Condition id="Platform" value="!mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 			_label = "O_pen Containing Folder"
 			_description = "Opens the folder that contains this file."/>
+	</Condition>
+	<Condition id="Platform" value="mac">
+		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
+			_label = "Reveal in Finder"
+			_description = "Reveals the file in Finder."/>
+	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
 			_label = "Build action" />
@@ -925,6 +938,8 @@
 			_label = "Scroll page down"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine"
 			_label = "Delete entire line" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart"
+		 	_label = "Delete to start of line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd"
 			_label = "Delete to end of line"
 			_description="Deletes to end of line, or if at end, deletes line ending"

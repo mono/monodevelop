@@ -16559,7 +16559,7 @@ msgstr "Yalnızca tüm sözcükler"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
 #, fuzzy
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr "Öntanımlı renk paleti."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

@@ -41,6 +41,7 @@ using Mono.Addins;
 using System.Linq;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.ProgressMonitoring;
+using System.Runtime.Remoting.Messaging;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -271,7 +272,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				var configs = GetConfigurations (item, configuration);
 
 				string[] refs;
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (Item.GetProjectEventMetadata ()))
+				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (Item.GetProjectEventMetadata (configuration)))
 					refs = builder.ResolveAssemblyReferences (configs);
 				foreach (var r in refs)
 					yield return r;
@@ -287,8 +288,38 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 			}
 		}
+
+		public string[] GetSupportedTargets ()
+		{
+			if (UseMSBuildEngineForItem (Item, ConfigurationSelector.Default)) {
+				SolutionEntityItem item = (SolutionEntityItem) Item;
+				var configs = GetConfigurations (item, ConfigurationSelector.Default);
+				RemoteProjectBuilder builder = GetProjectBuilder ();
+				return builder.GetSupportedTargets (configs);
+			} else
+				return new string[0];
+		}
 		
 		public override BuildResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
+		{
+			var currentContext = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext") as ProjectOperationContext;
+			ProjectOperationContext newContext = currentContext;
+
+			try {
+				if (newContext == null)
+					newContext = new TargetEvaluationContext ();
+				else if (!(newContext is TargetEvaluationContext))
+					newContext = new TargetEvaluationContext (newContext);
+				var res = RunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
+				return res.BuildResult;
+			} finally {
+				if (newContext != currentContext)
+					CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
+			}
+		}
+
+		TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			if (UseMSBuildEngineForItem (Item, configuration)) {
 				SolutionEntityItem item = Item as SolutionEntityItem;
@@ -303,13 +334,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					case "Clean": buildTimer = Counters.CleanMSBuildProjectTimer; break;
 					}
 
-					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (Item.GetProjectEventMetadata ());
-					var t2 = buildTimer != null ? buildTimer.BeginTiming (Item.GetProjectEventMetadata ()) : null;
+					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (Item.GetProjectEventMetadata (configuration));
+					var t2 = buildTimer != null ? buildTimer.BeginTiming (Item.GetProjectEventMetadata (configuration)) : null;
 
 					MSBuildResult result;
 
 					try {
-						result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
+						result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, context.ItemsToEvaluate.ToArray(), context.PropertiesToEvaluate.ToArray (), context.GlobalProperties);
 					} finally {
 						t1.End ();
 						if (t2 != null)
@@ -328,17 +359,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							Subcategory = err.Subcategory,
 							EndLine = err.EndLineNumber,
 							EndColumn = err.EndColumnNumber,
-							IsWarning = err.IsWarning
+							IsWarning = err.IsWarning,
+							HelpKeyword = err.HelpKeyword,
 						});
 					}
-					return br;
+
+					return new TargetEvaluationResult (br, result.Items.Values.SelectMany (i => i), result.Properties);
 				}
 			}
 			else {
 				CleanupProjectBuilder ();
 				if (Item is DotNetProject) {
 					MD1DotNetProjectHandler handler = new MD1DotNetProjectHandler ((DotNetProject)Item);
-					return handler.RunTarget (monitor, target, configuration);
+					var br = handler.RunTarget (monitor, target, configuration);
+					return new TargetEvaluationResult (br);
 				}
 			}
 			return null;
@@ -463,8 +497,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			);
 		}
 
+		bool? useMSBuildEngineByDefault;
+
 		/// <summary>Whether to use the MSBuild engine by default.</summary>
-		internal bool UseMSBuildEngineByDefault { get; set; }
+		internal bool UseMSBuildEngineByDefault {
+			get {
+				//enable msbuild by default .NET assembly projects
+				return useMSBuildEngineByDefault ?? (Item is DotNetAssemblyProject && !string.IsNullOrEmpty (((DotNetAssemblyProject)Item).LanguageName));
+			}
+			set {
+				useMSBuildEngineByDefault = value;
+			}
+		}
 
 		/// <summary>Forces the MSBuild engine to be used.</summary>
 		internal bool RequireMSBuildEngine { get; set; }

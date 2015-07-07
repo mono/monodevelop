@@ -192,8 +192,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
 
-			DefaultWidth = 722;
-			DefaultHeight = 502;
+			DefaultWidth = 960;
+			DefaultHeight = 680;
 		}
 		
 		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)

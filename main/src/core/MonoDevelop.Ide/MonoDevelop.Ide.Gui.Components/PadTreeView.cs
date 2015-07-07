@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Gtk;
 using Mono.TextEditor;
 
@@ -34,7 +35,8 @@ namespace MonoDevelop.Ide.Gui.Components
 	{
 		PadFontChanger changer;
 		CellRendererText textRenderer = new CellRendererText ();
-		
+		readonly List<CellRendererText> renderers = new List<CellRendererText> ();
+
 		public PadTreeView ()
 		{
 			Init ();
@@ -44,12 +46,15 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			Init ();
 		}
-		
+
 		void Init ()
 		{
 			changer = new PadFontChanger (this,
-				delegate (Pango.FontDescription desc) { textRenderer.FontDesc = desc; },
-				ColumnsAutosize);
+				delegate (Pango.FontDescription desc) {
+					textRenderer.FontDesc = desc;
+					foreach (var renderer in renderers)
+						renderer.FontDesc = desc;
+				}, ColumnsAutosize);
 			MonoDevelop.Components.GtkUtil.EnableAutoTooltips (this);
 		}
 		
@@ -63,6 +68,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				changer.Dispose ();
 				changer = null;
 			}
+			renderers.Clear ();
 			base.OnDestroyed ();
 		}
 		
@@ -91,6 +97,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				Vadjustment.Value = v + delta;
 				Vadjustment.Value = v;
 			}
+		}
+
+		internal void RegisterRenderForFontChanges (CellRendererText renderer)
+		{
+			renderer.FontDesc = IdeApp.Preferences.CustomPadFont;
+			renderers.Add (renderer);
 		}
 	}
 }

@@ -523,7 +523,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public void Clean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			ITimeTracker tt = Counters.CleanProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata ());
+			ITimeTracker tt = Counters.CleanProjectTimer.BeginTiming ("Cleaning " + Name, GetProjectEventMetadata (configuration));
 			try {
 				//SolutionFolder handles the begin/end task itself, don't duplicate
 				if (this is SolutionFolder) {
@@ -586,7 +586,7 @@ namespace MonoDevelop.Projects
 					string confName = iconf != null ? iconf.Id : solutionConfiguration.ToString ();
 					monitor.BeginTask (GettextCatalog.GetString ("Building: {0} ({1})", Name, confName), 1);
 					
-					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ())) {
+					using (Counters.BuildProjectTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration))) {
 						// This will end calling OnBuild ()
 						return RunTarget (monitor, ProjectService.BuildTarget, solutionConfiguration);
 					}
@@ -596,7 +596,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 				
-			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata ());
+			ITimeTracker tt = Counters.BuildProjectAndReferencesTimer.BeginTiming ("Building " + Name, GetProjectEventMetadata (solutionConfiguration));
 			try {
 				// Get a list of all items that need to be built (including this),
 				// and build them in the correct order
@@ -630,7 +630,17 @@ namespace MonoDevelop.Projects
 				tt.End ();
 			}
 		}
-		
+
+		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector solutionConfiguration, bool buildReferences, ProjectOperationContext context)
+		{
+			try {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+				return Build (monitor, solutionConfiguration, buildReferences);
+			} finally {
+				System.Runtime.Remoting.Messaging.CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
+			}
+		}
+
 		internal bool ContainsReferences (HashSet<SolutionItem> items, ConfigurationSelector conf)
 		{
 			foreach (SolutionItem it in GetReferencedItems (conf))
@@ -695,8 +705,6 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (!SupportsExecute ())
-				return false;
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 
@@ -904,9 +912,16 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public IDictionary<string, string> GetProjectEventMetadata ()
+		public IDictionary<string, string> GetProjectEventMetadata (ConfigurationSelector configurationSelector)
 		{
 			var data = new Dictionary<string, string> ();
+			if (configurationSelector != null) {
+				var slnConfig = configurationSelector as SolutionConfigurationSelector;
+				if (slnConfig != null) {
+					data ["Config.Id"] = slnConfig.Id;
+				}
+			}
+
 			OnGetProjectEventMetadata (data);
 			return data;
 		}

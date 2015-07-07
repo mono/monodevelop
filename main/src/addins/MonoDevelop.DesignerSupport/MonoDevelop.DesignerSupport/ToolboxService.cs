@@ -125,9 +125,10 @@ namespace MonoDevelop.DesignerSupport
 		
 		public void AddUserItems ()
 		{
-			ComponentSelectorDialog dlg = new ComponentSelectorDialog (currentConsumer);
-			dlg.Fill ();
-			MessageService.ShowCustomDialog (dlg);
+			using (ComponentSelectorDialog dlg = new ComponentSelectorDialog (currentConsumer)) {
+				dlg.Fill ();
+				MessageService.ShowCustomDialog (dlg);
+			}
 		}
 		
 		void AddUserItems (IList<ItemToolboxNode> nodes)

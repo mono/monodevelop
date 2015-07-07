@@ -32,7 +32,7 @@
 			</References>
 
 			<Packages>
-				<Package ID="NUnit" Version="2.6.3" />
+				<Package ID="NUnit" Version="2.6.4" />
 			</Packages>
 
 			<Files>

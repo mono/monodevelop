@@ -31,7 +31,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -74,15 +73,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		void RefreshAllChildNodes ()
 		{
 			DispatchService.GuiDispatch (() => {
-				foreach (IDotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
-					RefreshChildNodes (project.DotNetProject);
+				foreach (DotNetProject project in IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ()) {
+					RefreshChildNodes (project);
 				}
 			});
-		}
-
-		void RefreshChildNodes (IPackageManagementProject project)
-		{
-			DispatchService.GuiDispatch (() => RefreshChildNodes (project.DotNetProject));
 		}
 
 		void RefreshChildNodes (DotNetProject project)

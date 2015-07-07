@@ -392,18 +392,18 @@ namespace MonoDevelop.NUnit
 			ITestFilter filter = null;
 			if (test != null) {
 				if (test is UnitTestGroup) {
-					filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+					var categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
+					if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
+						string[] cats = new string [categoryOptions.Categories.Count];
+						categoryOptions.Categories.CopyTo (cats, 0);
+						filter = new CategoryFilter (cats);
+						if (categoryOptions.Exclude)
+							filter = new NotFilter (filter);
+					} else {
+						filter = new TestNameFilter (CollectTests ((UnitTestGroup)test));
+					}
 				} else {
 					filter = new TestNameFilter (test.TestId);
-				}
-			} else {
-				NUnitCategoryOptions categoryOptions = (NUnitCategoryOptions) test.GetOptions (typeof(NUnitCategoryOptions));
-				if (categoryOptions.EnableFilter && categoryOptions.Categories.Count > 0) {
-					string[] cats = new string [categoryOptions.Categories.Count];
-					categoryOptions.Categories.CopyTo (cats, 0);
-					filter = new CategoryFilter (cats);
-					if (categoryOptions.Exclude)
-						filter = new NotFilter (filter);
 				}
 			}
 
@@ -414,6 +414,7 @@ namespace MonoDevelop.NUnit
 			testContext.Monitor.CancelRequested += new TestHandler (rd.Cancel);
 
 			UnitTestResult result;
+			var crashLogFile = Path.GetTempFileName ();
 
 			try {
 				if (string.IsNullOrEmpty (AssemblyPath)) {
@@ -425,11 +426,17 @@ namespace MonoDevelop.NUnit
 				string testRunnerAssembly, testRunnerType;
 				GetCustomTestRunner (out testRunnerAssembly, out testRunnerType);
 
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly);
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly, crashLogFile);
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
+				
+				ReportCrash (testContext, crashLogFile);
+				
 			} catch (Exception ex) {
-				if (!localMonitor.Canceled) {
+				if (ReportCrash (testContext, crashLogFile)) {
+					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Unhandled exception"), null);
+				}
+				else if (!localMonitor.Canceled) {
 					LoggingService.LogError (ex.ToString ());
 					if (localMonitor.RunningTest != null) {
 						RuntimeErrorCleanup (testContext, localMonitor.RunningTest, ex);
@@ -442,6 +449,7 @@ namespace MonoDevelop.NUnit
 					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Canceled"), null);
 				}
 			} finally {
+				File.Delete (crashLogFile);
 				testContext.Monitor.CancelRequested -= new TestHandler (rd.Cancel);
 				runner.Dispose ();
 				System.Runtime.Remoting.RemotingServices.Disconnect (localMonitor);
@@ -449,7 +457,18 @@ namespace MonoDevelop.NUnit
 			
 			return result;
 		}
-		
+
+		bool ReportCrash (TestContext testContext, string crashLogFile)
+		{
+			var crash = File.ReadAllText (crashLogFile);
+			if (crash.Length == 0)
+				return false;
+
+			var ex = RemoteUnhandledException.Parse (crash);
+			testContext.Monitor.ReportRuntimeError (GettextCatalog.GetString ("Unhandled exception"), ex);
+			return true;
+		}
+
 		void RuntimeErrorCleanup (TestContext testContext, UnitTest t, Exception ex)
 		{
 			UnitTestResult result = UnitTestResult.CreateFailure (ex);
@@ -485,12 +504,13 @@ namespace MonoDevelop.NUnit
 				// Note that we always dispose the tcp listener as we don't want it listening
 				// forever if the test runner does not try to connect to it
 				using (tcpListener) {
-					var p = testContext.ExecutionContext.Execute (cmd, cons);
-
-					testContext.Monitor.CancelRequested += p.Cancel;
-					if (testContext.Monitor.IsCancelRequested)
-						p.Cancel ();
-					p.WaitForCompleted ();
+					using (var p = testContext.ExecutionContext.Execute (cmd, cons)) {
+						testContext.Monitor.CancelRequested += p.Cancel;
+						if (testContext.Monitor.IsCancelRequested)
+							p.Cancel ();
+						p.WaitForCompleted ();
+						testContext.Monitor.CancelRequested -= p.Cancel;
+					}
 					
 					if (new FileInfo (outFile).Length == 0)
 						throw new Exception ("Command failed");
@@ -540,6 +560,7 @@ namespace MonoDevelop.NUnit
 				return UnitTestResult.CreateIgnored ("Test execution failed");
 			} finally {
 				File.Delete (outFile);
+				cons.Dispose ();
 			}
 		}
 

@@ -16299,7 +16299,7 @@ msgstr "_Mots entier seulement"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1
 #, fuzzy
-msgid "Edit color sheme"
+msgid "Edit Color Scheme"
 msgstr "Le jeu de couleurs par défaut."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:1

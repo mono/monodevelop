@@ -630,6 +630,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -652,6 +653,7 @@ namespace MonoDevelop.Ide.Gui
 				MessageService.RunCustomDialog (ops, parentWindow);
 			} finally {
 				ops.Destroy ();
+				ops.Dispose ();
 			}
 		}
 		
@@ -1266,7 +1268,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = FileService.ResolveFullPath (value.CanonicalPath);
+				fileName = value.CanonicalPath.ResolveLinks ();
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}

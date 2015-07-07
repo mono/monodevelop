@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor
 {
 	public class BaseWindow : Gtk.Window
 	{
-		public BaseWindow () : base(Gtk.WindowType.Toplevel)
+		public BaseWindow () : base (Gtk.WindowType.Toplevel)
 		{
 			this.SkipPagerHint = true;
 			this.SkipTaskbarHint = true;
@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 		}
-		
+
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			int winWidth, winHeight;
@@ -63,34 +63,32 @@ namespace MonoDevelop.SourceEditor
 			return false;
 		}
 	}
-	
+
 	public class DebugValueWindow : PopoverWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
-//		PinWindow pinWindow;
-//		TreeIter currentPinIter;
-		
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch): base (Gtk.WindowType.Toplevel)
+
+		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window) editor.Toplevel;
-			
+			TransientFor = (Gtk.Window)editor.Toplevel;
+
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
-			
+
 			sw = new ScrolledWindow ();
 			sw.HscrollbarPolicy = PolicyType.Never;
 			sw.VscrollbarPolicy = PolicyType.Never;
-			
+
 			tree = new ObjectValueTreeView ();
 			sw.Add (tree);
 			ContentBox.Add (sw);
-			
+
 			tree.Frame = frame;
 			tree.CompactView = true;
 			tree.AllowAdding = false;
@@ -102,26 +100,20 @@ namespace MonoDevelop.SourceEditor
 			DocumentLocation location = editor.Document.OffsetToLocation (offset);
 			tree.PinnedWatchLine = location.Line;
 			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
-			
+
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
 			tree.SizeAllocated += OnTreeSizeChanged;
 			tree.PinStatusChanged += delegate {
 				Destroy ();
 			};
-			
-//			tree.MotionNotifyEvent += HandleTreeMotionNotifyEvent;
-			
+
 			sw.ShowAll ();
-			
-//			pinWindow = new PinWindow (this);
-//			pinWindow.SetPinned (false);
-//			pinWindow.ButtonPressEvent += HandlePinWindowButtonPressEvent;
-			
+
 			tree.StartEditing += delegate {
 				Modal = true;
 			};
-			
+
 			tree.EndEditing += delegate {
 				Modal = false;
 			};
@@ -130,55 +122,6 @@ namespace MonoDevelop.SourceEditor
 			Theme.CornerRadius = 3;
 		}
 
-//		void HandlePinWindowButtonPressEvent (object o, ButtonPressEventArgs args)
-//		{
-//			tree.CreatePinnedWatch (currentPinIter);
-//		}
-		
-//		[GLib.ConnectBefore]
-//		void HandleTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
-//		{
-//			PlacePinWindow ();
-//		}
-//		
-//		protected override void OnSizeAllocated (Rectangle allocation)
-//		{
-//			base.OnSizeAllocated (allocation);
-//			PlacePinWindow ();
-//		}
-//		
-//		void PlacePinWindow ()
-//		{
-//			int mx, my;
-//			ModifierType mm;
-//			if (tree.BinWindow == null)
-//				return;
-//			tree.BinWindow.GetPointer (out mx, out my, out mm);
-//			
-//			int cx, cy;
-//			TreePath path;
-//			TreeViewColumn col;
-//			if (!tree.GetPathAtPos (mx, my, out path, out col, out cx, out cy))
-//				return;
-//			
-//			tree.Model.GetIter (out currentPinIter, path);
-//			Rectangle cr = tree.GetCellArea (path, tree.Columns [1]);
-//		
-//			int ox, oy;
-//			tree.BinWindow.GetOrigin (out ox, out oy);
-//			
-//			if (mx < cr.Right - 30) {
-//				pinWindow.Hide ();
-//				return;
-//			}
-//			
-//			int x, y, w, h;
-//			GetPosition (out x, out y);
-//			GetSize (out w, out h);
-//			pinWindow.Move (x + w, oy + cr.Y);
-//			pinWindow.Show ();
-//		}
-		
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
 		{
 			if (!AcceptFocus)
@@ -188,13 +131,13 @@ namespace MonoDevelop.SourceEditor
 
 		void OnTreeSizeChanged (object s, SizeAllocatedArgs a)
 		{
-			int x,y,w,h;
+			int x, y, w, h;
 			GetPosition (out x, out y);
-			h = (int) sw.Vadjustment.Upper;
-			w = (int) sw.Hadjustment.Upper;
+			h = (int)sw.Vadjustment.Upper;
+			w = (int)sw.Hadjustment.Upper;
 			int dy = y + h - this.Screen.Height;
 			int dx = x + w - this.Screen.Width;
-			
+
 			if (dy > 0 && sw.VscrollbarPolicy == PolicyType.Never) {
 				sw.VscrollbarPolicy = PolicyType.Always;
 				sw.HeightRequest = h - dy - 10;
@@ -202,7 +145,7 @@ namespace MonoDevelop.SourceEditor
 				sw.VscrollbarPolicy = PolicyType.Never;
 				sw.HeightRequest = -1;
 			}
-			
+
 			if (dx > 0 && sw.HscrollbarPolicy == PolicyType.Never) {
 				sw.HscrollbarPolicy = PolicyType.Always;
 				sw.WidthRequest = w - dx - 10;
@@ -213,23 +156,23 @@ namespace MonoDevelop.SourceEditor
 			// Force a redraw of the whole window. This is a workaround for bug 7538
 			QueueDraw ();
 		}
-		
+
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			if (MonoDevelop.Core.Platform.IsMac || MonoDevelop.Core.Platform.IsWindows) {
 				// fails on linux see: Bug 8481 - Debug value tooltips very often appear at the top-left corner of the screen instead of near the element to inspect 
 				const int edgeGap = 2;
 				int oldY, x, y;
-				
+
 				this.GetPosition (out x, out y);
 				oldY = y;
-				
+
 				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
 				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
 					y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
 				if (y < geometry.Top + edgeGap)
 					y = geometry.Top + edgeGap;
-				
+
 				if (y != oldY) {
 					Move (x, y);
 					// If the window is moved, hide the arrow since it will be pointing to the wrong place
@@ -237,36 +180,6 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 			base.OnSizeAllocated (allocation);
-		}
-	}
-	
-	
-	// This class shows the pin button, to be used to pin a watch value
-	// This window is used instead of the pin support in ObjectValueTreeView
-	// to avoid some flickering caused by some weird gtk# behavior when scrolling
-	// (see bug #632215).
-	
-	class PinWindow: BaseWindow
-	{
-		Xwt.ImageView icon;
-		
-		public PinWindow (Gtk.Window parent)
-		{
-			Events |= EventMask.ButtonPressMask;
-			TransientFor = parent;
-			DestroyWithParent = true;
-			
-			icon = new Xwt.ImageView ();
-			Add (icon.ToGtkWidget ());
-			AcceptFocus = false;
-		}
-		
-		public void SetPinned (bool pinned)
-		{
-			if (pinned)
-				icon.Image = ImageService.GetIcon ("md-pin-down", IconSize.Menu);
-			else
-				icon.Image = ImageService.GetIcon ("md-pin-up", IconSize.Menu);
 		}
 	}
 }

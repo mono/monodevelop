@@ -76,8 +76,8 @@ namespace MonoDevelop.Ide.Templates
 		ProjectCreateInformation CreateProjectCreateInformation (NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
-			cinfo.SolutionPath = FileService.ResolveFullPath (config.SolutionLocation);
-			cinfo.ProjectBasePath = FileService.ResolveFullPath (config.ProjectLocation);
+			cinfo.SolutionPath = new FilePath (config.SolutionLocation).ResolveLinks ();
+			cinfo.ProjectBasePath = new FilePath (config.ProjectLocation).ResolveLinks ();
 			cinfo.ProjectName = config.ProjectName;
 			cinfo.SolutionName = config.SolutionName;
 			cinfo.ParentFolder = parentFolder;

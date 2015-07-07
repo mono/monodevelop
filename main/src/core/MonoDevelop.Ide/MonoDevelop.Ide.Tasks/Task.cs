@@ -53,6 +53,9 @@ namespace MonoDevelop.Ide.Tasks
 		
 		[ItemProperty (DefaultValue = "")]
 		string code = string.Empty;
+
+		[ItemProperty (DefaultValue = "")]
+		string helpKeyword = string.Empty;
 		
 		[ItemProperty (DefaultValue = TaskPriority.Normal)]
 		TaskPriority priority = TaskPriority.Normal;
@@ -62,7 +65,10 @@ namespace MonoDevelop.Ide.Tasks
 		
 		[ItemProperty (DefaultValue = false)]
 		bool completed;
-		
+
+		[ItemProperty (DefaultValue = "")]
+		string category = string.Empty;
+
 		object owner;
 		IWorkspaceObject parentObject;
 		internal int SavedLine;
@@ -83,6 +89,11 @@ namespace MonoDevelop.Ide.Tasks
 		}
 		
 		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner)
+			: this (file, description, column, line, severity, priority, parent, owner, null)
+		{
+		}
+
+		public Task (FilePath file, string description, int column, int line, TaskSeverity severity, TaskPriority priority, IWorkspaceObject parent, object owner, string category)
 		{
 			this.file = file;
 			this.description = description;
@@ -92,6 +103,7 @@ namespace MonoDevelop.Ide.Tasks
 			this.priority = priority;
 			this.owner = owner;
 			this.parentObject = parent;
+			this.category = category;
 		}
 		
 		public Task ()
@@ -120,6 +132,8 @@ namespace MonoDevelop.Ide.Tasks
 				severity = TaskSeverity.Error;
 			priority = TaskPriority.Normal;
 			code = error.ErrorNumber;
+			category = error.Subcategory;
+			helpKeyword = error.HelpKeyword;
 		}
 		
 		public int Column {
@@ -149,6 +163,12 @@ namespace MonoDevelop.Ide.Tasks
 		public string Code {
 			get {
 				return code;
+			}
+		}
+
+		public string HelpKeyword {
+			get {
+				return helpKeyword;
 			}
 		}
 		
@@ -204,8 +224,16 @@ namespace MonoDevelop.Ide.Tasks
 				return severity;
 			}
 		}
-				
-		
+
+		public string Category {
+			get {
+				return category;
+			}
+			set {
+				category = value;
+			}
+		}
+
 		public virtual void JumpToPosition()
 		{
 			if (!file.IsNullOrEmpty) {

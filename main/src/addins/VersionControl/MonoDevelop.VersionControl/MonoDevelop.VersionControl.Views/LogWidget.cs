@@ -256,7 +256,8 @@ namespace MonoDevelop.VersionControl.Views
 			if (info.Repository.SupportsRevertRevision)
 				toolbar.Add (revertButton);
 
-			toolbar.Add (revertToButton);
+			if (info.Repository.SupportsRevertToRevision)
+				toolbar.Add (revertToButton);
 			toolbar.Add (refreshButton);
 
 			Gtk.HBox a = new Gtk.HBox ();
@@ -457,6 +458,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();
+			treeviewFiles.Dispose ();
 		}
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
