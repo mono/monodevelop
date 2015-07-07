@@ -85,7 +85,27 @@ namespace MonoDevelop.Projects
 
 		public bool ShouldCreate (string createCondition)
 		{
-			return Parameters.EvaluateCondition (createCondition);
+			// This logic is duplicated in the TemplateConditionEvaluator.
+			if (string.IsNullOrWhiteSpace (createCondition))
+				return true;
+
+			createCondition = createCondition.Trim ();
+
+			string parameter = GetNotConditionParameterName (createCondition);
+			if (parameter != null) {
+				return !Parameters.GetBoolean (parameter);
+			}
+
+			return Parameters.GetBoolean (createCondition);
+		}
+
+		static string GetNotConditionParameterName (string createCondition)
+		{
+			if (createCondition.StartsWith ("!")) {
+				return createCondition.Substring (1).TrimStart ();
+			}
+
+			return null;
 		}
 	}
 }

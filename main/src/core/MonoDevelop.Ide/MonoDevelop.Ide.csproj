@@ -3372,6 +3372,7 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\ObjectResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateConditionEvaluator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

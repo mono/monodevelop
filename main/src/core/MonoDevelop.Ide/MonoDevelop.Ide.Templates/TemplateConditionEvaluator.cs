@@ -1,5 +1,5 @@
 ﻿//
-// StringTagModelExtensions.cs
+// TemplateConditionEvaluator.cs
 //
 // Author:
 //       Michael Hutchinson <m.j.hutchinson@gmail.com>
@@ -24,29 +24,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using MonoDevelop.Core.StringParsing;
 
-namespace MonoDevelop.Core.StringParsing
+namespace MonoDevelop.Ide.Templates
 {
-	public static class StringTagModelExtensions
+	static class TemplateConditionEvaluator
 	{
-		public static bool GetBoolValue (this IStringTagModel model, string name, bool defaultValue = false)
+		public static bool EvaluateCondition (IStringTagModel model, string condition)
 		{
-			object value = model.GetValue (name);
+			// This logic is duplicated in the ProjectCreateInformation.ShouldCreate method.
+			if (string.IsNullOrWhiteSpace (condition))
+				return true;
 
-			if (value is bool) {
-				return ((bool)value);
+			condition = condition.Trim ();
+
+			string parameter = GetNotConditionParameterName (condition);
+			if (parameter != null) {
+				return !model.GetBoolValue (parameter);
 			}
 
-			var stringValue = value as string;
-			if (!string.IsNullOrEmpty (stringValue)) {
-				bool result;
-				if (bool.TryParse (stringValue, out result)) {
-					return result;
-				}
+			return model.GetBoolValue (condition);
+		}
+
+		static string GetNotConditionParameterName (string createCondition)
+		{
+			if (createCondition.StartsWith ("!", StringComparison.Ordinal)) {
+				return createCondition.Substring (1).TrimStart ();
 			}
 
-			return defaultValue;
+			return null;
 		}
 	}
 }
+
