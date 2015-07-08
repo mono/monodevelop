@@ -53,7 +53,7 @@ namespace MonoDevelop.Core.Text
 				var bom = encoding.GetPreamble ();
 				if (bom == null || bom.Length == 0)
 					continue;
-				maxBomLength = Math.Max (maxBomLength, bom.Length);
+				maxBomLength = System.Math.Max (maxBomLength, bom.Length);
 				encodings.Add (encoding);
 			}
 			encodingsWithBom = encodings.ToArray ();
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core.Text
 			if (stream == null)
 				throw new ArgumentNullException ("stream");
 			byte[] possibleBom = new byte[maxBomLength];
-			stream.Read (possibleBom, 0, Math.Min ((int)stream.Length, maxBomLength));
+			stream.Read (possibleBom, 0, System.Math.Min ((int)stream.Length, maxBomLength));
 
 			foreach (var encoding in encodingsWithBom) {
 				var bom = encoding.GetPreamble ();
@@ -141,19 +141,40 @@ namespace MonoDevelop.Core.Text
 		#region string methods
 		public static string GetText (byte[] bytes)
 		{
-			using (var stream = OpenStream (bytes)) {
-				return stream.ReadToEnd ();
-			}
+			Encoding encoding;
+			bool hadBom;
+			return GetText (bytes, out encoding, out hadBom);
 		}
 
 		public static string GetText (byte[] bytes, out Encoding encoding, out bool hadBom)
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
-			using (var stream = OpenStream (bytes, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
+			encoding = null;
+			hadBom = false;
+			int start = 0;
+			foreach (var enc in encodingsWithBom) {
+				var bom = enc.GetPreamble ();
+				bool invalid = false;
+				for (int i = 0; i < bom.Length; i++) {
+					if (bom [i] != bytes [i]) {
+						invalid = true;
+						break;
+					}
+				}
+
+				if (!invalid) {
+					encoding = enc;
+					hadBom = true;
+					start = bom.Length;
+					break;
+				}
 			}
+			if (encoding == null) {
+				int max = System.Math.Min (bytes.Length, maxBufferLength);
+				encoding = AutoDetectEncoding (bytes, max);
+			}
+			return encoding.GetString (bytes, start, bytes.Length - start);
 		}
 
 		public static string GetText (byte[] bytes, Encoding encoding, out bool hadBom)
@@ -194,19 +215,14 @@ namespace MonoDevelop.Core.Text
 
 		public static string GetText (string fileName)
 		{
-			using (var stream = OpenStream (fileName)) {
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = OpenStream (fileName, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName), out encoding, out hadBom);
 		}
 
 		#endregion
@@ -309,9 +325,8 @@ namespace MonoDevelop.Core.Text
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				return GetText (stream, out encoding, out hadBom);
-			}
+			byte[] content = File.ReadAllBytes (fileName);
+			return GetText (content, out encoding, out hadBom);
 		}
 
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
@@ -408,10 +423,24 @@ namespace MonoDevelop.Core.Text
 			var cache = RequestCache ();
 			try {
 				var readBuf = cache.readBuf;
-				var states = cache.states;
 				int max = (int)System.Math.Min (stream.Length, maxBufferLength);
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
+				return AutoDetectEncoding (readBuf, readLength, cache);
+			} catch (Exception e) {
+				LoggingService.LogError ("error while detecting encoding", e);
+			} finally {
+				PutbackCache (cache);
+			}
+			return Encoding.ASCII;
+		}
+
+		static unsafe Encoding AutoDetectEncoding (byte[] bytes, int readLength, EncodingCache cache = null)
+		{
+			EncodingCache encCache = cache ?? RequestCache ();
+			try {
+				var readBuf = bytes;
+				var states = encCache.states;
 
 				// Store the dfa data from the verifiers in local variables.
 				int verifiersRunning = verifiers.Length;
@@ -434,7 +463,7 @@ namespace MonoDevelop.Core.Text
 								curState = stateTables [i] [curState] [*bPtr];
 								if (curState == 0) {
 									verifiersRunning--;
-									if (verifiersRunning == 0) 
+									if (verifiersRunning == 0 || verifiersRunning == 1 && i >= 10 * 1024) 
 										goto finishVerify;
 								}
 								*sPtr = curState;
@@ -454,7 +483,6 @@ namespace MonoDevelop.Core.Text
 						//						Console.WriteLine ("---------------");
 						for (int i = 0; i < verifiers.Length; i++) {
 							if (verifiers [i].IsEncodingValid (states [i])) {
-								PutbackCache (cache);
 								return verifiers [i].Encoding;
 							}
 						}
@@ -462,9 +490,11 @@ namespace MonoDevelop.Core.Text
 				}
 
 			} catch (Exception e) {
-				Console.WriteLine (e);
+				LoggingService.LogError ("error while detecting encoding", e);
+			} finally {
+				if (cache == null)
+					PutbackCache (encCache);
 			}
-			PutbackCache (cache);
 			return Encoding.ASCII;
 		}
 

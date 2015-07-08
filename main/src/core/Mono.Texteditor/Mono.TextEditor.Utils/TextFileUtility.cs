@@ -57,9 +57,9 @@ namespace Mono.TextEditor.Utils
 				encodings.Add (encoding);
 			}
 			encodingsWithBom = encodings.ToArray ();
-			
+
 			// Encoding verifiers
-			var verifierList = new List<Verifier> () {
+			var verifierList = new List<Verifier> {
 				new Utf8Verifier (),
 				new GB18030CodePageVerifier (),
 				new WindowsCodePageVerifier (),
@@ -141,19 +141,40 @@ namespace Mono.TextEditor.Utils
 		#region string methods
 		public static string GetText (byte[] bytes)
 		{
-			using (var stream = OpenStream (bytes)) {
-				return stream.ReadToEnd ();
-			}
+			Encoding encoding;
+			bool hadBom;
+			return GetText (bytes, out encoding, out hadBom);
 		}
 
 		public static string GetText (byte[] bytes, out Encoding encoding, out bool hadBom)
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
-			using (var stream = OpenStream (bytes, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
+			encoding = null;
+			hadBom = false;
+			int start = 0;
+			foreach (var enc in encodingsWithBom) {
+				var bom = enc.GetPreamble ();
+				bool invalid = false;
+				for (int i = 0; i < bom.Length; i++) {
+					if (bom [i] != bytes [i]) {
+						invalid = true;
+						break;
+					}
+				}
+
+				if (!invalid) {
+					encoding = enc;
+					hadBom = true;
+					start = bom.Length;
+					break;
+				}
 			}
+			if (encoding == null) {
+				int max = System.Math.Min (bytes.Length, maxBufferLength);
+				encoding = AutoDetectEncoding (bytes, max);
+			}
+			return encoding.GetString (bytes, start, bytes.Length - start);
 		}
 
 		public static string GetText (byte[] bytes, Encoding encoding, out bool hadBom)
@@ -194,25 +215,19 @@ namespace Mono.TextEditor.Utils
 
 		public static string GetText (string fileName)
 		{
-			using (var stream = OpenStream (fileName)) {
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = OpenStream (fileName, out hadBom)) {
-				encoding = stream.CurrentEncoding;
-				return stream.ReadToEnd ();
-			}
+			return GetText (File.ReadAllBytes (fileName), out encoding, out hadBom);
 		}
 
 		#endregion
 
 		#region file methods
-
 		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
 		{
 			if (fileName == null)
@@ -236,7 +251,7 @@ namespace Mono.TextEditor.Utils
 				SystemRename (tmpPath, fileName);
 			} catch (Exception) {
 				try {
-					System.IO.File.Delete (tmpPath);
+					File.Delete (tmpPath);
 				} catch {
 					// nothing
 				}
@@ -310,17 +325,17 @@ namespace Mono.TextEditor.Utils
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-				return GetText (stream, out encoding, out hadBom);
-			}
+			byte[] content = File.ReadAllBytes (fileName);
+			return GetText (content, out encoding, out hadBom);
 		}
+
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
-			
+
 			byte[] content = File.ReadAllBytes (fileName);
 			return GetText (content, encoding, out hadBom); 
 		}
@@ -339,7 +354,6 @@ namespace Mono.TextEditor.Utils
 			return true;
 		}
 		#endregion
-
 
 		#region Binary check
 		public static bool IsBinary (byte[] bytes)
@@ -362,15 +376,15 @@ namespace Mono.TextEditor.Utils
 		{
 			if (stream == null)
 				throw new ArgumentNullException ("stream");
-			
+
 			var enc = AutoDetectEncoding (stream);
 			return enc == Encoding.ASCII;
 		}
 		#endregion
 
 		#region Encoding autodetection
-		static Verifier[] verifiers;
-		static byte[][][] stateTables;
+		static readonly Verifier[] verifiers;
+		static readonly byte[][][] stateTables;
 
 		const int maxBufferLength = 50 * 1024;
 		static Queue<EncodingCache> caches = new Queue<EncodingCache>();
@@ -409,10 +423,24 @@ namespace Mono.TextEditor.Utils
 			var cache = RequestCache ();
 			try {
 				var readBuf = cache.readBuf;
-				var states = cache.states;
 				int max = (int)System.Math.Min (stream.Length, maxBufferLength);
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
+				return AutoDetectEncoding (readBuf, readLength, cache);
+			} catch (Exception e) {
+				Console.WriteLine (e);
+			} finally {
+				PutbackCache (cache);
+			}
+			return Encoding.ASCII;
+		}
+
+		static unsafe Encoding AutoDetectEncoding (byte[] bytes, int readLength, EncodingCache cache = null)
+		{
+			EncodingCache encCache = cache ?? RequestCache ();
+			try {
+				var readBuf = bytes;
+				var states = encCache.states;
 
 				// Store the dfa data from the verifiers in local variables.
 				int verifiersRunning = verifiers.Length;
@@ -435,7 +463,7 @@ namespace Mono.TextEditor.Utils
 								curState = stateTables [i] [curState] [*bPtr];
 								if (curState == 0) {
 									verifiersRunning--;
-									if (verifiersRunning == 0) 
+									if (verifiersRunning == 0 || verifiersRunning == 1 && i >= 10 * 1024) 
 										goto finishVerify;
 								}
 								*sPtr = curState;
@@ -455,7 +483,6 @@ namespace Mono.TextEditor.Utils
 						//						Console.WriteLine ("---------------");
 						for (int i = 0; i < verifiers.Length; i++) {
 							if (verifiers [i].IsEncodingValid (states [i])) {
-								PutbackCache (cache);
 								return verifiers [i].Encoding;
 							}
 						}
@@ -464,8 +491,10 @@ namespace Mono.TextEditor.Utils
 
 			} catch (Exception e) {
 				Console.WriteLine (e);
+			} finally {
+				if (cache == null)
+					PutbackCache (encCache);
 			}
-			PutbackCache (cache);
 			return Encoding.ASCII;
 		}
 
@@ -479,7 +508,7 @@ namespace Mono.TextEditor.Utils
 			public abstract Encoding Encoding { get; }
 
 			public abstract byte[][] StateTable { get; }
-		
+
 			protected abstract void Init ();
 
 			bool isInitialized = false;
@@ -542,7 +571,7 @@ namespace Mono.TextEditor.Utils
 					table [UTFTail2] [i] = UTFTail1;
 					table [UTFTail3] [i] = UTFTail2;
 				}
-		
+
 				// UTF8-2 = %xC2-DF UTF8-tail
 				for (int i = 0xC2; i <= 0xDF; i++)
 					table [UTF1] [i] = UTFTail1;
@@ -613,7 +642,7 @@ namespace Mono.TextEditor.Utils
 				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
 					table [i] = new byte[(int)byte.MaxValue + 1];
-			
+
 				for (int i = 0x00; i <= 0xFF; i++) {
 					table [Even] [i] = Odd;
 					table [Odd] [i] = Even;
@@ -624,7 +653,7 @@ namespace Mono.TextEditor.Utils
 				table [Even] [0] = Error;
 				table [EvenPossible] [0] = Error;
 			}
-		
+
 			public override byte InitalState { get { return Even; } }
 
 			public override Encoding Encoding { get { return Encoding.Unicode; } }
@@ -686,7 +715,7 @@ namespace Mono.TextEditor.Utils
 				table [0] = errorTable;
 				for (int i = 1; i < LAST; i++)
 					table [i] = new byte[(int)byte.MaxValue + 1];
-			
+
 				for (int i = 0x00; i <= 0xFF; i++) {
 					table [Even] [i] = Odd;
 					table [Odd] [i] = Even;
@@ -885,7 +914,3 @@ namespace Mono.TextEditor.Utils
 		#endregion
 	}
 }
-
-
-
-
