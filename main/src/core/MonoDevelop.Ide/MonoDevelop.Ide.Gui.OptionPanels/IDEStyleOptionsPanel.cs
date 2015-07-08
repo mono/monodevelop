@@ -57,6 +57,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	
 	public partial class IDEStyleOptionsPanelWidget : Gtk.Bin
 	{
+		string currentTheme;
+
 		static Lazy<List<string>> themes = new Lazy<List<string>> (() => {
 			var searchDirs = new List<string> ();
 
@@ -70,7 +72,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 
 			var themes = FindThemes (searchDirs).ToList ();
-			themes.Sort ();
 			return themes;
 		});
 
@@ -86,41 +87,83 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.Build();
 			Load ();
 		}
-		
+
 		void Load ()
 		{
-			for (int n=1; n < isoCodes.Length; n += 2)
+			currentTheme = IdeApp.Preferences.UserInterfaceTheme;
+
+			for (int n = 1; n < isoCodes.Length; n += 2)
 				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
-			
+
 			int i = Array.IndexOf (isoCodes, IdeApp.Preferences.UserInterfaceLanguage);
 			if (i == -1) i = 0;
 			comboLanguage.Active = i / 2;
-			
-			comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
+
+			if (Platform.IsLinux)
+				comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
 
 			foreach (string t in InstalledThemes)
 				comboTheme.AppendText (t);
-			
-			comboTheme.Active = themes.Value.IndexOf (IdeApp.Preferences.UserInterfaceTheme) + 1;
 
-			labelTheme.Visible = comboTheme.Visible = !Platform.IsMac && !Platform.IsWindows;
+			var sel = themes.Value.IndexOf (IdeApp.Preferences.UserInterfaceTheme);
+			if (sel == -1)
+				sel = 0;
+			else if (Platform.IsLinux)
+				sel++;
+			
+			comboTheme.Active = sel;
+			comboTheme.Changed += ComboThemeChanged;
 		}
-		
+
+		void ComboThemeChanged (object sender, EventArgs e)
+		{
+			SetTheme ();
+		}
+
+		void SetTheme ()
+		{
+			string theme;
+			if (comboTheme.Active == 0 && Platform.IsLinux)
+				theme = "";
+			else
+				theme = comboTheme.ActiveText;
+			SetTheme (theme);
+		}
+
+		void SetTheme (string theme)
+		{
+			if (theme.Length == 0 && Platform.IsLinux) {
+				theme = IdeStartup.DefaultTheme;
+				IdeApp.Preferences.UserInterfaceTheme.Value = "";
+			}
+			else {
+				IdeApp.Preferences.UserInterfaceTheme.Value = theme;
+			}
+
+			if (Platform.IsLinux && theme != Gtk.Settings.Default.ThemeName)
+				Gtk.Settings.Default.ThemeName = theme;
+		}
+
 		// Code for getting the list of themes based on f-spot
 		static ICollection<string> FindThemes (IEnumerable<string> themeDirs)
 		{
 			var themes = new HashSet<string> ();
-			string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
-			foreach (string themeDir in themeDirs) {
-				if (string.IsNullOrEmpty (themeDir) || !System.IO.Directory.Exists (themeDir))
-					continue;
-				foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
-					if (System.IO.File.Exists (dir.Combine (gtkrc))) {
-						var themeName = dir.FileName;
-						if (!IsBadGtkTheme (themeName))
-							themes.Add (themeName);
+			if (Platform.IsLinux) {
+				string gtkrc = System.IO.Path.Combine ("gtk-2.0", "gtkrc");
+				foreach (string themeDir in themeDirs) {
+					if (string.IsNullOrEmpty (themeDir) || !System.IO.Directory.Exists (themeDir))
+						continue;
+					foreach (FilePath dir in System.IO.Directory.GetDirectories (themeDir)) {
+						if (System.IO.File.Exists (dir.Combine (gtkrc))) {
+							var themeName = dir.FileName;
+							if (!IsBadGtkTheme (themeName))
+								themes.Add (themeName);
+						}
 					}
 				}
+			} else {
+				themes.Add ("Light");
+				themes.Add ("Dark");
 			}
 			return themes;
 		}
@@ -146,18 +189,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					)
 				);
 			}
-			string theme;
-			if (comboTheme.Active == 0) {
-				theme = IdeStartup.DefaultTheme;
-				IdeApp.Preferences.UserInterfaceTheme.Value = "";
-			}
-			else {
-				theme = comboTheme.ActiveText;
-				IdeApp.Preferences.UserInterfaceTheme.Value = theme;
-			}
-			
-			if (theme != Gtk.Settings.Default.ThemeName)
-				Gtk.Settings.Default.ThemeName = theme;
+			currentTheme = comboTheme.ActiveText;
+			SetTheme ();
+		}
+
+		public override void Dispose ()
+		{
+			if (currentTheme != IdeApp.Preferences.UserInterfaceTheme)
+				SetTheme (currentTheme);
+			base.Dispose ();
 		}
 		
 		static string[] isoCodes = new string[] {

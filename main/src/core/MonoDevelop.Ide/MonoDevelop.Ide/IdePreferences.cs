@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide
 		}
 
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
-		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", "");
+		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
 		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
@@ -143,6 +143,15 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
 		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 7);
 
+		public Skin UserInterfaceSkin {
+			get { return UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light; }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> UserInterfaceSkinChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+		}
+
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
@@ -157,6 +166,12 @@ namespace MonoDevelop.Ide
 		Nothing,
 		SaveAllFiles,
 		PromptForSave,
+	}
+
+	public enum Skin
+	{
+		Light,
+		Dark
 	}
 	
 }
