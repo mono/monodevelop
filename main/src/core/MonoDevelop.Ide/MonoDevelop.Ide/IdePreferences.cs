@@ -275,10 +275,19 @@ namespace MonoDevelop.Ide
 		}
 		
 		public string UserInterfaceTheme {
-			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceTheme", ""); }
+			get { return PropertyService.Get ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light"); }
 			set { PropertyService.Set ("MonoDevelop.Ide.UserInterfaceTheme", value); }
 		}
 		
+		public Skin UserInterfaceSkin {
+			get { return UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light; }
+		}
+
+		public event EventHandler<PropertyChangedEventArgs> UserInterfaceSkinChanged {
+			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
+		}
+
 		public event EventHandler<PropertyChangedEventArgs> UserInterfaceThemeChanged {
 			add { PropertyService.AddPropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
 			remove { PropertyService.RemovePropertyHandler ("MonoDevelop.Ide.UserInterfaceTheme", value); }
@@ -311,6 +320,12 @@ namespace MonoDevelop.Ide
 		Nothing,
 		SaveAllFiles,
 		PromptForSave,
+	}
+
+	public enum Skin
+	{
+		Light,
+		Dark
 	}
 	
 }

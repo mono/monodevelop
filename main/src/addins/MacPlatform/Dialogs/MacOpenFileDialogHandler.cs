@@ -33,6 +33,7 @@ using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
@@ -58,7 +59,9 @@ namespace MonoDevelop.MacIntegration
 						CanChooseFiles = !directoryMode,
 					};
 				}
-				
+
+				panel.ApplyTheme ();
+
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
