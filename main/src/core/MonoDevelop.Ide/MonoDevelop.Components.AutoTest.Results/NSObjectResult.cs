@@ -221,9 +221,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
-		public override void Flash (Action completionHandler)
+		public override void Flash ()
 		{
-			completionHandler ();
+			
 		}
 	}
 }
