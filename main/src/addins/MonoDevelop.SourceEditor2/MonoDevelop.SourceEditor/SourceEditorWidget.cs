@@ -1493,6 +1493,11 @@ namespace MonoDevelop.SourceEditor
 				if (TextEditor.IsSomethingSelected) {
 					startLine = Document.GetLineByOffset (textEditor.SelectionRange.Offset);
 					endLine = Document.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+
+					// If selection ends at begining of line... This is visible as previous line
+					// is selected, hence we want to select previous line Bug 26287
+					if (endLine.Offset == textEditor.SelectionRange.EndOffset)
+						endLine = endLine.PreviousLine;
 				} else {
 					startLine = endLine = Document.GetLine (textEditor.Caret.Line);
 				}
