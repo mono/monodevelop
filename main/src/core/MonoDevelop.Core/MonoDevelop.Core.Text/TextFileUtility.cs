@@ -362,7 +362,8 @@ namespace MonoDevelop.Core.Text
 		{
 			if (bytes == null)
 				throw new ArgumentNullException ("bytes");
-			return IsBinary (new MemoryStream (bytes, false));
+			var enc = AutoDetectEncoding (bytes, Math.Min (bytes.Length, maxBufferLength));
+			return enc == Encoding.ASCII;
 		}
 
 		public static bool IsBinary (string fileName)
@@ -408,55 +409,26 @@ namespace MonoDevelop.Core.Text
 		{
 			try {
 				var readBuf = bytes;
-				var states = new byte[verifiers.Length];
-
-				// Store the dfa data from the verifiers in local variables.
-				int verifiersRunning = verifiers.Length;
-
-				for (int i = 0; i < verifiers.Length; i++)
-					states [i] = verifiers [i].InitalState;
 
 				// run the verifiers
-				fixed (byte* bBeginPtr = readBuf, stateBeginPtr = states) {
-					byte* bPtr = bBeginPtr;
+				fixed (byte* bBeginPtr = readBuf) {
 					byte* bEndPtr = bBeginPtr + readLength;
-					byte* sEndPtr = stateBeginPtr + states.Length;
-
-					while (bPtr != bEndPtr) {
-						byte* sPtr = stateBeginPtr;
-						int i = 0;
-						while (sPtr != sEndPtr) {
-							byte curState = *sPtr;
+					for (int i = 0; i < verifiers.Length; i++) {
+						byte curState = verifiers [i].InitalState;
+						byte* bPtr = bBeginPtr;
+						while (bPtr != bEndPtr) {
 							if (curState != 0) {
 								curState = stateTables [i] [curState] [*bPtr];
 								if (curState == 0) {
-									verifiersRunning--;
-									if (verifiersRunning == 0 || verifiersRunning == 1 && i >= 10 * 1024) 
-										goto finishVerify;
+									break;
 								}
-								*sPtr = curState;
 							}
-							sPtr++;
-							i++;
+							bPtr++;
 						}
-						bPtr++;
-					}
-					finishVerify:
-					if (verifiersRunning > 0) {
-						//						Console.WriteLine ("valid encodings:");
-						//						for (int i = 0; i < verifiers.Length; i++) {
-						//							if (verifiers [i].IsEncodingValid (states [i]))
-						//								Console.WriteLine (verifiers [i].Encoding.EncodingName);
-						//						}
-						//						Console.WriteLine ("---------------");
-						for (int i = 0; i < verifiers.Length; i++) {
-							if (verifiers [i].IsEncodingValid (states [i])) {
-								return verifiers [i].Encoding;
-							}
-						}
+						if (verifiers [i].IsEncodingValid (curState))
+							return verifiers [i].Encoding;
 					}
 				}
-
 			} catch (Exception e) {
 				Console.WriteLine (e);
 			}
