@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						this.fileName = Path.GetTempFileName ();
 					string tmpPath = Path.Combine (Path.GetDirectoryName (fileName), ".#" + Path.GetFileName (fileName));
 					encoding = text.Encoding ?? Encoding.Default;
-					using (var writer = new StreamWriter (tmpPath, false, text.Encoding))
+					using (var writer = new StreamWriter (tmpPath, false, encoding))
 						text.Write (writer, cancellationToken);
 					sourceText = new WeakReference<SourceText>(text);
 					FileService.SystemRename (tmpPath, fileName);
