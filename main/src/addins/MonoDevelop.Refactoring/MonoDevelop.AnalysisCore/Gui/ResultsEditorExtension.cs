@@ -141,12 +141,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 			var doc = DocumentContext.ParsedDocument;
 			if (doc == null)
 				return;
-			var ad = new AnalysisDocument (Editor, DocumentContext);
 			updateTimeout = GLib.Timeout.Add (250, delegate {
 				lock (updateLock) {
 					CancelTask ();
 					src = new CancellationTokenSource ();
 					var token = src.Token;
+					var ad = new AnalysisDocument (Editor, DocumentContext);
 					oldTask = Task.Run (() => {
 						try {
 							var result = CodeDiagnosticRunner.Check (ad, token);
