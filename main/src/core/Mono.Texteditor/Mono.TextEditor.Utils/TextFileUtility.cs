@@ -389,60 +389,26 @@ namespace Mono.TextEditor.Utils
 		static readonly byte[][][] stateTables;
 
 		const int maxBufferLength = 50 * 1024;
-		static Queue<EncodingCache> caches = new Queue<EncodingCache>();
-		class EncodingCache
-		{
-			internal byte[] readBuf;
-			internal byte[] states;
-
-			internal static EncodingCache Create()
-			{
-				return new EncodingCache () {
-					readBuf =  new byte[maxBufferLength],
-					states = new byte[verifiers.Length]
-				};
-			}
-		}
-
-		static EncodingCache RequestCache()
-		{
-			lock (caches) {
-				if (caches.Count > 0)
-					return caches.Dequeue ();
-				return EncodingCache.Create ();
-			}
-		}
-
-		static void PutbackCache (EncodingCache cache)
-		{
-			lock (caches) {
-				caches.Enqueue (cache);
-			}
-		}
 
 		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
-			var cache = RequestCache ();
 			try {
-				var readBuf = cache.readBuf;
 				int max = (int)System.Math.Min (stream.Length, maxBufferLength);
+				var readBuf = new byte[max];
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
-				return AutoDetectEncoding (readBuf, readLength, cache);
+				return AutoDetectEncoding (readBuf, readLength);
 			} catch (Exception e) {
 				Console.WriteLine (e);
-			} finally {
-				PutbackCache (cache);
 			}
 			return Encoding.ASCII;
 		}
 
-		static unsafe Encoding AutoDetectEncoding (byte[] bytes, int readLength, EncodingCache cache = null)
+		static unsafe Encoding AutoDetectEncoding (byte[] bytes, int readLength)
 		{
-			EncodingCache encCache = cache ?? RequestCache ();
 			try {
 				var readBuf = bytes;
-				var states = encCache.states;
+				var states = new byte[verifiers.Length];
 
 				// Store the dfa data from the verifiers in local variables.
 				int verifiersRunning = verifiers.Length;
@@ -493,9 +459,6 @@ namespace Mono.TextEditor.Utils
 
 			} catch (Exception e) {
 				Console.WriteLine (e);
-			} finally {
-				if (cache == null)
-					PutbackCache (encCache);
 			}
 			return Encoding.ASCII;
 		}
