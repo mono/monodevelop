@@ -44,6 +44,7 @@ namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
+		static List<CodeDiagnosticDescriptor> diagnostics;
 		public static IEnumerable<Result> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
 			var input = analysisDocument.DocumentContext;
@@ -58,8 +59,10 @@ namespace MonoDevelop.CodeIssues
 
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				var diagnostics = CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
-				foreach (var diagnostic in diagnostics.Result) {
+				if (diagnostics == null) {
+					diagnostics = CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken).Result.ToList ();
+				}
+				foreach (var diagnostic in diagnostics) {
 					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
 						continue;
 					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);

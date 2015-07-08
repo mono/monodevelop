@@ -143,6 +143,7 @@ namespace MonoDevelop.CodeActions
 
 		Task<CodeActionContainer> smartTagTask;
 		CancellationTokenSource quickFixCancellationTokenSource = new CancellationTokenSource ();
+		List<CodeDiagnosticFixDescriptor> codeFixes;
 
 		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
@@ -191,8 +192,11 @@ namespace MonoDevelop.CodeActions
 				smartTagTask = Task.Run (async delegate {
 					try {
 						var codeIssueFixes = new List<ValidCodeDiagnosticAction> ();
-						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToImmutableArray<string> ();
-						foreach (var cfp in CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType)).Result) {
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).Concat (errorList.Select (rm => rm.Error.Id)).ToList ();
+						if (codeFixes == null) {
+							codeFixes = (await CodeRefactoringService.GetCodeFixesAsync (DocumentContext, CodeRefactoringService.MimeTypeToLanguage (Editor.MimeType), token).ConfigureAwait (false)).ToList ();
+						}
+						foreach (var cfp in codeFixes) {
 							if (token.IsCancellationRequested)
 								return CodeActionContainer.Empty;
 							var provider = cfp.GetCodeFixProvider ();
@@ -229,7 +233,7 @@ namespace MonoDevelop.CodeActions
 							}
 						}
 						var codeActions = new List<ValidCodeAction> ();
-						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token)) {
+						foreach (var action in await CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).ConfigureAwait (false)) {
 							codeActions.Add (action);
 						}
 						var codeActionContainer = new CodeActionContainer (codeIssueFixes, codeActions, diagnosticsAtCaret);
@@ -757,6 +761,7 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag.CancelPopup += CurrentSmartTag_CancelPopup;
 			currentSmartTag.ShowPopup += CurrentSmartTag_ShowPopup;
 			currentSmartTag.Tag = fixes;
+			currentSmartTag.IsVisible = fixes.CodeFixActions.Count > 0;
 			editor.AddMarker (currentSmartTag);
 		}
 
