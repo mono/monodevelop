@@ -100,8 +100,8 @@ type FSharpProject() as self =
       let globalGroup = msproject.GetGlobalPropertyGroup()
 
       maybe {
-        let! targetFrameworkProfile = msproject.EvaluatedProperties.GetProperty("TargetFrameworkProfile") |> Option.ofNull
-        let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile.Value
+        let! targetFrameworkProfile = x.TargetFramework.Id.Profile |> Option.ofString
+        let! fsharpcoreversion, netcore = profileMap |> Map.tryFind targetFrameworkProfile
         do globalGroup.SetValue ("TargetFSharpCoreVersion", fsharpcoreversion, "", true)
         let targetProfile = if netcore then "netcore" else "mscorlib"
         do globalGroup.SetValue ("TargetProfile", targetProfile, "mscorlib", true) } |> ignore

@@ -64,3 +64,7 @@ module Option =
     | null -> None
     | :? 'T as a -> Some a
     | _ -> None
+
+  let ofString (s:string) =
+    if String.isNullOrEmpty s then None
+    else Some s
