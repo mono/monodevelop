@@ -61,9 +61,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public ITextSource Format (PolicyContainer policyParent, ITextSource input, ISegment segment = null)
 		{
-			if (segment == null)
-				return formatter.Format (policyParent, mimeType, input);
-			return formatter.Format (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			try {
+				if (segment == null)
+					return formatter.Format (policyParent, mimeType, input);
+				return formatter.Format (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while formatting text.", e);
+				if (segment == null)
+					return input;
+				return input.CreateSnapshot (segment.Offset, segment.Length);
+			}
 		}
 
 		[Obsolete("Use FormatText (PolicyContainer policyParent, string input, ISegment segment) instead. This function is going to be removed.")]
@@ -74,9 +81,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public string FormatText (PolicyContainer policyParent, string input, ISegment segment = null)
 		{
-			if (segment == null)
-				return formatter.FormatText (policyParent, mimeType, input, 0, input.Length);
-			return formatter.FormatText (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			try {
+				if (segment == null)
+					return formatter.FormatText (policyParent, mimeType, input, 0, input.Length);
+				return formatter.FormatText (policyParent, mimeType, input, segment.Offset, segment.EndOffset);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while formatting text.", e);
+				if (segment == null)
+					return input;
+				return input.Substring (segment.Offset, segment.Length);
+			}
 		}
 
 		public bool SupportsOnTheFlyFormatting { get { return formatter.SupportsOnTheFlyFormatting; } }
@@ -89,10 +103,14 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public void OnTheFlyFormat (TextEditor editor, DocumentContext context, ISegment segment = null)
 		{
-			if (segment == null) {
-				formatter.OnTheFlyFormat (editor, context, 0, editor.Length);
-			} else {
-				formatter.OnTheFlyFormat (editor, context, segment.Offset, segment.Length);
+			try {
+				if (segment == null) {
+					formatter.OnTheFlyFormat (editor, context, 0, editor.Length);
+				} else {
+					formatter.OnTheFlyFormat (editor, context, segment.Offset, segment.Length);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while on the fly format.", e);
 			}
 		}
 
@@ -111,9 +129,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 		public void CorrectIndenting (PolicyContainer policyParent, TextEditor editor, IDocumentLine line)
 		{
-			if (line == null)
-				throw new ArgumentNullException (nameof (line));
-			formatter.CorrectIndenting (policyParent, editor, line.LineNumber);
+			try {
+				if (line == null)
+					throw new ArgumentNullException (nameof (line));
+				formatter.CorrectIndenting (policyParent, editor, line.LineNumber);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while indenting.", e);
+			}
 		}
 	}
 }

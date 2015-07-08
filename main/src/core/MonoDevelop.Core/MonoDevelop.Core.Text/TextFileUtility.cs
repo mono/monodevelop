@@ -156,6 +156,8 @@ namespace MonoDevelop.Core.Text
 			foreach (var enc in encodingsWithBom) {
 				var bom = enc.GetPreamble ();
 				bool invalid = false;
+				if (bom.Length > bytes.Length)
+					continue;
 				for (int i = 0; i < bom.Length; i++) {
 					if (bom [i] != bytes [i]) {
 						invalid = true;
