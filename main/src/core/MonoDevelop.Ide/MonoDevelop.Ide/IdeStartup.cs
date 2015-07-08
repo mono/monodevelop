@@ -103,6 +103,7 @@ namespace MonoDevelop.Ide
 			}
 
 			SetupTheme ();
+			IdeApp.Preferences.UserInterfaceSkinChanged += (s,a) => SetupTheme ();
 
 			var args = options.RemainingArgs.ToArray ();
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
@@ -350,13 +351,21 @@ namespace MonoDevelop.Ide
 						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
+						gtkrc += "-dark";
 
 					var osv = Platform.OSVersion;
 					if (osv.Major == 10 && osv.Minor >= 10) {
 						gtkrc += "-yosemite";
 					}
 				}
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
+				// Generate a dummy rc file and use that to include the real rc. This allows changing the rc
+				// on the fly. All we have to do is rewrite the dummy rc changing the include and call ReparseAll
+
+				var rcFile = UserProfile.Current.ConfigDir.Combine ("gtkrc");
+				File.WriteAllText (rcFile, "include \"" + PropertyService.EntryAssemblyPath.Combine (gtkrc) + "\"");
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
+				Gtk.Rc.ReparseAll ();
 			}
 		}
 

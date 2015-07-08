@@ -193,13 +193,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			SetTheme ();
 		}
 
-		public override void Dispose ()
+		protected override void OnDestroyed ()
 		{
 			if (currentTheme != IdeApp.Preferences.UserInterfaceTheme)
 				SetTheme (currentTheme);
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
-		
+
 		static string[] isoCodes = new string[] {
 			"", "(Default)",
 			"ca", "Catalan",

@@ -60,8 +60,10 @@ namespace MonoDevelop.Components
 
 		static void Window_WillClose (object sender, EventArgs e)
 		{
-			((NSWindow)sender).WillClose -= Window_WillClose;
-			nsWindows.Remove ((NSWindow)sender);
+			var n = (Foundation.NSNotification) sender;
+			var w = (NSWindow)n.Object;
+			w.WillClose -= Window_WillClose;
+			nsWindows.Remove (w);
 		}
 
 		static void UpdateMacWindows ()
