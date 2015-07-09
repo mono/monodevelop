@@ -233,6 +233,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.Dispose (disposing);
 		}
 
+		NSTrackingArea textFieldArea;
 		void ReconstructString ()
 		{
 			if (string.IsNullOrEmpty (text)) {
@@ -242,6 +243,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
+
+			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
+
+			if (textFieldArea != null)
+				RemoveTrackingArea (textFieldArea);
+
+			if (width > textField.Frame.Width) {
+				textFieldArea = new NSTrackingArea (textField.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
+				AddTrackingArea (textFieldArea);
+			} else
+				textFieldArea = null;
 		}
 
 		CALayer ProgressLayer {
@@ -676,24 +689,20 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSPopover popover;
 
-		void CreatePopoverForLayer (CALayer layer)
+		void CreatePopoverCommon (nfloat width, string text)
 		{
 			popover = new NSPopover {
 				ContentViewController = new NSViewController (null, null),
 				Animates = false
 			};
 
-			string tooltip = layerToStatus [layer.Name].ToolTip;
-			if (tooltip == null)
-				return;
+			var attrString = GetPopoverString (text);
 
-			var attrString = GetPopoverString (tooltip);
-
-			var height = attrString.BoundingRectWithSize (new CGSize (230, nfloat.MaxValue),
+			var height = attrString.BoundingRectWithSize (new CGSize (width, nfloat.MaxValue),
 				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Height;
 			
 			popover.ContentViewController.View = new NSTextField {
-				Frame = new CGRect (0, 0, 230, height + 14),
+				Frame = new CGRect (0, 0, width, height + 14),
 				DrawsBackground = false,
 				Bezeled = true,
 				Editable = false,
@@ -702,7 +711,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
 		}
 
-		public void ShowPopoverForLayer (CALayer layer)
+		void CreatePopoverForLayer (CALayer layer)
+		{
+			string tooltip = layerToStatus [layer.Name].ToolTip;
+			if (tooltip == null)
+				return;
+
+			CreatePopoverCommon (230, tooltip);
+		}
+
+		void CreatePopoverForStatusBar ()
+		{
+			CreatePopoverCommon (Frame.Width, textField.AttributedStringValue.Value);
+		}
+
+		void ShowPopoverForLayer (CALayer layer)
 		{
 			if (popover != null)
 				return;
@@ -714,6 +737,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
+		void ShowPopoverForStatusBar ()
+		{
+			if (popover != null)
+				return;
+
+			CreatePopoverForStatusBar ();
+			popover.Show (textField.Frame, this, NSRectEdge.MinYEdge);
+		}
+
 		void DestroyPopover ()
 		{
 			oldLayer = null;
@@ -722,9 +754,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			popover = null;
 		}
 
-		CALayer LayerForEvent (NSEvent theEvent)
+		bool InTextField (CGPoint location)
 		{
-			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+			return textField.IsMouseInRect (location, textField.Frame);
+		}
+
+		CALayer LayerForPoint (CGPoint location)
+		{
 			CALayer layer = Layer.PresentationLayer.HitTest (location);
 			return layer != null ? layer.ModelLayer : null;
 		}
@@ -734,7 +770,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseEntered (theEvent);
 
-			var layer = LayerForEvent (theEvent);
+			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+
+			if (InTextField (location)) {
+				ShowPopoverForStatusBar ();
+				return;
+			}
+
+			var layer = LayerForPoint (location);
 			if (layer == null)
 				return;
 
@@ -755,16 +798,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseExited (theEvent);
 
-			if (oldLayer != null) {
-				DestroyPopover ();
-			}
+			DestroyPopover ();
 		}
 
 		public override void MouseDown (NSEvent theEvent)
 		{
 			base.MouseDown (theEvent);
 
-			var layer = LayerForEvent (theEvent);
+			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
+			var layer = LayerForPoint (location);
 			if (layer != null && layer.Name != null) {
 				Xwt.PointerButton button = Xwt.PointerButton.Left;
 				switch ((NSEventType)(long)theEvent.ButtonNumber) {
