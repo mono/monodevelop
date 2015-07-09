@@ -734,9 +734,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.MouseEntered (theEvent);
 
-			StatusIcon icon;
 			var layer = LayerForEvent (theEvent);
-			if (layer == null || layer.Name == oldLayer) {
+			if (layer == null)
+				return;
+
+			if (layer.Name == oldLayer) {
+				StatusIcon icon;
 				if (!layerToStatus.TryGetValue (layer.Name, out icon))
 					return;
 
