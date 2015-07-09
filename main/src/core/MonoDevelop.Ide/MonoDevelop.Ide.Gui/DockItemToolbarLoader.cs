@@ -33,6 +33,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.Commands;
 using Gtk;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -185,7 +186,7 @@ namespace MonoDevelop.Ide.Gui
 
 			if (displayType != CommandEntryDisplayType.TextOnly && cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
-				button.Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
+				button.Image = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
 			if (cmdInfo.Enabled != button.Sensitive)
 				button.Sensitive = cmdInfo.Enabled;

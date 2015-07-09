@@ -157,7 +157,7 @@ namespace MonoDevelop.DesignerSupport
 				return toolbarWidgets;
 			
 			var groupToggleButton = new ToggleButton () {
-				Image = new Image (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
+				Image = new ImageView (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
 			};	
@@ -169,7 +169,7 @@ namespace MonoDevelop.DesignerSupport
 			};
 
 			var sortAlphabeticallyToggleButton = new ToggleButton () {
-				Image = new Image (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
+				Image = new ImageView (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
 				Active = settings.IsSorted,
 			};	

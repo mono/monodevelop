@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				newButton.UseUnderline = true;
 				newButton.UseStock     = button.IsStockButton;
 				if (!String.IsNullOrEmpty (button.Icon))
-					newButton.Image = new Image (button.Icon, IconSize.Button);
+					newButton.Image = new ImageView (button.Icon, IconSize.Button);
 				newButton.Clicked += ButtonClicked;
 				ActionArea.Add (newButton);
 			}

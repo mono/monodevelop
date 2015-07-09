@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			errorBtn = new ToggleButton ();
 			errorBtn.Active = (bool)PropertyService.Get (showErrorsPropertyName, true);
-			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
+			errorBtn.Image = new ImageView (Stock.Error, Gtk.IconSize.Menu);
 			errorBtn.Image.Show ();
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			warnBtn = new ToggleButton ();
 			warnBtn.Active = (bool)PropertyService.Get (showWarningsPropertyName, true);
-			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
+			warnBtn.Image = new ImageView (Stock.Warning, Gtk.IconSize.Menu);
 			warnBtn.Image.Show ();
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			msgBtn = new ToggleButton ();
 			msgBtn.Active = (bool)PropertyService.Get (showMessagesPropertyName, true);
-			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
+			msgBtn.Image = new ImageView (Stock.Information, Gtk.IconSize.Menu);
 			msgBtn.Image.Show ();
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");

@@ -91,7 +91,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton = new RadioButton ((Gtk.RadioButton)null);
 			catButton.DrawIndicator = false;
 			catButton.Relief = ReliefStyle.None;
-			catButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
+			catButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
 			catButton.Image.Show ();
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
@@ -100,7 +100,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			alphButton = new RadioButton (catButton);
 			alphButton.DrawIndicator = false;
 			alphButton.Relief = ReliefStyle.None;
-			alphButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
+			alphButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
 			alphButton.Image.Show ();
 			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);

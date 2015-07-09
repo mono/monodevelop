@@ -14,7 +14,7 @@ namespace MonoDevelop.Components
 	public class TabLabel : HBox
 	{
 		private Label title;
-		private Gtk.Image icon;
+		private ImageView icon;
 		private EventBox titleBox;
 		private static Xwt.Drawing.Image closeImage;
 
@@ -31,7 +31,7 @@ namespace MonoDevelop.Components
 		{
 		}
 
-		public TabLabel (Label label, Gtk.Image icon) : base (false, 0)
+		public TabLabel (Label label, ImageView icon) : base (false, 0)
 		{
 			this.title = label;
 			this.icon = icon;
