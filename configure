@@ -158,10 +158,10 @@ configure_packages ()
 			enable_tests=" "
 		fi
 
-		if test xyes == x$x64; then
-			enable_x64=--with-macarch=x86_64
-		else
+		if [ -z "$MONODEVELOP_64BIT_SAFE" ]; then	
 			enable_x64=--with-macarch=i386
+		else
+			enable_x64=--with-macarch=x86_64
 		fi
 
 		prefixarg="--prefix=$prefix"
