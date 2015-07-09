@@ -524,7 +524,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void Flash (AppResult result)
 		{
 			try {
-				ExecuteOnIdle (() => result.Flash (() => AutoTestService.NotifyEvent ("FlashCompleted")));
+				ExecuteOnIdle (() => result.Flash ());
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
 			}

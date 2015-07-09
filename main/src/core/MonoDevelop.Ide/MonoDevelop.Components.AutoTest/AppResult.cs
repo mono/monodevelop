@@ -63,7 +63,7 @@ namespace MonoDevelop.Components.AutoTest
 		public abstract bool EnterText (string text);
 		public abstract bool Toggle (bool active);
 
-		public abstract void Flash (Action completionHandler);
+		public abstract void Flash ();
 
 		// Inspection Operations
 		public abstract ObjectProperties Properties ();

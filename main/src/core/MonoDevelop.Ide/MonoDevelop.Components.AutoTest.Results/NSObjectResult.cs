@@ -90,15 +90,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
-		}
-
 		public override AppResult Text (string text, bool exact)
 		{
 			if (ResultObject is NSControl) {
@@ -221,9 +212,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
-		public override void Flash (Action completionHandler)
+		public override void Flash ()
 		{
-			completionHandler ();
+			
 		}
 	}
 }

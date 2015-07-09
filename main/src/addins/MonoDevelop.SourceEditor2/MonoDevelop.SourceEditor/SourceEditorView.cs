@@ -56,6 +56,7 @@ using Mono.Addins;
 using MonoDevelop.Components;
 using Mono.TextEditor.Utils;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Ide.Editor.Extension;
@@ -621,10 +622,20 @@ namespace MonoDevelop.SourceEditor
 			if (PropertyService.Get ("AutoFormatDocumentOnSave", false)) {
 				try {
 					var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
-					if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-						using (var undo = TextEditor.OpenUndoGroup ()) {
-							formatter.OnTheFlyFormat (WorkbenchWindow.Document.Editor, WorkbenchWindow.Document);
-							wasEdited = false;
+					if (formatter != null) {
+						var document = WorkbenchWindow.Document;
+						if (formatter.SupportsOnTheFlyFormatting) {
+							using (var undo = TextEditor.OpenUndoGroup ()) {
+								formatter.OnTheFlyFormat (WorkbenchWindow.Document.Editor, WorkbenchWindow.Document);
+								wasEdited = false;
+							}
+						} else {
+							var text = document.Editor.Text;
+							var policies = document.Project != null ? document.Project.Policies : PolicyService.DefaultPolicies;
+							string formattedText = formatter.FormatText (policies, text);
+							if (formattedText != null && formattedText != text) {
+								document.Editor.ReplaceText (0, text.Length, formattedText);
+							}
 						}
 					}
 				} catch (Exception e) {
