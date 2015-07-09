@@ -42,6 +42,10 @@ namespace MonoDevelop.Components
 			this.image = image;
 		}
 
+		public ImageView (string stockId, Gtk.IconSize size): this (MonoDevelop.Ide.ImageService.GetIcon (stockId, size))
+		{
+		}
+
 		public Xwt.Drawing.Image Image {
 			get { return image; }
 			set {

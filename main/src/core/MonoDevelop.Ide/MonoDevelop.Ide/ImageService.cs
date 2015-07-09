@@ -108,9 +108,10 @@ namespace MonoDevelop.Ide
 		static Xwt.Drawing.Image LoadStockIcon (RuntimeAddin addin, string stockId, string resource, string imageFile, string iconId, Gtk.IconSize iconSize, string animation, bool forceWildcard)
 		{
 			try {
-				Gdk.Pixbuf pixbuf = null, pixbuf2x = null;
 				AnimatedIcon animatedIcon = null;
 				Func<Stream[]> imageLoader = null;
+
+				Xwt.Drawing.Image img = null;
 
 				if (!string.IsNullOrEmpty (resource) || !string.IsNullOrEmpty (imageFile)) {
 					// using the stream directly produces a gdk warning.
@@ -151,49 +152,29 @@ namespace MonoDevelop.Ide
 					var st2x = streams.Length > 1 ? streams[1] : null;
 
 					using (st) {
-						if (st == null || st.Length < 0) {
-							LoggingService.LogError ("Did not find resource '{0}' in addin '{1}' for icon '{2}'",
-								resource, addin.Id, stockId);
-							return null;
-						}
-						buffer = new byte [st.Length];
-						st.Read (buffer, 0, (int)st.Length);
+						img = Xwt.Drawing.Image.FromStream (st);
 					}
-					pixbuf = new Gdk.Pixbuf (buffer);
-
 					using (st2x) {
 						if (st2x != null && st2x.Length >= 0) {
-							buffer = new byte [st2x.Length];
-							st2x.Read (buffer, 0, (int)st2x.Length);
-							pixbuf2x = new Gdk.Pixbuf (buffer);
+							var img2x = Xwt.Drawing.Image.FromStream (st2x);
+							img = Xwt.Drawing.Image.CreateMultiResolutionImage (new [] { img, img2x });
 						}
 					}
-
 				} else if (!string.IsNullOrEmpty (iconId)) {
 					var id = GetStockIdForImageSpec (addin, iconId, iconSize);
-					pixbuf = GetPixbuf (id, iconSize);
-					pixbuf2x = Get2xIconVariant (pixbuf);
+					img = GetIcon (id, iconSize);
 					// This may be an animation, get it
 					animationFactory.TryGetValue (id, out animatedIcon);
 				} else if (!string.IsNullOrEmpty (animation)) {
 					string id = GetStockIdForImageSpec (addin, "animation:" + animation, iconSize);
-					pixbuf = GetPixbuf (id, iconSize);
+					img = GetIcon (id, iconSize);
 					// This *should* be an animation
 					animationFactory.TryGetValue (id, out animatedIcon);
 				}
 
-				Gtk.IconSize size = forceWildcard? Gtk.IconSize.Invalid : iconSize;
-				if (pixbuf != null)
-					AddToIconFactory (stockId, pixbuf, pixbuf2x, size);
-
 				if (animatedIcon != null)
 					AddToAnimatedIconFactory (stockId, animatedIcon);
 
-				var img = Xwt.Toolkit.CurrentEngine.WrapImage (pixbuf);
-				if (pixbuf2x != null) {
-					var img2x = Xwt.Toolkit.CurrentEngine.WrapImage (pixbuf2x);
-					img = Xwt.Drawing.Image.CreateMultiResolutionImage (new [] { img, img2x });
-				}
 				if (imageLoader != null)
 					img.SetStreamSource (imageLoader);
 
@@ -224,6 +205,8 @@ namespace MonoDevelop.Ide
 
 		public static Xwt.Drawing.Image GetIcon (string name, Gtk.IconSize size)
 		{
+			// Converts an image spec into a real stock icon id
+			name = GetStockIdForImageSpec (name, size);
 			return GetIcon (name).WithSize (size);
 		}
 
@@ -477,45 +460,6 @@ namespace MonoDevelop.Ide
 			return GetStockIdForImageSpec (addin, filename, iconSize);
 		}
 
-		static void AddToIconFactory (string stockId, Gdk.Pixbuf pixbuf, Gdk.Pixbuf pixbuf2x, Gtk.IconSize iconSize)
-		{
-			Gtk.IconSet iconSet = iconFactory.Lookup (stockId);
-			if (iconSet == null) {
-				iconSet = new Gtk.IconSet ();
-				iconFactory.Add (stockId, iconSet);
-			}
-
-			Gtk.IconSource source = new Gtk.IconSource ();
-			Gtk.IconSource source2x = null;
-
-			if (Platform.IsWindows) {
-				var pixel_scale = GtkWorkarounds.GetPixelScale ();
-				source.Pixbuf = pixbuf.ScaleSimple ((int)(pixbuf.Width * pixel_scale), (int)(pixbuf.Height * pixel_scale), Gdk.InterpType.Bilinear);
-			} else {
-				source.Pixbuf = pixbuf;
-			}
-
-			source.Size = iconSize;
-			source.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
-
-			if (pixbuf2x != null) {
-				if (GtkWorkarounds.SetSourceScale (source, 1)) {
-					GtkWorkarounds.SetSourceScaleWildcarded (source, false);
-					source2x = new Gtk.IconSource ();
-					source2x.Pixbuf = pixbuf2x;
-					source2x.Size = iconSize;
-					source2x.SizeWildcarded = iconSize == Gtk.IconSize.Invalid;
-					GtkWorkarounds.SetSourceScale (source2x, 2);
-					GtkWorkarounds.SetSourceScaleWildcarded (source2x, false);
-				}
-			} else {
-				GtkWorkarounds.SetSourceScaleWildcarded (source, true);
-			}
-
-			iconSet.AddSource (source);
-			if (source2x != null)
-				iconSet.AddSource (source2x);
-		}
 
 		static void AddToAnimatedIconFactory (string stockId, AnimatedIcon aicon)
 		{
@@ -566,9 +510,9 @@ namespace MonoDevelop.Ide
 			string stockId = "__asm" + addinId + "__" + id + "__" + size;
 			if (!hash.ContainsKey (stockId)) {
 				var aicon = new AnimatedIcon (addin, id, size);
-				AddToIconFactory (stockId, aicon.FirstFrame.WithSize (size).ToPixbuf (), null, size);
 				AddToAnimatedIconFactory (stockId, aicon);
 				hash[stockId] = stockId;
+				icons [stockId] = aicon.FirstFrame;
 			}
 			return stockId;
 		}
@@ -591,6 +535,7 @@ namespace MonoDevelop.Ide
 			if (composedIcons.TryGetValue (id, out cid))
 				return cid;
 			System.Collections.ICollection col = size == Gtk.IconSize.Invalid ? Enum.GetValues (typeof(Gtk.IconSize)) : new object [] { size };
+			var frames = new List<Xwt.Drawing.Image> ();
 			foreach (Gtk.IconSize sz in col) {
 				if (sz == Gtk.IconSize.Invalid)
 					continue;
@@ -616,9 +561,13 @@ namespace MonoDevelop.Ide
 
 					ib.Context.DrawImage (px, 0, 0);
 				}
-				if (icon != null)
-					AddToIconFactory (id, ib.ToBitmap ().ToPixbuf (), ib.ToBitmap (2f).WithSize (icon.Width * 2, icon.Height * 2).ToPixbuf (), sz);
+
+				// Create composed icons in normal and double resolution
+				var comp = Xwt.Drawing.Image.CreateMultiResolutionImage (new [] { ib.ToBitmap (1d), ib.ToBitmap (2d) });
+				frames.Add (comp);
 			}
+
+			icons [id] = Xwt.Drawing.Image.CreateMultiSizeIcon (frames);
 			composedIcons[id] = id;
 			return id;
 		}

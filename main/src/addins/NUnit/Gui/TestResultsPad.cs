@@ -214,12 +214,12 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu));
+			buttonRun.Image = new ImageView ("nunit-run", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
 			
-			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
+			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
 			toolbar.Add (buttonStop);
 			toolbar.ShowAll ();
 			

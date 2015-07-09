@@ -101,7 +101,7 @@ namespace MonoDevelop.NUnit
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
 			
-			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, IconSize.Menu));
+			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
 			buttonStop.Sensitive = false;
 			buttonStop.TooltipText = GettextCatalog.GetString ("Cancel running test");
@@ -122,12 +122,12 @@ namespace MonoDevelop.NUnit
 			detailLabel = new HeaderLabel ();
 			detailLabel.Padding = 6;
 			
-			Button hb = new Button (new Gtk.Image ("gtk-close", IconSize.SmallToolbar));
+			Button hb = new Button (new ImageView ("gtk-close", IconSize.SmallToolbar));
 			hb.Relief = ReliefStyle.None;
 			hb.Clicked += new EventHandler (OnCloseDetails);
 			header.PackEnd (hb, false, false, 0);
 			
-			hb = new Button (new Gtk.Image ("gtk-go-back", IconSize.SmallToolbar));
+			hb = new Button (new ImageView ("gtk-go-back", IconSize.SmallToolbar));
 			hb.Relief = ReliefStyle.None;
 			hb.Clicked += new EventHandler (OnGoBackTest);
 			header.PackEnd (hb, false, false, 0);

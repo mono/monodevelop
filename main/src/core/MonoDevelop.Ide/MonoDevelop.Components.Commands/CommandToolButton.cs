@@ -91,7 +91,7 @@ namespace MonoDevelop.Components.Commands
 				Label = cmdInfo.Text;
 			if (cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
-				this.IconWidget = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
+				this.IconWidget = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}
 			if (cmdInfo.Enabled != Sensitive)
 				Sensitive = cmdInfo.Enabled;

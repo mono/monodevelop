@@ -179,14 +179,14 @@ namespace MonoDevelop.Components.Docking
 	{
 		public DockToolButton (string stockId)
 		{
-			Image = new Gtk.Image (stockId, IconSize.Menu);
+			Image = new ImageView (stockId, IconSize.Menu);
 			Image.Show ();
 		}
 		
 		public DockToolButton (string stockId, string label)
 		{
 			Label = label;
-			Image = new Gtk.Image (stockId, IconSize.Menu);
+			Image = new ImageView (stockId, IconSize.Menu);
 			Image.Show ();
 		}
 	}

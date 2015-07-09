@@ -796,7 +796,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				box.PackStart (new HSeparator (), false, false, 0);
 				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
-				hbox.PackStart (new Image ("md-parser", IconSize.Menu), false, false, 0);
+				hbox.PackStart (new ImageView ("md-parser", IconSize.Menu), false, false, 0);
 				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);
