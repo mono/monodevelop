@@ -67,24 +67,22 @@ namespace MonoDevelop.CSharp.Parser
 
 		#region implemented abstract members of ParsedDocument
 
-
-		WeakReference<IReadOnlyList<Comment>> weakComments;
+		IReadOnlyList<Comment> comments;
+		object commentLock = new object ();
 
 		public override Task<IReadOnlyList<Comment>> GetCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IReadOnlyList<Comment> result;
-			if (weakComments == null || !weakComments.TryGetTarget (out result)) {
-				var visitor = new CommentVisitor (cancellationToken);
-				if (Unit != null)
-					visitor.Visit (Unit.GetRoot (cancellationToken));
-				result = visitor.Comments;
-
-				var newRef = new WeakReference<IReadOnlyList<Comment>> (result);
-				var oldRef = weakComments;
-				while (Interlocked.CompareExchange (ref weakComments, newRef, oldRef) == oldRef) {
+			if (comments == null) {
+				lock (commentLock) {
+					if (comments == null) {
+						var visitor = new CommentVisitor (cancellationToken);
+						if (Unit != null)
+							visitor.Visit (Unit.GetRoot (cancellationToken));
+						comments = visitor.Comments;
+					}
 				}
 			}
-			return Task.FromResult (result);
+			return Task.FromResult (comments);
 		}
 
 
@@ -197,27 +195,25 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		WeakReference<IReadOnlyList<Tag>> weakTags;
-
+		IReadOnlyList<Tag> tags;
+		object tagLock = new object ();
 		public override Task<IReadOnlyList<Tag>> GetTagCommentsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IReadOnlyList<Tag> result;
-			if (weakTags == null || !weakTags.TryGetTarget (out result)) {
-				var visitor = new SemanticTagVisitor (cancellationToken);
-				if (Unit != null) {
-					try {
-						visitor.Visit (Unit.GetRoot (cancellationToken));
-					} catch {
+			if (tags == null) {
+				lock (tagLock) {
+					if (tags == null) {
+						var visitor = new SemanticTagVisitor (cancellationToken);
+						if (Unit != null) {
+							try {
+								visitor.Visit (Unit.GetRoot (cancellationToken));
+							} catch {
+							}
+						}
+						tags = visitor.Tags;
 					}
 				}
-				result = visitor.Tags;
-
-				var newRef = new WeakReference<IReadOnlyList<Tag>> (result);
-				var oldRef = weakTags;
-				while (Interlocked.CompareExchange (ref weakTags, newRef, oldRef) == oldRef) {
-				}
 			}
-			return Task.FromResult (result);
+			return Task.FromResult (tags);
 		}
 
 		sealed class SemanticTagVisitor : CSharpSyntaxWalker
@@ -276,22 +272,19 @@ namespace MonoDevelop.CSharp.Parser
 			}
 		}
 
-		WeakReference<IReadOnlyList<FoldingRegion>> weakFoldings;
+		IReadOnlyList<FoldingRegion> foldings;
+		object foldingLock = new object ();
 
 		public override Task<IReadOnlyList<FoldingRegion>> GetFoldingsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IReadOnlyList<FoldingRegion> result;
-			if (weakFoldings == null || !weakFoldings.TryGetTarget (out result)) {
-
-				result = GenerateFoldings (cancellationToken).ToList ();
-
-				var newRef = new WeakReference<IReadOnlyList<FoldingRegion>> (result);
-				var oldRef = weakFoldings;
-				while (Interlocked.CompareExchange (ref weakFoldings, newRef, oldRef) == oldRef) {
+			if (foldings == null) {
+				lock (foldingLock) {
+					if (foldings == null) 
+						foldings = GenerateFoldings (cancellationToken).ToList ();
 				}
 			}
 
-			return Task.FromResult (result);
+			return Task.FromResult (foldings);
 		}
 
 		IEnumerable<FoldingRegion> GenerateFoldings (CancellationToken cancellationToken)
@@ -420,7 +413,8 @@ namespace MonoDevelop.CSharp.Parser
 		}
 
 		static readonly IReadOnlyList<Error> emptyErrors = new Error[0];
-		WeakReference<IReadOnlyList<Error>> weakErrors;
+		IReadOnlyList<Error> errors;
+		object errorLock = new object ();
 
 		public override Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -428,26 +422,25 @@ namespace MonoDevelop.CSharp.Parser
 			if (model == null)
 				return Task.FromResult (emptyErrors);
 			
-			IReadOnlyList<Error> result;
-			if (weakErrors == null || !weakErrors.TryGetTarget (out result)) {
-				try {
-					result = model
-						.GetDiagnostics (null, cancellationToken)
-						.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
-						.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
-						.ToList ();
-					var newRef = new WeakReference<IReadOnlyList<Error>> (result);
-					var oldRef = weakErrors;
-					while (Interlocked.CompareExchange (ref weakErrors, newRef, oldRef) == oldRef) {
+			if (errors == null) {
+				lock (errorLock) {
+					if (errors == null) {
+						try {
+							errors = model
+								.GetDiagnostics (null, cancellationToken)
+								.Where (diag => diag.Severity == DiagnosticSeverity.Error || diag.Severity == DiagnosticSeverity.Warning)
+								.Select ((Diagnostic diag) => new Error (GetErrorType (diag.Severity), diag.Id, diag.GetMessage (), GetRegion (diag)) { Tag = diag })
+								.ToList ();
+						} catch (OperationCanceledException) {
+							errors = emptyErrors;
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while getting diagnostics.", e);
+							errors = emptyErrors;
+						}
 					}
-				} catch (OperationCanceledException) {
-					return Task.FromResult (emptyErrors);
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while getting diagnostics.", e);
-					return Task.FromResult (emptyErrors);
 				}
 			}
-			return Task.FromResult (result);
+			return Task.FromResult (errors);
 		}
 
 		static DocumentRegion GetRegion (Diagnostic diagnostic)

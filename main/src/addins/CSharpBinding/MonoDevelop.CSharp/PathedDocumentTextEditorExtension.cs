@@ -507,14 +507,15 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
+		async static Task<PathEntry> GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
 			FoldingRegion reg;
 			try {
-				if (unit == null || !unit.GetUserRegionsAsync ().Result.Any ())
+				var regions = await unit.GetUserRegionsAsync ().ConfigureAwait (false);
+				if (unit == null || !regions.Any ())
 					return null;
-				reg = unit.GetUserRegionsAsync ().Result.LastOrDefault (r => r.Region.Contains (loc));
+				reg = regions.LastOrDefault (r => r.Region.Contains (loc));
 			} catch (AggregateException) {
 				return null;
 			} catch (OperationCanceledException) {
@@ -523,8 +524,7 @@ namespace MonoDevelop.CSharp
 			if (reg == null) {
 				entry = new PathEntry (GettextCatalog.GetString ("No region"));
 			} else {
-				entry = new PathEntry (CompilationUnitDataProvider.Pixbuf,
-				                       GLib.Markup.EscapeText (reg.Name));
+				entry = new PathEntry (CompilationUnitDataProvider.Pixbuf, GLib.Markup.EscapeText (reg.Name));
 			}
 			entry.Position = EntryPosition.Right;
 			return entry;
@@ -631,6 +631,7 @@ namespace MonoDevelop.CSharp
 					});
 					return;
 				}
+				var regionEntry = await GetRegionEntry (DocumentContext.ParsedDocument, loc).ConfigureAwait (false);
 
 				Gtk.Application.Invoke(delegate {
 					if (curType != null) {
@@ -655,9 +656,8 @@ namespace MonoDevelop.CSharp
 						}
 					}
 
-					var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
-					if (entry != null)
-						result.Add(entry);
+					if (regionEntry != null)
+						result.Add(regionEntry);
 
 					PathEntry noSelection = null;
 					if (curType == null) {
