@@ -88,9 +88,9 @@ namespace Mono.TextEditor.Utils
 		/// <summary>Holds the mask used to ensure a block boundary cesures.</summary>
 		const int BLOCK_MASK = ~(BLOCK_SIZE - 1);
 
-		static readonly LeafNode EMPTY_NODE = new Leaf8BitNode(new byte[0]);
+		static readonly LeafNode EMPTY_NODE = new Leaf8BitNode (new byte [0]);
 
-		public static readonly ImmutableText Empty = new ImmutableText(EMPTY_NODE);
+		public static readonly ImmutableText Empty = new ImmutableText (EMPTY_NODE);
 
 		readonly Node root;
 
@@ -113,18 +113,18 @@ namespace Mono.TextEditor.Utils
 		public char this [int index] {
 			get {
 				if (root is LeafNode) {
-					return root[index];
+					return root [index];
 				}
 
 				var leaf = myLastLeaf;
 				if (leaf == null || index < leaf.offset || index >= leaf.offset + leaf.leafNode.Length) {
-					myLastLeaf = leaf = FindLeaf(index, 0);
+					myLastLeaf = leaf = FindLeaf (index, 0);
 				}
-				return leaf.leafNode[index - leaf.offset];
+				return leaf.leafNode [index - leaf.offset];
 			}
 		}
 
-		ImmutableText(Node node)
+		ImmutableText (Node node)
 		{
 			root = node;
 		}
@@ -134,7 +134,7 @@ namespace Mono.TextEditor.Utils
 			root = CreateLeafNode (str.ToCharArray ());
 		}
 
-		public ImmutableText (char[] str)
+		public ImmutableText (char [] str)
 		{
 			root = CreateLeafNode (str);
 		}
@@ -147,9 +147,9 @@ namespace Mono.TextEditor.Utils
 		/// </summary>
 		/// <param name="that">that the text that is concatenated.</param>
 		/// <returns><code>this + that</code></returns>
-		public ImmutableText Concat(ImmutableText that) 
+		public ImmutableText Concat (ImmutableText that)
 		{
-			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText(ConcatNodes(EnsureChunked().root, that.EnsureChunked().root));
+			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText (ConcatNodes (EnsureChunked ().root, that.EnsureChunked ().root));
 		}
 
 		/// <summary>
@@ -160,14 +160,14 @@ namespace Mono.TextEditor.Utils
 		/// <param name="txt">txt the text being inserted.</param>
 		/// <returns>subtext(0, index).concat(txt).concat(subtext(index))</returns>
 		/// <exception cref="IndexOutOfRangeException">if <code>(index &lt; 0) || (index &gt; this.Length)</code></exception>
-		public ImmutableText InsertText(int index, ImmutableText txt)
+		public ImmutableText InsertText (int index, ImmutableText txt)
 		{
-			return GetText(0, index).Concat(txt).Concat(SubText(index));
+			return GetText (0, index).Concat (txt).Concat (SubText (index));
 		}
 
-		public ImmutableText InsertText(int index, string txt)
+		public ImmutableText InsertText (int index, string txt)
 		{
-			return InsertText(index, new ImmutableText(txt));
+			return InsertText (index, new ImmutableText (txt));
 		}
 
 		/// <summary>
@@ -181,18 +181,18 @@ namespace Mono.TextEditor.Utils
 			var end = start + count;
 			if (end > Length)
 				throw new IndexOutOfRangeException ();
-			return EnsureChunked().GetText(0, start).Concat(SubText(end));
+			return EnsureChunked ().GetText (0, start).Concat (SubText (end));
 		}
 
 		/// <summary>
 		/// Returns a portion of this text.
 		/// </summary>
 		/// <returns>the sub-text starting at the specified start position and ending just before the specified end position.</returns>
-		public ImmutableText GetText(int start, int count) 
+		public ImmutableText GetText (int start, int count)
 		{
 			var end = start + count;
 			if ((start < 0) || (start > end) || (end > Length)) {
-				throw new IndexOutOfRangeException(" start :" + start +" end :" + end + " needs to be between 0 <= " + Length);
+				throw new IndexOutOfRangeException (" start :" + start + " end :" + end + " needs to be between 0 <= " + Length);
 			}
 			if ((start == 0) && (end == Length)) {
 				return this;
@@ -201,7 +201,7 @@ namespace Mono.TextEditor.Utils
 				return Empty;
 			}
 
-			return new ImmutableText(root.SubNode(start, end));
+			return new ImmutableText (root.SubNode (start, end));
 		}
 
 		/// <summary>
@@ -211,9 +211,9 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public void CopyTo(char[] array, int arrayIndex)
+		public void CopyTo (char [] array, int arrayIndex)
 		{
-			CopyTo(0, array, arrayIndex, Length);
+			CopyTo (0, array, arrayIndex, Length);
 		}
 
 		/// <summary>
@@ -223,11 +223,11 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public void CopyTo(int index, char[] array, int arrayIndex, int count)
+		public void CopyTo (int index, char [] array, int arrayIndex, int count)
 		{
-			VerifyRange(index, count);
-			VerifyArrayWithRange(array, arrayIndex, count);
-			root.GetChars(index, index + count, array, arrayIndex);
+			VerifyRange (index, count);
+			VerifyArrayWithRange (array, arrayIndex, count);
+			root.GetChars (index, index + count, array, arrayIndex);
 		}
 
 		/// <summary>
@@ -237,10 +237,10 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public char[] ToArray()
+		public char [] ToArray ()
 		{
-			char[] arr = new char[Length];
-			CopyTo(0, arr, 0, arr.Length);
+			char [] arr = new char [Length];
+			CopyTo (0, arr, 0, arr.Length);
 			return arr;
 		}
 
@@ -251,52 +251,52 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public char[] ToArray(int offset, int length)
+		public char [] ToArray (int offset, int length)
 		{
-			VerifyRange(offset, length);
-			char[] arr = new char[length];
-			CopyTo(offset, arr, 0, length);
+			VerifyRange (offset, length);
+			char [] arr = new char [length];
+			CopyTo (offset, arr, 0, length);
 			return arr;
 		}
 
-		void VerifyRange(int startIndex, int length)
+		void VerifyRange (int startIndex, int length)
 		{
 			if (startIndex < 0 || startIndex > Length) {
-				throw new ArgumentOutOfRangeException(nameof (startIndex), startIndex, "0 <= startIndex <= " + Length.ToString(CultureInfo.InvariantCulture));
+				throw new ArgumentOutOfRangeException (nameof (startIndex), startIndex, "0 <= startIndex <= " + Length.ToString (CultureInfo.InvariantCulture));
 			}
 			if (length < 0 || startIndex + length > Length) {
-				throw new ArgumentOutOfRangeException(nameof (length), length, "0 <= length, startIndex(" + startIndex + ")+length <= " + Length.ToString(CultureInfo.InvariantCulture));
+				throw new ArgumentOutOfRangeException (nameof (length), length, "0 <= length, startIndex(" + startIndex + ")+length <= " + Length.ToString (CultureInfo.InvariantCulture));
 			}
 		}
 
-		static void VerifyArrayWithRange(char[] array, int arrayIndex, int count)
+		static void VerifyArrayWithRange (char [] array, int arrayIndex, int count)
 		{
 			if (array == null)
-				throw new ArgumentNullException(nameof (array));
+				throw new ArgumentNullException (nameof (array));
 			if (arrayIndex < 0 || arrayIndex > array.Length) {
-				throw new ArgumentOutOfRangeException(nameof (arrayIndex), arrayIndex, "0 <= arrayIndex <= " + array.Length.ToString(CultureInfo.InvariantCulture));
+				throw new ArgumentOutOfRangeException (nameof (arrayIndex), arrayIndex, "0 <= arrayIndex <= " + array.Length.ToString (CultureInfo.InvariantCulture));
 			}
 			if (count < 0 || arrayIndex + count > array.Length) {
-				throw new ArgumentOutOfRangeException(nameof (count), count, "0 <= length, arrayIndex(" + arrayIndex + ")+count <= " + array.Length.ToString(CultureInfo.InvariantCulture));
+				throw new ArgumentOutOfRangeException (nameof (count), count, "0 <= length, arrayIndex(" + arrayIndex + ")+count <= " + array.Length.ToString (CultureInfo.InvariantCulture));
 			}
 		}
 
 		public override string ToString ()
 		{
-			return root.ToString();
+			return root.ToString ();
 		}
 
 		public string ToString (int offset, int length)
 		{
-			char[] data = new char[length];
+			char [] data = new char [length];
 			CopyTo (offset, data, 0, length);
 			return new string (data);
 		}
 
-		public void WriteTo(TextWriter output, int index, int count)
+		public void WriteTo (TextWriter output, int index, int count)
 		{
 			while (index < index + count) {
-				output.Write (this[index]);
+				output.Write (this [index]);
 				index++;
 			}
 		}
@@ -309,13 +309,13 @@ namespace Mono.TextEditor.Utils
 			var that = obj as ImmutableText;
 			if (that == null)
 				return false;
-			
+
 			int len = Length;
 			if (len != that.Length)
 				return false;
 
 			for (int i = 0; i < len; i++) {
-				if (this[i] != that[i])
+				if (this [i] != that [i])
 					return false;
 			}
 			return true;
@@ -327,7 +327,7 @@ namespace Mono.TextEditor.Utils
 			int h = hash;
 			if (h == 0) {
 				for (int off = 0; off < Length; off++) {
-					h = 31 * h + this[off];
+					h = 31 * h + this [off];
 				}
 				hash = h;
 			}
@@ -336,27 +336,61 @@ namespace Mono.TextEditor.Utils
 
 		#region Helper methods
 
-		ImmutableText SubText(int start)
+		ImmutableText SubText (int start)
 		{
-			return GetText(start, Length - start);
+			return GetText (start, Length - start);
 		}
 
-		static LeafNode CreateLeafNode(char[] str) 
+		static LeafNode CreateLeafNode (char [] str)
 		{
-			byte[] bytes = ToBytesIfPossible(str);
+			byte [] bytes = ToBytesIfPossible (str);
 			if (bytes != null)
 				return new Leaf8BitNode (bytes);
-			return new WideLeafNode(str);
+			return new WideLeafNode (str);
 		}
 
-		static byte[] ToBytesIfPossible(char[] seq)
+		#region orinal version
+		//static byte [] ToBytesIfPossible (char [] seq)
+		//{
+		//	byte [] bytes = new byte [seq.Length];
+		//	for (int i = 0; i < bytes.Length; i++) {
+		//		char c = seq [i];
+		//		if ((c & 0xff00) != 0)
+		//			return null;
+		//		bytes [i] = (byte)c;
+		//	}
+		//	return bytes;
+		//}
+		#endregion
+
+		unsafe static byte [] ToBytesIfPossible (char [] seq)
 		{
-			byte[] bytes = new byte[seq.Length];
-			for (int i = 0; i < bytes.Length; i++) {
-				char c = seq[i];
-				if ((c & 0xff00) != 0)
-					return null;
-				bytes[i] = (byte)c;
+			var bytes = new byte [seq.Length];
+			fixed (byte* bBegin = bytes) {
+				fixed (char* cBegin = seq) {
+					var bPtr = bBegin;
+					var bEnd = bBegin + bytes.Length;
+
+					var bEnd4 = (uint*)bEnd - bytes.Length % 4;
+					var clPtr = (ulong*)cBegin;
+					while (bPtr != bEnd4) {
+						var c = *clPtr++;
+						if ((c & 0xFF00FF00FF00FF00ul) != 0)
+							return null;
+						*(bPtr++) = (byte)c;
+						*(bPtr++) = (byte)(c >> 16);
+						*(bPtr++) = (byte)(c >> 32);
+						*(bPtr++) = (byte)(c >> 48);
+					}
+
+					var cPtr = (ushort*)cBegin;
+					while (bPtr != bEnd) {
+						var c = *cPtr++;
+						if (c > 0xFF)
+							return null;
+						*(bPtr++) = (byte)c;
+					}
+				}
 			}
 			return bytes;
 		}
@@ -367,36 +401,35 @@ namespace Mono.TextEditor.Utils
 		/// original document. Whoever retains old non-chunked version will use more memory than really needed.
 		/// </summary>
 		/// <returns>A copy of this text better prepared for small modifications to fully enable structure-sharing capabilities</returns>
-		ImmutableText EnsureChunked() 
+		ImmutableText EnsureChunked ()
 		{
 			if (Length > BLOCK_SIZE && root is LeafNode) {
-				return new ImmutableText(NodeOf((LeafNode)root, 0, Length));
+				return new ImmutableText (NodeOf ((LeafNode)root, 0, Length));
 			}
 			return this;
 		}
 
-		static Node NodeOf(LeafNode node, int offset, int length)
+		static Node NodeOf (LeafNode node, int offset, int length)
 		{
 			if (length <= BLOCK_SIZE) {
-				return node.SubNode(offset, offset+length);
+				return node.SubNode (offset, offset + length);
 			}
 			// Splits on a block boundary.
 			int half = ((length + BLOCK_SIZE) >> 1) & BLOCK_MASK;
-			return new CompositeNode(NodeOf(node, offset, half), NodeOf(node, offset + half, length - half));
+			return new CompositeNode (NodeOf (node, offset, half), NodeOf (node, offset + half, length - half));
 		}
 
-		static Node ConcatNodes(Node node1, Node node2)
+		static Node ConcatNodes (Node node1, Node node2)
 		{
 			// All Text instances are maintained balanced:
 			//   (head < tail * 2) & (tail < head * 2)
 			int length = node1.Length + node2.Length;
 			if (length <= BLOCK_SIZE) { // Merges to primitive.
-				var mergedArray = new char[node1.Length + node2.Length];
+				var mergedArray = new char [node1.Length + node2.Length];
 				node1.GetChars (0, node1.Length, mergedArray, 0);
 				node2.GetChars (0, node2.Length, mergedArray, node1.Length);
-				return CreateLeafNode(mergedArray);
-			}
-			else { // Returns a composite.
+				return CreateLeafNode (mergedArray);
+			} else { // Returns a composite.
 				Node head = node1;
 				Node tail = node2;
 				var compositeTail = tail as CompositeNode;
@@ -404,34 +437,33 @@ namespace Mono.TextEditor.Utils
 					// head too small, returns (head + tail/2) + (tail/2)
 					if (compositeTail.head.Length > compositeTail.tail.Length) {
 						// Rotates to concatenate with smaller part.
-						tail = compositeTail.RotateRight();
+						tail = compositeTail.RotateRight ();
 					}
-					head = ConcatNodes(head, compositeTail.head);
+					head = ConcatNodes (head, compositeTail.head);
 					tail = compositeTail.tail;
-				}
-				else {
+				} else {
 					var compositeHead = head as CompositeNode;
 					if (((tail.Length << 1) < head.Length) && compositeHead != null) {
 						// tail too small, returns (head/2) + (head/2 concat tail)
 						if (compositeHead.tail.Length > compositeHead.head.Length) {
 							// Rotates to concatenate with smaller part.
-							head = compositeHead.RotateLeft();
+							head = compositeHead.RotateLeft ();
 						}
-						tail = ConcatNodes(compositeHead.tail, tail);
+						tail = ConcatNodes (compositeHead.tail, tail);
 						head = compositeHead.head;
 					}
 				}
 
-				return new CompositeNode(head, tail);
+				return new CompositeNode (head, tail);
 			}
 		}
 
-		InnerLeaf FindLeaf(int index, int offset)
+		InnerLeaf FindLeaf (int index, int offset)
 		{
 			Node node = root;
 			while (true) {
 				if (index >= node.Length)
-					throw new IndexOutOfRangeException();
+					throw new IndexOutOfRangeException ();
 
 				var leafNode = node as LeafNode;
 				if (leafNode != null)
@@ -448,12 +480,12 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		class InnerLeaf 
+		class InnerLeaf
 		{
 			internal readonly LeafNode leafNode;
 			internal readonly int offset;
 
-			public InnerLeaf(LeafNode leafNode, int offset)
+			public InnerLeaf (LeafNode leafNode, int offset)
 			{
 				this.leafNode = leafNode;
 				this.offset = offset;
@@ -472,31 +504,31 @@ namespace Mono.TextEditor.Utils
 				get;
 			}
 
-			public abstract void GetChars(int start, int end, char[] dest, int destPos);
+			public abstract void GetChars (int start, int end, char [] dest, int destPos);
 
-			public abstract Node SubNode(int start, int end);
+			public abstract Node SubNode (int start, int end);
 
 			public override string ToString ()
 			{
 				int len = Length;
-				char[] data = new char[len];
-				GetChars(0, len, data, 0);
+				char [] data = new char [len];
+				GetChars (0, len, data, 0);
 				return new string (data);
 			}
 
-			public Node subSequence(int start, int end)
+			public Node subSequence (int start, int end)
 			{
-				return SubNode(start, end);
+				return SubNode (start, end);
 			}
 		}
 
-		abstract class LeafNode : Node 
+		abstract class LeafNode : Node
 		{
 		}
 
 		sealed class WideLeafNode : LeafNode
 		{
-			readonly char[] data;
+			readonly char [] data;
 
 			public override int Length {
 				get {
@@ -506,31 +538,28 @@ namespace Mono.TextEditor.Utils
 
 			public override char this [int index] {
 				get {
-					return data[index];
+					return data [index];
 				}
 			}
 
-			public WideLeafNode(char[] data)
+			public WideLeafNode (char [] data)
 			{
 				this.data = data;
 			}
 
-			public override void GetChars(int start, int end, char[] dest, int destPos) 
+			public override void GetChars (int start, int end, char [] dest, int destPos)
 			{
-				if ((start < 0) || (end > Length) || (start > end)) {
-					throw new IndexOutOfRangeException();
-				}
-				Array.Copy(data, start, dest, destPos, end - start);
+				Array.Copy (data, start, dest, destPos, end - start);
 			}
 
-			public override Node SubNode(int start, int end)
+			public override Node SubNode (int start, int end)
 			{
 				if (start == 0 && end == Length) {
 					return this;
 				}
-				var subArray = new char[end - start];
-				Array.Copy (data, start, subArray, 0, end - Length);
-				return CreateLeafNode(subArray);
+				var subArray = new char [end - start];
+				Array.Copy (data, start, subArray, 0, subArray.Length);
+				return CreateLeafNode (subArray);
 			}
 
 			public override string ToString ()
@@ -539,9 +568,9 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		sealed class Leaf8BitNode : LeafNode 
+		sealed class Leaf8BitNode : LeafNode
 		{
-			readonly byte[] data;
+			readonly byte [] data;
 
 			public override int Length {
 				get {
@@ -551,35 +580,60 @@ namespace Mono.TextEditor.Utils
 
 			public override char this [int index] {
 				get {
-					return (char)data[index];
+					return (char)data [index];
 				}
 			}
 
-			public Leaf8BitNode(byte[] data)
+			public Leaf8BitNode (byte [] data)
 			{
 				this.data = data;
 			}
 
+			#region original version
+			//public override void GetChars(int start, int end, char[] dest, int destPos) 
+			//{
+			//	for (int i=start;i<end;i++) {
+			//		dest[destPos++] = (char)data[i];
+			//	}
+			//}
+			#endregion
 
-			public override void GetChars(int start, int end, char[] dest, int destPos) 
+			public unsafe override void GetChars (int start, int end, char [] dest, int destPos)
 			{
-				if ((start < 0) || (end > Length) || (start > end)) {
-					throw new IndexOutOfRangeException();
-				}
-				for (int i=start;i<end;i++) {
-					dest[destPos++] = (char)data[i];
+				fixed (byte* bPtr = data)
+				{
+					fixed (char* cPtr = dest)
+					{
+						var b = bPtr + start;
+						var size = end - start;
+						var endPtr = b + size;
+						var endPtr4 = endPtr - size % 4;
+
+						var c = (short*)cPtr + destPos;
+
+						while (b != endPtr4) {
+							*(c++) = *(b++);
+							*(c++) = *(b++);
+							*(c++) = *(b++);
+							*(c++) = *(b++);
+						}
+
+						while (b != endPtr) {
+							*(c++) = *(b++);
+						}
+					}
 				}
 			}
 
-			public override Node SubNode(int start, int end)
+			public override Node SubNode (int start, int end)
 			{
 				if (start == 0 && end == Length) {
 					return this;
 				}
 				int length = end - start;
-				byte[] chars = new byte[length];
-				Array.Copy(data, start, chars, 0, length);
-				return new Leaf8BitNode(chars);
+				byte [] chars = new byte [length];
+				Array.Copy (data, start, chars, 0, length);
+				return new Leaf8BitNode (chars);
 			}
 		}
 
@@ -598,18 +652,18 @@ namespace Mono.TextEditor.Utils
 			public override char this [int index] {
 				get {
 					int headLength = head.Length;
-					return index < headLength ? head[index] : tail[index - headLength];
+					return index < headLength ? head [index] : tail [index - headLength];
 				}
 			}
 
-			public CompositeNode(Node head, Node tail)
+			public CompositeNode (Node head, Node tail)
 			{
 				count = head.Length + tail.Length;
 				this.head = head;
 				this.tail = tail;
 			}
 
-			internal Node RotateRight()
+			internal Node RotateRight ()
 			{
 				// See: http://en.wikipedia.org/wiki/Tree_rotation
 				var P = head as CompositeNode;
@@ -619,10 +673,10 @@ namespace Mono.TextEditor.Utils
 				var A = P.head;
 				var B = P.tail;
 				var C = tail;
-				return new CompositeNode(A, new CompositeNode(B, C));
+				return new CompositeNode (A, new CompositeNode (B, C));
 			}
 
-			internal Node RotateLeft()
+			internal Node RotateLeft ()
 			{
 				// See: http://en.wikipedia.org/wiki/Tree_rotation
 				var Q = tail as CompositeNode;
@@ -632,39 +686,39 @@ namespace Mono.TextEditor.Utils
 				var B = Q.head;
 				var C = Q.tail;
 				var A = head;
-				return new CompositeNode(new CompositeNode(A, B), C);
+				return new CompositeNode (new CompositeNode (A, B), C);
 			}
 
-			public override void GetChars(int start, int end, char[] dest, int destPos) {
+			public override void GetChars (int start, int end, char [] dest, int destPos)
+			{
 				int cesure = head.Length;
 				if (end <= cesure) {
-					head.GetChars(start, end, dest, destPos);
-				}
-				else if (start >= cesure) {
-					tail.GetChars(start - cesure, end - cesure, dest, destPos);
-				}
-				else { // Overlaps head and tail.
-					head.GetChars(start, cesure, dest, destPos);
-					tail.GetChars(0, end - cesure, dest, destPos + cesure - start);
+					head.GetChars (start, end, dest, destPos);
+				} else if (start >= cesure) {
+					tail.GetChars (start - cesure, end - cesure, dest, destPos);
+				} else { // Overlaps head and tail.
+					head.GetChars (start, cesure, dest, destPos);
+					tail.GetChars (0, end - cesure, dest, destPos + cesure - start);
 				}
 			}
 
-			public override Node SubNode(int start, int end) {
+			public override Node SubNode (int start, int end)
+			{
 				int cesure = head.Length;
 				if (end <= cesure) {
-					return head.SubNode(start, end);
+					return head.SubNode (start, end);
 				}
 				if (start >= cesure) {
-					return tail.SubNode(start - cesure, end - cesure);
+					return tail.SubNode (start - cesure, end - cesure);
 				}
 				if ((start == 0) && (end == count)) {
 					return this;
 				}
 				// Overlaps head and tail.
-				return ConcatNodes(head.SubNode(start, cesure), tail.SubNode(0, end - cesure));
+				return ConcatNodes (head.SubNode (start, cesure), tail.SubNode (0, end - cesure));
 			}
 		}
-	
+
 		#endregion
 	}
 }
