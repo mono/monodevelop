@@ -66,6 +66,20 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		}
 	}
 
+	class TestEvaluationChild : TestEvaluation
+	{
+		public int HiddenField = 6;
+		public int HiddenProperty {
+			get {
+				return 6;
+			}
+		}
+		public int HiddenMethod ()
+		{
+			return 6;
+		}
+	}
+
 	class TestEvaluation : TestEvaluationParent
 	{
 		static string staticString = "some static";
@@ -74,7 +88,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 		public static void RunTest ()
 		{
-			var obj = new TestEvaluation ();
+			var obj = new TestEvaluationChild ();
 			obj.Test ("testString", 55);
 		}
 
@@ -243,6 +257,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		class NestedGenericClass<T1,T2>
 		{
 
+		}
+
+		public int HiddenField = 5;
+		public virtual int HiddenProperty {
+			get {
+				return 5;
+			}
+		}
+		public virtual int HiddenMethod ()
+		{
+			return 5;
 		}
 	}
 

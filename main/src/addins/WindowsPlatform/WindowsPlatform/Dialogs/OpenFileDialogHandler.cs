@@ -51,9 +51,11 @@ namespace MonoDevelop.Platform
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			CommonFileDialog dialog;
-			if (data.Action == FileChooserAction.Open)
-				dialog = new CustomCommonOpenFileDialog ();
-			else
+			if (data.Action == FileChooserAction.Open) {
+				dialog = new CustomCommonOpenFileDialog {
+					EnsureFileExists = true
+				};
+			} else
 				dialog = new CustomCommonSaveFileDialog ();
 
 			dialog.SetCommonFormProperties (data);
@@ -93,8 +95,17 @@ namespace MonoDevelop.Platform
 				group.Items.Add (viewerCombo);
 				dialog.Controls.Add (group);
 
+				if (encodingCombo != null || IdeApp.Workspace.IsOpen) {
+					viewerCombo.SelectedIndexChanged += (o, e) => {
+						bool solutionWorkbenchSelected = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer == null;
+						if (closeSolution != null)
+							closeSolution.Visible = solutionWorkbenchSelected;
+						if (encodingCombo != null)
+							encodingCombo.Enabled = !solutionWorkbenchSelected;
+					};
+				}
+
 				if (IdeApp.Workspace.IsOpen) {
-					viewerCombo.SelectedIndexChanged += (o, e) => closeSolution.Visible = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer == null;
 					var group2 = new CommonFileDialogGroupBox ();
 
 					// "Close current workspace" is too long and splits the text on 2 lines.
@@ -112,6 +123,8 @@ namespace MonoDevelop.Platform
 						bool hasBench = FillViewers (viewerCombo, file);
 						if (closeSolution != null)
 							closeSolution.Visible = hasBench;
+						if (encodingCombo != null)
+							encodingCombo.Enabled = !hasBench;
 						dialog.ApplyControlPropertyChange ("Items", viewerCombo);
 					} catch (Exception ex) {
 						LoggingService.LogInternalError (ex);
@@ -152,6 +165,8 @@ namespace MonoDevelop.Platform
 				if (ex != null && ex.ErrorCode == -2147467259)
 					return filenames;
 				throw;
+			} catch (FileNotFoundException) {
+				return filenames;
 			}
 
 			var hr = (int)resultsArray.GetCount (out count);

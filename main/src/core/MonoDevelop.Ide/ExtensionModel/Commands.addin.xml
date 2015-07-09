@@ -355,6 +355,12 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportPolicy"
 			defaultHandler="MonoDevelop.Ide.Commands.ExportPolicyHandler"
 			_label = "Export Policy..." />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisSolutionHandler"
+			_label = "Run Code Analysis on Solution" />
+	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject"
+			defaultHandler = "MonoDevelop.Ide.Commands.RunCodeAnalysisProjectHandler"
+			_label = "Run Code Analysis on Project" />
 	</Category>
 
 

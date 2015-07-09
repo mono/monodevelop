@@ -445,7 +445,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 			cr.Stroke ();
 		}
 
-		public override void Flash (System.Action completionHandler)
+		public override void Flash ()
 		{
 			int flashCount = 10;
 
@@ -458,7 +458,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 				if (flashCount == 0) {
 					resultWidget.ExposeEvent -= OnFlashWidget;
-					completionHandler ();
 					return false;
 				}
 				return true;

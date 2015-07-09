@@ -216,9 +216,9 @@ namespace MonoDevelop.Components.AutoTest
 		}
 			
 		// FIXME: This shouldn't be here.
-		public bool IsBuildSuccessful ()
+		public int ErrorCount (TaskSeverity severity)
 		{
-			return TaskService.Errors.Count (x => x.Severity == TaskSeverity.Error) == 0;
+			return TaskService.Errors.Count (x => x.Severity == severity);
 		}
 
 		object SafeObject (object ob)
@@ -524,7 +524,7 @@ namespace MonoDevelop.Components.AutoTest
 		public void Flash (AppResult result)
 		{
 			try {
-				ExecuteOnIdle (() => result.Flash (() => AutoTestService.NotifyEvent ("FlashCompleted")));
+				ExecuteOnIdle (() => result.Flash ());
 			} catch (TimeoutException e) {
 				ThrowOperationTimeoutException ("Flash", result.SourceQuery, result, e);
 			}

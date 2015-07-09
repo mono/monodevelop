@@ -175,6 +175,9 @@
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		<SeparatorItem id = "OptionsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisSolution" />
+		<SeparatorItem id = "OptionsSeparator" />
 		<ItemSet id = "SelectActiveConfiguration" _label = "Active Configuration" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SelectActiveConfiguration" />
 		</ItemSet>
