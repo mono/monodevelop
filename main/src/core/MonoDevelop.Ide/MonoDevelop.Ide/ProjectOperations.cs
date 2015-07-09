@@ -1779,9 +1779,15 @@ namespace MonoDevelop.Ide
 					FileService.DeleteFile (filename);
 			}
 			return true;
-		}		
-		
+		}
+
 		public void TransferFiles (ProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
+								   FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
+		{
+			TransferFilesInternal (monitor, sourceProject, sourcePath, targetProject, targetPath, removeFromSource, copyOnlyProjectFiles);
+		}
+
+		internal static void TransferFilesInternal (ProgressMonitor monitor, Project sourceProject, FilePath sourcePath, Project targetProject,
 		                           FilePath targetPath, bool removeFromSource, bool copyOnlyProjectFiles)
 		{
 			// When transfering directories, targetPath is the directory where the source
@@ -1803,11 +1809,9 @@ namespace MonoDevelop.Ide
 			
 			bool sourceIsFolder = Directory.Exists (sourcePath);
 
-			bool copyingFolder = sourceIsFolder && (
+			bool movingFolder = removeFromSource && sourceIsFolder && (
 				!copyOnlyProjectFiles ||
-				IsDirectoryHierarchyEmpty (sourcePath));
-
-			bool movingFolder = removeFromSource && copyingFolder;
+				ContainsOnlyProjectFiles (sourcePath, sourceProject));
 
 			// We need to remove all files + directories from the source project
 			// but when dealing with the VCS addins we need to process only the
@@ -1972,8 +1976,8 @@ namespace MonoDevelop.Ide
 					sourceProject.Files.Remove (v);
 			}
 
-			// Moving an empty folder. A new folder object has to be added to the project.
-			if ((movingFolder || copyingFolder) && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
+			// Moving or copying an empty folder. A new folder object has to be added to the project.
+			if (sourceIsFolder && !targetProject.Files.GetFilesInVirtualPath (targetPath).Any ()) {
 				var folderFile = new ProjectFile (targetPath) { Subtype = Subtype.Directory };
 				targetProject.Files.Add (folderFile);
 			}
@@ -2037,7 +2041,7 @@ namespace MonoDevelop.Ide
 			return " (" + string.Format (sc, n) + ")";
 		}
 		
-		void GetAllFilesRecursive (string path, List<ProjectFile> files)
+		static void GetAllFilesRecursive (string path, List<ProjectFile> files)
 		{
 			if (File.Exists (path)) {
 				files.Add (new ProjectFile (path));
@@ -2053,11 +2057,12 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		bool IsDirectoryHierarchyEmpty (string path)
+		static bool ContainsOnlyProjectFiles (string path, Project project)
 		{
-			if (Directory.GetFiles(path).Length > 0) return false;
+			if (Directory.GetFiles (path).Any (f => project.Files.GetFile (f) == null))
+				return false;
 			foreach (string dir in Directory.GetDirectories (path))
-				if (!IsDirectoryHierarchyEmpty (dir)) return false;
+				if (!ContainsOnlyProjectFiles (dir, project)) return false;
 			return true;
 		}
 
