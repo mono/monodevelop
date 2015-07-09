@@ -49,7 +49,6 @@
     <Compile Include="Mono.TextEditor.Tests\SyntaxHighlightingTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\ViTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\VirtualSpacesTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\BufferTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\InsertionModeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\TextBreakerTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SegmentTreeTests.cs" />
@@ -72,7 +71,6 @@
     <Compile Include="Mono.TextEditor.Tests.DefaultEditActions\MiscActionsTest.cs" />
     <Compile Include="Mono.TextEditor.Tests\ClipboardTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\CompressingTreeListTests.cs" />
-    <Compile Include="Mono.TextEditor.Tests\AvlTreeTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SearchAndReplaceTests.cs" />
     <Compile Include="Mono.TextEditor.Tests\SemanticRuleTests.cs" />
   </ItemGroup>

@@ -31,10 +31,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class RopeTextSource : ITextSource
 	{
-		readonly Rope<char> rope;
+		readonly ImmutableText rope;
 		readonly ITextSourceVersion version;
 
-		public RopeTextSource (Mono.TextEditor.Utils.Rope<char> rope, System.Text.Encoding encoding, bool useBom, ITextSourceVersion version = null)
+		public RopeTextSource (ImmutableText rope, System.Text.Encoding encoding, bool useBom, ITextSourceVersion version = null)
 		{
 			if (rope == null)
 				throw new ArgumentNullException ("rope");
@@ -63,12 +63,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		System.IO.TextReader ITextSource.CreateReader ()
 		{
-			return new RopeTextReader (rope);
+			return new ImmutableTextTextReader (rope);
 		}
 
 		System.IO.TextReader ITextSource.CreateReader (int offset, int length)
 		{
-			return new RopeTextReader (rope.GetRange (offset, length));
+			return new ImmutableTextTextReader (rope.GetText (offset, length));
 		}
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer)
@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new RopeTextSource (rope.GetRange (offset, length), Encoding, UseBOM);
+			return new RopeTextSource (rope.GetText (offset, length), Encoding, UseBOM);
 		}
 
 		ITextSourceVersion ITextSource.Version {

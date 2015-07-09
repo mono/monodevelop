@@ -39,9 +39,9 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLastLineCreation ()
 		{
-			var buffer = new Rope<char> ();
+			var buffer = ImmutableText.Empty;
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
-			buffer.InsertText (0, "1\n2\n3\n");
+			buffer = buffer.InsertText (0, "1\n2\n3\n");
 			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.ToString ()));
 			Assert.AreEqual (4, splitter.Count);
 			for (int i = 0; i < 3; i++) {
@@ -59,9 +59,9 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLastLineRemove ()
 		{
-			var buffer = new Rope<char> ();
+			var buffer = ImmutableText.Empty;
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
-			buffer.InsertText (0, "1\n2\n3\n");
+			buffer = buffer.InsertText (0, "1\n2\n3\n");
 			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.ToString ()));
 			
 			DocumentLine lastLine = splitter.Get (2);
