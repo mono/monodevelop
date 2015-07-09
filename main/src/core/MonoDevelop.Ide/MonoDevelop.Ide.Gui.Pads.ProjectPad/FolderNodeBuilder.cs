@@ -496,9 +496,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						"There is already a link with the name '{0}' in the target directory", srcRoot.FileName));
 					return;
 				}
-			} else {
-				project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
-				changedProject = true;
 			}
 
 			var foundFiles = Directory.GetFiles (srcRoot, "*", SearchOption.AllDirectories);
@@ -510,6 +507,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					var targetFiles = srcFiles.Select (f => targetRoot.Combine (f.ToRelative (srcRoot)));
 					if (IdeApp.ProjectOperations.AddFilesToProject (project, srcFiles.ToArray (), targetFiles.ToArray (), null).Any ())
 						changedProject = true;
+					else if (!srcFiles.Any () && existingPf == null) {
+						// Just add empty folder.
+						project.Files.Add (new ProjectFile (targetRoot) { Subtype = Subtype.Directory });
+						changedProject = true;
+					}
 				}
 			
 				if (changedProject)

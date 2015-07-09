@@ -1549,12 +1549,6 @@ namespace MonoDevelop.Ide
 				FilePath fp = file;
 				FilePath dest = folder.BaseDirectory.Combine (fp.FileName);
 				
-				if (folder.IsRoot) {
-					// Don't allow adding files to the root folder. VS doesn't allow it
-					// If there is no existing folder, create one
-					folder = folder.ParentSolution.DefaultSolutionFolder;
-				}
-				
 				if (!fp.IsChildPathOf (folder.BaseDirectory)) {
 					msg.Text = GettextCatalog.GetString ("The file {0} is outside the folder directory. What do you want to do?", fp.FileName);
 					AlertButton res = MessageService.AskQuestion (msg);
@@ -1568,6 +1562,13 @@ namespace MonoDevelop.Ide
 						fp = dest;
 					}
 				}
+
+				if (folder.IsRoot) {
+					// Don't allow adding files to the root folder. VS doesn't allow it
+					// If there is no existing folder, create one
+					folder = folder.ParentSolution.DefaultSolutionFolder;
+				}
+
 				folder.Files.Add (fp);
 				someAdded = true;
 			}
