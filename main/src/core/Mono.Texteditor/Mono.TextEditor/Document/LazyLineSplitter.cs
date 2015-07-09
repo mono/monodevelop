@@ -73,8 +73,6 @@ namespace Mono.TextEditor
 		{
 			if (this.lines != null)
 				return;
-			Console.WriteLine ("build lines !!!");
-			Console.WriteLine (Environment.StackTrace);
 			var text = src.Text;
 			var nodes = new List<LineSegment> ();
 
