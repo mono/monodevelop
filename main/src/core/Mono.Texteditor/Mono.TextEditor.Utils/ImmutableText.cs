@@ -211,9 +211,9 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public void CopyTo (char [] array, int arrayIndex)
+		public void CopyTo (char [] destination, int destinationIndex)
 		{
-			CopyTo (0, array, arrayIndex, Length);
+			CopyTo (0, destination, destinationIndex, Length);
 		}
 
 		/// <summary>
@@ -223,11 +223,11 @@ namespace Mono.TextEditor.Utils
 		/// <remarks>
 		/// This method counts as a read access and may be called concurrently to other read accesses.
 		/// </remarks>
-		public void CopyTo (int index, char [] array, int arrayIndex, int count)
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 		{
-			VerifyRange (index, count);
-			VerifyArrayWithRange (array, arrayIndex, count);
-			root.GetChars (index, index + count, array, arrayIndex);
+			VerifyRange (sourceIndex, count);
+			VerifyArrayWithRange (destination, destinationIndex, count);
+			root.CopyTo (sourceIndex, destination, destinationIndex, count);
 		}
 
 		/// <summary>
@@ -426,8 +426,8 @@ namespace Mono.TextEditor.Utils
 			int length = node1.Length + node2.Length;
 			if (length <= BLOCK_SIZE) { // Merges to primitive.
 				var mergedArray = new char [node1.Length + node2.Length];
-				node1.GetChars (0, node1.Length, mergedArray, 0);
-				node2.GetChars (0, node2.Length, mergedArray, node1.Length);
+				node1.CopyTo (0, mergedArray, 0, node1.Length);
+				node2.CopyTo (0, mergedArray, node1.Length, node2.Length);
 				return CreateLeafNode (mergedArray);
 			} else { // Returns a composite.
 				Node head = node1;
@@ -504,7 +504,7 @@ namespace Mono.TextEditor.Utils
 				get;
 			}
 
-			public abstract void GetChars (int start, int end, char [] dest, int destPos);
+			public abstract void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count);
 
 			public abstract Node SubNode (int start, int end);
 
@@ -512,7 +512,7 @@ namespace Mono.TextEditor.Utils
 			{
 				int len = Length;
 				char [] data = new char [len];
-				GetChars (0, len, data, 0);
+				CopyTo (0, data, 0, len);
 				return new string (data);
 			}
 
@@ -547,9 +547,9 @@ namespace Mono.TextEditor.Utils
 				this.data = data;
 			}
 
-			public override void GetChars (int start, int end, char [] dest, int destPos)
+			public override void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 			{
-				Array.Copy (data, start, dest, destPos, end - start);
+				Array.Copy (data, sourceIndex, destination, destinationIndex, count);
 			}
 
 			public override Node SubNode (int start, int end)
@@ -598,18 +598,17 @@ namespace Mono.TextEditor.Utils
 			//}
 			#endregion
 
-			public unsafe override void GetChars (int start, int end, char [] dest, int destPos)
+			public unsafe override void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 			{
 				fixed (byte* bPtr = data)
 				{
-					fixed (char* cPtr = dest)
+					fixed (char* cPtr = destination)
 					{
-						var b = bPtr + start;
-						var size = end - start;
-						var endPtr = b + size;
-						var endPtr4 = endPtr - size % 4;
+						var b = bPtr + sourceIndex;
+						var endPtr = b + count;
+						var endPtr4 = endPtr - count % 4;
 
-						var c = (short*)cPtr + destPos;
+						var c = (short*)cPtr + destinationIndex;
 
 						while (b != endPtr4) {
 							*(c++) = *(b++);
@@ -689,16 +688,17 @@ namespace Mono.TextEditor.Utils
 				return new CompositeNode (new CompositeNode (A, B), C);
 			}
 
-			public override void GetChars (int start, int end, char [] dest, int destPos)
+			public override void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
 			{
 				int cesure = head.Length;
-				if (end <= cesure) {
-					head.GetChars (start, end, dest, destPos);
-				} else if (start >= cesure) {
-					tail.GetChars (start - cesure, end - cesure, dest, destPos);
+				if (sourceIndex + count <= cesure) {
+					head.CopyTo (sourceIndex, destination, destinationIndex, count);
+				} else if (sourceIndex >= cesure) {
+					tail.CopyTo (sourceIndex - cesure, destination, destinationIndex, count);
 				} else { // Overlaps head and tail.
-					head.GetChars (start, cesure, dest, destPos);
-					tail.GetChars (0, end - cesure, dest, destPos + cesure - start);
+					var headChunkSize = cesure - sourceIndex;
+					head.CopyTo (sourceIndex, destination, destinationIndex, headChunkSize);
+					tail.CopyTo (0, destination, destinationIndex + headChunkSize, count - headChunkSize);
 				}
 			}
 
