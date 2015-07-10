@@ -867,7 +867,7 @@ namespace MonoDevelop.Xml.Formatting
 					preserver = new StringWriter ();
 				else
 					preserver.GetStringBuilder ().Length = 0;
-				writer = new TextWriterWrapper (preserver, this);
+				writer = new TextWriterWrapper (preserver, this, writer);
 
 				if (!isNSDecl) {
 					is_preserved_xmlns = false;
@@ -942,7 +942,7 @@ namespace MonoDevelop.Xml.Formatting
 				throw StateError ("End of attribute");
 
 			if (writer.Wrapped == preserver) {
-				writer = new TextWriterWrapper (source, this);
+				writer = writer.PreviousWrapper ?? new TextWriterWrapper (source, this);
 				string value = preserver.ToString ();
 				if (is_preserved_xmlns) {
 					if (preserved_name.Length > 0 &&
@@ -1896,19 +1896,26 @@ namespace MonoDevelop.Xml.Formatting
 	class TextWriterWrapper: TextWriter
 	{
 		public TextWriter Wrapped;
+		public readonly TextWriterWrapper PreviousWrapper;
 		XmlFormatterWriter formatter;
 		StringBuilder sb;
 		bool inBlock;
 		
 		public int Column;
 		public int AttributesPerLine;
-		
+
 		public TextWriterWrapper (TextWriter wrapped, XmlFormatterWriter formatter)
 		{
 			this.Wrapped = wrapped;
 			this.formatter = formatter;
 		}
-		
+
+		public TextWriterWrapper (TextWriter wrapped, XmlFormatterWriter formatter, TextWriterWrapper currentWriter)
+			: this (wrapped, formatter)
+		{
+			PreviousWrapper = currentWriter;
+		}
+
 		public void MarkBlockStart ()
 		{
 			sb = new StringBuilder ();

@@ -76,6 +76,9 @@ namespace MonoDevelop.Xml.Parser
 					context.Nodes.Pop ();
 					att.End (context.LocationMinus (1));
 					IAttributedXObject element = (IAttributedXObject) context.Nodes.Peek ();
+					if (element.Attributes.Get (att.Name, false) != null) {
+						context.LogError ("'" + att.Name + "' is a duplicate attribute name.", att.Region);
+					}
 					element.Attributes.AddAttribute (att);
 					rollback = string.Empty;
 					return Parent;

@@ -46,6 +46,7 @@ namespace MonoDevelop.Xml.Formatting
 			} catch (Exception ex) {
 				// Ignore malformed xml
 				MonoDevelop.Core.LoggingService.LogWarning ("Error formatting XML file", ex);
+				IdeApp.Workbench.StatusBar.ShowError ("Error formatting file: " + ex.Message);
 				return null;
 			}
 			

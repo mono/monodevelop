@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[Test]
-		public void MoveFirst_OneWizardPageNoSupportedParametersDefined_AllParametersSupportedByWizard ()
+		public void MoveFirst_OneWizardPageNoSupportedParametersDefined_UnknownParameterNotSupportedByWizard ()
 		{
 			CreateProvider ();
 			template.SupportedParameters = null;
@@ -145,7 +145,7 @@ namespace MonoDevelop.Ide.Templates
 			bool supported = wizard.IsSupportedParameter ("Unknown");
 
 			Assert.IsTrue (result);
-			Assert.IsTrue (supported);
+			Assert.IsFalse (supported);
 		}
 
 		[Test]
