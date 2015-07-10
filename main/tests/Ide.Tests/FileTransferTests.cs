@@ -45,6 +45,9 @@ namespace Ide.Tests
 			var sourceDir = lib2.ItemDirectory.Combine ("f2-empty");
 			var targetDir = lib1.ItemDirectory.Combine ("f2-empty");
 
+			// Git can't commit empty folders, so that folder has a dummy file that needs to be deleted
+			File.Delete (sourceDir.Combine ("delete-me"));
+
 			Assert.IsTrue (lib2.Files.GetFile (sourceDir) != null);
 
 			ProjectOperations.TransferFilesInternal (Util.GetMonitor (), lib2, sourceDir, lib1, targetDir, true, true);
