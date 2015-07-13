@@ -242,7 +242,8 @@ namespace MonoDevelop.Debugger
 						if (ShowParameterValue) {
 							if (ShowParameterType || ShowParameterName)
 								methodNameBuilder.Append (" = ");
-							methodNameBuilder.Append (args [n].Value);
+							var val = args [n].Value ?? "";
+							methodNameBuilder.Append (val.Replace ("\r\n", " ").Replace ("\n", " "));
 						}
 					}
 					methodNameBuilder.Append (")");
