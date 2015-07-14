@@ -2388,6 +2388,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
 		}
+
+		[CommandHandler (TextEditorCommands.SelectUntilMatchingBrace)]
+		internal void OnSelectUntilMatchingBrace ()
+		{
+			TextEditor.RunAction (MiscActions.SelectUntilMatchingBracket);
+		}
 		
 		void CorrectIndenting ()
 		{

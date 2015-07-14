@@ -335,7 +335,8 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (TextEditorCommands.DeleteLine)]
 		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
 		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]		
-		[CommandUpdateHandler (TextEditorCommands.GotoMatchingBrace)]		
+		[CommandUpdateHandler (TextEditorCommands.GotoMatchingBrace)]
+		[CommandUpdateHandler (TextEditorCommands.SelectUntilMatchingBrace)]
 		protected void OnUpdateLineEnd (CommandInfo info)
 		{
 			// If the current document is not an editor, just ignore the text

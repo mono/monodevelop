@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.Commands
 		MoveBlockDown,
 		ShowParameterCompletionWindow,
 		GotoMatchingBrace,
+		SelectUntilMatchingBrace,
 		SelectionMoveLeft,
 		SelectionMoveRight,
 		MovePrevWord,

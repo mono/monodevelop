@@ -837,6 +837,12 @@ namespace MonoDevelop.SourceEditor
 			RunAction (MiscActions.GotoMatchingBracket);
 		}
 
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectUntilMatchingBrace)]
+		internal void OnSelectUntilMatchingBrace ()
+		{
+			RunAction (MiscActions.SelectUntilMatchingBracket);
+		}
+
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]
 		internal void OnSelectionMoveLeft ()
 		{

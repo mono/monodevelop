@@ -73,6 +73,26 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, "$(foo(bar))");
 		}
 
+		// Match outer.
+		[TestCase("$(foo(bar))", "$<-(foo(bar))->")]
+		[TestCase("($foo(bar))", "<-($foo(bar))->")]
+		[TestCase("(foo(bar)$)", "<-(foo(bar)$)->")]
+		[TestCase("(foo(bar))$", "<-(foo(bar))$->")]
+		// Match inner.
+		[TestCase("(foo$(bar))", "(foo->$(bar)<-)")]
+		[TestCase("(foo($bar))", "(foo->($bar)<-)")]
+		[TestCase("(foo(bar$))", "(foo->(bar$)<-)")]
+		// We can't be smart enough to detect this case without a space there.
+		[TestCase("(foo(bar)$ )", "->(foo->(bar)<-$ )")]
+		public void TestSelectUntilMatchingBracket (string initial, string expected)
+		{
+			var data = Create (initial);
+			MiscActions.SelectUntilMatchingBracket (data);
+			Check (data, expected);
+			MiscActions.SelectUntilMatchingBracket (data);
+			Check (data, expected);
+		}
+
 		[Test()]
 		public void TestInsertNewLine ()
 		{
