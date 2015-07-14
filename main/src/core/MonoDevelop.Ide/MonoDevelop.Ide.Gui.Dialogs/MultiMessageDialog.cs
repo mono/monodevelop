@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				HSeparator sep = new HSeparator ();
 				sep.Show ();
 				msgBox.PackStart (sep, false, false, 0);
-				lastImage.IconSize = (int) Gtk.IconSize.Menu;
+				lastImage.IconSize = Gtk.IconSize.Menu;
 			}
 			
 			HBox box = new HBox ();

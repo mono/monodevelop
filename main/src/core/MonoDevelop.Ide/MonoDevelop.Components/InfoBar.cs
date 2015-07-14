@@ -87,7 +87,7 @@ namespace MonoDevelop.Components
 				messageHBox.PackEnd (img, false, false, 12);
 				img.SetAlignment (0.5f, 0.5f);
 			} else {
-				img.IconName = iconName;
+				img.IconId = iconName;
 			}
 		}
 		

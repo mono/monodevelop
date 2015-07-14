@@ -31,6 +31,9 @@ namespace MonoDevelop.Components
 	public class ImageView: Gtk.DrawingArea
 	{
 		Xwt.Drawing.Image image;
+		string iconId;
+		Gtk.IconSize? size;
+		int xpad, ypad;
 
 		public ImageView ()
 		{
@@ -42,8 +45,11 @@ namespace MonoDevelop.Components
 			this.image = image;
 		}
 
-		public ImageView (string stockId, Gtk.IconSize size): this (MonoDevelop.Ide.ImageService.GetIcon (stockId, size))
+		public ImageView (string iconId, Gtk.IconSize size)
 		{
+			this.iconId = iconId;
+			this.size = size;
+			image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size);
 		}
 
 		public Xwt.Drawing.Image Image {
@@ -53,6 +59,62 @@ namespace MonoDevelop.Components
 				QueueDraw ();
 				QueueResize ();
 			}
+		}
+
+		public void SetIcon (string iconId, Gtk.IconSize size)
+		{
+			this.iconId = iconId;
+			this.size = size;
+			Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size);
+		}
+
+		public Gtk.IconSize IconSize {
+			get {
+				return size.HasValue ? size.Value : Gtk.IconSize.Invalid;
+			}
+			set {
+				size = value;
+				if (iconId != null)
+					Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size.Value);
+			}
+		}
+
+		public string IconId {
+			get {
+				return iconId;
+			}
+			set {
+				iconId = value;
+				if (size.HasValue)
+					Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size.Value);
+			}
+		}
+
+		public int Xpad {
+			get {
+				return xpad;
+			}
+			set {
+				xpad = value;
+				QueueResize ();
+			}
+		}
+
+		public int Ypad {
+			get {
+				return ypad;
+			}
+			set {
+				ypad = value;
+				QueueResize ();
+			}
+		}
+
+		public void SetAlignment (float xalign, float yalign)
+		{
+			Xalign = xalign;
+			Yalign = yalign;
+			QueueDraw ();
 		}
 
 		float xalign = 0.5f;
@@ -79,6 +141,8 @@ namespace MonoDevelop.Components
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
+			requisition.Width = xpad * 2;
+			requisition.Height = ypad * 2;
 			if (image != null) {
 				requisition.Width = (int)(image.Width * IconScale);
 				requisition.Height = (int)(image.Height * IconScale);
@@ -88,9 +152,11 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			if (image != null) {
+				var alloc = Allocation;
+				alloc.Inflate (-xpad, -ypad);
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
-					var x = Math.Round (Allocation.X + (Allocation.Width - image.Width * IconScale) * Xalign);
-					var y = Math.Round (Allocation.Y + (Allocation.Height - image.Height * IconScale) * Yalign);
+					var x = Math.Round (alloc.X + (alloc.Width - image.Width * IconScale) * Xalign);
+					var y = Math.Round (alloc.Y + (alloc.Height - image.Height * IconScale) * Yalign);
 					ctx.Save ();
 					ctx.Scale (IconScale, IconScale);
 					ctx.DrawImage (this, image, x / IconScale, y / IconScale);
