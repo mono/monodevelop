@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide
 
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string, string> composedIcons = new Dictionary<string, string> ();
+		static Dictionary<RuntimeAddin, CustomImageLoader> imageLoaders = new Dictionary<RuntimeAddin, CustomImageLoader> ();
 
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
@@ -114,51 +115,15 @@ namespace MonoDevelop.Ide
 				Xwt.Drawing.Image img = null;
 
 				if (!string.IsNullOrEmpty (resource) || !string.IsNullOrEmpty (imageFile)) {
-					// using the stream directly produces a gdk warning.
-					byte[] buffer;
 
 					if (resource != null) {
-						imageLoader = delegate {
-							var stream = addin.GetResource (resource);
-							var stream2x = addin.GetResource2x (resource);
-							if (stream2x == null)
-								return new [] { stream };
-							else
-								return new [] { stream, stream2x };
-						};
+						CustomImageLoader loader;
+						if (!imageLoaders.TryGetValue (addin, out loader))
+							loader = imageLoaders [addin] = new CustomImageLoader (addin);
+						img = Xwt.Drawing.Image.FromCustomLoader (loader, resource);
 					}
 					else {
-						imageLoader = delegate {
-							var file = addin.GetFilePath (imageFile);
-							var stream = File.OpenRead (file);
-							Stream stream2x = null;
-							var file2x = Path.Combine (Path.GetDirectoryName (file), Path.GetFileNameWithoutExtension (file) + "@2x" + Path.GetExtension (file));
-							if (File.Exists (file2x))
-								stream2x = File.OpenRead (file2x);
-							else {
-								file2x = file + "@2x";
-								if (File.Exists (file2x))
-									stream2x = File.OpenRead (file2x);
-							}
-							if (stream2x == null)
-								return new [] { stream };
-							else
-								return new [] { stream, stream2x };
-						};
-					}
-					var streams = imageLoader ();
-
-					var st = streams[0];
-					var st2x = streams.Length > 1 ? streams[1] : null;
-
-					using (st) {
-						img = Xwt.Drawing.Image.FromStream (st);
-					}
-					using (st2x) {
-						if (st2x != null && st2x.Length >= 0) {
-							var img2x = Xwt.Drawing.Image.FromStream (st2x);
-							img = Xwt.Drawing.Image.CreateMultiResolutionImage (new [] { img, img2x });
-						}
+						img = Xwt.Drawing.Image.FromFile (addin.GetFilePath (imageFile));
 					}
 				} else if (!string.IsNullOrEmpty (iconId)) {
 					var id = GetStockIdForImageSpec (addin, iconId, iconSize);
@@ -842,4 +807,30 @@ namespace MonoDevelop.Ide
 		}
 	}
 
+	class CustomImageLoader : Xwt.Drawing.IImageLoader
+	{
+		RuntimeAddin addin;
+		Dictionary<System.Reflection.Assembly, string []> resources = new Dictionary<System.Reflection.Assembly, string[]> ();
+
+		public CustomImageLoader (RuntimeAddin addin)
+		{
+			this.addin = addin;
+		}
+
+		public IEnumerable<string> GetAlternativeFiles (string fileName, string baseName, string ext)
+		{
+			var r = addin.GetResourceInfo (fileName);
+
+			string [] resourceList;
+			if (!resources.TryGetValue (r.ReferencedAssembly, out resourceList))
+				resourceList = resources [r.ReferencedAssembly] = r.ReferencedAssembly.GetManifestResourceNames ();
+
+			return resourceList;
+		}
+
+		public Stream LoadImage (string fileName)
+		{
+			return addin.GetResource (fileName);
+		}
+	}
 }
