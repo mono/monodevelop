@@ -77,6 +77,7 @@ namespace MonoDevelop.SourceEditor
 			TextStylePolicy policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
+			IdeApp.Preferences.UserInterfaceSkinChanged += (sender, e) =>  instance.LoadAllPrefs ();
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
@@ -167,6 +168,7 @@ namespace MonoDevelop.SourceEditor
 					base.GutterFontName = (string)args.NewValue;
 					break;
 				case "ColorScheme":
+				case "ColorScheme-Dark":
 					base.ColorScheme = (string)args.NewValue;
 					break;
 				case "DefaultRegionsFolding":
@@ -217,7 +219,12 @@ namespace MonoDevelop.SourceEditor
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
 			base.FontName = PropertyService.Get ("FontName", "Mono 10");
 			base.GutterFontName = PropertyService.Get ("GutterFontName", "");
-			base.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				base.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
+			else
+				base.ColorScheme = PropertyService.Get ("ColorScheme-" + IdeApp.Preferences.UserInterfaceSkin, "Monokai");
+			
 			this.defaultRegionsFolding = PropertyService.Get ("DefaultRegionsFolding", false);
 			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
@@ -238,6 +245,10 @@ namespace MonoDevelop.SourceEditor
 			base.IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", Mono.TextEditor.IncludeWhitespaces.All);
 			base.WrapLines = PropertyService.Get ("WrapLines", false);
 			base.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
+		}
+
+		string ColorSchemePropertyName {
+			get { return IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? "ColorScheme-Dark" : "ColorScheme"; }
 		}
 		
 		#region new options
@@ -665,7 +676,10 @@ namespace MonoDevelop.SourceEditor
 		public override string ColorScheme {
 			set {
 				string newColorScheme = !String.IsNullOrEmpty (value) ? value : "Default";
-				PropertyService.Set ("ColorScheme", newColorScheme);
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					PropertyService.Set ("ColorScheme", newColorScheme);
+				else
+					PropertyService.Set ("ColorScheme-" + IdeApp.Preferences.UserInterfaceSkin, newColorScheme);
 				base.ColorScheme =  newColorScheme;
 			}
 		}
