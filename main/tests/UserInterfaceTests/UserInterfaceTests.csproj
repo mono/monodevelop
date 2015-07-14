@@ -77,6 +77,8 @@
     <Compile Include="Controllers\SolutionExplorerController.cs" />
     <Compile Include="Controllers\NuGetController.cs" />
     <Compile Include="DialogTests\NuGetDialogTests.cs" />
+    <Compile Include="Exceptions\TemplateSelectionException.cs" />
+    <Compile Include="Exceptions\CreateProjectException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -112,5 +114,6 @@
   <ItemGroup>
     <Folder Include="DialogTests\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 </Project>

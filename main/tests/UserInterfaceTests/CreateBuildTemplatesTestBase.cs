@@ -29,8 +29,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
-
-using MonoDevelop.Core;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -120,11 +118,21 @@ namespace UserInterfaceTests
 
 		protected virtual void OnSelectTemplate (NewProjectController newProject, TemplateSelectionOptions templateOptions)
 		{
-			Assert.IsTrue (newProject.SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category));
+			if (!newProject.SelectTemplateType (templateOptions.CategoryRoot, templateOptions.Category)) {
+				throw new TemplateSelectionException (string.Format ("Failed to select Category '{0}' under '{1}'", 
+					templateOptions.Category, templateOptions.CategoryRoot));
+			}
 			TakeScreenShot ("TemplateCategorySelected");
-			Assert.IsTrue (newProject.SelectTemplate (templateOptions.TemplateKindRoot, templateOptions.TemplateKind));
+
+			if (!newProject.SelectTemplate (templateOptions.TemplateKindRoot, templateOptions.TemplateKind)) {
+				throw new TemplateSelectionException (string.Format ("Failed to select Template '{0}' under '{1}'", 
+					templateOptions.TemplateKind, templateOptions.TemplateKindRoot));
+			}
 			TakeScreenShot ("TemplateSelected");
-			Assert.IsTrue (newProject.Next ());
+
+			if (!newProject.Next ()) {
+				throw new TemplateSelectionException ("Clicking Next failed after selecting template");
+			}
 			TakeScreenShot ("NextAfterTemplateSelected");
 		}
 
@@ -133,20 +141,31 @@ namespace UserInterfaceTests
 		protected virtual void OnEnterProjectDetails (NewProjectController newProject, ProjectDetails projectDetails,
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			Assert.IsTrue (newProject.SetProjectName (projectDetails.ProjectName));
+			if (!newProject.SetProjectName (projectDetails.ProjectName)) {
+				throw new CreateProjectException (string.Format ("Failed at entering ProjectName as '{0}'", projectDetails.ProjectName));
+			}
 
 			if (!string.IsNullOrEmpty (projectDetails.SolutionName)) {
-				Assert.IsTrue (newProject.SetSolutionName (projectDetails.SolutionName));
+				if (!newProject.SetSolutionName (projectDetails.SolutionName)) {
+					throw new CreateProjectException (string.Format ("Failed at entering SolutionName as '{0}'", projectDetails.SolutionName));
+				}
 			}
 
 			if (!string.IsNullOrEmpty (projectDetails.SolutionLocation)) {
-				Assert.IsTrue (newProject.SetSolutionLocation (projectDetails.SolutionLocation));
+				if (!newProject.SetSolutionLocation (projectDetails.SolutionLocation)) {
+					throw new CreateProjectException (string.Format ("Failed at entering SolutionLocation as '{0}'", projectDetails.SolutionLocation));
+				}
 			}
 
-			Assert.IsTrue (newProject.CreateProjectInSolutionDirectory (projectDetails.ProjectInSolution));
+			if (!newProject.CreateProjectInSolutionDirectory (projectDetails.ProjectInSolution)) {
+				throw new CreateProjectException (string.Format ("Failed at entering ProjectInSolution as '{0}'", projectDetails.ProjectInSolution));
+			}
 
-			if (gitOptions != null)
-				Assert.IsTrue (newProject.UseGit (gitOptions));
+			if (gitOptions != null) {
+				if (!newProject.UseGit (gitOptions)) {
+					throw new CreateProjectException (string.Format ("Failed at setting Git as - '{0}'", gitOptions));
+				}
+			}
 
 			TakeScreenShot ("AfterProjectDetailsFilled");
 		}
