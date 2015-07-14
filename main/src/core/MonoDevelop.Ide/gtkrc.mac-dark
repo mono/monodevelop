@@ -5,7 +5,7 @@
 #   Carlos Garnacho <carlos.garnacho@lanedo.com>
 
 gtk-color-scheme =
-"bg_color:         #222
+"bg_color:         #333
 fg_color:          #fff
 base_color:        #222
 text_color:        #fff
@@ -141,9 +141,16 @@ style "dialog-button" = "default" {
     GtkWidget::focus-line-width = 1
     GtkButton::inner-border = { 8, 8, 0, 3 }
 
-    engine "quartz" {
-        buttontype = "aqua"
-    }
+    engine "xamarin" {
+        rgba = FALSE
+        contrast = 1.0
+        gradient_shades     = {0.96, 0.918, 0.926, 0.858}
+        focus_color         = shade(0.6, @bg_color)
+        textstyle           = 1
+      }
+#    engine "quartz" {
+#        buttontype = "aqua"
+#    }
 }
 
 style "toggle-button" = "button" {
@@ -168,8 +175,8 @@ style "menu" {
     fg[PRELIGHT] = @selected_fg_color
     text[PRELIGHT] = @selected_fg_color
 
-    engine "quartz" {
-    }
+   # engine "quartz" {
+   # }
 }
 
 style "menu-item" = "menu" {
