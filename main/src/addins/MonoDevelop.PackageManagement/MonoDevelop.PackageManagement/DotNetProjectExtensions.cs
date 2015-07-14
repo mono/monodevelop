@@ -87,7 +87,8 @@ namespace ICSharpCode.PackageManagement
 
 		public static string GetPackagesConfigFilePath (this DotNetProject project)
 		{
-			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
+			string path = Path.Combine (project.BaseDirectory, string.Format("packages.{0}.config", project.Name));
+			return File.Exists (path) ? path : Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
 		}
 
 		public static bool HasPackages (this IDotNetProject project)
@@ -97,7 +98,8 @@ namespace ICSharpCode.PackageManagement
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
 		{
-			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
+			string path = Path.Combine (project.BaseDirectory, string.Format("packages.{0}.config", project.Name));
+			return File.Exists (path) ? path : Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
 		}
 	}
 }
