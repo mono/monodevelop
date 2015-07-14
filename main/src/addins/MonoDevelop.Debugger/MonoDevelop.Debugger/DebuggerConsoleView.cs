@@ -50,9 +50,19 @@ namespace MonoDevelop.Debugger
 			SetFont (IdeApp.Preferences.CustomOutputPadFont);
 
 			TextView.KeyReleaseEvent += OnEditKeyRelease;
+			TextView.FocusOutEvent += TextView_FocusOutEvent;
 
 			IdeApp.Preferences.CustomOutputPadFont.Changed += OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed += OnCompletionWindowClosed;
+		}
+
+		void TextView_FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+		{
+			// On Windows code completion popup stays TopMost also when switching to other apps
+			// but on Mac code completion window hides and shows when focus goes out and back in
+			// so no need to hide it on Mac for better UX
+			if (MonoDevelop.Core.Platform.IsWindows)
+				CompletionWindowManager.HideWindow ();
 		}
 
 		public bool Editable {
@@ -467,6 +477,7 @@ namespace MonoDevelop.Debugger
 			IdeApp.Preferences.CustomOutputPadFont.Changed -= OnCustomOutputPadFontChanged;
 			CompletionWindowManager.WindowClosed -= OnCompletionWindowClosed;
 			CompletionWindowManager.HideWindow ();
+			TextView.FocusOutEvent -= TextView_FocusOutEvent;
 			base.OnDestroyed ();
 		}
 	}

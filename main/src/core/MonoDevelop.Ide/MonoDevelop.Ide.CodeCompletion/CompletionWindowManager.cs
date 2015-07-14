@@ -99,6 +99,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (ext != null) {
 				var widget = ext.Editor.GetNativeWidget<Gtk.Widget> ();
 				wnd.TransientFor = widget?.Parent?.Toplevel as Gtk.Window;
+			} else {
+				var widget = completionWidget as Gtk.Widget;
+				if (widget != null) {
+					var window = widget.Toplevel as Gtk.Window;
+					if (window != null)
+						wnd.TransientFor = window;
+				}
 			}
 			wnd.Extension = ext;
 
