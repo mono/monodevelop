@@ -71,12 +71,31 @@ namespace MonoDevelop.Components
 			foreach (var w in nsWindows)
 				SetTheme (w);
 		}
+
+		static void OnGtkWindowRealized (object s, EventArgs a)
+		{
+			var nsw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow ((Gtk.Window) s);
+			if (nsw != null)
+				nsw.ApplyTheme ();
+		}
 #endif
 
 		static void Preferences_UserInterfaceSkinChanged (object sender, Core.PropertyChangedEventArgs e)
 		{
 			#if MAC
 			UpdateMacWindows ();
+			#endif
+		}
+
+		public static void ApplyTheme (this Gtk.Window window)
+		{
+			#if MAC
+			window.Realized += OnGtkWindowRealized;
+			if (window.IsRealized) {
+				var nsw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
+				if (nsw != null)
+					nsw.ApplyTheme ();
+			}
 			#endif
 		}
 	}

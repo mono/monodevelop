@@ -30,83 +30,85 @@ namespace MonoDevelop.Ide.Gui
 {
 	static class Styles
 	{
-		public static readonly Cairo.Color BaseBackgroundColor = new Cairo.Color (1, 1, 1);
-		public static readonly Cairo.Color BaseForegroundColor = new Cairo.Color (0, 0, 0);
+		public static event EventHandler Changed;
+
+		public static Cairo.Color BaseBackgroundColor { get; internal set; }
+		public static Cairo.Color BaseForegroundColor { get; internal set; }
 
 		// General
 
-		public static readonly Gdk.Color ThinSplitterColor = new Gdk.Color (166, 166, 166);
+		public static Gdk.Color ThinSplitterColor { get; internal set; }
 
 		// Document tab bar
 
+		public static Cairo.Color TabBarBackgroundColor { get; internal set; }
+		public static Cairo.Color TabBarActiveTextColor { get; internal set; }
 
-		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
-		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
+		public static Cairo.Color TabBarActiveGradientStartColor { get; internal set; }
+		public static Cairo.Color TabBarActiveGradientEndColor { get; internal set; }
+		public static Cairo.Color TabBarGradientStartColor { get; internal set; }
+		public static Cairo.Color TabBarGradientEndColor { get; internal set; }
+		public static Cairo.Color TabBarGradientShadowColor { get; internal set; }
+		public static Cairo.Color TabBarHoverActiveTextColor { get; internal set; }
+		public static Cairo.Color TabBarInactiveTextColor { get; internal set; }
+		public static Cairo.Color TabBarHoverInactiveTextColor { get; internal set; }
 
-		public static readonly Cairo.Color TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
-		public static readonly Cairo.Color TabBarActiveGradientEndColor = TabBarBackgroundColor;
-		public static readonly Cairo.Color TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
-		public static readonly Cairo.Color TabBarGradientEndColor = TabBarBackgroundColor;
-		public static readonly Cairo.Color TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
-		public static readonly Cairo.Color TabBarHoverActiveTextColor = TabBarActiveTextColor;
-		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
-		public static readonly Cairo.Color TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
+		public static Cairo.Color BreadcrumbGradientStartColor { get; internal set; }
+		public static Cairo.Color BreadcrumbBackgroundColor { get; internal set; }
+		public static Cairo.Color BreadcrumbGradientEndColor { get; internal set; }
+		public static Cairo.Color BreadcrumbBorderColor { get; internal set; }
+		public static Cairo.Color BreadcrumbInnerBorderColor { get; internal set; }
+		public static Gdk.Color BreadcrumbTextColor { get; internal set; }
+		public static Cairo.Color BreadcrumbButtonBorderColor { get; internal set; }
+		public static Cairo.Color BreadcrumbButtonFillColor { get; internal set; }
+		public static Cairo.Color BreadcrumbBottomBorderColor { get; internal set; }
 
-		public static readonly Cairo.Color BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
-		public static readonly Cairo.Color BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
-		public static readonly Cairo.Color BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9);
-		public static readonly Cairo.Color BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6);
-		public static readonly Cairo.Color BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
-		public static readonly Gdk.Color BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
-		public static readonly Cairo.Color BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
-		public static readonly Cairo.Color BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
-		public static readonly Cairo.Color BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
 		public static readonly bool BreadcrumbInvertedIcons = false;
 		public static readonly bool BreadcrumbGreyscaleIcons = false;
 
 		// Dock pads
 		
-		public static readonly Cairo.Color DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
-		public static readonly Cairo.Color DockTabBarGradientStart = new Cairo.Color (242d / 255d, 242d / 255d, 242d / 255d);
-		public static readonly Cairo.Color DockTabBarGradientEnd = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
-		public static readonly Cairo.Color DockTabBarShadowGradientStart = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 1);
-		public static readonly Cairo.Color DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
+		public static Cairo.Color DockTabBarGradientTop { get; internal set; }
+		public static Cairo.Color DockTabBarGradientStart { get; internal set; }
+		public static Cairo.Color DockTabBarGradientEnd { get; internal set; }
+		public static Cairo.Color DockTabBarShadowGradientStart { get; internal set; }
+		public static Cairo.Color DockTabBarShadowGradientEnd { get; internal set; }
 
-		public static readonly Gdk.Color PadBackground = new Gdk.Color (240, 240, 240);
-		public static readonly Gdk.Color InactivePadBackground = ReduceLight (PadBackground, 0.9);
-		public static readonly Gdk.Color PadLabelColor = new Gdk.Color (92, 99, 102);
-		public static readonly Gdk.Color DockFrameBackground = new Gdk.Color (157, 162, 166);
-		public static readonly Gdk.Color DockSeparatorColor = ThinSplitterColor;
+		public static Gdk.Color PadBackground { get; internal set; }
+		public static Gdk.Color InactivePadBackground { get; internal set; }
+		public static Gdk.Color PadLabelColor { get; internal set; }
+		public static Gdk.Color DockFrameBackground { get; internal set; }
+		public static Gdk.Color DockSeparatorColor { get; internal set; }
 
-		public static readonly Gdk.Color BrowserPadBackground = new Gdk.Color (225, 228, 232);
-		public static readonly Gdk.Color InactiveBrowserPadBackground = new Gdk.Color (240, 240, 240);
+		public static Gdk.Color BrowserPadBackground { get; internal set; }
+		public static Gdk.Color InactiveBrowserPadBackground { get; internal set; }
 
-		public static readonly Cairo.Color DockBarBackground1 = PadBackground.ToCairoColor ();
-		public static readonly Cairo.Color DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
-		public static readonly Cairo.Color DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
-		public static readonly Cairo.Color DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
+		public static Cairo.Color DockBarBackground1 { get; internal set; }
+		public static Cairo.Color DockBarBackground2 { get; internal set; }
+		public static Cairo.Color DockBarSeparatorColorDark { get; internal set; }
+		public static Cairo.Color DockBarSeparatorColorLight { get; internal set; }
 
-		public static readonly Cairo.Color DockBarPrelightColor = CairoExtensions.ParseColor ("ffffff");
+		public static Cairo.Color DockBarPrelightColor { get; internal set; }
 
 		// Status area
 
-		public static readonly Cairo.Color WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
+		public static Cairo.Color WidgetBorderColor { get; internal set; }
 
-		public static readonly Cairo.Color StatusBarBorderColor = CairoExtensions.ParseColor ("919191");
+		public static Cairo.Color StatusBarBorderColor { get; internal set; }
 
-		public static readonly Cairo.Color StatusBarFill1Color = CairoExtensions.ParseColor ("f5fafc");
-		public static readonly Cairo.Color StatusBarFill2Color = CairoExtensions.ParseColor ("e9f1f3");
-		public static readonly Cairo.Color StatusBarFill3Color = CairoExtensions.ParseColor ("d8e7ea");
-		public static readonly Cairo.Color StatusBarFill4Color = CairoExtensions.ParseColor ("d1e3e7");
+		public static Cairo.Color StatusBarFill1Color { get; internal set; }
+		public static Cairo.Color StatusBarFill2Color { get; internal set; }
+		public static Cairo.Color StatusBarFill3Color { get; internal set; }
+		public static Cairo.Color StatusBarFill4Color { get; internal set; }
 
-		public static readonly Cairo.Color StatusBarErrorColor = CairoExtensions.ParseColor ("FF6363");
+		public static Cairo.Color StatusBarErrorColor { get; internal set; }
 
-		public static readonly Cairo.Color StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
-		public static readonly Cairo.Color StatusBarShadowColor1 = new Cairo.Color (0,0,0, 0.06);
-		public static readonly Cairo.Color StatusBarShadowColor2 = new Cairo.Color (0,0,0, 0.02);
-		public static readonly Cairo.Color StatusBarTextColor = CairoExtensions.ParseColor ("555555");
-		public static readonly Cairo.Color StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.1);
-		public static readonly Cairo.Color StatusBarProgressOutlineColor = new Cairo.Color (0, 0, 0, 0.1);
+		public static Cairo.Color StatusBarInnerColor { get; internal set; }
+		public static Cairo.Color StatusBarShadowColor1 { get; internal set; }
+		public static Cairo.Color StatusBarShadowColor2 { get; internal set; }
+		public static Cairo.Color StatusBarTextColor { get; internal set; }
+		public static Cairo.Color StatusBarProgressBackgroundColor { get; internal set; }
+		public static Cairo.Color StatusBarProgressOutlineColor { get; internal set; }
 
 		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal");
 
@@ -119,8 +121,8 @@ namespace MonoDevelop.Ide.Gui
 
 		// Toolbar
 
-		public static readonly Cairo.Color ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
-		public static readonly Cairo.Color ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
+		public static Cairo.Color ToolbarBottomBorderColor { get; internal set; }
+		public static Cairo.Color ToolbarBottomGlowColor { get; internal set; }
 
 		// Code Completion
 
@@ -133,25 +135,25 @@ namespace MonoDevelop.Ide.Gui
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
 
-			public static readonly Cairo.Color DefaultBackgroundColor = CairoExtensions.ParseColor ("f2f2f2");
-			public static readonly Cairo.Color ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
-			public static readonly Cairo.Color WarningBackgroundColor = CairoExtensions.ParseColor ("efd46c");
-			public static readonly Cairo.Color InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
+			public static Cairo.Color DefaultBackgroundColor { get; internal set; }
+			public static Cairo.Color ErrorBackgroundColor { get; internal set; }
+			public static Cairo.Color WarningBackgroundColor { get; internal set; }
+			public static Cairo.Color InformationBackgroundColor { get; internal set; }
 
-			public static readonly Cairo.Color DefaultBorderColor = CairoExtensions.ParseColor ("ffeeba");
-			public static readonly Cairo.Color ErrorBorderColor = CairoExtensions.ParseColor ("c97968");
-			public static readonly Cairo.Color WarningBorderColor = CairoExtensions.ParseColor ("e8c12c");
-			public static readonly Cairo.Color InformationBorderColor = CairoExtensions.ParseColor ("6688bc");
+			public static Cairo.Color DefaultBorderColor { get; internal set; }
+			public static Cairo.Color ErrorBorderColor { get; internal set; }
+			public static Cairo.Color WarningBorderColor { get; internal set; }
+			public static Cairo.Color InformationBorderColor { get; internal set; }
 
-			public static readonly Cairo.Color DefaultTextColor = CairoExtensions.ParseColor ("665a36");
-			public static readonly Cairo.Color ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
-			public static readonly Cairo.Color WarningTextColor = CairoExtensions.ParseColor ("563b00");
-			public static readonly Cairo.Color InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+			public static Cairo.Color DefaultTextColor { get; internal set; }
+			public static Cairo.Color ErrorTextColor { get; internal set; }
+			public static Cairo.Color WarningTextColor { get; internal set; }
+			public static Cairo.Color InformationTextColor { get; internal set; }
 
 			public static class ParamaterWindows
 			{
-				public static readonly Cairo.Color GradientStartColor = CairoExtensions.ParseColor ("fffee6");
-				public static readonly Cairo.Color GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+				public static Cairo.Color GradientStartColor { get; internal set; }
+				public static Cairo.Color GradientEndColor { get; internal set; }
 			}
 		}
 
@@ -203,6 +205,217 @@ namespace MonoDevelop.Ide.Gui
 		internal static Gdk.Color IncreaseLight (Gdk.Color color, double factor)
 		{
 			return IncreaseLight (color.ToCairoColor (), factor).ToGdkColor ();
+		}
+
+		internal static void LoadStyle ()
+		{
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				LoadLightStyle ();
+			else
+				LoadDarkStyle ();
+
+			if (Changed != null)
+				Changed (null, EventArgs.Empty);
+		}
+
+		internal static void LoadLightStyle ()
+		{
+			BaseBackgroundColor = new Cairo.Color (1, 1, 1);
+			BaseForegroundColor = new Cairo.Color (0, 0, 0);
+
+			ThinSplitterColor = new Gdk.Color (166, 166, 166);
+
+			TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
+			TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
+
+			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
+			TabBarActiveGradientEndColor = TabBarBackgroundColor;
+			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
+			TabBarGradientEndColor = TabBarBackgroundColor;
+			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
+			TabBarHoverActiveTextColor = TabBarActiveTextColor;
+			TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
+			TabBarHoverInactiveTextColor = new Cairo.Color (0, 0, 0);
+
+			BreadcrumbGradientStartColor = CairoExtensions.ParseColor ("FFFFFF");
+			BreadcrumbBackgroundColor = Shift (BreadcrumbGradientStartColor, .95);
+			BreadcrumbGradientEndColor = Shift (BreadcrumbGradientStartColor, 0.9);
+			BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.6);
+			BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
+			BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
+			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
+			BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
+			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
+
+			// Dock pads
+
+			DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
+			DockTabBarGradientStart = new Cairo.Color (242d / 255d, 242d / 255d, 242d / 255d);
+			DockTabBarGradientEnd = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
+			DockTabBarShadowGradientStart = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 1);
+			DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
+
+			PadBackground = new Gdk.Color (240, 240, 240);
+			InactivePadBackground = ReduceLight (PadBackground, 0.9);
+			PadLabelColor = new Gdk.Color (92, 99, 102);
+			DockFrameBackground = new Gdk.Color (157, 162, 166);
+			DockSeparatorColor = ThinSplitterColor;
+
+			BrowserPadBackground = new Gdk.Color (225, 228, 232);
+			InactiveBrowserPadBackground = new Gdk.Color (240, 240, 240);
+
+			DockBarBackground1 = PadBackground.ToCairoColor ();
+			DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
+			DockBarSeparatorColorDark = new Cairo.Color (0, 0, 0, 0.2);
+			DockBarSeparatorColorLight = new Cairo.Color (1, 1, 1, 0.3);
+
+			DockBarPrelightColor = CairoExtensions.ParseColor ("ffffff");
+
+			// Status area
+
+			WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
+
+			StatusBarBorderColor = CairoExtensions.ParseColor ("919191");
+
+			StatusBarFill1Color = CairoExtensions.ParseColor ("f5fafc");
+			StatusBarFill2Color = CairoExtensions.ParseColor ("e9f1f3");
+			StatusBarFill3Color = CairoExtensions.ParseColor ("d8e7ea");
+			StatusBarFill4Color = CairoExtensions.ParseColor ("d1e3e7");
+
+			StatusBarErrorColor = CairoExtensions.ParseColor ("FF6363");
+
+			StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
+			StatusBarShadowColor1 = new Cairo.Color (0,0,0, 0.06);
+			StatusBarShadowColor2 = new Cairo.Color (0,0,0, 0.02);
+			StatusBarTextColor = CairoExtensions.ParseColor ("555555");
+			StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.1);
+			StatusBarProgressOutlineColor = new Cairo.Color (0, 0, 0, 0.1);
+
+			// Toolbar
+
+			ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
+			ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
+
+			// Popover window
+
+			PopoverWindow.DefaultBackgroundColor = CairoExtensions.ParseColor ("f2f2f2");
+			PopoverWindow.ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
+			PopoverWindow.WarningBackgroundColor = CairoExtensions.ParseColor ("efd46c");
+			PopoverWindow.InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
+
+			PopoverWindow.DefaultBorderColor = CairoExtensions.ParseColor ("ffeeba");
+			PopoverWindow.ErrorBorderColor = CairoExtensions.ParseColor ("c97968");
+			PopoverWindow.WarningBorderColor = CairoExtensions.ParseColor ("e8c12c");
+			PopoverWindow.InformationBorderColor = CairoExtensions.ParseColor ("6688bc");
+
+			PopoverWindow.DefaultTextColor = CairoExtensions.ParseColor ("665a36");
+			PopoverWindow.ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
+			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
+			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
+			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");
+		}
+
+		internal static void LoadDarkStyle ()
+		{
+			BaseBackgroundColor = new Cairo.Color (0, 0, 0);
+			BaseForegroundColor = new Cairo.Color (1, 1, 1);
+
+			ThinSplitterColor = new Gdk.Color (89, 89, 89);
+
+			TabBarBackgroundColor = CairoExtensions.ParseColor ("333333");
+			TabBarActiveTextColor = new Cairo.Color (1, 1, 1);
+
+			// Document tabs
+
+			TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
+			TabBarActiveGradientEndColor = TabBarBackgroundColor;
+			TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
+			TabBarGradientEndColor = TabBarBackgroundColor;
+			TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
+			TabBarHoverActiveTextColor = TabBarActiveTextColor;
+			TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
+			TabBarHoverInactiveTextColor = new Cairo.Color (1, 1, 1);
+
+			// Breadcrumb
+
+			BreadcrumbGradientStartColor = new Cairo.Color (0, 0, 0);
+			BreadcrumbBackgroundColor = new Cairo.Color (.05, .05, .05);
+			BreadcrumbGradientEndColor = new Cairo.Color (.1, .1, .1);
+			BreadcrumbBorderColor = Shift (BreadcrumbBackgroundColor, 0.4);
+			BreadcrumbInnerBorderColor = WithAlpha (BaseBackgroundColor, 0.1d);
+			BreadcrumbTextColor = Shift (BaseForegroundColor, 0.8).ToGdkColor ();
+			BreadcrumbButtonBorderColor = Shift (BaseBackgroundColor, 0.8);
+			BreadcrumbButtonFillColor = WithAlpha (BaseBackgroundColor, 0.1d);
+			BreadcrumbBottomBorderColor = Shift (BreadcrumbBackgroundColor, 0.7d);
+
+			// Dock pads
+
+			DockTabBarGradientTop = new Cairo.Color (248d / 255d, 248d / 255d, 248d / 255d);
+			DockTabBarGradientStart = new Cairo.Color (242d / 255d, 242d / 255d, 242d / 255d);
+			DockTabBarGradientEnd = new Cairo.Color (230d / 255d, 230d / 255d, 230d / 255d);
+			DockTabBarShadowGradientStart = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 1);
+			DockTabBarShadowGradientEnd = new Cairo.Color (154d / 255d, 154d / 255d, 154d / 255d, 0);
+
+			PadBackground = new Gdk.Color (90, 90, 90);
+			InactivePadBackground = ReduceLight (PadBackground, 0.9);
+			PadLabelColor = new Gdk.Color (92, 99, 102);
+			DockFrameBackground = new Gdk.Color (157, 162, 166);
+			DockSeparatorColor = ThinSplitterColor;
+
+			BrowserPadBackground = new Gdk.Color (32, 32, 32);
+			InactiveBrowserPadBackground = new Gdk.Color (20, 20, 20);
+
+			DockBarBackground1 = PadBackground.ToCairoColor ();
+			DockBarBackground2 = Shift (PadBackground.ToCairoColor (), 0.95);
+			DockBarSeparatorColorDark = new Cairo.Color (1, 1, 1, 0.2);
+			DockBarSeparatorColorLight = new Cairo.Color (0, 0, 0, 0.3);
+
+			DockBarPrelightColor = new Cairo.Color (0, 0, 0);
+
+			// Status area
+
+			WidgetBorderColor = CairoExtensions.ParseColor ("8c8c8c");
+
+			StatusBarBorderColor = CairoExtensions.ParseColor ("919191");
+
+			StatusBarFill1Color = CairoExtensions.ParseColor ("f5fafc");
+			StatusBarFill2Color = CairoExtensions.ParseColor ("e9f1f3");
+			StatusBarFill3Color = CairoExtensions.ParseColor ("d8e7ea");
+			StatusBarFill4Color = CairoExtensions.ParseColor ("d1e3e7");
+
+			StatusBarErrorColor = CairoExtensions.ParseColor ("FF6363");
+
+			StatusBarInnerColor = new Cairo.Color (0,0,0, 0.08);
+			StatusBarShadowColor1 = new Cairo.Color (0,0,0, 0.06);
+			StatusBarShadowColor2 = new Cairo.Color (0,0,0, 0.02);
+			StatusBarTextColor = CairoExtensions.ParseColor ("555555");
+			StatusBarProgressBackgroundColor = new Cairo.Color (0, 0, 0, 0.1);
+			StatusBarProgressOutlineColor = new Cairo.Color (0, 0, 0, 0.1);
+
+			// Toolbar
+
+			ToolbarBottomBorderColor = new Cairo.Color (0.5, 0.5, 0.5);
+			ToolbarBottomGlowColor = new Cairo.Color (1, 1, 1, 0.2);
+
+			// Popover window
+
+			PopoverWindow.DefaultBackgroundColor = CairoExtensions.ParseColor ("f2f2f2");
+			PopoverWindow.ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
+			PopoverWindow.WarningBackgroundColor = CairoExtensions.ParseColor ("efd46c");
+			PopoverWindow.InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
+
+			PopoverWindow.DefaultBorderColor = CairoExtensions.ParseColor ("ffeeba");
+			PopoverWindow.ErrorBorderColor = CairoExtensions.ParseColor ("c97968");
+			PopoverWindow.WarningBorderColor = CairoExtensions.ParseColor ("e8c12c");
+			PopoverWindow.InformationBorderColor = CairoExtensions.ParseColor ("6688bc");
+
+			PopoverWindow.DefaultTextColor = CairoExtensions.ParseColor ("665a36");
+			PopoverWindow.ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
+			PopoverWindow.WarningTextColor = CairoExtensions.ParseColor ("563b00");
+			PopoverWindow.InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+			PopoverWindow.ParamaterWindows.GradientStartColor = CairoExtensions.ParseColor ("fffee6");
+			PopoverWindow.ParamaterWindows.GradientEndColor = CairoExtensions.ParseColor ("fffcd1");			
 		}
 	}
 }

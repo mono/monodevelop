@@ -133,6 +133,9 @@ namespace MonoDevelop.Components
 			if (img == null)
 				return;
 
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				img = img.WithStyles ("sel");
+			
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
 				var x = cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
 				var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);

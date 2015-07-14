@@ -690,6 +690,11 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (item);
 		}
 		
+		internal void UpdateStyles ()
+		{
+			container.RelayoutWidgets ();
+		}
+
 		internal void UpdateStyle (DockItem item)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
