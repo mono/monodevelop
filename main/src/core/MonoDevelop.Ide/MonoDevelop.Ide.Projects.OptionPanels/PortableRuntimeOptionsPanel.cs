@@ -414,8 +414,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			warning.SetAlignment (0.0f, 0.5f);
 			warning.Show ();
 
-			infoImage = new ImageView (GetType ().Assembly, "warning-16.png");
-			warningImage = new ImageView (GetType ().Assembly, "error-16.png");
+			infoImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "warning-16.png"));
+			warningImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "error-16.png"));
 
 			warningHBox = new HBox (false, 6);
 			warningHBox.PackStart (infoImage, false, false, 0);

@@ -142,9 +142,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnButtonPinClick (object sender, EventArgs e)
 		{
 			if (buttonPin.Active)
-				((ImageView)buttonPin.Image).Stock = (IconId) "md-pin-down";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 			else
-				((ImageView)buttonPin.Image).Stock = (IconId) "md-pin-up";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 		}
 		
 		public bool AllowReuse {

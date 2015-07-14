@@ -71,7 +71,7 @@ namespace MonoDevelop.Components
 			set { title = value; }
 		}
 
-		public Gtk.Image Icon
+		public ImageView Icon
 		{
 			get { return icon; }
 			set { icon = value; }
