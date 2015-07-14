@@ -1976,6 +1976,27 @@
     <EmbeddedResource Include="icons\project-nunit-overlay-32%402x.png">
       <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\project-16~dark.png">
+      <LogicalName>project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\project-32~dark.png">
+      <LogicalName>project-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\solution-16~dark.png">
+      <LogicalName>solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\solution-32~dark.png">
+      <LogicalName>solution-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~sel.png">
+      <LogicalName>solution-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~sel.png">
+      <LogicalName>solution-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-64~sel.png">
+      <LogicalName>solution-64~sel.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\status-building-1-14.png">
@@ -3575,6 +3596,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="icons\mac\" />
     <Folder Include="MonoDevelop.Components\Windows\" />
+    <Folder Include="icons\dark\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

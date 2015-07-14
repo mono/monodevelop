@@ -87,6 +87,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
+			this.ApplyTheme ();
+
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
 

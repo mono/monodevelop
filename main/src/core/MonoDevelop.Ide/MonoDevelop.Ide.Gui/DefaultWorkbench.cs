@@ -855,7 +855,6 @@ namespace MonoDevelop.Ide.Gui
 			// correct style (the style of the window). At this point the widget is not yet a child
 			// of the window, so its style is not yet the correct one.
 			tabControl.InitSize ();
-			var barHeight = tabControl.BarHeight;
 
 			// The main document area
 			documentDockItem = dock.AddItem ("Documents");
@@ -865,32 +864,8 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
 			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 
-			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadBackgroundColor = Styles.PadBackground;
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
-			style.PadTitleHeight = barHeight;
-			dock.DefaultVisualStyle = style;
-
-			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor;
-			style.PadTitleHeight = barHeight;
-			style.ShowPadTitleIcon = false;
-			style.UppercaseTitles = false;
-			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground;
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
-			style.TreeBackgroundColor = Styles.BrowserPadBackground;
-			dock.SetDockItemStyle ("ProjectPad", style);
-			dock.SetDockItemStyle ("ClassPad", style);
-
-//			dock.SetRegionStyle ("Documents/Left", style);
-			//dock.SetRegionStyle ("Documents/Right", style);
-
-//			style = new DockVisualStyle ();
-//			style.SingleColumnMode = true;
-//			dock.SetRegionStyle ("Documents/Left;Documents/Right", style);
-//			dock.SetDockItemStyle ("Documents", style);
+			LoadDockStyles ();
+			Styles.Changed += (sender, e) => LoadDockStyles ();
 
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");
@@ -940,6 +915,40 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
+		}
+
+		void LoadDockStyles ()
+		{
+			var barHeight = tabControl.BarHeight;
+
+			DockVisualStyle style = new DockVisualStyle ();
+			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadBackgroundColor = Styles.PadBackground;
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.PadTitleHeight = barHeight;
+			dock.DefaultVisualStyle = style;
+
+			style = new DockVisualStyle ();
+			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.PadTitleHeight = barHeight;
+			style.ShowPadTitleIcon = false;
+			style.UppercaseTitles = false;
+			style.ExpandedTabs = true;
+			style.PadBackgroundColor = Styles.BrowserPadBackground;
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
+			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			dock.SetDockItemStyle ("ProjectPad", style);
+			dock.SetDockItemStyle ("ClassPad", style);
+
+			//			dock.SetRegionStyle ("Documents/Left", style);
+			//dock.SetRegionStyle ("Documents/Right", style);
+
+			//			style = new DockVisualStyle ();
+			//			style.SingleColumnMode = true;
+			//			dock.SetRegionStyle ("Documents/Left;Documents/Right", style);
+			//			dock.SetDockItemStyle ("Documents", style);
+
+			dock.UpdateStyles ();
 		}
 		
 		void InitializeLayout (string name)
