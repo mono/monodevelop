@@ -114,6 +114,8 @@ namespace UserInterfaceTests
 			OnEnterProjectDetails (newProject, projectDetails, gitOptions, miscOptions);
 
 			OnClickCreate (newProject);
+
+			FoldersToClean.Add (projectDetails.SolutionLocation);
 		}
 
 		protected virtual void OnSelectTemplate (NewProjectController newProject, TemplateSelectionOptions templateOptions)
@@ -178,7 +180,7 @@ namespace UserInterfaceTests
 		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
 		{
 			try {
-				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs));
+				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs), "Build Failed");
 				TakeScreenShot ("AfterBuildFinishedSuccessfully");
 			} catch (TimeoutException e) {
 				TakeScreenShot ("AfterBuildFailed");
