@@ -560,6 +560,7 @@ namespace MonoDevelop.Ide
 		
 		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
+			this.ApplyTheme ();
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
 				IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));

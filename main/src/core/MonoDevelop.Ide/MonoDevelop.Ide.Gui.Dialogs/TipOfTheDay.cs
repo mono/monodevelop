@@ -5,6 +5,7 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -16,6 +17,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
         public TipOfTheDayWindow()
             : base (WindowType.Toplevel)
         {
+			this.ApplyTheme ();
             Build ();
             TransientFor = IdeApp.Workbench.RootWindow;
 

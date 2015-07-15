@@ -3547,6 +3547,8 @@
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
     <Compile Include="MonoDevelop.Components\ThemeExtensions.cs" />
+    <Compile Include="MonoDevelop.Components\IdeDialog.cs" />
+    <Compile Include="MonoDevelop.Components\IdeWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
