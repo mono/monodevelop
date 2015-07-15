@@ -29,6 +29,7 @@ using System;
 using Gdk;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Projects
 {
@@ -44,6 +45,20 @@ namespace MonoDevelop.AspNet.Projects
 		public GtkAspNetProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
+
+			if (Platform.IsMac) {
+				int labelPaddingHeight = 5;
+				if (IsYosemiteOrHigher ())
+					labelPaddingHeight--;
+				includeLabelPadding.HeightRequest = labelPaddingHeight;
+				testingLabelPadding.HeightRequest = labelPaddingHeight;
+
+				int leftPaddingWidth = 28;
+				mvcDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
+				webFormsDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
+				webApiDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
+				includeUnitTestProjectDescriptionLeftHandPadding.WidthRequest = leftPaddingWidth;
+			}
 
 			backgroundImage = Xwt.Drawing.Image.FromResource ("aspnet-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage);
@@ -124,6 +139,11 @@ namespace MonoDevelop.AspNet.Projects
 		{
 			configurationTable.Remove (widget);
 			widget.Destroy ();
+		}
+
+		bool IsYosemiteOrHigher ()
+		{
+			return Platform.OSVersion >= MacSystemInformation.Yosemite;
 		}
 	}
 }
