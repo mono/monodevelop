@@ -42,6 +42,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public DockWindow () : base (Gtk.WindowType.Toplevel)
 		{
+			this.ApplyTheme ();
 			IdeApp.CommandService.RegisterTopWindow (this);
 			AddAccelGroup (IdeApp.CommandService.AccelGroup);
 
