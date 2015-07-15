@@ -38,6 +38,7 @@ namespace MonoDevelop.Components
 	public class MenuButton : Button
 	{
 		MenuCreator creator;
+		ContextMenuCreator contextMenuCreator;
 		Label label;
 		Image image;
 		Arrow arrow;
@@ -65,31 +66,57 @@ namespace MonoDevelop.Components
 		{
 			
 		}
-		
+
+		[Obsolete ("Use ContextMenuRequested")]
 		public MenuCreator MenuCreator {
 			get { return creator; }
 			set { creator = value; }
 		}
-		
+
+		public ContextMenuCreator ContextMenuRequested {
+			get { return contextMenuCreator; }
+			set { contextMenuCreator = value; }
+		}
+
+		ReliefStyle MenuOpened ()
+		{
+			isOpen = true;
+			//make sure the button looks depressed
+			ReliefStyle oldRelief = this.Relief;
+			this.Relief = ReliefStyle.Normal;
+			return oldRelief;
+		}
+
+		void MenuClosed (ReliefStyle oldRelief)
+		{
+			this.Relief = oldRelief;
+			isOpen = false;
+			this.State = StateType.Normal;
+		}
+
 		protected override void OnClicked ()
 		{
 			base.OnClicked ();
-			
+			if (contextMenuCreator != null) {
+				ContextMenu menu = contextMenuCreator (this);
+				var oldRelief = MenuOpened ();
+
+				Gdk.Rectangle rect = this.Allocation;
+
+				// Offset the menu by the height of the rect
+				ContextMenuExtensionsGtk.ShowContextMenu (this, 0, rect.Height, menu, () => MenuClosed (oldRelief));
+				return;
+			}
+
 			if (creator != null) {
 				Menu menu = creator (this);
 				
 				if (menu != null) {
-					isOpen = true;
-					
-					//make sure the button looks depressed
-					ReliefStyle oldRelief = this.Relief;
-					this.Relief = ReliefStyle.Normal;
-					
+					var oldRelief = MenuOpened ();
+
 					//clean up after the menu's done
 					menu.Hidden += delegate {
-						this.Relief = oldRelief ;
-						isOpen = false;
-						this.State = StateType.Normal;
+						MenuClosed (oldRelief);
 						
 						//FIXME: for some reason the menu's children don't get activated if we destroy 
 						//directly here, so use a timeout to delay it
@@ -153,6 +180,8 @@ namespace MonoDevelop.Components
 		protected override void OnDestroyed ()
 		{
 			creator = null;
+			contextMenuCreator = null;
+
 			base.OnDestroyed ();
 		}
 
@@ -186,6 +215,7 @@ namespace MonoDevelop.Components
 			set { label.Markup = value; }
 		}
 	}
-	
+
 	public delegate Menu MenuCreator (MenuButton button);
+	public delegate ContextMenu ContextMenuCreator (MenuButton button);
 }
