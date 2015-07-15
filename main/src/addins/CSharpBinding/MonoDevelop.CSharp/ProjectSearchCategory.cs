@@ -79,10 +79,10 @@ namespace MonoDevelop.CSharp
 			symbolInfoTokenSrc = new CancellationTokenSource();
 			lastResult = new WorkerResult (widget);
 			SymbolInfoTask = null;
-			//CancellationToken token = symbolInfoTokenSrc.Token;
-			//SymbolInfoTask = Task.Run (delegate {
-			//	return GetSymbolInfos (token);
-			//}, token);
+			CancellationToken token = symbolInfoTokenSrc.Token;
+			SymbolInfoTask = Task.Run (delegate {
+				return GetSymbolInfos (token);
+			}, token);
 		}
 
 		static ImmutableList<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
