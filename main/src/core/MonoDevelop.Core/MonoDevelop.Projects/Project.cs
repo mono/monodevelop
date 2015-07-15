@@ -69,6 +69,8 @@ namespace MonoDevelop.Projects
 
 		public TargetEvaluationResult RunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
+			var currentContext = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext");
+			var currentResult = CallContext.GetData ("MonoDevelop.Projects.TargetEvaluationResult");
 			try {
 				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
 				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", null);
@@ -82,8 +84,8 @@ namespace MonoDevelop.Projects
 				}
 				return new TargetEvaluationResult (r);
 			} finally {
-				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", null);
-				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", null);
+				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
+				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", currentResult);
 			}
 		}
 
@@ -102,6 +104,7 @@ namespace MonoDevelop.Projects
 					newContext = new TargetEvaluationContext ();
 				else if (!(newContext is TargetEvaluationContext))
 					newContext = new TargetEvaluationContext (newContext);
+				
 				var res = OnRunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
 				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
 				return res.BuildResult;
@@ -119,13 +122,20 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual TargetEvaluationResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
-			var r = base.OnRunTarget (monitor, target, configuration);
-			var evalRes = CallContext.GetData ("MonoDevelop.Projects.TargetEvaluationResult") as TargetEvaluationResult;
-			if (evalRes != null)
-				evalRes.BuildResult = r;
-			else
-				evalRes = new TargetEvaluationResult (r);
-			return evalRes;
+			var currentContext = CallContext.GetData ("MonoDevelop.Projects.ProjectOperationContext") as ProjectOperationContext;
+			CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", context);
+
+			try {
+				var r = base.OnRunTarget (monitor, target, configuration);
+				var evalRes = CallContext.GetData ("MonoDevelop.Projects.TargetEvaluationResult") as TargetEvaluationResult;
+				if (evalRes != null)
+					evalRes.BuildResult = r;
+				else
+					evalRes = new TargetEvaluationResult (r);
+				return evalRes;
+			} finally {
+				CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
+			}
 		}
 
 		string[] supportedMSBuildTargets;
