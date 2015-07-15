@@ -27,8 +27,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
+using Xwt.Drawing;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -38,10 +43,52 @@ namespace MonoDevelop.PackageManagement
 			: base (GettextCatalog.GetString("Search"))
 		{
 		}
-
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Factory.StartNew (() => (ISearchDataSource)new SearchPackagesDataSource (searchPattern));
+			if (IsProjectSelected ()) {
+				searchResultCallback.ReportResult (new SearchPackageSearchResult (pattern));
+			}
+			return SpecializedTasks.EmptyTask;
+		}
+
+		class SearchPackageSearchResult : SearchResult
+		{
+			SearchPopupSearchPattern pattern;
+
+			public override bool CanActivate {
+				get {
+					return IsProjectSelected ();
+				}
+			}
+
+			public SearchPackageSearchResult (SearchPopupSearchPattern pattern) : base ("", "", 0)
+			{
+				this.pattern = pattern;
+			}
+
+			public override void Activate ()
+			{
+				var runner = new AddPackagesDialogRunner ();
+				runner.Run (pattern.UnparsedPattern);
+			}
+
+			public override string GetMarkupText (Gtk.Widget widget)
+			{
+				return GettextCatalog.GetString ("Search Packages...");
+			}
+		}
+
+		static bool IsProjectSelected ()
+		{
+			return PackageManagementServices.ProjectService.CurrentProject != null;
+		}
+
+		static readonly string [] tags = { "search" };
+
+		public override string [] Tags {
+			get {
+				return tags;
+			}
 		}
 
 		public override bool IsValidTag (string tag)

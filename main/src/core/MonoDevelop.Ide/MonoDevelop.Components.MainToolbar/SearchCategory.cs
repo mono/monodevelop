@@ -84,6 +84,9 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		public abstract string[] Tags {
+			get;
+		}
 
 		public SearchCategory (string name)
 		{
@@ -92,7 +95,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public abstract bool IsValidTag (string tag);
 
-		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token);
+		public abstract Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token);
 
 		public virtual void Initialize (PopoverWindow popupWindow)
 		{

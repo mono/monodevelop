@@ -46,10 +46,9 @@ namespace MonoDevelop.Components.MainToolbar
 		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
 		{
 			this.widget = widget;
-			this.lastResult = new WorkerResult (widget);
 		}
 
-		IEnumerable<ProjectFile> files {
+		IEnumerable<ProjectFile> AllFiles {
 			get {
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					// We only want to check it here if it's not part
@@ -70,111 +69,58 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		WorkerResult lastResult;
 		string[] validTags = new [] { "file"};
+
+		public override string [] Tags {
+			get {
+				return validTags;
+			}
+		}
 
 		public override bool IsValidTag (string tag)
 		{
 			return validTags.Any (t => t == tag);
 		}
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Factory.StartNew (delegate {
-				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag))
-					return null;
-				try {
-					var newResult = new WorkerResult (widget);
-					newResult.pattern = searchPattern.Pattern;
-					newResult.IncludeFiles = true;
-					newResult.IncludeTypes = true;
-					newResult.IncludeMembers = true;
-
-					string toMatch = searchPattern.Pattern;
-					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
-					newResult.FullSearch = true;
-
-					AllResults (lastResult, newResult, token);
-					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
-					lastResult = newResult;
-					return (ISearchDataSource)newResult.results;
-				} catch {
-					token.ThrowIfCancellationRequested ();
-					throw;
+			var files = AllFiles.ToList ();
+			return Task.Run (delegate {
+				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
+				savedMatches = new Dictionary<string, MatchResult> ();
+				foreach (ProjectFile file in files) {
+					if (token.IsCancellationRequested)
+						break;
+					int rank;
+					string matchString = System.IO.Path.GetFileName (file.FilePath);
+					if (MatchName (matcher, matchString, out rank))
+						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, matchString, rank, file, true));
+					matchString = FileSearchResult.GetRelProjectPath (file);
+					if (MatchName (matcher, matchString, out rank)) 
+						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, matchString, rank, file, true));
+					
 				}
-			}, token);
+				savedMatches = null;
+			});
 		}
 
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
+		bool MatchName (StringMatcher matcher, string name, out int matchRank)
 		{
-			// Search files
-			if (newResult.IncludeFiles) {
-				newResult.filteredFiles = new List<ProjectFile> ();
-				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
-				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
-				foreach (ProjectFile file in allFiles) {
-					token.ThrowIfCancellationRequested ();
-					SearchResult curResult = newResult.CheckFile (file);
-					if (curResult != null) {
-						newResult.filteredFiles.Add (file);
-						newResult.results.Add (curResult);
-					}
-				}
+			if (name == null) {
+				matchRank = -1;
+				return false;
 			}
-		}
-		
-		class WorkerResult 
-		{
-			public List<ProjectFile> filteredFiles = null;
+			MatchResult savedMatch;
+			if (!savedMatches.TryGetValue (name, out savedMatch)) {
+				bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
+				savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
+			}
 
-			public string pattern = null;
-			public bool isGotoFilePattern;
-			public ResultsDataSource results;
-			
-			public bool FullSearch;
-			
-			public bool IncludeFiles, IncludeTypes, IncludeMembers;
-			
-			public StringMatcher matcher = null;
-			
-			public WorkerResult (Widget widget)
-			{
-				results = new ResultsDataSource (widget);
-			}
-			
-			internal SearchResult CheckFile (ProjectFile file)
-			{
-				int rank;
-				string matchString = System.IO.Path.GetFileName (file.FilePath);
-				if (MatchName (matchString, out rank)) 
-					return new FileSearchResult (pattern, matchString, rank, file, true);
-				
-				if (!FullSearch)
-					return null;
-				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (matchString, out rank)) 
-					return new FileSearchResult (pattern, matchString, rank, file, false);
-				
-				return null;
-			}
-			
-			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
-			bool MatchName (string name, out int matchRank)
-			{
-				if (name == null) {
-					matchRank = -1;
-					return false;
-				}
-				MatchResult savedMatch;
-				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
-					savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
-				}
-				
-				matchRank = savedMatch.Rank;
-				return savedMatch.Match;
-			}
+			matchRank = savedMatch.Rank;
+			return savedMatch.Match;
 		}
+
+		Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
 	}
 }
 

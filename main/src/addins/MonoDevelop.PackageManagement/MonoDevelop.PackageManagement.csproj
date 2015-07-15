@@ -284,7 +284,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SearchPackagesDataSource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\ProjectPackagesFolderNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\ProjectReferenceNodeBuilderExtension.cs" />

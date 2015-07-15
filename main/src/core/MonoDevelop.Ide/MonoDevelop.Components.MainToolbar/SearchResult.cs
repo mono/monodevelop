@@ -44,13 +44,14 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	public enum SearchResultType
 	{
+		Unknown,
 		File,
 		Type,
 		Member,
 		Command
 	}
 
-	abstract class SearchResult
+	public abstract class SearchResult
 	{
 		protected string match;
 		
@@ -65,21 +66,31 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 
-		public abstract SearchResultType SearchResultType { get; }
-		public abstract string PlainText  { get; }
+		public virtual SearchResultType SearchResultType { get { return SearchResultType.Unknown; } }
+		public virtual string PlainText  { get { return null; } }
 
 		public int Rank { get; private set; }
+
+		public double Weight {
+			get;
+			set;
+		}
 
 		public virtual int Offset { get { return -1; } }
 		public virtual int Length { get { return -1; } }
 		
-		public abstract string File { get; }
-		public abstract Xwt.Drawing.Image Icon { get; }
+		public virtual string File { get { return null;} }
+		public virtual Xwt.Drawing.Image Icon { get { return null; } }
 		
-		public abstract string Description { get; }
+		public virtual string Description { get { return null;} }
 		public string MatchedString { get; private set;}
 
-		public abstract Task<TooltipInformation> GetTooltipInformation (CancellationToken token);
+		public ISegment Segment { get { return new TextSegment (Offset, Length); } }
+
+		public virtual Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		{
+			return TaskUtil.Default<TooltipInformation> ();
+		}
 
 		public SearchResult (string match, string matchedString, int rank)
 		{
@@ -119,7 +130,6 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 		}
 	}
-	
 
 	class FileSearchResult: SearchResult
 	{
@@ -177,7 +187,6 @@ namespace MonoDevelop.Components.MainToolbar
 			return file.FilePath;
 		}
 	}
-
 
 	class CommandResult: SearchResult
 	{

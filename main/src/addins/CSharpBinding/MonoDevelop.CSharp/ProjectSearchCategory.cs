@@ -124,15 +124,22 @@ namespace MonoDevelop.CSharp
 		}
 
 		static WorkerResult lastResult;
-		string[] typeTags = new [] { "type", "c", "s", "i", "e", "d" };
-		string[] memberTags = new [] { "member", "m", "p", "f", "evt" };
+		static readonly string[] typeTags = new [] { "type", "c", "s", "i", "e", "d" };
+		static readonly string[] memberTags = new [] { "member", "m", "p", "f", "evt" };
+		static readonly string[] tags = typeTags.Concat(memberTags).ToArray();
+
+		public override string[] Tags {
+			get {
+				return tags;
+			}
+		}
 
 		public override bool IsValidTag (string tag)
 		{
 			return typeTags.Any (t => t == tag) || memberTags.Any (t => t == tag);
 		}
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern searchPattern, CancellationToken token)
 		{
 			return Task.Run (async delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
@@ -154,8 +161,8 @@ namespace MonoDevelop.CSharp
 						oldLastResult = new WorkerResult (widget);
 //					var now = DateTime.Now;
 
-					AllResults (oldLastResult, newResult, allTypes, token);
-					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
+					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
+					//newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
 //					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
 					return (ISearchDataSource)newResult.results;
@@ -166,7 +173,7 @@ namespace MonoDevelop.CSharp
 			}, token);
 		}
 
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
+		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
 			if (newResult.isGotoFilePattern)
 				return;
@@ -213,6 +220,7 @@ namespace MonoDevelop.CSharp
 					if (curResult != null) {
 						newResult.filteredSymbols.Add (type);
 						newResult.results.AddResult (curResult);
+						searchResultCallback.ReportResult (curResult);
 					}
 				}
 			}
