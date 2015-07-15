@@ -177,6 +177,15 @@
     <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
       <LogicalName>aspnet-empty-project@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png">
+      <LogicalName>aspnet-wizard-page.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\aspnet-wizard-page%402x.png">
+      <LogicalName>aspnet-wizard-page@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
@@ -301,9 +310,11 @@
     <Compile Include="Razor\RazorPageInfo.cs" />
     <Compile Include="WebForms\WebFormsTypeContext.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizard.cs" />
-    <Compile Include="Projects\AspNetProjectTemplateWizardPageWidget.cs" />
     <Compile Include="Projects\AspNetProjectTemplateWizardPage.cs" />
     <Compile Include="Projects\AspNetStringTagProvider.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Projects\GtkAspNetProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

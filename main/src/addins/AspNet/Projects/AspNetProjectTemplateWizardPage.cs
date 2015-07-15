@@ -32,9 +32,9 @@ namespace MonoDevelop.AspNet.Projects
 {
 	class AspNetProjectTemplateWizardPage : WizardPage
 	{
-		readonly string title = GettextCatalog.GetString ("Web Project Options");
+		readonly string title = GettextCatalog.GetString ("Configure your Web project");
 		readonly AspNetProjectTemplateWizard wizard;
-		AspNetProjectTemplateWizardPageWidget view;
+		GtkAspNetProjectTemplateWizardPageWidget view;
 
 		bool includeTestProject;
 
@@ -121,7 +121,15 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected override object CreateNativeWidget ()
 		{
-			return view ?? (view = new AspNetProjectTemplateWizardPageWidget (this));
+			return view ?? (view = new GtkAspNetProjectTemplateWizardPageWidget (this));
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (view != null) {
+				view.Dispose ();
+				view = null;
+			}
 		}
 	}
 }
