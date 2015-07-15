@@ -91,32 +91,28 @@ namespace MonoDevelop.Ide.Gui
 
 			statusBar.EndProgress ();
 
-			if (!CancellationToken.IsCancellationRequested) {
-				try {
-					if (Errors.Length > 0 || Warnings.Length > 0) {
-						if (Errors.Length > 0) {
-							statusBar.ShowError (Errors [Errors.Length - 1].Message);
-						} else if (SuccessMessages.Length == 0) {
-							statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
-						}
-
-						DesktopService.ShowGlobalProgressError ();
-
-						base.OnCompleted ();
-					
-						if (showErrorDialogs)
-							this.ShowResultDialog ();
-						return;
+			try {
+				if (Errors.Length > 0 || Warnings.Length > 0) {
+					if (Errors.Length > 0) {
+						statusBar.ShowError (Errors [Errors.Length - 1].Message);
+					} else if (SuccessMessages.Length == 0) {
+						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
-				
-					if (SuccessMessages.Length > 0)
-						statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
-				
-				} finally {
-					statusBar.StatusSourcePad = statusSourcePad;
-					statusBar.Dispose ();
+
+					DesktopService.ShowGlobalProgressError ();
+
+					base.OnCompleted ();
+
+					if (!CancellationToken.IsCancellationRequested && showErrorDialogs)
+						this.ShowResultDialog ();
+					return;
 				}
-			} else {
+
+				if (SuccessMessages.Length > 0)
+					statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Length - 1]);
+
+			} finally {
+				statusBar.StatusSourcePad = statusSourcePad;
 				statusBar.Dispose ();
 			}
 

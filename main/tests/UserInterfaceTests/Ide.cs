@@ -36,6 +36,7 @@ using NUnit.Framework;
 
 using Gdk;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 
 namespace UserInterfaceTests
@@ -45,6 +46,8 @@ namespace UserInterfaceTests
 		static AutoTestClientSession Session {
 			get { return TestService.Session; }
 		}
+
+		static Regex buildRegex = new Regex (@"Build: (?<errors>\d*) error\D*, (?<warnings>\d*) warning\D*", RegexOptions.Compiled);
 
 		public static void OpenFile (FilePath file)
 		{
@@ -63,12 +66,10 @@ namespace UserInterfaceTests
 			return Session.GetGlobalValue<FilePath> ("MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.FileName");
 		}
 
-		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 180)
+		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 360)
 		{
-			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"Ide.Shell.ProjectBuilt", timeout: timeoutInSecs * 1000);
-			var status = IsBuildSuccessful ();
-			return isPass == status;
+			Session.ExecuteCommand (ProjectCommands.BuildSolution);
+			return isPass == IsBuildSuccessful (timeoutInSecs);
 		}
 
 		public static void WaitUntil (Func<bool> done, int timeout = 20000, int pollStep = 200)
@@ -101,9 +102,27 @@ namespace UserInterfaceTests
 			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
 		}
 
-		public static bool IsBuildSuccessful ()
+		public static bool IsBuildSuccessful (int timeoutInSecs)
 		{
-			return Session.ErrorCount (MonoDevelop.Ide.Tasks.TaskSeverity.Error) == 0;
+			bool isBuildSuccessful = false;
+			Ide.WaitUntil (() => {
+				var actualStatusMessage = Ide.GetStatusMessage ();
+				if (actualStatusMessage == "Build successful.") {
+					isBuildSuccessful = true;
+					return true;
+				}
+				if (actualStatusMessage == "Build failed.") {
+					isBuildSuccessful = false;
+					return true;
+				}
+				var match = buildRegex.Match (actualStatusMessage);
+				if (match != null && match.Success) {
+					isBuildSuccessful = string.Equals (match.Groups ["errors"].ToString (), "0");
+					return true;
+				}
+				return false;
+			}, pollStep: 5 * 1000, timeout: timeoutInSecs * 1000);
+			return isBuildSuccessful;
 		}
 
 		public static void RunAndWaitForTimer (Action action, string counter, int timeout = 20000)
