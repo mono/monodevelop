@@ -90,32 +90,28 @@ namespace MonoDevelop.Ide.Gui
 
 			statusBar.EndProgress ();
 
-			if (!IsCancelRequested) {
-				try {
-					if (Errors.Count > 0 || Warnings.Count > 0) {
-						if (Errors.Count > 0) {
-							statusBar.ShowError (Errors [Errors.Count - 1]);
-						} else if (SuccessMessages.Count == 0) {
-							statusBar.ShowWarning (Warnings [Warnings.Count - 1]);
-						}
-
-						DesktopService.ShowGlobalProgressError ();
-
-						base.OnCompleted ();
-					
-						if (showErrorDialogs)
-							ShowResultDialog ();
-						return;
+			try {
+				if (Errors.Count > 0 || Warnings.Count > 0) {
+					if (Errors.Count > 0) {
+						statusBar.ShowError (Errors [Errors.Count - 1]);
+					} else if (SuccessMessages.Count == 0) {
+						statusBar.ShowWarning (Warnings [Warnings.Count - 1]);
 					}
+
+					DesktopService.ShowGlobalProgressError ();
+
+					base.OnCompleted ();
 				
-					if (SuccessMessages.Count > 0)
-						statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Count - 1]);
-				
-				} finally {
-					statusBar.StatusSourcePad = statusSourcePad;
-					statusBar.Dispose ();
+					if (!IsCancelRequested && showErrorDialogs)
+						ShowResultDialog ();
+					return;
 				}
-			} else {
+				
+				if (SuccessMessages.Count > 0)
+					statusBar.ShowMessage (MonoDevelop.Ide.Gui.Stock.StatusSuccess, SuccessMessages [SuccessMessages.Count - 1]);
+			
+			} finally {
+				statusBar.StatusSourcePad = statusSourcePad;
 				statusBar.Dispose ();
 			}
 
