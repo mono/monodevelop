@@ -28,12 +28,11 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
-	public class ImageView: Gtk.DrawingArea
+	public class ImageView: Gtk.Misc
 	{
 		Xwt.Drawing.Image image;
 		string iconId;
 		Gtk.IconSize? size;
-		int xpad, ypad;
 
 		public ImageView ()
 		{
@@ -45,7 +44,7 @@ namespace MonoDevelop.Components
 			this.image = image;
 		}
 
-		public ImageView (string iconId, Gtk.IconSize size)
+		public ImageView (string iconId, Gtk.IconSize size): this ()
 		{
 			this.iconId = iconId;
 			this.size = size;
@@ -90,62 +89,17 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public int Xpad {
-			get {
-				return xpad;
-			}
-			set {
-				xpad = value;
-				QueueResize ();
-			}
-		}
-
-		public int Ypad {
-			get {
-				return ypad;
-			}
-			set {
-				ypad = value;
-				QueueResize ();
-			}
-		}
-
-		public void SetAlignment (float xalign, float yalign)
-		{
-			Xalign = xalign;
-			Yalign = yalign;
-			QueueDraw ();
-		}
-
-		float xalign = 0.5f;
-		public float Xalign {
-			get { return xalign; }
-			set {
-				xalign = (float)(value * IconScale);
-				QueueDraw ();
-			}
-		}
-
-		float yalign = 0.5f;
-		public float Yalign {
-			get { return yalign; }
-			set {
-				yalign = (float)(value * IconScale);
-				QueueDraw ();
-			}
-		}
-
 		double IconScale {
 			get { return GtkWorkarounds.GetPixelScale (); }
 		}
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
-			requisition.Width = xpad * 2;
-			requisition.Height = ypad * 2;
+			requisition.Width = Xpad * 2;
+			requisition.Height = Ypad * 2;
 			if (image != null) {
-				requisition.Width = (int)(image.Width * IconScale);
-				requisition.Height = (int)(image.Height * IconScale);
+				requisition.Width += (int)(image.Width * IconScale);
+				requisition.Height += (int)(image.Height * IconScale);
 			}
 		}
 
@@ -153,7 +107,7 @@ namespace MonoDevelop.Components
 		{
 			if (image != null) {
 				var alloc = Allocation;
-				alloc.Inflate (-xpad, -ypad);
+				alloc.Inflate (-Xpad, -Ypad);
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
 					var x = Math.Round (alloc.X + (alloc.Width - image.Width * IconScale) * Xalign);
 					var y = Math.Round (alloc.Y + (alloc.Height - image.Height * IconScale) * Yalign);
