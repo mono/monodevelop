@@ -129,16 +129,16 @@ namespace Mono.TextEditor.Tests
 		public void TestDocumentBug2Test()
 		{
 			var document = new Mono.TextEditor.TextDocument ();
-			
+
 			string top      = "123\n456\n789\n0";
 			string testText = "Hello World!";
-			
+
 			document.Text = top;
-			
+
 			document.Insert (top.Length, testText);
-			
+
 			DocumentLine line = document.GetLine (document.LineCount);
-			
+
 			Assert.AreEqual (top.Length - 1, line.Offset);
 			Assert.AreEqual (testText.Length + 1, line.LengthIncludingDelimiter);
 		}
@@ -163,6 +163,18 @@ namespace Mono.TextEditor.Tests
 			}
 			Assert.AreEqual (1, document.LineCount);
 		}
-		
+
+		[Test]
+		public void TestBufferCreationIssue()
+		{
+			var document = new Mono.TextEditor.TextDocument ();
+
+			for (int i = 1; i < 1000; i++) {
+				var text = new string ('a', i);
+				document.Text = text;
+				Assert.AreEqual (i, document.TextLength);
+				Assert.AreEqual (text, document.Text);
+			}
+		}
 	}
 }
