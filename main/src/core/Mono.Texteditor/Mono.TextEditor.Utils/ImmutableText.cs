@@ -371,18 +371,6 @@ namespace Mono.TextEditor.Utils
 					var bPtr = bBegin;
 					var bEnd = bBegin + bytes.Length;
 
-					var bEnd4 = (uint*)(bEnd - bytes.Length % 4);
-					var clPtr = (ulong*)cBegin;
-					while (bPtr != bEnd4) {
-						var c = *clPtr++;
-						if ((c & 0xFF00FF00FF00FF00ul) != 0)
-							return null;
-						*(bPtr++) = (byte)c;
-						*(bPtr++) = (byte)(c >> 16);
-						*(bPtr++) = (byte)(c >> 32);
-						*(bPtr++) = (byte)(c >> 48);
-					}
-
 					var cPtr = (ushort*)cBegin;
 					while (bPtr != bEnd) {
 						var c = *cPtr++;
