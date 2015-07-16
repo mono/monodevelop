@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp
 	{
 		static Components.PopoverWindow widget;
 
-		static ProjectSearchCategory ()
+		internal static void Init ()
 		{
 			MonoDevelopWorkspace.LoadingFinished += delegate {
 				UpdateSymbolInfos ();
@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp
 			lastResult = new WorkerResult (popupWindow);
 		}
 
-		internal static Task<ImmutableList<DeclaredSymbolInfo>> SymbolInfoTask;
+		internal static Task<List<DeclaredSymbolInfo>> SymbolInfoTask;
 
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
@@ -85,20 +85,20 @@ namespace MonoDevelop.CSharp
 			}, token);
 		}
 
-		static ImmutableList<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
+		static List<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
 		{
 			getTypesTimer.BeginTiming ();
 			try {
-				var result = ImmutableList<DeclaredSymbolInfo>.Empty;
+				var result = new List<DeclaredSymbolInfo> ();
 				foreach (var workspace in TypeSystemService.AllWorkspaces) {
-					result = result.AddRange (workspace.CurrentSolution.Projects.Select (p => SearchAsync (p, token)).SelectMany (i => i));
+					result.AddRange (workspace.CurrentSolution.Projects.Select (p => SearchAsync (p, token)).SelectMany (i => i));
 				}
 				return result;
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
-				return ImmutableList<DeclaredSymbolInfo>.Empty;
+				return new List<DeclaredSymbolInfo> ();
 			} catch (TaskCanceledException) {
-				return ImmutableList<DeclaredSymbolInfo>.Empty;
+				return new List<DeclaredSymbolInfo> ();
 			} finally {
 				getTypesTimer.EndTiming ();
 			}
@@ -151,7 +151,7 @@ namespace MonoDevelop.CSharp
 					newResult.Tag = searchPattern.Tag;
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
-					ImmutableList<DeclaredSymbolInfo> allTypes;
+					List<DeclaredSymbolInfo> allTypes;
 					allTypes = SymbolInfoTask != null ? await SymbolInfoTask.ConfigureAwait (false) : GetSymbolInfos (token);
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
@@ -268,17 +268,19 @@ namespace MonoDevelop.CSharp
 			internal SearchResult CheckType (DeclaredSymbolInfo symbol)
 			{
 				int rank;
-				if (MatchName (symbol.Name, out rank)) {
+				var name = symbol.Name;
+				if (MatchName(name, out rank)) {
 //					if (type.ContainerDisplayName != null)
 //						rank--;
 					return new DeclaredSymbolInfoResult (pattern, symbol.Name, rank, symbol, false);
 				}
 				if (!FullSearch)
 					return null;
-				if (MatchName (symbol.FullyQualifiedContainerName, out rank)) {
+				name = symbol.FullyQualifiedContainerName;
+				if (MatchName(name, out rank)) {
 //					if (type.ContainingType != null)
 //						rank--;
-					return new DeclaredSymbolInfoResult (pattern, symbol.FullyQualifiedContainerName, rank, symbol, true);
+					return new DeclaredSymbolInfoResult (pattern, name, rank, symbol, true);
 				}
 				return null;
 			}
@@ -292,22 +294,23 @@ namespace MonoDevelop.CSharp
 					return false;
 				}
 
-				bool doesMatch;
-				if (firstChars != null) {
-					int idx = name.IndexOfAny (firstChars);
-					doesMatch = idx >= 0;
-					if (doesMatch) {
-						matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
-						if (name [idx] != firstChar)
-							matchRank /= 2;
-						return true;
-					} else {
-						matchRank = -1;
-					}
-					return false;
-				}
 				MatchResult savedMatch;
 				if (!savedMatches.TryGetValue (name, out savedMatch)) {
+					bool doesMatch;
+					if (firstChars != null) {
+						int idx = name.IndexOfAny (firstChars);
+						doesMatch = idx >= 0;
+						if (doesMatch) {
+							matchRank = int.MaxValue - (name.Length - 1) * 10 - idx;
+							if (name [idx] != firstChar)
+								matchRank /= 2;
+							savedMatches [name] = savedMatch = new MatchResult (true, matchRank);
+							return true;
+						}
+						matchRank = -1;
+						savedMatches [name] = savedMatch = new MatchResult (false, -1);
+						return false;
+					}
 					doesMatch = matcher.CalcMatchRank (name, out matchRank);
 					savedMatches [name] = savedMatch = new MatchResult (doesMatch, matchRank);
 				}
