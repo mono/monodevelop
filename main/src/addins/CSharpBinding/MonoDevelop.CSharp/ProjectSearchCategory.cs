@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp
 			lastResult = new WorkerResult (popupWindow);
 		}
 
-		internal static Task<List<DeclaredSymbolInfo>> SymbolInfoTask;
+		internal static Task<SymbolCache> SymbolInfoTask;
 
 		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
@@ -76,6 +76,11 @@ namespace MonoDevelop.CSharp
 		public static void UpdateSymbolInfos ()
 		{
 			symbolInfoTokenSrc.Cancel ();
+			if (SymbolInfoTask != null) {
+				var old = SymbolInfoTask.Result;
+				if (old != null)
+					old.Dispose ();
+            }
 			symbolInfoTokenSrc = new CancellationTokenSource();
 			lastResult = new WorkerResult (widget);
 			SymbolInfoTask = null;
@@ -85,43 +90,118 @@ namespace MonoDevelop.CSharp
 			}, token);
 		}
 
-		static List<DeclaredSymbolInfo> GetSymbolInfos (CancellationToken token)
+		internal class SymbolCache : IDisposable
+		{
+			public static readonly SymbolCache Empty = new SymbolCache ();
+
+			List<Microsoft.CodeAnalysis.Workspace> workspaces = new List<Microsoft.CodeAnalysis.Workspace> ();
+			ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> documentInfos = new ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> ();
+
+			public void AddWorkspace (Microsoft.CodeAnalysis.Workspace ws, CancellationToken token)
+			{
+				workspaces.Add (ws);
+				ws.WorkspaceChanged += Ws_WorkspaceChanged;
+
+				foreach (var p in ws.CurrentSolution.Projects) {
+					SearchAsync (documentInfos, p, token);
+				}
+			}
+
+			public List<DeclaredSymbolInfo> AllTypes {
+				get {
+					var result = new List<DeclaredSymbolInfo> ();
+					foreach (var infos in documentInfos.Values)
+						result.AddRange (infos);
+					return result;
+				}
+			}
+
+			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			{
+				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
+					try {
+						cancellationToken.ThrowIfCancellationRequested ();
+						await UpdateDocument (result, document, cancellationToken).ConfigureAwait (false);
+					} catch (OperationCanceledException) {
+					}
+				});
+			}
+
+			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
+			{
+				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+				var infos = new List<DeclaredSymbolInfo> ();
+				foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
+					DeclaredSymbolInfo declaredSymbolInfo;
+					if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
+						infos.Add (declaredSymbolInfo);
+					}
+				}
+				RemoveDocument (result, document.Id);
+				result.TryAdd (document.Id, infos);
+			}
+
+			static void RemoveDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.DocumentId documentId)
+			{
+				if (result.ContainsKey (documentId)) {
+					List<DeclaredSymbolInfo> val;
+					result.TryRemove (documentId, out val);
+				}
+			}
+
+			public void Dispose ()
+			{
+				if (workspaces == null)
+					return;
+				foreach (var ws in workspaces)
+					ws.WorkspaceChanged -= Ws_WorkspaceChanged;
+				workspaces = null;
+				documentInfos = null;
+			}
+
+			async void Ws_WorkspaceChanged (object sender, WorkspaceChangeEventArgs e)
+			{
+				var ws = (Microsoft.CodeAnalysis.Workspace)sender;
+				switch (e.Kind) {
+				case WorkspaceChangeKind.ProjectAdded:
+					SearchAsync (documentInfos, ws.CurrentSolution.GetProject (e.ProjectId), default (CancellationToken));
+					break;
+				case WorkspaceChangeKind.ProjectRemoved:
+					foreach (var docId in ws.CurrentSolution.GetProject (e.ProjectId).DocumentIds)
+						RemoveDocument (documentInfos, docId);
+					break;
+				case WorkspaceChangeKind.DocumentAdded:
+					await UpdateDocument (documentInfos, ws.CurrentSolution.GetDocument (e.DocumentId), default (CancellationToken));
+					break;
+				case WorkspaceChangeKind.DocumentRemoved:
+					RemoveDocument (documentInfos, e.DocumentId);
+					break;
+				case WorkspaceChangeKind.DocumentChanged:
+					await UpdateDocument (documentInfos, ws.CurrentSolution.GetDocument (e.DocumentId), default (CancellationToken));
+					break;
+				}
+			}
+		}
+
+		static SymbolCache GetSymbolInfos (CancellationToken token)
 		{
 			getTypesTimer.BeginTiming ();
 			try {
-				var result = new List<DeclaredSymbolInfo> ();
+				var result = new SymbolCache ();
 				foreach (var workspace in TypeSystemService.AllWorkspaces) {
-					result.AddRange (workspace.CurrentSolution.Projects.Select (p => SearchAsync (p, token)).SelectMany (i => i));
+					result.AddWorkspace (workspace, token);
 				}
 				return result;
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
-				return new List<DeclaredSymbolInfo> ();
+				return SymbolCache.Empty;
 			} catch (TaskCanceledException) {
-				return new List<DeclaredSymbolInfo> ();
+				return SymbolCache.Empty;
 			} finally {
 				getTypesTimer.EndTiming ();
 			}
 		}
 
-		static IEnumerable<DeclaredSymbolInfo> SearchAsync(Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
-		{
-			var result = new ConcurrentBag<DeclaredSymbolInfo> ();
-			Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
-				try {
-					cancellationToken.ThrowIfCancellationRequested ();
-					var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
-					foreach (var current in root.DescendantNodesAndSelf (CSharpSyntaxFactsService.DescentIntoSymbolForDeclarationSearch)) {
-						DeclaredSymbolInfo declaredSymbolInfo;
-						if (current.TryGetDeclaredSymbolInfo (out declaredSymbolInfo)) {
-							result.Add (declaredSymbolInfo);
-						}
-					}
-				} catch (OperationCanceledException) {
-				}
-			});
-			return (IEnumerable<DeclaredSymbolInfo>)result;
-		}
 
 		static WorkerResult lastResult;
 		static readonly string[] typeTags = new [] { "type", "c", "s", "i", "e", "d" };
@@ -152,7 +232,10 @@ namespace MonoDevelop.CSharp
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag);
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					List<DeclaredSymbolInfo> allTypes;
-					allTypes = SymbolInfoTask != null ? await SymbolInfoTask.ConfigureAwait (false) : GetSymbolInfos (token);
+					if (SymbolInfoTask == null)
+						SymbolInfoTask = Task.FromResult (GetSymbolInfos (token));
+					var cache = await SymbolInfoTask.ConfigureAwait (false);
+					allTypes = cache.AllTypes;
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
