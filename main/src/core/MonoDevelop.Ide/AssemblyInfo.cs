@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright ("LGPL")]
 
 [assembly: InternalsVisibleTo("MacPlatform")]
+[assembly: InternalsVisibleTo("WindowsPlatform")]
 [assembly: InternalsVisibleTo("MonoDevelop.Debugger")]
 [assembly: InternalsVisibleTo("MonoDevelop.DesignerSupport")]
 [assembly: InternalsVisibleTo("Ide.Tests")]
