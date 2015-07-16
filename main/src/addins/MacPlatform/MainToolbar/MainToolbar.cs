@@ -175,6 +175,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSToolbarItem CreateSearchBarToolbarItem ()
 		{
 			var bar = new SearchBar ();
+
+			// Remove the focus from the Gtk system when Cocoa has focus
+			// Fixes BXC #29601
+			bar.GainedFocus += (o, e) => IdeApp.Workbench.RootWindow.Focus = null;
+
 			viewCache.Add (bar);
 			var menuBar = new SearchBar {
 				Frame = new CGRect (0, 0, 180, bar.FittingSize.Height),
@@ -280,6 +285,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void FocusSearchBar ()
 		{
+			searchEntry.Focus ();
+
 			var entry = searchEntry;
 			if (!IsSearchEntryInOverflow)
 				entry.SelectText (entry);

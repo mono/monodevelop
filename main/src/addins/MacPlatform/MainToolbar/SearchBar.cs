@@ -40,6 +40,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
 		new internal event EventHandler Activated;
+		public event EventHandler GainedFocus;
 
 		/// <summary>
 		/// This tells whether events have been attached when created from the menu.
@@ -112,6 +113,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			// Needs to be grabbed after it's parented.
 			gtkWidget = GtkMacInterop.NSViewToGtkWidget (this);
+		}
+
+		public override bool BecomeFirstResponder ()
+		{
+			bool firstResponder = base.BecomeFirstResponder ();
+			if (firstResponder)
+				Focus ();
+
+			return firstResponder;
+		}
+
+		public void Focus ()
+		{
+			if (GainedFocus != null)
+				GainedFocus (this, EventArgs.Empty);
 		}
 	}
 }
