@@ -155,4 +155,4 @@ The pack file goes under pack/...
 
 The build is performed against the installed MonoDevelop or Xamarin Studio on your machine. 
 
-For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/fsharpbinding) for tracking work items and suggestions.
+For more information about F# see [The F# Software Foundation](http://fsharp.org). Join [The F# Open Source Group](http://fsharp.github.com). We use [github](https://github.com/fsharp/xamarin-monodevelop-fsharp-addin/) for tracking work items and suggestions.
