@@ -111,6 +111,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override ObjectProperties Properties ()
+		{
+			if (resultIter != null && resultIter.HasValue) {
+				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
+				return base.GetProperties (objectForProperties);
+			}
+			return base.Properties ();
+		}
+
 		public override List<AppResult> NextSiblings ()
 		{
 			if (!resultIter.HasValue) {
