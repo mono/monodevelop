@@ -610,6 +610,8 @@ namespace MonoDevelop.Projects
 		{
 			if (args.Change == ExtensionChange.Add)
 				projectBindings.Add (args.ExtensionNode);
+			else if (args.Change == ExtensionChange.Remove)
+				projectBindings.Remove (args.ExtensionNode);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
