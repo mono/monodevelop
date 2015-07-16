@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			bool isNewLine = false, gotNewLine = false;
 			for (int i = 0; i < text.Length; i++) {
 				var ch = text [i];
-				if (clonedEngine.IsInsideVerbatimString || clonedEngine.IsInsideMultiLineComment) {
+				if (clonedEngine.IsInsideVerbatimString || clonedEngine.IsInsideMultiLineComment || clonedEngine.IsInsidePreprocessorComment) {
 					clonedEngine.Push(ch);
 					curLine.Append(ch);
 					continue;
