@@ -247,8 +247,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
 				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
 
-			if (textFieldArea != null)
+			if (textFieldArea != null) {
 				RemoveTrackingArea (textFieldArea);
+				DestroyPopover ();
+			}
 
 			if (width > textField.Frame.Width) {
 				textFieldArea = new NSTrackingArea (textField.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
