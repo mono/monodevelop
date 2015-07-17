@@ -129,6 +129,10 @@ namespace MonoDevelop.Components.MainToolbar
 		public virtual void Activate ()
 		{
 		}
+
+		public virtual bool IsValid {
+			get { return true; }
+		}
 	}
 
 	class FileSearchResult: SearchResult
@@ -263,6 +267,17 @@ namespace MonoDevelop.Components.MainToolbar
 		public override void Activate ()
 		{
 			IdeApp.CommandService.DispatchCommand (command.Id, null, route.InitialTarget, CommandSource.MainToolbar);
+		}
+
+		public override bool IsValid {
+			get {
+				if (ci == null) {
+					DispatchService.GuiSyncDispatch (delegate {
+						ci = IdeApp.CommandService.GetCommandInfo (command.Id, new CommandTargetRoute (MainToolbar.LastCommandTarget));
+					});
+				}
+				return ci.Enabled && ci.Visible;
+			}
 		}
 	}
 }

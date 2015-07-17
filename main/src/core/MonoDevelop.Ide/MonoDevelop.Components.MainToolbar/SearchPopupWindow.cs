@@ -125,7 +125,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowGrow = false;
 
 			categories.Add (new FileSearchCategory (this));
-//			categories.Add (new CommandSearchCategory (this));
+			categories.Add (new CommandSearchCategory (this));
 			categories.Add (new SearchInSolutionSearchCategory ());
 			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
 				categories.Add (cat);
@@ -236,14 +236,13 @@ namespace MonoDevelop.Components.MainToolbar
 			void ISearchResultCallback.ReportResult (SearchResult result)
 			{
 				int i = Math.Min (maxItems, searchResults.Count);
-				int lastCmp = 1;
 				while (i > 0) {
-					if ((lastCmp = cmp.Compare (result, searchResults [i - 1])) > 0)
+					if (cmp.Compare (result, searchResults [i - 1]) > 0)
 						break;
 					i--;
 				}
 
-				if (i < 0 || i >= maxItems)
+				if (i >= maxItems || !result.IsValid)
 					return;
 				searchResults = searchResults.Insert (i, result);
 				parent.UpdateSearchCollectors ();

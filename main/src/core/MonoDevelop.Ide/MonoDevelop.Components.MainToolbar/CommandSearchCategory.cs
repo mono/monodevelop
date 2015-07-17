@@ -73,8 +73,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			// NOTE: This is run on the UI thread as checking whether or not a command is enabled is not thread-safe
-			return Task.Factory.StartNew (delegate {
+			return Task.Run (delegate {
 				try {
 					if (pattern.HasLineNumber)
 						return;
@@ -87,18 +86,14 @@ namespace MonoDevelop.Components.MainToolbar
 						var matchString = cmdTuple.Item2;
 						int rank;
 
-						if (matcher.CalcMatchRank (matchString, out rank)) {
-							try {
-								var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, route);
-								searchResultCallback.ReportResult (new CommandResult (cmd, ci, route, pattern.Pattern, matchString, rank));
-							} catch (Exception e) { LoggingService.LogWarning ("Can't get command info : " + cmd.Id, e);}
-						}
+						if (matcher.CalcMatchRank (matchString, out rank))
+							searchResultCallback.ReportResult (new CommandResult (cmd, null, route, pattern.Pattern, matchString, rank));
 					}
 				} catch {
 					token.ThrowIfCancellationRequested ();
 					throw;
 				}
-			}, token, TaskCreationOptions.None, Xwt.Application.UITaskScheduler);
+			});
 		}
 	}
 }
