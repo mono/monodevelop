@@ -125,7 +125,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowGrow = false;
 
 			categories.Add (new FileSearchCategory (this));
-			categories.Add (new CommandSearchCategory (this));
+//			categories.Add (new CommandSearchCategory (this));
 			categories.Add (new SearchInSolutionSearchCategory ());
 			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
 				categories.Add (cat);
@@ -243,7 +243,7 @@ namespace MonoDevelop.Components.MainToolbar
 					i--;
 				}
 
-				if (i < 0 || i >= maxItems && lastCmp <= 0)
+				if (i < 0 || i >= maxItems)
 					return;
 				searchResults = searchResults.Insert (i, result);
 				parent.UpdateSearchCollectors ();
