@@ -655,11 +655,12 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			if (tooltip == null || string.IsNullOrEmpty (tooltip.SignatureMarkup) || token.IsCancellationRequested)
 				return;
-			
-			declarationviewwindow.Clear ();
-			declarationviewwindow.AddOverload (tooltip);
-			declarationviewwindow.CurrentOverload = 0;
-			declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+			Application.Invoke (delegate {
+				declarationviewwindow.Clear ();
+				declarationviewwindow.AddOverload (tooltip);
+				declarationviewwindow.CurrentOverload = 0;
+				declarationViewTimer = GLib.Timeout.Add (250, DelayedTooltipShow);
+			});
 		}
 
 		bool DelayedTooltipShow ()

@@ -198,7 +198,7 @@ namespace MonoDevelop.Components
 			set;
 		}
 
-		public void RepositionWindow (Gdk.Rectangle? newCaret = null)
+		public virtual void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (parent == null)
 				return;
