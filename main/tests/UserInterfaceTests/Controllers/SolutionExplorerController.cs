@@ -39,12 +39,12 @@ namespace UserInterfaceTests
 
 		public static Func<AppQuery, AppQuery> GetSolutionQuery (string solutionLabel)
 		{
-			return c => topLevel (c).Children().Property ("Label", solutionLabel).Index (0);
+			return c => topLevel (c).Children (false).Index (0).Property ("Label", solutionLabel);
 		}
 
 		public static Func<AppQuery, AppQuery> GetProjectQuery (string solutionLabel, string projectLabel)
 		{
-			return c => topLevel (c).Children().Property ("Label", solutionLabel).Children ().Property ("Label", projectLabel).Index (0);
+			return c => topLevel (c).Children (false).Index (0).Property ("Label", solutionLabel).Children (false).Property ("Label", projectLabel).Index (0);
 		}
 	}
 }
