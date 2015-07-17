@@ -249,9 +249,7 @@ namespace MonoDevelop.NUnit
 					}
 				}
 				menu.ShowAll ();
-
-				GtkWorkarounds.ShowContextMenu (menu, ext.Editor, new Gdk.Rectangle (x, y, 1, 1));
-
+				GtkWorkarounds.ShowContextMenu (menu, ext.Editor, x, y, new Gdk.Rectangle (0, 0, 1, 1));
 			}
 
 			#endregion
