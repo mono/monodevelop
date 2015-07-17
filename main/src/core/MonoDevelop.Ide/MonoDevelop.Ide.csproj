@@ -1988,15 +1988,6 @@
     <EmbeddedResource Include="icons\dark\solution-32~dark.png">
       <LogicalName>solution-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-16~sel.png">
-      <LogicalName>solution-16~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~sel.png">
-      <LogicalName>solution-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-64~sel.png">
-      <LogicalName>solution-64~sel.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\status-building-1-14.png">
