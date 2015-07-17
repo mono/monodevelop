@@ -647,7 +647,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 			TooltipInformation tooltip;
 			try {
-				tooltip = await currentSelectedItem.DataSource[i].GetTooltipInformation (token).ConfigureAwait (false);
+				tooltip = await currentSelectedItem.DataSource[i].GetTooltipInformation (token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while creating search popup window tooltip", e);
 				return;

@@ -165,7 +165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var service = Services.GetService<IPersistentStorageService>();
 
 			try {
-				var si = await CreateSolutionInfo (currentMonoDevelopSolution, token);
+				var si = await CreateSolutionInfo (currentMonoDevelopSolution, token).ConfigureAwait (false);
 				if (si != null)
 					OnSolutionReloaded (si);
 			} catch (Exception ex) {
