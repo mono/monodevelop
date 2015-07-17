@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using System.Linq;
 
 namespace MonoDevelop.Components.AutoTest.Results
 {
@@ -111,6 +112,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
+		public override ObjectProperties Properties ()
+		{
+			if (resultIter != null && resultIter.HasValue) {
+				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
+				return base.GetProperties (objectForProperties);
+			}
+			return base.Properties ();
+		}
+
 		public override List<AppResult> NextSiblings ()
 		{
 			if (!resultIter.HasValue) {
@@ -131,26 +141,72 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (resultIter == null || !resultIter.HasValue) {
 				List<AppResult> children = new List<AppResult> ();
-				TModel.Foreach ((m, p, i) => {
-					children.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, i));
-					return false;
-				});
+				TreeIter topIter;
+				if (TModel.GetIterFirst (out topIter)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+					children.Add (child);
+					this.FirstChild = child;
+					child.ParentNode = this;
+
+					if (recursive) {
+						var topIterChildren = FetchIterChildren (topIter, child, recursive);
+						child.FirstChild = topIterChildren.FirstOrDefault ();
+						children.AddRange (topIterChildren);
+					}
+
+					GtkTreeModelResult previousSibling = child;
+					while (TModel.IterNext (ref topIter)) {
+						var nextSibling = new GtkTreeModelResult (ParentWidget, TModel, Column, topIter);
+						children.Add (nextSibling);
+
+						nextSibling.PreviousSibling = previousSibling;
+						previousSibling.NextSibling = nextSibling;
+						nextSibling.ParentNode = this;
+
+						if (recursive) {
+							var topIterChildren = FetchIterChildren (topIter, nextSibling, recursive);
+							nextSibling.FirstChild = topIterChildren.FirstOrDefault ();
+							children.AddRange (topIterChildren);
+						}
+					}
+				}
 				return children;
 			}
 
 			TreeIter currentIter = (TreeIter) resultIter;
-			if (!TModel.IterHasChild (currentIter))
+			return FetchIterChildren (currentIter, this, recursive);
+		}
+
+		List<AppResult> FetchIterChildren (TreeIter iter, GtkTreeModelResult result, bool recursive)
+		{
+			List<AppResult> newList = new List<AppResult> ();
+			if (!TModel.IterHasChild (iter))
 			{
-				return null;
+				return newList;
 			}
 
-			List<AppResult> newList = new List<AppResult> ();
-			for (int i = 0; i < TModel.IterNChildren (currentIter); i++) {
+			GtkTreeModelResult previousSibling = null;
+			for (int i = 0; i < TModel.IterNChildren (iter); i++) {
 				TreeIter childIter;
-				if (TModel.IterNthChild (out childIter, currentIter, i)) {
-					newList.Add (new GtkTreeModelResult (ParentWidget, TModel, Column, childIter));
+				if (TModel.IterNthChild (out childIter, iter, i)) {
+					var child = new GtkTreeModelResult (ParentWidget, TModel, Column, childIter);
+
+					child.ParentNode = this;
+					child.PreviousSibling = previousSibling;
+					if (previousSibling != null)
+						previousSibling.NextSibling = child;
+					
+					newList.Add (child);
+					if (recursive) {
+						var childrenIter = FetchIterChildren (childIter, child, recursive);
+						newList.AddRange (childrenIter);
+						child.FirstChild = childrenIter.FirstOrDefault ();
+					}
+
+					previousSibling = child;
 				}
 			}
+			result.FirstChild = newList.FirstOrDefault ();
 			return newList;
 		}
 
