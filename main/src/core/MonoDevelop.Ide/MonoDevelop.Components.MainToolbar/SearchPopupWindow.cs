@@ -211,11 +211,10 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 		static readonly SearchCategory.DataItemComparer cmp = new SearchCategory.DataItemComparer ();
 
-		class SearchResultCollector : ISearchResultCallback, IDisposable
+		class SearchResultCollector : ISearchResultCallback
 		{
 			readonly SearchPopupWindow parent;
 			ImmutableList<SearchResult> searchResults = ImmutableList<SearchResult>.Empty;
-			uint timeout;
 
 			public IReadOnlyList<SearchResult> Results {
 				get {
@@ -247,33 +246,35 @@ namespace MonoDevelop.Components.MainToolbar
 				if (i < 0 || i >= maxItems && lastCmp <= 0)
 					return;
 				searchResults = searchResults.Insert (i, result);
-				Application.Invoke (delegate {
-					RemoveTimeout ();
-					timeout = GLib.Timeout.Add (200, delegate {
-						parent.ShowResult (Category, searchResults);
-						parent.QueueResize ();
-						timeout = 0;
-						return false;
-					});
-				});
-			}
+				parent.UpdateSearchCollectors ();
 
-			void RemoveTimeout ()
-			{
-				if (timeout == 0)
-					return;
-				GLib.Source.Remove (timeout);
-				timeout = 0;
-			}
-
-			public void Dispose ()
-			{
-				RemoveTimeout ();
 			}
 
 			#endregion
 		}
+		uint timeout;
 
+		void UpdateSearchCollectors()
+		{
+			RemoveTimeout ();
+			timeout = GLib.Timeout.Add (200, delegate {
+				foreach (var col in collectors) {
+					ShowResult (col.Category, col.Results);
+				}
+				QueueResize ();
+				timeout = 0;
+				return false;
+			});
+		}
+
+		void RemoveTimeout ()
+		{
+			if (timeout == 0)
+				return;
+			GLib.Source.Remove (timeout);
+			timeout = 0;
+		}
+		List<SearchResultCollector> collectors = new List<SearchResultCollector> ();
 		public void Update (SearchPopupSearchPattern pattern)
 		{
 			// in case of 'string:' it's not clear if the user ment 'tag:pattern'  or 'pattern:line' therefore guess
@@ -285,7 +286,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.pattern = pattern;
 			if (src != null)
 				src.Cancel ();
-
+			RemoveTimeout ();
 			HideTooltip ();
 			src = new CancellationTokenSource ();
 			isInSearch = true;
@@ -309,11 +310,11 @@ namespace MonoDevelop.Components.MainToolbar
 					LoggingService.LogError ("Error getting search results", t.Exception);
 				} else {
 					Application.Invoke (delegate {
+						RemoveTimeout ();
 						if (token.IsCancellationRequested)
 							return;
 						foreach (var col in collectors) {
 							ShowResult (col.Category, col.Results);
-							col.Dispose ();
 						}
 						isInSearch = false;
 						AnimatedResize ();
