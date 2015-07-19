@@ -177,6 +177,11 @@ namespace MonoDevelop.Debugger.Tests
 		public virtual void HiddenMembers ()
 		{
 			IgnoreCorDebugger ("TODO");
+			if (Session is SoftDebuggerSession) {
+				if (!((SoftDebuggerSession)Session).ProtocolVersion.AtLeast (2, 40)) {
+					Assert.Ignore ("Need newer Mono with SDB protocol 2.40+");
+				}
+			}
 			ObjectValue val;
 			val = Eval ("HiddenField");
 			Assert.AreEqual ("5", val.Value);
