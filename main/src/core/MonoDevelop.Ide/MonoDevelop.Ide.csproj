@@ -575,11 +575,23 @@
     <EmbeddedResource Include="icons\package-16%402x.png">
       <LogicalName>package-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark.png">
+      <LogicalName>package-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark%402x.png">
+      <LogicalName>package-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-24.png">
       <LogicalName>package-24.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-24%402x.png">
       <LogicalName>package-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~dark.png">
+      <LogicalName>package-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-24~dark%402x.png">
+      <LogicalName>package-24~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-32.png">
       <LogicalName>package-32.png</LogicalName>
@@ -587,11 +599,23 @@
     <EmbeddedResource Include="icons\package-32%402x.png">
       <LogicalName>package-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark.png">
+      <LogicalName>package-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-32~dark%402x.png">
+      <LogicalName>package-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48.png">
       <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-48%402x.png">
       <LogicalName>package-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark.png">
+      <LogicalName>package-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark%402x.png">
+      <LogicalName>package-48~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-task-list-16.png">
       <LogicalName>pad-task-list-16.png</LogicalName>
@@ -605,11 +629,23 @@
     <EmbeddedResource Include="icons\project-16%402x.png">
       <LogicalName>project-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~dark.png">
+      <LogicalName>project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-16~dark%402x.png">
+      <LogicalName>project-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-32.png">
       <LogicalName>project-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-32%402x.png">
       <LogicalName>project-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark.png">
+      <LogicalName>project-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark%402x.png">
+      <LogicalName>project-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-console-overlay-32.png">
       <LogicalName>project-console-overlay-32.png</LogicalName>
@@ -650,11 +686,23 @@
     <EmbeddedResource Include="icons\package-source-16%402x.png">
       <LogicalName>package-source-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~dark.png">
+      <LogicalName>package-source-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-16~dark%402x.png">
+      <LogicalName>package-source-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\reference-16.png">
       <LogicalName>reference-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\reference-16%402x.png">
       <LogicalName>reference-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~dark.png">
+      <LogicalName>reference-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-16~dark%402x.png">
+      <LogicalName>reference-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16.png">
       <LogicalName>solution-16.png</LogicalName>
@@ -662,23 +710,23 @@
     <EmbeddedResource Include="icons\solution-16%402x.png">
       <LogicalName>solution-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~dark.png">
+      <LogicalName>solution-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-16~dark%402x.png">
+      <LogicalName>solution-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-32.png">
       <LogicalName>solution-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-32%402x.png">
       <LogicalName>solution-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-64.png">
-      <LogicalName>solution-64.png</LogicalName>
+    <EmbeddedResource Include="icons\solution-32~dark.png">
+      <LogicalName>solution-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-64%402x.png">
-      <LogicalName>solution-64@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-128.png">
-      <LogicalName>solution-128.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-128%402x.png">
-      <LogicalName>solution-128@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\solution-32~dark%402x.png">
+      <LogicalName>solution-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
@@ -1082,11 +1130,23 @@
     <EmbeddedResource Include="icons\information-16%402x.png">
       <LogicalName>information-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~dark.png">
+      <LogicalName>information-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-16~dark%402x.png">
+      <LogicalName>information-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\information-24.png">
       <LogicalName>information-24.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-24%402x.png">
       <LogicalName>information-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~dark.png">
+      <LogicalName>information-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-24~dark%402x.png">
+      <LogicalName>information-24~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-32.png">
       <LogicalName>information-32.png</LogicalName>
@@ -1094,17 +1154,35 @@
     <EmbeddedResource Include="icons\information-32%402x.png">
       <LogicalName>information-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~dark.png">
+      <LogicalName>information-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-32~dark%402x.png">
+      <LogicalName>information-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\information-48.png">
       <LogicalName>information-48.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-48%402x.png">
       <LogicalName>information-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~dark.png">
+      <LogicalName>information-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\information-48~dark%402x.png">
+      <LogicalName>information-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\question-16.png">
       <LogicalName>question-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-16%402x.png">
       <LogicalName>question-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~dark.png">
+      <LogicalName>question-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-16~dark%402x.png">
+      <LogicalName>question-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-24.png">
       <LogicalName>question-24.png</LogicalName>
@@ -1118,11 +1196,23 @@
     <EmbeddedResource Include="icons\question-32%402x.png">
       <LogicalName>question-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~dark.png">
+      <LogicalName>question-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-32~dark%402x.png">
+      <LogicalName>question-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\question-48.png">
       <LogicalName>question-48.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\question-48%402x.png">
       <LogicalName>question-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~dark.png">
+      <LogicalName>question-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\question-48~dark%402x.png">
+      <LogicalName>question-48~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\command-16.png">
       <LogicalName>command-16.png</LogicalName>
@@ -1373,11 +1463,23 @@
     <EmbeddedResource Include="icons\warning-8%402x.png">
       <LogicalName>warning-8@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-8~dark.png">
+      <LogicalName>warning-8~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-8~dark%402x.png">
+      <LogicalName>warning-8~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16.png">
       <LogicalName>warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-16%402x.png">
       <LogicalName>warning-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~dark.png">
+      <LogicalName>warning-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-16~dark%402x.png">
+      <LogicalName>warning-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-24.png">
       <LogicalName>warning-24.png</LogicalName>
@@ -1385,11 +1487,23 @@
     <EmbeddedResource Include="icons\warning-24%402x.png">
       <LogicalName>warning-24@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~dark.png">
+      <LogicalName>warning-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-24~dark%402x.png">
+      <LogicalName>warning-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-32.png">
       <LogicalName>warning-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-32%402x.png">
       <LogicalName>warning-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~dark.png">
+      <LogicalName>warning-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-32~dark%402x.png">
+      <LogicalName>warning-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-48.png">
       <LogicalName>warning-48.png</LogicalName>
@@ -1397,11 +1511,23 @@
     <EmbeddedResource Include="icons\warning-48%402x.png">
       <LogicalName>warning-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~dark.png">
+      <LogicalName>warning-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\warning-48~dark%402x.png">
+      <LogicalName>warning-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16.png">
       <LogicalName>error-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-16%402x.png">
       <LogicalName>error-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~dark.png">
+      <LogicalName>error-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-16~dark%402x.png">
+      <LogicalName>error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-24.png">
       <LogicalName>error-24.png</LogicalName>
@@ -1409,11 +1535,23 @@
     <EmbeddedResource Include="icons\error-24%402x.png">
       <LogicalName>error-24@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~dark.png">
+      <LogicalName>error-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-24~dark%402x.png">
+      <LogicalName>error-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\error-32.png">
       <LogicalName>error-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-32%402x.png">
       <LogicalName>error-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~dark.png">
+      <LogicalName>error-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-32~dark%402x.png">
+      <LogicalName>error-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\error-48.png">
       <LogicalName>error-48.png</LogicalName>
@@ -1421,11 +1559,59 @@
     <EmbeddedResource Include="icons\error-48%402x.png">
       <LogicalName>error-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~dark.png">
+      <LogicalName>error-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\error-48~dark%402x.png">
+      <LogicalName>error-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16.png">
       <LogicalName>done-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\done-16%402x.png">
       <LogicalName>done-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~dark.png">
+      <LogicalName>done-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-16~dark%402x.png">
+      <LogicalName>done-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24.png">
+      <LogicalName>done-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24%402x.png">
+      <LogicalName>done-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~dark.png">
+      <LogicalName>done-24~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-24~dark%402x.png">
+      <LogicalName>done-24~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32.png">
+      <LogicalName>done-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32%402x.png">
+      <LogicalName>done-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~dark.png">
+      <LogicalName>done-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-32~dark%402x.png">
+      <LogicalName>done-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48.png">
+      <LogicalName>done-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48%402x.png">
+      <LogicalName>done-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~dark.png">
+      <LogicalName>done-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\done-48~dark%402x.png">
+      <LogicalName>done-48~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\edit-16.png">
       <LogicalName>edit-16.png</LogicalName>
@@ -1952,41 +2138,11 @@
     <EmbeddedResource Include="icons\spinner-selected-5-16%402x.png">
       <LogicalName>spinner-selected-5-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-24.png">
-      <LogicalName>done-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-24%402x.png">
-      <LogicalName>done-24@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-32.png">
-      <LogicalName>done-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-32%402x.png">
-      <LogicalName>done-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-48.png">
-      <LogicalName>done-48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\done-48%402x.png">
-      <LogicalName>done-48@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-nunit-overlay-32%402x.png">
       <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\dark\project-16~dark.png">
-      <LogicalName>project-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\dark\project-32~dark.png">
-      <LogicalName>project-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\dark\solution-16~dark.png">
-      <LogicalName>solution-16~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\dark\solution-32~dark.png">
-      <LogicalName>solution-32~dark.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">

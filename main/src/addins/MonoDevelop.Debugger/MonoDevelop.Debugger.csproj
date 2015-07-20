@@ -280,6 +280,12 @@
     <EmbeddedResource Include="icons\exception-48%402x.png">
       <LogicalName>exception-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-48~dark.png">
+      <LogicalName>exception-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-48~dark%402x.png">
+      <LogicalName>exception-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png">
       <LogicalName>gutter-breakpoint-15.png</LogicalName>
     </EmbeddedResource>

@@ -387,6 +387,12 @@
     <EmbeddedResource Include="icons\package-source-32%402x.png">
       <LogicalName>package-source-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark.png">
+      <LogicalName>package-source-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark%402x.png">
+      <LogicalName>package-source-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-16.png">
       <LogicalName>prefs-package-16.png</LogicalName>
     </EmbeddedResource>
@@ -406,6 +412,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\reference-48%402x.png">
       <LogicalName>reference-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-48~dark.png">
+      <LogicalName>reference-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\reference-48~dark%402x.png">
+      <LogicalName>reference-48~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
