@@ -51,6 +51,7 @@ using MonoDevelop.Projects.Extensions;
 using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.AutoTest;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -155,6 +156,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			store = new Gtk.TreeStore (typeof(NodeInfo), typeof(object), typeof(object), typeof(bool), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
+
+			// Set up the list store so the test framework can work out the correct columns
+			var modelAttr = new SemanticModelAttribute ("store__NodeInfo", "store__DataObject", "store__Chain", "store__CheckVisible");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			store.DefaultSortFunc = new Gtk.TreeIterCompareFunc (CompareNodes);
 			store.SetSortColumnId (/* GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID */ -1, Gtk.SortType.Ascending);
