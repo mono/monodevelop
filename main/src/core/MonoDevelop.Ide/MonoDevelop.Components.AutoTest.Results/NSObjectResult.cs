@@ -43,6 +43,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			ResultObject = resultObject;
 		}
 
+		public override string ToString ()
+		{
+			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
+		}
+
 		public override void ToXml (XmlElement element)
 		{
 			AddAttribute (element, "type", ResultObject.GetType ().ToString ());
@@ -77,6 +82,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 				if (ResultObject.GetType ().FullName == mark) {
 					return this;
 				}
+			}
+			if (ResultObject is NSWindow)
+			if (((NSWindow)ResultObject).Title == mark) {
+				return this;
 			}
 			return null;
 		}
