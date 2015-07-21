@@ -150,7 +150,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			control.PerformClick (null);
+			using (var nsObj = new NSObject ())
+				control.PerformClick (nsObj);
 			return true;
 		}
 
