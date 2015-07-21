@@ -128,27 +128,30 @@ namespace MonoDevelop.Components.AutoTest
 				var properties = resultObject.GetType ().GetProperties (
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 				foreach (var property in properties) {
-					var value = GetPropertyValue (property.Name, resultObject);
-					AppResult result = null;
+					try {
+						var value = GetPropertyValue (property.Name, resultObject);
+						AppResult result = null;
 
-					var gtkNotebookValue = value as Gtk.Notebook;
-					if (gtkNotebookValue != null)
-						result = new GtkNotebookResult (gtkNotebookValue);
-					var gtkTreeviewValue = value as Gtk.TreeView;
-					if (gtkTreeviewValue != null && result == null)
-						result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
-					var gtkWidgetValue = value as Gtk.Widget;
-					if (gtkWidgetValue != null && result == null)
-						result = new GtkWidgetResult (gtkWidgetValue);
-					#if MAC
-					var nsObjectValue = value as Foundation.NSObject;
-					if (nsObjectValue != null && result == null)
-						result = new NSObjectResult (nsObjectValue);
-					#endif
-					if (result == null)
-						result = new ObjectResult (value);
-
-					propertiesObject.Add (property.Name, result, property);
+						var gtkNotebookValue = value as Gtk.Notebook;
+						if (gtkNotebookValue != null)
+							result = new GtkNotebookResult (gtkNotebookValue);
+						var gtkTreeviewValue = value as Gtk.TreeView;
+						if (gtkTreeviewValue != null && result == null)
+							result = new GtkTreeModelResult (gtkTreeviewValue, gtkTreeviewValue.Model, 0);
+						var gtkWidgetValue = value as Gtk.Widget;
+						if (gtkWidgetValue != null && result == null)
+							result = new GtkWidgetResult (gtkWidgetValue);
+						#if MAC
+						var nsObjectValue = value as Foundation.NSObject;
+						if (nsObjectValue != null && result == null)
+							result = new NSObjectResult (nsObjectValue);
+						#endif
+						if (result == null)
+							result = new ObjectResult (value);
+						propertiesObject.Add (property.Name, result, property);
+					} catch (Exception e) {
+						MonoDevelop.Core.LoggingService.LogInfo ("Failed to fetch property '{0}' on '{1}' with Exception: {2}", property, resultObject, e);
+					}
 				}
 			}
 
