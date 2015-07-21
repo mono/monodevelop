@@ -48,31 +48,46 @@ namespace UserInterfaceTests
 
 		Action<string> takeScreenshot;
 
+		bool isUpdate;
+
 		readonly Func<AppQuery,AppQuery> nugetWindow;
 		readonly Func<AppQuery,AppQuery> addPackageButton;
+		readonly Func<AppQuery,AppQuery> updatePackageButton;
 		readonly Func<AppQuery,AppQuery> resultList;
 		readonly Func<AppQuery,AppQuery> includePreRelease;
 
 		public static void AddPackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
 		{
-			var nuget = new NuGetController (takeScreenshot);
+			AddUpdatePackage (packageOptions, takeScreenshot, false);
+		}
+
+		public static void UpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot = null)
+		{
+			AddUpdatePackage (packageOptions, takeScreenshot, true);
+		}
+
+		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate)
+		{
+			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();
 			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
 			nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
 			nuget.ClickAdd ();
-			Ide.WaitForStatusMessage (new [] {
-				string.Format ("{0} successfully added.", packageOptions.PackageName)
+			Ide.WaitForStatusMessage (new[] {
+				string.Format ("{0} successfully {1}.", packageOptions.PackageName, isUpdate ? "updated": "added")
 			});
 			if (takeScreenshot != null)
-				takeScreenshot ("Package-Added");
+				takeScreenshot ("NuGet-Operation-Finished");
 		}
 
-		public NuGetController (Action<string> takeScreenshot = null)
+		public NuGetController (Action<string> takeScreenshot = null, bool isUpdate = false)
 		{
 			this.takeScreenshot = takeScreenshot ?? delegate { };
+			this.isUpdate = isUpdate;
 
 			nugetWindow = c => c.Window ().Marked ("Add Packages");
 			addPackageButton = c => nugetWindow (c).Children ().Button ().Text ("Add Package");
+			updatePackageButton = c => nugetWindow (c).Children ().Button ().Text ("Update Package");
 			resultList = c => nugetWindow (c).Children ().TreeView ().Model ();
 			includePreRelease = c => nugetWindow (c).Children ().CheckButton ().Text ("Show pre-release packages");
 		}
@@ -123,7 +138,7 @@ namespace UserInterfaceTests
 		public void ClickAdd ()
 		{
 			WaitForAddButton (true);
-			Assert.IsTrue (Session.ClickElement (addPackageButton));
+			Assert.IsTrue (Session.ClickElement (isUpdate ? updatePackageButton : addPackageButton));
 			Session.WaitForElement (IdeQuery.TextArea);
 		}
 
@@ -138,7 +153,7 @@ namespace UserInterfaceTests
 			if (enabled == null)
 				Session.WaitForElement (addPackageButton);
 			else
-				Session.WaitForElement (c => addPackageButton (c).Sensitivity (enabled.Value), 10000);
+				Session.WaitForElement (c => (isUpdate? updatePackageButton(c) : addPackageButton (c)).Sensitivity (enabled.Value), 10000);
 		}
 	}
 }

@@ -218,7 +218,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			if (ParentWidget is TreeView) {
 				TreeView treeView = (TreeView) ParentWidget;
+				treeView.Selection.UnselectAll ();
 				treeView.Selection.SelectIter ((TreeIter) resultIter);
+				treeView.SetCursor (TModel.GetPath ((TreeIter) resultIter), treeView.Columns [0], false);
+
 			} else if (ParentWidget is ComboBox) {
 				ComboBox comboBox = (ComboBox) ParentWidget;
 				comboBox.SetActiveIter ((TreeIter) resultIter);
