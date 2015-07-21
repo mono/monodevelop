@@ -107,6 +107,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				if (CheckForText (value, text, exact)) {
 					return this;
 				}
+
+				if (ResultObject is NSButton) {
+					var nsButton = (NSButton)ResultObject;
+					if (CheckForText (nsButton.Title, text, exact)) {
+						return this;
+					}
+				}
 			}
 
 			return null;
