@@ -74,18 +74,20 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
-			if (ResultObject is NSView) {
-				if (((NSView)ResultObject).Identifier == mark) {
-					return this;
-				}
+			if (CheckForText (ResultObject.GetType ().FullName, mark, true)) {
+				return this;
+			}
 
-				if (ResultObject.GetType ().FullName == mark) {
+			if (ResultObject is NSView) {
+				if (CheckForText (((NSView)ResultObject).Identifier, mark, true)) {
 					return this;
 				}
 			}
-			if (ResultObject is NSWindow)
-			if (((NSWindow)ResultObject).Title == mark) {
-				return this;
+
+			if (ResultObject is NSWindow) {
+				if (CheckForText (((NSWindow)ResultObject).Title,  mark, true)) {
+					return this;
+				}
 			}
 			return null;
 		}
