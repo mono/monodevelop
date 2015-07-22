@@ -232,11 +232,23 @@
     <EmbeddedResource Include="icons\pin-down-16%402x.png">
       <LogicalName>pin-down-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~dark.png">
+      <LogicalName>pin-down-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-down-16~dark%402x.png">
+      <LogicalName>pin-down-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-up-16.png">
       <LogicalName>pin-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pin-up-16%402x.png">
       <LogicalName>pin-up-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~dark.png">
+      <LogicalName>pin-up-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pin-up-16~dark%402x.png">
+      <LogicalName>pin-up-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="options\KeyBindingSchemeEmacs.xml">
       <LogicalName>KeyBindingSchemeEmacs.xml</LogicalName>
@@ -802,11 +814,23 @@
     <EmbeddedResource Include="icons\feedback-16%402x.png">
       <LogicalName>feedback-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\feedback-16~dark.png">
+      <LogicalName>feedback-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\feedback-16~dark%402x.png">
+      <LogicalName>feedback-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\updates-16.png">
       <LogicalName>updates-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\updates-16%402x.png">
       <LogicalName>updates-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\updates-16~dark.png">
+      <LogicalName>updates-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\updates-16~dark%402x.png">
+      <LogicalName>updates-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="branding\WelcomePage_Logo.png">
       <LogicalName>WelcomePage_Logo.png</LogicalName>
@@ -823,11 +847,23 @@
     <EmbeddedResource Include="icons\popup-close-16%402x.png">
       <LogicalName>popup-close-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\popup-close-16~dark.png">
+      <LogicalName>popup-close-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\popup-close-16~dark%402x.png">
+      <LogicalName>popup-close-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\popup-close-hover-16.png">
       <LogicalName>popup-close-hover-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\popup-close-hover-16%402x.png">
       <LogicalName>popup-close-hover-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\popup-close-hover-16~dark.png">
+      <LogicalName>popup-close-hover-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\popup-close-hover-16~dark%402x.png">
+      <LogicalName>popup-close-hover-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\assets\btn-debug-base-left-cap-normal.png">
       <LogicalName>btn-debug-base-left-cap-normal.png</LogicalName>
@@ -919,11 +955,47 @@
     <EmbeddedResource Include="icons\disclose-arrow-down-16%402x.png">
       <LogicalName>disclose-arrow-down-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark.png">
+      <LogicalName>disclose-arrow-down-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark%402x.png">
+      <LogicalName>disclose-arrow-down-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark~sel.png">
+      <LogicalName>disclose-arrow-down-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~dark~sel%402x.png">
+      <LogicalName>disclose-arrow-down-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~sel.png">
+      <LogicalName>disclose-arrow-down-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-down-16~sel%402x.png">
+      <LogicalName>disclose-arrow-down-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-up-16.png">
       <LogicalName>disclose-arrow-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\disclose-arrow-up-16%402x.png">
       <LogicalName>disclose-arrow-up-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark.png">
+      <LogicalName>disclose-arrow-up-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark%402x.png">
+      <LogicalName>disclose-arrow-up-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark~sel.png">
+      <LogicalName>disclose-arrow-up-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~dark~sel%402x.png">
+      <LogicalName>disclose-arrow-up-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~sel.png">
+      <LogicalName>disclose-arrow-up-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\disclose-arrow-up-16~sel%402x.png">
+      <LogicalName>disclose-arrow-up-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-search-results-16.png">
       <LogicalName>pad-search-results-16.png</LogicalName>
@@ -937,11 +1009,47 @@
     <EmbeddedResource Include="icons\searchbox-clear-16%402x.png">
       <LogicalName>searchbox-clear-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~dark.png">
+      <LogicalName>searchbox-clear-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~dark%402x.png">
+      <LogicalName>searchbox-clear-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~dark~sel.png">
+      <LogicalName>searchbox-clear-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~dark~sel%402x.png">
+      <LogicalName>searchbox-clear-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~sel.png">
+      <LogicalName>searchbox-clear-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-clear-16~sel%402x.png">
+      <LogicalName>searchbox-clear-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-16.png">
       <LogicalName>searchbox-search-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\searchbox-search-16%402x.png">
       <LogicalName>searchbox-search-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~dark.png">
+      <LogicalName>searchbox-search-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~dark%402x.png">
+      <LogicalName>searchbox-search-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~dark~sel.png">
+      <LogicalName>searchbox-search-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~dark~sel%402x.png">
+      <LogicalName>searchbox-search-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~sel.png">
+      <LogicalName>searchbox-search-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\searchbox-search-16~sel%402x.png">
+      <LogicalName>searchbox-search-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tree-popup-button.png">
       <LogicalName>tree-popup-button.png</LogicalName>
@@ -1057,17 +1165,53 @@
     <EmbeddedResource Include="icons\tabbar-next-12%402x.png">
       <LogicalName>tabbar-next-12@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-normal-16.png">
-      <LogicalName>breadcrumb-previous-normal-16.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16.png">
+      <LogicalName>breadcrumb-previous-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-previous-normal-16%402x.png">
-      <LogicalName>breadcrumb-previous-normal-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16%402x.png">
+      <LogicalName>breadcrumb-previous-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-normal-16.png">
-      <LogicalName>breadcrumb-next-normal-16.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark.png">
+      <LogicalName>breadcrumb-previous-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\breadcrumb-next-normal-16%402x.png">
-      <LogicalName>breadcrumb-next-normal-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark%402x.png">
+      <LogicalName>breadcrumb-previous-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark~sel.png">
+      <LogicalName>breadcrumb-previous-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~dark~sel%402x.png">
+      <LogicalName>breadcrumb-previous-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~sel.png">
+      <LogicalName>breadcrumb-previous-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-previous-16~sel%402x.png">
+      <LogicalName>breadcrumb-previous-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16.png">
+      <LogicalName>breadcrumb-next-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16%402x.png">
+      <LogicalName>breadcrumb-next-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~dark.png">
+      <LogicalName>breadcrumb-next-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~dark%402x.png">
+      <LogicalName>breadcrumb-next-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~dark~sel.png">
+      <LogicalName>breadcrumb-next-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~dark~sel%402x.png">
+      <LogicalName>breadcrumb-next-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~sel.png">
+      <LogicalName>breadcrumb-next-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breadcrumb-next-16~sel%402x.png">
+      <LogicalName>breadcrumb-next-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\information-16.png">
       <LogicalName>information-16.png</LogicalName>
@@ -1165,6 +1309,12 @@
     <EmbeddedResource Include="icons\command-16%402x.png">
       <LogicalName>command-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\command-16~dark.png">
+      <LogicalName>command-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\command-16~dark%402x.png">
+      <LogicalName>command-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.MainToolbar\icons\ico-build-disabled-32.png">
       <LogicalName>ico-build-disabled-32.png</LogicalName>
     </EmbeddedResource>
@@ -1183,11 +1333,23 @@
     <EmbeddedResource Include="icons\stop-16%402x.png">
       <LogicalName>stop-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-16~dark.png">
+      <LogicalName>stop-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stop-16~dark%402x.png">
+      <LogicalName>stop-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\clear-16.png">
       <LogicalName>clear-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\clear-16%402x.png">
       <LogicalName>clear-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\clear-16~dark.png">
+      <LogicalName>clear-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\clear-16~dark%402x.png">
+      <LogicalName>clear-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\link-chat.png">
       <LogicalName>link-chat.png</LogicalName>
@@ -1378,11 +1540,23 @@
     <EmbeddedResource Include="icons\preferences-16%402x.png">
       <LogicalName>preferences-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\preferences-16~dark.png">
+      <LogicalName>preferences-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preferences-16~dark%402x.png">
+      <LogicalName>preferences-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\sort-alphabetically-16.png">
       <LogicalName>sort-alphabetically-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\sort-alphabetically-16%402x.png">
       <LogicalName>sort-alphabetically-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sort-alphabetically-16~dark.png">
+      <LogicalName>sort-alphabetically-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\sort-alphabetically-16~dark%402x.png">
+      <LogicalName>sort-alphabetically-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\group-by-category-16.png">
       <LogicalName>group-by-category-16.png</LogicalName>
@@ -1390,11 +1564,23 @@
     <EmbeddedResource Include="icons\group-by-category-16%402x.png">
       <LogicalName>group-by-category-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\group-by-category-16~dark.png">
+      <LogicalName>group-by-category-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\group-by-category-16~dark%402x.png">
+      <LogicalName>group-by-category-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\add-16.png">
       <LogicalName>add-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\add-16%402x.png">
       <LogicalName>add-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-16~dark.png">
+      <LogicalName>add-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\add-16~dark%402x.png">
+      <LogicalName>add-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-overlay-9.png">
       <LogicalName>warning-overlay-9.png</LogicalName>
@@ -1564,6 +1750,12 @@
     <EmbeddedResource Include="icons\edit-16%402x.png">
       <LogicalName>edit-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\edit-16~dark.png">
+      <LogicalName>edit-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\edit-16~dark%402x.png">
+      <LogicalName>edit-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\star-16.png">
       <LogicalName>star-16.png</LogicalName>
     </EmbeddedResource>
@@ -1617,6 +1809,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\remove-16%402x.png">
       <LogicalName>remove-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~dark.png">
+      <LogicalName>remove-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remove-16~dark%402x.png">
+      <LogicalName>remove-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\properties-16.png">
       <LogicalName>properties-16.png</LogicalName>
@@ -1738,11 +1936,23 @@
     <EmbeddedResource Include="icons\copy-16%402x.png">
       <LogicalName>copy-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-16~dark.png">
+      <LogicalName>copy-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\copy-16~dark%402x.png">
+      <LogicalName>copy-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\find-16.png">
       <LogicalName>find-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\find-16%402x.png">
       <LogicalName>find-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-16~dark.png">
+      <LogicalName>find-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-16~dark%402x.png">
+      <LogicalName>find-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\find-and-replace-16.png">
       <LogicalName>find-and-replace-16.png</LogicalName>
@@ -1756,11 +1966,23 @@
     <EmbeddedResource Include="icons\go-back-16%402x.png">
       <LogicalName>go-back-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-back-16~dark.png">
+      <LogicalName>go-back-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-back-16~dark%402x.png">
+      <LogicalName>go-back-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\go-down-16.png">
       <LogicalName>go-down-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\go-down-16%402x.png">
       <LogicalName>go-down-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-down-16~dark.png">
+      <LogicalName>go-down-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-down-16~dark%402x.png">
+      <LogicalName>go-down-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\go-forward-16.png">
       <LogicalName>go-forward-16.png</LogicalName>
@@ -1768,11 +1990,23 @@
     <EmbeddedResource Include="icons\go-forward-16%402x.png">
       <LogicalName>go-forward-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-forward-16~dark.png">
+      <LogicalName>go-forward-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-forward-16~dark%402x.png">
+      <LogicalName>go-forward-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\go-up-16.png">
       <LogicalName>go-up-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\go-up-16%402x.png">
       <LogicalName>go-up-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-up-16~dark.png">
+      <LogicalName>go-up-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\go-up-16~dark%402x.png">
+      <LogicalName>go-up-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\undo-16.png">
       <LogicalName>undo-16.png</LogicalName>
@@ -1780,11 +2014,35 @@
     <EmbeddedResource Include="icons\undo-16%402x.png">
       <LogicalName>undo-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\undo-16~dark.png">
+      <LogicalName>undo-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\undo-16~dark%402x.png">
+      <LogicalName>undo-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\home-16.png">
       <LogicalName>home-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\home-16%402x.png">
       <LogicalName>home-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~dark.png">
+      <LogicalName>home-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~dark%402x.png">
+      <LogicalName>home-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~dark~sel.png">
+      <LogicalName>home-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~dark~sel%402x.png">
+      <LogicalName>home-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~sel.png">
+      <LogicalName>home-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\home-16~sel%402x.png">
+      <LogicalName>home-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\jump-to-16.png">
       <LogicalName>jump-to-16.png</LogicalName>
@@ -1792,17 +2050,35 @@
     <EmbeddedResource Include="icons\jump-to-16%402x.png">
       <LogicalName>jump-to-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\jump-to-16~dark.png">
+      <LogicalName>jump-to-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\jump-to-16~dark%402x.png">
+      <LogicalName>jump-to-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\media-play-16.png">
       <LogicalName>media-play-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\media-play-16%402x.png">
       <LogicalName>media-play-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\media-play-16~dark.png">
+      <LogicalName>media-play-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\media-play-16~dark%402x.png">
+      <LogicalName>media-play-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\missing-image-16.png">
       <LogicalName>missing-image-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\missing-image-16%402x.png">
       <LogicalName>missing-image-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\missing-image-16~dark.png">
+      <LogicalName>missing-image-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\missing-image-16~dark%402x.png">
+      <LogicalName>missing-image-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\open-16.png">
       <LogicalName>open-16.png</LogicalName>
@@ -1812,6 +2088,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\refresh-16%402x.png">
       <LogicalName>refresh-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark.png">
+      <LogicalName>refresh-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark%402x.png">
+      <LogicalName>refresh-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\save-16.png">
       <LogicalName>save-16.png</LogicalName>
@@ -1825,11 +2107,47 @@
     <EmbeddedResource Include="icons\zoom-in-16%402x.png">
       <LogicalName>zoom-in-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~dark.png">
+      <LogicalName>zoom-in-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~dark%402x.png">
+      <LogicalName>zoom-in-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~dark~sel.png">
+      <LogicalName>zoom-in-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~dark~sel%402x.png">
+      <LogicalName>zoom-in-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~sel.png">
+      <LogicalName>zoom-in-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-in-16~sel%402x.png">
+      <LogicalName>zoom-in-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\zoom-out-16.png">
       <LogicalName>zoom-out-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\zoom-out-16%402x.png">
       <LogicalName>zoom-out-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~dark.png">
+      <LogicalName>zoom-out-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~dark%402x.png">
+      <LogicalName>zoom-out-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~dark~sel.png">
+      <LogicalName>zoom-out-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~dark~sel%402x.png">
+      <LogicalName>zoom-out-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~sel.png">
+      <LogicalName>zoom-out-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\zoom-out-16~sel%402x.png">
+      <LogicalName>zoom-out-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\spinner-14-1.png">
       <LogicalName>spinner-14-1.png</LogicalName>
@@ -2005,23 +2323,59 @@
     <EmbeddedResource Include="icons\preview-active-16%402x.png">
       <LogicalName>preview-active-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-active-16~dark.png">
+      <LogicalName>preview-active-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-active-16~dark%402x.png">
+      <LogicalName>preview-active-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\preview-hover-16.png">
       <LogicalName>preview-hover-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\preview-hover-16%402x.png">
       <LogicalName>preview-hover-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\preview-normal-16.png">
-      <LogicalName>preview-normal-16.png</LogicalName>
+    <EmbeddedResource Include="icons\preview-hover-16~dark.png">
+      <LogicalName>preview-hover-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\preview-normal-16%402x.png">
-      <LogicalName>preview-normal-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\preview-hover-16~dark%402x.png">
+      <LogicalName>preview-hover-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\preview-selected-16.png">
-      <LogicalName>preview-selected-16.png</LogicalName>
+    <EmbeddedResource Include="icons\preview-hover-16~dark~sel.png">
+      <LogicalName>preview-hover-16~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\preview-selected-16%402x.png">
-      <LogicalName>preview-selected-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\preview-hover-16~dark~sel%402x.png">
+      <LogicalName>preview-hover-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-hover-16~sel.png">
+      <LogicalName>preview-hover-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-hover-16~sel%402x.png">
+      <LogicalName>preview-hover-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16.png">
+      <LogicalName>preview-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16%402x.png">
+      <LogicalName>preview-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~dark.png">
+      <LogicalName>preview-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~dark%402x.png">
+      <LogicalName>preview-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~dark~sel.png">
+      <LogicalName>preview-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~dark~sel%402x.png">
+      <LogicalName>preview-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~sel.png">
+      <LogicalName>preview-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\preview-16~sel%402x.png">
+      <LogicalName>preview-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\spinner-normal-1-16.png">
       <LogicalName>spinner-normal-1-16.png</LogicalName>
@@ -2342,6 +2696,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\parser-16%402x.png">
       <LogicalName>parser-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\parser-16~dark.png">
+      <LogicalName>parser-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\parser-16~dark%402x.png">
+      <LogicalName>parser-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
