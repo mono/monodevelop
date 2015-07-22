@@ -118,6 +118,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return SolutionFormat;
 				return new MSBuildFileFormatVS12 ();
 			case "12.0":
+			case "14.0":
 				return new MSBuildFileFormatVS12 ();
 			default:
 				throw new Exception ("Unknown ToolsVersion '" + ToolsVersion + "'");
