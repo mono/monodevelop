@@ -124,9 +124,10 @@ namespace MonoDevelop.VersionControl
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
-				case VersionStatus.ScheduledReplace:
 				case VersionStatus.ScheduledIgnore:
 					return overlay_modified;
+				case VersionStatus.ScheduledReplace:
+					return overlay_renamed;
 				case VersionStatus.Conflicted:
 					return overlay_conflicted;
 				case VersionStatus.ScheduledAdd:

@@ -335,9 +335,9 @@ namespace MonoDevelop.Components.AutoTest
 			return this;
 		}
 
-		public AppQuery Children ()
+		public AppQuery Children (bool recursive = true)
 		{
-			operations.Add (new ChildrenOperation ());
+			operations.Add (new ChildrenOperation (recursive));
 			return this;
 		}
 

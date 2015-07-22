@@ -78,6 +78,28 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		{
 			return 6;
 		}
+
+		public override int OverridenMethodInt ()
+		{
+			return 6;
+		}
+
+		public override int OverridenPropertyInt {
+			get {
+				return 6;
+			}
+		}
+
+		public override string OverridenMethodString ()
+		{
+			return "6";
+		}
+
+		public override string OverridenPropertyString {
+			get {
+				return "6";
+			}
+		}
 	}
 
 	class TestEvaluation : TestEvaluationParent
@@ -165,6 +187,8 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 					}
 				}
 			}
+
+			var testEvaluationChild = new TestEvaluationChild ();
 
 			Console.WriteLine (n); /*break*/
 		}
@@ -268,6 +292,28 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public virtual int HiddenMethod ()
 		{
 			return 5;
+		}
+
+		public virtual int OverridenMethodInt ()
+		{
+			return 5;
+		}
+
+		public virtual int OverridenPropertyInt {
+			get {
+				return 5;
+			}
+		}
+
+		public virtual string OverridenMethodString ()
+		{
+			return "5";
+		}
+
+		public virtual string OverridenPropertyString {
+			get {
+				return "5";
+			}
 		}
 	}
 
