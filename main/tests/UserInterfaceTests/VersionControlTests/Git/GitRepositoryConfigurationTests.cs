@@ -130,7 +130,50 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
-		public void EditGitRemoteTest ()
+		[Description ("Edit only Remote Name, don't edit URL or Push URL")]
+		public void EditGitRemoteNameTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+
+			const string updatedRemoteName = "second-origin";
+			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			EditRemote (updatedRemoteName, updatedRemoteUrl, updatedRemoteUrl);
+			SelectRemote (updatedRemoteName, updatedRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Edit only Remote Name and URL, don't edit Push URL")]
+		public void EditGitRemoteNameAndUrlTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+
+			const string updatedRemoteName = "second-origin";
+			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			EditRemote (updatedRemoteName, updatedRemoteUrl, newRemoteUrl);
+			SelectRemote (updatedRemoteName, updatedRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Edit only Remote Name and Push URL, don't edit URL")]
+		public void EditGitRemoteNameAndPushUrlTest ()
 		{
 			TestClone ("git@github.com:mono/jurassic.git");
 			Ide.WaitForSolutionCheckedOut ();
@@ -146,6 +189,26 @@ namespace UserInterfaceTests
 			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
 			EditRemote (updatedRemoteName, updatedRemoteUrl, "git@github.com:mono/monohotdraw-push.git");
 			SelectRemote (updatedRemoteName, updatedRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		[Description ("Edit only Remote URL and Push URL, don't edit Name")]
+		public void EditGitRemoteUrlTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+
+			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw-push.git";
+			EditRemote (newRemoteName, updatedRemoteUrl, updatedRemoteUrl);
+			SelectRemote (newRemoteName, updatedRemoteUrl);
 			CloseRepositoryConfiguration ();
 		}
 
