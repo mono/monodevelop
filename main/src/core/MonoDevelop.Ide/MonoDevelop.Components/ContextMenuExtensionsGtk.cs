@@ -82,7 +82,7 @@ namespace MonoDevelop.Components
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, x, y, parent.Allocation);
+			GtkWorkarounds.ShowContextMenu (menu, parent, x, y, parent.Allocation);
 		}
 
 		static Gtk.MenuItem CreateMenuItem (ContextMenuItem item)
