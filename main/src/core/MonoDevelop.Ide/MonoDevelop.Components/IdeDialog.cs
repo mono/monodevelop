@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Gtk;
+using MonoDevelop.Components.Theming;
 
 namespace MonoDevelop.Components
 {
@@ -32,12 +33,12 @@ namespace MonoDevelop.Components
 	{
 		public IdeDialog ()
 		{
-			this.ApplyTheme ();
+			IdeTheme.ApplyTheme (this);
 		}
 
 		public IdeDialog (string title, Gtk.Window parentWindow, DialogFlags flags): base (title, parentWindow, flags)
 		{
-			this.ApplyTheme ();
+			IdeTheme.ApplyTheme (this);
 		}
 	}
 }

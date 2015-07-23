@@ -9,7 +9,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-    internal partial class TipOfTheDayWindow : Gtk.Window
+	internal partial class TipOfTheDayWindow : IdeWindow
 	{
 		internal const string ShowTipsAtStartup = "MonoDevelop.Core.Gui.Dialog.TipOfTheDayView.ShowTipsAtStartup";
         List<string> tips = new List<string> ();
@@ -18,7 +18,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
         public TipOfTheDayWindow()
             : base (WindowType.Toplevel)
         {
-			this.ApplyTheme ();
             Build ();
             TransientFor = IdeApp.Workbench.RootWindow;
 

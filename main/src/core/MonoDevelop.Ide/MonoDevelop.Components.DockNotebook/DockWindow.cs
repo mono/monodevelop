@@ -36,13 +36,12 @@ using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockWindow : Gtk.Window
+	class DockWindow : IdeWindow
 	{
 		static List<DockWindow> allWindows = new List<DockWindow> ();
 
 		public DockWindow () : base (Gtk.WindowType.Toplevel)
 		{
-			this.ApplyTheme ();
 			IdeApp.CommandService.RegisterTopWindow (this);
 			AddAccelGroup (IdeApp.CommandService.AccelGroup);
 

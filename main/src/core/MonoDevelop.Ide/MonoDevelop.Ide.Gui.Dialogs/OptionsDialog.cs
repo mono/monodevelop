@@ -37,7 +37,7 @@ using MonoDevelop.Components;
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	
-	public partial class OptionsDialog : Gtk.Dialog
+	public partial class OptionsDialog : IdeDialog
 	{
 		Gtk.HBox mainHBox;
 		Gtk.TreeView tree;
@@ -87,8 +87,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
-			this.ApplyTheme ();
-
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
 
