@@ -57,7 +57,12 @@ namespace UserInterfaceTests
 
 		public bool Next ()
 		{
-			return Session.ClickElement (c => c.Button ().Marked ("nextButton"));
+			return Session.ClickElement (c => c.Button ().Text ("Next"));
+		}
+
+		public bool Create ()
+		{
+			return Session.ClickElement (c => c.Button ().Text ("Create"));
 		}
 
 		public bool Previous ()

@@ -1,8 +1,9 @@
 ﻿//
-// SimpleTest.cs
+// CreateBuildTemplatesTestBase.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
+//		 Manish Sinha <manish.sinha@xamarin.com>
 //
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 //
@@ -174,7 +175,7 @@ namespace UserInterfaceTests
 
 		protected virtual void OnClickCreate (NewProjectController newProject)
 		{
-			Session.RunAndWaitForTimer (() => newProject.Next(), "Ide.Shell.SolutionOpened");
+			Session.RunAndWaitForTimer (() => newProject.Create (), "Ide.Shell.SolutionOpened");
 		}
 
 		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
