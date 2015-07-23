@@ -313,7 +313,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					newContext = new TargetEvaluationContext (newContext);
 				var res = RunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
 				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
-				return res.BuildResult;
+				return res != null ? res.BuildResult : null;
 			} finally {
 				if (newContext != currentContext)
 					CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
