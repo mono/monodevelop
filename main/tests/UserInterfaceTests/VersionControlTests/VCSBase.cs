@@ -27,6 +27,7 @@
 using System;
 using NUnit.Framework;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide.Commands;
 
 namespace UserInterfaceTests
 {
@@ -117,6 +118,37 @@ namespace UserInterfaceTests
 				TakeScreenShot ("Selected-Use-Git-Config");
 				Session.ClickElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserInfoConflictDialog").Children ().Button ().Marked ("buttonOk"));
 			}
+		}
+
+		protected void GitCreateAndCommit (TemplateSelectionOptions templateOptions, string commitMessage)
+		{
+			CreateProject (templateOptions, 
+				new ProjectDetails (templateOptions),
+				new GitOptions { UseGit = true, UseGitIgnore = true });
+
+			Session.WaitForElement (IdeQuery.TextArea);
+			TestCommit (commitMessage);
+
+			Session.ExecuteCommand (FileCommands.CloseFile);
+			Session.WaitForElement (IdeQuery.TextArea);
+		}
+
+		protected string MakeSomeChangesAndSaveAll (string waitForFile = null)
+		{
+			if (waitForFile != null)
+				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", waitForFile));
+			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("Ready-To-Make-Changes");
+			Session.SelectElement (IdeQuery.TextArea);
+			for (int i = 0; i < 10; i++) {
+				Session.ExecuteCommand (TextEditorCommands.InsertNewLine);
+				Session.ExecuteCommand (TextEditorCommands.InsertTab);
+			}
+			TakeScreenShot ("Made-Changes-To-Doc");
+			Session.ExecuteCommand (FileCommands.SaveAll);
+			TakeScreenShot ("Inserted-Newline-SaveAll-Called");
+
+			return "Entered new blank line";
 		}
 
 		protected override void OnBuildTemplate (int buildTimeoutInSecs = 180)
