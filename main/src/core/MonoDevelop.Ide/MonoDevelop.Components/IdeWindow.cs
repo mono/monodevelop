@@ -31,7 +31,7 @@ namespace MonoDevelop.Components
 	{
 		public IdeWindow (Gtk.WindowType type): base (type)
 		{
-			this.ApplyTheme ();
+			IdeTheme.ApplyTheme (this);
 		}
 	}
 }

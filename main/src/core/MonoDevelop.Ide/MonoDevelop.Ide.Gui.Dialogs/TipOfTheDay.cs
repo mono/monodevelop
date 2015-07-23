@@ -9,7 +9,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-    internal partial class TipOfTheDayWindow : Gtk.Window
+	internal partial class TipOfTheDayWindow : IdeWindow
 	{
         List<string> tips = new List<string> ();
         int currentTip;
@@ -17,7 +17,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
         public TipOfTheDayWindow()
             : base (WindowType.Toplevel)
         {
-			this.ApplyTheme ();
             Build ();
             TransientFor = IdeApp.Workbench.RootWindow;
 

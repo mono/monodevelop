@@ -33,16 +33,16 @@ using AppKit;
 
 namespace MonoDevelop.Components
 {
-	public static class ThemeExtensions
+	public static class IdeTheme
 	{
-		static ThemeExtensions ()
+		static IdeTheme ()
 		{
 			IdeApp.Preferences.UserInterfaceSkinChanged += Preferences_UserInterfaceSkinChanged;
 		}
 #if MAC
 		static HashSet<NSWindow> nsWindows = new HashSet<NSWindow> ();
 
-		public static void ApplyTheme (this NSWindow window)
+		public static void ApplyTheme (NSWindow window)
 		{
 			if (nsWindows.Add (window)) {
 				window.WillClose += Window_WillClose;
@@ -76,7 +76,7 @@ namespace MonoDevelop.Components
 		{
 			var nsw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow ((Gtk.Window) s);
 			if (nsw != null)
-				nsw.ApplyTheme ();
+				ApplyTheme (nsw);
 		}
 #endif
 
@@ -87,14 +87,14 @@ namespace MonoDevelop.Components
 			#endif
 		}
 
-		public static void ApplyTheme (this Gtk.Window window)
+		public static void ApplyTheme (Gtk.Window window)
 		{
 			#if MAC
 			window.Realized += OnGtkWindowRealized;
 			if (window.IsRealized) {
 				var nsw = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (window);
 				if (nsw != null)
-					nsw.ApplyTheme ();
+					ApplyTheme (nsw);
 			}
 			#endif
 		}

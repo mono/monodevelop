@@ -58,7 +58,7 @@ namespace MonoDevelop.MacIntegration
 					};
 				}
 
-				panel.ApplyTheme ();
+				IdeTheme.ApplyTheme (panel);
 
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				

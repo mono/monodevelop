@@ -549,7 +549,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 	
-	internal class DocumentSwitcher : Gtk.Window
+	internal class DocumentSwitcher : IdeWindow
 	{
 		List<MonoDevelop.Ide.Gui.Document> documents;
 		Xwt.ImageView imageTitle = new Xwt.ImageView ();
@@ -560,7 +560,6 @@ namespace MonoDevelop.Ide
 		
 		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
 		{
-			this.ApplyTheme ();
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
 				IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
