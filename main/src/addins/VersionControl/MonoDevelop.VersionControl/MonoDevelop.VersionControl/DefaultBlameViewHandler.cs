@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl
 	{
 		public bool CanHandle (VersionControlItem item, DocumentView primaryView)
 		{
-			return (primaryView == null || primaryView.GetContent <ITextFile> () != null)
+			return (primaryView == null || primaryView.GetContent <MonoDevelop.SourceEditor.SourceEditorView> () != null)
 				&& item.Repository.GetFileIsText (item.Path);
 		}
 

@@ -46,9 +46,6 @@ if ENABLE_WINDOWSPLATFORM
 TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
-UITEST_ASSEMBLIES = \
-	$(TEST_DIR)/UserInterfaceTests.dll
-
 test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
@@ -75,7 +72,7 @@ test:
 uitest:
 	rm -rf $(TEST_DIR)/TestResults
 	@if test -n "$(assembly)"; then \
-		for asm in $(UITEST_ASSEMBLIES); do \
+		for asm in $(wildcard $(TEST_DIR)/MonoDevelop.UITests*.dll); do \
 			if test `basename $$asm` = $(assembly); then \
 				if test -n "$(categories)"; then \
 					($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels -include=$(categories) $$asm) || exit $?; \

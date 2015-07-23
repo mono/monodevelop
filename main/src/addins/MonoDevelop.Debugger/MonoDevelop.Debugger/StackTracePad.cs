@@ -41,6 +41,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using Stock = MonoDevelop.Ide.Gui.Stock;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
@@ -55,10 +56,7 @@ namespace MonoDevelop.Debugger
 		const int StyleColumn = 6;
 		const int FrameColumn = 7;
 		const int FrameIndexColumn = 8;
-		const int CanRefreshColumn = 9;
 
-		readonly CellRendererImage refresh;
-		readonly CommandEntrySet menuSet;
 		readonly PadTreeView tree;
 		readonly ListStore store;
 		IPadWindow window;
@@ -70,17 +68,7 @@ namespace MonoDevelop.Debugger
 		{
 			this.ShadowType = ShadowType.None;
 
-			var evalCmd = new ActionCommand ("StackTracePad.EvaluateMethodParams", GettextCatalog.GetString ("Evaluate Method Parameters"));
-			var gotoCmd = new ActionCommand ("StackTracePad.ActivateFrame", GettextCatalog.GetString ("Activate Stack Frame"));
-			
-			menuSet = new CommandEntrySet ();
-			menuSet.Add (evalCmd);
-			menuSet.Add (gotoCmd);
-			menuSet.AddSeparator ();
-			menuSet.AddItem (EditCommands.SelectAll);
-			menuSet.AddItem (EditCommands.Copy);
-			
-			store = new ListStore (typeof (bool), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (int), typeof (bool));
+			store = new ListStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Pango.Style), typeof(object), typeof(int), typeof(bool));
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;
@@ -89,7 +77,6 @@ namespace MonoDevelop.Debugger
 			tree.SearchEqualFunc = Search;
 			tree.EnableSearch = true;
 			tree.SearchColumn = 1;
-			tree.ButtonPressEvent += HandleButtonPressEvent;
 			tree.DoPopupMenu = ShowPopup;
 
 			var col = new TreeViewColumn ();
@@ -101,10 +88,6 @@ namespace MonoDevelop.Debugger
 			
 			col = new TreeViewColumn ();
 			col.Title = GettextCatalog.GetString ("Name");
-			refresh = new CellRendererImage ();
-			refresh.Image = ImageService.GetIcon (Gtk.Stock.Refresh).WithSize (12, 12);
-			col.PackStart (refresh, false);
-			col.AddAttribute (refresh, "visible", CanRefreshColumn);
 			col.PackStart (tree.TextRenderer, true);
 			col.AddAttribute (tree.TextRenderer, "text", MethodColumn);
 			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
@@ -125,6 +108,7 @@ namespace MonoDevelop.Debugger
 			col.PackStart (tree.TextRenderer, false);
 			col.AddAttribute (tree.TextRenderer, "text", LangColumn);
 			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
+			col.Visible = false;//By default Language column is hidden
 			tree.AppendColumn (col);
 
 			col = new TreeViewColumn ();
@@ -132,9 +116,14 @@ namespace MonoDevelop.Debugger
 			col.PackStart (tree.TextRenderer, false);
 			col.AddAttribute (tree.TextRenderer, "text", AddrColumn);
 			col.AddAttribute (tree.TextRenderer, "foreground", ForegroundColumn);
+			col.Visible = false;//By default Address column is hidden
 			tree.AppendColumn (col);
 			
 			Add (tree);
+
+			LoadColumnsVisibility ();
+			LoadSettings ();
+
 			ShowAll ();
 			UpdateDisplay ();
 			
@@ -145,19 +134,61 @@ namespace MonoDevelop.Debugger
 			tree.RowActivated += OnRowActivated;
 		}
 
-		void OnDebuggingServiceStopped(object sender, EventArgs e)
+		bool ShowModuleName;
+		bool ShowParameterType;
+		bool ShowParameterName;
+		bool ShowParameterValue;
+		bool ShowLineNumber;
+
+		void LoadSettings ()
+		{
+			ShowModuleName = PropertyService.Get ("Monodevelop.StackTrace.ShowModuleName", false);
+			ShowParameterType = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterType", true);
+			ShowParameterName = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterName", true);
+			ShowParameterValue = PropertyService.Get ("Monodevelop.StackTrace.ShowParameterValue", false);
+			ShowLineNumber = PropertyService.Get ("Monodevelop.StackTrace.ShowLineNumber", true);
+		}
+
+		void StoreSettings ()
+		{
+			PropertyService.Set ("Monodevelop.StackTrace.ShowModuleName", ShowModuleName);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterType", ShowParameterType);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterName", ShowParameterName);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowParameterValue", ShowParameterValue);
+			PropertyService.Set ("Monodevelop.StackTrace.ShowLineNumber", ShowLineNumber);
+		}
+
+		void LoadColumnsVisibility ()
+		{
+			var columns = PropertyService.Get ("Monodevelop.StackTrace.ColumnsVisibility", "");
+			var tokens = columns.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (tree.Columns.Length == tokens.Length) {
+				for (int i = 0; i < tokens.Length; i++) {
+					bool visible;
+					if (bool.TryParse (tokens [i], out visible))
+						tree.Columns [i].Visible = visible;
+				}
+			}
+		}
+
+		void StoreColumnsVisibility ()
+		{
+			PropertyService.Set ("Monodevelop.StackTrace.ColumnsVisibility", string.Join (";", tree.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
+		}
+
+		void OnDebuggingServiceStopped (object sender, EventArgs e)
 		{
 			if (store != null)
-				store.Clear();
+				store.Clear ();
 		}
 
 		static bool Search (TreeModel model, int column, string key, TreeIter iter)
 		{
-			string value = (string) model.GetValue (iter, column);
+			string value = (string)model.GetValue (iter, column);
 
 			return !value.Contains (key);
 		}
-		
+
 		void IPadContent.Initialize (IPadWindow window)
 		{
 			this.window = window;
@@ -175,22 +206,51 @@ namespace MonoDevelop.Debugger
 				needsUpdate = true;
 		}
 
-		static string EvaluateMethodName (StackFrame frame, EvaluationOptions options)
+		string EvaluateMethodName (StackFrame frame)
 		{
-			var method = new StringBuilder (frame.SourceLocation.MethodName);
-			var args = frame.GetParameters (options);
-
-			if (args.Length != 0 || !frame.SourceLocation.MethodName.StartsWith ("[", StringComparison.Ordinal)) {
-				method.Append (" (");
-				for (int n = 0; n < args.Length; n++) {
-					if (n > 0)
-						method.Append (", ");
-					method.Append (args[n].Name).Append ("=").Append (args[n].Value);
-				}
-				method.Append (")");
+			var methodNameBuilder = new StringBuilder (frame.SourceLocation.MethodName);
+			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
+			if (ShowParameterValue) {
+				options.AllowMethodEvaluation = true;
+				options.AllowToStringCalls = true;
+				options.AllowTargetInvoke = true;
+			} else {
+				options.AllowMethodEvaluation = false;
+				options.AllowToStringCalls = false;
+				options.AllowTargetInvoke = false;
 			}
 
-			return method.ToString ();
+			var args = frame.GetParameters ();
+
+			//MethodName starting with "["... it's something like [ExternalCode]
+			if (!frame.SourceLocation.MethodName.StartsWith ("[", StringComparison.Ordinal)) {
+				if (ShowModuleName && !string.IsNullOrEmpty (frame.FullModuleName)) {
+					methodNameBuilder.Insert (0, System.IO.Path.GetFileName (frame.FullModuleName) + "!");
+				}
+				if (ShowParameterType || ShowParameterName || ShowParameterValue) {
+					methodNameBuilder.Append ("(");
+					for (int n = 0; n < args.Length; n++) {
+						if (n > 0)
+							methodNameBuilder.Append (", ");
+						if (ShowParameterType) {
+							methodNameBuilder.Append (args [n].TypeName);
+							if (ShowParameterName)
+								methodNameBuilder.Append (" ");
+						}
+						if (ShowParameterName)
+							methodNameBuilder.Append (args [n].Name);
+						if (ShowParameterValue) {
+							if (ShowParameterType || ShowParameterName)
+								methodNameBuilder.Append (" = ");
+							var val = args [n].Value ?? "";
+							methodNameBuilder.Append (val.Replace ("\r\n", " ").Replace ("\n", " "));
+						}
+					}
+					methodNameBuilder.Append (")");
+				}
+			}
+
+			return methodNameBuilder.ToString ();
 		}
 
 		void Update ()
@@ -204,7 +264,6 @@ namespace MonoDevelop.Debugger
 			if (!DebuggingService.IsPaused)
 				return;
 
-			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions;
 			var backtrace = DebuggingService.CurrentCallStack;
 
 			for (int i = 0; i < backtrace.FrameCount; i++) {
@@ -214,12 +273,12 @@ namespace MonoDevelop.Debugger
 				if (frame.IsDebuggerHidden)
 					continue;
 				
-				var method = EvaluateMethodName (frame, options);
+				var method = EvaluateMethodName (frame);
 				
 				string file;
 				if (!string.IsNullOrEmpty (frame.SourceLocation.FileName)) {
 					file = frame.SourceLocation.FileName;
-					if (frame.SourceLocation.Line != -1)
+					if (frame.SourceLocation.Line != -1 && ShowLineNumber)
 						file += ":" + frame.SourceLocation.Line;
 				} else {
 					file = string.Empty;
@@ -228,7 +287,7 @@ namespace MonoDevelop.Debugger
 				var style = frame.IsExternalCode ? Pango.Style.Italic : Pango.Style.Normal;
 				
 				store.AppendValues (icon, method, file, frame.Language, "0x" + frame.Address.ToString ("x"), null,
-				                    style, frame, i, !options.AllowDisplayStringEvaluation);
+					style, frame, i);
 			}
 		}
 
@@ -253,33 +312,6 @@ namespace MonoDevelop.Debugger
 			return false;
 		}
 
-		[GLib.ConnectBefore]
-		void HandleButtonPressEvent (object sender, ButtonPressEventArgs args)
-		{
-			TreeViewColumn col;
-			CellRenderer cr;
-			TreePath path;
-			TreeIter iter;
-
-			if (args.Event.Button != 1 || !GetCellAtPos ((int) args.Event.X, (int) args.Event.Y, out path, out col, out cr))
-				return;
-
-			if (!store.GetIter (out iter, path))
-				return;
-
-			if (cr == refresh) {
-				var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
-				options.AllowMethodEvaluation = true;
-				options.AllowToStringCalls = true;
-
-				var frame = (StackFrame) store.GetValue (iter, FrameColumn);
-				var method = EvaluateMethodName (frame, options);
-
-				store.SetValue (iter, MethodColumn, method);
-				store.SetValue (iter, CanRefreshColumn, false);
-			}
-		}
-		
 		public void UpdateCurrentFrame ()
 		{
 			TreeIter iter;
@@ -288,7 +320,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			do {
-				int frame = (int) store.GetValue (iter, FrameIndexColumn);
+				int frame = (int)store.GetValue (iter, FrameIndexColumn);
 
 				if (frame == DebuggingService.CurrentFrameIndex)
 					store.SetValue (iter, IconColumn, true);
@@ -306,7 +338,7 @@ namespace MonoDevelop.Debugger
 		{
 			UpdateDisplay ();
 		}
-		
+
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
 			ActivateFrame ();
@@ -333,49 +365,114 @@ namespace MonoDevelop.Debugger
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			IdeApp.CommandService.ShowContextMenu (tree, evt, menuSet, tree);
+			var context_menu = new ContextMenu ();
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+			var selectAllItem = new ContextMenuItem (GettextCatalog.GetString ("Select All"));
+			selectAllItem.Clicked += delegate {
+				OnSelectAll ();
+			};
+			context_menu.Items.Add (selectAllItem);
+			var copyItem = new ContextMenuItem (GettextCatalog.GetString ("Copy"));
+			copyItem.Clicked += delegate {
+				OnCopy ();
+			};
+			context_menu.Items.Add (copyItem);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
+			var assemblyCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Module Name"));
+			assemblyCheckbox.Clicked += delegate {
+				assemblyCheckbox.Checked = ShowModuleName = !ShowModuleName;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			assemblyCheckbox.Checked = ShowModuleName;
+			context_menu.Items.Add (assemblyCheckbox);
+			var typeCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Type"));
+			typeCheckbox.Clicked += delegate {
+				typeCheckbox.Checked = ShowParameterType = !ShowParameterType;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			typeCheckbox.Checked = ShowParameterType;
+			context_menu.Items.Add (typeCheckbox);
+			var nameCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Name"));
+			nameCheckbox.Clicked += delegate {
+				nameCheckbox.Checked = ShowParameterName = !ShowParameterName;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			nameCheckbox.Checked = ShowParameterName;
+			context_menu.Items.Add (nameCheckbox);
+			var valueCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Parameter Value"));
+			valueCheckbox.Clicked += delegate {
+				valueCheckbox.Checked = ShowParameterValue = !ShowParameterValue;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			valueCheckbox.Checked = ShowParameterValue;
+			context_menu.Items.Add (valueCheckbox);
+			var lineCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Show Line Number"));
+			lineCheckbox.Clicked += delegate {
+				lineCheckbox.Checked = ShowLineNumber = !ShowLineNumber;
+				StoreSettings ();
+				UpdateDisplay ();
+			};
+			lineCheckbox.Checked = ShowLineNumber;
+			context_menu.Items.Add (lineCheckbox);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
+			var columnsVisibilitySubMenu = new ContextMenu ();
+			var nameColumnVisibilityCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Name"));
+			nameColumnVisibilityCheckbox.Clicked += delegate {
+				nameColumnVisibilityCheckbox.Checked = tree.Columns [MethodColumn].Visible = !tree.Columns [MethodColumn].Visible;
+				StoreColumnsVisibility ();
+			};
+			nameColumnVisibilityCheckbox.Checked = tree.Columns [MethodColumn].Visible;
+			columnsVisibilitySubMenu.Items.Add (nameColumnVisibilityCheckbox);
+			var fileColumnVisibilityCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("File"));
+			fileColumnVisibilityCheckbox.Clicked += delegate {
+				fileColumnVisibilityCheckbox.Checked = tree.Columns [FileColumn].Visible = !tree.Columns [FileColumn].Visible;
+				StoreColumnsVisibility ();
+			};
+			fileColumnVisibilityCheckbox.Checked = tree.Columns [FileColumn].Visible;
+			columnsVisibilitySubMenu.Items.Add (fileColumnVisibilityCheckbox);
+			var languageColumnVisibilityCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Language"));
+			languageColumnVisibilityCheckbox.Clicked += delegate {
+				languageColumnVisibilityCheckbox.Checked = tree.Columns [LangColumn].Visible = !tree.Columns [LangColumn].Visible;
+				StoreColumnsVisibility ();
+			};
+			languageColumnVisibilityCheckbox.Checked = tree.Columns [LangColumn].Visible;
+			columnsVisibilitySubMenu.Items.Add (languageColumnVisibilityCheckbox);
+			var addressColumnVisibilityCheckbox = new CheckBoxContextMenuItem (GettextCatalog.GetString ("Address"));
+			addressColumnVisibilityCheckbox.Clicked += delegate {
+				addressColumnVisibilityCheckbox.Checked = tree.Columns [AddrColumn].Visible = !tree.Columns [AddrColumn].Visible;
+				StoreColumnsVisibility ();
+			};
+			addressColumnVisibilityCheckbox.Checked = tree.Columns [AddrColumn].Visible;
+			columnsVisibilitySubMenu.Items.Add (addressColumnVisibilityCheckbox);
+			context_menu.Items.Add (new ContextMenuItem (GettextCatalog.GetString ("Columns")){ SubMenu = columnsVisibilitySubMenu });
+
+
+			context_menu.Show (this, evt);
 		}
 
-		[CommandHandler ("StackTracePad.EvaluateMethodParams")]
-		void EvaluateMethodParams ()
-		{
-			TreeIter iter;
-
-			if (!store.GetIterFirst (out iter))
-				return;
-
-			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
-			options.AllowMethodEvaluation = true;
-			options.AllowToStringCalls = true;
-			options.AllowTargetInvoke = true;
-
-			do {
-				if ((bool) store.GetValue (iter, CanRefreshColumn)) {
-					var frame = (StackFrame) store.GetValue (iter, FrameColumn);
-					var method = EvaluateMethodName (frame, options);
-
-					store.SetValue (iter, MethodColumn, method);
-					store.SetValue (iter, CanRefreshColumn, false);
-				}
-			} while (store.IterNext (ref iter));
-		}
-
-		[CommandHandler ("StackTracePad.ActivateFrame")]
 		void ActivateFrame ()
 		{
 			var selected = tree.Selection.GetSelectedRows ();
 			TreeIter iter;
 
-			if (selected.Length > 0 && store.GetIter (out iter, selected[0]))
-				DebuggingService.CurrentFrameIndex = (int) store.GetValue (iter, FrameIndexColumn);
+			if (selected.Length > 0 && store.GetIter (out iter, selected [0]))
+				DebuggingService.CurrentFrameIndex = (int)store.GetValue (iter, FrameIndexColumn);
 		}
-		
+
 		[CommandHandler (EditCommands.SelectAll)]
 		internal void OnSelectAll ()
 		{
 			tree.Selection.SelectAll ();
 		}
-		
+
 		[CommandHandler (EditCommands.Copy)]
 		internal void OnCopy ()
 		{
@@ -387,11 +484,11 @@ namespace MonoDevelop.Debugger
 				if (!model.GetIter (out iter, path))
 					continue;
 
-				string method = (string) model.GetValue (iter, MethodColumn);
-				string file = (string) model.GetValue (iter, FileColumn);
+				string method = (string)model.GetValue (iter, MethodColumn);
+				string file = (string)model.GetValue (iter, FileColumn);
 
 				if (txt.Length > 0)
-					txt.Append ('\n');
+					txt.Append (Environment.NewLine);
 
 				txt.AppendFormat ("{0} in {1}", method, file);
 			}

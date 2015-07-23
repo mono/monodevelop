@@ -571,9 +571,11 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = (IdeApp.ProjectOperations.CurrentSelectedSolution != null) &&
-				(IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) &&
-				IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ().Any (p => p.SupportsTarget ("RunCodeAnalysis"));
+			//TODO: Roslyn, switch back to SupportsTarget check
+			//info.Enabled = (IdeApp.ProjectOperations.CurrentSelectedSolution != null) &&
+			//	(IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) &&
+			//	IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ().Any (p => p.SupportsTarget ("RunCodeAnalysis"));
+			info.Enabled = true;
 		}
 
 		protected override void Run ()
@@ -591,7 +593,8 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.Workspace.IsOpen) {
 				var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 				if (project != null) {
-					info.Enabled = project.SupportsTarget ("RunCodeAnalysis");
+					//TODO: Roslyn, switch back to SupportsTarget check
+					info.Enabled = true;//project.SupportsTarget ("RunCodeAnalysis");
 					info.Text = GettextCatalog.GetString ("Run Code Analysis on {0}", project.Name.Replace ("_","__"));
 					return;
 				}

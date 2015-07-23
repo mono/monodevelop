@@ -8,6 +8,7 @@
 		<_Name>ASP.NET MVC Project with Unit Tests</_Name>
 		<Category>other/aspnet/general</Category>
 		<Icon>md-project-web</Icon>
+		<Image id="md-aspnet-empty-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an ASP.NET MVC Web Project with a Unit Test Project.</_Description>
 	</TemplateConfiguration>

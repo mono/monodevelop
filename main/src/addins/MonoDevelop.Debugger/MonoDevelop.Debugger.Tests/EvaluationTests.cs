@@ -177,6 +177,11 @@ namespace MonoDevelop.Debugger.Tests
 		public virtual void HiddenMembers ()
 		{
 			IgnoreCorDebugger ("TODO");
+			if (Session is SoftDebuggerSession) {
+				if (!((SoftDebuggerSession)Session).ProtocolVersion.AtLeast (2, 40)) {
+					Assert.Ignore ("Need newer Mono with SDB protocol 2.40+");
+				}
+			}
 			ObjectValue val;
 			val = Eval ("HiddenField");
 			Assert.AreEqual ("5", val.Value);
@@ -203,6 +208,122 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("5", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("OverridenPropertyInt");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("OverridenMethodInt()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("OverridenPropertyString");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"6\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("OverridenMethodString()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"6\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+
+
+			val = Eval ("testEvaluationChild.HiddenField");
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("testEvaluationChild.HiddenProperty");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("testEvaluationChild.HiddenMethod()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("testEvaluationChild.OverridenPropertyInt");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("testEvaluationChild.OverridenMethodInt()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("6", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("testEvaluationChild.OverridenPropertyString");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"6\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("testEvaluationChild.OverridenMethodString()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"6\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
 		}
 
 		[Test]
@@ -610,7 +731,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("bool", val.TypeName);
 
 			val = Eval ("alist.Count");
-			if (!AllowTargetInvokes && soft == null) {
+			if (!AllowTargetInvokes) {
 				// Note: this is a simple property which gets evaluated client-side by the SDB backend
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
@@ -1659,7 +1780,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("a.Prop");
-			if (!AllowTargetInvokes && soft == null) {
+			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1683,7 +1804,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.PropNoVirt2");
-			if (!AllowTargetInvokes && soft == null) {
+			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1735,7 +1856,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.Prop");
-			if (!AllowTargetInvokes && soft == null) {
+			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 

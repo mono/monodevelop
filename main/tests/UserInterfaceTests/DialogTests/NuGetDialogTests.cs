@@ -39,20 +39,52 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "2.0.1-pre",
+				Version = "2.0.85-alpha",
 				IsPreRelease = true
 			});
 		}
 
-		ProjectDetails CreateProject ()
+		[Test]
+		public void TestReadmeTxtOpens ()
 		{
-			var templateOptions = new TemplateSelectionOptions {
+			CreateProject ();
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "RestSharp",
+				Version = "105.0.1",
+				IsPreRelease = true
+			});
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+		}
+
+		[Test, Category ("NuGetUpgrade")]
+		public void TestReadmeTxtUpgradeOpens ()
+		{
+			CreateProject ();
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "RestSharp",
+				Version = "105.0.1",
+				IsPreRelease = true
+			}, TakeScreenShot);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+			Session.ExecuteCommand (MonoDevelop.Ide.Commands.FileCommands.CloseFile);
+			Session.WaitForElement (IdeQuery.TextArea);
+			NuGetController.UpdatePackage (new NuGetPackageOptions {
+				PackageName = "RestSharp",
+				Version = "105.1.0",
+				IsPreRelease = true
+			}, TakeScreenShot);
+			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
+		}
+
+		ProjectDetails CreateProject (TemplateSelectionOptions templateOptions = null, ProjectDetails projectDetails = null)
+		{
+			templateOptions = templateOptions ?? new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
 				Category = ".NET",
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			var projectDetails = new ProjectDetails (templateOptions);
+			projectDetails = projectDetails ?? new ProjectDetails (templateOptions);
 			CreateProject (templateOptions,
 					projectDetails,
 				new GitOptions { UseGit = true, UseGitIgnore = true});

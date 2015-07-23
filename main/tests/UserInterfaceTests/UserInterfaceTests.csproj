@@ -8,7 +8,7 @@
     <ProjectGuid>{07F55155-51A8-4072-9F80-FA473666F086}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>UserInterfaceTests</RootNamespace>
-    <AssemblyName>UserInterfaceTests</AssemblyName>
+    <AssemblyName>MonoDevelop.UITests</AssemblyName>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -77,6 +77,9 @@
     <Compile Include="Controllers\SolutionExplorerController.cs" />
     <Compile Include="Controllers\NuGetController.cs" />
     <Compile Include="DialogTests\NuGetDialogTests.cs" />
+    <Compile Include="Exceptions\TemplateSelectionException.cs" />
+    <Compile Include="Exceptions\CreateProjectException.cs" />
+    <Compile Include="Workbench.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -112,5 +115,6 @@
   <ItemGroup>
     <Folder Include="DialogTests\" />
     <Folder Include="Controllers\" />
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 </Project>

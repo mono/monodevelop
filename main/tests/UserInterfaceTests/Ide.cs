@@ -1,5 +1,5 @@
 //
-// IdeApi.cs
+// Ide.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@novell.com>
@@ -26,6 +26,7 @@
 
 using System;
 using System.Threading;
+using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
@@ -33,10 +34,6 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.AutoTest;
 
 using NUnit.Framework;
-
-using Gdk;
-using System.Linq;
-
 
 namespace UserInterfaceTests
 {
@@ -63,12 +60,10 @@ namespace UserInterfaceTests
 			return Session.GetGlobalValue<FilePath> ("MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument.FileName");
 		}
 
-		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 180)
+		public static bool BuildSolution (bool isPass = true, int timeoutInSecs = 360)
 		{
-			Session.RunAndWaitForTimer (() => Session.ExecuteCommand (ProjectCommands.BuildSolution),
-				"Ide.Shell.ProjectBuilt", timeout: timeoutInSecs * 1000);
-			var status = IsBuildSuccessful ();
-			return isPass == status;
+			Session.ExecuteCommand (ProjectCommands.BuildSolution);
+			return isPass == Workbench.IsBuildSuccessful (timeoutInSecs);
 		}
 
 		public static void WaitUntil (Func<bool> done, int timeout = 20000, int pollStep = 200)
@@ -83,27 +78,14 @@ namespace UserInterfaceTests
 			throw new TimeoutException ("Timed out waiting for Function: "+done.Method.Name);
 		}
 
-		//no saner way to do this
-		public static string GetStatusMessage (int timeout = 20000)
+		public static bool ClickButtonAlertDialog (string buttonText)
 		{
 			if (Platform.IsMac) {
-				WaitUntil (
-					() => Session.GetGlobalValue<string> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text") != string.Empty,
-					timeout
-				);
-				return (string)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.text");
+				Ide.WaitUntil (() => Session.Query (c => c.Marked ("Xamarin Studio").Marked ("AppKit.NSPanel")).Any ());
+				return Session.ClickElement (c => c.Marked ("AppKit.NSButton").Text (buttonText));
 			}
 
-			WaitUntil (
-				() => Session.GetGlobalValue<int> ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.messageQueue.Count") == 0,
-				timeout
-			);
-			return (string) Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.RootWindow.StatusBar.renderArg.CurrentText");
-		}
-
-		public static bool IsBuildSuccessful ()
-		{
-			return Session.ErrorCount (MonoDevelop.Ide.Tasks.TaskSeverity.Error) == 0;
+			throw new PlatformNotSupportedException ("ClickButtonAlertDialog is only supported on Mac");
 		}
 
 		public static void RunAndWaitForTimer (Action action, string counter, int timeout = 20000)
@@ -153,7 +135,7 @@ namespace UserInterfaceTests
 		static void PollStatusMessage (string[] statusMessage, int timeoutInSecs, int pollStepInSecs, bool waitForMessage = true)
 		{
 			Ide.WaitUntil (() => {
-				var actualStatusMessage = Ide.GetStatusMessage ();
+				var actualStatusMessage = Workbench.GetStatusMessage ();
 				return waitForMessage == (statusMessage.Contains (actualStatusMessage, StringComparer.OrdinalIgnoreCase));
 			}, pollStep: pollStepInSecs * 1000, timeout: timeoutInSecs * 1000);
 		}

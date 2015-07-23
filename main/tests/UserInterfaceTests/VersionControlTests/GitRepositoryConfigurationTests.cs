@@ -74,6 +74,20 @@ namespace UserInterfaceTests
 			CloseRepositoryConfiguration ();
 		}
 
+		[Test]
+		public void GitDeleteBranchTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ();
+			CreateNewBranch ("new-branch");
+			SelectBranch ("new-branch");
+			DeleteBranch ("new-branch");
+
+			CloseRepositoryConfiguration ();
+		}
+
 		#endregion
 
 		#region Remotes Tab
@@ -100,6 +114,21 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Remote Sources");
 			AddRemote (newRemoteName, newRemoteUrl);
 			SelectRemote (newRemoteName, newRemoteUrl);
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void DeleteGitRemoteTest ()
+		{
+			TestClone ("git@github.com:mono/jurassic.git");
+			Ide.WaitForSolutionCheckedOut ();
+
+			const string newRemoteName = "second";
+			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
+			OpenRepositoryConfiguration ("Remote Sources");
+			AddRemote (newRemoteName, newRemoteUrl);
+			SelectRemote (newRemoteName, newRemoteUrl);
+			DeleteRemote (newRemoteName);
 			CloseRepositoryConfiguration ();
 		}
 
@@ -224,6 +253,15 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Remote-Edit-Dialog-Closed");
 		}
 
+		protected void DeleteRemote (string remoteName)
+		{
+			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Remove"), false);
+			TakeScreenShot (string.Format ("Remove-Remote-{0}", remoteName));
+			Ide.ClickButtonAlertDialog ("Delete");
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+		}
+
 		#endregion
 
 		#region Branches
@@ -282,6 +320,15 @@ namespace UserInterfaceTests
 		{
 			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
 			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName));
+		}
+
+		protected void DeleteBranch (string branchName)
+		{
+			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Delete"), false);
+			TakeScreenShot (string.Format ("Delete-Branch-{0}", branchName));
+			Ide.ClickButtonAlertDialog ("Delete");
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 		}
 
 		protected bool IsBranchSwitched (string branchName)

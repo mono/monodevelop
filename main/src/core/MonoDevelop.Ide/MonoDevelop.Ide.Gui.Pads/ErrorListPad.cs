@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -302,31 +303,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
-			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-			if (tokens.Length == 7 && view != null && view.Columns.Length == 7)
-			{
-				for (int i = 0; i < 7; i++)
-				{
+			var columns = PropertyService.Get ("Monodevelop.ErrorListColumns", string.Join (";", Enumerable.Repeat ("TRUE", view.Columns.Length)));
+			var tokens = columns.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (view.Columns.Length == tokens.Length) {
+				for (int i = 0; i < tokens.Length; i++) {
 					bool visible;
-					if (bool.TryParse (tokens[i], out visible))
-						view.Columns[i].Visible = visible;
+					if (bool.TryParse (tokens [i], out visible))
+						view.Columns [i].Visible = visible;
 				}
 			}
 		}
 
 		void StoreColumnsVisibility ()
 		{
-			string columns = String.Format ("{0};{1};{2};{3};{4};{5};{6};{7}",
-			                                view.Columns[VisibleColumns.Type].Visible,
-			                                view.Columns[VisibleColumns.Marked].Visible,
-			                                view.Columns[VisibleColumns.Line].Visible,
-			                                view.Columns[VisibleColumns.Description].Visible,
-			                                view.Columns[VisibleColumns.File].Visible,
-			                                view.Columns[VisibleColumns.Project].Visible,
-			                                view.Columns[VisibleColumns.Path].Visible,
-			                                view.Columns[VisibleColumns.Category].Visible);
-			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
+			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
 		}
 		
 		public void RedrawContent()
@@ -576,12 +566,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (LineDataFunc));
 
-			var descriptionCellRenderer = new CellRendererText ();
+			var descriptionCellRenderer = new DescriptionCellRendererText ();
 			view.RegisterRenderForFontChanges (descriptionCellRenderer);
 			var descriptionCol = view.AppendColumn (GettextCatalog.GetString ("Description"), descriptionCellRenderer);
 			descriptionCol.SetCellDataFunc (descriptionCellRenderer, new Gtk.TreeCellDataFunc (DescriptionDataFunc));
 			descriptionCol.Resizable = true;
 			descriptionCellRenderer.WrapMode = Pango.WrapMode.Word;
+			descriptionCellRenderer.PreferedMaxWidth = IdeApp.Workbench.RootWindow.Allocation.Width / 3;
+
 			descriptionCol.AddNotification("width", delegate
 			{
 				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
@@ -956,6 +948,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 			int pos = (int) (controlWidth * relPos);
 			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
 			control.Position = pos;
+		}
+
+		class DescriptionCellRendererText : CellRendererText
+		{
+			public int PreferedMaxWidth { get; set; }
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				int originalWrapWidth = WrapWidth;
+				WrapWidth = -1;
+				// First calculate Width with WrapWidth=-1 which will give us
+				// Width of text in one line(without wrapping)
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				int oneLineWidth = width;
+				WrapWidth = originalWrapWidth;
+				// originalWrapWidth(aka WrapWidth) equals to actual width of Column if oneLineWidth is bigger
+				// then column width/height we must recalculate, because Height is atm for one line
+				// and not multipline that WrapWidth creates...
+				if (oneLineWidth > originalWrapWidth) {
+					base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				}
+				width = Math.Min (oneLineWidth, PreferedMaxWidth);
+			}
 		}
 	}
 }

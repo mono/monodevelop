@@ -8,6 +8,7 @@
 		<_Name>Empty ASP.NET MVC Project</_Name>
 		<Category>other/aspnet/general</Category>
 		<Icon>md-project-web</Icon>
+		<Image id="md-aspnet-empty-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty ASP.NET MVC Web Project.</_Description>
 	</TemplateConfiguration>
