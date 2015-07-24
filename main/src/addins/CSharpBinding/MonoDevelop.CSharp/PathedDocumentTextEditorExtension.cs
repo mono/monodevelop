@@ -44,10 +44,13 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			UntrackStartupProjectChanges ();
+
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
-			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;;
+			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;
+			IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 
 			if (caret != null) {
 				caret.PositionChanged -= UpdatePath;
@@ -86,7 +89,19 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
-			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;;
+			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
+			IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
+		}
+
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			// If the current configuration changes and the project to which this document is bound is disabled in the
+			// new configuration, try to find another project
+			if (Document.Project != null && Document.Project.ParentSolution == IdeApp.ProjectOperations.CurrentSelectedSolution) {
+				var conf = Document.Project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (conf != null && !conf.BuildEnabledForItem (Document.Project))
+					ResetOwnerProject ();
+			}
 		}
 
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
@@ -101,7 +116,7 @@ namespace MonoDevelop.CSharp
 			if (ownerProjects == null)
 				return;
 			foreach (var p in e.Item.GetAllProjects ().OfType<DotNetProject> ()) {
-				ownerProjects.Remove (p); 
+				RemoveOwnerProject (p);
 			}
 			if (ownerProjects.Count == 0) {
 				ownerProjects = null;
@@ -124,12 +139,12 @@ namespace MonoDevelop.CSharp
 		{
 			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (Document.FileName)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
-				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
+				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
 				var dnp = Document.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					var pp = Document.Project != null ? FindBestDefaultProject (Document.Project.ParentSolution) : null;
 					if (pp != null)
 						Document.AttachToProject (pp);
 				}
@@ -139,8 +154,76 @@ namespace MonoDevelop.CSharp
 		void UpdateOwnerProjects ()
 		{
 			UpdateOwnerProjects (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ());
-			if (Document.Project == null && ownerProjects.Count > 0)
-				Document.AttachToProject (ownerProjects[0]);
+			if (Document.Project == null)
+				ResetOwnerProject ();
+		}
+
+		void ResetOwnerProject ()
+		{
+			if (ownerProjects.Count > 0)
+				Document.AttachToProject (FindBestDefaultProject ());
+		}
+
+		DotNetProject FindBestDefaultProject (Solution solution = null)
+		{
+			// The best candidate to be selected as default project for this document is the startup project.
+			// If the startup project is not an owner, pick any project that is not disabled in the current configuration.
+			DotNetProject best = null;
+			if (solution == null)
+				solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			foreach (var p in ownerProjects) {
+				if (p.ParentSolution != solution)
+					continue;
+				var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (solConf == null || !solConf.BuildEnabledForItem (p))
+					continue;
+				if (p == p.ParentSolution.StartupItem)
+					return p;
+				if (best == null)
+					best = p;
+			}
+			return best ?? ownerProjects.FirstOrDefault (pr => pr.ParentSolution == solution) ?? ownerProjects.FirstOrDefault ();
+		}
+
+		void SetOwnerProjects (List<DotNetProject> projects)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects = projects;
+			TrackStartupProjectChanges ();
+		}
+
+		void RemoveOwnerProject (DotNetProject project)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects.Remove (project);
+			TrackStartupProjectChanges ();
+		}
+
+		void TrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged += HandleStartupProjectChanged;
+			}
+		}
+
+		void UntrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged -= HandleStartupProjectChanged;
+			}
+		}
+
+		void HandleStartupProjectChanged (object sender, EventArgs e)
+		{
+			// If the startup project changes, and the new startup project is an owner of this document,
+			// then attach the document to that project
+
+			var sol = (Solution) sender;
+			var p = sol.StartupItem as DotNetProject;
+			if (p != null && ownerProjects.Contains (p))
+				Document.AttachToProject (p);
 		}
 
 		#region IPathedDocument implementation
