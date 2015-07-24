@@ -56,12 +56,14 @@ namespace MonoDevelop.CSharp
 			Editor.TextChanging -= Editor_TextChanging;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed; 
 			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+			UntrackStartupProjectChanges ();
+
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution -= HandleProjectChanged;
-
+			IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 
 			if (ext != null) {
 				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
@@ -88,7 +90,7 @@ namespace MonoDevelop.CSharp
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
-			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// Delay the execution of UpdateOwnerProjects since it may end calling DocumentContext.AttachToProject,
 			// which shouldn't be called while the extension chain is being initialized.
 			Gtk.Application.Invoke (delegate {
 				UpdateOwnerProjects ();
@@ -105,6 +107,7 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
 			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;
 			IdeApp.Workspace.ItemAddedToSolution += HandleProjectChanged;
+			IdeApp.Workspace.ActiveConfigurationChanged += HandleActiveConfigurationChanged;
 			SubscribeCaretPositionChange ();
 		}
 
@@ -137,6 +140,17 @@ namespace MonoDevelop.CSharp
 			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 		}
 
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			// If the current configuration changes and the project to which this document is bound is disabled in the
+			// new configuration, try to find another project
+			if (DocumentContext.Project != null && DocumentContext.Project.ParentSolution == IdeApp.ProjectOperations.CurrentSelectedSolution) {
+				var conf = DocumentContext.Project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (conf != null && !conf.BuildEnabledForItem (DocumentContext.Project))
+					ResetOwnerProject ();
+			}
+		}
+
 		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
 		{
 			if (ownerProjects != null)
@@ -149,7 +163,7 @@ namespace MonoDevelop.CSharp
 			if (ownerProjects == null)
 				return;
 			foreach (var p in e.Item.GetAllItems<DotNetProject> ()) {
-				ownerProjects.Remove (p); 
+				RemoveOwnerProject (p);
 			}
 			if (ownerProjects.Count == 0) {
 				ownerProjects = null;
@@ -177,12 +191,12 @@ namespace MonoDevelop.CSharp
 		{
 			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
-				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
+				SetOwnerProjects (projects.OrderBy (p => p.Name).ToList ());
 				var dnp = DocumentContext.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = DocumentContext.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == DocumentContext.Project.ParentSolution) : null;
+					var pp = DocumentContext.Project != null ? FindBestDefaultProject (DocumentContext.Project.ParentSolution) : null;
 					if (pp != null)
 						DocumentContext.AttachToProject (pp);
 				}
@@ -192,8 +206,76 @@ namespace MonoDevelop.CSharp
 		void UpdateOwnerProjects ()
 		{
 			UpdateOwnerProjects (IdeApp.Workspace.GetAllItems<DotNetProject> ());
-			if (DocumentContext.Project == null && ownerProjects.Count > 0)
-				DocumentContext.AttachToProject (ownerProjects[0]);
+			if (DocumentContext.Project == null)
+				ResetOwnerProject ();
+		}
+
+		void ResetOwnerProject ()
+		{
+			if (ownerProjects.Count > 0)
+				DocumentContext.AttachToProject (FindBestDefaultProject ());
+		}
+
+		DotNetProject FindBestDefaultProject (Solution solution = null)
+		{
+			// The best candidate to be selected as default project for this document is the startup project.
+			// If the startup project is not an owner, pick any project that is not disabled in the current configuration.
+			DotNetProject best = null;
+			if (solution == null)
+				solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			foreach (var p in ownerProjects) {
+				if (p.ParentSolution != solution)
+					continue;
+				var solConf = p.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration);
+				if (solConf == null || !solConf.BuildEnabledForItem (p))
+					continue;
+				if (p == p.ParentSolution.StartupItem)
+					return p;
+				if (best == null)
+					best = p;
+			}
+			return best ?? ownerProjects.FirstOrDefault (pr => pr.ParentSolution == solution) ?? ownerProjects.FirstOrDefault ();
+		}
+
+		void SetOwnerProjects (List<DotNetProject> projects)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects = projects;
+			TrackStartupProjectChanges ();
+		}
+
+		void RemoveOwnerProject (DotNetProject project)
+		{
+			UntrackStartupProjectChanges ();
+			ownerProjects.Remove (project);
+			TrackStartupProjectChanges ();
+		}
+
+		void TrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged += HandleStartupProjectChanged;
+			}
+		}
+
+		void UntrackStartupProjectChanges ()
+		{
+			if (ownerProjects != null) {
+				foreach (var sol in ownerProjects.Select (p => p.ParentSolution).Distinct ())
+					sol.StartupItemChanged -= HandleStartupProjectChanged;
+			}
+		}
+
+		void HandleStartupProjectChanged (object sender, EventArgs e)
+		{
+			// If the startup project changes, and the new startup project is an owner of this document,
+			// then attach the document to that project
+
+			var sol = (Solution) sender;
+			var p = sol.StartupItem as DotNetProject;
+			if (p != null && ownerProjects.Contains (p))
+				DocumentContext.AttachToProject (p);
 		}
 
 		#region IPathedDocument implementation
