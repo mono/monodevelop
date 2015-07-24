@@ -54,10 +54,13 @@ namespace UserInterfaceTests
 
 			OpenStashManager ();
 			ApplyAndRemoveStash (0);
+
+			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("Stash-Applied");
 			OpenStashManager ();
 
 			TakeScreenShot ("Asserting-if-Not-Stash-Present");
-			Assert.IsEmpty (Session.Query (StashEntries));
+			Session.WaitForNoElement (StashEntries);
 			CloseStashManager ();
 		}
 

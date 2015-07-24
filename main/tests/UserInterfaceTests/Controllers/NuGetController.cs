@@ -66,6 +66,14 @@ namespace UserInterfaceTests
 			AddUpdatePackage (packageOptions, takeScreenshot, true);
 		}
 
+		public static void UpdateAllNuGetPackages (Action<string> takeScreenshot = null)
+		{
+			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
+			Ide.WaitForStatusMessage (new [] { "Updating packages in solution..." });
+			Ide.WaitForPackageUpdate ();
+			takeScreenshot ("All-NuGet-Packages-Updated");
+		}
+
 		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate)
 		{
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
