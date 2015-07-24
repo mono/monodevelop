@@ -2239,35 +2239,65 @@
     <EmbeddedResource Include="icons\project-status-error-16%402x.png">
       <LogicalName>project-status-error-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16.png">
+      <LogicalName>platform-android-16.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-android-16%402x.png">
-      <LogicalName>platform-android-light-16@2x.png</LogicalName>
+      <LogicalName>platform-android-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~dark.png">
+      <LogicalName>platform-android-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-android-16~dark%402x.png">
+      <LogicalName>platform-android-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-cross-platform-16.png">
-      <LogicalName>platform-cross-platform-light-16.png</LogicalName>
+      <LogicalName>platform-cross-platform-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-cross-platform-16%402x.png">
-      <LogicalName>platform-cross-platform-light-16@2x.png</LogicalName>
+      <LogicalName>platform-cross-platform-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-cross-platform-16~dark.png">
+      <LogicalName>platform-cross-platform-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-cross-platform-16~dark%402x.png">
+      <LogicalName>platform-cross-platform-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-ios-16.png">
-      <LogicalName>platform-ios-light-16.png</LogicalName>
+      <LogicalName>platform-ios-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-ios-16%402x.png">
-      <LogicalName>platform-ios-light-16@2x.png</LogicalName>
+      <LogicalName>platform-ios-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~dark.png">
+      <LogicalName>platform-ios-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-ios-16~dark%402x.png">
+      <LogicalName>platform-ios-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-mac-16.png">
-      <LogicalName>platform-mac-light-16.png</LogicalName>
+      <LogicalName>platform-mac-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-mac-16%402x.png">
-      <LogicalName>platform-mac-light-16@2x.png</LogicalName>
+      <LogicalName>platform-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~dark.png">
+      <LogicalName>platform-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-mac-16~dark%402x.png">
+      <LogicalName>platform-mac-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-other-16.png">
-      <LogicalName>platform-other-light-16.png</LogicalName>
+      <LogicalName>platform-other-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-other-16%402x.png">
-      <LogicalName>platform-other-light-16@2x.png</LogicalName>
+      <LogicalName>platform-other-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\platform-android-16.png">
-      <LogicalName>platform-android-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\platform-other-16~dark.png">
+      <LogicalName>platform-other-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\platform-other-16~dark%402x.png">
+      <LogicalName>platform-other-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\images\generic-project.png">
       <LogicalName>generic-project.png</LogicalName>
