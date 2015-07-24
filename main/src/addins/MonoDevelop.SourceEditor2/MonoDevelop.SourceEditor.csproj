@@ -208,11 +208,23 @@
     <EmbeddedResource Include="icons\issues-busy-16%402x.png">
       <LogicalName>issues-busy-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-busy-16~dark.png">
+      <LogicalName>issues-busy-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-busy-16~dark%402x.png">
+      <LogicalName>issues-busy-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-error-16.png">
       <LogicalName>issues-error-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-error-16%402x.png">
       <LogicalName>issues-error-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-error-16~dark.png">
+      <LogicalName>issues-error-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-error-16~dark%402x.png">
+      <LogicalName>issues-error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-ok-16.png">
       <LogicalName>issues-ok-16.png</LogicalName>
@@ -220,17 +232,35 @@
     <EmbeddedResource Include="icons\issues-ok-16%402x.png">
       <LogicalName>issues-ok-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-ok-16~dark.png">
+      <LogicalName>issues-ok-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-ok-16~dark%402x.png">
+      <LogicalName>issues-ok-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-suggestion-16.png">
       <LogicalName>issues-suggestion-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-suggestion-16%402x.png">
       <LogicalName>issues-suggestion-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-suggestion-16~dark.png">
+      <LogicalName>issues-suggestion-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-suggestion-16~dark%402x.png">
+      <LogicalName>issues-suggestion-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-warning-16.png">
       <LogicalName>issues-warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-warning-16%402x.png">
       <LogicalName>issues-warning-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-warning-16~dark.png">
+      <LogicalName>issues-warning-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-warning-16~dark%402x.png">
+      <LogicalName>issues-warning-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-bookmark-15.png">
       <LogicalName>gutter-bookmark-15.png</LogicalName>
