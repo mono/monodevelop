@@ -488,12 +488,12 @@ namespace MonoDevelop.Debugger
 			foreach (var s in evalSpinnersIcons.ToArray()) {
 				if (store.IterIsValid (s.Key) && Selection.IterIsSelected (s.Key)) {
 					if (!s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-selected-16", IconSize.Menu);
+						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-16", IconSize.Menu);
 						evalSpinnersIcons [s.Key] = true;
 					}
 				} else {
 					if (s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-normal-16", IconSize.Menu);
+						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-16", IconSize.Menu).WithStyle ("sel");
 						evalSpinnersIcons [s.Key] = false;
 					}
 				}
@@ -1159,13 +1159,9 @@ namespace MonoDevelop.Debugger
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 
-				if (Selection.IterIsSelected (it)) {
-					evalSpinnersIcons [it] = true;
-					evaluateStatusIcon = "md-spinner-selected-16";
-				} else {
-					evalSpinnersIcons [it] = false;
-					evaluateStatusIcon = "md-spinner-normal-16";
-				}
+				evalSpinnersIcons [it] = true;
+				evaluateStatusIcon = "md-spinner-16";
+
 				valueColor = disabledColor;
 				if (val.IsEvaluatingGroup) {
 					nameColor = disabledColor;
@@ -1209,7 +1205,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
-			if (evaluateStatusIcon != "md-spinner-normal-16" && evaluateStatusIcon != "md-spinner-selected-16") {
+			if (evaluateStatusIcon != "md-spinner-16") {
 				evalSpinnersIcons.Remove (it);
 			}
 			store.SetValue (it, EvaluateStatusIconVisibleColumn, evaluateStatusIcon != null);

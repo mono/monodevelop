@@ -2407,65 +2407,125 @@
     <EmbeddedResource Include="icons\preview-16~sel%402x.png">
       <LogicalName>preview-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-1-16.png">
-      <LogicalName>spinner-normal-1-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1.png">
+      <LogicalName>spinner-16-1.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-1-16%402x.png">
-      <LogicalName>spinner-normal-1-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1%402x.png">
+      <LogicalName>spinner-16-1@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-2-16.png">
-      <LogicalName>spinner-normal-2-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~dark.png">
+      <LogicalName>spinner-16-1~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-2-16%402x.png">
-      <LogicalName>spinner-normal-2-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~dark%402x.png">
+      <LogicalName>spinner-16-1~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-3-16.png">
-      <LogicalName>spinner-normal-3-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~dark~sel.png">
+      <LogicalName>spinner-16-1~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-3-16%402x.png">
-      <LogicalName>spinner-normal-3-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~dark~sel%402x.png">
+      <LogicalName>spinner-16-1~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-4-16.png">
-      <LogicalName>spinner-normal-4-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~sel.png">
+      <LogicalName>spinner-16-1~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-4-16%402x.png">
-      <LogicalName>spinner-normal-4-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1~sel%402x.png">
+      <LogicalName>spinner-16-1~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-5-16.png">
-      <LogicalName>spinner-normal-5-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2.png">
+      <LogicalName>spinner-16-2.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-normal-5-16%402x.png">
-      <LogicalName>spinner-normal-5-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-1%402x.png">
+      <LogicalName>spinner-16-1@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-1-16.png">
-      <LogicalName>spinner-selected-1-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~dark.png">
+      <LogicalName>spinner-16-2~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-1-16%402x.png">
-      <LogicalName>spinner-selected-1-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~dark%402x.png">
+      <LogicalName>spinner-16-2~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-2-16.png">
-      <LogicalName>spinner-selected-2-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~dark~sel.png">
+      <LogicalName>spinner-16-2~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-2-16%402x.png">
-      <LogicalName>spinner-selected-2-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~dark~sel%402x.png">
+      <LogicalName>spinner-16-2~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-3-16.png">
-      <LogicalName>spinner-selected-3-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~sel.png">
+      <LogicalName>spinner-16-2~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-3-16%402x.png">
-      <LogicalName>spinner-selected-3-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-2~sel%402x.png">
+      <LogicalName>spinner-16-2~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-4-16.png">
-      <LogicalName>spinner-selected-4-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-3.png">
+      <LogicalName>spinner-16-3.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-4-16%402x.png">
-      <LogicalName>spinner-selected-4-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-3%402x.png">
+      <LogicalName>spinner-16-3@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-5-16.png">
-      <LogicalName>spinner-selected-5-16.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-3~dark.png">
+      <LogicalName>spinner-16-3~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\spinner-selected-5-16%402x.png">
-      <LogicalName>spinner-selected-5-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\spinner-16-3~dark%402x.png">
+      <LogicalName>spinner-16-3~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-3~dark~sel.png">
+      <LogicalName>spinner-16-3~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-3~dark~sel%402x.png">
+      <LogicalName>spinner-16-3~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-3~sel.png">
+      <LogicalName>spinner-16-3~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-3~sel%402x.png">
+      <LogicalName>spinner-16-3~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4.png">
+      <LogicalName>spinner-16-4.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4%402x.png">
+      <LogicalName>spinner-16-4@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~dark.png">
+      <LogicalName>spinner-16-4~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~dark%402x.png">
+      <LogicalName>spinner-16-4~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~dark~sel.png">
+      <LogicalName>spinner-16-4~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~dark~sel%402x.png">
+      <LogicalName>spinner-16-4~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~sel.png">
+      <LogicalName>spinner-16-4~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-4~sel%402x.png">
+      <LogicalName>spinner-16-4~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5.png">
+      <LogicalName>spinner-16-5.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5%402x.png">
+      <LogicalName>spinner-16-5@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~dark.png">
+      <LogicalName>spinner-16-5~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~dark%402x.png">
+      <LogicalName>spinner-16-5~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~dark~sel.png">
+      <LogicalName>spinner-16-5~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~dark~sel%402x.png">
+      <LogicalName>spinner-16-5~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~sel.png">
+      <LogicalName>spinner-16-5~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\spinner-16-5~sel%402x.png">
+      <LogicalName>spinner-16-5~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-nunit-overlay-32.png">
       <LogicalName>project-nunit-overlay-32.png</LogicalName>
