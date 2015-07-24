@@ -474,8 +474,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		Dictionary<TreeIter, bool> evalSpinnersIcons = new Dictionary<TreeIter, bool>();
-
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
 			if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
@@ -483,19 +481,6 @@ namespace MonoDevelop.Debugger
 					SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
 				} else {
 					SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
-				}
-			}
-			foreach (var s in evalSpinnersIcons.ToArray()) {
-				if (store.IterIsValid (s.Key) && Selection.IterIsSelected (s.Key)) {
-					if (!s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-16", IconSize.Menu);
-						evalSpinnersIcons [s.Key] = true;
-					}
-				} else {
-					if (s.Value) {
-						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-16", IconSize.Menu).WithStyle ("sel");
-						evalSpinnersIcons [s.Key] = false;
-					}
 				}
 			}
 		}
@@ -1159,7 +1144,6 @@ namespace MonoDevelop.Debugger
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 
-				evalSpinnersIcons [it] = true;
 				evaluateStatusIcon = "md-spinner-16";
 
 				valueColor = disabledColor;
@@ -1205,9 +1189,6 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
-			if (evaluateStatusIcon != "md-spinner-16") {
-				evalSpinnersIcons.Remove (it);
-			}
 			store.SetValue (it, EvaluateStatusIconVisibleColumn, evaluateStatusIcon != null);
 			store.LoadIcon (it, EvaluateStatusIconColumn, evaluateStatusIcon, IconSize.Menu);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
