@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharp
 				DocumentContext.AttachToProject (FindBestDefaultProject ());
 		}
 
-		DotNetProject FindBestDefaultProject (Solution solution = null)
+		DotNetProject FindBestDefaultProject (MonoDevelop.Projects.Solution solution = null)
 		{
 			// The best candidate to be selected as default project for this document is the startup project.
 			// If the startup project is not an owner, pick any project that is not disabled in the current configuration.
