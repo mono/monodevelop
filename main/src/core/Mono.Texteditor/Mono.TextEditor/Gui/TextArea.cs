@@ -370,7 +370,12 @@ namespace Mono.TextEditor
 			imContext.RetrieveSurrounding += delegate (object o, RetrieveSurroundingArgs args) {
 				//use a single line of context, whole document would be very expensive
 				//FIXME: UTF16 surrogates handling for caret offset? only matters for astral plane
-				imContext.SetSurrounding (Document.GetLineText (Caret.Line, false), Caret.Column);
+				var text = Document.GetLineText (Caret.Line, false);
+				// Gtk#, with some input methods, causes
+				// "Gtk-Critical: IA__gtk_im_context_set_surrounding: assertion 'cursor_index >= 0 && cursor_index <= len' failed"
+				// so, do not try to attempt erroneous imcontext call.
+				if (Caret.Column < text.Length)
+					imContext.SetSurrounding (text, Caret.Column);
 				args.RetVal = true;
 			};
 			
