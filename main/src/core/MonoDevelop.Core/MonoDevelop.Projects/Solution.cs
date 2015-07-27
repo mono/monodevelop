@@ -226,7 +226,6 @@ namespace MonoDevelop.Projects
 		}
 
 		// Used by serialization only
-		[ProjectPathItemProperty ("StartupItem", DefaultValue=null, ReadOnly=true)]
 		internal string StartupItemFileName {
 			get {
 				if (SingleStartup && StartupItem != null)
@@ -237,8 +236,6 @@ namespace MonoDevelop.Projects
 			set { startItemFileName = value; }
 		}
 
-		[ItemProperty ("StartupItems", ReadOnly=true)]
-		[ProjectPathItemProperty ("Item", Scope="*")]
 		internal List<string> MultiStartupItemFileNames {
 			get {
 				if (SingleStartup)

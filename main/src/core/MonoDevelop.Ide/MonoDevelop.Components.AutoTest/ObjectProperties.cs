@@ -42,8 +42,10 @@ namespace MonoDevelop.Components.AutoTest
 
 		internal void Add (string propertyName, AppResult propertyValue, PropertyInfo propertyInfo)
 		{
-			propertyMap.Add (propertyName, propertyValue);
-			propertyMetaData.Add (propertyName, new PropertyMetadata (propertyInfo));
+			if (!propertyMap.ContainsKey (propertyName))
+				propertyMap.Add (propertyName, propertyValue);
+			if (!propertyMetaData.ContainsKey (propertyName))
+				propertyMetaData.Add (propertyName, new PropertyMetadata (propertyInfo));
 		}
 
 		public ReadOnlyCollection<string> GetPropertyNames ()

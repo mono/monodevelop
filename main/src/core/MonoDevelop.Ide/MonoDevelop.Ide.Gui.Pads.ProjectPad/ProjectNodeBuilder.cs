@@ -384,9 +384,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public async void SetAsStartupProject ()
 		{
 			Project project = CurrentNode.DataItem as Project;
-			project.ParentSolution.SingleStartup = true;
 			project.ParentSolution.StartupItem = project;
-			await IdeApp.ProjectOperations.SaveAsync (project.ParentSolution);
+			if (!project.ParentSolution.SingleStartup) {
+				project.ParentSolution.SingleStartup = true;
+				await IdeApp.ProjectOperations.SaveAsync (project.ParentSolution);
+			} else
+				project.ParentSolution.SaveUserProperties ();
 		}
 		
 		public override void DeleteItem ()

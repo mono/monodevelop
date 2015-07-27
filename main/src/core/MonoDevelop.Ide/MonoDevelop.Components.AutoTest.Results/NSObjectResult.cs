@@ -43,6 +43,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			ResultObject = resultObject;
 		}
 
+		public override string ToString ()
+		{
+			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
+		}
+
 		public override void ToXml (XmlElement element)
 		{
 			AddAttribute (element, "type", ResultObject.GetType ().ToString ());
@@ -69,12 +74,18 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Marked (string mark)
 		{
+			if (CheckForText (ResultObject.GetType ().FullName, mark, true)) {
+				return this;
+			}
+
 			if (ResultObject is NSView) {
-				if (((NSView)ResultObject).Identifier == mark) {
+				if (CheckForText (((NSView)ResultObject).Identifier, mark, true)) {
 					return this;
 				}
+			}
 
-				if (ResultObject.GetType ().FullName == mark) {
+			if (ResultObject is NSWindow) {
+				if (CheckForText (((NSWindow)ResultObject).Title,  mark, true)) {
 					return this;
 				}
 			}
@@ -97,6 +108,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				string value = control.StringValue;
 				if (CheckForText (value, text, exact)) {
 					return this;
+				}
+
+				if (ResultObject is NSButton) {
+					var nsButton = (NSButton)ResultObject;
+					if (CheckForText (nsButton.Title, text, exact)) {
+						return this;
+					}
 				}
 			}
 
@@ -125,7 +143,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;
+			return MatchProperty (propertyName, ResultObject, value);
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -150,7 +168,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			control.PerformClick (null);
+			using (var nsObj = new NSObject ())
+				control.PerformClick (nsObj);
 			return true;
 		}
 

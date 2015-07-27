@@ -1,5 +1,5 @@
 ﻿//
-// GitRepositoryConfigurationTests.cs
+// GitBase.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -23,144 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using NUnit.Framework;
 using System;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.AutoTest;
+using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
-	[Category ("GitConfig")]
-	public class GitRepositoryConfigurationTests : GitRepositoryConfigurationBase
+	public abstract class GitBase : VCSBase
 	{
-		#region Branch Tab
+		#region Git Repository Configuration
 
-		[Test]
-		public void CreateNewBranchTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ();
-			CreateNewBranch ("new-branch");
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		public void GitSwitchBranchTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ();
-			CreateNewBranch ("new-branch");
-			SwitchToBranch ("new-branch");
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		public void GitEditBranchTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ();
-			CreateNewBranch ("new-branch");
-			SelectBranch ("new-branch");
-			EditBranch ("new-branch", "new-new-branch");
-			SwitchToBranch ("new-new-branch");
-			CloseRepositoryConfiguration ();
-		}
-
-		#endregion
-
-		#region Remotes Tab
-
-		[Test]
-		public void SelectRemoteTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ("Remote Sources");
-			SelectRemote ("origin");
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		public void AddGitRemoteTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			OpenRepositoryConfiguration ("Remote Sources");
-			AddRemote (newRemoteName, newRemoteUrl);
-			SelectRemote (newRemoteName, newRemoteUrl);
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		[Ignore ("When OK is clicked on EditRemoteDialog, it doesn't update the list")]
-		public void EditGitRemoteTest ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ("Remote Sources");
-
-			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			AddRemote (newRemoteName, newRemoteUrl);
-			SelectRemote (newRemoteName, newRemoteUrl);
-
-			const string updatedRemoteName = "second-origin";
-			const string updatedRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			EditRemote (updatedRemoteName, updatedRemoteUrl, "git@github.com:mono/monohotdraw-push.git");
-			SelectRemote (updatedRemoteName, updatedRemoteUrl);
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		public void FetchRemoteBranches ()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			OpenRepositoryConfiguration ("Remote Sources");
-			AddRemote (newRemoteName, newRemoteUrl);
-			FetchRemoteBranch (newRemoteName);
-			CloseRepositoryConfiguration ();
-		}
-
-		[Test]
-		public void TrackRemoteBranchInLocalTest()
-		{
-			TestClone ("git@github.com:mono/jurassic.git");
-			Ide.WaitForSolutionCheckedOut ();
-
-			const string newRemoteName = "second";
-			const string newRemoteUrl = "git@github.com:mono/monohotdraw.git";
-			OpenRepositoryConfiguration ("Remote Sources");
-			AddRemote (newRemoteName, newRemoteUrl);
-			FetchRemoteBranch (newRemoteName);
-			const string localBranch = "local-branch-random-uitest";
-			CreateEditBranch ("buttonTrackRemote", localBranch);
-			SwitchTab ("Branches");
-			SelectBranch (localBranch);
-			CloseRepositoryConfiguration ();
-		}
-
-		#endregion
-	}
-
-	public abstract class GitRepositoryConfigurationBase : VCSBase
-	{
 		#region Remotes
 
 		Func<AppQuery, AppQuery> remoteTreeName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name");
@@ -224,6 +96,15 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Remote-Edit-Dialog-Closed");
 		}
 
+		protected void DeleteRemote (string remoteName)
+		{
+			Session.WaitForElement (c => remoteTreeName (c).Contains (remoteName));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Remove"), false);
+			TakeScreenShot (string.Format ("Remove-Remote-{0}", remoteName));
+			Ide.ClickButtonAlertDialog ("Delete");
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+		}
+
 		#endregion
 
 		#region Branches
@@ -247,13 +128,17 @@ namespace UserInterfaceTests
 			Session.WaitForElement (IdeQuery.EditBranchDialog);
 			TakeScreenShot ("Edit-Branch-Dialog-Opened");
 
+			EnterBranchName (newBranchName);
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+			TakeScreenShot ("Edit-Branch-Dialog-Opened-Closed");
+		}
+
+		protected void EnterBranchName (string newBranchName)
+		{
 			Session.EnterText (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName"), newBranchName);
 			Session.WaitForElement (c => IdeQuery.EditBranchDialog (c).Children ().Textfield ().Marked ("entryName").Text (newBranchName));
 			TakeScreenShot ("Branch-Name-Entered");
-
 			Assert.IsTrue (Session.ClickElement (c => IdeQuery.EditBranchDialog (c).Children ().Button ().Marked ("buttonOk")));
-			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
-			TakeScreenShot ("Edit-Branch-Dialog-Opened-Closed");
 		}
 
 		protected void SwitchToBranch (string branchName)
@@ -284,13 +169,22 @@ namespace UserInterfaceTests
 			TakeScreenShot (string.Format ("Selected-Branch-{0}", branchName));
 		}
 
+		protected void DeleteBranch (string branchName)
+		{
+			Assert.IsTrue (Session.SelectElement (c => branchDisplayName (c).Contains (branchName)));
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Delete"), false);
+			TakeScreenShot (string.Format ("Delete-Branch-{0}", branchName));
+			Ide.ClickButtonAlertDialog ("Delete");
+			Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+		}
+
 		protected bool IsBranchSwitched (string branchName)
 		{
 			return Session.SelectElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
 		}
 
 		#endregion
-	
+
 		protected void OpenRepositoryConfiguration (string selectTab = null)
 		{
 			Session.ExecuteCommand (MonoDevelop.VersionControl.Git.Commands.ManageBranches);
@@ -305,6 +199,65 @@ namespace UserInterfaceTests
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
 		}
+
+		#endregion
+
+		#region Stash Manager
+
+		protected Func<AppQuery, AppQuery> StashEntries = c => c.Window ().Marked (
+			"Stash Manager").Children ().TreeView ().Marked ("list").Model ().Children ();
+
+		protected void OpenStashManager ()
+		{
+			Session.ExecuteCommand ("MonoDevelop.VersionControl.Git.Commands.ManageStashes");
+			Session.WaitForElement (c => c.Window ().Marked ("Stash Manager"));
+			TakeScreenShot ("StashManager-Opened");
+		}
+
+		protected void CloseStashManager ()
+		{
+			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Text ("Close"));
+			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("StashManager-Closed");
+		}
+
+		protected void SelectStashEntry (int index = 0)
+		{
+			Session.WaitForElement (c => StashEntries (c).Index (index));
+			Session.SelectElement (c => StashEntries (c).Index (index));
+		}
+
+		protected void RemoveStash (int index)
+		{
+			SelectStashEntry (index);
+			TakeScreenShot ("About-To-Click-Remove");
+			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Remove"));
+			Session.WaitForElement (c => c.Window ().Marked ("Stash Manager"));
+		}
+
+		protected void ApplyAndRemoveStash (int index)
+		{
+			SelectStashEntry (index);
+			TakeScreenShot ("About-To-Click-Apply-and-Remove");
+			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply and Remove"));
+		}
+
+		protected void ApplyStash (int index)
+		{
+			SelectStashEntry (index);
+			TakeScreenShot ("About-To-Click-Apply");
+			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Apply"));
+		}
+
+		protected void ComvertToBranch (int index, string branchName)
+		{
+			SelectStashEntry (index);
+			TakeScreenShot ("About-To-Click-Convert-To-Branch");
+			Session.ClickElement (c => c.Window ().Marked ("Stash Manager").Children ().Button ().Text ("Convert to Branch"), false);
+			EnterBranchName (branchName);
+		}
+
+		#endregion
 	}
 }
 

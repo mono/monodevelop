@@ -53,6 +53,7 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -66,10 +67,8 @@
     <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
     <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
     <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
-    <Compile Include="VersionControlTests\GitTests.cs" />
     <Compile Include="VersionControlTests\VCSBase.cs" />
     <Compile Include="VersionControlTests\SvnTests.cs" />
-    <Compile Include="VersionControlTests\GitRepositoryConfigurationTests.cs" />
     <Compile Include="DialogTests\NewProjectDialogTests.cs" />
     <Compile Include="IdeQuery.cs" />
     <Compile Include="Controllers\NewFileController.cs" />
@@ -79,6 +78,11 @@
     <Compile Include="DialogTests\NuGetDialogTests.cs" />
     <Compile Include="Exceptions\TemplateSelectionException.cs" />
     <Compile Include="Exceptions\CreateProjectException.cs" />
+    <Compile Include="Workbench.cs" />
+    <Compile Include="VersionControlTests\Git\GitBase.cs" />
+    <Compile Include="VersionControlTests\Git\GitRepositoryConfigurationTests.cs" />
+    <Compile Include="VersionControlTests\Git\GitStashManagerTests.cs" />
+    <Compile Include="VersionControlTests\Git\GitTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -115,5 +119,6 @@
     <Folder Include="DialogTests\" />
     <Folder Include="Controllers\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="VersionControlTests\Git\" />
   </ItemGroup>
 </Project>
