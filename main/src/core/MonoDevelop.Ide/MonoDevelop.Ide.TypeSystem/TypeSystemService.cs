@@ -1129,10 +1129,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			public bool WasChanged;
 			[NonSerialized]
 			ICompilation compilation;
+			object compilationContentLock = new object ();
 
 			public ICompilation Compilation {
 				get {
-					lock (updateContentLock) {
+					lock (compilationContentLock) {
 						if (compilation == null) {
 							compilation = Content.CreateCompilation ();
 						}
