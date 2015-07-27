@@ -1828,11 +1828,23 @@
     <EmbeddedResource Include="icons\prefs-load-save-16%402x.png">
       <LogicalName>prefs-load-save-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-load-save-16~dark.png">
+      <LogicalName>prefs-load-save-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-load-save-16~dark%402x.png">
+      <LogicalName>prefs-load-save-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-formatting-16.png">
       <LogicalName>prefs-code-formatting-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-formatting-16%402x.png">
       <LogicalName>prefs-code-formatting-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-formatting-16~dark.png">
+      <LogicalName>prefs-code-formatting-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-formatting-16~dark%402x.png">
+      <LogicalName>prefs-code-formatting-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-language-16.png">
       <LogicalName>prefs-language-16.png</LogicalName>
@@ -1840,11 +1852,35 @@
     <EmbeddedResource Include="icons\prefs-language-16%402x.png">
       <LogicalName>prefs-language-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark.png">
+      <LogicalName>prefs-language-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark%402x.png">
+      <LogicalName>prefs-language-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark~sel.png">
+      <LogicalName>prefs-language-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark~sel%402x.png">
+      <LogicalName>prefs-language-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~sel.png">
+      <LogicalName>prefs-language-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~sel%402x.png">
+      <LogicalName>prefs-language-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-key-bindings-16.png">
       <LogicalName>prefs-key-bindings-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-key-bindings-16%402x.png">
       <LogicalName>prefs-key-bindings-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-key-bindings-16~dark.png">
+      <LogicalName>prefs-key-bindings-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-key-bindings-16~dark%402x.png">
+      <LogicalName>prefs-key-bindings-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-fonts-16.png">
       <LogicalName>prefs-fonts-16.png</LogicalName>
@@ -1852,11 +1888,23 @@
     <EmbeddedResource Include="icons\prefs-fonts-16%402x.png">
       <LogicalName>prefs-fonts-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-fonts-16~dark.png">
+      <LogicalName>prefs-fonts-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-fonts-16~dark%402x.png">
+      <LogicalName>prefs-fonts-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-author-information-16.png">
       <LogicalName>prefs-author-information-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-author-information-16%402x.png">
       <LogicalName>prefs-author-information-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-author-information-16~dark.png">
+      <LogicalName>prefs-author-information-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-author-information-16~dark%402x.png">
+      <LogicalName>prefs-author-information-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-sdk-locations-16.png">
       <LogicalName>prefs-sdk-locations-16.png</LogicalName>
@@ -1864,11 +1912,23 @@
     <EmbeddedResource Include="icons\prefs-sdk-locations-16%402x.png">
       <LogicalName>prefs-sdk-locations-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-sdk-locations-16~dark.png">
+      <LogicalName>prefs-sdk-locations-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-sdk-locations-16~dark%402x.png">
+      <LogicalName>prefs-sdk-locations-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-external-tools-16.png">
       <LogicalName>prefs-external-tools-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-external-tools-16%402x.png">
       <LogicalName>prefs-external-tools-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-external-tools-16~dark.png">
+      <LogicalName>prefs-external-tools-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-external-tools-16~dark%402x.png">
+      <LogicalName>prefs-external-tools-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-build-16.png">
       <LogicalName>prefs-build-16.png</LogicalName>
@@ -1876,11 +1936,47 @@
     <EmbeddedResource Include="icons\prefs-build-16%402x.png">
       <LogicalName>prefs-build-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~dark.png">
+      <LogicalName>prefs-build-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~dark%402x.png">
+      <LogicalName>prefs-build-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~dark~sel.png">
+      <LogicalName>prefs-build-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~dark~sel%402x.png">
+      <LogicalName>prefs-build-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~sel.png">
+      <LogicalName>prefs-build-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-build-16~sel%402x.png">
+      <LogicalName>prefs-build-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-play-16.png">
       <LogicalName>prefs-play-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-play-16%402x.png">
       <LogicalName>prefs-play-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~dark.png">
+      <LogicalName>prefs-play-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~dark%402x.png">
+      <LogicalName>prefs-play-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~dark~sel.png">
+      <LogicalName>prefs-play-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~dark~sel%402x.png">
+      <LogicalName>prefs-play-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~sel.png">
+      <LogicalName>prefs-play-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-play-16~sel%402x.png">
+      <LogicalName>prefs-play-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-updates-16.png">
       <LogicalName>prefs-updates-16.png</LogicalName>
@@ -1888,11 +1984,23 @@
     <EmbeddedResource Include="icons\prefs-updates-16%402x.png">
       <LogicalName>prefs-updates-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-updates-16~dark.png">
+      <LogicalName>prefs-updates-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-updates-16~dark%402x.png">
+      <LogicalName>prefs-updates-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-task-list-16.png">
       <LogicalName>prefs-task-list-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-task-list-16%402x.png">
       <LogicalName>prefs-task-list-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-task-list-16~dark.png">
+      <LogicalName>prefs-task-list-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-task-list-16~dark%402x.png">
+      <LogicalName>prefs-task-list-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-generic-16.png">
       <LogicalName>prefs-generic-16.png</LogicalName>
@@ -1900,11 +2008,35 @@
     <EmbeddedResource Include="icons\prefs-generic-16%402x.png">
       <LogicalName>prefs-generic-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~dark.png">
+      <LogicalName>prefs-generic-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~dark%402x.png">
+      <LogicalName>prefs-generic-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~dark~sel.png">
+      <LogicalName>prefs-generic-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~dark~sel%402x.png">
+      <LogicalName>prefs-generic-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~sel.png">
+      <LogicalName>prefs-generic-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-generic-16~sel%402x.png">
+      <LogicalName>prefs-generic-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-csharp-16.png">
       <LogicalName>prefs-csharp-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-csharp-16%402x.png">
       <LogicalName>prefs-csharp-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-csharp-16~dark.png">
+      <LogicalName>prefs-csharp-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-csharp-16~dark%402x.png">
+      <LogicalName>prefs-csharp-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-standard-header-16.png">
       <LogicalName>prefs-standard-header-16.png</LogicalName>
@@ -1912,11 +2044,23 @@
     <EmbeddedResource Include="icons\prefs-standard-header-16%402x.png">
       <LogicalName>prefs-standard-header-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-standard-header-16~dark.png">
+      <LogicalName>prefs-standard-header-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-standard-header-16~dark%402x.png">
+      <LogicalName>prefs-standard-header-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16.png">
       <LogicalName>prefs-dotnet-naming-policies-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16%402x.png">
       <LogicalName>prefs-dotnet-naming-policies-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~dark.png">
+      <LogicalName>prefs-dotnet-naming-policies-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~dark%402x.png">
+      <LogicalName>prefs-dotnet-naming-policies-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-templates-16.png">
       <LogicalName>prefs-code-templates-16.png</LogicalName>
@@ -1924,11 +2068,23 @@
     <EmbeddedResource Include="icons\prefs-code-templates-16%402x.png">
       <LogicalName>prefs-code-templates-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-templates-16~dark.png">
+      <LogicalName>prefs-code-templates-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-templates-16~dark%402x.png">
+      <LogicalName>prefs-code-templates-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-name-conventions-16.png">
       <LogicalName>prefs-name-conventions-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-name-conventions-16%402x.png">
       <LogicalName>prefs-name-conventions-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-name-conventions-16~dark.png">
+      <LogicalName>prefs-name-conventions-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-name-conventions-16~dark%402x.png">
+      <LogicalName>prefs-name-conventions-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\copy-16.png">
       <LogicalName>copy-16.png</LogicalName>
