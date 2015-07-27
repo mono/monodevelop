@@ -225,6 +225,24 @@
     <EmbeddedResource Include="icons\prefs-language-16%402x.png">
       <LogicalName>prefs-language-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark.png">
+      <LogicalName>prefs-language-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark%402x.png">
+      <LogicalName>prefs-language-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark~sel.png">
+      <LogicalName>prefs-language-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~dark~sel%402x.png">
+      <LogicalName>prefs-language-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~sel.png">
+      <LogicalName>prefs-language-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-language-16~sel%402x.png">
+      <LogicalName>prefs-language-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
