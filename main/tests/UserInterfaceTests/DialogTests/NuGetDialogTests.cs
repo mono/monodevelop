@@ -43,7 +43,7 @@ namespace UserInterfaceTests
 			CreateProject ();
 			NuGetController.AddPackage (new NuGetPackageOptions {
 				PackageName = "CommandLineParser",
-				Version = "2.0.85-alpha",
+				Version = "2.0.119-alpha",
 				IsPreRelease = true
 			});
 		}
@@ -112,7 +112,6 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Solution-Opened");
 			Ide.WaitForPackageUpdate ();
 			TakeScreenShot ("Solution-Ready");
-			Session.WaitForElement (IdeQuery.TextArea);
 
 			NuGetController.UpdateAllNuGetPackages (TakeScreenShot);
 

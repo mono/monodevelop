@@ -69,8 +69,12 @@ namespace UserInterfaceTests
 		public static void UpdateAllNuGetPackages (Action<string> takeScreenshot = null)
 		{
 			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
-			Ide.WaitForStatusMessage (new [] { "Updating packages in solution..." });
-			Ide.WaitForPackageUpdate ();
+			Ide.WaitForStatusMessage (new [] {
+				"Packages are up to date.",
+				"No updates found but warnings were reported.",
+				"Packages successfully updated.",
+				"Packages updated with warnings."},
+				timeoutInSecs: 120, pollStepInSecs: 5);
 			takeScreenshot ("All-NuGet-Packages-Updated");
 		}
 

@@ -92,5 +92,17 @@ namespace UserInterfaceTests
 				return true;
 			}
 		}
+
+		public static string Configuration
+		{
+			get {
+				var configId = Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.ActiveConfigurationId");
+				return configId != null ? (string)configId : null;
+			}
+			set {
+				Session.SetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.ActiveConfigurationId", value);
+				Ide.WaitUntil (() => Workbench.Configuration == value);
+			}
+		}
 	}
 }
