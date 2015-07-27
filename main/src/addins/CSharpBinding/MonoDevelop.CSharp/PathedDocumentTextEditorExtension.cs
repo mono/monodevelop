@@ -272,7 +272,7 @@ namespace MonoDevelop.CSharp
 			// If the startup project changes, and the new startup project is an owner of this document,
 			// then attach the document to that project
 
-			var sol = (Solution) sender;
+			var sol = (Projects.Solution) sender;
 			var p = sol.StartupItem as DotNetProject;
 			if (p != null && ownerProjects.Contains (p))
 				DocumentContext.AttachToProject (p);
