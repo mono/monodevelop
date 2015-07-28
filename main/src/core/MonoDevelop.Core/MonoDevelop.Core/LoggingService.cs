@@ -576,7 +576,7 @@ namespace MonoDevelop.Core
 		/// <param name="ex">Exception</param>
 		public static void LogFatalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Fatal, FormatExceptionText (message, ex));
 
 			ReportUnhandledException (ex, true, false, "fatal");
 		}
