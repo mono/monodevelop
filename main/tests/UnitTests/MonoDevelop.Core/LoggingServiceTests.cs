@@ -168,14 +168,6 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (2, reporter.Messages.Count);
 		}
 
-		[Test]
-		public void TestCrashLoggingOnlyRegisteredOnce ()
-		{
-			LoggingService.RegisterCrashReporter (reporter);
-			LoggingService.LogInternalError (null);
-			Assert.AreEqual (1, reporter.Messages.Count, "Only getting message once.");
-		}
-
 		class LoggingServiceTestsLogger : ILogger
 		{
 			#region ILogger implementation
