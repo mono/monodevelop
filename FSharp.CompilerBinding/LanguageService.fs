@@ -345,15 +345,6 @@ type LanguageService(dirtyNotify) =
     let opts = x.GetProjectCheckerOptions(projectFilename)
     checker.StartBackgroundCompile(opts)
 
-  /// Parses and checks the given file in the given project under the given configuration. Asynchronously
-  /// returns the results of checking the file.
-  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src) =
-    async {
-      let opts = x.GetCheckerOptions(fileName, projectFilename, src)
-      Debug.WriteLine("LanguageService: ParseAndCheckFileInProject: Trigger parse (fileName={0})", fileName)
-      let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
-      return results }
-
   member x.ParseFileInProject(projectFilename, fileName:string, src) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src)
     Debug.WriteLine("LanguageService: ParseFileInProject: Get untyped parse result (fileName={0})", fileName)
@@ -370,6 +361,8 @@ type LanguageService(dirtyNotify) =
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
     | _ -> None
 
+  /// Parses and checks the given file in the given project under the given configuration.
+  ///Asynchronously returns the results of checking the file.
   member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout) = 
     async {
       let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName

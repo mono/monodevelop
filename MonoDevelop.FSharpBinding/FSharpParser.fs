@@ -90,8 +90,7 @@ type FSharpParser() =
         let fileName = parseOptions.FileName
         let content = parseOptions.Content
         let proj = parseOptions.Project
-        if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null
-        else
+        if fileName = null || not (MDLanguageService.SupportedFileName (fileName)) then null else
 
         Async.StartAsTask(
             cancellationToken = cancellationToken,
@@ -105,40 +104,46 @@ type FSharpParser() =
             | None -> ()
             | Some filePath -> 
                 let! results =
-                    try
-                        let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
-                        LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        languageService.ParseAndCheckFileInProject(projectFile, filePath, content.Text)
-                    with
-                    | :? TimeoutException ->
-                        doc.IsInvalid <- true
-                        LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        async.Return ParseAndCheckResults.Empty
-                    | :? Tasks.TaskCanceledException ->
-                        doc.IsInvalid <- true
-                        LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject was cancelled for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
-                        async.Return ParseAndCheckResults.Empty
-                    | ex -> doc.IsInvalid <- true
-                            LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename, ex)
-                            async.Return ParseAndCheckResults.Empty
-                                                                                     
-                results.GetErrors()
-                |> Option.iter (Array.map formatError >> doc.AddRange)
+                  try
+                    let projectFile = proj |> function null -> filePath | proj -> proj.FileName.ToString()
+                    LoggingService.LogInfo ("FSharpParser: [Thread {0}] Running ParseAndCheckFileInProject for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                    languageService.GetTypedParseResultWithTimeout(projectFile, filePath, content.Text, AllowStaleResults.MatchingSource)
+                  with
+                  | :? TimeoutException ->
+                    doc.IsInvalid <- true
+                    LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject timed out for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                    async.Return None
+                  | :? Tasks.TaskCanceledException ->
+                    doc.IsInvalid <- true
+                    LoggingService.LogWarning ("FSharpParser: [Thread {0}] ParseAndCheckFileInProject was cancelled for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename)
+                    async.Return None
+                  | ex ->
+                    doc.IsInvalid <- true
+                    LoggingService.LogError("FSharpParser: [Thread {0}] Error processing ParseAndCheckFileResults for {1}", Thread.CurrentThread.ManagedThreadId, shortFilename, ex)
+                    async.Return None
+                match results with
+                | Some results ->                                                                     
+                  results.GetErrors()
+                  |> Option.iter (Array.map formatError >> doc.AddRange)
 
-                //Set code folding regions, GetNavigationItems may throw in some situations
-                try 
+                  //Set code folding regions, GetNavigationItems may throw in some situations
+                  try 
                     let regions = 
-                        let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
-                            let m = decl.Range
-                            FoldingRegion(decl.Name, Editor.DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
-                        seq {for toplevel in results.GetNavigationItems() do
-                                yield processDecl toplevel.Declaration
-                                for next in toplevel.Nested do
-                                    yield processDecl next }
+                      let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
+                        let m = decl.Range
+                        FoldingRegion(decl.Name, Editor.DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
+                      seq {for toplevel in results.GetNavigationItems() do
+                             yield processDecl toplevel.Declaration
+                             for next in toplevel.Nested do
+                               yield processDecl next }
                     regions |> doc.AddRange
-                with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
-                //Store the AST of active results
-                doc.Ast <- results
+                  with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
+                  //Store the AST of active results
+                  doc.Ast <- results
+                | None ->
+                  doc.IsInvalid <- true
+                  LoggingService.LogError("FSharpParser: [Thread {0}] Error ParseAndCheckFileResults for {1} no results returned", Thread.CurrentThread.ManagedThreadId, shortFilename)
+
             doc.LastWriteTimeUtc <- try File.GetLastWriteTimeUtc(fileName) with _ -> DateTime.UtcNow
             return doc :> _})
 
