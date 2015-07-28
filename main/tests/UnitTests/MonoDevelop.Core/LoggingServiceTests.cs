@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Logging;
-using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core.Logging;
+using MonoDevelop.Core.LogReporting;
+using NUnit.Framework;
 
 namespace MonoDevelop.Core
 {
@@ -34,18 +36,32 @@ namespace MonoDevelop.Core
 	public class LoggingServiceTests
 	{
 		readonly LoggingServiceTestsLogger logger = new LoggingServiceTestsLogger ();
+		LoggingServiceTestsCrashReporter reporter;
+
+		const string message = "This is a log message";
+		const string format = "{0}";
+		string[] exceptionMessage = new[] {
+			"This is a log message",
+			"System.Exception: Exception of type 'System.Exception' was thrown.",
+			"  at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
+			"Exception Data:",
+			"key: value",
+			"key2: value2"
+		};
 
 		[SetUp]
 		public void SetUp ()
 		{
 			logger.EnabledLevel = EnabledLoggingLevel.All;
 			LoggingService.AddLogger (logger);
+			LoggingService.RegisterCrashReporter (reporter = new LoggingServiceTestsCrashReporter ());
 		}
 
 		[TearDown]
 		public void TearDown ()
 		{
 			LoggingService.RemoveLogger (logger.Name);
+			LoggingService.UnregisterCrashReporter (reporter);
 		}
 
 		void AssertLastMessageEqual (string message, LogLevel level)
@@ -100,17 +116,6 @@ namespace MonoDevelop.Core
 		[TestCase (LogLevel.Debug, "LogDebug")]
 		public void TestSimpleLogging (LogLevel level, string methodName)
 		{
-			const string message = "This is a log message";
-			const string format = "{0}";
-			string[] exceptionMessage = new[] {
-				"This is a log message",
-				"System.Exception: Exception of type 'System.Exception' was thrown.",
-				"  at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
-				"Exception Data:",
-				"key: value",
-				"key2: value2"
-			};
-
 			var logMethod = typeof(LoggingService).GetMethod (methodName, new[] { typeof(string) });
 			logMethod.Invoke (null, new[] { message });
 			AssertLastMessageEqual (message, level);
@@ -144,6 +149,25 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		[Test]
+		public void TestCrashLogging ()
+		{
+			Tuple<Exception, bool, string> message;
+			LoggingService.LogInternalError (null);
+			message = reporter.Messages [reporter.Messages.Count - 1];
+			Assert.AreSame (null, message.Item1);
+			Assert.AreEqual (false, message.Item2);
+			Assert.AreEqual ("internal", message.Item3);
+			Assert.AreEqual (1, reporter.Messages.Count);
+
+			LoggingService.LogFatalError (string.Empty, (Exception)null);
+			message = reporter.Messages [reporter.Messages.Count - 1];
+			Assert.AreSame (null, message.Item1);
+			Assert.AreEqual (true, message.Item2);
+			Assert.AreEqual ("fatal", message.Item3);
+			Assert.AreEqual (2, reporter.Messages.Count);
+		}
+
 		class LoggingServiceTestsLogger : ILogger
 		{
 			#region ILogger implementation
@@ -173,6 +197,20 @@ namespace MonoDevelop.Core
 			}
 
 			#endregion
+		}
+
+		class LoggingServiceTestsCrashReporter : CrashReporter
+		{
+			readonly List<Tuple<Exception, bool, string>> messages = new List<Tuple<Exception, bool, string>> ();
+
+			public IReadOnlyList<Tuple<Exception, bool, string>> Messages {
+				get { return messages; }
+			}
+
+			public override void ReportCrash (Exception ex, bool willShutDown, IEnumerable<string> tags)
+			{
+				messages.Add (new Tuple<Exception, bool, string> (ex, willShutDown, tags.First ()));
+			}
 		}
 	}
 }

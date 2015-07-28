@@ -561,7 +561,7 @@ namespace MonoDevelop.Core
 		/// <param name="ex">Exception</param>
 		public static void LogInternalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Error, FormatExceptionText (message, ex));
 
 			ReportUnhandledException (ex, false, true, "internal");
 		}
