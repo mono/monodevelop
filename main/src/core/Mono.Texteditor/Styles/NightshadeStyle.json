@@ -92,7 +92,7 @@
 
         { "name":"Bookmarks", "color":"aluminium1", "secondcolor":"aluminium4" },
 
-        { "name":"Underline(Error)", "color":"invalid-red" },
+        { "name":"Underline(Error)", "color":"scarletred2" },
         { "name":"Underline(Warning)", "color":"skyblue1" },
         { "name":"Underline(Suggestion)", "color":"chameleon3" },
         { "name":"Underline(Hint)", "color":"chameleon1" },
