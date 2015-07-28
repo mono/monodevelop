@@ -496,11 +496,15 @@ namespace MonoDevelop.Core
 
 		static string FormatExceptionText (string message, Exception ex)
 		{
+			if (ex == null)
+				return message;
+
 			var exceptionText = new StringBuilder ();
-			exceptionText.Append (message);
-			if (ex != null) {
+			exceptionText.AppendLine (message);
+			exceptionText.Append (ex);
+			if (ex.Data.Count > 0) {
 				exceptionText.AppendLine ();
-				exceptionText.Append (ex);
+				exceptionText.Append ("Exception Data:");
 				foreach (DictionaryEntry item in ex.Data) {
 					exceptionText.AppendLine ();
 					exceptionText.AppendFormat ("{0}: {1}", item.Key, item.Value);
