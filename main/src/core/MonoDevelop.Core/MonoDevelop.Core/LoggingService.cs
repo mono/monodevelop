@@ -36,6 +36,7 @@ using Mono.Addins;
 using MonoDevelop.Core.LogReporting;
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
+using System.Text;
 
 namespace MonoDevelop.Core
 {
@@ -492,20 +493,35 @@ namespace MonoDevelop.Core
 #endregion
 		
 #region convenience methods (string message, Exception ex)
-		
+
+		static string FormatExceptionText (string message, Exception ex)
+		{
+			var exceptionText = new StringBuilder ();
+			exceptionText.Append (message);
+			if (ex != null) {
+				exceptionText.AppendLine ();
+				exceptionText.Append (ex);
+				foreach (DictionaryEntry item in ex.Data) {
+					exceptionText.AppendLine ();
+					exceptionText.AppendFormat ("{0}: {1}", item.Key, item.Value);
+				}
+			}
+			return exceptionText.ToString ();
+		}
+
 		public static void LogDebug (string message, Exception ex)
 		{
-			Log (LogLevel.Debug, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Debug, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogInfo (string message, Exception ex)
 		{
-			Log (LogLevel.Info, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Info, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogWarning (string message, Exception ex)
 		{
-			Log (LogLevel.Warn, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Warn, FormatExceptionText (message, ex));
 		}
 		
 		public static void LogError (string message, Exception ex)
@@ -516,7 +532,7 @@ namespace MonoDevelop.Core
 		[Obsolete ("Use LogError")]
 		public static void LogUserError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
+			Log (LogLevel.Error, FormatExceptionText (message, ex));
 		}
 
 		/// <summary>
