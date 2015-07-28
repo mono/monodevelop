@@ -43,7 +43,7 @@ namespace MonoDevelop.Core
 		string[] exceptionMessage = new[] {
 			"This is a log message",
 			"System.Exception: Exception of type 'System.Exception' was thrown.",
-			"  at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
+			"at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
 			"Exception Data:",
 			"key: value",
 			"key2: value2"
@@ -140,7 +140,7 @@ namespace MonoDevelop.Core
 
 				Assert.AreEqual (level, actualLevel);
 				for (int i = 0; i < actualMessage.Length; ++i)
-					Assert.IsTrue (actualMessage[i].StartsWith (exceptionMessage[i]), "Line {0} mismatches.{1}Expected: {2}{3}Actual: {4}", i, Environment.NewLine,
+					Assert.IsTrue (actualMessage[i].Contains (exceptionMessage[i]), "Line {0} mismatches.{1}Expected: {2}{3}Actual: {4}", i, Environment.NewLine,
 						exceptionMessage[i], Environment.NewLine, actualMessage[i]);
 
 				// Test that the message is the same when no exception is sent.
