@@ -71,7 +71,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			set {
 				if (value == null)
 					throw new ArgumentNullException ();
+				if (textEditor != null)
+					textEditor.EditorOptionsChanged -= TextEditor_EditorOptionsChanged;
 				textEditor = value;
+				textEditor.EditorOptionsChanged += TextEditor_EditorOptionsChanged;
 				SetupMode ();
 			}
 		}
@@ -157,6 +160,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnDestroyed ()
 		{
 			adj = null;
+			if (textEditor != null)
+				textEditor.EditorOptionsChanged -= TextEditor_EditorOptionsChanged;
 			textEditor = null;
 			providerTasks = null;
 			PropertyService.RemovePropertyHandler ("ScrollBar.Mode", ScrollBarModeChanged);
@@ -202,7 +207,12 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
-		
+
+		void TextEditor_EditorOptionsChanged (object sender, EventArgs e)
+		{
+			QueueDraw ();
+		}
+
 		#region Command handlers
 		[CommandHandler (ScrollbarCommand.Top)]
 		internal void GotoTop ()
