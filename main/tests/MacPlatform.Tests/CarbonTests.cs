@@ -32,6 +32,7 @@ namespace MacPlatform.Tests
 {
 	public class CarbonTests
 	{
+		[Ignore]
 		[Test]
 		public void TestProcessName ()
 		{
