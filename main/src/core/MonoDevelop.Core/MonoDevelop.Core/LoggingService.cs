@@ -60,7 +60,7 @@ namespace MonoDevelop.Core
 		// Thirdparameter shows if the exception is fatal or not
 		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
 
-		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
+		static HashSet<CrashReporter> customCrashReporters = new HashSet<CrashReporter> ();
 
 		static LoggingService ()
 		{
