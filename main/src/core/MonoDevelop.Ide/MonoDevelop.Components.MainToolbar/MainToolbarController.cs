@@ -512,6 +512,9 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
+			if (!string.IsNullOrEmpty (ToolbarView.SearchText))
+				lastSearchText = ToolbarView.SearchText;
+			
 			if (string.IsNullOrEmpty (ToolbarView.SearchText)){
 				DestroyPopup ();
 				return;
@@ -537,6 +540,7 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.ShowAll ();
 			}
+
 			popup.Update (pattern);
 		}
 
@@ -573,9 +577,16 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		string lastSearchText;
 		public void FocusSearchBar ()
 		{
 			IdeApp.Workbench.Present ();
+			var text = lastSearchText;
+			var actDoc = IdeApp.Workbench.ActiveDocument;
+			if (actDoc != null && actDoc.Editor.IsSomethingSelected)
+				text = actDoc.Editor.SelectedText;
+
+			ToolbarView.SearchText = text;
 			ToolbarView.FocusSearchBar ();
 		}
 
