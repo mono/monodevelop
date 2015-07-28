@@ -8,7 +8,7 @@
     <ProjectGuid>{07F55155-51A8-4072-9F80-FA473666F086}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>UserInterfaceTests</RootNamespace>
-    <AssemblyName>UserInterfaceTests</AssemblyName>
+    <AssemblyName>MonoDevelop.UITests</AssemblyName>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -50,6 +50,10 @@
       <HintPath>..\..\packages\NUnit.Runners.2.6.4\tools\lib\nunit.core.interfaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UITestBase.cs" />
@@ -58,14 +62,28 @@
     <Compile Include="ProcessUtils.cs" />
     <Compile Include="Ide.cs" />
     <Compile Include="CreateBuildTemplatesTestBase.cs" />
-    <Compile Include="NewProjectController.cs" />
     <Compile Include="UITestDebug.cs" />
     <Compile Include="TemplateTestOptions.cs" />
     <Compile Include="TemplateTests\ASPNETTemplateTests.cs" />
     <Compile Include="TemplateTests\DotNetTemplatesTest.cs" />
     <Compile Include="TemplateTests\MiscTemplatesTest.cs" />
-    <Compile Include="VersionControlTests\VCSUtils.cs" />
-    <Compile Include="VersionControlTests\GitTests.cs" />
+    <Compile Include="VersionControlTests\VCSBase.cs" />
+    <Compile Include="VersionControlTests\SvnTests.cs" />
+    <Compile Include="DialogTests\NewProjectDialogTests.cs" />
+    <Compile Include="IdeQuery.cs" />
+    <Compile Include="Controllers\NewFileController.cs" />
+    <Compile Include="Controllers\NewProjectController.cs" />
+    <Compile Include="Controllers\SolutionExplorerController.cs" />
+    <Compile Include="Controllers\NuGetController.cs" />
+    <Compile Include="DialogTests\NuGetDialogTests.cs" />
+    <Compile Include="Exceptions\TemplateSelectionException.cs" />
+    <Compile Include="Exceptions\CreateProjectException.cs" />
+    <Compile Include="Workbench.cs" />
+    <Compile Include="VersionControlTests\Git\GitBase.cs" />
+    <Compile Include="VersionControlTests\Git\GitRepositoryConfigurationTests.cs" />
+    <Compile Include="VersionControlTests\Git\GitStashManagerTests.cs" />
+    <Compile Include="VersionControlTests\Git\GitTests.cs" />
+    <Compile Include="Controllers\ProjectOptionsController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -98,4 +116,10 @@
     </PropertyGroup>
     <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
+  <ItemGroup>
+    <Folder Include="DialogTests\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="VersionControlTests\Git\" />
+  </ItemGroup>
 </Project>

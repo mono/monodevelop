@@ -135,7 +135,8 @@ namespace MonoDevelop.VersionControl.Views
 
 			buttonCommit = new Gtk.Button () {
 				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("commit-16.png")).ToGtkWidget (),
-				Label = GettextCatalog.GetString ("Commit...")
+				Label = GettextCatalog.GetString ("Commit..."),
+				Name = "buttonCommit"
 			};
 			buttonCommit.Image.Show ();
 			buttonRevert = new Gtk.Button () {

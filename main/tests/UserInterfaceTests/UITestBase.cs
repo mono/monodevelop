@@ -74,16 +74,18 @@ namespace UserInterfaceTests
 			SetupTestResultFolder (TestContext.CurrentContext.Test.FullName);
 			var currentXSIdeLog = Path.Combine (currentTestResultFolder,string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.FullName) );
 			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
-			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "All");
+			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
 
-			TestService.StartSession (MonoDevelopBinPath);
+			var mdProfile = Util.CreateTmpDir ();
+			TestService.StartSession (MonoDevelopBinPath, mdProfile);
 			TestService.Session.DebugObject = new UITestDebug ();
+
+			FoldersToClean.Add (mdProfile);
 		}
 
 		[TearDown]
 		public virtual void Teardown ()
 		{
-			FoldersToClean.Add (GetSolutionDirectory ());
 			File.WriteAllText (Path.Combine (memoryUsageFolder, TestContext.CurrentContext.Test.FullName),
 			                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
@@ -127,7 +129,12 @@ namespace UserInterfaceTests
 
 		protected string GetSolutionDirectory ()
 		{
-			return Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory").ToString ();
+			try {
+				var dirObj = Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.RootFolder.BaseDirectory");
+			return dirObj != null ? dirObj.ToString () : null;
+			} catch (Exception) {
+				return null;
+			}
 		}
 	}
 }

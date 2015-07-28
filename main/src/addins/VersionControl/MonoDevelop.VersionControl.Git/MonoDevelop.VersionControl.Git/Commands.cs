@@ -110,8 +110,8 @@ namespace MonoDevelop.VersionControl.Git
 			{
 				string currentBranch = repo.GetCurrentBranch ();
 				foreach (Branch branch in repo.GetBranches ()) {
-					CommandInfo ci = info.Add (branch.Name, branch.Name);
-					if (branch.Name == currentBranch)
+					CommandInfo ci = info.Add (branch.FriendlyName, branch.FriendlyName);
+					if (branch.FriendlyName == currentBranch)
 						ci.Checked = true;
 				}
 			}
@@ -155,19 +155,39 @@ namespace MonoDevelop.VersionControl.Git
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
 							Stash stash;
-							Repository.TryCreateStash (monitor, comment, out stash);
+							if (Repository.TryCreateStash (monitor, comment, out stash)) {
+								string msg;
+								if (stash != null) {
+									msg = GettextCatalog.GetString ("Changes successfully stashed");
+								} else {
+									msg = GettextCatalog.GetString ("No changes were available to stash");
+								}
+
+								DispatchService.GuiDispatch (delegate {
+									IdeApp.Workbench.StatusBar.ShowMessage (msg);
+								});
+							}
+
 						} catch (Exception ex) {
 							MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 						}
 						finally {
 							monitor.Dispose ();
-							statusTracker.NotifyChanges ();
+							statusTracker.Dispose ();
 						}
 					});
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			var repo = UpdateVisibility (info);
+			if (repo != null)
+				info.Enabled = !repo.RootRepository.Info.IsHeadUnborn;
 		}
 	}
 
@@ -185,7 +205,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 				finally {
 					monitor.Dispose ();
-					statusTracker.NotifyChanges ();
+					statusTracker.Dispose ();
 				}
 			});
 		}

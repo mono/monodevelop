@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				scrolled.VscrollbarPolicy = PolicyType.Never;
 				this.Resize (10, 10);
 			}
-			return MessageService.RunCustomDialog (this, null);
+			return MessageService.ShowCustomDialog (this, null);
 		}
 	}
 }

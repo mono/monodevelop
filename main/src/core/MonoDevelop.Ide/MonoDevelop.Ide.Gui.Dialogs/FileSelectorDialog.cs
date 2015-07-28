@@ -196,8 +196,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void EncodingChanged (object s, EventArgs args)
 		{
 			if (encodingMenu.History == selectOption) {
-				var dlg = new SelectEncodingsDialog ();
-				MessageService.ShowCustomDialog (dlg, this);
+				using (var dlg = new SelectEncodingsDialog ())
+					MessageService.ShowCustomDialog (dlg, this);
 				FillEncodings ();
 			}
 		}

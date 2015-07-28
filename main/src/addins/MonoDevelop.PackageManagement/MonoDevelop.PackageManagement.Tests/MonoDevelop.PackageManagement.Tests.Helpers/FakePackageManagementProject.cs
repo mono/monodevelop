@@ -187,9 +187,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakeInstallPackageAction LastInstallPackageCreated;
 
+		public Action InstallPackageExecuteAction = () => { };
+
 		public virtual InstallPackageAction CreateInstallPackageAction ()
 		{
 			LastInstallPackageCreated = new FakeInstallPackageAction (this);
+			LastInstallPackageCreated.ExecuteAction = InstallPackageExecuteAction;
 			return LastInstallPackageCreated;
 		}
 

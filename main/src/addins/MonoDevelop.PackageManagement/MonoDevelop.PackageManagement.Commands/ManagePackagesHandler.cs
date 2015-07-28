@@ -40,8 +40,8 @@ namespace MonoDevelop.PackageManagement.Commands
 			try {
 				var viewModels = new PackageManagementViewModels ();
 				IPackageManagementEvents packageEvents = PackageManagementServices.PackageManagementEvents;
-				var dialog = new ManagePackagesDialog (viewModels.ManagePackagesViewModel, packageEvents);
-				MessageService.ShowCustomDialog (dialog);
+				using (var dialog = new ManagePackagesDialog (viewModels.ManagePackagesViewModel, packageEvents))
+					MessageService.ShowCustomDialog (dialog);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			}

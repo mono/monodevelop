@@ -538,6 +538,13 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (1, res.Errors.Count);
 			Assert.AreEqual ("Something failed: foo", res.Errors [0].ErrorText);
+
+			p.Clean (Util.GetMonitor (), p.Configurations [0].Selector);
+			res = p.Build (Util.GetMonitor (), p.Configurations [0].Selector, true);
+
+			// Check that the global property is reset
+			Assert.AreEqual (1, res.Errors.Count);
+			Assert.AreEqual ("Something failed: show", res.Errors [0].ErrorText);
 		}
 
 		[Test]
@@ -552,6 +559,16 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.SupportsTarget ("ResolveReferences"));
 			Assert.IsTrue (p.SupportsTarget ("GetReferenceAssemblyPaths"));
 			Assert.IsFalse (p.SupportsTarget ("Foo"));
+		}
+
+		[Test]
+		public void DefaultMSBuildSupport ()
+		{
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			bool byDefault, require;
+			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (project, out byDefault, out require);
+			Assert.IsTrue (byDefault);
+			Assert.IsFalse (require);
 		}
 	}
 }

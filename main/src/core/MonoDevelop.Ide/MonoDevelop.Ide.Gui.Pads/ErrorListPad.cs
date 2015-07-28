@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
@@ -58,10 +59,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 		ScrolledWindow sw;
 		PadTreeView view;
 		LogView outputView;
-		ListStore store;
+		TreeStore store;
 		TreeModelFilter filter;
 		TreeModelSort sort;
 		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		SearchEntry searchEntry;
+		string currentSearchPattern = null;
 		Hashtable tasks = new Hashtable ();
 		int errorCount;
 		int warningCount;
@@ -76,6 +79,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Xwt.Drawing.Image iconWarning;
 		Xwt.Drawing.Image iconError;
 		Xwt.Drawing.Image iconInfo;
+		Xwt.Drawing.Image iconEmpty;
 		
 		const string showErrorsPropertyName = "SharpDevelop.TaskList.ShowErrors";
 		const string showWarningsPropertyName = "SharpDevelop.TaskList.ShowWarnings";
@@ -88,6 +92,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int Type = 0;
 			internal const int Read = 1;
 			internal const int Task = 2;
+			internal const int Description = 3;
 		}
 		
 		static class VisibleColumns
@@ -99,6 +104,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int File        = 4;
 			internal const int Project     = 5;
 			internal const int Path        = 6;
+			internal const int Category    = 7;
 		}
 
 		public Gtk.Widget Control {
@@ -156,21 +162,37 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
-			
+
+			//Dummy widget to take all space between "Build Output" button and SearchEntry
+			toolbar.Add (new HBox (), true);
+
+			searchEntry = new SearchEntry ();
+			searchEntry.Entry.Changed += searchPatternChanged;
+			searchEntry.WidthRequest = 200;
+			searchEntry.Visible = true;
+			toolbar.Add (searchEntry);
+
 			toolbar.ShowAll ();
 
 			UpdatePadIcon ();
 		}
-		
+
+		void searchPatternChanged (object sender, EventArgs e)
+		{
+			currentSearchPattern = searchEntry.Entry.Text;
+			filter.Refilter ();
+		}
+
 		void CreateControl ()
 		{
 			control = new HPaned ();
 
-			store = new Gtk.ListStore (typeof (Xwt.Drawing.Image), // image - type
-			                           typeof (bool),       // read?
-			                           typeof (Task));       // read? -- use Pango weight
+			store = new Gtk.TreeStore (typeof (Xwt.Drawing.Image), // image - type
+									   typeof (bool),       // read?
+									   typeof (Task),       // read? -- use Pango weight
+									   typeof (string));
 
-			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTaskTypes);
+			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTasks);
 			filter = new TreeModelFilter (store, null);
 			filter.VisibleFunc = filterFunct;
 			
@@ -180,6 +202,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			sort.SetSortFunc (VisibleColumns.File, FileIterSort);
 			
 			view = new PadTreeView (sort);
+			view.ShowExpanders = true;
 			view.RulesHint = true;
 			view.DoPopupMenu = (evnt) => IdeApp.CommandService.ShowContextMenu (view, evnt, CreateMenu ());
 			AddColumns ();
@@ -204,6 +227,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			iconWarning = ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			iconError = ImageService.GetIcon (Ide.Gui.Stock.Error, Gtk.IconSize.Menu);
 			iconInfo = ImageService.GetIcon (Ide.Gui.Stock.Information, Gtk.IconSize.Menu);
+			iconEmpty = ImageService.GetIcon (Ide.Gui.Stock.Empty, Gtk.IconSize.Menu);
 			
 			control.Add1 (sw);
 			
@@ -279,30 +303,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		void LoadColumnsVisibility ()
 		{
-			string columns = (string)PropertyService.Get ("Monodevelop.ErrorListColumns", "TRUE;TRUE;TRUE;TRUE;TRUE;TRUE;TRUE");
-			string[] tokens = columns.Split (new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-			if (tokens.Length == 7 && view != null && view.Columns.Length == 7)
-			{
-				for (int i = 0; i < 7; i++)
-				{
+			var columns = PropertyService.Get ("Monodevelop.ErrorListColumns", string.Join (";", Enumerable.Repeat ("TRUE", view.Columns.Length)));
+			var tokens = columns.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (view.Columns.Length == tokens.Length) {
+				for (int i = 0; i < tokens.Length; i++) {
 					bool visible;
-					if (bool.TryParse (tokens[i], out visible))
-						view.Columns[i].Visible = visible;
+					if (bool.TryParse (tokens [i], out visible))
+						view.Columns [i].Visible = visible;
 				}
 			}
 		}
 
 		void StoreColumnsVisibility ()
 		{
-			string columns = String.Format ("{0};{1};{2};{3};{4};{5};{6}",
-			                                view.Columns[VisibleColumns.Type].Visible,
-			                                view.Columns[VisibleColumns.Marked].Visible,
-			                                view.Columns[VisibleColumns.Line].Visible,
-			                                view.Columns[VisibleColumns.Description].Visible,
-			                                view.Columns[VisibleColumns.File].Visible,
-			                                view.Columns[VisibleColumns.Project].Visible,
-			                                view.Columns[VisibleColumns.Path].Visible);
-			PropertyService.Set ("Monodevelop.ErrorListColumns", columns);
+			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
 		}
 		
 		public void RedrawContent()
@@ -376,6 +390,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			columnsActions[columnPath] = VisibleColumns.Path;
 			group.Add (columnPath);
 
+			var columnCategory = new ToggleAction ("columnCategory", GettextCatalog.GetString ("Category"),
+			                                       GettextCatalog.GetString ("Toggle visibility of Category column"), null);
+			columnCategory.Toggled += OnColumnVisibilityChanged;
+			columnsActions[columnCategory] = VisibleColumns.Category;
+			group.Add (columnCategory);
+
+
+
 			var uiManager = new UIManager ();
 			uiManager.InsertActionGroup (group, 0);
 			
@@ -392,6 +414,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				+ "<menuitem action='columnFile' />"
 				+ "<menuitem action='columnProject' />"
 				+ "<menuitem action='columnPath' />"
+				+ "<menuitem action='columnCategory' />"
 				+ "</menu>"
 				+ "</popup></ui>";
 
@@ -407,6 +430,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				columnFile.Active = view.Columns[VisibleColumns.File].Visible;
 				columnProject.Active = view.Columns[VisibleColumns.Project].Visible;
 				columnPath.Active = view.Columns[VisibleColumns.Path].Visible;
+				columnCategory.Active = view.Columns[VisibleColumns.Category].Visible;
 				help.Sensitive = copy.Sensitive = jump.Sensitive =
 					view.Selection != null &&
 					view.Selection.CountSelectedRows () > 0 &&
@@ -416,6 +440,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 						columnDescription.Active ||
 						columnFile.Active ||
 						columnPath.Active);
+				string dummyString;
+				help.Sensitive &= GetSelectedErrorReference (out dummyString);
 			};
 			
 			return menu;
@@ -461,7 +487,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 				text.Append (task.Description);
 				if (task.WorkspaceObject != null)
 					text.Append (" (").Append (task.WorkspaceObject.Name).Append (")");
-				
+
+				if (!string.IsNullOrEmpty (task.Category)) {
+					text.Append (" ").Append (task.Category);
+				}
+
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
 				clipboard.Text = text.ToString ();
 				clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
@@ -473,7 +503,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			string reference = null;
 			if (GetSelectedErrorReference (out reference)) {
-				IdeApp.HelpOperations.ShowHelp ("error:" + reference);
+				Process.Start ("http://google.com/search?q=" + System.Web.HttpUtility.UrlEncode (reference));
 				return;
 			}
 		}
@@ -481,6 +511,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		bool GetSelectedErrorReference (out string reference)
 		{
 			Task task = SelectedTask;
+			if (task != null && !String.IsNullOrEmpty (task.HelpKeyword)) {
+				reference = task.HelpKeyword;
+				return true;
+			}
 			if (task != null && !String.IsNullOrEmpty (task.Code)) {
 				reference = task.Code;
 				return true;
@@ -531,10 +565,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			col = view.AppendColumn (GettextCatalog.GetString ("Line"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (LineDataFunc));
-			
-			col = view.AppendColumn (GettextCatalog.GetString ("Description"), view.TextRenderer);
-			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (DescriptionDataFunc));
-			col.Resizable = true;
+
+			var descriptionCellRenderer = new DescriptionCellRendererText ();
+			view.RegisterRenderForFontChanges (descriptionCellRenderer);
+			var descriptionCol = view.AppendColumn (GettextCatalog.GetString ("Description"), descriptionCellRenderer);
+			descriptionCol.SetCellDataFunc (descriptionCellRenderer, new Gtk.TreeCellDataFunc (DescriptionDataFunc));
+			descriptionCol.Resizable = true;
+			descriptionCellRenderer.WrapMode = Pango.WrapMode.Word;
+			descriptionCellRenderer.PreferedMaxWidth = IdeApp.Workbench.RootWindow.Allocation.Width / 3;
+
+			descriptionCol.AddNotification("width", delegate
+			{
+				descriptionCellRenderer.WrapWidth = descriptionCol.Width;
+				store.Foreach((model, path, iter) =>
+				{
+					model.EmitRowChanged(path, iter);
+					return false;
+				});
+			});
 			
 			col = view.AppendColumn (GettextCatalog.GetString ("File"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (FileDataFunc));
@@ -547,14 +595,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 			col = view.AppendColumn (GettextCatalog.GetString ("Path"), view.TextRenderer);
 			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (PathDataFunc));
 			col.Resizable = true;
+
+			col = view.AppendColumn (GettextCatalog.GetString ("Category"), view.TextRenderer);
+			col.SetCellDataFunc (view.TextRenderer, new Gtk.TreeCellDataFunc (CategoryDataFunc));
+			col.Resizable = true;
 		}
-		
+
 		static void ToggleDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererToggle toggleRenderer = (Gtk.CellRendererToggle)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
+			if (task == null) {
+				toggleRenderer.Visible = false;
 				return;
+			}
 			toggleRenderer.Active = task.Completed;
 		}
 		
@@ -562,26 +616,41 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
+			if (task == null) {
+				textRenderer.Text = "";
 				return;
+			}
 			SetText (textRenderer, model, iter, task, task.Line != 0 ? task.Line.ToString () : "");
 		}
-		
+
 		static void DescriptionDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			var textRenderer = (CellRendererText)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
-				return;
-			SetText (textRenderer, model, iter, task, task.Description);
+			var text = model.GetValue (iter, DataColumns.Description) as string;
+			if (task == null) {
+				if (model.IterParent (out iter, iter)) {
+					task = model.GetValue (iter, DataColumns.Task) as Task;
+					if (task == null) {
+						textRenderer.Text = "";
+						return;
+					}
+				} else {
+					textRenderer.Text = "";
+					return;
+				}
+			}
+			SetText (textRenderer, model, iter, task, text);
 		}
-		
+
 		static void FileDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
+			if (task == null) {
+				textRenderer.Text = "";
 				return;
+			}
 			
 			string tmpPath = "";
 			string fileName = "";
@@ -607,8 +676,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
+			if (task == null) {
+				textRenderer.Text = "";
 				return;
+			}
 			SetText (textRenderer, model, iter, task, GetProject(task));
 		}
 		
@@ -621,9 +692,22 @@ namespace MonoDevelop.Ide.Gui.Pads
 		{
 			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
 			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
-			if (task == null)
+			if (task == null) {
+				textRenderer.Text = "";
 				return;
+			}
 			SetText (textRenderer, model, iter, task, GetPath (task));
+		}
+
+		static void CategoryDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			Gtk.CellRendererText textRenderer = (Gtk.CellRendererText)cell;
+			Task task = model.GetValue (iter, DataColumns.Task) as Task; 
+			if (task == null) {
+				textRenderer.Text = "";
+				return;
+			}
+			SetText (textRenderer, model, iter, task, task.Category ?? "");
 		}
 		
 		static void SetText (CellRendererText textRenderer, TreeModel model, TreeIter iter, Task task, string text)
@@ -664,7 +748,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
-		bool FilterTaskTypes (TreeModel model, TreeIter iter)
+		bool FilterTasks (TreeModel model, TreeIter iter)
 		{
 			bool canShow = false;
 
@@ -675,6 +759,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 				if (task.Severity == TaskSeverity.Error && errorBtn.Active) canShow = true;
 				else if (task.Severity == TaskSeverity.Warning && warnBtn.Active) canShow = true;
 				else if (task.Severity == TaskSeverity.Information && msgBtn.Active) canShow = true;
+
+				if (canShow && !string.IsNullOrWhiteSpace (currentSearchPattern)) {
+					canShow = (task.Description != null && task.Description.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
+						(task.Code != null && task.Code.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
+						(task.FileName != null && task.FileName.FileName.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
+						(task.WorkspaceObject != null && task.WorkspaceObject.Name != null && task.WorkspaceObject.Name.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1) ||
+						(task.Category != null && task.Category.IndexOf (currentSearchPattern, StringComparison.OrdinalIgnoreCase) != -1);
+				}
 			} catch {
 				//Not yet fully added
 				return false;
@@ -758,8 +850,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 			
 			tasks [t] = t;
-			
-			store.AppendValues (stock, false, t);
+
+			var indexOfNewLine = t.Description.IndexOfAny (new [] { '\n', '\r' });
+			if (indexOfNewLine != -1) {
+				var iter = store.AppendValues (stock, false, t, t.Description.Remove (indexOfNewLine));
+				store.AppendValues (iter, iconEmpty, false, null, t.Description);
+			} else {
+				store.AppendValues (stock, false, t, t.Description);
+			}
+
 			UpdatePadIcon ();
 		}
 
@@ -849,6 +948,29 @@ namespace MonoDevelop.Ide.Gui.Pads
 			int pos = (int) (controlWidth * relPos);
 			pos = Math.Max (30, Math.Min (pos, controlWidth - 30));
 			control.Position = pos;
+		}
+
+		class DescriptionCellRendererText : CellRendererText
+		{
+			public int PreferedMaxWidth { get; set; }
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				int originalWrapWidth = WrapWidth;
+				WrapWidth = -1;
+				// First calculate Width with WrapWidth=-1 which will give us
+				// Width of text in one line(without wrapping)
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				int oneLineWidth = width;
+				WrapWidth = originalWrapWidth;
+				// originalWrapWidth(aka WrapWidth) equals to actual width of Column if oneLineWidth is bigger
+				// then column width/height we must recalculate, because Height is atm for one line
+				// and not multipline that WrapWidth creates...
+				if (oneLineWidth > originalWrapWidth) {
+					base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				}
+				width = Math.Min (oneLineWidth, PreferedMaxWidth);
+			}
 		}
 	}
 }

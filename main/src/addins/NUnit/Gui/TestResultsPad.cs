@@ -274,6 +274,7 @@ namespace MonoDevelop.NUnit
 			progressBar.Text = "";
 			testsRun = 0;
 			resultSummary = new UnitTestResult ();
+			resultLabel.Markup = GetResultsMarkup ();
 			UpdateCounters ();
 			if (rootTest != null) {
 				rootTest = testService.SearchTest (rootTest.FullName);

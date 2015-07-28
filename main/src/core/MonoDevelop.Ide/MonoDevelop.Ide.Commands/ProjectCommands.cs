@@ -548,8 +548,8 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.ShowCustomDialog (dlg);
+			using (ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
+				MessageService.ShowCustomDialog (dlg);
 		}
 	}
 	
@@ -562,8 +562,52 @@ namespace MonoDevelop.Ide.Commands
 		
 		protected override void Run ()
 		{
-			ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.ShowCustomDialog (dlg);
+			using (ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution))
+				MessageService.ShowCustomDialog (dlg);
+		}
+	}
+
+	internal class RunCodeAnalysisSolutionHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			//TODO: Roslyn, switch back to SupportsTarget check
+			//info.Enabled = (IdeApp.ProjectOperations.CurrentSelectedSolution != null) &&
+			//	(IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted) &&
+			//	IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ().Any (p => p.SupportsTarget ("RunCodeAnalysis"));
+			info.Enabled = true;
+		}
+
+		protected override void Run ()
+		{
+			var context = new ProjectOperationContext ();
+			context.GlobalProperties.Add ("RunCodeAnalysisOnce", "true");
+			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedSolution, context);
+		}
+	}
+
+	internal class RunCodeAnalysisProjectHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workspace.IsOpen) {
+				var project = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (project != null) {
+					//TODO: Roslyn, switch back to SupportsTarget check
+					info.Enabled = true;//project.SupportsTarget ("RunCodeAnalysis");
+					info.Text = GettextCatalog.GetString ("Run Code Analysis on {0}", project.Name.Replace ("_","__"));
+					return;
+				}
+			}
+			info.Text = GettextCatalog.GetString ("Run Code Analysis on Project");
+			info.Enabled = false;
+		}
+
+		protected override void Run ()
+		{
+			var context = new ProjectOperationContext ();
+			context.GlobalProperties.Add ("RunCodeAnalysisOnce", "true");
+			IdeApp.ProjectOperations.Rebuild (IdeApp.ProjectOperations.CurrentSelectedProject, context);
 		}
 	}
 }

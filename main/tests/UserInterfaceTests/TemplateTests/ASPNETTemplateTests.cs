@@ -36,48 +36,14 @@ namespace UserInterfaceTests
 		readonly string aspCategory = "ASP.NET";
 
 		[Test]
-		public void TestEmptyASPMVCProject ()
-		{
-			RunASPTest ("Empty ASP.NET MVC Project", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestEmptyASPProject ()
-		{
-			RunASPTest ("Empty ASP.NET Project", EmptyAction);
-		}
-
-		[Test]
-		public void TestASPMVCProject ()
-		{
-			RunASPTest ("ASP.NET MVC Project", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCProjectWithUnitTests ()
-		{
-			RunASPTest ("ASP.NET MVC Project with Unit Tests", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCMazorProject ()
-		{
-			RunASPTest ("ASP.NET MVC Razor Project", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPMVCMazorProjectWithUnitTests ()
-		{
-			RunASPTest ("ASP.NET MVC Razor Project with Unit Tests", WaitForPackageUpdate);
-		}
-
-		[Test]
-		public void TestASPProject ()
-		{
-			RunASPTest ("ASP.NET Project", EmptyAction);
-		}
-
-		void RunASPTest (string templateName, Action beforeBuild)
+		[TestCase ("Empty ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestEmptyASPMVCProject")]
+		[TestCase ("Empty ASP.NET Project", BeforeBuildAction.None, TestName = "TestEmptyASPProject")]
+		[TestCase ("ASP.NET MVC Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProject")]
+		[TestCase ("ASP.NET MVC Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCProjectWithUnitTests")]
+		[TestCase ("ASP.NET MVC Razor Project", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProject")]
+		[TestCase ("ASP.NET MVC Razor Project with Unit Tests", BeforeBuildAction.WaitForPackageUpdate, TestName = "TestASPMVCMazorProjectWithUnitTests")]
+		[TestCase ("ASP.NET Project", BeforeBuildAction.None, TestName = "TestASPProject")]
+		public void RunASPTest (string templateName, BeforeBuildAction beforeBuild)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
@@ -85,7 +51,7 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, beforeBuild);
+			CreateBuildProject (templateOptions, beforeBuild.GetAction ());
 		}
 	}
 }

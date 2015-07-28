@@ -148,6 +148,13 @@ namespace MonoDevelop.Core
 			}
 			return sb.ToString ();
 		}
+
+		public static string GetOperatingSystemDescription ()
+		{
+			var sb = new StringBuilder ();
+			Instance.AppendOperatingSystem (sb);
+			return sb.ToString ().Trim ();
+		}
 	}
 
 	class SystemInformationSection: ISystemInformationProvider

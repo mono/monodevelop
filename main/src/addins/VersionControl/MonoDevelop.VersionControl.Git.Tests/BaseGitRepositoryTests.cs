@@ -91,6 +91,13 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			repo2.RootRepository.Config.Set<string> ("user.email", Email);
 		}
 
+		protected override void CheckLog (Repository repo)
+		{
+			int index = 2;
+			foreach (Revision rev in Repo.GetHistory (LocalPath, null))
+				Assert.AreEqual (String.Format ("Commit #{0}\n", index--), rev.Message);
+		}
+
 		[Test]
 		[Ignore ("Not implemented in GitRepository.")]
 		public override void LocksEntities ()
@@ -147,7 +154,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			vi = repo2.GetVersionInfo (LocalPath + "file3", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file3"), "Stash pop untracked failure");
-			Assert.AreEqual (VersionStatus.Unversioned, vi.Status & VersionStatus.Unversioned, "Stash pop failure");
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status, "Stash pop failure");
 
 			vi = repo2.GetVersionInfo (LocalPath + "file4", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (File.Exists (LocalPath + "file4"), "Stash pop conflict failure");
@@ -215,10 +222,10 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			repo2.SwitchToBranch (new NullProgressMonitor (), "master");
 			repo2.RemoveBranch ("branch1");
-			Assert.IsFalse (repo2.GetBranches ().Any (b => b.Name == "branch1"), "Failed to delete branch");
+			Assert.IsFalse (repo2.GetBranches ().Any (b => b.FriendlyName == "branch1"), "Failed to delete branch");
 
 			repo2.RenameBranch ("branch2", "branch3");
-			Assert.IsTrue (repo2.GetBranches ().Any (b => b.Name == "branch3") && repo2.GetBranches ().All (b => b.Name != "branch2"), "Failed to rename branch");
+			Assert.IsTrue (repo2.GetBranches ().Any (b => b.FriendlyName == "branch3") && repo2.GetBranches ().All (b => b.FriendlyName != "branch2"), "Failed to rename branch");
 
 			// TODO: Add CreateBranchFromCommit tests.
 		}
@@ -453,7 +460,7 @@ index 0000000..009b64b
 				Assert.Throws (exceptionType, () => repo2.CreateBranch ("testBranch2", trackSource, trackRef));
 			else {
 				repo2.CreateBranch ("testBranch2", trackSource, trackRef);
-				Assert.True (repo2.GetBranches ().Any (b => b.Name == "testBranch2" && b.TrackedBranch.Name == trackSource));
+				Assert.True (repo2.GetBranches ().Any (b => b.FriendlyName == "testBranch2" && b.TrackedBranch.FriendlyName == trackSource));
 			}
 		}
 
@@ -465,13 +472,13 @@ index 0000000..009b64b
 
 			repo2.SetBranchTrackRef ("testBranch", "origin/master", "refs/remotes/origin/master");
 			Assert.True (repo2.GetBranches ().Any (
-				b => b.Name == "testBranch" &&
-				b.TrackedBranch == repo2.GetBranches ().Single (rb => rb.Name == "origin/master")
+				b => b.FriendlyName == "testBranch" &&
+				b.TrackedBranch == repo2.GetBranches ().Single (rb => rb.FriendlyName == "origin/master")
 			));
 
 			repo2.SetBranchTrackRef ("testBranch", null, null);
 			Assert.True (repo2.GetBranches ().Any (
-				b => b.Name == "testBranch" &&
+				b => b.FriendlyName == "testBranch" &&
 				b.TrackedBranch == null)
 			);
 		}

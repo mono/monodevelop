@@ -48,6 +48,7 @@ namespace MonoDevelop.VersionControl
 				} while (true);
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 			return true;
 		}

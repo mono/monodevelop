@@ -48,7 +48,7 @@ namespace MonoDevelop.NUnit
 
 		public override IList<string> UserAssemblyPaths {
 			get {
-				return project.GetUserAssemblyPaths (project.ParentSolution.DefaultConfigurationSelector);
+				return project.GetUserAssemblyPaths (IdeApp.Workspace.ActiveConfiguration);
 			}
 		}
 

@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
+
 using AppKit;
 using Foundation;
 
@@ -41,14 +43,49 @@ namespace MonoDevelop.Components.AutoTest.Results
 			ResultObject = resultObject;
 		}
 
+		public override string ToString ()
+		{
+			return string.Format ("NSObject: Type: {0}", ResultObject.GetType ().FullName);
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", ResultObject.GetType ().ToString ());
+			AddAttribute (element, "fulltype", ResultObject.GetType ().FullName);
+
+			NSView view = ResultObject as NSView;
+			if (view == null) {
+				return;
+			}
+
+			if (view.Identifier != null) {
+				AddAttribute (element, "name", view.Identifier);
+			}
+
+			// In Cocoa the attribute is Hidden as opposed to Gtk's Visible.
+			AddAttribute (element, "visible", (!view.Hidden).ToString ());
+			AddAttribute (element, "allocation", view.Frame.ToString ());
+		}
+
+		public override string GetResultType  ()
+		{
+			return ResultObject.GetType ().FullName;
+		}
+
 		public override AppResult Marked (string mark)
 		{
+			if (CheckForText (ResultObject.GetType ().FullName, mark, true)) {
+				return this;
+			}
+
 			if (ResultObject is NSView) {
-				if (((NSView)ResultObject).Identifier == mark) {
+				if (CheckForText (((NSView)ResultObject).Identifier, mark, true)) {
 					return this;
 				}
+			}
 
-				if (ResultObject.GetType ().FullName == mark) {
+			if (ResultObject is NSWindow) {
+				if (CheckForText (((NSWindow)ResultObject).Title,  mark, true)) {
 					return this;
 				}
 			}
@@ -64,15 +101,6 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return null;
 		}
 
-		bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
-		}
-
 		public override AppResult Text (string text, bool exact)
 		{
 			if (ResultObject is NSControl) {
@@ -80,6 +108,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 				string value = control.StringValue;
 				if (CheckForText (value, text, exact)) {
 					return this;
+				}
+
+				if (ResultObject is NSButton) {
+					var nsButton = (NSButton)ResultObject;
+					if (CheckForText (nsButton.Title, text, exact)) {
+						return this;
+					}
 				}
 			}
 
@@ -108,12 +143,17 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;
+			return MatchProperty (propertyName, ResultObject, value);
 		}
 
 		public override List<AppResult> NextSiblings ()
 		{
 			return null;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (ResultObject);
 		}
 
 		public override bool Select ()
@@ -128,7 +168,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				return false;
 			}
 
-			control.PerformClick (null);
+			using (var nsObj = new NSObject ())
+				control.PerformClick (nsObj);
 			return true;
 		}
 
@@ -168,10 +209,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
-		public override bool TypeKey (char key, string state)
+		public override bool TypeKey (char key, string state = "")
 		{
 			RealTypeKey (key);
 			return true;
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			throw new NotImplementedException ();
 		}
 
 		public override bool Toggle (bool active)
@@ -183,6 +229,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			button.State = active ? NSCellStateValue.On : NSCellStateValue.Off;
 			return true;
+		}
+
+		public override void Flash ()
+		{
+			
 		}
 	}
 }

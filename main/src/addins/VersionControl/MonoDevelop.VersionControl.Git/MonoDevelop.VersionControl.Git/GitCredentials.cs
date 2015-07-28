@@ -125,7 +125,8 @@ namespace MonoDevelop.VersionControl.Git
 
 						if (KeyHasPassphrase (dlg.SelectedFile)) {
 							DispatchService.GuiSyncDispatch (delegate {
-								result = MessageService.ShowCustomDialog (new CredentialsDialog (url, types, cred)) == (int)Gtk.ResponseType.Ok;
+								using (var credDlg = new CredentialsDialog (url, types, cred))
+									result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
 							});
 						}
 
@@ -146,7 +147,8 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			DispatchService.GuiSyncDispatch (delegate {
-				result = MessageService.ShowCustomDialog (new CredentialsDialog (url, types, cred)) == (int)Gtk.ResponseType.Ok;
+				using (var credDlg = new CredentialsDialog (url, types, cred))
+					result = MessageService.ShowCustomDialog (credDlg) == (int)Gtk.ResponseType.Ok;
 			});
 
 			if (result) {

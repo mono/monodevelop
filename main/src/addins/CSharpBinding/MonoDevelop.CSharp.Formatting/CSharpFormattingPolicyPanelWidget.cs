@@ -101,9 +101,8 @@ namespace Example {
 
 		void HandleButtonEditClicked (object sender, EventArgs e)
 		{
-			var editDialog = new CSharpFormattingProfileDialog (policy);
-			MessageService.ShowCustomDialog (editDialog);
-			editDialog.Destroy ();
+			using (var editDialog = new CSharpFormattingProfileDialog (policy))
+				MessageService.ShowCustomDialog (editDialog);
 		}
 	}
 }

@@ -216,6 +216,7 @@ namespace MonoDevelop.Debugger
 
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 
 
@@ -259,6 +260,7 @@ namespace MonoDevelop.Debugger
 			}
 			finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 		

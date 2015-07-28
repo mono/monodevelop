@@ -584,8 +584,8 @@ namespace MonoDevelop.Debugger
 		public void ShowDialog ()
 		{
 			if (dialog == null) {
-				dialog = new ExceptionCaughtDialog (ex, this);
-				MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
+				using (dialog = new ExceptionCaughtDialog (ex, this))
+					MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
 				dialog = null;
 			}
 		}

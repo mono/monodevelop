@@ -74,7 +74,10 @@ namespace MonoDevelop.Platform
 
 		private void UpdateJumpList ()
 		{
-			Taskbar.JumpList jumplist = Taskbar.JumpList.CreateJumpList ();
+			Taskbar.JumpList jumplist = Taskbar.JumpList.CreateJumpListForIndividualWindow (
+				MonoDevelop.Core.BrandingService.ApplicationName,
+				GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow)
+			);
 			jumplist.KnownCategoryToDisplay = Taskbar.JumpListKnownCategoryType.Neither;
 			
 			Taskbar.JumpListCustomCategory recentProjectsCategory = new Taskbar.JumpListCustomCategory ("Recent Solutions");
@@ -88,27 +91,34 @@ namespace MonoDevelop.Platform
 				// has been registered as supported in the registry can be added.
 				bool isSupportedFileExtension = this.supportedExtensions.Contains (Path.GetExtension (recentProject.FileName));
 				if (isSupportedFileExtension) {
-					recentProjectsCategory.AddJumpListItems (new Taskbar.JumpListItem (recentProject.FileName));
+					recentProjectsCategory.AddJumpListItems (new Taskbar.JumpListLink (exePath, recentProject.DisplayName) {
+						Arguments = MonoDevelop.Core.Execution.ProcessArgumentBuilder.Quote (recentProject.FileName),
+						IconReference = new Microsoft.WindowsAPICodePack.Shell.IconReference (exePath, 0),
+					});
 				}
 			}
 			
 			foreach (RecentFile recentFile in recentFiles.GetFiles ()) {
 				if (this.supportedExtensions.Contains (Path.GetExtension (recentFile.FileName)))
-					recentFilesCategory.AddJumpListItems (new Taskbar.JumpListItem (recentFile.FileName));
+					recentFilesCategory.AddJumpListItems (new Taskbar.JumpListLink (exePath, recentFile.DisplayName) {
+						Arguments = MonoDevelop.Core.Execution.ProcessArgumentBuilder.Quote (recentFile.FileName),
+						IconReference = new Microsoft.WindowsAPICodePack.Shell.IconReference (exePath, 0),
+					});
 			}
 			
 			jumplist.Refresh ();
 		}
 
+		string exePath;
 		private bool Initialize ()
 		{
 			this.supportedExtensions = new List<string> ();
 			
 			// Determine the correct value for /HKCR/XamarinStudio/shell/Open/Command
 			ProcessModule monoDevelopAssembly = Process.GetCurrentProcess ().MainModule;
-			string exePath = monoDevelopAssembly.FileName;
+			exePath = monoDevelopAssembly.FileName;
 			string executeString = exePath + " %1";
-			string progId = Taskbar.TaskbarManager.Instance.ApplicationId;
+			string progId = MonoDevelop.Core.BrandingService.ProfileDirectoryName;
 
 			using (RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey (progId + @"\shell\Open\Command", false)) {
 				if (progIdKey == null) {

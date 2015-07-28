@@ -92,8 +92,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 					wnd = new CompletionListWindow ();
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
-				if (ext != null)
+				if (ext != null) {
 					wnd.TransientFor = ext.document.Editor.Parent.Toplevel as Gtk.Window;
+				} else {
+					var widget = completionWidget as Gtk.Widget;
+					if (widget != null) {
+						var window = widget.Toplevel as Gtk.Window;
+						if (window != null)
+							wnd.TransientFor = window;
+					}
+				}
 				wnd.Extension = ext;
 				try {
 					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {

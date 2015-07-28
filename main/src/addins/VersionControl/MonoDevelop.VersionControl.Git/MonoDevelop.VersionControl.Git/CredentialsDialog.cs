@@ -23,9 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using Gtk;
 using System;
 using LibGit2Sharp;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -35,6 +37,8 @@ namespace MonoDevelop.VersionControl.Git
 		public CredentialsDialog (string uri, SupportedCredentialTypes type, Credentials cred)
 		{
 			this.Build ();
+
+			this.UseNativeContextMenus ();
 
 			labelTop.Text = string.Format (labelTop.Text, uri);
 

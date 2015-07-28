@@ -34,67 +34,21 @@ namespace UserInterfaceTests
 	{
 		readonly string miscCategory = "Miscellaneous";
 
-		readonly string genericKindRoot = "Generic";
-		readonly string cCPlusKindRoot = "C/C++";
-
-		#region Generic
-
 		[Test]
-		public void TestMiscGenericProject ()
-		{
-			RunMiscGenericTests ("Generic Project");
-		}
-
-		[Test]
-		public void TestMiscPackagingProject ()
-		{
-			RunMiscGenericTests ("Packaging project");
-		}
-
-		void RunMiscGenericTests (string templateName)
+		[TestCase ("Generic Project", "Generic", TestName = "TestMiscGenericProject")]
+		[TestCase ("Packaging project", "Generic", TestName = "TestMiscPackagingProject")]
+		[TestCase ("Shared Library", "C/C++", TestName = "TestMiscCCPlusSharedLibrary")]
+		[TestCase ("Static Library", "C/C++", TestName = "TestMiscCCPlusStaticLibrary")]
+		[TestCase ("Console Project", "C/C++", TestName = "TestMiscCCPlusConsoleProject")]
+		public void RunMiscTemplatesTest (string templateName, string templateKind)
 		{
 			var templateOptions = new TemplateSelectionOptions {
 				CategoryRoot = OtherCategoryRoot,
 				Category = miscCategory,
-				TemplateKindRoot = genericKindRoot,
+				TemplateKindRoot = templateKind,
 				TemplateKind = templateName
 			};
 			CreateBuildProject (templateOptions, EmptyAction);
 		}
-
-		#endregion
-
-		#region C/C++
-
-		[Test]
-		public void TestMiscCCPlusSharedLibrary ()
-		{
-			RunCCPlusTests ("Shared Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusStaticLibrary ()
-		{
-			RunCCPlusTests ("Static Library");
-		}
-
-		[Test]
-		public void TestMiscCCPlusConsoleProject ()
-		{
-			RunCCPlusTests ("Console Project");
-		}
-
-		void RunCCPlusTests (string templateName)
-		{
-			var templateOptions = new TemplateSelectionOptions {
-				CategoryRoot = OtherCategoryRoot,
-				Category = miscCategory,
-				TemplateKindRoot = cCPlusKindRoot,
-				TemplateKind = templateName
-			};
-			CreateBuildProject (templateOptions, EmptyAction);
-		}
-
-		#endregion
 	}
 }

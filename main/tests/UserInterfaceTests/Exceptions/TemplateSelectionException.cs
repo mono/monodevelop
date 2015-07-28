@@ -1,5 +1,5 @@
 ﻿//
-// GitTests.cs
+// TemplateSelectionException.cs
 //
 // Author:
 //       Manish Sinha <manish.sinha@xamarin.com>
@@ -23,34 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using NUnit.Framework;
+using System;
 
 namespace UserInterfaceTests
 {
-	[TestFixture]
-	[Category ("Git")]
-	public class GitTests : CreateBuildTemplatesTestBase
+	public class TemplateSelectionException : Exception
 	{
-		[Test]
-		public void TestGitSSHClone ()
+		public TemplateSelectionException (string message) : base (message)
 		{
-			TestClone ("git@github.com:mono/monkeywrench.git");
-		}
-
-		[Test]
-		public void TestGitHTTPSClone ()
-		{
-			TestClone ("https://github.com/mono/monkeywrench.git");
-		}
-
-		void TestClone (string url)
-		{
-			var checkoutFolder = VCSUtils.CheckoutOrClone (url, TakeScreenShot);
-			FoldersToClean.Add (checkoutFolder);
-			Assert.DoesNotThrow (() => Ide.WaitForSolutionLoaded (TakeScreenShot));
-			Assert.DoesNotThrow (() => Ide.WaitForPackageUpdate());
-			TakeScreenShot ("Packages-Updated");
 		}
 	}
 }

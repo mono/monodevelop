@@ -24,6 +24,7 @@ namespace MonoDevelop.VersionControl
 				}
 			} finally {
 				del.Destroy ();
+				del.Dispose ();
 			}
 		}
 	}

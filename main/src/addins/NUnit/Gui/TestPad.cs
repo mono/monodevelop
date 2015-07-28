@@ -420,6 +420,9 @@ namespace MonoDevelop.NUnit
 				    item,
 				    test.CanRun,
 				    info);
+
+				foreach (var ci in info)
+					ci.Enabled = runningTestOperation == null;
 			}
 		}
 		
@@ -443,9 +446,12 @@ namespace MonoDevelop.NUnit
 				return;
 
 			foreach (var mode in debugModeSet.ExecutionModes) {
-				if (test.CanRun (mode.ExecutionHandler))
-					info.Add (GettextCatalog.GetString ("Debug Test ({0})", mode.Name), mode.Id);
+				if (test.CanRun (mode.ExecutionHandler)) {
+					var ci = info.Add (GettextCatalog.GetString ("Debug Test ({0})", mode.Name), mode.Id);
+					ci.Enabled = runningTestOperation == null;
+				}
 			}
+
 			if (info.Count == 1)
 				info [0].Text = GettextCatalog.GetString ("Debug Test");
 		}

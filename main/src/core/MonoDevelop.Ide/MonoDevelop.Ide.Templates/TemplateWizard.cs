@@ -70,23 +70,16 @@ namespace MonoDevelop.Ide.Templates
 
 		void UpdateSupportedParameters (string parameters)
 		{
-			if (String.IsNullOrEmpty (parameters)) {
-				supportedParameters = null;
-				return;
-			}
-
 			supportedParameters = new List<string> ();
-			foreach (string part in parameters.Split (new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries)) {
-				supportedParameters.Add (part.Trim ());
+			if (!string.IsNullOrEmpty (parameters)) {
+				foreach (string part in parameters.Split (new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries)) {
+					supportedParameters.Add (part.Trim ());
+				}
 			}
 		}
 
 		public bool IsSupportedParameter (string name)
 		{
-			if (supportedParameters == null) {
-				return true;
-			}
-
 			return supportedParameters.Contains (name);
 		}
 

@@ -334,7 +334,7 @@ namespace SubversionAddinWindows
 			lock (client)
 				client.Log (path, args, (o, a) =>
 					list.Add (new SvnRevision (repo, (int)a.Revision, a.Time, a.Author, a.LogMessage,
-						a.ChangedPaths.Select (item => new RevisionPath (item.Path, ConvertRevisionAction (item.Action), "")).ToArray ())));
+						a.ChangedPaths == null ? new RevisionPath[0] : a.ChangedPaths.Select (item => new RevisionPath (item.Path, ConvertRevisionAction (item.Action), "")).ToArray ())));
 			return list;
 		}
 

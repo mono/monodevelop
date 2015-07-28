@@ -45,7 +45,13 @@ namespace MonoDevelop.Components
 			ShowContextMenu (parent, evt, nsMenu);
 		}
 
-		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu)
+		{
+			var nsMenu = FromMenu (menu);
+			ShowContextMenu (parent, x, y, nsMenu);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu)
 		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
@@ -53,17 +59,6 @@ namespace MonoDevelop.Components
 				throw new ArgumentNullException ("menu");
 
 			parent.GrabFocus ();
-			int x, y;
-			if (evt != null) {
-				x = (int)evt.X;
-				y = (int)evt.Y;
-			} else {
-				Gdk.ModifierType mod;
-				parent.GdkWindow.GetPointer (out x, out y, out mod);
-
-				var titleBarHeight = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight ();
-				y -= titleBarHeight;
-			}
 
 			Gtk.Application.Invoke (delegate {
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
@@ -71,11 +66,9 @@ namespace MonoDevelop.Components
 				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
 				var toplevel = parent.Toplevel as Gtk.Window;
 
-				var screenPoint = NSEvent.CurrentMouseLocation;
-				var screenRect = new CoreGraphics.CGRect (screenPoint.X, screenPoint.Y, 0, 0);
 				var nswindow = MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel);
-				var rect = nswindow.ConvertRectFromScreen (screenRect);
-				var pt = rect.Location;
+				var titleBarHeight = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight ();
+				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarHeight - 12);
 
 				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					pt,
@@ -85,6 +78,15 @@ namespace MonoDevelop.Components
 
 				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
 			});
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, NSMenu menu)
+		{
+			int x, y;
+
+			parent.TranslateCoordinates (parent.Toplevel, (int)evt.X, (int)evt.Y, out x, out y);
+
+			ShowContextMenu (parent, x, y, menu);
 		}
 
 		static NSMenuItem CreateMenuItem (ContextMenuItem item)

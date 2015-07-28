@@ -5,16 +5,25 @@ namespace MonoDevelop.VersionControl.Git
 	internal partial class UserGitConfigDialog
 	{
 		private global::Gtk.VBox vbox2;
-		private global::Gtk.VBox vbox5;
+		
+		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.Label label1;
+		
+		private global::Gtk.Alignment alignment8;
+		
 		private global::Gtk.Entry usernameEntry;
-		private global::Gtk.VBox vbox6;
+		
+		private global::Gtk.HBox hbox6;
+		
 		private global::Gtk.Label label2;
+		
+		private global::Gtk.Alignment alignment7;
+		
 		private global::Gtk.Entry emailEntry;
-		private global::Gtk.VBox vbox4;
-		private global::Gtk.RadioButton globalConfigRadio;
-		private global::Gtk.RadioButton repoConfigRadio;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -32,107 +41,78 @@ namespace MonoDevelop.VersionControl.Git
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
 			// Container child vbox2.Gtk.Box+BoxChild
-			this.vbox5 = new global::Gtk.VBox ();
-			this.vbox5.Name = "vbox5";
-			this.vbox5.Spacing = 6;
-			// Container child vbox5.Gtk.Box+BoxChild
+			this.hbox5 = new global::Gtk.HBox ();
+			this.hbox5.Name = "hbox5";
+			this.hbox5.Spacing = 6;
+			// Container child hbox5.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Username");
-			this.vbox5.Add (this.label1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.label1]));
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Username:");
+			this.hbox5.Add (this.label1);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.label1]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
-			// Container child vbox5.Gtk.Box+BoxChild
+			// Container child hbox5.Gtk.Box+BoxChild
+			this.alignment8 = new global::Gtk.Alignment (1F, 1F, 0.9F, 1F);
+			this.alignment8.Name = "alignment8";
+			// Container child alignment8.Gtk.Container+ContainerChild
 			this.usernameEntry = new global::Gtk.Entry ();
 			this.usernameEntry.CanFocus = true;
 			this.usernameEntry.Name = "usernameEntry";
 			this.usernameEntry.IsEditable = true;
 			this.usernameEntry.InvisibleChar = '●';
-			this.vbox5.Add (this.usernameEntry);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.usernameEntry]));
-			w3.Position = 1;
-			w3.Expand = false;
-			w3.Fill = false;
-			this.vbox2.Add (this.vbox5);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox5]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.vbox6 = new global::Gtk.VBox ();
-			this.vbox6.Name = "vbox6";
-			this.vbox6.Spacing = 6;
-			// Container child vbox6.Gtk.Box+BoxChild
-			this.label2 = new global::Gtk.Label ();
-			this.label2.Name = "label2";
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Email");
-			this.vbox6.Add (this.label2);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.label2]));
+			this.alignment8.Add (this.usernameEntry);
+			this.hbox5.Add (this.alignment8);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.alignment8]));
+			w4.Position = 1;
+			this.vbox2.Add (this.hbox5);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox5]));
 			w5.Position = 0;
 			w5.Expand = false;
 			w5.Fill = false;
-			// Container child vbox6.Gtk.Box+BoxChild
+			// Container child vbox2.Gtk.Box+BoxChild
+			this.hbox6 = new global::Gtk.HBox ();
+			this.hbox6.Name = "hbox6";
+			this.hbox6.Spacing = 6;
+			// Container child hbox6.Gtk.Box+BoxChild
+			this.label2 = new global::Gtk.Label ();
+			this.label2.Name = "label2";
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Email:");
+			this.hbox6.Add (this.label2);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.label2]));
+			w6.Position = 0;
+			w6.Expand = false;
+			w6.Fill = false;
+			// Container child hbox6.Gtk.Box+BoxChild
+			this.alignment7 = new global::Gtk.Alignment (1F, 1F, 0.71F, 1F);
+			this.alignment7.Name = "alignment7";
+			// Container child alignment7.Gtk.Container+ContainerChild
 			this.emailEntry = new global::Gtk.Entry ();
 			this.emailEntry.CanFocus = true;
 			this.emailEntry.Name = "emailEntry";
 			this.emailEntry.IsEditable = true;
 			this.emailEntry.InvisibleChar = '●';
-			this.vbox6.Add (this.emailEntry);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox6 [this.emailEntry]));
-			w6.Position = 1;
-			w6.Expand = false;
-			w6.Fill = false;
-			this.vbox2.Add (this.vbox6);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox6]));
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.vbox4 = new global::Gtk.VBox ();
-			this.vbox4.Name = "vbox4";
-			this.vbox4.Spacing = 6;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.globalConfigRadio = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Global Config (Recommended)"));
-			this.globalConfigRadio.CanFocus = true;
-			this.globalConfigRadio.Name = "globalConfigRadio";
-			this.globalConfigRadio.DrawIndicator = true;
-			this.globalConfigRadio.UseUnderline = true;
-			this.globalConfigRadio.Group = new global::GLib.SList (global::System.IntPtr.Zero);
-			this.vbox4.Add (this.globalConfigRadio);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.globalConfigRadio]));
-			w8.Position = 0;
-			w8.Expand = false;
-			w8.Fill = false;
-			// Container child vbox4.Gtk.Box+BoxChild
-			this.repoConfigRadio = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Repository Config"));
-			this.repoConfigRadio.CanFocus = true;
-			this.repoConfigRadio.Name = "repoConfigRadio";
-			this.repoConfigRadio.DrawIndicator = true;
-			this.repoConfigRadio.UseUnderline = true;
-			this.repoConfigRadio.Group = this.globalConfigRadio.Group;
-			this.vbox4.Add (this.repoConfigRadio);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.repoConfigRadio]));
+			this.alignment7.Add (this.emailEntry);
+			this.hbox6.Add (this.alignment7);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.alignment7]));
+			w8.Position = 1;
+			this.vbox2.Add (this.hbox6);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox6]));
 			w9.Position = 1;
 			w9.Expand = false;
 			w9.Fill = false;
-			this.vbox2.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vbox4]));
-			w10.Position = 2;
+			w1.Add (this.vbox2);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
+			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
-			w1.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.vbox2]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
 			// Internal child MonoDevelop.VersionControl.Git.UserGitConfigDialog.ActionArea
-			global::Gtk.HButtonBox w12 = this.ActionArea;
-			w12.Name = "dialog1_ActionArea";
-			w12.Spacing = 10;
-			w12.BorderWidth = ((uint)(5));
-			w12.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w11 = this.ActionArea;
+			w11.Name = "dialog1_ActionArea";
+			w11.Spacing = 10;
+			w11.BorderWidth = ((uint)(5));
+			w11.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
@@ -142,9 +122,9 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonCancel.UseUnderline = true;
 			this.buttonCancel.Label = "gtk-cancel";
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCancel]));
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w12 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonCancel]));
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
@@ -154,15 +134,15 @@ namespace MonoDevelop.VersionControl.Git
 			this.buttonOk.UseUnderline = true;
 			this.buttonOk.Label = "gtk-ok";
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonOk]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w11 [this.buttonOk]));
+			w13.Position = 1;
+			w13.Expand = false;
+			w13.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 400;
-			this.DefaultHeight = 240;
+			this.DefaultWidth = 332;
+			this.DefaultHeight = 184;
 			this.Show ();
 			this.usernameEntry.Changed += new global::System.EventHandler (this.OnChanged);
 			this.emailEntry.Changed += new global::System.EventHandler (this.OnChanged);

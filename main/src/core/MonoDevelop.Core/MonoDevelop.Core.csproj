@@ -479,6 +479,7 @@
     <Compile Include="MonoDevelop.Projects\ProjectOperationContext.cs" />
     <Compile Include="MonoDevelop.Projects\TargetEvaluationContext.cs" />
     <Compile Include="MonoDevelop.Projects\TargetEvaluationResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Extensions\SupportsTargetCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

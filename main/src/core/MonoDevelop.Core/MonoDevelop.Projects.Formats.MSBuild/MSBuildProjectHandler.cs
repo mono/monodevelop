@@ -119,6 +119,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					return SolutionFormat;
 				return new MSBuildFileFormatVS12 ();
 			case "12.0":
+			case "14.0":
 				return new MSBuildFileFormatVS12 ();
 			default:
 				throw new Exception ("Unknown ToolsVersion '" + ToolsVersion + "'");
@@ -312,7 +313,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					newContext = new TargetEvaluationContext (newContext);
 				var res = RunTarget (monitor, target, configuration, (TargetEvaluationContext) newContext);
 				CallContext.SetData ("MonoDevelop.Projects.TargetEvaluationResult", res);
-				return res.BuildResult;
+				return res != null ? res.BuildResult : null;
 			} finally {
 				if (newContext != currentContext)
 					CallContext.SetData ("MonoDevelop.Projects.ProjectOperationContext", currentContext);
@@ -359,7 +360,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							Subcategory = err.Subcategory,
 							EndLine = err.EndLineNumber,
 							EndColumn = err.EndColumnNumber,
-							IsWarning = err.IsWarning
+							IsWarning = err.IsWarning,
+							HelpKeyword = err.HelpKeyword,
 						});
 					}
 
@@ -496,8 +498,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			);
 		}
 
+		bool? useMSBuildEngineByDefault;
+
 		/// <summary>Whether to use the MSBuild engine by default.</summary>
-		internal bool UseMSBuildEngineByDefault { get; set; }
+		internal bool UseMSBuildEngineByDefault {
+			get {
+				//enable msbuild by default .NET assembly projects
+				return useMSBuildEngineByDefault ?? (Item is DotNetAssemblyProject && !string.IsNullOrEmpty (((DotNetAssemblyProject)Item).LanguageName));
+			}
+			set {
+				useMSBuildEngineByDefault = value;
+			}
+		}
 
 		/// <summary>Forces the MSBuild engine to be used.</summary>
 		internal bool RequireMSBuildEngine { get; set; }

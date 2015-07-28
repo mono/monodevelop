@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 
 namespace UserInterfaceTests
@@ -33,6 +34,13 @@ namespace UserInterfaceTests
 		None = 0x0,
 		IOS = 0x1,
 		Android = 0x2
+	}
+
+	public enum BeforeBuildAction
+	{
+		None,
+		WaitForPackageUpdate,
+		WaitForSolutionCheckedOut
 	}
 
 	public enum CodeSharingType
@@ -50,8 +58,6 @@ namespace UserInterfaceTests
 		public string TemplateKindRoot { get; set; }
 
 		public string TemplateKind { get; set; }
-
-		public string ProjectName { get; set; }
 	}
 
 	public class GitOptions
@@ -65,6 +71,47 @@ namespace UserInterfaceTests
 		public bool UseGit { get; set; }
 
 		public bool UseGitIgnore { get; set; }
+
+		public override string ToString ()
+		{
+			return string.Format ("UseGit={0}, UseGitIgnore={1}", UseGit, UseGitIgnore);
+		}
+	}
+
+	public class ProjectDetails
+	{
+		public ProjectDetails ()
+		{
+			SolutionLocation = Util.CreateTmpDir ();
+			ProjectInSolution = true;
+		}
+
+		public ProjectDetails (TemplateSelectionOptions templateData) : this ()
+		{
+			ProjectName = CreateBuildTemplatesTestBase.GenerateProjectName (templateData.TemplateKind);
+			SolutionName = ProjectName;
+		}
+
+		public string ProjectName { get; set; }
+
+		public string SolutionName { get; set; }
+
+		public string SolutionLocation { get; set; }
+
+		public bool ProjectInSolution { get; set; }
+	}
+
+	public class NewFileOptions
+	{
+		public string FileName { get; set; }
+
+		public string FileType { get; set; }
+
+		public string FileTypeCategory { get; set; }
+
+		public string FileTypeCategoryRoot { get; set; }
+
+		public string AddToProjectName { get; set; }
 	}
 }
 

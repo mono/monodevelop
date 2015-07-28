@@ -72,37 +72,44 @@ namespace MonoDevelop.Ide.Projects
 			
 			exportButton = new MenuButton ();
 			exportButton.Label = GettextCatalog.GetString ("Export");
-			exportButton.MenuCreator = delegate {
-				Gtk.Menu menu = new Gtk.Menu ();
-				MenuItem mi = new MenuItem (GettextCatalog.GetString ("To file..."));
-				mi.Activated += HandleToFile;
-				menu.Insert (mi, -1);
-				mi = new MenuItem (GettextCatalog.GetString ("To project or solution..."));
-				mi.Activated += HandleToProject;
-				if (!IdeApp.Workspace.IsOpen)
-					mi.Sensitive = false;
-				menu.Insert (mi, -1);
-				menu.ShowAll ();
+			exportButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
+
+				ContextMenuItem item = new ContextMenuItem (GettextCatalog.GetString ("To file..."));
+				item.Clicked += HandleToFile;
+				menu.Items.Add (item);
+
+				item = new ContextMenuItem (GettextCatalog.GetString ("To project or solution..."));
+				item.Clicked += HandleToProject;
+				if (!IdeApp.Workspace.IsOpen) {
+					item.Sensitive = false;
+				}
+				menu.Items.Add (item);
+
 				return menu;
 			};
 			topBar.PackEnd (exportButton, false, false, 0);
 			
 			newButton = new MenuButton ();
 			newButton.Label = GettextCatalog.GetString ("Add Policy");
-			newButton.MenuCreator = delegate {
-				Gtk.Menu menu = new Gtk.Menu ();
-				MenuItem mi = new MenuItem (GettextCatalog.GetString ("New policy..."));
-				mi.Activated += HandleNewButtonClicked;
-				menu.Insert (mi, -1);
-				mi = new MenuItem (GettextCatalog.GetString ("From file..."));
-				mi.Activated += HandleFromFile;
-				menu.Insert (mi, -1);
-				mi = new MenuItem (GettextCatalog.GetString ("From project or solution..."));
-				mi.Activated += HandleFromProject;
-				if (!IdeApp.Workspace.IsOpen)
-					mi.Sensitive = false;
-				menu.Insert (mi, -1);
-				menu.ShowAll ();
+			newButton.ContextMenuRequested = delegate {
+				ContextMenu menu = new ContextMenu ();
+
+				ContextMenuItem item = new ContextMenuItem (GettextCatalog.GetString ("New policy..."));
+				item.Clicked += HandleNewButtonClicked;
+				menu.Items.Add (item);
+
+				item = new ContextMenuItem (GettextCatalog.GetString ("From file..."));
+				item.Clicked += HandleFromFile;
+				menu.Items.Add (item);
+
+				item = new ContextMenuItem (GettextCatalog.GetString ("From project or solution..."));
+				item.Clicked += HandleFromProject;
+				if (!IdeApp.Workspace.IsOpen) {
+					item.Sensitive = false;
+				}
+				menu.Items.Add (item);
+
 				return menu;
 			};
 			topBar.PackEnd (newButton, false, false, 0);
@@ -189,6 +196,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -206,6 +214,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 
@@ -262,6 +271,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			} finally {
 				dlg.Destroy ();
+				dlg.Dispose ();
 			}
 		}
 

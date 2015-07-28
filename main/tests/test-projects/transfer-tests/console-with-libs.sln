@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "console-with-libs", "console-with-libs\console-with-libs.csproj", "{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library1", "library1\library1.csproj", "{7F63CBE6-2FE7-47A7-8930-EA078DA05062}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library2", "library2\library2.csproj", "{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A9AAF1-DCB8-4F3F-9B20-5F17D4EAAD20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F63CBE6-2FE7-47A7-8930-EA078DA05062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F63CBE6-2FE7-47A7-8930-EA078DA05062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F63CBE6-2FE7-47A7-8930-EA078DA05062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F63CBE6-2FE7-47A7-8930-EA078DA05062}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = console-with-libs\console-with-libs.csproj
+		name = console-with-libs
+	EndGlobalSection
+EndGlobal

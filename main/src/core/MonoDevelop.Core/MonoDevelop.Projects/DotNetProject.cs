@@ -479,6 +479,13 @@ namespace MonoDevelop.Projects
 						References [n] = nr;
 				}
 			}
+
+			// If a referenced assembly changes, dirtify the project.
+			foreach (var asm in GetReferencedAssemblies (DefaultConfiguration.Selector))
+				if (asm == updatedFile) {
+					SetFastBuildCheckDirty ();
+					break;
+				}
 		}
 
 		internal override void OnFileChanged (object source, MonoDevelop.Core.FileEventArgs e)
@@ -941,6 +948,22 @@ namespace MonoDevelop.Projects
 				cmd.Target = context.ExecutionTarget;
 
 			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
+		}
+
+		internal protected override bool OnGetSupportsExecute ()
+		{
+			if (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe)
+				return true;
+
+			if (Configurations.OfType<DotNetProjectConfiguration> ().Any (c => c.CustomCommands.Any (cc => cc.Type == CustomCommandType.Execute)))
+				return true;
+
+			// Hack to keep backwards compatibility with the old behavior. For example, a MonoDroid project is a library, but OnGetSupportsExecute
+			// is not overriden, so it depends on DotNetProject to return true by default.
+			if (compileTarget == CompileTarget.Library && GetType () == typeof (DotNetAssemblyProject))
+				return false;
+
+			return true;
 		}
 
 		protected internal override List<FilePath> OnGetItemFiles (bool includeReferencedFiles)

@@ -59,6 +59,7 @@ namespace MonoDevelop.Gettext
 					}
 				} finally {
 					chooser.Destroy ();
+					chooser.Dispose ();
 				}
 			};
 			this.buttonRemove.Sensitive = false;

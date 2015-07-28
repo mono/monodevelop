@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Xml;
 using Gtk;
 
 namespace MonoDevelop.Components.AutoTest.Results
@@ -45,6 +45,25 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override string ToString ()
 		{
 			return String.Format ("{0} - {1} - {2} - {3}, - {4}", resultWidget, resultWidget.Allocation, resultWidget.Name, resultWidget.GetType ().FullName, resultWidget.Toplevel.Name);
+		}
+
+		public override void ToXml (XmlElement element)
+		{
+			AddAttribute (element, "type", resultWidget.GetType ().ToString ());
+			AddAttribute (element, "fulltype", resultWidget.GetType ().FullName);
+
+			if (resultWidget.Name != null) {
+				AddAttribute (element, "name", resultWidget.Name);
+			}
+
+			AddAttribute (element, "visible", resultWidget.Visible.ToString ());
+			AddAttribute (element, "sensitive", resultWidget.Sensitive.ToString ());
+			AddAttribute (element, "allocation", resultWidget.Allocation.ToString ());
+		}
+
+		public override string GetResultType  ()
+		{
+			return resultWidget.GetType ().FullName;
 		}
 
 		public override AppResult Marked (string mark)
@@ -69,19 +88,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override AppResult CheckType (Type desiredType)
 		{
 			if (resultWidget.GetType () == desiredType || resultWidget.GetType ().IsSubclassOf (desiredType)) {
-				return this;
+				return desiredType == typeof(Notebook) ? new GtkNotebookResult (resultWidget) : this;
 			}
 
 			return null;
-		}
-
-		bool CheckForText (string haystack, string needle, bool exact)
-		{
-			if (exact) {
-				return haystack == needle;
-			} else {
-				return (haystack.IndexOf (needle) > -1);
-			}
 		}
 
 		public override AppResult Text (string text, bool exact)
@@ -185,24 +195,9 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return new GtkTreeModelResult (resultWidget, model, columnNumber) { SourceQuery = this.SourceQuery };
 		}
 
-		object GetPropertyValue (string propertyName)
-		{
-			return AutoTestService.CurrentSession.UnsafeSync (delegate {
-				PropertyInfo propertyInfo = resultWidget.GetType().GetProperty(propertyName);
-				if (propertyInfo != null) {
-					var propertyValue = propertyInfo.GetValue (resultWidget);
-					if (propertyValue != null) {
-						return propertyValue;
-					}
-				}
-
-				return null;
-			});
-		}
-
 		public override AppResult Property (string propertyName, object value)
 		{
-			return (GetPropertyValue (propertyName) == value) ? this : null;			
+			return MatchProperty (propertyName, resultWidget, value);
 		}
 
 		public override List<AppResult> NextSiblings ()
@@ -231,6 +226,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			}
 
 			return siblingResults;
+		}
+
+		public override ObjectProperties Properties ()
+		{
+			return GetProperties (resultWidget);
 		}
 
 		public override bool Select ()
@@ -297,7 +297,67 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SendKeyEvent (resultWidget, (uint)key, state, Gdk.EventType.KeyRelease, null);
 		}
 
-		public override bool TypeKey (char key, string state)
+		Gdk.ModifierType ParseModifier (string modifierString)
+		{
+			string[] modifiers = modifierString.Split ('|');
+			Gdk.ModifierType modifier = Gdk.ModifierType.None;
+
+			foreach (var m in modifiers) {
+				switch (m) {
+				case "Shift":
+					modifier |= Gdk.ModifierType.ShiftMask;
+					break;
+
+				case "Lock":
+					modifier |= Gdk.ModifierType.LockMask;
+					break;
+
+				case "Control":
+					modifier |= Gdk.ModifierType.ControlMask;
+					break;
+
+				case "Mod1":
+					modifier |= Gdk.ModifierType.Mod1Mask;
+					break;
+
+				case "Mod2":
+					modifier |= Gdk.ModifierType.Mod2Mask;
+					break;
+
+				case "Mod3":
+					modifier |= Gdk.ModifierType.Mod3Mask;
+					break;
+
+				case "Mod4":
+					modifier |= Gdk.ModifierType.Mod4Mask;
+					break;
+
+				case "Mod5":
+					modifier |= Gdk.ModifierType.Mod5Mask;
+					break;
+
+				case "Super":
+					modifier |= Gdk.ModifierType.SuperMask;
+					break;
+
+				case "Hyper":
+					modifier |= Gdk.ModifierType.HyperMask;
+					break;
+
+				case "Meta":
+					modifier |= Gdk.ModifierType.MetaMask;
+					break;
+
+				default:
+					modifier |= Gdk.ModifierType.None;
+					break;
+				}
+			}
+
+			return modifier;
+		}
+
+		public override bool TypeKey (char key, string state = "")
 		{
 			Gdk.Key realKey;
 
@@ -306,16 +366,51 @@ namespace MonoDevelop.Components.AutoTest.Results
 			else
 				realKey = (Gdk.Key) Gdk.Global.UnicodeToKeyval ((uint)key);
 
-			// FIXME: Parse @state into a Gdk.ModifierType
-			RealTypeKey (realKey, Gdk.ModifierType.None);
+			RealTypeKey (realKey, ParseModifier (state));
 
+			return true;
+		}
+
+		Gdk.Key ParseKeyString (string keyString)
+		{
+			switch (keyString) {
+			case "ESC":
+				return Gdk.Key.Escape;
+
+			case "UP":
+				return Gdk.Key.Up;
+
+			case "DOWN":
+				return Gdk.Key.Down;
+
+			case "LEFT":
+				return Gdk.Key.Left;
+
+			case "RIGHT":
+				return Gdk.Key.Right;
+
+			case "RETURN":
+				return Gdk.Key.Return;
+
+			case "TAB":
+				return Gdk.Key.Tab;
+
+			default:
+				throw new Exception ("Unknown keystring: " + keyString);
+			}
+		}
+
+		public override bool TypeKey (string keyString, string state = "")
+		{
+			Gdk.Key realKey = ParseKeyString (keyString);
+			RealTypeKey (realKey, ParseModifier (state));
 			return true;
 		}
 
 		public override bool EnterText (string text)
 		{
 			foreach (var c in text) {
-				TypeKey (c, null);
+				TypeKey (c);
 			}
 
 			return true;
@@ -330,6 +425,43 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 			toggleButton.Active = active;
 			return true;
+		}
+
+		bool flashState;
+
+		void OnFlashWidget (object o, ExposeEventArgs args)
+		{
+			flashState = !flashState;
+
+			if (flashState) {
+				return;
+			}
+
+			Cairo.Context cr = Gdk.CairoHelper.Create (resultWidget.GdkWindow);
+			cr.SetSourceRGB (1.0, 0.0, 0.0);
+
+			Gdk.Rectangle allocation = resultWidget.Allocation;
+			Gdk.CairoHelper.Rectangle (cr, allocation);
+			cr.Stroke ();
+		}
+
+		public override void Flash ()
+		{
+			int flashCount = 10;
+
+			flashState = true;
+			resultWidget.ExposeEvent += OnFlashWidget;
+
+			GLib.Timeout.Add (1000, () => {
+				resultWidget.QueueDraw ();
+				flashCount--;
+
+				if (flashCount == 0) {
+					resultWidget.ExposeEvent -= OnFlashWidget;
+					return false;
+				}
+				return true;
+			});
 		}
 	}
 }
