@@ -60,6 +60,13 @@ namespace MonoDevelop.Core
 		}
 
 		[Test]
+		public void CheckWeGotDefaultLoggers ()
+		{
+			Assert.NotNull (LoggingService.GetLogger ("ConsoleLogger"));
+			Assert.NotNull (LoggingService.GetLogger ("Instrumentation logger"));
+		}
+
+		[Test]
 		public void CheckWeGotOurLogger ()
 		{
 			Assert.AreSame (logger, LoggingService.GetLogger (logger.Name));
