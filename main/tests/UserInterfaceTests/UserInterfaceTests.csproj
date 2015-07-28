@@ -83,6 +83,7 @@
     <Compile Include="VersionControlTests\Git\GitRepositoryConfigurationTests.cs" />
     <Compile Include="VersionControlTests\Git\GitStashManagerTests.cs" />
     <Compile Include="VersionControlTests\Git\GitTests.cs" />
+    <Compile Include="Controllers\ProjectOptionsController.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

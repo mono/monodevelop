@@ -124,10 +124,12 @@ namespace MonoDevelop.Core
 				if (string.IsNullOrEmpty (fileName))
 					return FilePath.Empty;
 				string fp = Path.GetFullPath (fileName);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.DirectorySeparatorChar)
-					return fp.TrimEnd (Path.DirectorySeparatorChar);
-				if (fp.Length > 0 && fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
-					return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				if (fp.Length > 0) {
+					if (fp [fp.Length - 1] == Path.DirectorySeparatorChar)
+						return fp.TrimEnd (Path.DirectorySeparatorChar);
+					if (fp [fp.Length - 1] == Path.AltDirectorySeparatorChar)
+						return fp.TrimEnd (Path.AltDirectorySeparatorChar);
+				}
 				return fp;
 			}
 		}
