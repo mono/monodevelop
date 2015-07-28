@@ -53,7 +53,6 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   -->
   <ItemGroup>
-    <Compile Include="Digraph.fs" />
     <Compile Include="CompilerLocationUtils.fs" />
     <Compile Include="Parser.fs" />
     <None Include="paket.references" />
