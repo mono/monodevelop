@@ -151,7 +151,7 @@ namespace MonoDevelop.MacInterop
 			All = 0xFFFFFFFF
 		}
 		
-		static IntPtr CreatePathUrl (string path)
+		public static IntPtr CreatePathUrl (string path)
 		{
 			IntPtr str = IntPtr.Zero;
 			IntPtr url = IntPtr.Zero;
