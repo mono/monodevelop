@@ -43,7 +43,7 @@ namespace MonoDevelop.Core
 		string[] exceptionMessage = new[] {
 			"This is a log message",
 			"System.Exception: Exception of type 'System.Exception' was thrown.",
-			"at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging (LogLevel level, System.String methodName)", // [0x000c7] in /path/to/monodevelop/main/tests/UnitTests/MonoDevelop.Core/LoggingServiceTests.cs:LINENO
+			"at MonoDevelop.Core.LoggingServiceTests.TestSimpleLogging", // This line is different on .NET and Mono, so use least common denominator.
 			"Exception Data:",
 			"key: value",
 			"key2: value2"
