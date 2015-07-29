@@ -402,7 +402,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return retval;
 			}
 			
-			if (descriptor.SpecialKey == SpecialKey.Tab && !CompletionWindowManager.IsVisible) {
+			if (descriptor.SpecialKey == SpecialKey.Tab && descriptor.ModifierKeys == ModifierKeys.None && !CompletionWindowManager.IsVisible) {
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				if (stateTracker.IsInsideStringLiteral && !Editor.IsSomethingSelected) {
 					var lexer = new ICSharpCode.NRefactory.CSharp.Completion.CSharpCompletionEngineBase.MiniLexer (Editor.GetTextAt (0, Editor.CaretOffset));
