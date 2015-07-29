@@ -854,17 +854,35 @@
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9%402x.png">
       <LogicalName>pad-minimize-9@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~dark.png">
+      <LogicalName>pad-minimize-9~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~dark%402x.png">
+      <LogicalName>pad-minimize-9~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9.png">
       <LogicalName>pad-close-9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9%402x.png">
       <LogicalName>pad-close-9@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~dark.png">
+      <LogicalName>pad-close-9~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~dark%402x.png">
+      <LogicalName>pad-close-9~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9.png">
       <LogicalName>pad-dock-9.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9%402x.png">
       <LogicalName>pad-dock-9@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark.png">
+      <LogicalName>pad-dock-9~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark%402x.png">
+      <LogicalName>pad-dock-9~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml">
       <LogicalName>ProjectPadContextMenu.addin.xml</LogicalName>
@@ -1286,11 +1304,23 @@
     <EmbeddedResource Include="icons\tabbar-prev-12%402x.png">
       <LogicalName>tabbar-prev-12@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-12~dark.png">
+      <LogicalName>tabbar-prev-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-prev-12~dark%402x.png">
+      <LogicalName>tabbar-prev-12~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-next-12.png">
       <LogicalName>tabbar-next-12.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-next-12%402x.png">
       <LogicalName>tabbar-next-12@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-12~dark.png">
+      <LogicalName>tabbar-next-12~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tabbar-next-12~dark%402x.png">
+      <LogicalName>tabbar-next-12~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breadcrumb-previous-16.png">
       <LogicalName>breadcrumb-previous-16.png</LogicalName>
