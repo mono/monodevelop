@@ -207,7 +207,6 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\RopeTextSource.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ReadonlyDocumentSnapshot.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
