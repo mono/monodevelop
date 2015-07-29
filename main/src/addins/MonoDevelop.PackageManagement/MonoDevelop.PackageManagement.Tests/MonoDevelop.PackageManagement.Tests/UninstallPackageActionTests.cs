@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
@@ -271,16 +271,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.0");
 			action.Package = package;
 			package.AddFile (@"tools\install.ps1");
-			bool messageLogged = false;
+			var messagesLogged = new List<string> ();
 			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
-				if (e.Message.Level == MessageLevel.Warning) {
-					messageLogged = true;
-				}
+				messagesLogged.Add (e.Message.ToString ());
 			};
 
 			action.Execute ();
 
-			Assert.IsFalse (messageLogged);
+			Assert.IsFalse (messagesLogged.Any (message => message.Contains ("PowerShell")));
 		}
 	}
 }
