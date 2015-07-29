@@ -3501,9 +3501,6 @@
     <Compile Include="MonoDevelop.Components.Docking\IDockGroup.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockGroupItem.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockLayout.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockFrameBackend.cs" />
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockItemBackend.cs" />
   </ItemGroup>
