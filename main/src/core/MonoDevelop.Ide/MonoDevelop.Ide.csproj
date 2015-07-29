@@ -263,17 +263,35 @@
     <EmbeddedResource Include="icons\assembly-reference-overlay-16%402x.png">
       <LogicalName>assembly-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-reference-overlay-16~dark.png">
+      <LogicalName>assembly-reference-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-reference-overlay-16~dark%402x.png">
+      <LogicalName>assembly-reference-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\invalid-reference-overlay-16.png">
       <LogicalName>invalid-reference-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\invalid-reference-overlay-16%402x.png">
       <LogicalName>invalid-reference-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16~dark.png">
+      <LogicalName>invalid-reference-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\invalid-reference-overlay-16~dark%402x.png">
+      <LogicalName>invalid-reference-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-reference-overlay-16.png">
       <LogicalName>project-reference-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-reference-overlay-16%402x.png">
       <LogicalName>project-reference-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-overlay-16~dark.png">
+      <LogicalName>project-reference-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-reference-overlay-16~dark%402x.png">
+      <LogicalName>project-reference-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\GenericProject.xpt.xml">
       <LogicalName>GenericProject.xpt.xml</LogicalName>
@@ -367,6 +385,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\assembly-project-16%402x.png">
       <LogicalName>assembly-project-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-project-16~dark.png">
+      <LogicalName>assembly-project-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\assembly-project-16~dark%402x.png">
+      <LogicalName>assembly-project-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
@@ -835,6 +859,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16%402x.png">
       <LogicalName>workspace-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~dark.png">
+      <LogicalName>workspace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-16~dark%402x.png">
+      <LogicalName>workspace-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-32.png">
       <LogicalName>workspace-32.png</LogicalName>
@@ -1661,11 +1691,23 @@
     <EmbeddedResource Include="icons\folder-component-mac-16%402x.png">
       <LogicalName>folder-component-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-component-mac-16~dark.png">
+      <LogicalName>folder-component-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-component-mac-16~dark%402x.png">
+      <LogicalName>folder-component-mac-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-component-win-16.png">
       <LogicalName>folder-component-win-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-component-win-16%402x.png">
       <LogicalName>folder-component-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-component-win-16~dark.png">
+      <LogicalName>folder-component-win-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-component-win-16~dark%402x.png">
+      <LogicalName>folder-component-win-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-generic-mac-16.png">
       <LogicalName>folder-generic-mac-16.png</LogicalName>
@@ -1673,11 +1715,23 @@
     <EmbeddedResource Include="icons\folder-generic-mac-16%402x.png">
       <LogicalName>folder-generic-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-generic-mac-16~dark.png">
+      <LogicalName>folder-generic-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-generic-mac-16~dark%402x.png">
+      <LogicalName>folder-generic-mac-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-generic-win-16.png">
       <LogicalName>folder-generic-win-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-generic-win-16%402x.png">
       <LogicalName>folder-generic-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-generic-win-16~dark.png">
+      <LogicalName>folder-generic-win-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-generic-win-16~dark%402x.png">
+      <LogicalName>folder-generic-win-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-special-mac-16.png">
       <LogicalName>folder-special-mac-16.png</LogicalName>
@@ -1685,11 +1739,23 @@
     <EmbeddedResource Include="icons\folder-special-mac-16%402x.png">
       <LogicalName>folder-special-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-special-mac-16~dark.png">
+      <LogicalName>folder-special-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-special-mac-16~dark%402x.png">
+      <LogicalName>folder-special-mac-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-special-win-16.png">
       <LogicalName>folder-special-win-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-special-win-16%402x.png">
       <LogicalName>folder-special-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-special-win-16~dark.png">
+      <LogicalName>folder-special-win-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-special-win-16~dark%402x.png">
+      <LogicalName>folder-special-win-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-web-reference-mac-16.png">
       <LogicalName>folder-web-reference-mac-16.png</LogicalName>
@@ -1697,11 +1763,23 @@
     <EmbeddedResource Include="icons\folder-web-reference-mac-16%402x.png">
       <LogicalName>folder-web-reference-mac-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-web-reference-mac-16~dark.png">
+      <LogicalName>folder-web-reference-mac-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-web-reference-mac-16~dark%402x.png">
+      <LogicalName>folder-web-reference-mac-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-web-reference-win-16.png">
       <LogicalName>folder-web-reference-win-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-web-reference-win-16%402x.png">
       <LogicalName>folder-web-reference-win-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-web-reference-win-16~dark.png">
+      <LogicalName>folder-web-reference-win-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\folder-web-reference-win-16~dark%402x.png">
+      <LogicalName>folder-web-reference-win-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-help-16.png">
       <LogicalName>pad-help-16.png</LogicalName>
@@ -2864,17 +2942,35 @@
     <EmbeddedResource Include="icons\project-status-information-16%402x.png">
       <LogicalName>project-status-information-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-information-16~dark.png">
+      <LogicalName>project-status-information-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-information-16~dark%402x.png">
+      <LogicalName>project-status-information-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-status-warning-16.png">
       <LogicalName>project-status-warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-status-warning-16%402x.png">
       <LogicalName>project-status-warning-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-warning-16~dark.png">
+      <LogicalName>project-status-warning-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-warning-16~dark%402x.png">
+      <LogicalName>project-status-warning-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\project-status-error-16.png">
       <LogicalName>project-status-error-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-status-error-16%402x.png">
       <LogicalName>project-status-error-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-error-16~dark.png">
+      <LogicalName>project-status-error-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-status-error-16~dark%402x.png">
+      <LogicalName>project-status-error-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\platform-android-16.png">
       <LogicalName>platform-android-16.png</LogicalName>
