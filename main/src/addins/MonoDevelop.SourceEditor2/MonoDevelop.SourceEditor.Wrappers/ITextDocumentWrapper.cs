@@ -376,12 +376,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		ITextSource ITextSource.CreateSnapshot ()
 		{
-			return new ImmutableTextTextSource (document.CloneRope (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
+			return new ImmutableTextTextSource (document.GetImmutableText (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
 		}
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new ImmutableTextTextSource (document.CloneRope (offset, length), document.Encoding, document.UseBom);
+			return new ImmutableTextTextSource (document.GetImmutableText (offset, length), document.Encoding, document.UseBom);
 		}
 		#endregion
 	}

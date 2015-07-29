@@ -1961,12 +1961,12 @@ namespace Mono.TextEditor
 			return new SnapshotDocument (this);
 		}
 
-		public ImmutableText CloneRope ()
+		public ImmutableText GetImmutableText ()
 		{
 			return buffer;
 		}
 
-		public ImmutableText CloneRope (int offset, int count)
+		public ImmutableText GetImmutableText (int offset, int count)
 		{
 			return buffer.GetText (offset, count);
 		}
