@@ -282,14 +282,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_OneInstallActionWithPowerShellScripts_WarningReportedToProgressMonitor ()
+		public void Run_OneInstallActionWithPowerShellScripts_WarningNotReportedToProgressMonitor ()
 		{
 			CreateRunner ();
 			AddInstallActionWithPowerShellScript ();
 
 			Run ();
 
-			Assert.AreEqual ("Warning", progressMonitor.ReportedWarningMessage);
+			Assert.IsNull (progressMonitor.ReportedWarningMessage);
 		}
 
 		[Test]

@@ -246,22 +246,22 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_PackageHasPowerShellUninstallScript_PowerShellWarningLogged ()
+		public void Execute_PackageHasPowerShellUninstallScript_PowerShellInfoLogged ()
 		{
 			CreateAction ();
 			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.0");
 			action.Package = package;
 			package.AddFile (@"tools\uninstall.ps1");
-			string messageLogged = null;
+			var messagesLogged = new List<string> ();
 			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
-				if (e.Message.Level == MessageLevel.Warning) {
-					messageLogged = e.Message.ToString ();
+				if (e.Message.Level == MessageLevel.Info) {
+					messagesLogged.Add (e.Message.ToString ());
 				}
 			};
 
 			action.Execute ();
 
-			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
+			Assert.That (messagesLogged, Contains.Item ("Test Package contains PowerShell scripts which will not be run."));
 		}
 
 		[Test]
