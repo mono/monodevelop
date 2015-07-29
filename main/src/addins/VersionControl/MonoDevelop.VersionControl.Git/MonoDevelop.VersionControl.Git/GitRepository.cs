@@ -1233,7 +1233,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
-			return RootRepository.Branches.Where (b => b.IsRemote && b.Remote.Name == remoteName).Select (b => b.FriendlyName.Substring (b.FriendlyName.IndexOf ('/') + 1));
+			return RootRepository.Branches
+				.Where (b => b.IsRemote && b.Remote != null && b.Remote.Name == remoteName)
+				.Select (b => b.FriendlyName.Substring (b.FriendlyName.IndexOf ('/') + 1));
 		}
 
 		public string GetCurrentBranch ()

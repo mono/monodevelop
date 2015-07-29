@@ -52,12 +52,7 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateProject (templateOptions,
-				new ProjectDetails (templateOptions),
-				new GitOptions { UseGit = true, UseGitIgnore = true});
-			
-			Session.WaitForElement (IdeQuery.TextArea);
-			TestCommit ("First commit");
+			GitCreateAndCommit (templateOptions, "First commit");
 		}
 
 		[Test]
@@ -107,23 +102,10 @@ namespace UserInterfaceTests
 				TemplateKindRoot = GeneralKindRoot,
 				TemplateKind = "Console Project"
 			};
-			CreateProject (templateOptions, 
-				new ProjectDetails (templateOptions),
-				new GitOptions { UseGit = true, UseGitIgnore = true });
-			
-			Session.WaitForElement (IdeQuery.TextArea);
-			TestCommit ("First commit");
+			GitCreateAndCommit (templateOptions, "First commit");
 
-			Session.ExecuteCommand (FileCommands.CloseFile);
-			Session.WaitForElement (IdeQuery.TextArea);
-
-			Session.ExecuteCommand (TextEditorCommands.InsertNewLine);
-			TakeScreenShot ("Inserted-Newline-Marked-Dirty");
-			Session.ExecuteCommand (FileCommands.SaveAll);
-			TakeScreenShot ("Inserted-Newline-SaveAll-Called");
-
-			TestGitStash ("Entered new blank line");
-
+			var changeDescription = MakeSomeChangesAndSaveAll ("Program.cs");
+			TestGitStash (changeDescription);
 			Session.WaitForElement (IdeQuery.TextArea);
 			TakeScreenShot ("After-Stash");
 

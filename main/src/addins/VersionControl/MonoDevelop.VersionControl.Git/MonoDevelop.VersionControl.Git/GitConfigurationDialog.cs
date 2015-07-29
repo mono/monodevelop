@@ -254,12 +254,14 @@ namespace MonoDevelop.VersionControl.Git
 			var dlg = new EditRemoteDialog (remote);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					if (remote.Name != dlg.RemoteName)
-						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					if (remote.Url != dlg.RemoteUrl)
 						repo.ChangeRemoteUrl (remote.Name, dlg.RemoteUrl);
-					if (remote.Url != dlg.RemotePushUrl)
+					if (remote.PushUrl != dlg.RemotePushUrl)
 						repo.ChangeRemotePushUrl (remote.Name, dlg.RemotePushUrl);
+
+					// Only do rename after we've done previous changes.
+					if (remote.Name != dlg.RemoteName)
+						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					FillRemotes ();
 				}
 			} finally {

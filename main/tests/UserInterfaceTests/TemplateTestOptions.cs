@@ -92,6 +92,16 @@ namespace UserInterfaceTests
 			SolutionName = ProjectName;
 		}
 
+		public static ProjectDetails ToExistingSolution (string solutionName, string projectName)
+		{
+			return new ProjectDetails  {
+				ProjectName = projectName,
+				SolutionName = solutionName,
+				AddProjectToExistingSolution = true,
+				SolutionLocation = null
+			};
+		}
+
 		public string ProjectName { get; set; }
 
 		public string SolutionName { get; set; }
@@ -99,6 +109,8 @@ namespace UserInterfaceTests
 		public string SolutionLocation { get; set; }
 
 		public bool ProjectInSolution { get; set; }
+
+		public bool AddProjectToExistingSolution { get; set; }
 	}
 
 	public class NewFileOptions
