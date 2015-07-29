@@ -31,13 +31,11 @@ namespace MacPlatform.Tests
 {
 	public class LaunchServicesTests
 	{
+		[Ignore ("The LaunchServices are not used anywhere in the code")]
 		[Test]
 		public void TestLaunchProcess ()
 		{
-			ProcessSerialNumber psn = LaunchServices.OpenApplication ("/Applications/Calculator.app");
-
-			bool result = ProcessManager.KillProcess (psn);
-			Assert.AreEqual (result, true);
+			LaunchServices.OpenApplication ("/Applications/Calculator.app");
 		}
 	}
 }
