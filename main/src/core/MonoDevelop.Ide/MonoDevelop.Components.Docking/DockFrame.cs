@@ -74,11 +74,11 @@ namespace MonoDevelop.Components.Docking
 		protected override object CreateNativeWidget ()
 		{
 			#if MAC
-			if (GtkMacInterop.SupportsGtkIntoNSViewEmbedding ()) {
-				backend = new Mac.DockFrameBackend ();
-				backend.Initialize (this);
-				return backend;
-			}
+			//if (GtkMacInterop.SupportsGtkIntoNSViewEmbedding ()) {
+			//	backend = new Mac.DockFrameBackend ();
+			//	backend.Initialize (this);
+			//	return backend;
+			//}
 			#endif
 			backend = new GtkDockFrame ();
 			backend.Initialize (this);
