@@ -2,6 +2,7 @@
 open System
 open System.IO
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open MonoDevelop.Ide.Editor
 
 [<AutoOpen>]
 module FSharpSymbolExt =
@@ -20,6 +21,12 @@ module FSharpSymbolExt =
   type FSharpMemberOrFunctionOrValue with
     // FullType may raise exceptions (see https://github.com/fsharp/fsharp/issues/307). 
     member x.FullTypeSafe = Option.attempt (fun _ -> x.FullType)
+    member x.IsConstructor = x.CompiledName = ".ctor"
+    member x.IsOperatorOrActivePattern =
+      let name = x.DisplayName
+      if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4 then
+          name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
+      else false
 
   type FSharpEntity with
       member x.TryGetFullName() =
@@ -45,6 +52,11 @@ module FrameworkExt =
       if x.Length > 0 then f x.[0]
       else false
 
+  /// Add some useful methods for creating strings from sequences
+  type System.String with
+    static member ofSeq s = new String(s |> Seq.toArray)
+    static member ofReversedSeq s = new String(s |> Seq.toArray |> Array.rev)
+
   ///Helper to return an IDisposable for a event on subscribe
   type IDelegateEvent<'Del when 'Del :> Delegate> with
     member this.Subscribe handler =
@@ -65,6 +77,7 @@ module Option =
     | :? 'T as a -> Some a
     | _ -> None
 
+  /// Convert string into Option string where null and String.Empty result in None
   let ofString (s:string) =
     if String.isNullOrEmpty s then None
     else Some s

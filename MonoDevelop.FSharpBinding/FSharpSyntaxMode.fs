@@ -10,7 +10,6 @@ open Mono.TextEditor
 open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 open ExtCore.Control
 open MonoDevelop.FSharp.Symbols
 [<AutoOpen>]

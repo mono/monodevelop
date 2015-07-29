@@ -1,6 +1,5 @@
 ﻿namespace MonoDevelop.FSharp
 
-open FSharp.CompilerBinding
 open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler
 open MonoDevelop.Core

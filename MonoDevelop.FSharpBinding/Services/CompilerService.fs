@@ -15,8 +15,6 @@ open MonoDevelop.Core
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Projects
 open MonoDevelop.Ide
-open FSharp.CompilerBinding
-
 open FSharp.Compiler.CodeDom
 
 // --------------------------------------------------------------------------------------
@@ -158,8 +156,8 @@ module CompilerService =
       // Parse messages and build results        
       for msg in messages do
         match processMsg msg with
-        | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m)
-        | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m)
+        | true, (f, l, c, n, m) -> br.AddError(f, l, c, n, m) |> ignore
+        | false, (f, l, c, n, m) -> br.AddWarning(f, l, c, n, m) |> ignore
 
             
       LoggingService.LogInfo ("Compiler: Waiting for exit...")

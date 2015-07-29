@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------
 
 #nowarn "40" // recursive references checked at runtime
-namespace FSharp.CompilerBinding
+namespace MonoDevelop.FSharp
 
 open System
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -33,11 +33,6 @@ module LazyList =
 module Parser =
 
   open System
-
-  /// Add some useful methods for creating strings from sequences
-  type System.String with
-    static member ofSeq s = new String(s |> Seq.toArray)
-    static member ofReversedSeq s = new String(s |> Seq.toArray |> Array.rev)
 
   /// Parser is implemented using lazy list (so that we can use seq<_>)
   type Parser<'T> = P of (LazyList<char> -> ('T * LazyList<char>) list)

@@ -12,7 +12,6 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Gui.Content
 open ICSharpCode.NRefactory
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 open ExtCore.Control
 
 /// Resolves locations to NRefactory symbols and ResolveResult objects.

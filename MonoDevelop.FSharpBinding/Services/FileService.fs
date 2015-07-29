@@ -7,7 +7,6 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
 open MonoDevelop.Ide.TypeSystem
-open FSharp.CompilerBinding
 open ExtCore.Control
 type Version = int
 

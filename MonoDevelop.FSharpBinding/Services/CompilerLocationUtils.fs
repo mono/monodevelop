@@ -1,4 +1,4 @@
-namespace FSharp.CompilerBinding
+namespace MonoDevelop.FSharp
 
 open System
 open System.Diagnostics
@@ -87,13 +87,6 @@ module FSharpEnvironment =
 
   [<DllImport("Advapi32.dll")>]
   extern uint32 RegCloseKey(UIntPtr _hKey)
-
-  module Option = 
-    /// Convert string into Option string where null and String.Empty result in None
-    let ofString s = 
-      if String.IsNullOrEmpty(s) then None
-      else Some(s)
-
 
   // MaxPath accounts for the null-terminating character, for example, the maximum path on the D drive is "D:\<256 chars>\0". 
   // See: ndp\clr\src\BCL\System\IO\Path.cs

@@ -6,7 +6,6 @@ open MonoDevelop.FSharp
 open MonoDevelop.Core
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
-open FSharp.CompilerBinding
 open MonoDevelop.Projects
 open MonoDevelop.Ide.TypeSystem
 open FsUnit

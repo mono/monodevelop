@@ -8,7 +8,6 @@ open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 
 /// Utilities to produce NRefactory ISymbol, IEntity, IVariable etc. implementations based on FSharpSymbol
 /// objects returned by FSharp.Compiler.Service.
@@ -168,7 +167,7 @@ module NRefactory =
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
     let createMemberReference(doc:MonoDevelop.Ide.Editor.TextEditor, context:MonoDevelop.Ide.Editor.DocumentContext, symbolUse: FSharpSymbolUse, lastIdentAtLoc:string) =
-        let start, finish = Symbols.trimSymbolRegion symbolUse lastIdentAtLoc
+        let start, finish = Symbol.trimSymbolRegion symbolUse lastIdentAtLoc
         let filename = doc.FileName.ToString()  
         let offset = doc.LocationToOffset(start.Line, start.Column+1)
         let domRegion = DomRegion(filename, start.Line, start.Column+1, finish.Line, finish.Column+1)

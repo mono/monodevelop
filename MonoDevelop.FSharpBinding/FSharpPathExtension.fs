@@ -10,7 +10,6 @@ open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 open ExtCore.Control
 
 type FSharpPathExtension() =

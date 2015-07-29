@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{165E4D13-19CC-4FCA-B4EC-F86DA08E6003}"
@@ -6,13 +6,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{165E4D
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "MonoDevelop.FSharp.mac-linux", "MonoDevelop.FSharpBinding\MonoDevelop.FSharp.mac-linux.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
-EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.CompilerBinding", "FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj", "{88F6940F-D300-474C-B2A7-E2ECD5B04B57}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.mac-linux", "MonoDevelop.FSharpBinding\MonoDevelop.FSharp.mac-linux.fsproj", "{4C10F8F9-3816-4647-BA6E-85F5DE39883A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.FSharp.Gui", "MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj", "{FD0D1033-9145-48E5-8ED8-E2365252878C}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "MonoDevelop.FSharp.Tests", "MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,10 +22,6 @@ Global
 		{4C10F8F9-3816-4647-BA6E-85F5DE39883A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C10F8F9-3816-4647-BA6E-85F5DE39883A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C10F8F9-3816-4647-BA6E-85F5DE39883A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88F6940F-D300-474C-B2A7-E2ECD5B04B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88F6940F-D300-474C-B2A7-E2ECD5B04B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88F6940F-D300-474C-B2A7-E2ECD5B04B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88F6940F-D300-474C-B2A7-E2ECD5B04B57}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1A45375-7FB8-4F2A-850F-FBCC67739927}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,8 +32,5 @@ Global
 		{FD0D1033-9145-48E5-8ED8-E2365252878C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = MonoDevelop.FSharp.mac-linux.fsproj
 	EndGlobalSection
 EndGlobal

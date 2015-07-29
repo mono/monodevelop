@@ -11,7 +11,6 @@ open Mono.TextEditor
 open Fantomas
 open Fantomas.FormatConfig
 open Microsoft.FSharp.Compiler
-open FSharp.CompilerBinding
 open ExtCore.Control
 open MonoDevelop.Core.Text
 

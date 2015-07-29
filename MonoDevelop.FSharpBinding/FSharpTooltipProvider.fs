@@ -6,7 +6,6 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.IO
-open FSharp.CompilerBinding
 open Mono.TextEditor
 open MonoDevelop
 open MonoDevelop.Core

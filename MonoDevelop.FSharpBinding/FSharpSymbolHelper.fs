@@ -24,14 +24,14 @@ module Symbols =
         
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
-        match FSharp.CompilerBinding.Parsing.findLongIdents(column, lineString) with
+        match Parsing.findLongIdents(column, lineString) with
         | Some (_col, identIsland) -> Seq.last identIsland
         | None -> ""
 
     ///Returns a TextSegment that is trimmed to only include the identifier
     let getTextSegment (doc:Editor.TextEditor) (symbolUse:FSharpSymbolUse) column line =
         let lastIdent = lastIdent column line
-        let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+        let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
 
         let startOffset = doc.LocationToOffset(start.Line, start.Column+1)
         let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
@@ -57,7 +57,7 @@ module Symbols =
         symbolUse
         |> getLocationFromSymbolUse
         |> List.map (fun range -> 
-            let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+            let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
             range.FileName, start, finish)
 
     let getTrimmedOffsetsForDeclarations lastIdent (symbolUse:FSharpSymbolUse) = 
@@ -86,7 +86,7 @@ module Symbols =
     let getOffsetsTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
         let filename = symbolUse.RangeAlternate.FileName
         let editor = getEditorForFileName filename
-        let start, finish = FSharp.CompilerBinding.Symbols.trimSymbolRegion symbolUse lastIdent
+        let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
         let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
         let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
         filename, startOffset, endOffset
@@ -94,16 +94,6 @@ module Symbols =
     let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
         let filename, start, finish = getOffsetsTrimmed lastIdent symbolUse
         filename, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (start, finish)
-
-[<AutoOpen>]
-module FSharpTypeExt =
-    let isOperatorOrActivePattern (name: string) =
-            if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4 then
-                name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
-            else false
-
-    let isConstructor (func: FSharpMemberOrFunctionOrValue) =
-        func.CompiledName = ".ctor"
 
 [<AutoOpen>]
 module CorePatterns =
@@ -152,7 +142,7 @@ module ExtendedPatterns =
     let (|Constructor|_|) symbol =
         match symbol with
         | CorePatterns.MemberFunctionOrValue func -> 
-            if isConstructor func || func.IsImplicitConstructor then Some func
+            if func.IsConstructor || func.IsImplicitConstructor then Some func
             else None
         | _ -> None
 
@@ -194,12 +184,12 @@ module ExtendedPatterns =
     let (|Function|Operator|Pattern|ClosureOrNestedFunction|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
         match symbolUse with
         | CorePatterns.MemberFunctionOrValue symbol
-            when not (isConstructor symbol) ->
+            when not (symbol.IsConstructor) ->
                 match symbol.FullTypeSafe with
                 | Some fullType when fullType.IsFunctionType
                                     && not symbol.IsPropertyGetterMethod
                                     && not symbol.IsPropertySetterMethod ->
-                    if FSharpTypeExt.isOperatorOrActivePattern symbol.DisplayName then
+                    if symbol.IsOperatorOrActivePattern then
                         if symbolUse.IsFromPattern then Pattern symbol
                         else Operator symbol
                     else
@@ -338,7 +328,7 @@ module SymbolTooltips =
         let indent = String.replicate indent " "
         let functionName =
             let name = 
-                if isConstructor func then func.EnclosingEntity.DisplayName
+                if func.IsConstructor then func.EnclosingEntity.DisplayName
                 else func.DisplayName
             escapeText name
 
@@ -351,7 +341,7 @@ module SymbolTooltips =
 
             let modifier =
                 //F# types are prefixed with new, should non F# types be too for consistancy?
-                if isConstructor func then
+                if func.IsConstructor then
                     if func.EnclosingEntity.IsFSharp then "new" ++ accessibility
                     else accessibility
                 elif func.IsMember then 

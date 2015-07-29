@@ -18,7 +18,6 @@ open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.CodeTemplates
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 open MonoDevelop.FSharp.NRefactory
 open ICSharpCode.NRefactory.TypeSystem
 open ExtCore.Control

@@ -9,7 +9,6 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open MonoDevelop.Refactoring
-open FSharp.CompilerBinding
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.Ide.FindInFiles

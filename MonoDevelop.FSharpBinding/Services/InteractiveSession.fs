@@ -6,7 +6,6 @@ open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
-open FSharp.CompilerBinding
 
 type InteractiveSession() =
   let server = "MonoDevelop" + Guid.NewGuid().ToString("n")

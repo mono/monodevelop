@@ -15,7 +15,6 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-open FSharp.CompilerBinding
 
 // --------------------------------------------------------------------------------------
 // Common utilities for working with files & extracting information from 
@@ -309,7 +308,7 @@ module CompilerArguments =
     | _ -> None
 
   let getDefineSymbols (fileName:string) (project: Project option) =
-    [if FSharp.CompilerBinding.LanguageService.IsAScript fileName
+    [if LanguageService.IsAScript fileName
      then yield! ["INTERACTIVE";"EDITING"]
      else yield! ["COMPILED";"EDITING"]
      

@@ -8,7 +8,6 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Ide
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
-open FSharp.CompilerBinding
 open MonoDevelop.Ide.Gui
 
 module FsUnit =

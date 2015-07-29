@@ -1,7 +1,6 @@
 ﻿namespace MonoDevelopTests
 open System
 open System.IO
-open FSharp.CompilerBinding
 open NUnit.Framework
 open FsUnit
 open System.Reflection

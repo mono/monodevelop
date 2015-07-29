@@ -1,210 +1,537 @@
-// --------------------------------------------------------------------------------------
-// Main file - contains types that call F# compiler service in the background, display
-// error messages and expose various methods for to be used from MonoDevelop integration
-// --------------------------------------------------------------------------------------
-
-namespace MonoDevelop.FSharp
-#nowarn "40"
-
+﻿namespace MonoDevelop.FSharp
 open System
 open System.IO
-open System.Xml
-open System.Text
 open System.Diagnostics
-open Mono.TextEditor
-open MonoDevelop.Ide
-open MonoDevelop.Ide.Editor
-open MonoDevelop.Core
-open MonoDevelop.Projects
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
+open ExtCore
+open ExtCore.Control
+open ExtCore.Control.Collections
 
-module MonoDevelop =
-    type TextEditor with
-        member x.GetLineInfoFromOffset (offset) =
-            let loc  = x.OffsetToLocation(offset)
-            let line, col = max loc.Line 1, loc.Column-1
-            let currentLine = x.GetLineByOffset(offset)
-            let lineStr = x.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
-            line, col, lineStr
+module Symbol =
+  /// We always know the text of the identifier that resolved to symbol.
+  /// Trim the range of the referring text to only include this identifier.
+  /// This means references like A.B.C are trimmed to "C".  This allows renaming to just rename "C". 
+  let trimSymbolRegion(symbolUse:FSharpSymbolUse) (lastIdentAtLoc:string) =
+    let m = symbolUse.RangeAlternate 
+    let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
+             
+    let (beginLine, beginCol) =
+        if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
+          (endLine,endCol-lastIdentAtLoc.Length)
+        else
+          (beginLine, beginCol)
+    Range.mkPos beginLine beginCol, Range.mkPos endLine endCol
+    //(beginLine, beginCol), (endLine, endCol)
 
-        member x.GetLineInfoByCaretOffset () =
-            x.GetLineInfoFromOffset x.CaretOffset
+/// Contains settings of the F# language service
+module ServiceSettings =
+  let internal getEnvInteger e dflt = match System.Environment.GetEnvironmentVariable(e) with null -> dflt | t -> try int t with _ -> dflt
+  /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
+  let blockingTimeout = getEnvInteger "FSharpBinding_BlockingTimeout" 1000
+  let maximumTimeout = getEnvInteger "FSharpBinding_MaxTimeout" 10000
 
-    type MonoDevelop.Ide.TypeSystem.ParsedDocument with
-        member x.TryGetAst() =
-            match x.Ast with
-            | null -> None
-            | :? FSharp.CompilerBinding.ParseAndCheckResults as ast
-                -> Some ast
-            | _ -> None
+// --------------------------------------------------------------------------------------
+/// Wraps the result of type-checking and provides methods for implementing
+/// various IntelliSense functions (such as completion & tool tips). Provides default
+/// empty/negative results if information is missing.
+type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpParseFileResults) option) =
+  let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
-    let internal getConfig () =
-        match MonoDevelop.Ide.IdeApp.Workspace with
-        | null -> MonoDevelop.Projects.ConfigurationSelector.Default
-        | ws ->
-           match ws.ActiveConfiguration with
-           | null -> MonoDevelop.Projects.ConfigurationSelector.Default
-           | config -> config
+  new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
+
+  static member Empty = ParseAndCheckResults(None)
+
+  /// Get declarations at the current location in the specified document and the long ident residue
+  /// e.g. The incomplete ident One.Two.Th will return Th
+  member x.GetDeclarations(line, col, lineStr) = 
+    match infoOpt with 
+    | None -> None
+    | Some (checkResults, parseResults) -> 
+      let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+      Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
+      // Get items & generate output
+      try
+        let results =
+          Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
+        Some (results, residue)
+      with :? TimeoutException -> None
+
+    /// Get the symbols for declarations at the current location in the specified document and the long ident residue
+    /// e.g. The incomplete ident One.Two.Th will return Th
+    member x.GetDeclarationSymbols(line, col, lineStr) = 
+      match infoOpt with 
+      | None -> None
+      | Some (checkResults, parseResults) -> 
+          let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+          Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
+          // Get items & generate output
+          try
+           let results = 
+               Async.RunSynchronously (checkResults.GetDeclarationListSymbols(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                                       timeout = ServiceSettings.blockingTimeout )
+           Some (results, residue)
+          with :? TimeoutException -> None
+
+    /// Get the tool-tip to be displayed at the specified offset (relatively
+    /// from the beginning of the current document)
+    member x.GetToolTip(line, col, lineStr) =
+      async {
+        match infoOpt with 
+        | None -> return None
+        | Some (checkResults, _parseResults) -> 
+        match Parsing.findLongIdents(col, lineStr) with 
+        | None -> return None
+        | Some(col,identIsland) ->
+          let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
+          let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
+          Debug.WriteLine("Result: Got something, returning")
+          return sym |> Option.bind (fun sym -> let start, finish = Symbol.trimSymbolRegion sym (Seq.last identIsland)
+                                                Some (res, (start.Column, finish.Column))) }
+      
+    member x.GetDeclarationLocation(line, col, lineStr) =
+      async {
+        match infoOpt with 
+        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
+        | Some (checkResults, _parseResults) -> 
+        match Parsing.findLongIdents(col, lineStr) with 
+        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
+        | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false) }
+      
+    member x.GetMethods(line, col, lineStr) =
+      async { 
+        match infoOpt with 
+        | None -> return None
+        | Some (checkResults, _parseResults) -> 
+        match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+        | None -> return None
+        | Some(col,identIsland) ->
+            let! res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
+            Debug.WriteLine("Result: Got something, returning")
+            return Some (res.MethodName, res.Methods) }
+
+    member x.GetSymbolAtLocation(line, col, lineStr) =
+      async {
+        match infoOpt with 
+        | None -> return None
+        | Some (checkResults, _parseResults) -> 
+        match Parsing.findLongIdents(col, lineStr) with 
+        | None -> return None
+        | Some(colu, identIsland) ->
+            return! checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland) }
+
+    member x.GetMethodsAsSymbols(line, col, lineStr) =
+      async {
+        match infoOpt with 
+        | None -> return None
+        | Some (checkResults, _parseResults) -> 
+        match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with 
+        | None -> return None
+        | Some(colu, identIsland) ->
+            return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland) }
+
+    member x.GetUsesOfSymbolInFile(symbol) =
+      async {
+        match infoOpt with 
+        | None -> return [| |]
+        | Some (checkResults, _parseResults) -> return! checkResults.GetUsesOfSymbolInFile(symbol) }
+
+    member x.GetAllUsesOfAllSymbolsInFile() =
+      async {
+        match infoOpt with
+        | None -> return None
+        | Some (checkResults, _parseResults) ->
+            let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
+            return Some allSymbols }
+
+    member x.PartialAssemblySignature =
+      async {
+        match infoOpt with
+        | None -> return None
+        | Some (checkResults, _parseResults) ->
+          return Some checkResults.PartialAssemblySignature }
+
+    member x.GetErrors() =
+      match infoOpt with 
+      | None -> None
+      | Some (checkResults, _parseResults) -> Some checkResults.Errors
+
+    member x.GetNavigationItems() =
+      match infoOpt with 
+      | None -> [| |]
+      | Some (_checkResults, parseResults) -> 
+         // GetNavigationItems is not 100% solid and throws occasional exceptions
+          try parseResults.GetNavigationItems().Declarations
+          with _ -> 
+            Debug.Assert(false, "couldn't update navigation items, ignoring")  
+            [| |]
+
+    member x.ParseTree = 
+      match infoOpt with
+      | Some (_checkResults,parseResults) -> parseResults.ParseTree
+      | None -> None
+
+    member x.CheckResults = 
+      match infoOpt with
+      | Some (checkResults,_parseResults) -> checkResults |> Some
+      | None -> None
+
+    member x.GetExtraColorizations() =
+      match infoOpt with
+      | Some(checkResults,_parseResults) -> checkResults.GetExtraColorizationsAlternate() |> Some
+      | None -> None
+
+[<RequireQualifiedAccess>]
+type AllowStaleResults = 
+  // Allow checker results where the source doesn't even match
+  | MatchingFileName
+  // Allow checker results where the source matches but where the background builder may not have caught up yet after some other change
+  | MatchingSource
+  // Don't allow stale results
+  | No
+
+//type Debug = System.Console
 
 /// Provides functionality for working with the F# interactive checker running in background
-type MDLanguageService() =
-  /// Single instance of the language service. We don't want the VFS during tests, so set it to blank from tests
-  /// before Instance is evaluated
-  static let mutable vfs =
-      lazy (let originalFs = Shim.FileSystem
-            let fs = new FileSystem(originalFs, (fun () -> seq { yield! IdeApp.Workbench.Documents }))
-            Shim.FileSystem <- fs
-            fs :> IFileSystem)
+type LanguageService(dirtyNotify) =
 
-  static let mutable instance =
-    lazy
-        let _ = vfs.Force()
-        new FSharp.CompilerBinding.LanguageService(
-            (fun changedfile ->
-                try
-                    let doc = IdeApp.Workbench.ActiveDocument
-                    if doc <> null && doc.FileName.FullPath.ToString() = changedfile then
-                        LoggingService.LogInfo("FSharp Language Service: Compiler notifying document '{0}' is dirty and needs reparsing.  Reparsing as its the active document.", (Path.GetFileName changedfile))
-                        doc.ReparseDocument()
-                with exn  -> 
-                   LoggingService.LogInfo("FSharp Language Service: Error while attempting to notify document '{0}' needs reparsing", (Path.GetFileName changedfile), exn) ))
+  /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
+  /// Not yet sure if this works for scripts.
+  let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
 
-  static member Instance with get () = instance.Force ()
-                         and  set v  = instance <- lazy v
-  // Call this before Instance is called
-  static member DisableVirtualFileSystem() =
-        vfs <- lazy (Shim.FileSystem)
-        
-  static member SupportedFileExtensions =
-    [".fsscript"; ".fs"; ".fsx"; ".fsi"; ".sketchfs"]
+  // Create an instance of interactive checker. The callback is called by the F# compiler service
+  // when its view of the prior-typechecking-state of the start of a file has changed, for example
+  // when the background typechecker has "caught up" after some other file has been changed, 
+  // and its time to re-typecheck the current file.
+  let checker = 
+    let checker = FSharpChecker.Create()
+    checker.BeforeBackgroundFileCheck.Add dirtyNotify
+    checker
 
-  /// Is the specified extension supported F# file?
-  static member SupportedFileName fileName =
-    let ext = Path.GetExtension(fileName).ToLower()
-    MDLanguageService.SupportedFileExtensions
-    |> List.exists ((=) ext)
+  /// When creating new script file on Mac, the filename we get sometimes 
+  /// has a name //foo.fsx, and as a result 'Path.GetFullPath' throws in the F#
+  /// language service - this fixes the issue by inventing nicer file name.
+  let fixFileName path = 
+    if (try Path.GetFullPath(path) |> ignore; true
+        with _ -> false) then path
+    else 
+      let dir = 
+        if Environment.OSVersion.Platform = PlatformID.Unix ||  
+           Environment.OSVersion.Platform = PlatformID.MacOSX then
+          Environment.GetEnvironmentVariable("HOME") 
+        else
+          Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
+      Path.Combine(dir, Path.GetFileName(path))
+
+  let projectInfoCache =
+    //cache 50 project infos, then start evicting the least recently used entries
+    ref (ExtCore.Caching.LruCache.create 50u)
+
+  static member IsAScript fileName =
+    let ext = Path.GetExtension fileName
+    [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
+
+  member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
+    let properties = defaultArg properties ["Configuration", "Debug"]
+    let key = (projFilename, properties)
+    Debug.WriteLine("LanguageService: Removing {0} from projectInfoCache", projFilename)
+    match (!projectInfoCache).TryExtract(key) with
+    | Some _extractee, cache -> projectInfoCache := cache
+    | None, _unchangedCache -> ()
+
+  member x.ClearProjectInfoCache() =
+    Debug.WriteLine("LanguageService: Clearing ProjectInfoCache")
+    projectInfoCache := ExtCore.Caching.LruCache.create 50u
+
+  /// Constructs options for the interactive checker for the given file in the project under the given configuration.
+  member x.GetCheckerOptions(fileName, projFilename, source) =
+    Debug.WriteLine("LanguageService: GetCheckerOptions")
+    let opts =
+      if LanguageService.IsAScript fileName || fileName = projFilename then
+        // We are in a stand-alone file or we are in a project, but currently editing a script file
+        x.GetScriptCheckerOptions(fileName, projFilename, source)
+          
+      // We are in a project - construct options using current properties
+      else
+        x.GetProjectCheckerOptions(projFilename)
+    opts
+   
+  /// Constructs options for the interactive checker for the given script file in the project under the given configuration. 
+  member x.GetScriptCheckerOptions(fileName, projFilename, source) =
+    let opts = 
+      // We are in a stand-alone file or we are in a project, but currently editing a script file
+      try 
+        let fileName = fixFileName(fileName)
+        Debug.WriteLine ("LanguageService: GetScriptCheckerOptions: Creating for stand-alone file or script: {0}", fileName)
+        let opts =
+          Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
+                                  timeout = ServiceSettings.maximumTimeout)
+
+      // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
+        if opts.OtherOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
+        else 
+          // Add assemblies that may be missing in the standard assembly resolution
+          Debug.WriteLine("LanguageService: GetScriptCheckerOptions: Adding missing core assemblies.")
+          let dirs = FSharpEnvironment.getDefaultDirectories (None, FSharpTargetFramework.NET_4_5 )
+          {opts with OtherOptions = [| yield! opts.OtherOptions
+                                       match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
+                                       | Some fn -> yield String.Format ("-r:{0}", fn)
+                                       | None -> Debug.WriteLine("LanguageService: Resolution: FSharp.Core assembly resolution failed!")
+                                       match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
+                                       | Some fn -> yield String.Format ("-r:{0}", fn)
+                                       | None -> Debug.WriteLine("LanguageService: Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
+      with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
+
+    // Print contents of check option for debugging purposes
+    // Debug.WriteLine(sprintf "GetScriptCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+    opts
+   
+  /// Constructs options for the interactive checker for a project under the given configuration. 
+  member x.GetProjectCheckerOptions(projFilename, ?properties) =
+    let properties = defaultArg properties ["Configuration", "Debug"]
+    let key = (projFilename, properties)
+    lock projectInfoCache (fun () ->
+      match (!projectInfoCache).TryFind (key) with
+      | Some entry, cache ->
+          Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for {0}", Path.GetFileName(projFilename))
+          projectInfoCache := cache
+          entry
+      | None, cache ->
+          Debug.WriteLine ("LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for {0}", Path.GetFileName(projFilename))
+          let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
+          projectInfoCache := cache.Add (key, opts)
+          opts)
+
+    // Print contents of check option for debugging purposes
+    // Debug.WriteLine(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+    //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+
+  member x.StartBackgroundCompileOfProject (projectFilename) =
+    let opts = x.GetProjectCheckerOptions(projectFilename)
+    checker.StartBackgroundCompile(opts)
+
+  member x.ParseFileInProject(projectFilename, fileName:string, src) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+    Debug.WriteLine("LanguageService: ParseFileInProject: Get untyped parse result (fileName={0})", fileName)
+    checker.ParseFileInProject(fixFileName fileName, src, opts)
+
+  member internal x.TryGetStaleTypedParseResult(fileName:string, options, src, stale)  = 
+    // Try to get recent results from the F# service
+    let res = 
+      match stale with 
+      | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options) 
+      | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options, source=src) 
+      | AllowStaleResults.No -> None
+    match res with 
+    | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))
+    | _ -> None
+
+  member internal x.ParseAndCheckFile (fileName, src, opts) =
+    async {
+      try
+         let fileName = fixFileName(fileName)
+         let! parseResults, checkAnswer = checker.ParseAndCheckFileInProject(fileName, 0, src ,opts, IsResultObsolete(fun () -> false), null )
+
+         // Construct new typed parse result if the task succeeded
+         let results =
+           match checkAnswer with
+           | FSharpCheckFileAnswer.Succeeded(checkResults) ->
+               ParseAndCheckResults(checkResults, parseResults)
+           | _ -> ParseAndCheckResults.Empty
+               
+         return results
+      with exn ->
+        Debug.WriteLine("LanguageService agent: Exception: {0}", exn.ToString())
+        return ParseAndCheckResults.Empty }
+
+  /// Parses and checks the given file in the given project under the given configuration.
+  ///Asynchronously returns the results of checking the file.
+  member x.GetTypedParseResultWithTimeout(projectFilename, fileName:string, src, stale, ?timeout) = 
+    async {
+      let fileName = if Path.GetExtension fileName = ".sketchfs" then Path.ChangeExtension (fileName, ".fsx") else fileName
+      let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+      Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout, fileName={0}", fileName)
+      // Try to get recent results from the F# service
+      match x.TryGetStaleTypedParseResult(fileName, opts, src, stale) with
+      | Some _ as results ->
+          Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: using stale results")
+          return results
+      | None -> 
+          Debug.WriteLine("LanguageService: GetTypedParseResultWithTimeout: No stale results - trying typecheck with timeout")
+          // If we didn't get a recent set of type checking results, we put in a request and wait for at most 'timeout' for a response
+          match timeout with
+          | Some timeout ->
+            let! computation = Async.StartChild(x.ParseAndCheckFile(fileName, src, opts), timeout)
+            try 
+              let! result = computation
+              return Some(result)
+            with
+            | :? System.TimeoutException -> return None
+          | None ->
+            let! result = x.ParseAndCheckFile(fileName, src, opts) 
+            return Some(result) }
+
+  /// Returns a TypeParsedResults if available, otherwise None
+  member x.GetTypedParseResultIfAvailable(projectFilename, fileName:string, src, stale) = 
+    let opts = x.GetCheckerOptions(fileName, projectFilename, src)
+    Debug.WriteLine("LanguageService: GetTypedParseResultIfAvailable: fileName={0}", fileName)
+    match x.TryGetStaleTypedParseResult(fileName, opts, src, stale)  with
+    | Some results -> results
+    | None -> ParseAndCheckResults.Empty
+
+  /// Get all the uses of a symbol in the given file (using 'source' as the source for the file)
+  member x.GetUsesOfSymbolAtLocationInFile(projectFilename, fileName, source, line:int, col, lineStr) =
+    asyncMaybe {
+      Debug.WriteLine("LanguageService: GetUsesOfSymbolAtLocationInFile: fileName={0}, line = {1}, col = {2}", fileName, line, col)
+      let! colu, identIsland = Parsing.findLongIdents(col, lineStr) |> async.Return
+      let! results = x.GetTypedParseResultWithTimeout(projectFilename, fileName, source, stale= AllowStaleResults.MatchingSource)
+      let! symbolUse = results.GetSymbolAtLocation(line, colu, lineStr)
+      let lastIdent = Seq.last identIsland
+      let! refs = results.GetUsesOfSymbolInFile(symbolUse.Symbol) |> Async.map Some
+      return (lastIdent, refs) }
+
+  /// Get all the uses of the specified symbol in the current project and optionally all dependent projects
+  member x.GetUsesOfSymbolInProject(projectFilename, file, source, symbol:FSharpSymbol, ?dependentProjects) =
+    async { 
+      Debug.WriteLine("LanguageService: GetUsesOfSymbolInProject: project={0}, currentFile = {1}, symbol = {2}", projectFilename, file, symbol.DisplayName )
+      let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
+        |> Async.List.map checker.ParseAndCheckProject
+
+      let! allSymbolUses =
+        allProjectResults
+        |> List.map (fun checkedProj -> checkedProj.GetUsesOfSymbol(symbol))
+        |> Async.Parallel
+        |> Async.map Array.concat
     
-  static member SupportedFilePath (filePath:FilePath) = 
-      MDLanguageService.SupportedFileName (filePath.ToString())
+     return allSymbolUses }
 
-/// Various utilities for working with F# language service
-module internal ServiceUtils =
-  let map =
-    [ 0x0000,  "md-class"
-      0x0003,  "md-enum"
-      0x00012, "md-struct"
-      0x00018, "md-struct" (* value type *)
-      0x0002,  "md-delegate"
-      0x0008,  "md-interface"
-      0x000e,  "md-module" (* module *)
-      0x000f,  "md-name-space"
-      0x000c,  "md-method";
-      0x000d,  "md-extensionmethod" (* method2 ? *)
-      0x00011, "md-property"
-      0x0005,  "md-event"
-      0x0007,  "md-field" (* fieldblue ? *)
-      0x0020,  "md-field" (* fieldyellow ? *)
-      0x0001,  "md-field" (* const *)
-      0x0004,  "md-property" (* enummember *)
-      0x0006,  "md-exception" (* exception *)
-      0x0009,  "md-text-file-icon" (* TextLine *)
-      0x000a,  "md-regular-file" (* Script *)
-      0x000b,  "Script" (* Script2 *)
-      0x0010,  "md-tip-of-the-day" (* Formula *);
-      0x00013, "md-class" (* Template *)
-      0x00014, "md-class" (* Typedef *)
-      0x00015, "md-type" (* Type *)
-      0x00016, "md-type" (* Union *)
-      0x00017, "md-field" (* Variable *)
-      0x00019, "md-class" (* Intrinsic *)
-      0x0001f, "md-breakpint" (* error *)
-      0x00021, "md-misc-files" (* Misc1 *)
-      0x0022,  "md-misc-files" (* Misc2 *)
-      0x00023, "md-misc-files" (* Misc3 *) ] |> Map.ofSeq
+  /// Get all symbols derived from the specified symbol in the current project and optionally all dependent projects
+  member x.GetDerivedSymbolsInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
 
-  /// Translates icon code that we get from F# language service into a MonoDevelop icon
-  let getIcon glyph =
-    match map.TryFind (glyph / 6), map.TryFind (glyph % 6) with
-    | Some(s), _ -> s // Is the second number good for anything?
-    | _, _ -> "md-breakpoint"
+    let predicate (symbolUse: FSharpSymbolUse) =
+      try
+        match symbolAtCaret with
 
-module internal KeywordList =
-  let keywordDescriptions =  
-    dict [
-      "abstract",  """Indicates a method that either has no implementation in the type in which it is declared or that is virtual and has a default implementation."""
-      "and",  """Used in mutually recursive bindings, in property declarations, and with multiple constraints on generic parameters."""
-      "as",  """Used to give the current class object an object name. Also used to give a name to a whole pattern within a pattern match."""
-      "assert",  """Used to verify code during debugging."""
-      "base",  """Used as the name of the base class object."""
-      "begin",  """In verbose syntax, indicates the start of a code block."""
-      "class",  """In verbose syntax, indicates the start of a class definition."""
-      "default",  """Indicates an implementation of an abstract method; used together with an abstract method declaration to create a virtual method."""
-      "delegate",  """Used to declare a delegate."""
-      "do",  """Used in looping constructs or to execute imperative code."""
-      "done",  """In verbose syntax, indicates the end of a block of code in a looping expression."""
-      "downcast",  """Used to convert to a type that is lower in the inheritance chain."""
-      "downto",  """In a for expression, used when counting in reverse."""
-      "elif",  """Used in conditional branching. A short form of else if."""
-      "else",  """Used in conditional branching."""
-      "end",  """In type definitions and type extensions, indicates the end of a section of member definitions.
-In verbose syntax, used to specify the end of a code block that starts with the begin keyword."""
-      "exception",  """Used to declare an exception type."""
-      "extern",  """Indicates that a declared program element is defined in another binary or assembly."""
-      "false",  """Used as a Boolean literal."""
-      "finally",  """Used together with try to introduce a block of code that executes regardless of whether an exception occurs."""
-      "for",  """Used in looping constructs."""
-      "fun",  """Used in lambda expressions, also known as anonymous functions."""
-      "function",  """Used as a shorter alternative to the fun keyword and a match expression in a lambda expression that has pattern matching on a single argument."""
-      "global",  """Used to reference the top-level .NET namespace."""
-      "if",  """Used in conditional branching constructs."""
-      "in",  """Used for sequence expressions and, in verbose syntax, to separate expressions from bindings."""
-      "inherit",  """Used to specify a base class or base interface."""
-      "inline",  """Used to indicate a function that should be integrated directly into the caller's code."""
-      "interface",  """Used to declare and implement interfaces."""
-      "internal",  """Used to specify that a member is visible inside an assembly but not outside it."""
-      "lazy",  """Used to specify a computation that is to be performed only when a result is needed."""
-      "let",  """Used to associate, or bind, a name to a value or function."""
-      "let!",  """Used in asynchronous workflows to bind a name to the result of an asynchronous computation, or, in other computation expressions, used to bind a name to a result, which is of the computation type."""
-      "match",  """Used to branch by comparing a value to a pattern."""
-      "member",  """Used to declare a property or method in an object type."""
-      "module",  """Used to associate a name with a group of related types, values, and functions, to logically separate it from other code."""
-      "mutable",  """Used to declare a variable, that is, a value that can be changed."""
-      "namespace",  """Used to associate a name with a group of related types and modules, to logically separate it from other code."""
-      "new",  """Used to declare, define, or invoke a constructor that creates or that can create an object.
-Also used in generic parameter constraints to indicate that a type must have a certain constructor."""
-      "not",  """Not actually a keyword. However, not struct in combination is used as a generic parameter constraint."""
-      "null",  """Indicates the absence of an object.
-Also used in generic parameter constraints."""
-      "of",  """Used in discriminated unions to indicate the type of categories of values, and in delegate and exception declarations."""
-      "open",  """Used to make the contents of a namespace or module available without qualification."""
-      "or",  """Used with Boolean conditions as a Boolean or operator. Equivalent to ||.
-Also used in member constraints."""
-      "override",  """Used to implement a version of an abstract or virtual method that differs from the base version."""
-      "private",  """Restricts access to a member to code in the same type or module."""
-      "public",  """Allows access to a member from outside the type."""
-      "rec",  """Used to indicate that a function is recursive."""
-      "return",  """Used to indicate a value to provide as the result of a computation expression."""
-      "return!",  """Used to indicate a computation expression that, when evaluated, provides the result of the containing computation expression."""
-      "select",  """Used in query expressions to specify what fields or columns to extract. Note that this is a contextual keyword, which means that it is not actually a reserved word and it only acts like a keyword in appropriate context."""
-      "static",  """Used to indicate a method or property that can be called without an instance of a type, or a value member that is shared among all instances of a type."""
-      "struct",  """Used to declare a structure type.
-Also used in generic parameter constraints.
-Used for OCaml compatibility in module definitions."""
-      "then",  """Used in conditional expressions.
-Also used to perform side effects after object construction."""
-      "to",  """Used in for loops to indicate a range."""
-      "true",  """Used as a Boolean literal."""
-      "try",  """Used to introduce a block of code that might generate an exception. Used together with with or finally."""
-      "type",  """Used to declare a class, record, structure, discriminated union, enumeration type, unit of measure, or type abbreviation."""
-      "upcast",  """Used to convert to a type that is higher in the inheritance chain."""
-      "use",  """Used instead of let for values that require Dispose to be called to free resources."""
-      "use!",  """Used instead of let! in asynchronous workflows and other computation expressions for values that require Dispose to be called to free resources."""
-      "val",  """Used in a signature to indicate a value, or in a type to declare a member, in limited situations."""
-      "void",  """Indicates the .NET void type. Used when interoperating with other .NET languages."""
-      "when",  """Used for Boolean conditions (when guards) on pattern matches and to introduce a constraint clause for a generic type parameter."""
-      "while",  """Introduces a looping construct."""
-      "with",  """Used together with the match keyword in pattern matching expressions. Also used in object expressions, record copying expressions, and type extensions to introduce member definitions, and to introduce exception handlers."""
-      "yield",  """Used in a sequence expression to produce a value for a sequence."""
-      "yield!",  """Used in a computation expression to append the result of a given computation expression to a collection of results for the containing computation expression."""]
+        | :? FSharpMemberOrFunctionOrValue as caretmfv ->
+            match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as mfv ->
+              let isOverrideOrDefault = mfv.IsOverrideOrExplicitInterfaceImplementation
+              let baseTypeMatch() =
+                match mfv.EnclosingEntity.BaseType with
+                | Some bt -> caretmfv.EnclosingEntity.IsEffectivelySameAs bt.TypeDefinition
+                | _ -> false
+              let nameMatch = mfv.DisplayName = caretmfv.DisplayName
+              let parameterMatch() =
+                let both = (mfv.CurriedParameterGroups |> Seq.concat) |> Seq.zip (caretmfv.CurriedParameterGroups |> Seq.concat)
+                let allMatch = both |> Seq.forall (fun (one, two) -> one.Type = two.Type)
+                allMatch
+              let allmatch = nameMatch && isOverrideOrDefault && baseTypeMatch() && parameterMatch()
+              allmatch
+            | _ -> false
 
+        | :? FSharpEntity as ent -> 
+            match symbolUse.Symbol with
+            | :? FSharpEntity as fse ->
+                match fse.BaseType with
+                | Some basetype ->
+                    basetype.TypeDefinition.IsEffectivelySameAs ent
+                | _ -> false
+            | _ -> false
+
+        | _ -> false
+      with ex ->
+        false
+
+    async { 
+      Debug.WriteLine("LanguageService: GetDerivedSymbolInProject: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
+      let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
+        |> Async.List.map checker.ParseAndCheckProject
+
+      let! allSymbolUses =
+        allProjectResults
+        |> List.map (fun checkedProj -> checkedProj.GetAllUsesOfAllSymbols())
+        |> Async.Parallel
+        |> Async.map Array.concat
+      
+      let filteredSymbols = allSymbolUses |> Array.filter predicate 
+              
+      return filteredSymbols }
+
+  /// Get all overloads derived from the specified symbol in the current project
+  //Currently there seems to be an issue in FCS where a methods EnclosingEntity returns the wrong type
+  //The sanest option is to just use the OverloadsProperty for now.
+  member x.GetOverridesForSymbolInProject(projectFilename, file, source, symbolAtCaret:FSharpSymbol) =
+    try
+      match symbolAtCaret with
+      | :? FSharpMemberOrFunctionOrValue as caretmfv ->
+        caretmfv.Overloads(false)
+      | _ -> None
+    with _ -> None
+
+  member x.GetExtensionMethods(projectFilename, file, source, symbolAtCaret:FSharpSymbol, ?dependentProjects) =
+
+    let isAnAttributedExtensionMethod (symbolToCompare:FSharpMemberOrFunctionOrValue) parentEntity = 
+      let hasExtension = symbolToCompare.Attributes |> Seq.tryFind (fun a -> a.AttributeType.DisplayName = "ExtensionAttribute") |> Option.isSome
+      if hasExtension then
+        let firstCurriedParamter = symbolToCompare.CurriedParameterGroups.[0].[0]
+        let sameAs = firstCurriedParamter.Type.TypeDefinition.IsEffectivelySameAs parentEntity
+        sameAs
+      else false
+
+    let isAnExtensionMethod (mfv:FSharpMemberOrFunctionOrValue) (parentEntity:FSharpSymbol) =
+      let isExt = mfv.IsExtensionMember
+      let extslogicalEntity = mfv.LogicalEnclosingEntity
+      let sameLogicalParent = parentEntity.IsEffectivelySameAs extslogicalEntity
+      isExt && sameLogicalParent
+
+    let predicate (symbolUse: FSharpSymbolUse) =
+      try
+        match symbolAtCaret with
+
+        | :? FSharpEntity as caretEntity ->
+            match symbolUse.Symbol with
+            | :? FSharpMemberOrFunctionOrValue as mfv ->
+                isAnExtensionMethod mfv caretEntity || isAnAttributedExtensionMethod mfv caretEntity
+            | _ -> false
+        | _ -> false
+      with ex ->
+        false
+
+    async { 
+      Debug.WriteLine("LanguageService: GetExtensionMethods: proj:{0}, file:{1}, symbol:{2}", projectFilename, file, symbolAtCaret.DisplayName )
+      let sourceProjectOptions = x.GetCheckerOptions(file, projectFilename, source)
+      let dependentProjectsOptions = defaultArg dependentProjects [] |> List.map x.GetProjectCheckerOptions
+
+      let! allProjectResults =
+        sourceProjectOptions :: dependentProjectsOptions
+        |> Async.List.map checker.ParseAndCheckProject
+
+      let! allSymbolUses =
+        allProjectResults
+        |> List.map (fun checkedProj -> checkedProj.GetAllUsesOfAllSymbols())
+        |> Async.Parallel
+        |> Async.map Array.concat
+      
+      let filteredSymbols = allSymbolUses |> Array.filter predicate 
+              
+      return filteredSymbols }
+           
+  /// This function is called when the project is know to have changed for reasons not encoded in the ProjectOptions
+  /// e.g. dependent references have changed
+  member x.InvalidateConfiguration(options) =
+    Debug.WriteLine("LanguageService: Invalidating configuration for: {0}", Path.GetFileName(options.ProjectFileName))
+    checker.InvalidateConfiguration(options)
+
+  //flush all caches and garbage collect
+  member x.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients() =
+    Debug.WriteLine("LanguageService: Clearing root caches and finalizing transients")
+    checker.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()

@@ -9,7 +9,6 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.NUnit
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
 
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
