@@ -29,16 +29,16 @@ using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
-	class RopeTextSource : ITextSource
+	class ImmutableTextTextSource : ITextSource
 	{
-		readonly ImmutableText rope;
+		readonly ImmutableText immutableText;
 		readonly ITextSourceVersion version;
 
-		public RopeTextSource (ImmutableText rope, System.Text.Encoding encoding, bool useBom, ITextSourceVersion version = null)
+		public ImmutableTextTextSource (ImmutableText immutableText, System.Text.Encoding encoding, bool useBom, ITextSourceVersion version = null)
 		{
-			if (rope == null)
-				throw new ArgumentNullException ("rope");
-			this.rope = rope;
+			if (immutableText == null)
+				throw new ArgumentNullException (nameof (immutableText));
+			this.immutableText = immutableText;
 			this.encoding = encoding;
 			UseBOM = useBom;
 			this.version = version;
@@ -47,38 +47,38 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		#region ITextSource implementation
 		char ITextSource.GetCharAt (int offset)
 		{
-			return rope [offset];
+			return immutableText [offset];
 		}
 
 		char ITextSource.this [int offset] {
 			get {
-				return rope [offset];
+				return immutableText [offset];
 			}
 		}
 
 		string ITextSource.GetTextAt (int offset, int length)
 		{
-			return rope.ToString (offset, length);
+			return immutableText.ToString (offset, length);
 		}
 
 		System.IO.TextReader ITextSource.CreateReader ()
 		{
-			return new ImmutableTextTextReader (rope);
+			return new ImmutableTextTextReader (immutableText);
 		}
 
 		System.IO.TextReader ITextSource.CreateReader (int offset, int length)
 		{
-			return new ImmutableTextTextReader (rope.GetText (offset, length));
+			return new ImmutableTextTextReader (immutableText.GetText (offset, length));
 		}
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer)
 		{
-			rope.WriteTo (writer, 0, rope.Length);
+			immutableText.WriteTo (writer, 0, immutableText.Length);
 		}
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer, int offset, int length)
 		{
-			rope.WriteTo (writer, offset, length);
+			immutableText.WriteTo (writer, offset, length);
 		}
 
 		ITextSource ITextSource.CreateSnapshot ()
@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new RopeTextSource (rope.GetText (offset, length), Encoding, UseBOM);
+			return new ImmutableTextTextSource (immutableText.GetText (offset, length), Encoding, UseBOM);
 		}
 
 		ITextSourceVersion ITextSource.Version {
@@ -111,16 +111,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		int ITextSource.Length {
 			get {
-				return rope.Length;
+				return immutableText.Length;
 			}
 		}
 
 		string ITextSource.Text {
 			get {
-				return rope.ToString ();
+				return immutableText.ToString ();
 			}
 		}
 		#endregion
 	}
 }
-
