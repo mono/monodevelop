@@ -105,6 +105,7 @@ namespace MonoDevelop.NUnit
 		public TestResultsPad ()
 		{
 			testService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
+			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
 			
 			panel = new VBox ();
 			
@@ -259,14 +260,28 @@ namespace MonoDevelop.NUnit
 		
 		public void OnTestSuiteChanged (object sender, EventArgs e)
 		{
+			if (rootTest != null) {
+				rootTest = testService.SearchTest (rootTest.FullName);
+				if (rootTest == null)
+					buttonRun.Sensitive = false;
+			}
+		}
+
+		void OnWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			ClearResults ();
+		}
+
+		void ClearResults ()
+		{
 			if (failuresTreeView.IsRealized)
 				failuresTreeView.ScrollToPoint (0, 0);
 
 			results.Clear ();
-			
+
 			error = null;
 			errorMessage = null;
-			
+
 			failuresStore.Clear ();
 			outputView.Buffer.Clear ();
 			outIters.Clear ();
@@ -276,11 +291,6 @@ namespace MonoDevelop.NUnit
 			resultSummary = new UnitTestResult ();
 			resultLabel.Markup = GetResultsMarkup ();
 			UpdateCounters ();
-			if (rootTest != null) {
-				rootTest = testService.SearchTest (rootTest.FullName);
-				if (rootTest == null)
-					buttonRun.Sensitive = false;
-			}
 		}
 		
 		bool Running {
