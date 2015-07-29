@@ -32,6 +32,49 @@ namespace UserInterfaceTests
 	[Category ("GitConfig")]
 	public class GitRepositoryConfigurationTests : GitBase
 	{
+		string gtkSharpUrl = "git@github.com:mono/gtk-sharp.git";
+
+		[Test]
+		public void CheckBranchButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Branches");
+
+			TakeScreenShot ("Asserting-Edit-Delete-Switch-Button-Disabled");
+			AssertBranchesButtonSensitivity (false, false, false);
+			SelectBranch ("<b>master</b>");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
+			AssertBranchesButtonSensitivity (true, false, false);
+			CreateNewBranch ("new-branch");
+			SelectBranch ("new-branch");
+			TakeScreenShot ("Asserting-Edit-Delete-Switch-Button-Enabled");
+			AssertBranchesButtonSensitivity (true, true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void CheckRemoteButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			TakeScreenShot ("Asserting-Edit-Remove-Track--Fetch-Button-Disabled");
+			AssertRemotesButtonSensitivity (false, false, false, false);
+			SelectRemote ("origin");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
+			AssertRemotesButtonSensitivity (true, true, false, true);
+			SelectRemoteBranch ("origin", "master");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Track-Enabled");
+			AssertRemotesButtonSensitivity (true, true, true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
 		#region Branch Tab
 
 		[Test]
