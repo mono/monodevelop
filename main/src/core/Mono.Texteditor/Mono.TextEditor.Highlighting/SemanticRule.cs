@@ -56,6 +56,8 @@ namespace Mono.TextEditor
 		{
 			if (endOffset <= startOffset || startOffset >= doc.TextLength || inUpdate)
 				return;
+			if (startChunk.Style != "Comment(Line)" && startChunk.Style != "Comment(Block)")
+				return;
 			inUpdate = true;
 			try {
 				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.TextLength) - startOffset);
