@@ -99,7 +99,9 @@ namespace MonoDevelop.MacInterop
 		{
 			return OpenApplication (new ApplicationStartInfo (application));
 		}
-			
+
+		// This function can be replaced by NSWorkspace.LaunchApplication but it currently doesn't work
+		// https://bugzilla.xamarin.com/show_bug.cgi?id=32540
 		public static ProcessSerialNumber OpenApplication (ApplicationStartInfo application)
 		{
 			if (application == null)

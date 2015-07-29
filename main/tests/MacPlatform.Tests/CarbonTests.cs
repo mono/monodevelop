@@ -32,7 +32,6 @@ namespace MacPlatform.Tests
 {
 	public class CarbonTests
 	{
-		[Ignore]
 		[Test]
 		public void TestProcessName ()
 		{
@@ -41,6 +40,13 @@ namespace MacPlatform.Tests
 
 			Process currentProcess = Process.GetCurrentProcess ();
 			Assert.AreEqual (processName, currentProcess.ProcessName);
+		}
+
+		[Test]
+		public void TestGestalt ()
+		{
+			int majorVersion = Carbon.Gestalt ("sys1");
+			Assert.AreEqual (majorVersion, 10);
 		}
 	}
 }
