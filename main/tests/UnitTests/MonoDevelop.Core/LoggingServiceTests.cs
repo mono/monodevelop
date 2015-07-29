@@ -152,7 +152,11 @@ namespace MonoDevelop.Core
 		[Test]
 		public void TestCrashLogging ()
 		{
+			var oldValue = LoggingService.ReportCrashes;
+			LoggingService.ReportCrashes = true;
+
 			Tuple<Exception, bool, string> message;
+
 			LoggingService.LogInternalError (null);
 			message = reporter.Messages [reporter.Messages.Count - 1];
 			Assert.AreSame (null, message.Item1);
@@ -166,6 +170,8 @@ namespace MonoDevelop.Core
 			Assert.AreEqual (true, message.Item2);
 			Assert.AreEqual ("fatal", message.Item3);
 			Assert.AreEqual (2, reporter.Messages.Count);
+
+			LoggingService.ReportCrashes = oldValue;
 		}
 
 		class LoggingServiceTestsLogger : ILogger
