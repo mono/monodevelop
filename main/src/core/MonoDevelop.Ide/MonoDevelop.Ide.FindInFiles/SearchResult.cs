@@ -48,36 +48,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		}
 
 		#region Cached data
-		public int LineNumber {
-			get;
-			set;
-		}
-
-		public string Markup {
-			get; 
-			set;
-		}
-
-		public uint StartIndex {
-			get;
-			set;
-		}
-
-		public uint EndIndex {
-			get;
-			set;
-		}
-
-		public Xwt.Drawing.Image FileIcon {
-			get;
-			set;
-		}
-
-		public Xwt.Drawing.Image ProjectIcon {
-			get;
-			set;
-		}
-
 		private List<Project> projects;
 		public List<Project> Projects {
 			get {
@@ -88,7 +58,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		#endregion
-
 
 		protected SearchResult (int offset, int length)
 		{
@@ -112,7 +81,5 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			return style.SearchResult;
 		}
-
-		internal string PathMarkup, FileNameMarkup, ProjectNameMarkup, TextMarkup;
 	}
 }
