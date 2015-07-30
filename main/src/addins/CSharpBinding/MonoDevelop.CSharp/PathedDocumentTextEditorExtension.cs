@@ -663,6 +663,8 @@ namespace MonoDevelop.CSharp
 				SyntaxNode token;
 				try {
 					root = await unit.GetRootAsync(cancellationToken).ConfigureAwait(false);
+					if (root.Span.Length <= caretOffset)
+						return;
 					token = root.FindNode(TextSpan.FromBounds(caretOffset, caretOffset));
 				} catch (Exception ex ) {
 					Console.WriteLine (ex);

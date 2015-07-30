@@ -130,16 +130,16 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		internal static Microsoft.CodeAnalysis.Workspace Load (WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground = true)
+		internal static async Task<Microsoft.CodeAnalysis.Workspace> Load (WorkspaceItem item, ProgressMonitor progressMonitor, bool loadInBackground = true)
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var workspace = new MonoDevelopWorkspace ();
 				if (!(item is MonoDevelop.Projects.Workspace))
 					workspaces.Add (workspace);
 				workspace.ShowStatusIcon ();
-				InternalLoad (item, progressMonitor, workspace, loadInBackground).ContinueWith (t => {
+				await InternalLoad (item, progressMonitor, workspace, loadInBackground).ContinueWith (t => {
 					workspace.HideStatusIcon ();
-				});
+				}).ConfigureAwait (false);
 				return workspace;
 			}
 		}
@@ -169,6 +169,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 					};
+
 					if (loadInBackground) {
 						return Task.Run (loadAction);
 					} else {
@@ -227,8 +228,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("fileName");
 			fileName = FileService.GetFullPath (fileName);
 			var projectId = ((MonoDevelopWorkspace)workspace).GetProjectId (project);
-			if (projectId != null)
+			if (projectId != null) {
 				return ((MonoDevelopWorkspace)workspace).GetDocumentId (projectId, fileName);
+			} else {
+				LoggingService.LogWarning ("Warning can't find " + fileName + " in project " + project.Name + "("+ projectId +")");
+			}
 			return null;
 		}
 
