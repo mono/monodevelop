@@ -59,6 +59,8 @@ namespace MonoDevelop.CSharp
 			if (ast == null)
 				return await fallback.GetMatchingBracesAsync (editor, context, offset, cancellationToken);
 			var root = await ast.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			if (offset < 0 || root.Span.Length <= offset)
+				return null;
 			var token = root.FindToken (offset);
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
