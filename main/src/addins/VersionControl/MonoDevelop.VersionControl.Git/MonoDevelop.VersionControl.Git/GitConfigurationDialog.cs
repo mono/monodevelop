@@ -107,6 +107,9 @@ namespace MonoDevelop.VersionControl.Git
 			listTags.Model = storeTags;
 			listTags.HeadersVisible = true;
 
+			SemanticModelAttribute tagsModelAttr = new SemanticModelAttribute ("storeTags__Name");
+			TypeDescriptor.AddAttributes (storeTags, tagsModelAttr);
+
 			listTags.AppendColumn (GettextCatalog.GetString ("Tag"), new CellRendererText (), "text", 0);
 
 			listTags.Selection.Changed += delegate {

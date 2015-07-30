@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -33,6 +34,8 @@ namespace UserInterfaceTests
 	public class GitRepositoryConfigurationTests : GitBase
 	{
 		string gtkSharpUrl = "git@github.com:mono/gtk-sharp.git";
+
+		#region Branch Tab
 
 		[Test]
 		public void CheckBranchButtonsSensitivity ()
@@ -54,28 +57,6 @@ namespace UserInterfaceTests
 
 			CloseRepositoryConfiguration ();
 		}
-
-		[Test]
-		public void CheckRemoteButtonsSensitivity ()
-		{
-			TestClone (gtkSharpUrl);
-			Ide.WaitForSolutionCheckedOut ();
-
-			OpenRepositoryConfiguration ("Remote Sources");
-
-			TakeScreenShot ("Asserting-Edit-Remove-Track--Fetch-Button-Disabled");
-			AssertRemotesButtonSensitivity (false, false, false, false);
-			SelectRemote ("origin");
-			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
-			AssertRemotesButtonSensitivity (true, true, false, true);
-			SelectRemoteBranch ("origin", "master");
-			TakeScreenShot ("Asserting-Edit-Switch-Button-Track-Enabled");
-			AssertRemotesButtonSensitivity (true, true, true, true);
-
-			CloseRepositoryConfiguration ();
-		}
-
-		#region Branch Tab
 
 		[Test]
 		public void CreateNewBranchTest ()
@@ -130,7 +111,72 @@ namespace UserInterfaceTests
 
 		#endregion
 
+		#region Tag
+
+		[Test]
+		public void CheckTagButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+
+			TakeScreenShot ("Asserting-Push-Delete-Button-Disabled");
+			AssertTagsButtonSensitivity (false, false);
+			SelectTag ("1.0.10");
+			TakeScreenShot ("Asserting-Push-Delete-Button-Enabled");
+			AssertTagsButtonSensitivity (true, true);
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test, Category ("Tag")]
+		public void AddTag ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+
+			AddNewTag ("bumped", "bumped tag", "build: Bump mono dependency to 3.2.8");
+
+			CloseRepositoryConfiguration ();
+		}
+
+		[Test]
+		public void DeleteTag ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Tags");
+			DeleteTag ("1.0.10");
+			CloseRepositoryConfiguration ();
+		}
+
+		#endregion
+
 		#region Remotes Tab
+
+		[Test]
+		public void CheckRemoteButtonsSensitivity ()
+		{
+			TestClone (gtkSharpUrl);
+			Ide.WaitForSolutionCheckedOut ();
+
+			OpenRepositoryConfiguration ("Remote Sources");
+
+			TakeScreenShot ("Asserting-Edit-Remove-Track--Fetch-Button-Disabled");
+			AssertRemotesButtonSensitivity (false, false, false, false);
+			SelectRemote ("origin");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Enabled");
+			AssertRemotesButtonSensitivity (true, true, false, true);
+			SelectRemoteBranch ("origin", "master");
+			TakeScreenShot ("Asserting-Edit-Switch-Button-Track-Enabled");
+			AssertRemotesButtonSensitivity (true, true, true, true);
+
+			CloseRepositoryConfiguration ();
+		}
 
 		[Test]
 		public void SelectRemoteTest ()
