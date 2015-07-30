@@ -398,11 +398,23 @@
     <EmbeddedResource Include="icons\breakpoint-16%402x.png">
       <LogicalName>breakpoint-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark.png">
+      <LogicalName>breakpoint-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark%402x.png">
+      <LogicalName>breakpoint-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disable-all-16.png">
       <LogicalName>breakpoint-disable-all-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disable-all-16%402x.png">
       <LogicalName>breakpoint-disable-all-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-disable-all-16~dark.png">
+      <LogicalName>breakpoint-disable-all-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-disable-all-16~dark%402x.png">
+      <LogicalName>breakpoint-disable-all-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-disabled-16.png">
       <LogicalName>breakpoint-disabled-16.png</LogicalName>
@@ -410,11 +422,23 @@
     <EmbeddedResource Include="icons\breakpoint-disabled-16%402x.png">
       <LogicalName>breakpoint-disabled-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-disabled-16~dark.png">
+      <LogicalName>breakpoint-disabled-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-disabled-16~dark%402x.png">
+      <LogicalName>breakpoint-disabled-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-invalid-16.png">
       <LogicalName>breakpoint-invalid-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-invalid-16%402x.png">
       <LogicalName>breakpoint-invalid-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-invalid-16~dark.png">
+      <LogicalName>breakpoint-invalid-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-invalid-16~dark%402x.png">
+      <LogicalName>breakpoint-invalid-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-new-16.png">
       <LogicalName>breakpoint-new-16.png</LogicalName>
@@ -422,11 +446,23 @@
     <EmbeddedResource Include="icons\breakpoint-new-16%402x.png">
       <LogicalName>breakpoint-new-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-new-16~dark.png">
+      <LogicalName>breakpoint-new-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-new-16~dark%402x.png">
+      <LogicalName>breakpoint-new-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-on-off-16.png">
       <LogicalName>breakpoint-on-off-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-on-off-16%402x.png">
       <LogicalName>breakpoint-on-off-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-on-off-16~dark.png">
+      <LogicalName>breakpoint-on-off-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-on-off-16~dark%402x.png">
+      <LogicalName>breakpoint-on-off-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\build-project-16.png">
       <LogicalName>build-project-16.png</LogicalName>
@@ -542,11 +578,23 @@
     <EmbeddedResource Include="icons\file-class-32%402x.png">
       <LogicalName>file-class-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~dark.png">
+      <LogicalName>file-class-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-class-32~dark%402x.png">
+      <LogicalName>file-class-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-enumeration-32.png">
       <LogicalName>file-enumeration-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-enumeration-32%402x.png">
       <LogicalName>file-enumeration-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enumeration-32~dark.png">
+      <LogicalName>file-enumeration-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-enumeration-32~dark%402x.png">
+      <LogicalName>file-enumeration-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-interface-32.png">
       <LogicalName>file-interface-32.png</LogicalName>
@@ -554,11 +602,23 @@
     <EmbeddedResource Include="icons\file-interface-32%402x.png">
       <LogicalName>file-interface-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~dark.png">
+      <LogicalName>file-interface-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-interface-32~dark%402x.png">
+      <LogicalName>file-interface-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-struct-32.png">
       <LogicalName>file-struct-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-struct-32%402x.png">
       <LogicalName>file-struct-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~dark.png">
+      <LogicalName>file-struct-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-struct-32~dark%402x.png">
+      <LogicalName>file-struct-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-16.png">
       <LogicalName>file-xml-16.png</LogicalName>
@@ -566,11 +626,23 @@
     <EmbeddedResource Include="icons\file-xml-16%402x.png">
       <LogicalName>file-xml-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark.png">
+      <LogicalName>file-xml-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark%402x.png">
+      <LogicalName>file-xml-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32.png">
       <LogicalName>file-xml-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32%402x.png">
       <LogicalName>file-xml-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~dark.png">
+      <LogicalName>file-xml-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-32~dark%402x.png">
+      <LogicalName>file-xml-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-16.png">
       <LogicalName>file-script-16.png</LogicalName>
@@ -578,11 +650,23 @@
     <EmbeddedResource Include="icons\file-script-16%402x.png">
       <LogicalName>file-script-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~dark.png">
+      <LogicalName>file-script-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-16~dark%402x.png">
+      <LogicalName>file-script-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-32.png">
       <LogicalName>file-script-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-script-32%402x.png">
       <LogicalName>file-script-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~dark.png">
+      <LogicalName>file-script-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-script-32~dark%402x.png">
+      <LogicalName>file-script-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
@@ -1292,11 +1376,23 @@
     <EmbeddedResource Include="icons\file-resource-16%402x.png">
       <LogicalName>file-resource-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~dark.png">
+      <LogicalName>file-resource-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-16~dark%402x.png">
+      <LogicalName>file-resource-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-32.png">
       <LogicalName>file-resource-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-32%402x.png">
       <LogicalName>file-resource-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~dark.png">
+      <LogicalName>file-resource-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-resource-32~dark%402x.png">
+      <LogicalName>file-resource-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-32.png">
       <LogicalName>file-text-32.png</LogicalName>
@@ -1304,11 +1400,23 @@
     <EmbeddedResource Include="icons\file-text-32%402x.png">
       <LogicalName>file-text-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~dark.png">
+      <LogicalName>file-text-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-32~dark%402x.png">
+      <LogicalName>file-text-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-16.png">
       <LogicalName>file-text-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-text-16%402x.png">
       <LogicalName>file-text-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~dark.png">
+      <LogicalName>file-text-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-text-16~dark%402x.png">
+      <LogicalName>file-text-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\toggle-bookmark-16.png">
       <LogicalName>toggle-bookmark-16.png</LogicalName>
@@ -1322,11 +1430,23 @@
     <EmbeddedResource Include="icons\file-generic-16%402x.png">
       <LogicalName>file-generic-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~dark.png">
+      <LogicalName>file-generic-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-16~dark%402x.png">
+      <LogicalName>file-generic-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-generic-32.png">
       <LogicalName>file-generic-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-generic-32%402x.png">
       <LogicalName>file-generic-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~dark.png">
+      <LogicalName>file-generic-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-generic-32~dark%402x.png">
+      <LogicalName>file-generic-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tabbar-prev-12.png">
       <LogicalName>tabbar-prev-12.png</LogicalName>
@@ -1643,11 +1763,23 @@
     <EmbeddedResource Include="icons\file-source-16%402x.png">
       <LogicalName>file-source-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~dark.png">
+      <LogicalName>file-source-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-16~dark%402x.png">
+      <LogicalName>file-source-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-source-32.png">
       <LogicalName>file-source-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-source-32%402x.png">
       <LogicalName>file-source-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~dark.png">
+      <LogicalName>file-source-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-source-32~dark%402x.png">
+      <LogicalName>file-source-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-16.png">
       <LogicalName>file-header-16.png</LogicalName>
@@ -1655,11 +1787,23 @@
     <EmbeddedResource Include="icons\file-header-16%402x.png">
       <LogicalName>file-header-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~dark.png">
+      <LogicalName>file-header-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-16~dark%402x.png">
+      <LogicalName>file-header-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-32.png">
       <LogicalName>file-header-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-header-32%402x.png">
       <LogicalName>file-header-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~dark.png">
+      <LogicalName>file-header-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-header-32~dark%402x.png">
+      <LogicalName>file-header-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-unit-test-32.png">
       <LogicalName>file-unit-test-32.png</LogicalName>
@@ -1667,11 +1811,23 @@
     <EmbeddedResource Include="icons\file-unit-test-32%402x.png">
       <LogicalName>file-unit-test-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~dark.png">
+      <LogicalName>file-unit-test-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-unit-test-32~dark%402x.png">
+      <LogicalName>file-unit-test-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-16.png">
       <LogicalName>file-web-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-16%402x.png">
       <LogicalName>file-web-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~dark.png">
+      <LogicalName>file-web-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-16~dark%402x.png">
+      <LogicalName>file-web-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-web-32.png">
       <LogicalName>file-web-32.png</LogicalName>
@@ -1679,11 +1835,23 @@
     <EmbeddedResource Include="icons\file-web-32%402x.png">
       <LogicalName>file-web-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~dark.png">
+      <LogicalName>file-web-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-web-32~dark%402x.png">
+      <LogicalName>file-web-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-gtk-32.png">
       <LogicalName>file-gtk-32.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-gtk-32%402x.png">
       <LogicalName>file-gtk-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~dark.png">
+      <LogicalName>file-gtk-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-gtk-32~dark%402x.png">
+      <LogicalName>file-gtk-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-component-mac-16.png">
       <LogicalName>folder-component-mac-16.png</LogicalName>
@@ -2930,11 +3098,23 @@
     <EmbeddedResource Include="icons\catchpoint-16%402x.png">
       <LogicalName>catchpoint-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\catchpoint-16~dark.png">
+      <LogicalName>catchpoint-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\catchpoint-16~dark%402x.png">
+      <LogicalName>catchpoint-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\catchpoint-disabled-16.png">
       <LogicalName>catchpoint-disabled-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\catchpoint-disabled-16%402x.png">
       <LogicalName>catchpoint-disabled-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\catchpoint-disabled-16~dark.png">
+      <LogicalName>catchpoint-disabled-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\catchpoint-disabled-16~dark%402x.png">
+      <LogicalName>catchpoint-disabled-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-status-information-16.png">
       <LogicalName>project-status-information-16.png</LogicalName>
