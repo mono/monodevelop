@@ -374,7 +374,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null;
+			var activeDoc = IdeApp.Workbench.ActiveDocument;
+			bool editorCanBeFocused = activeDoc != null && activeDoc.Editor != null && activeDoc.Editor.Parent != null && !activeDoc.Editor.Parent.TextArea.HasFocus;
+			info.Enabled = activeDoc != null && activeDoc.Editor != null;
+			info.Bypass = !editorCanBeFocused;
 		}
 
 		protected override void Run ()
