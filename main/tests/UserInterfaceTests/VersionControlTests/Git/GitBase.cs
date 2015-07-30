@@ -31,6 +31,8 @@ namespace UserInterfaceTests
 {
 	public abstract class GitBase : VCSBase
 	{
+		static string notString = "not";
+
 		#region Git Repository Configuration
 
 		#region Remotes
@@ -38,6 +40,15 @@ namespace UserInterfaceTests
 		Func<AppQuery, AppQuery> remoteTreeName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Name");
 		Func<AppQuery, AppQuery> remoteTreeUrl = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__Url");
 		Func<AppQuery, AppQuery> remoteTreeFullName = c => c.TreeView ().Marked ("treeRemotes").Model ("storeRemotes__FullName");
+
+		protected void AssertRemotesButtonSensitivity (bool editSensitivity, bool removeSensitivity, bool trackSensitivity, bool fetchSensitivity)
+		{
+			AssertButtonSensitivity ("Add", true);
+			AssertButtonSensitivity ("Edit", editSensitivity);
+			AssertButtonSensitivity ("Remove", removeSensitivity);
+			AssertButtonSensitivity ("Track in Local Branch", trackSensitivity);
+			AssertButtonSensitivity ("Fetch", fetchSensitivity);
+		}
 
 		protected void SelectRemote (string remoteName, string remoteUrl = null)
 		{
@@ -67,10 +78,15 @@ namespace UserInterfaceTests
 			Assert.IsTrue (Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonFetch")));
 			TakeScreenShot ("Fetch-Remote");
 
+			SelectRemoteBranch (remoteName);
+		}
+
+		protected void SelectRemoteBranch (string remoteName, string remoteBranchName = null)
+		{
 			Session.ClickElement (c => remoteTreeName (c).Contains (remoteName));
-			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/")));
-			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/").Index (0)));
-			TakeScreenShot ("First-Remote-Branch-Selected");
+			Assert.IsNotEmpty (Session.Query (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName)));
+			Assert.IsTrue (Session.SelectElement (c => remoteTreeFullName (c).Contains (remoteName+"/"+remoteBranchName).Index (0)));
+			TakeScreenShot (string.Format ("{0}-Remote-Branch-Selected", remoteBranchName ?? "First"));
 		}
 
 		void AddEditRemote (string buttonName, string newRemoteName, string remoteUrl, string remotePushUrl)
@@ -110,6 +126,14 @@ namespace UserInterfaceTests
 		#region Branches
 
 		Func<AppQuery, AppQuery> branchDisplayName = c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName");
+
+		protected void AssertBranchesButtonSensitivity (bool editSensitivity, bool deleteSensitivity, bool switchSensitivity)
+		{
+			AssertButtonSensitivity ("New", true);
+			AssertButtonSensitivity ("Edit", editSensitivity);
+			AssertButtonSensitivity ("Delete", deleteSensitivity);
+			AssertButtonSensitivity ("Switch to Branch", switchSensitivity);
+		}
 
 		protected void CreateNewBranch (string newBranchName)
 		{
@@ -198,6 +222,12 @@ namespace UserInterfaceTests
 		{
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
+		}
+
+		protected void AssertButtonSensitivity (string buttonLabel, bool sensitivity)
+		{
+			Assert.IsNotEmpty (Session.Query (c => c.Button ().Text (buttonLabel).Sensitivity (sensitivity)),
+				string.Format ("{0} button is {1} enabled", buttonLabel, sensitivity ? notString : string.Empty));
 		}
 
 		#endregion

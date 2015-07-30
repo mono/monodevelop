@@ -72,6 +72,7 @@ namespace MonoDevelop.VersionControl.Git
 				string currentBranch = repo.GetCurrentBranch ();
 				var b = (Branch) storeBranches.GetValue (it, 0);
 				buttonRemoveBranch.Sensitive = b.FriendlyName != currentBranch;
+				buttonSetDefaultBranch.Sensitive = !b.IsCurrentRepositoryHead;
 			};
 			buttonRemoveBranch.Sensitive = buttonEditBranch.Sensitive = buttonSetDefaultBranch.Sensitive = false;
 
