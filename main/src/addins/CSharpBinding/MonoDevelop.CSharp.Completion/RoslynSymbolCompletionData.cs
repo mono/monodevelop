@@ -412,14 +412,29 @@ namespace MonoDevelop.CSharp.Completion
 		public override int CompareTo (object obj)
 		{
 			var anonymousMethodCompletionData = obj as AnonymousMethodCompletionData;
-			if (anonymousMethodCompletionData == null)
-				return 1;
+			if (anonymousMethodCompletionData != null)
+				return -1;
 			var objectCreationData = obj as ObjectCreationCompletionData;
-			if (objectCreationData == null)
-				return 1;
-			
-
-			return base.CompareTo (obj);
+			if (objectCreationData != null)
+				return -1;
+			int ret = base.CompareTo (obj);
+			if (ret == 0) {
+				var sym = Symbol;
+				var other = obj as RoslynSymbolCompletionData;
+				if (other == null)
+					return 0;
+				if (sym.Kind == other.Symbol.Kind) {
+					var m1 = sym as IMethodSymbol;
+					var m2 = other.Symbol as IMethodSymbol;
+					if (m1 != null)
+						return m1.Parameters.Length.CompareTo (m2.Parameters.Length);
+					var p1 = sym as IPropertySymbol;
+					var p2 = other.Symbol as IPropertySymbol;
+					if (p1 != null)
+						return p1.Parameters.Length.CompareTo (p2.Parameters.Length);
+				}
+			}
+			return ret;
 		}
 
 

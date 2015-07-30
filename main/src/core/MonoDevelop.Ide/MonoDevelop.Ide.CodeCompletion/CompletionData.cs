@@ -148,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				var ca = a as CompletionData;
 				var cb = b as CompletionData;
 				if (ca != null && cb != null && !ca.Icon.IsNull && !cb.Icon.IsNull) {
-					return cb.Icon.Name.CompareTo (ca.Icon.Name);
+					return string.Compare(cb.Icon.Name, ca.Icon.Name, StringComparison.Ordinal);
 				}
 			}
 			return result;

@@ -330,7 +330,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				DocumentId result;
 				if (!documentIdMap.TryGetValue (name, out result)) {
-					LoggingService.LogWarning ("Can't find document id " + name + " in project " + projectId);
 					return null;
 				}
 				return result;
