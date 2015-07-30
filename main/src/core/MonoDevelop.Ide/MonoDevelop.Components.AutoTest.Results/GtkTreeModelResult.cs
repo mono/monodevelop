@@ -212,6 +212,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool Select ()
 		{
+			base.Select ();
+
 			if (!resultIter.HasValue) {
 				return false;
 			}
