@@ -891,6 +891,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					OnTransferProgress = (tp) => OnTransferProgress (tp, monitor, ref transferProgress),
 					OnCheckoutProgress = (path, completedSteps, totalSteps) => OnCheckoutProgress (completedSteps, totalSteps, monitor, ref checkoutProgress),
+					RecurseSubmodules = true,
 				});
 			});
 
