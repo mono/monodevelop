@@ -180,11 +180,13 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
+		SolutionData solutionData;
 		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
 		{
 			var projects = new ConcurrentBag<ProjectInfo> ();
 			var mdProjects = solution.GetAllProjects ();
 			projectionList.Clear ();
+			solutionData = new SolutionData ();
 
 			List<Task> allTasks = new List<Task> ();
 			foreach (var proj in mdProjects) {
@@ -380,7 +382,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var projectId = GetOrCreateProjectId (p);
 			var projectData = GetOrCreateProjectData (projectId);
-
 			return Task.Run (async () => {
 				var references = await CreateMetadataReferences (p, projectId, token).ConfigureAwait (false);
 				var config = IdeApp.Workspace != null ? p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
@@ -421,17 +422,23 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		}
 
-		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
-
-		static DocumentInfo CreateDocumentInfo (string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
+		internal class SolutionData
 		{
-			var sourceCodeKind = f.FilePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
+			public ConcurrentDictionary<string, TextLoader> Files = new ConcurrentDictionary<string, TextLoader> (); 
+		}
+
+		internal static Func<SolutionData, string, TextLoader> CreateTextLoader = (data, fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
+
+		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
+		{
+			var filePath = f.FilePath;
+			var sourceCodeKind = filePath.Extension == ".sketchcs" ? SourceCodeKind.Interactive : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
-				id.GetOrCreateDocumentId (f.FilePath),
+				id.GetOrCreateDocumentId (filePath),
 				f.FilePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				sourceCodeKind,
-				CreateTextLoader (f.Name),
+				CreateTextLoader (data, f.Name),
 				f.Name,
 				false
 			);
@@ -461,7 +468,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (p.Name, projectData, f);
+					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
 					continue;
 				}
 				var mimeType = DesktopService.GetMimeTypeForUri (f.FilePath);
@@ -902,7 +909,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (!TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					continue;
 				var projectId = GetProjectId (project);
-				var newDocument = CreateDocumentInfo(project.Name, GetProjectData(projectId), projectFile);
+				var newDocument = CreateDocumentInfo(solutionData, project.Name, GetProjectData(projectId), projectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
@@ -948,7 +955,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					data.RemoveDocument (fargs.OldName);
 				}
 
-				var newDocument = CreateDocumentInfo (project.Name, GetProjectData (projectId), projectFile);
+				var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
 				OnDocumentAdded (newDocument);
 			}
 		}
