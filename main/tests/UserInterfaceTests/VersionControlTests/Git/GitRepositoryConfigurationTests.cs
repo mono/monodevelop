@@ -130,7 +130,7 @@ namespace UserInterfaceTests
 			CloseRepositoryConfiguration ();
 		}
 
-		[Test, Category ("Tag")]
+		[Test]
 		public void AddTag ()
 		{
 			TestClone (gtkSharpUrl);
@@ -139,6 +139,8 @@ namespace UserInterfaceTests
 			OpenRepositoryConfiguration ("Tags");
 
 			AddNewTag ("bumped", "bumped tag", "build: Bump mono dependency to 3.2.8");
+			SelectTag ("bumped");
+			TakeScreenShot ("New-Tag-Selected");
 
 			CloseRepositoryConfiguration ();
 		}

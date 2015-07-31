@@ -173,6 +173,7 @@ namespace UserInterfaceTests
 
 			Session.ClickElement (c => c.Window ().Marked ("Select a revision").Children ().Button ().Text ("Ok"));
 			Session.WaitForElement (c => IdeQuery.GitConfigurationDialog (c));
+			TakeScreenShot ("Ok-Clicked");
 		}
 
 		#endregion
@@ -275,6 +276,7 @@ namespace UserInterfaceTests
 		protected void CloseRepositoryConfiguration ()
 		{
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
+			TakeScreenShot ("Git-Repository-Configuration-Closed");
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
 		}
 

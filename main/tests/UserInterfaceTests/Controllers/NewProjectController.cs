@@ -82,9 +82,13 @@ namespace UserInterfaceTests
 			return Session.ClickElement (c => c.Button ().Marked ("cancelButton"));
 		}
 
-		public bool SetProjectName (string projectName)
+		public bool SetProjectName (string projectName, bool addToExistingSolution)
 		{
-			return Session.EnterText (c => c.Textfield ().Marked ("projectNameTextBox"), projectName);
+			Func<AppQuery, AppQuery> projectNameTextBox = c => c.Textfield ().Marked ("projectNameTextBox");
+			if (addToExistingSolution) {
+				return Session.Query (c => projectNameTextBox (c).Sensitivity (false)).Length > 0;
+			}
+			return Session.EnterText (c => projectNameTextBox (c), projectName);
 		}
 
 		public bool SetSolutionName (string solutionName, bool addToExistingSolution)
