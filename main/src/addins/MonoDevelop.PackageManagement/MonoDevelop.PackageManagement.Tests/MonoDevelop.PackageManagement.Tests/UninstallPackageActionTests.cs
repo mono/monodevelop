@@ -261,7 +261,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			action.Execute ();
 
-			Assert.That (messagesLogged, Contains.Item ("Test Package contains PowerShell scripts which will not be run."));
+			Assert.That (messagesLogged, Contains.Item ("WARNING: Test Package contains PowerShell scripts which will not be run."));
 		}
 
 		[Test]

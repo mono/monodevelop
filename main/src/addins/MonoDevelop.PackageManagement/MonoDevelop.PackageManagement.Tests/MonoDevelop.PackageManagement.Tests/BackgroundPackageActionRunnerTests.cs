@@ -300,7 +300,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Run ();
 
-			progressMonitor.AssertMessageIsLogged ("Test Package contains PowerShell scripts which will not be run.");
+			progressMonitor.AssertMessageIsLogged ("WARNING: Test Package contains PowerShell scripts which will not be run.");
 		}
 
 		[Test]
