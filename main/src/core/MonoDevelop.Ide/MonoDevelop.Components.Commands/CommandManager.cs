@@ -345,6 +345,16 @@ namespace MonoDevelop.Components.Commands
 		[GLib.ConnectBefore]
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
+			// Check if the focused widget wants to handle this key
+			var focusedWidget = IdeApp.Workbench.RootWindow.Focus;
+			if (focusedWidget != null) {
+				IKeyHandler keyHandler = focusedWidget as IKeyHandler;
+				if (keyHandler != null && keyHandler.WillHandleKey (e.Event.Key, e.Event.State)) {
+					e.RetVal = false;
+					return;
+				}
+			}
+
 			e.RetVal = ProcessKeyEvent (e.Event);
 		}
 
