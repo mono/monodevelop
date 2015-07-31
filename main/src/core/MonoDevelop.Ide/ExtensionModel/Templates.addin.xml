@@ -94,6 +94,11 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+	<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform">
+			<Category id="library" name="Library">
+				<Category id="general" name="General" />
+			</Category>
+		</Category>
 	<Category id="other" name="Other" icon="md-platform-other">
 		<Category id="net" name=".NET">
 			<Category id="general" name="General" mappedCategories="C#" />
