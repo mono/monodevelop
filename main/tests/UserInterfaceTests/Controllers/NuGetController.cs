@@ -25,21 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Components.AutoTest;
-using UserInterfaceTests;
 using MonoDevelop.Components.Commands;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
 {
-	public class NuGetPackageOptions
-	{
-		public string PackageName { get; set;}
-
-		public string Version { get; set;}
-
-		public bool IsPreRelease { get; set;}
-	}
-
 	public class NuGetController
 	{
 		static AutoTestClientSession Session {
@@ -50,7 +40,7 @@ namespace UserInterfaceTests
 
 		bool isUpdate;
 
-		readonly Func<AppQuery,AppQuery> nugetWindow;
+		static readonly Func<AppQuery,AppQuery> nugetWindow = c => c.Window ().Marked ("Add Packages");
 		readonly Func<AppQuery,AppQuery> addPackageButton;
 		readonly Func<AppQuery,AppQuery> updatePackageButton;
 		readonly Func<AppQuery,AppQuery> resultList;
@@ -69,27 +59,28 @@ namespace UserInterfaceTests
 		public static void UpdateAllNuGetPackages (Action<string> takeScreenshot = null)
 		{
 			Session.ExecuteCommand ("MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution");
-			Ide.WaitForStatusMessage (new [] {
-				"Packages are up to date.",
-				"No updates found but warnings were reported.",
-				"Packages successfully updated.",
-				"Packages updated with warnings."},
-				timeoutInSecs: 120, pollStepInSecs: 5);
-			takeScreenshot ("All-NuGet-Packages-Updated");
+			WaitForNuGet.UpdateSuccess (string.Empty);
+			if (takeScreenshot != null)
+				takeScreenshot ("All-NuGet-Packages-Updated");
 		}
 
-		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate)
+		static void AddUpdatePackage (NuGetPackageOptions packageOptions, Action<string> takeScreenshot, bool isUpdate = false)
 		{
+			takeScreenshot = takeScreenshot ?? delegate {};
 			var nuget = new NuGetController (takeScreenshot, isUpdate);
 			nuget.Open ();
 			nuget.EnterSearchText (packageOptions.PackageName, packageOptions.Version, packageOptions.IsPreRelease);
 			nuget.SelectResultByPackageName (packageOptions.PackageName, packageOptions.Version);
 			nuget.ClickAdd ();
-			Ide.WaitForStatusMessage (new[] {
-				string.Format ("{0} successfully {1}.", packageOptions.PackageName, isUpdate ? "updated": "added")
-			});
-			if (takeScreenshot != null)
-				takeScreenshot ("NuGet-Operation-Finished");
+			Session.WaitForNoElement (nugetWindow);
+			takeScreenshot ("NuGet-Update-Is-"+isUpdate);
+			try {
+				WaitForNuGet.Success (packageOptions.PackageName, isUpdate ? NuGetOperations.Update : NuGetOperations.Add);
+			} catch (TimeoutException e) {
+				takeScreenshot ("Wait-For-NuGet-Operation-Failed");
+				throw;
+			}
+			takeScreenshot ("NuGet-Operation-Finished");
 		}
 
 		public NuGetController (Action<string> takeScreenshot = null, bool isUpdate = false)
@@ -97,7 +88,6 @@ namespace UserInterfaceTests
 			this.takeScreenshot = takeScreenshot ?? delegate { };
 			this.isUpdate = isUpdate;
 
-			nugetWindow = c => c.Window ().Marked ("Add Packages");
 			addPackageButton = c => nugetWindow (c).Children ().Button ().Text ("Add Package");
 			updatePackageButton = c => nugetWindow (c).Children ().Button ().Text ("Update Package");
 			resultList = c => nugetWindow (c).Children ().TreeView ().Model ();

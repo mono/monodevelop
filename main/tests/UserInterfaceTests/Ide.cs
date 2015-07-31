@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.AutoTest;
 
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {

@@ -34,10 +34,12 @@ namespace UserInterfaceTests
 {
 	[TestFixture]
 	[Category ("Dialog")]
+	[Category ("NuGet")]
 	[Category ("PackagesDialog")]
 	public class NuGetDialogTests : CreateBuildTemplatesTestBase
 	{
 		[Test]
+		[Description ("Add a single NuGet Package")]
 		public void AddPackagesTest ()
 		{
 			CreateProject ();
@@ -45,10 +47,11 @@ namespace UserInterfaceTests
 				PackageName = "CommandLineParser",
 				Version = "2.0.119-alpha",
 				IsPreRelease = true
-			});
+			}, TakeScreenShot);
 		}
 
 		[Test]
+		[Description ("Add a single NuGet Package and check if it's readme.txt opens")]
 		public void TestReadmeTxtOpens ()
 		{
 			CreateProject ();
@@ -56,11 +59,12 @@ namespace UserInterfaceTests
 				PackageName = "RestSharp",
 				Version = "105.0.1",
 				IsPreRelease = true
-			});
+			}, TakeScreenShot);
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
 		}
 
 		[Test]
+		[Description ("Add a single NuGet Package. Check if readme.txt opens even when updating")]
 		public void TestReadmeTxtUpgradeOpens ()
 		{
 			CreateProject ();
@@ -72,6 +76,7 @@ namespace UserInterfaceTests
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
 			Session.ExecuteCommand (FileCommands.CloseFile);
 			Session.WaitForElement (IdeQuery.TextArea);
+			TakeScreenShot ("About-To-Update-Package");
 			NuGetController.UpdatePackage (new NuGetPackageOptions {
 				PackageName = "RestSharp",
 				Version = "105.1.0",
@@ -80,7 +85,8 @@ namespace UserInterfaceTests
 			Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.Ide.Gui.DefaultWorkbench").Property ("TabControl.CurrentTab.Text", "readme.txt"));
 		}
 
-		[Test, Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
+		[Test]
+		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
 		public void TestLocalCopyPreservedUpdate ()
 		{
 			var templateOptions = new TemplateSelectionOptions {

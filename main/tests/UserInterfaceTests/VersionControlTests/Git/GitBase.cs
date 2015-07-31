@@ -172,6 +172,11 @@ namespace UserInterfaceTests
 			TakeScreenShot ("Commit-Message-Selected");
 
 			Session.ClickElement (c => c.Window ().Marked ("Select a revision").Children ().Button ().Text ("Ok"));
+			try {
+				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
+				TakeScreenShot ("Git-User-Not-Configured");
+				EnterGitUserConfig ("John Doe", "john.doe@example.com");
+			} catch (TimeoutException e) { }
 			Session.WaitForElement (c => IdeQuery.GitConfigurationDialog (c));
 			TakeScreenShot ("Ok-Clicked");
 		}
@@ -225,13 +230,6 @@ namespace UserInterfaceTests
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
-
-			try {
-				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
-				TakeScreenShot ("Git-User-Not-Configured");
-				EnterGitUserConfig ("John Doe", "john.doe@example.com");
-			} catch (TimeoutException e) { }
-
 			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}
