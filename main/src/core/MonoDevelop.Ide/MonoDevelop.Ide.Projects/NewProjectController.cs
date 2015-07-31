@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Projects
 		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
 		const string LastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
+		const string LastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
 		const string SelectedLanguagePropertyName = "Dialogs.NewProjectDialog.SelectedLanguage";
 
 		List<TemplateCategory> templateCategories;
@@ -93,6 +94,15 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				PropertyService.Set (LastSelectedCategoryPropertyName, value);
+			}
+		}
+
+		string DefaultSelectedTemplate {
+			get {
+				return PropertyService.Get<string> (LastSelectedTemplatePropertyName, null);
+			}
+			set {
+				PropertyService.Set (LastSelectedTemplatePropertyName, value);
 			}
 		}
 
@@ -160,6 +170,7 @@ namespace MonoDevelop.Ide.Projects
 			UpdateDefaultCreateProjectDirectorySetting ();
 			PropertyService.Set (SelectedLanguagePropertyName, SelectedLanguage);
 			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
+			DefaultSelectedTemplate = GetDefaultSelectedTemplateId ();
 		}
 
 		string GetSelectedCategoryPath ()
@@ -177,6 +188,14 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			return null;
+		}
+
+		string GetDefaultSelectedTemplateId ()
+		{
+			if (SelectedTemplate != null) {
+				return SelectedTemplate.Id;
+			}
 			return null;
 		}
 
@@ -263,7 +282,13 @@ namespace MonoDevelop.Ide.Projects
 			if (SelectedTemplateId != null) {
 				SelectTemplate (SelectedTemplateId);
 			} else if (DefaultSelectedCategoryPath != null) {
-				SelectFirstTemplateInCategory (DefaultSelectedCategoryPath);
+				if (DefaultSelectedTemplate != null) {
+					SelectTemplateInCategory (DefaultSelectedCategoryPath, template => template.Id == DefaultSelectedTemplate);
+				}
+
+				if (SelectedTemplate == null) {
+					SelectFirstTemplateInCategory (DefaultSelectedCategoryPath);
+				}
 			}
 
 			if (SelectedSecondLevelCategory == null) {
@@ -283,6 +308,11 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectFirstTemplateInCategory (string categoryPath)
 		{
+			SelectTemplateInCategory (categoryPath, template => true);
+		}
+
+		void SelectTemplateInCategory (string categoryPath, Func<SolutionTemplate, bool> isTemplateMatch)
+		{
 			List<string> parts = new TemplateCategoryPath (categoryPath).GetParts ().ToList ();
 			if (parts.Count < 2) {
 				return;
@@ -291,7 +321,7 @@ namespace MonoDevelop.Ide.Projects
 			string topLevelCategoryId = parts [0];
 			string secondLevelCategoryId = parts [1];
 			SelectTemplate (
-				template => true,
+				isTemplateMatch,
 				category => category.Id == topLevelCategoryId,
 				category => category.Id == secondLevelCategoryId);
 		}
