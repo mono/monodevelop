@@ -154,7 +154,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
-		async void HandleActiveConfigurationChanged (object sender, EventArgs e)
+		void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
 			if (currentMonoDevelopSolution == null)
 				return;
@@ -163,16 +163,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			var token = src.Token;
 
 			var service = Services.GetService<IPersistentStorageService>();
+			Task.Run (delegate {
+				try {
+					var si = CreateSolutionInfo (currentMonoDevelopSolution, token);
+					if (si != null)
+						OnSolutionReloaded (si);
+				} catch (OperationCanceledException) {
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (x => x is OperationCanceledException);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while reloading solution.", ex);
+				} finally {
+					HideStatusIcon ();
+				}
+			});
 
-			try {
-				var si = CreateSolutionInfo (currentMonoDevelopSolution, token);
-				if (si != null)
-					OnSolutionReloaded (si);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error while reloading solution.", ex);
-			} finally {
-				HideStatusIcon ();
-			}
 		}
 
 		SolutionInfo CreateSolutionInfo (MonoDevelop.Projects.Solution solution, CancellationToken token)
