@@ -148,7 +148,7 @@ namespace UserInterfaceTests
 		protected virtual void OnEnterProjectDetails (NewProjectController newProject, ProjectDetails projectDetails,
 			GitOptions gitOptions = null, object miscOptions = null)
 		{
-			if (!newProject.SetProjectName (projectDetails.ProjectName)) {
+			if (!newProject.SetProjectName (projectDetails.ProjectName, projectDetails.AddProjectToExistingSolution)) {
 				throw new CreateProjectException (string.Format ("Failed at entering ProjectName as '{0}'", projectDetails.ProjectName));
 			}
 

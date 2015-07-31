@@ -434,9 +434,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				clipItem.PerformSelector (sel);
 
-				var menuBar = (SearchBar)clipItem.Menu.ItemAt (0).View;
-				AttachToolbarEvents (menuBar);
-				menuBar.StringValue = value;
+				foreach (NSMenuItem item in clipItem.Menu.ItemArray ()) {
+					if (item.View is SearchBar) {
+						var menuBar = (SearchBar)item.View;
+						AttachToolbarEvents (menuBar);
+						menuBar.StringValue = value;
+						break;
+					}
+				}
 			}
 		}
 

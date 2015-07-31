@@ -123,6 +123,61 @@ namespace UserInterfaceTests
 
 		#endregion
 
+		#region Tags
+
+		Func<AppQuery, AppQuery> tagTreeName = c => c.TreeView ().Marked ("listTags").Model ("storeTags__Name");
+
+		protected void AssertTagsButtonSensitivity (bool pushSensitivity, bool deleteSensitivity)
+		{
+			AssertButtonSensitivity ("New", true);
+			AssertButtonSensitivity ("Push", pushSensitivity);
+			AssertButtonSensitivity ("Delete", deleteSensitivity);
+		}
+
+		protected void SelectTag (string tagName)
+		{
+			Session.WaitForElement (c => tagTreeName (c).Text (tagName));
+			Assert.IsTrue (Session.SelectElement (c => tagTreeName (c).Text (tagName)), "Failed to select tag: "+tagName);
+			TakeScreenShot (string.Format ("{0}-Tag-Selected", tagName));
+		}
+
+		protected void DeleteTag (string tagName)
+		{
+			SelectTag (tagName);
+			Assert.IsTrue ((Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonRemoveTag"))));
+			Session.WaitForNoElement (c => tagTreeName (c).Text (tagName));
+		}
+
+		protected void AddNewTag (string tagName, string tagMessage = null, string commitMsg = null)
+		{
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog (c).Children ().Button ().Marked ("buttonAddTag"), false);
+			Session.WaitForElement (c => c.Window ().Marked ("Select a revision"));
+
+			Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0), tagName);
+			Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (0).Text (tagName));
+			TakeScreenShot ("Tag-Name-Entered");
+
+			if (!string.IsNullOrEmpty (tagMessage)) {
+				Session.EnterText (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1), tagMessage);
+				Session.WaitForElement (c => c.Window ().Marked ("Select a revision").Children ().Textfield ().Index (1).Text (tagMessage));
+				TakeScreenShot ("Tag-Message-Entered");
+			}
+
+			Func<AppQuery, AppQuery> revisionsTreeView = c => c.Window ().Marked ("Select a revision").Children ().TreeView ().Index (0).Model ().Children ();
+			if (!string.IsNullOrEmpty (commitMsg)) {
+				Session.SelectElement (c => revisionsTreeView (c).Text (commitMsg));
+			} else {
+				Session.SelectElement (c => revisionsTreeView (c).Index (0));
+			}
+			TakeScreenShot ("Commit-Message-Selected");
+
+			Session.ClickElement (c => c.Window ().Marked ("Select a revision").Children ().Button ().Text ("Ok"));
+			Session.WaitForElement (c => IdeQuery.GitConfigurationDialog (c));
+			TakeScreenShot ("Ok-Clicked");
+		}
+
+		#endregion
+
 		#region Branches
 
 		Func<AppQuery, AppQuery> branchDisplayName = c => c.TreeView ().Marked ("listBranches").Model ("storeBranches__DisplayName");
@@ -221,6 +276,7 @@ namespace UserInterfaceTests
 		protected void CloseRepositoryConfiguration ()
 		{
 			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonOk"));
+			TakeScreenShot ("Git-Repository-Configuration-Closed");
 			Session.WaitForNoElement (IdeQuery.GitConfigurationDialog);
 		}
 
