@@ -474,6 +474,25 @@ namespace Mono.TextEditor
 			Editor.Document.CommitUpdateAll ();*/
 		}
 
+		internal override bool WillHandleKeypress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			bool reservedKey = false;
+
+			switch (key) {
+			case Gdk.Key.BackSpace:
+			case Gdk.Key.space:
+			case Gdk.Key.Delete:
+			case Gdk.Key.Tab:
+			case Gdk.Key.Escape:
+			case Gdk.Key.Return:
+			case Gdk.Key.KP_Enter:
+				reservedKey = true;
+				break;
+			}
+
+			return reservedKey || base.WillHandleKeypress (key, modifier);
+		}
+
 		ListWindow<string> window;
 
 		void DestroyWindow ()

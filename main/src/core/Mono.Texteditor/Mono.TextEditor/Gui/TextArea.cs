@@ -44,7 +44,7 @@ using Gtk;
 
 namespace Mono.TextEditor
 {
-	public class TextArea : Container, ITextEditorDataProvider
+	public class TextArea : Container, ITextEditorDataProvider, IKeyHandler
 	{
 		TextEditorData textEditorData;
 		
@@ -3244,6 +3244,13 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
+		#region IKeyHandler
+		public bool WillHandleKey (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			return textEditorData.CurrentMode.WillHandleKeypress (key, modifier);;
+		}
+
+		#endregion
 	}
 
 	public interface ITextEditorDataProvider

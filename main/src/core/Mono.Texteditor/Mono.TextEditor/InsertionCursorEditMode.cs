@@ -236,6 +236,21 @@ namespace Mono.TextEditor
 				break;
 			}
 		}
+
+		internal override bool WillHandleKeypress (Gdk.Key key, Gdk.ModifierType modifier)
+		{
+			switch (key) {
+			case Gdk.Key.Up:
+			case Gdk.Key.Down:
+			case Gdk.Key.KP_Enter:
+			case Gdk.Key.Return:
+			case Gdk.Key.Escape:
+				return true;
+
+			default:
+				return false;
+			}
+		}
 		
 		EditMode oldMode;
 		public void StartMode ()
