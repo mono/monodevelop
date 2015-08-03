@@ -57,8 +57,10 @@ namespace MonoDevelop.Ide.Projects
 		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
 		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
-		const string LastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
-		const string LastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
+		const string NewSolutionLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
+		const string NewSolutionLastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.LastSelectedTemplate";
+		const string NewProjectLastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.AddNewProjectLastSelectedCategoryPath";
+		const string NewProjectLastSelectedTemplatePropertyName = "Dialogs.NewProjectDialog.AddNewProjectLastSelectedTemplate";
 		const string SelectedLanguagePropertyName = "Dialogs.NewProjectDialog.SelectedLanguage";
 
 		List<TemplateCategory> templateCategories;
@@ -90,20 +92,54 @@ namespace MonoDevelop.Ide.Projects
 
 		string DefaultSelectedCategoryPath {
 			get {
-				return PropertyService.Get<string> (LastSelectedCategoryPropertyName, null);
+				return GetDefaultPropertyValue (NewProjectLastSelectedCategoryPropertyName,
+					NewSolutionLastSelectedCategoryPropertyName);
 			}
 			set {
-				PropertyService.Set (LastSelectedCategoryPropertyName, value);
+				SetDefaultPropertyValue (NewProjectLastSelectedCategoryPropertyName,
+					NewSolutionLastSelectedCategoryPropertyName,
+					value);
 			}
 		}
 
 		string DefaultSelectedTemplate {
 			get {
-				return PropertyService.Get<string> (LastSelectedTemplatePropertyName, null);
+				return GetDefaultPropertyValue (NewProjectLastSelectedTemplatePropertyName,
+					NewSolutionLastSelectedTemplatePropertyName);
 			}
 			set {
-				PropertyService.Set (LastSelectedTemplatePropertyName, value);
+				SetDefaultPropertyValue (NewProjectLastSelectedTemplatePropertyName,
+					NewSolutionLastSelectedTemplatePropertyName,
+					value);
 			}
+		}
+
+		string GetDefaultPropertyValue (string newProjectPropertyName, string newSolutionPropertyName)
+		{
+			if (!IsNewSolution) {
+				string propertyValue = PropertyService.Get<string> (newProjectPropertyName, null);
+				if (!string.IsNullOrEmpty (propertyValue))
+					return propertyValue;
+			}
+			return PropertyService.Get<string> (newSolutionPropertyName, null);
+		}
+
+		void SetDefaultPropertyValue (string newProjectPropertyName, string newSolutionPropertyName, string value)
+		{
+			SolutionTemplateVisibility visibility = GetSelectedTemplateVisibility ();
+			if (IsNewSolution || visibility != SolutionTemplateVisibility.NewProject) {
+				PropertyService.Set (newSolutionPropertyName, value);
+				PropertyService.Set (newProjectPropertyName, null);
+			} else if (visibility == SolutionTemplateVisibility.NewProject) {
+				PropertyService.Set (newProjectPropertyName, value);
+			}
+		}
+
+		SolutionTemplateVisibility GetSelectedTemplateVisibility ()
+		{
+			if (SelectedTemplate != null)
+				return SelectedTemplate.Visibility;
+			return SolutionTemplateVisibility.All;
 		}
 
 		public bool IsNewSolution {
