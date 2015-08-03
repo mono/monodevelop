@@ -2134,12 +2134,6 @@
     <EmbeddedResource Include="icons\add-16~dark%402x.png">
       <LogicalName>add-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-overlay-9.png">
-      <LogicalName>warning-overlay-9.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\warning-overlay-9%402x.png">
-      <LogicalName>warning-overlay-9@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\warning-8.png">
       <LogicalName>warning-8.png</LogicalName>
     </EmbeddedResource>
