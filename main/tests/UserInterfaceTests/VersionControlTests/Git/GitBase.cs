@@ -257,7 +257,12 @@ namespace UserInterfaceTests
 
 		protected bool IsBranchSwitched (string branchName)
 		{
-			return Session.SelectElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
+			try {
+				Session.WaitForElement (c => branchDisplayName (c).Text ("<b>" + branchName + "</b>"));
+				return true;
+			} catch (TimeoutException) {
+				return false;
+			}
 		}
 
 		#endregion
