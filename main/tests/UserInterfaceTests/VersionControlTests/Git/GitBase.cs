@@ -229,7 +229,8 @@ namespace UserInterfaceTests
 		{
 			SelectBranch (branchName);
 			TakeScreenShot (string.Format ("{0}-Branch-Selected", branchName));
-			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Marked ("buttonSetDefaultBranch"), false);
+			Session.ClickElement (c => IdeQuery.GitConfigurationDialog(c).Children ().Button ().Text ("Switch to Branch"), false);
+			CheckIfNameEmailNeeded ();
 			Assert.IsTrue (IsBranchSwitched (branchName));
 			TakeScreenShot (string.Format ("Switched-To-{0}", branchName));
 		}

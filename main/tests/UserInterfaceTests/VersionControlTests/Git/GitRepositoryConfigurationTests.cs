@@ -72,6 +72,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Category ("SwitchBranch")]
 		[Description ("Create a New Branch and switch to it")]
 		public void GitSwitchBranchTest ()
 		{
@@ -85,6 +86,7 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Category ("SwitchBranch")]
 		[Description ("Create a New Branch, select it and edit the name and switch to it")]
 		public void GitEditBranchTest ()
 		{
