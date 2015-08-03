@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.Projects
 				SelectTemplate (SelectedTemplateId);
 			} else if (DefaultSelectedCategoryPath != null) {
 				if (DefaultSelectedTemplate != null) {
-					SelectTemplateInCategory (DefaultSelectedCategoryPath, template => template.Id == DefaultSelectedTemplate);
+					SelectTemplateInCategory (DefaultSelectedCategoryPath, DefaultSelectedTemplate);
 				}
 
 				if (SelectedTemplate == null) {
@@ -318,6 +318,13 @@ namespace MonoDevelop.Ide.Projects
 		void SelectFirstTemplateInCategory (string categoryPath)
 		{
 			SelectTemplateInCategory (categoryPath, template => true);
+		}
+
+		void SelectTemplateInCategory (string categoryPath, string templateId)
+		{
+			SelectTemplateInCategory (categoryPath, parentTemplate => {
+				return parentTemplate.GetTemplate (template => template.Id == templateId) != null;
+			});
 		}
 
 		void SelectTemplateInCategory (string categoryPath, Func<SolutionTemplate, bool> isTemplateMatch)
