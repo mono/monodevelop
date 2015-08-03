@@ -476,11 +476,23 @@
     <EmbeddedResource Include="icons\element-template-16%402x.png">
       <LogicalName>element-template-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-template-16~dark.png">
+      <LogicalName>element-template-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-template-16~dark%402x.png">
+      <LogicalName>element-template-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-template-surroundwith-16.png">
       <LogicalName>element-template-surroundwith-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-template-surroundwith-16%402x.png">
       <LogicalName>element-template-surroundwith-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-template-surroundwith-16~dark.png">
+      <LogicalName>element-template-surroundwith-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-template-surroundwith-16~dark%402x.png">
+      <LogicalName>element-template-surroundwith-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\comment-16.png">
       <LogicalName>comment-16.png</LogicalName>
@@ -500,11 +512,23 @@
     <EmbeddedResource Include="icons\element-class-16%402x.png">
       <LogicalName>element-class-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-class-16~dark.png">
+      <LogicalName>element-class-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-class-16~dark%402x.png">
+      <LogicalName>element-class-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-delegate-16.png">
       <LogicalName>element-delegate-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-delegate-16%402x.png">
       <LogicalName>element-delegate-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-delegate-16~dark.png">
+      <LogicalName>element-delegate-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-delegate-16~dark%402x.png">
+      <LogicalName>element-delegate-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-enumeration-16.png">
       <LogicalName>element-enumeration-16.png</LogicalName>
@@ -512,11 +536,23 @@
     <EmbeddedResource Include="icons\element-enumeration-16%402x.png">
       <LogicalName>element-enumeration-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-enumeration-16~dark.png">
+      <LogicalName>element-enumeration-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-enumeration-16~dark%402x.png">
+      <LogicalName>element-enumeration-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-event-16.png">
       <LogicalName>element-event-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-event-16%402x.png">
       <LogicalName>element-event-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-event-16~dark.png">
+      <LogicalName>element-event-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-event-16~dark%402x.png">
+      <LogicalName>element-event-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-extensionmethod-16.png">
       <LogicalName>element-extensionmethod-16.png</LogicalName>
@@ -524,11 +560,23 @@
     <EmbeddedResource Include="icons\element-extensionmethod-16%402x.png">
       <LogicalName>element-extensionmethod-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-extensionmethod-16~dark.png">
+      <LogicalName>element-extensionmethod-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-extensionmethod-16~dark%402x.png">
+      <LogicalName>element-extensionmethod-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-field-16.png">
       <LogicalName>element-field-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-field-16%402x.png">
       <LogicalName>element-field-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-field-16~dark.png">
+      <LogicalName>element-field-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-field-16~dark%402x.png">
+      <LogicalName>element-field-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-interface-16.png">
       <LogicalName>element-interface-16.png</LogicalName>
@@ -536,11 +584,23 @@
     <EmbeddedResource Include="icons\element-interface-16%402x.png">
       <LogicalName>element-interface-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-interface-16~dark.png">
+      <LogicalName>element-interface-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-interface-16~dark%402x.png">
+      <LogicalName>element-interface-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-constant-16.png">
       <LogicalName>element-constant-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-constant-16%402x.png">
       <LogicalName>element-constant-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-constant-16~dark.png">
+      <LogicalName>element-constant-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-constant-16~dark%402x.png">
+      <LogicalName>element-constant-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-16.png">
       <LogicalName>element-method-16.png</LogicalName>
@@ -548,11 +608,23 @@
     <EmbeddedResource Include="icons\element-method-16%402x.png">
       <LogicalName>element-method-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-method-16~dark.png">
+      <LogicalName>element-method-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-method-16~dark%402x.png">
+      <LogicalName>element-method-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-new-16.png">
       <LogicalName>element-method-new-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-method-new-16%402x.png">
       <LogicalName>element-method-new-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-method-new-16~dark.png">
+      <LogicalName>element-method-new-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-method-new-16~dark%402x.png">
+      <LogicalName>element-method-new-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-namespace-16.png">
       <LogicalName>element-namespace-16.png</LogicalName>
@@ -560,17 +632,35 @@
     <EmbeddedResource Include="icons\element-namespace-16%402x.png">
       <LogicalName>element-namespace-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-namespace-16~dark.png">
+      <LogicalName>element-namespace-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-namespace-16~dark%402x.png">
+      <LogicalName>element-namespace-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-property-16.png">
       <LogicalName>element-property-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-property-16%402x.png">
       <LogicalName>element-property-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-property-16~dark.png">
+      <LogicalName>element-property-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-property-16~dark%402x.png">
+      <LogicalName>element-property-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-structure-16.png">
       <LogicalName>element-structure-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-structure-16%402x.png">
       <LogicalName>element-structure-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-structure-16~dark.png">
+      <LogicalName>element-structure-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-structure-16~dark%402x.png">
+      <LogicalName>element-structure-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-class-32.png">
       <LogicalName>file-class-32.png</LogicalName>
@@ -676,6 +766,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-keyword-16%402x.png">
       <LogicalName>element-keyword-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-keyword-16~dark.png">
+      <LogicalName>element-keyword-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-keyword-16~dark%402x.png">
+      <LogicalName>element-keyword-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\monodevelop-16.png">
       <LogicalName>monodevelop-16.png</LogicalName>
@@ -896,11 +992,23 @@
     <EmbeddedResource Include="icons\element-visibility-internal-overlay-16%402x.png">
       <LogicalName>element-visibility-internal-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-overlay-16~dark.png">
+      <LogicalName>element-visibility-internal-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-internal-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-private-overlay-16.png">
       <LogicalName>element-visibility-private-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-private-overlay-16%402x.png">
       <LogicalName>element-visibility-private-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-private-overlay-16~dark.png">
+      <LogicalName>element-visibility-private-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-private-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-private-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-protected-overlay-16.png">
       <LogicalName>element-visibility-protected-overlay-16.png</LogicalName>
@@ -908,11 +1016,23 @@
     <EmbeddedResource Include="icons\element-visibility-protected-overlay-16%402x.png">
       <LogicalName>element-visibility-protected-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-protected-overlay-16~dark.png">
+      <LogicalName>element-visibility-protected-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-protected-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-protected-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-internal-an-protected-overlay-16.png">
       <LogicalName>element-visibility-internal-an-protected-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-internal-an-protected-overlay-16%402x.png">
       <LogicalName>element-visibility-internal-an-protected-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-an-protected-overlay-16~dark.png">
+      <LogicalName>element-visibility-internal-an-protected-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-an-protected-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-internal-an-protected-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-internal-or-protected-overlay-16.png">
       <LogicalName>element-visibility-internal-or-protected-overlay-16.png</LogicalName>
@@ -920,11 +1040,23 @@
     <EmbeddedResource Include="icons\element-visibility-internal-or-protected-overlay-16%402x.png">
       <LogicalName>element-visibility-internal-or-protected-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-or-protected-overlay-16~dark.png">
+      <LogicalName>element-visibility-internal-or-protected-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-internal-or-protected-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-internal-or-protected-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-static-overlay-16.png">
       <LogicalName>element-visibility-static-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-visibility-static-overlay-16%402x.png">
       <LogicalName>element-visibility-static-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark.png">
+      <LogicalName>element-visibility-static-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-visibility-static-overlay-16~dark%402x.png">
+      <LogicalName>element-visibility-static-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-web-overlay-32.png">
       <LogicalName>project-web-overlay-32.png</LogicalName>
@@ -1727,11 +1859,23 @@
     <EmbeddedResource Include="icons\element-variable-16%402x.png">
       <LogicalName>element-variable-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-variable-16~dark.png">
+      <LogicalName>element-variable-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-variable-16~dark%402x.png">
+      <LogicalName>element-variable-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-exception-16.png">
       <LogicalName>element-exception-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-exception-16%402x.png">
       <LogicalName>element-exception-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-exception-16~dark.png">
+      <LogicalName>element-exception-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-exception-16~dark%402x.png">
+      <LogicalName>element-exception-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-fs-field-16.png">
       <LogicalName>element-fs-field-16.png</LogicalName>
@@ -1739,11 +1883,23 @@
     <EmbeddedResource Include="icons\element-fs-field-16%402x.png">
       <LogicalName>element-fs-field-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-fs-field-16~dark.png">
+      <LogicalName>element-fs-field-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-fs-field-16~dark%402x.png">
+      <LogicalName>element-fs-field-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-module-16.png">
       <LogicalName>element-module-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-module-16%402x.png">
       <LogicalName>element-module-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-module-16~dark.png">
+      <LogicalName>element-module-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-module-16~dark%402x.png">
+      <LogicalName>element-module-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-other-declaration-16.png">
       <LogicalName>element-other-declaration-16.png</LogicalName>
@@ -1751,11 +1907,23 @@
     <EmbeddedResource Include="icons\element-other-declaration-16%402x.png">
       <LogicalName>element-other-declaration-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-other-declaration-16~dark.png">
+      <LogicalName>element-other-declaration-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-other-declaration-16~dark%402x.png">
+      <LogicalName>element-other-declaration-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-type-16.png">
       <LogicalName>element-type-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\element-type-16%402x.png">
       <LogicalName>element-type-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-type-16~dark.png">
+      <LogicalName>element-type-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\element-type-16~dark%402x.png">
+      <LogicalName>element-type-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-source-16.png">
       <LogicalName>file-source-16.png</LogicalName>
