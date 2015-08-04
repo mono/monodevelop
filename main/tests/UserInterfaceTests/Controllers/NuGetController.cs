@@ -129,9 +129,9 @@ namespace UserInterfaceTests
 				var found = Session.Query (c => nugetWindow (c).Children ().CheckType (typeof(Gtk.Label)).Text (packageName)).Length > 0;
 				if (version != null) {
 					found = found && (Session.Query (c => nugetWindow (c).Children ().CheckType (typeof(Gtk.Label)).Text (version)).Length > 0);
-					if (found)
-						return;
 				}
+				if (found)
+					return;
 			}
 			takeScreenshot ("Package-Failed-To-Be-Found");
 			Assert.Fail ("No package '{0}' with version: '{1}' found", packageName, version);

@@ -86,6 +86,19 @@ namespace UserInterfaceTests
 		}
 
 		[Test]
+		[Description ("Add a package with powershell scripts and assert that Xamarin Studio doesn't report warnings "+
+			"when trying to add powershell scripts to Xamarin Studio")]
+		public void TestDontShowWarningWithPowerShellScripts ()
+		{
+			CreateProject ();
+			NuGetController.AddPackage (new NuGetPackageOptions {
+				PackageName = "Newtonsoft.Json",
+			}, TakeScreenShot);
+			WaitForNuGet.Success ("Newtonsoft.Json", NuGetOperations.Add, false);
+			TakeScreenShot ("NewtonSoftJson-Package-Added-Without-Warning");
+		}
+
+		[Test]
 		[Description ("When a NuGet package is updated, the 'Local Copy' value should be preserved")]
 		public void TestLocalCopyPreservedUpdate ()
 		{
