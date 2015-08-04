@@ -479,7 +479,13 @@ namespace MonoDevelop.Components
 			if (menuWidget is Menu) {
 				((Menu)menuWidget).Popup (null, null, PositionFunc, 0, Gtk.Global.CurrentEventTime);
 			} else {
+				var window = menuWidget as Gtk.Window;
 				PositionWidget (menuWidget);
+
+				if (window != null) {
+					window.TransientFor = this.Toplevel as Gtk.Window;
+				}
+
 				menuWidget.ShowAll ();
 			}
 		}
