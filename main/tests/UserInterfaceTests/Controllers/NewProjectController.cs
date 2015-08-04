@@ -47,7 +47,7 @@ namespace UserInterfaceTests
 
 		public void Open (string addToSolutionName)
 		{
-			Session.SelectElement (SolutionExplorerController.GetSolutionQuery (addToSolutionName));
+			SolutionExplorerController.SelectSolution (addToSolutionName);
 			Session.ExecuteCommand (ProjectCommands.AddNewProject);
 			Session.WaitForElement (c => c.Window ().Marked ("New Project"));
 		}

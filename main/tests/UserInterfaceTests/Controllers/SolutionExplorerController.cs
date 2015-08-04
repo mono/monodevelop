@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Components.AutoTest;
+using System.Collections.Generic;
 
 namespace UserInterfaceTests
 {
@@ -45,6 +47,37 @@ namespace UserInterfaceTests
 		public static Func<AppQuery, AppQuery> GetProjectQuery (string solutionLabel, string projectLabel)
 		{
 			return c => topLevel (c).Children (false).Index (0).Property ("Label", solutionLabel).Children (false).Property ("Label", projectLabel).Index (0);
+		}
+
+		public static bool Select (params string[] selectionTree)
+		{
+			var funcs = new List<Func<AppQuery, AppQuery>> ();
+			funcs.Add (topLevel);
+			foreach (var nodeName in selectionTree) {
+				var lastFunc = funcs.Last ();
+				funcs.Add (c => lastFunc (c).Children (false).Index (0).Property ("Label", nodeName));
+			}
+			return Session.SelectElement (funcs.Last ());
+		}
+
+		public static bool SelectSolution (string solutionName)
+		{
+			return Select (solutionName);
+		}
+
+		public static bool SelectProject (string solutionName, string projectName)
+		{
+			return Select (solutionName, projectName);
+		}
+
+		public static bool SelectReferenceFolder (string solutionName, string projectName)
+		{
+			return Select (solutionName, projectName);
+		}
+
+		public static bool SelectSingleReference (string solutionName, string projectName, string referenceName, bool fromPackage = false)
+		{
+			return fromPackage ? Select (solutionName, projectName, "From Packages", referenceName) : Select (solutionName, projectName, referenceName);
 		}
 	}
 }

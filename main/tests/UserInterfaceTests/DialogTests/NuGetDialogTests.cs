@@ -111,7 +111,7 @@ namespace UserInterfaceTests
 				GenerateProjectName (pclTemplateOptions.TemplateKind));
 			CreateProject (pclTemplateOptions, pclProjectDetails);
 
-			Session.ClickElement (SolutionExplorerController.GetProjectQuery (projectDetails.SolutionName, pclProjectDetails.ProjectName));
+			SolutionExplorerController.SelectProject (projectDetails.SolutionName, pclProjectDetails.ProjectName);
 			NuGetController.AddPackage (packageInfo);
 			Assert.Throws<TimeoutException> (WaitForNuGetReadmeOpened);
 		}
