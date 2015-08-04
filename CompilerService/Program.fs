@@ -1,9 +1,8 @@
 ﻿open System
 open Nessos.UnionArgParser
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open Newtonsoft.Json
 open Microsoft.FSharp.Reflection
-open Nessos.FsPickler//.Json
+open Nessos.FsPickler
 
 type Arguments =
   | Project of string
@@ -26,7 +25,7 @@ let main argv =
    
     let fsharpProjectOptions = checker.GetProjectOptionsFromProjectFile(projectFile)
 
-    let json = FsPickler.CreateBinary()//Json(indent = false)
+    let json = FsPickler.CreateBinary()
     let outstream = Console.OpenStandardOutput()
     json.Serialize(outstream, fsharpProjectOptions)
   with ex ->
